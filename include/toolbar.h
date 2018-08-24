@@ -356,6 +356,7 @@ public:
       void CreateConfigMenu();
       bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
       
+      void SetGrabberEnable( bool bShow ){ m_bGrabberEnable = bShow; }
       void Submerge();
       void SubmergeToGrabber();
       bool isSubmergedToGrabber();
@@ -379,6 +380,7 @@ public:
       bool CheckSurfaceRequest( wxMouseEvent &event );
       
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
+      void SetMinX( int offset ){ m_dock_min_x = offset; }
       long GetOrient() {
             return m_orient;
       }
@@ -405,6 +407,7 @@ public:
       wxString m_tblastAISiconName;
       wxToolBarToolBase *m_pTBAISTool;
       bool m_toolbar_scale_tools_shown;
+      void SetBackGroundColorString( wxString colorRef );
       
 protected:
     ocpnToolBarSimple *m_ptoolbar;
@@ -428,6 +431,8 @@ private:
       wxPoint m_position;
       int m_dock_x;
       int m_dock_y;
+      int m_dock_min_x;
+      
       ocpnStyle::Style* m_style;
       bool m_block;
 
@@ -440,8 +445,9 @@ private:
       bool m_bAutoHideToolbar;
       int m_nAutoHideToolbar;
       bool m_benableSubmerge;
+      bool m_bGrabberEnable;
       
-      
+      wxString m_backcolorString;
 
 };
 

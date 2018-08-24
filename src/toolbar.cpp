@@ -59,6 +59,7 @@ extern bool                       g_bPermanentMOBIcon;
 extern bool                       g_btouch;
 extern bool                       g_bsmoothpanzoom;
 extern OCPNPlatform               *g_Platform;
+extern bool                       g_useMUI;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -338,7 +339,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_opacity = 255;
 
     m_pGrabberwin = new GrabberWin( this, this, size_factor, _T("grabber_hi") );
-    m_pGrabberwin->Show();
+    m_pGrabberwin->Hide();
+    m_bGrabberEnable = true;
     
     m_pRecoverwin = NULL;
     m_position = position;
@@ -348,12 +350,15 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_bAutoHideToolbar = false;
     m_nAutoHideToolbar = 5;
     m_toolbar_scale_tools_shown = false;
+    m_backcolorString = _T("GREY2") ;
     
     m_ptoolbar = CreateNewToolbar();
 
     m_cs = (ColorScheme)-1;
 
     m_style = g_StyleManager->GetCurrentStyle();
+    m_dock_min_x = 0;
+    
     SetGeometry(false, wxRect());
     
 
@@ -399,6 +404,12 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
     DestroyToolBar();
 }
 
+void ocpnFloatingToolbarDialog::SetBackGroundColorString( wxString colorRef )
+{
+    m_backcolorString = colorRef;
+    SetColorScheme( m_cs );             //Causes a reload of background color
+}
+
 void ocpnFloatingToolbarDialog::OnKeyDown( wxKeyEvent &event )
 {
     event.Skip();
@@ -423,9 +434,31 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( int toolid, wxString tip
         
         if( toolid == ID_MOB && g_bPermanentMOBIcon )
             return true;
-        
+            
         ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
 
+        if(parentCanvas){
+            // If using MUI mode, and this toolbar is on a ChartCanvas,
+            // then some global action icons are dis-allowed on per-canvas toolbar
+            if(g_useMUI){
+                switch(toolid){
+                    case ID_SETTINGS:
+                    case ID_PRINT:
+                    case ID_ROUTEMANAGER:
+                    case ID_TRACK:
+                    case ID_ROUTE:
+                    case ID_COLSCHEME:
+                    case ID_ABOUT:
+                    case ID_MOB:
+                        return false;
+                         
+                    default:
+                        break;
+                }
+            }
+        }
+            
+        
         wxString configString;
         
         if(parentCanvas)
@@ -462,7 +495,7 @@ void ocpnFloatingToolbarDialog::SetGrabber( wxString icon_name )
 {
 //    m_pGrabberwin->Destroy();
     m_pGrabberwin = new GrabberWin( this, this, m_sizefactor, icon_name );
-    m_pGrabberwin->Show();
+    m_pGrabberwin->Hide();
     
     Realize();
     
@@ -496,8 +529,8 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 {
     m_cs = cs;
 
-    wxColour back_color = GetGlobalColor( _T("GREY2") );
-
+    wxColour back_color = GetGlobalColor( m_backcolorString );
+    
     //  Set background
     SetBackgroundColour( back_color );
     ClearBackground();
@@ -539,17 +572,16 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
         int max_rows = 10;
         int max_cols = 100;
         
-        ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
-        
-        if(parentCanvas){
+        if(GetParent())
+        {
 
-            int avoid_start = parentCanvas->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+            int avoid_start = GetParent()->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
             if(bAvoid && !rectAvoid.IsEmpty()){
-                avoid_start = parentCanvas->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
+                avoid_start = GetParent()->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
             }
             
             
-            max_rows = (parentCanvas->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
+            max_rows = (GetParent()->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
             
             max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
             max_cols -= 1;
@@ -575,18 +607,20 @@ void ocpnFloatingToolbarDialog::RePosition()
 
     if( m_pparent && m_ptoolbar ) {
         wxSize cs = m_pparent->GetClientSize();
-        if( -1 == m_dock_x ) m_position.x = 0;
+        if( -1 == m_dock_x )
+            m_position.x = m_dock_min_x;
         else
             if( 1 == m_dock_x ) m_position.x = cs.x - GetSize().x;
 
-        if( -1 == m_dock_y ) m_position.y = 0;
+        if( -1 == m_dock_y )
+            m_position.y = 0;
         else
             if( 1 == m_dock_y ) m_position.y = cs.y - GetSize().y;
 
         m_position.x = wxMin(cs.x - GetSize().x, m_position.x);
         m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
 
-        m_position.x = wxMax(0, m_position.x);
+        m_position.x = wxMax(m_dock_min_x, m_position.x);
         m_position.y = wxMax(0, m_position.y);
 
         wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
@@ -598,14 +632,15 @@ void ocpnFloatingToolbarDialog::RePosition()
         
         //  But this causes another problem. If a toolbar is NOT left docked, it will walk left by two pixels on each
         //  call to Reposition().  
-        //  The workaround temporarily disabled for O45.
         //TODO
-#ifdef __WXGTK__
-        wxPoint pp = m_pparent->GetPosition();
-        wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
-        wxPoint screen_pos_fix = ppg + pp + m_position;
-//        screen_pos.x = screen_pos_fix.x;
-#endif        
+ #ifdef __WXGTK__
+        if(m_pparent->GetParent()){
+            wxPoint pp = m_pparent->GetPosition();
+            wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
+            wxPoint screen_pos_fix = ppg + pp + m_position;
+            screen_pos.x = screen_pos_fix.x;
+        }
+ #endif        
 
         Move( screen_pos );
 
@@ -869,7 +904,7 @@ void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords( wxPoint posn, wxPoint 
     if( pos_in_parent.x < pos_in_parent_old.x )            // moving left
             {
         if( pos_in_parent.x < DOCK_MARGIN ) {
-            pos_in_parent.x = 0;
+            pos_in_parent.x = m_dock_min_x;               // but dock position may be offset
             m_dock_x = -1;
         }
     } else
@@ -914,7 +949,11 @@ void ocpnFloatingToolbarDialog::Realize()
 
         m_topSizer->Clear();
         m_topSizer->Add( m_ptoolbar );
-        m_topSizer->Add( m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin() );
+        
+        if(m_bGrabberEnable){
+            m_pGrabberwin->Show();
+            m_topSizer->Add( m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin() );
+        }
 
         m_topSizer->Layout();
         Fit();
@@ -939,18 +978,19 @@ void ocpnFloatingToolbarDialog::Realize()
             bool b_overlap = false;
 
             wxToolBarToolsList::compatibility_iterator node1 = m_ptoolbar->m_tools.GetFirst();
-            wxToolBarToolsList::compatibility_iterator node2 = node1->GetNext() ;
+            if( node1 ){
+                wxToolBarToolsList::compatibility_iterator node2 = node1->GetNext() ;
+                if( node2 ){
+                    wxToolBarToolBase *tool1 = node1->GetData();
+                    ocpnToolBarTool *tools1 = (ocpnToolBarTool *) tool1;
 
-            wxToolBarToolBase *tool1 = node1->GetData();
-            ocpnToolBarTool *tools1 = (ocpnToolBarTool *) tool1;
+                    wxToolBarToolBase *tool2 = node2->GetData();
+                    ocpnToolBarTool *tools2 = (ocpnToolBarTool *) tool2;
 
-            wxToolBarToolBase *tool2 = node2->GetData();
-            ocpnToolBarTool *tools2 = (ocpnToolBarTool *) tool2;
-
-            if( (tools1->m_x + tools1->m_width) >= tools2->m_x)
-                b_overlap = true;
-
-
+                    if( (tools1->m_x + tools1->m_width) >= tools2->m_x)
+                        b_overlap = true;
+                }
+            }
 
 
             int toolCount = m_ptoolbar->GetVisibleToolCount();
@@ -1316,14 +1356,21 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 {
-    //We only add plugin tools on toolbar associated with canvas #0, the primary.
+    if( !g_pi_manager ) return false;
+    
+    // We only add plugin tools on toolbar associated with canvas #0, the primary.
+    // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
+    
     ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
     if(parentCanvas){
-        if(!parentCanvas->IsPrimaryCanvas())
+        
+        if(g_useMUI){
+            return false;
+        }
+        else if(!parentCanvas->IsPrimaryCanvas())
             return false;
     }
         
-    if( !g_pi_manager ) return false;
 
     bool bret = false;
     int n_tools = tb->GetToolsCount();
@@ -1375,8 +1422,12 @@ bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 {
     //We only add plugin tools on toolbar associated with canvas #0, the primary.
+    // Except, if in gMUI mode, we allow no plugins ever on per-canvas toolbars.
     ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
     if(parentCanvas){
+        if(g_useMUI){
+            return false;
+        }
         if(!parentCanvas->IsPrimaryCanvas())
             return false;
     }

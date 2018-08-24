@@ -74,6 +74,7 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "chartdb.h"
+#include "CanvasConfig.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -1935,6 +1936,8 @@ void MyConfig::LoadCanvasConfigs( )
         pcc->bShowTides = false;
         pcc->bShowCurrents = false;
         pcc->toolbarConfig = g_toolbarConfig;
+        pcc->bShowToolbar = false;
+        pcc->toolbarOrientation = wxTB_HORIZONTAL;
         
         g_canvasConfigArray.Add(pcc);
         
@@ -1994,14 +1997,14 @@ void MyConfig::LoadCanvasConfigs( )
 
 }
             
-void MyConfig::LoadConfigCanvas( canvasConfig *cc )
+void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
 {
     wxString st;
     double st_lat, st_lon;
     
     //    Reasonable starting point
-    cc->iLat = START_LAT;                   // display viewpoint
-    cc->iLon = START_LON;
+    cConfig->iLat = START_LAT;                   // display viewpoint
+    cConfig->iLon = START_LON;
     
     if( Read( _T ( "canvasVPLatLon" ), &st ) ) {
         sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
@@ -2014,15 +2017,15 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
             while( st_lon > 180. )
                 st_lon -= 360.;
             
-            cc->iLon = st_lon;
+            cConfig->iLon = st_lon;
         }
         
         if( fabs( st_lat ) < 90.0 )
-            cc->iLat = st_lat;
+            cConfig->iLat = st_lat;
     }
     
-    cc->iScale = .0003;        // decent initial value
-    cc->iRotation = 0;
+    cConfig->iScale = .0003;        // decent initial value
+    cConfig->iRotation = 0;
     
     double st_view_scale;
     if( Read( wxString( _T ( "canvasVPScale" ) ), &st ) ) {
@@ -2030,7 +2033,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
         //    Sanity check the scale
         st_view_scale = fmax ( st_view_scale, .001/32 );
         st_view_scale = fmin ( st_view_scale, 4 );
-        cc->iScale = st_view_scale;
+        cConfig->iScale = st_view_scale;
     }
     
     double st_rotation;
@@ -2039,28 +2042,48 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
         //    Sanity check the rotation
         st_rotation = fmin ( st_rotation, 360 );
         st_rotation = fmax ( st_rotation, 0 );
-        cc->iRotation = st_rotation * PI / 180.;
+        cConfig->iRotation = st_rotation * PI / 180.;
     }
 
-    Read( _T ( "canvasInitialdBIndex" ), &cc->DBindex, 0 );
-    Read( _T ( "canvasbFollow" ), &cc->bFollow, 0 );
-    Read( _T ( "ActiveChartGroup" ), &cc->GroupID, 0 );
+    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
+    Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
+    Read( _T ( "ActiveChartGroup" ), &cConfig->GroupID, 0 );
     
+    Read( _T ( "canvasShowTides" ), &cConfig->bShowTides, 0 );
+    Read( _T ( "canvasShowCurrents" ), &cConfig->bShowCurrents, 0 );
+    
+    // per-canvas toolbar
     wxString st_toolbar_config;
     if(Read( _T ( "canvasToolbarConfig" ), &st_toolbar_config )){
-         cc->toolbarConfig = st_toolbar_config;
+        cConfig->toolbarConfig = st_toolbar_config;
     }
     else{
-        if(cc->configIndex == 0)
-            cc->toolbarConfig = g_toolbarConfig;
+        if(cConfig->configIndex == 0)
+            cConfig->toolbarConfig = g_toolbarConfig;
         else
-            cc->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
+            cConfig->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
     }
+    Read( _T ( "canvasShowToolbar" ), &cConfig->bShowToolbar, 0 );
+    Read( _T ( "canvasToolbarOrientation" ), &cConfig->toolbarOrientation, wxTB_HORIZONTAL );
 
+    Read( _T ( "canvasQuilt" ), &cConfig->bQuilt, 0 );
+    Read( _T ( "canvasShowGrid" ), &cConfig->bShowGrid, 0 );
+    Read( _T ( "canvasShowOutlines" ), &cConfig->bShowOutlines, 0 );
+    Read( _T ( "canvasShowDepthUnits" ), &cConfig->bShowDepthUnits, 0 );
+    
+    // ENC options
+    Read( _T ( "canvasShowENCText" ), &cConfig->bShowENCText, 1 );
+    Read( _T ( "canvasENCDisplayCategory" ), &cConfig->nENCDisplayCategory, STANDARD );
+    
     int sx, sy;
     Read( _T ( "canvasSizeX" ), &sx, 0 );
     Read( _T ( "canvasSizeY" ), &sy, 0 );
-    cc->canvasSize = wxSize(sx, sy);
+    cConfig->canvasSize = wxSize(sx, sy);
+
+    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
+    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
+    
+
     
 }   
             
@@ -2113,12 +2136,12 @@ void MyConfig::SaveCanvasConfigs( )
 }
     
 
-void MyConfig::SaveConfigCanvas( canvasConfig *cc )
+    void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
 {
     wxString st1;
     
-    if(cc->canvas){
-        ViewPort vp = cc->canvas->GetVP();
+    if(cConfig->canvas){
+        ViewPort vp = cConfig->canvas->GetVP();
             
         if( vp.IsValid() ) {
             st1.Printf( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
@@ -2130,19 +2153,33 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cc )
         }
         
         int restore_dbindex = 0;
-        ChartStack *pcs = cc->canvas->GetpCurrentStack();
+        ChartStack *pcs = cConfig->canvas->GetpCurrentStack();
         if(pcs)
             restore_dbindex = pcs->GetCurrentEntrydbIndex();
-        if( cc->canvas->GetQuiltMode())
-            restore_dbindex = cc->canvas->GetQuiltReferenceChartIndex();
+        if( cConfig->canvas->GetQuiltMode())
+            restore_dbindex = cConfig->canvas->GetQuiltReferenceChartIndex();
         Write( _T ( "canvasInitialdBIndex" ), restore_dbindex );
 
-        Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
-        Write( _T ( "ActiveChartGroup" ), cc->canvas->m_groupIndex );
-        Write( _T ( "canvasToolbarConfig" ), cc->canvas->GetToolbarConfigString() );
+        Write( _T ( "canvasbFollow" ), cConfig->canvas->m_bFollow );
+        Write( _T ( "ActiveChartGroup" ), cConfig->canvas->m_groupIndex );
+
+        Write( _T ( "canvasToolbarConfig" ), cConfig->canvas->GetToolbarConfigString() );
+        Write( _T ( "canvasShowToolbar" ), cConfig->canvas->GetToolbarEnable() );
+
+        Write( _T ( "canvasQuilt" ), cConfig->canvas->GetQuiltMode() );
+        Write( _T ( "canvasShowGrid" ), cConfig->canvas->GetShowGrid() );
+        Write( _T ( "canvasShowOutlines" ), cConfig->canvas->GetShowOutlines() );
+        Write( _T ( "canvasShowDepthUnits" ), cConfig->canvas->GetShowDepthUnits() );
         
-        int width = cc->canvas->GetSize().x;
-//         if(cc->canvas->IsPrimaryCanvas()){
+        Write( _T ( "canvasShowTides" ), cConfig->canvas->GetbShowTide() );
+        Write( _T ( "canvasShowCurrents" ), cConfig->canvas->GetbShowCurrent() );
+
+        // ENC options
+        Write( _T ( "canvasShowENCText" ), cConfig->canvas->GetShowENCText() );
+        Write( _T ( "canvasENCDisplayCategory" ), cConfig->canvas->GetENCDisplayCategory() );
+        
+        int width = cConfig->canvas->GetSize().x;
+        //         if(cConfig->canvas->IsPrimaryCanvas()){
 //             width = wxMax(width, gFrame->GetClientSize().x / 10);
 //         }
 //         else{
@@ -2150,7 +2187,7 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cc )
 //         }
         
         Write( _T ( "canvasSizeX" ), width );
-        Write( _T ( "canvasSizeY" ), cc->canvas->GetSize().y );
+        Write( _T ( "canvasSizeY" ), cConfig->canvas->GetSize().y );
         
     }
 }

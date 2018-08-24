@@ -122,6 +122,7 @@ enum
     ID_TBEXIT,
     ID_TBSTAT,
     ID_TBSTATBOX,
+    ID_MASTERTOGGLE,
 
     ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
@@ -285,30 +286,6 @@ public:
 private:
     std::string m_string;
 };
-
-
-//  Class to encapsulate persistant canvas configuration(s)
-class canvasConfig
-{
-public:    
-    canvasConfig();
-    canvasConfig(int index);
-    ~canvasConfig();
-    
-    int configIndex;
-    ChartCanvas *canvas;
-    double iLat, iLon, iScale, iRotation;
-    int DBindex; 
-    int GroupID;
-    bool bFollow;
-    bool bQuilt;
-    wxString toolbarConfig;
-    bool bShowTides;
-    bool bShowCurrents;
-    wxSize canvasSize;
-};
-
-WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
 
 
 class MyApp: public wxApp
@@ -517,6 +494,11 @@ class MyFrame: public wxFrame
     void LoadHarmonics();
     void ReloadAllVP();
     void SetCanvasSizes( wxSize frameSize );
+
+    ocpnToolBarSimple *CreateMasterToolbar();
+    void RequestNewMasterToolbar( bool bforcenew = true );
+    bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
+    bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
     
   private:
     void ODoSetSize(void);
@@ -536,6 +518,8 @@ class MyFrame: public wxFrame
     bool EvalPriority(const wxString & message, DataStream *pDS );
     void SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx);
 
+    bool GetMasterToolItemShow( int toolid );
+    
     int                 m_StatusBarFieldCount;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads

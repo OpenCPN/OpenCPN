@@ -115,6 +115,7 @@
 #include "Quilt.h"
 #include "Route.h"
 #include "OCPN_AUIManager.h"
+#include "CanvasConfig.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -166,6 +167,11 @@ WX_DEFINE_OBJARRAY( ArrayOfCDI );
 #ifdef __WXMSW__
 void RedirectIOToConsole();
 #endif
+
+//------------------------------------------------------------------------------
+//      Fwd Declarations
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //      Static variable definition
@@ -673,6 +679,8 @@ ocpnFloatingToolbarDialog *g_MainToolbar;
 int                       g_maintoolbar_x;
 int                       g_maintoolbar_y;
 long                      g_maintoolbar_orient;
+float                     g_toolbar_scalefactor;
+
 float                     g_compass_scalefactor;
 
 bool                      g_benable_rotate;
@@ -737,8 +745,8 @@ wxArrayString    g_locale_catalog_array;
 bool             b_reloadForPlugins;
 
 unsigned int     g_canvasConfig;
-
 bool             g_useMUI;
+bool             g_bmasterToolbarFull = true;
 
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
@@ -931,18 +939,6 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
 
      return filePathAndName;
 }
-
-//------------------------------------------------------------------------------
-// canvasConfig Implementation
-//------------------------------------------------------------------------------
-
-canvasConfig::canvasConfig( int index )
-{
-    configIndex = index;
-    canvas = NULL;
-}
-
-canvasConfig::~canvasConfig(){}
 
 
 // `Main program' equivalent, creating windows and returning main app frame
@@ -2157,6 +2153,8 @@ bool MyApp::OnInit()
     
     gFrame->CreateCanvasLayout();
 
+    //gFrame->RequestNewMasterToolbar( true );
+    
     gFrame->SetChartUpdatePeriod();             // Reasonable default
     
     gFrame->Enable();
@@ -3053,7 +3051,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
             //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
             //cc->SetToolbarConfigString(g_toolbarConfig);
             cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-            cc->SetToolbarOrientation( g_maintoolbar_orient);
+            //cc->SetToolbarOrientation( g_maintoolbar_orient);
             cc->ConfigureChartBar();
             cc->SetColorScheme( global_color_scheme );
             
@@ -3077,8 +3075,8 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            //cc->m_bFollow = pConfig->st_bFollow;               // set initial state
            //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc->SetToolbarConfigString(g_toolbarConfig);
-           cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-           cc->SetToolbarOrientation( g_maintoolbar_orient);
+           //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
+           //cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
            
@@ -3146,6 +3144,10 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
 }
 
 
+
+
+
+
 static bool b_inCloseWindow;
 
 void MyFrame::RequestNewToolbars(bool bforcenew)
@@ -3187,7 +3189,8 @@ void MyFrame::UpdateAllToolbars( ColorScheme cs )
 void MyFrame::SetAllToolbarScale()
 {
     double scale_factor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
-
+    g_toolbar_scalefactor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
+    
     //  Round to the nearest "quarter", to avoid rendering artifacts
     scale_factor = wxRound( scale_factor * 4.0 )/ 4.0;
     
@@ -3375,7 +3378,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     TrackOff();
 
-    // ..For each canvas...
     if( g_MainToolbar ) {
         wxPoint tbp_incanvas = GetPrimaryCanvas()->GetToolbarPosition();
         g_maintoolbar_x = tbp_incanvas.x;
@@ -3592,6 +3594,12 @@ void MyFrame::OnMove( wxMoveEvent& event )
     if( console && console->IsShown() )
         PositionConsole();
 
+    //  If global toolbar is shown, reposition it...
+    if( g_MainToolbar){
+        g_MainToolbar->RePosition();
+        g_MainToolbar->Realize();
+    }
+        
 //    Somehow, this method does not work right on Windows....
 //      g_nframewin_posx = event.GetPosition().x;
 //      g_nframewin_posy = event.GetPosition().y;
@@ -3864,6 +3872,12 @@ void MyFrame::ODoSetSize( void )
         ChartCanvas *cc = g_canvasArray.Item(i);
         if(cc)
             cc->FormatPianoKeys();
+    }
+    
+    //  If global toolbar is shown, reposition it...
+    if( g_MainToolbar){
+        g_MainToolbar->RePosition();
+        g_MainToolbar->Realize();
     }
     
 //  Update the stored window size
@@ -4245,6 +4259,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
 
+        case ID_MASTERTOGGLE:{
+            g_bmasterToolbarFull = !g_bmasterToolbarFull;
+            RequestNewMasterToolbar(true);
+            break;
+        }
+            
         //  Various command events coming from (usually) other threads,
         //  used to control OCPN modes in a thread-safe way.
 
@@ -5316,7 +5336,7 @@ void MyFrame::SurfaceAllToolbars( void )
         // .. for each canvas...
         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
             ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc)
+            if(cc && cc->GetToolbarEnable())
                 cc->SurfaceToolbar( );
         }
     }
@@ -6158,8 +6178,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             m_initializing = true;
             g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
-            RequestNewToolbars();
-            
+//            RequestNewToolbars();
+            RequestNewMasterToolbar();
             // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
             // Reload all icons, to be sure.
             if(pWayPointMan)
@@ -9109,6 +9129,398 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
 
 
 
+//----------------------------------------------------------------------------------------------------------
+//   Master Toolbar support
+//----------------------------------------------------------------------------------------------------------
+
+void MyFrame::RequestNewMasterToolbar(bool bforcenew)
+{
+    
+    bool b_reshow = true;
+    if( g_MainToolbar ) {
+        b_reshow = g_MainToolbar->IsShown();
+        float ff = fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor);
+        if((ff > 0.01f) || bforcenew){
+            g_MainToolbar->DestroyToolBar();
+            delete g_MainToolbar;
+            g_MainToolbar = NULL;
+        }
+    }
+    
+    if( !g_MainToolbar ) {
+        g_MainToolbar = new ocpnFloatingToolbarDialog( this,
+                                                       wxPoint( -1, -1/*g_maintoolbar_x, g_maintoolbar_y*/ ), wxTB_VERTICAL, g_toolbar_scalefactor );
+        g_MainToolbar->CreateConfigMenu();
+        g_MainToolbar->SetGrabberEnable( false );
+        g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
+        
+        
+    }
+    
+    if( g_MainToolbar ) {
+//         if( g_MainToolbar->IsToolbarShown() )
+//             g_MainToolbar->DestroyToolBar();
+        
+        
+        CreateMasterToolbar();
+        if (g_MainToolbar->isSubmergedToGrabber()) {
+            g_MainToolbar->SubmergeToGrabber();
+        } else {
+            g_MainToolbar->RePosition();
+            g_MainToolbar->SetColorScheme(global_color_scheme);
+            g_MainToolbar->Show(b_reshow && g_bshowToolbar);
+        }
+    }
+    
+    //  We need to move the toolbar for the primary (leftmost) ChartCanvas out of the way...
+    ChartCanvas *cc = g_canvasArray[0];
+     if(cc && cc->GetToolbar()){
+          cc->GetToolbar()->SetMinX( g_MainToolbar->GetSize().x * 12 / 10 );           // leave room for global toolbar on the left side of primary canvas
+          cc->RequestNewCanvasToolbar( false );
+     }
+        
+        
+    
+}
+
+bool MyFrame::GetMasterToolItemShow( int toolid )
+{
+    if(g_bmasterToolbarFull)
+        return true;
+    else
+        return false;
+}
+
+ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
+{
+    ocpnToolBarSimple *tb = NULL;
+    wxToolBarToolBase* newtool;
+
+    if( g_MainToolbar ){
+        tb = g_MainToolbar->GetToolbar();
+//         if(tb){
+//             if(g_Compass)
+//                 g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+//             else
+//                 g_MainToolbar->SetGeometry(false, wxRect(0,0,1,1));
+//         }
+            
+    }
+    if( !tb )
+        return 0;
+
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    wxString tipString;
+
+#if 0    
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Zoom In") ) << _T(" (+)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMIN, tipString ) )
+        tb->AddTool( ID_ZOOMIN, _T("zoomin"),
+            style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Zoom Out") ) << _T(" (-)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMOUT, tipString ) )
+        tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
+            style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
+            && ( pCurrentStack->nEntry > 1 );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {
+        newtool = tb->AddTool( ID_STKDN, _T("scin"),
+                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+        newtool->Enable( m_toolbar_scale_tools_shown );
+    }
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Shift to Smaller Scale Chart") ) << _T(" (F8)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKUP, tipString ) ) {
+        newtool = tb->AddTool( ID_STKUP, _T("scout"),
+                style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+        newtool->Enable( m_toolbar_scale_tools_shown );
+    }
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
+        tb->AddTool( ID_ROUTE, _T("route"),
+            style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
+            style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Auto Follow") ) << _T(" (F2)");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_FOLLOW, tipString ) )
+        tb->AddTool( ID_FOLLOW, _T("follow"),
+            style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
+            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+#endif
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Zoom In") ) << _T(" (+)");
+    tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Options");
+    if( GetMasterToolItemShow(ID_SETTINGS) )
+        tb->AddTool( ID_SETTINGS, _T("settings"),
+            style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    
+#if 0        
+    bool gs = false;
+#ifdef USE_S57
+    if (ps52plib)
+        gs = ps52plib->GetShowS57Text();
+#endif
+
+    if (gs)
+        tipString = wxString( _("Hide ENC text") ) << _T(" (T)");
+    else
+        tipString = wxString( _("Show ENC text") ) << _T(" (T)");
+
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
+        tb->AddTool( ID_ENC_TEXT, _T("text"),
+            style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
+            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+
+    m_pAISTool = NULL;
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Hide AIS Targets");          // inital state is on
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_AIS, tipString ) )
+        m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
+                                  style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ),
+                                  wxITEM_NORMAL, tipString );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Show Currents");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_CURRENT, tipString ) )
+        tb->AddTool( ID_CURRENT, _T("current"),
+            style->GetToolIcon( _T("current"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Show Tides");
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TIDE, tipString ) )
+        tb->AddTool( ID_TIDE, _T("tide"),
+            style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
+#endif
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Print Chart");
+    if( GetMasterToolItemShow(ID_PRINT) )
+        tb->AddTool( ID_PRINT, _T("print"),
+            style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Route & Mark Manager");
+    if( GetMasterToolItemShow(ID_ROUTEMANAGER) )
+        tb->AddTool( ID_ROUTEMANAGER,
+            _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
+            tipString, wxITEM_NORMAL );
+
+//     CheckAndAddPlugInTool( tb );
+//     tipString = _("Enable Tracking");
+//     if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TRACK, tipString ) )
+//         tb->AddTool( ID_TRACK, _T("track"),
+//             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
+//             style->GetToolIcon( _T("track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Change Color Scheme") ) << _T(" (F5)");
+    if( GetMasterToolItemShow(ID_COLSCHEME) ){
+        tb->AddTool( ID_COLSCHEME,
+            _T("colorscheme"), style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ),
+            tipString, wxITEM_NORMAL );
+        tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to always be visible, whatever
+                                                        //  the colorscheme
+    }
+
+    CheckAndAddPlugInTool( tb );
+    tipString = _("About OpenCPN");
+    if( GetMasterToolItemShow(ID_ABOUT) )
+        tb->AddTool( ID_ABOUT, _T("help"),
+            style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+    //      Add any PlugIn toolbar tools that request default positioning
+    if(g_bmasterToolbarFull)
+        AddDefaultPositionPlugInTools( tb );
+
+    //  And finally add the MOB tool
+    tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
+    if( GetMasterToolItemShow(ID_MOB))
+        tb->AddTool( ID_MOB, _T("mob_btn"),
+                     style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+
+
+// Realize() the toolbar
+    style->Unload();
+    g_MainToolbar->Realize();
+
+#if 0    
+//      Set up the toggle states
+
+    if( cc1 ) {
+        //  Re-establish toggle states
+        tb->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
+        tb->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+    }
+
+    if( pConfig && cc1 )
+        tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+#endif
+
+
+#if 0    
+    wxString initiconName;
+    if( g_bShowAIS ) {
+        if (g_bAllowShowScaled){
+            if(!g_bShowScaled)
+                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS targets") );
+            else
+                tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
+        }
+        else
+            tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
+        initiconName = _T("AIS");
+    }
+    else {
+        tb->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
+        initiconName = _T("AIS_Disabled");
+    }
+    tb->SetToolNormalBitmapEx( m_pAISTool, initiconName );
+    m_lastAISiconName = initiconName;
+
+    tb->ToggleTool( ID_TRACK, g_bTrackActive );
+#endif
+
+    //  Set PlugIn tool toggle states
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( !pttc->b_viz )
+            continue;
+
+        if( pttc->kind == wxITEM_CHECK )
+            tb->ToggleTool( pttc->id, pttc->b_toggle );
+    }
+
+
+    //SetStatusBarPane( -1 );                   // don't show help on status bar
+
+    return tb;
+}
+
+bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
+{
+    if( !g_pi_manager ) return false;
+    
+    bool bret = false;
+    int n_tools = tb->GetToolsCount();
+    
+    //    Walk the PlugIn tool spec array, checking the requested position
+    //    If a tool has been requested by a plugin at this position, add it
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( pttc->position == n_tools ) {
+            wxBitmap *ptool_bmp;
+            
+            switch( global_color_scheme ){
+                case GLOBAL_COLOR_SCHEME_DAY:
+                    ptool_bmp = pttc->bitmap_day;
+                    ;
+                    break;
+                case GLOBAL_COLOR_SCHEME_DUSK:
+                    ptool_bmp = pttc->bitmap_dusk;
+                    break;
+                case GLOBAL_COLOR_SCHEME_NIGHT:
+                    ptool_bmp = pttc->bitmap_night;
+                    break;
+                default:
+                    ptool_bmp = pttc->bitmap_day;
+                    ;
+                    break;
+            }
+            
+            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
+                                                    wxString( pttc->shortHelp ), pttc->kind );
+            
+            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
+                                   pttc->pluginRolloverIconSVG,
+                                   pttc->pluginToggledIconSVG );
+            
+            bret = true;
+        }
+    }
+    
+    //    If we added a tool, call again (recursively) to allow for adding adjacent tools
+    if( bret ) while( CheckAndAddPlugInTool( tb ) ) { /* nothing to do */
+    }
+    
+    return bret;
+}
+
+bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
+{
+    if( !g_pi_manager ) return false;
+
+    bool bret = false;
+
+    //    Walk the PlugIn tool spec array, checking the requested position
+    //    If a tool has been requested by a plugin at this position, add it
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+
+        //      Tool is currently tagged as invisible
+        if( !pttc->b_viz )
+            continue;
+
+        if( pttc->position == -1 )                  // PlugIn has requested default positioning
+                {
+            wxBitmap *ptool_bmp;
+            wxBitmap *ptool_bmp_Rollover;
+
+            switch( global_color_scheme ){
+                case GLOBAL_COLOR_SCHEME_DAY:
+                    ptool_bmp = pttc->bitmap_day;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
+                    ;
+                    break;
+                case GLOBAL_COLOR_SCHEME_DUSK:
+                    ptool_bmp = pttc->bitmap_dusk;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_dusk;
+                    break;
+                case GLOBAL_COLOR_SCHEME_NIGHT:
+                    ptool_bmp = pttc->bitmap_night;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_night;
+                    break;
+                default:
+                    ptool_bmp = pttc->bitmap_day;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
+                    break;
+            }
+
+            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
+                                                    wxString( pttc->shortHelp ), pttc->kind );
+            
+            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
+                                   pttc->pluginRolloverIconSVG,
+                                   pttc->pluginToggledIconSVG );
+            
+            bret = true;
+        }
+    }
+    return bret;
+}
+
+
 
 
 
@@ -10012,6 +10424,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASH2; 122;131;172;",              // Dashboard Illustrations
         "COMP1; 211;211;211;",              // Compass Window Background
         
+        "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
@@ -10058,6 +10472,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASH1;  76; 76;113;",              // Dashboard Illustrations
         "DASH2;  48; 52; 72;",              // Dashboard Illustrations
         "COMP1; 107;107;107;",              // Compass Window Background
+
+        "GREY3;  40; 40; 40;",              // MUIBar/TB background
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -10104,6 +10520,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASH1;  48; 52; 72;",              // Dashboard Illustrations
         "DASH2;  36; 36; 53;",              // Dashboard Illustrations
         "COMP1;  24; 24; 24;",              // Compass Window Background
+        
+        "GREY3;  40; 40; 40;",              // MUIBar/TB background
         
         "*****" };
 

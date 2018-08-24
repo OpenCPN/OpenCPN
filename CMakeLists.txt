@@ -1215,6 +1215,7 @@ SET(HDRS
                 include/OCPN_AUIManager.h
                 include/MUIBar.h
                 include/CanvasOptions.h
+                include/CanvasConfig.h
 )
 
 SET(SRCS
@@ -1312,6 +1313,7 @@ SET(SRCS
                 src/OCPN_AUIManager.cpp
                 src/MUIBar.cpp
                 src/CanvasOptions.cpp
+                src/CanvasConfig.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}

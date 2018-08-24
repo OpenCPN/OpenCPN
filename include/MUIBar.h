@@ -101,6 +101,8 @@ private:
     int         m_animationTotalTime;
     int         m_pushPull;
     
+    wxString    m_backcolorString;
+    
 DECLARE_EVENT_TABLE()
 };
 

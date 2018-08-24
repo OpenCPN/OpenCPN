@@ -132,6 +132,7 @@ extern bool                      g_bShowLayers;
 extern bool                      g_bTransparentToolbar;
 extern bool                      g_bPermanentMOBIcon;
 extern bool                      g_bTempShowMenuBar;
+extern float                     g_toolbar_scalefactor;
 
 extern int                       g_iSDMMFormat;
 extern int                       g_iDistanceFormat;
@@ -573,6 +574,10 @@ void OCPNPlatform::Initialize_2( void )
 #ifdef __OCPN__ANDROID__
     wxLogMessage(androidGetDeviceInfo());
 #endif    
+    
+    //  Set a global toolbar scale factor
+    g_toolbar_scalefactor = GetToolbarScaleFactor( g_GUIScaleFactor );
+    
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()

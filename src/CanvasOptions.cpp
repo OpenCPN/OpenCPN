@@ -104,12 +104,13 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
 #endif
     
     int border_size = 5;
-    int group_item_spacing = 5;
+    int group_item_spacing = 1;
     
     wxSizerFlags groupLabelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_TOP).Border(wxALL, group_item_spacing);
     wxSizerFlags groupInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_TOP).Border(wxBOTTOM, group_item_spacing * 2).Expand();
     wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
     wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+    wxSizerFlags labelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT).Border(wxALL, group_item_spacing);
     
     wxScrolledWindow *pDisplayPanel = m_sWindow;
 
@@ -132,7 +133,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
 
     //  Options Label
     generalSizer->Add(0, border_size * 2);
-    wxStaticText* optionsLabelBox = new wxStaticText(pDisplayPanel, wxID_ANY, _("Chart View Options"));
+    wxStaticText* optionsLabelBox = new wxStaticText(pDisplayPanel, wxID_ANY, _("Chart Panel Options"));
     generalSizer->Add(optionsLabelBox, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
     wxStaticLine *m_staticLine121 = new wxStaticLine(pDisplayPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
     generalSizer->Add(m_staticLine121, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
@@ -140,6 +141,17 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     // spacer
     generalSizer->Add(0, border_size * 4);
 
+    // Control Options
+    wxStaticBoxSizer* boxCont = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Control Options")), wxVERTICAL);
+    generalSizer->Add(boxCont, 0, wxALL | wxEXPAND, border_size);
+    
+    pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Enable Toolbar"));
+    boxCont->Add(pCBToolbar, verticleInputFlags);
+    pCBToolbar->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+
+    // spacer
+    generalSizer->Add(0, border_size * 4);
+    
     // Nav Mode
     wxStaticBoxSizer* boxNavMode = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Navigation Mode")), wxVERTICAL);
     generalSizer->Add(boxNavMode, 0, wxALL | wxEXPAND, border_size);
@@ -204,6 +216,13 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pCDOENCText = new wxCheckBox(pDisplayPanel, ID_ENCTEXT_CHECKBOX1, _("Show Text"));
     boxENC->Add(pCDOENCText, verticleInputFlags);
     pCDOENCText->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+
+    // dislay category
+    boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
+    wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
+    m_pDispCat = new wxChoice(pDisplayPanel, ID_CODISPCAT, wxDefaultPosition,  wxDefaultSize, 4, pDispCatStrings);
+    boxENC->Add(m_pDispCat, 0, wxLEFT, 4*GetCharWidth());
+    m_pDispCat->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     RefreshControlValues();
     
@@ -233,6 +252,9 @@ void CanvasOptions::RefreshControlValues( void )
     ChartCanvas *parentCanvas = wxDynamicCast(m_parent, ChartCanvas);
     if(!parentCanvas)
         return;
+
+    // Control options
+    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
     
     //  Display options
     pCDOQuilting->SetValue(parentCanvas->GetQuiltMode());
@@ -246,7 +268,27 @@ void CanvasOptions::RefreshControlValues( void )
     
     //ENC Options
     pCDOENCText->SetValue(parentCanvas->GetShowENCText());
-    
+
+    //  Display category
+    int nset = 2;  // default OTHER
+    switch (parentCanvas->GetENCDisplayCategory()) {
+        case (DISPLAYBASE):
+            nset = 0;
+            break;
+        case (STANDARD):
+            nset = 1;
+            break;
+        case (OTHER):
+            nset = 2;
+            break;
+        case (MARINERS_STANDARD):
+            nset = 3;
+            break;
+        default:
+            nset = 3;
+            break;
+    }
+    m_pDispCat->SetSelection(nset);
     
 }
 
@@ -258,6 +300,11 @@ void CanvasOptions::UpdateCanvasOptions( void )
     
     bool b_needRefresh = false;
     bool b_needReLoad = false;
+    
+    if(pCBToolbar->GetValue() != parentCanvas->GetToolbarEnable()){
+        parentCanvas->SetToolbarEnable( pCBToolbar->GetValue() );
+        b_needRefresh = true;
+    }
     
     if(pCDOQuilting->GetValue() != parentCanvas->GetQuiltMode()){
         parentCanvas->ToggleCanvasQuiltMode();
@@ -289,6 +336,29 @@ void CanvasOptions::UpdateCanvasOptions( void )
     //  ENC Options
     if(pCDOENCText->GetValue() != parentCanvas->GetShowENCText()){
         parentCanvas->SetShowENCText(pCDOENCText->GetValue());
+        b_needReLoad = true;
+    }
+
+    int nset = 2;
+    switch (parentCanvas->GetENCDisplayCategory()) {
+        case (DISPLAYBASE): nset = 0; break;
+        case (STANDARD): nset = 1; break;
+        case (OTHER): nset = 2; break;
+        case (MARINERS_STANDARD): nset = 3; break;
+        default: nset = 2; break;
+    }
+    
+    
+    if(m_pDispCat->GetSelection() != nset){
+        int valSet = 2;
+        switch(m_pDispCat->GetSelection()){
+            case 0: valSet = DISPLAYBASE; break;
+            case 1: valSet = STANDARD; break;
+            case 2: valSet = OTHER; break;
+            case 3: valSet = MARINERS_STANDARD; break;
+            default: valSet = STANDARD; break;
+        }
+        parentCanvas->SetENCDisplayCategory( valSet);
         b_needReLoad = true;
     }
     

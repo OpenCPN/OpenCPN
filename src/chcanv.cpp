@@ -89,6 +89,7 @@
 #include "Route.h"
 #include "OCPN_AUIManager.h"
 #include "MUIBar.h"
+#include "CanvasConfig.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -327,7 +328,7 @@ int   last_brightness;
 int                     g_cog_predictor_width;
 extern double           g_display_size_mm;
 
-extern bool             g_bshowToolbar;
+//extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern wxColour         g_colourOwnshipRangeRingsColour;
 
@@ -475,6 +476,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     m_toolBar = NULL;
     m_toolbar_scalefactor = 1.0;
+    m_toolbarOrientation = wxTB_HORIZONTAL;
+    
     m_pCurrentStack = NULL;
     m_bpersistent_quilt = false;
     m_piano_ctx_menu = NULL;
@@ -491,6 +494,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bShowOutlines = false;
     m_bDisplayGrid = false;
     m_bShowDepthUnits = true;
+    m_encDisplayCategory = (int)STANDARD;
     
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -840,7 +844,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
 
     m_Compass = new ocpnCompass(this);
     m_Compass->Show(pConfig->m_bShowCompassWin);
-    
+
+    m_bToolbarEnable = true;
 }
 
 ChartCanvas::~ChartCanvas()
@@ -923,12 +928,36 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
     m_groupIndex = pcc->GroupID;
+    
     m_toolbarConfig = pcc->toolbarConfig;
     if(m_toolbarConfig.IsEmpty() && (pcc->configIndex != 0)){
         m_toolbarConfig = g_toolbarConfigSecondary;
     }
+    SetToolbarOrientation( pcc->toolbarOrientation );
+    SetToolbarEnable(pcc->bShowToolbar);
+    
+    ShowTides(pcc->bShowTides);
+    ShowCurrents(pcc->bShowCurrents);
+    
+    SetShowDepthUnits( pcc->bShowDepthUnits );
+    SetShowGrid( pcc->bShowGrid );
+    SetShowOutlines( pcc->bShowOutlines );
+    
+    SetShowENCText( pcc->bShowENCText );
+    m_encDisplayCategory = pcc->nENCDisplayCategory;
+    
 }
 
+void ChartCanvas::SetToolbarEnable( bool bShow )
+{
+    //if(GetToolbarEnable() != bShow)
+    {
+        m_bToolbarEnable = bShow;
+        if(!m_toolBar)
+            RequestNewCanvasToolbar( true );
+        GetToolbar()->Show( bShow );
+    }
+}
 
 int ChartCanvas::GetPianoHeight()
 {
@@ -9156,6 +9185,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 {
     wxPaintDC dc( this );
 
+    //GetToolbar()->Show( m_bToolbarEnable );
+    
     //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
     //  It is important that the wxPaintDC is built, even if we elect to not process this paint message.
     //  Otherwise, the paint message may not be removed from the message queue, esp on Windows. (FS#1213)
@@ -9288,6 +9319,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         }
         
         if(bvectorQuilt){
+            printf("Render %d\n", IsPrimaryCanvas());
+            
             if(ps52plib->GetStateHash() != m_s52StateHash){
                 UpdateS52State();
                 m_s52StateHash = ps52plib->GetStateHash();
@@ -9966,8 +9999,8 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
         
-        if(g_MainToolbar)
-            g_MainToolbar->UpdateRecoveryWindow(g_bshowToolbar);
+//        if(g_MainToolbar)
+//            g_MainToolbar->UpdateRecoveryWindow(g_bshowToolbar);
         
     } else
 #endif
@@ -10545,6 +10578,9 @@ double ChartCanvas::GetAnchorWatchRadiusPixels( RoutePoint *pAnchorWatchPoint )
 //------------------------------------------------------------------------------------------
 void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
 {
+    if(!ptcmgr)
+        return;
+    
     pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_TIDEPOINT );
     
     for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -10568,6 +10604,9 @@ extern wxDateTime gTimeSource;
 
 void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 {
+    if(!ptcmgr)
+        return;
+    
     wxDateTime this_now = gTimeSource;
     bool cur_time = !gTimeSource.IsValid();
     if (cur_time)
@@ -10794,6 +10833,9 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 
 void ChartCanvas::RebuildCurrentSelectList( LLBBox& BBox )
 {
+    if(!ptcmgr)
+        return;
+    
     pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_CURRENTPOINT );
     
     double lon_last = 0.;
@@ -10827,6 +10869,9 @@ void ChartCanvas::RebuildCurrentSelectList( LLBBox& BBox )
 
 void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 {
+    if(!ptcmgr)
+        return;
+    
     float tcvalue, dir;
     bool bnew_val;
     char sbuf[20];
@@ -11381,7 +11426,7 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
         } else {
             m_toolBar->RePosition();
             m_toolBar->SetColorScheme(global_color_scheme);
-            m_toolBar->Show(b_reshow && g_bshowToolbar);
+            m_toolBar->Show(b_reshow && m_bToolbarEnable);
         }
     }
 
@@ -12158,9 +12203,13 @@ void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
 bool ChartCanvas::UpdateS52State()
 {
     bool retval = false;
+    printf("    update %d\n", IsPrimaryCanvas());
     
-    ps52plib->SetShowS57Text( m_encShowText );
+    if(ps52plib){
+        ps52plib->SetShowS57Text( m_encShowText );
     
+        ps52plib->SetDisplayCategory( (DisCat) m_encDisplayCategory );
+    }
     
     return retval;
 }
@@ -12173,7 +12222,12 @@ void ChartCanvas::SetShowENCText( bool show )
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
-
+void ChartCanvas::SetENCDisplayCategory( int category )
+{
+    m_encDisplayCategory = category;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
 
 
 //--------------------------------------------------------------------------------------------------------

@@ -321,8 +321,11 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             wxBitmap bm;
 #ifdef ocpnUSE_SVG
             wxString fullFilePath;
-            if( rollover )
+            if( rollover ){
                 fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T("_rollover.svg");
+                if( !wxFileExists( fullFilePath ) )
+                    fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T(".svg");
+            }
             else
                 fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T(".svg");
             if( wxFileExists( fullFilePath ) )

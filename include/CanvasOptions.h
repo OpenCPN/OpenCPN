@@ -46,6 +46,8 @@ enum {
     ID_TIDES_CHECKBOX,
     ID_CURRENTS_CHECKBOX,
     ID_ENCTEXT_CHECKBOX1,
+    ID_TOOLBARCHECKBOX,
+    ID_CODISPCAT,
 };
 
 class MyFrame;
@@ -88,7 +90,8 @@ private:
     wxCheckBox *pEnableZoomToCursor, *pPreserveScale;
     
     wxCheckBox *pCDOTides, *pCDOCurrents;
-    wxCheckBox *pCDOENCText;
+    wxCheckBox *pCDOENCText, *pCBToolbar;
+    wxChoice *m_pDispCat;
 };
 
 #endif //guard

@@ -95,6 +95,7 @@ int SetScreenBrightness(int brightness);
       class CanvasMenuHandler;
       class ChartStack;
       class Piano;
+      class canvasConfig;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -398,7 +399,7 @@ public:
       int GetMinAvailableGshhgQuality() { return pWorldBackgroundChart->GetMinAvailableQuality(); }
       int GetMaxAvailableGshhgQuality() { return pWorldBackgroundChart->GetMaxAvailableQuality(); }
 
-      ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew);
+      ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew = true);
       void UpdateToolbarColorScheme( ColorScheme cs );
       void SetAISCanvasDisplayStyle(int StyleIndx);
       void TouchAISToolActive( void );
@@ -421,8 +422,10 @@ public:
       
       void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
       void SelectdbChart( int dbindex );
+      
       void ShowTides(bool bShow);
       void ShowCurrents(bool bShow);
+      
       void DoCanvasStackDelta( int direction );
 
       bool GetShowDepthUnits(){ return m_bShowDepthUnits; }
@@ -431,6 +434,8 @@ public:
       void SetShowGrid( bool show ){ m_bDisplayGrid = show; }
       bool GetShowOutlines(){ return m_bShowOutlines; }
       void SetShowOutlines( bool show ){ m_bShowOutlines = show; }
+      bool GetToolbarEnable(){ return m_bToolbarEnable; }
+      void SetToolbarEnable( bool show );
       
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );
@@ -441,6 +446,8 @@ public:
 
       bool GetShowENCText(){ return m_encShowText; }
       void SetShowENCText( bool show );
+      int GetENCDisplayCategory(){ return m_encDisplayCategory; }
+      void SetENCDisplayCategory( int category );
       
 private:
       bool UpdateS52State();
@@ -782,10 +789,12 @@ private:
       bool         m_bShowOutlines;
       bool         m_bDisplayGrid;
       bool         m_bShowDepthUnits;
-
+      bool         m_bToolbarEnable;
+      
       // S52PLib state storage
       long         m_s52StateHash;
       bool         m_encShowText;
+      int          m_encDisplayCategory;
       
 DECLARE_EVENT_TABLE()
 };

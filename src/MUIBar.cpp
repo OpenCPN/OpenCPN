@@ -171,7 +171,10 @@ void MUIButton::Init()
 void MUIButton::CreateControls()
 {    
     this->SetForegroundColour(wxColour(255, 255, 255));
-    SetBackgroundColour(wxColour(40,40,40));
+    
+    wxColour backColor = GetGlobalColor( _("GREY3"));
+    SetBackgroundColour(backColor);
+    
     this->SetFont(wxFont(8, wxSWISS, wxNORMAL, wxBOLD, false, wxT("Tahoma")));
 }
 
@@ -345,14 +348,15 @@ void MUIBar::Init()
     m_zoutButton = NULL;
     m_canvasOptions = NULL;
     m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
+    m_backcolorString = _T("GREY3");
 }
 
 void MUIBar::CreateControls()
 {
     //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     
-    //SetBackgroundColour(wxColour(40,40,40));
-    SetBackgroundColour(wxColour(40,40,40, 0));
+    wxColour backColor = GetGlobalColor( m_backcolorString );
+    SetBackgroundColour(backColor);
     wxBoxSizer *topSizer;
     
     if(m_orientation == wxHORIZONTAL){
@@ -564,7 +568,8 @@ void MUIBar::OnPaint( wxPaintEvent& event )
 //     dc.SetBrush( *wxTRANSPARENT_BRUSH );
 //     dc.DrawRectangle( 0, 0, width, height);
     
-    wxColour backColor = wxColour(40,40,40);
+    wxColour backColor = GetGlobalColor( m_backcolorString );
+    
     dc.SetBrush( wxBrush( wxColour(200, 200, 200)) );
     dc.SetPen( wxPen( backColor) );
 //    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );

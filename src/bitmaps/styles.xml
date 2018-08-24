@@ -160,6 +160,12 @@
 				<rollover-location x="300" y="260"/>
 				<disabled-location x="300" y="360"/>
 			</tool>
+                        <tool name="menu">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
 		</tools>
 
 		<icons>
