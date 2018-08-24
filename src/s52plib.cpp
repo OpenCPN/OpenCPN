@@ -634,6 +634,7 @@ void s52plib::UpdateMarinerParams( void )
 
 void s52plib::GenerateStateHash()
 {
+    printf("GEnHash\n");
     unsigned char state_buffer[512];  // Needs to be at least this big...
     memset(state_buffer, 0, sizeof(state_buffer));
     
@@ -8676,6 +8677,7 @@ void s52plib::SetDisplayCategory(enum _DisCat cat)
     m_nDisplayCategory = cat;
     
     if(old != cat){
+        printf("Cat Miss\n");
         ClearNoshow();
     }
     GenerateStateHash();
@@ -8848,7 +8850,8 @@ void s52plib::PrepareForRender()
     //  options and updates State Hash as needed.
     
     int core_config = PI_GetPLIBStateHash();
-    if(core_config != m_myConfig){
+    //TODO  Think this through. I think s63_pi hits this, since oesenc_pi has its own PLIB.....
+    if(0/*core_config != m_myConfig*/){
         
         g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
         

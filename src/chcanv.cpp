@@ -9322,7 +9322,13 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             printf("Render %d\n", IsPrimaryCanvas());
             
             if(ps52plib->GetStateHash() != m_s52StateHash){
-                UpdateS52State();
+                if(!IsPrimaryCanvas()){
+                    int yyp = 3;
+                    UpdateS52State();
+                }
+                else
+                    UpdateS52State();
+                
                 m_s52StateHash = ps52plib->GetStateHash();
             }
         }
