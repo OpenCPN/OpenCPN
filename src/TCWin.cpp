@@ -139,16 +139,24 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     if (cur_time) {
         this_now = wxDateTime::Now();
+        wxLogMessage(_T("DT: Now()"));
     }
+    else{
+        wxLogMessage(_T("DT: gTimeSource"));
+    }
+    
     wxDateTime this_gmt = this_now.ToGMT();
 
 #if wxCHECK_VERSION(2, 6, 2)
     wxTimeSpan diff = this_now.Subtract( this_gmt );
+    wxLogMessage(_T("YES262"));
 #else
+    wxLogMessage(_T("NO262"));
     wxTimeSpan diff = this_gmt.Subtract ( this_now );
 #endif
 
     int diff_mins = diff.GetMinutes();
+    int diff_mins0 = diff_mins;
 
     //  Correct a bug in wx3.0.2
     //  If the system TZ happens to be GMT, with DST active (e.g.summer in London),
@@ -160,6 +168,8 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     int station_offset = ptcmgr->GetStationTimeOffset( pIDX );
 
     m_corr_mins = station_offset - diff_mins;
+    int corr_mins0 = m_corr_mins;
+    
     if( this_now.IsDST() ) m_corr_mins += 60;
 
 //    Establish the inital drawing day as today
@@ -167,6 +177,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxDateTime graphday_00 = this_now;
     graphday_00.ResetTime();
     time_t t_graphday_00 = graphday_00.GetTicks();
+    time_t tgd0 = t_graphday_00;
 
     //    Correct a Bug in wxWidgets time support
     if( !graphday_00.IsDST() && m_graphday.IsDST() ) t_graphday_00 -= 3600;
@@ -176,6 +187,18 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     btc_valid = false;
 
+    wxString dbg_msg;
+    dbg_msg.Printf(_T("TZ Debug: %d %d %d %d %d %d %d %d %d"),
+                   diff_mins0,
+                   this_now.IsDST(),
+                   diff_mins,
+                   station_offset,
+                   corr_mins0,
+                   m_corr_mins,
+                   tgd0,
+                   t_graphday_00,
+                   m_t_graphday_00_at_station);
+    wxLogMessage(dbg_msg);
 
     //  Measure the size of a generic button, with label
     wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
@@ -595,10 +618,16 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
         //    Make a line for "right now"
+        dc.SetPen( *pred_2 );
+        
         wxDateTime this_now = gTimeSource;
         bool cur_time = !gTimeSource.IsValid();
         if (cur_time)
             this_now = wxDateTime::Now();
+        else{
+            // Special pen for time taken from GRIB, etc...
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "BLUE2" ) ), wxMax(4,(int)(4*m_tcwin_scaler+0.5)), wxPENSTYLE_SOLID ) );
+        }            
 
         time_t t_now = this_now.GetTicks();       // now, in ticks
 
@@ -606,7 +635,6 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         //must eliminate line outside the graph (in that case put it outside the window)
         int xnow = ( t_ratio < 0 || t_ratio > m_graph_rect.width ) ? -1 : m_graph_rect.x + (int) t_ratio;
-        dc.SetPen( *pred_2 );
         dc.DrawLine( xnow, m_graph_rect.y, xnow, m_graph_rect.y + m_graph_rect.height );
         dc.SetPen( *pblack_1 );
 
@@ -986,7 +1014,7 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         // x value is clear...
         //  Find the point in the window that is used for the curev rendering, rounding as necessary
         
-        int idx;
+        int idx = 1;
         for( int i = 0; i < 26; i++ ) {
             float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
             if(ppx > curs_x){
