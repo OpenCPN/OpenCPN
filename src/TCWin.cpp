@@ -132,11 +132,10 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     int sx, sy;
     GetClientSize( &sx, &sy );
-    
-//    Figure out this computer timezone minute offset
+
     wxDateTime this_now = gTimeSource;
     bool cur_time = !gTimeSource.IsValid();
-
+    
     if (cur_time) {
         this_now = wxDateTime::Now();
         wxLogMessage(_T("DT: Now()"));
@@ -145,18 +144,25 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         wxLogMessage(_T("DT: gTimeSource"));
     }
     
-    wxDateTime this_gmt = this_now.ToGMT();
-
-#if wxCHECK_VERSION(2, 6, 2)
-    wxTimeSpan diff = this_now.Subtract( this_gmt );
-    wxLogMessage(_T("YES262"));
+    //    Figure out this computer timezone minute offset
+    
+    int diff_mins0, diff_mins;
+#ifdef __OCPN__ANDROID__    
+    int android_offset = androidGetTZOffsetMins();
+    wxString aomsg;
+    aomsg.Printf(_T("Androidtzoffset(with DST applied):  %d"), android_offset);
+    wxLogMessage(aomsg);
+    diff_mins = android_offset;
+    diff_mins0 = android_offset;
+    if(this_now.IsDST())
+        diff_mins0 -= 60;               // For debug only...
 #else
-    wxLogMessage(_T("NO262"));
-    wxTimeSpan diff = this_gmt.Subtract ( this_now );
-#endif
+    
+    wxDateTime this_gmt = this_now.ToGMT();
+    wxTimeSpan diff = this_now.Subtract( this_gmt );
 
-    int diff_mins = diff.GetMinutes();
-    int diff_mins0 = diff_mins;
+    diff_mins = diff.GetMinutes();
+    diff_mins0 = diff_mins;
 
     //  Correct a bug in wx3.0.2
     //  If the system TZ happens to be GMT, with DST active (e.g.summer in London),
@@ -165,12 +171,16 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     if( diff_mins == 0 && this_now.IsDST() )
         diff_mins +=60;
 #endif
+    
+#endif   //Android
+        
     int station_offset = ptcmgr->GetStationTimeOffset( pIDX );
 
     m_corr_mins = station_offset - diff_mins;
-    int corr_mins0 = m_corr_mins;
+    int corr_mins0 = m_corr_mins;               //  For debug only
     
-    if( this_now.IsDST() ) m_corr_mins += 60;
+    if( this_now.IsDST() )
+        m_corr_mins += 60;
 
 //    Establish the inital drawing day as today
     m_graphday = this_now;
