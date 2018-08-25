@@ -133,6 +133,7 @@ void androidLaunchHelpView();
 void androidTerminate();
 
 void androidTestCPP();
+int androidGetTZOffsetMins();
 
 int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
 

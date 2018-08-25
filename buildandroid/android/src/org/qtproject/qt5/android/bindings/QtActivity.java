@@ -250,6 +250,8 @@ import android.os.ParcelFileDescriptor;
 import android.content.res.AssetManager;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TimeZone;
+import android.text.format.Time;
 
 import org.opencpn.opencpn.ColorPickerDialog;
 
@@ -544,6 +546,20 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
     }
+
+    public String getAndroidTZOffsetMinutes()
+    {
+        Time time = new Time();
+        time.setToNow();
+
+        TimeZone tz = TimeZone.getDefault();
+        int offsetMilli = tz.getOffset (time.toMillis(true));
+        int offsetMins = offsetMilli / 60000;
+        String rv = Integer.toString(offsetMins);
+        Log.i("OpenCPN", "  offsetMilli is: " + Integer.toString(offsetMilli)  +  " offsetmins: " + rv);
+        return rv;
+    }
+
 
 
     public String buildSVGIcon(String inFile, String outFile, int width, int height){

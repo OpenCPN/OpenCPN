@@ -1944,6 +1944,16 @@ bool androidShowDisclaimer( wxString title, wxString msg )
     return (return_string == _T("OK"));
 }
 
+int androidGetTZOffsetMins()
+{
+    // Get the TZ offset (from UTC) of the local machine, in minutes.  Includes DST, if applicable
+    wxString result = callActivityMethod_vs("getAndroidTZOffsetMinutes");
+    qDebug() << "androidGetTZOffsetMins result: " << result.mb_str();
+    long value = 0;
+    result.ToLong(&value);
+    return (int)value;
+}   
+
 extern PlatSpec android_plat_spc;
 
 wxString androidGetDeviceInfo()
