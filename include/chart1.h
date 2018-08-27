@@ -499,6 +499,8 @@ class MyFrame: public wxFrame
     void RequestNewMasterToolbar( bool bforcenew = true );
     bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
     bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
+
+    void NotifyChildrenResize( void );
     
   private:
     void ODoSetSize(void);

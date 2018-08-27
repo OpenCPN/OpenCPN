@@ -669,7 +669,6 @@ bool                      g_bGarminHostUpload;
 bool                      g_bFullscreen;
 
 OCPN_AUIManager           *g_pauimgr;
-//wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -3000,6 +2999,16 @@ void MyFrame::CancelAllMouseRoute()
         ChartCanvas *cc = g_canvasArray.Item(i);
         if(cc)
             cc->CancelMouseRoute();
+    }
+}
+
+void MyFrame::NotifyChildrenResize()
+{
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->DestroyMuiBar();                // A new one will automatically be recreated.
     }
 }
     
@@ -5344,7 +5353,8 @@ void MyFrame::SurfaceAllToolbars( void )
     }
 
 #ifndef __WXQT__
-       Raise();
+       //  removed to show MUIBars on MSVC
+       ///Raise();
 #endif
 }
 

@@ -6031,35 +6031,18 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     }
     
     //  if MUIBar is active, size the bar
+    if(g_useMUI && !m_muiBar){                          // rebuild if necessary
+        m_muiBar = new MUIBar(this, wxHORIZONTAL);
+        m_muiBarHOSize = m_muiBar->GetSize();
+    }
+    
+    
     if(m_muiBar){
         SetMUIBarPosition();
-#if 0        
-        int pianoWidth = 0;
-        if(m_Piano)
-            pianoWidth = m_Piano->GetWidth();
-        
-        if((m_muiBar->GetOrientation() == wxHORIZONTAL)){
-            if(m_muiBarHOSize.x > (event.GetSize().x - pianoWidth)){
-                delete m_muiBar;
-                m_muiBar = new MUIBar(this, wxVERTICAL);
-            }
-        }
-        
-        if((m_muiBar->GetOrientation() == wxVERTICAL)){
-            if(m_muiBarHOSize.x < (event.GetSize().x - pianoWidth)){
-                delete m_muiBar;
-                m_muiBar = new MUIBar(this, wxHORIZONTAL);
-            }
-        }
-        
-        m_muiBar->SetBestPosition();
-#endif        
         m_muiBar->Raise();
     }
     
-    // Tell MUIBar to kill any open CanvasOptions dialog
-//     if(m_muiBar)
-//         m_muiBar->ResetCanvasOptions();
+    
         
     
 //    Set up the scroll margins
@@ -6130,6 +6113,13 @@ void ChartCanvas::SetMUIBarPosition()
     }
 }
 
+void ChartCanvas::DestroyMuiBar()
+{
+    if(m_muiBar){
+        m_muiBar->Destroy();
+        m_muiBar = NULL;
+    }
+}
 
 void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {

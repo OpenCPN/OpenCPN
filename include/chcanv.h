@@ -438,6 +438,8 @@ public:
       void SetToolbarEnable( bool show );
       wxRect GetMUIBarRect();
       void SetMUIBarPosition();
+      void DestroyMuiBar();
+      
       
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );

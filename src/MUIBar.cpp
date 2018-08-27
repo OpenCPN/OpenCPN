@@ -323,16 +323,15 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoin
     m_parentCanvas = parent;
     m_orientation = orientation;
     
-    SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
+    //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     //wxWindow::Create(parent, id, pos, size, style, name);
     //long mstyle = wxSIMPLE_BORDER;
     long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
     
     wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
-    
     Init();
     CreateControls();
-    Show();
+    //Show();
 }
 
 
@@ -491,6 +490,7 @@ void MUIBar::SetBestPosition( void )
             m_canvasOptions->Destroy();
             m_canvasOptions = 0;
         }
+        Show();
         
     }
 #endif
@@ -500,6 +500,21 @@ void MUIBar::OnSize( wxSizeEvent& event )
 {
     //int buttonSize = event.GetSize().y / 2;
     Layout();
+
+#if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)       
+    if(1) {
+        wxBitmap m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
+        wxMemoryDC sdc( m_MaskBmp );
+        sdc.SetBackground( *wxWHITE_BRUSH );
+        sdc.Clear();
+        sdc.SetBrush( *wxBLACK_BRUSH );
+        sdc.SetPen( *wxBLACK_PEN );
+        sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), 5 );
+        sdc.SelectObject( wxNullBitmap );
+        SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
+    }
+#endif
+
 }
 
 void MUIBar::UpdateDynamicValues()

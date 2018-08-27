@@ -28,6 +28,7 @@
 #endif
 
 #include <OCPN_AUIManager.h>
+#include "chart1.h"
 
 #ifdef __WXMSW__
 #include "wx/msw/wrapwin.h"
@@ -173,7 +174,16 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
             }
             else
             {
-                m_frame->ReleaseMouse();
+                bool bhasMouse  = m_frame->HasCapture();
+                
+                if(bhasMouse)
+                    m_frame->ReleaseMouse();
+
+                //  Tell MyFrame that the sash is moving, so that he
+                //  may disable any top-level windows and so avoid mouse focus problems.
+                MyFrame *pmf = wxDynamicCast(m_frame, MyFrame);
+                if(pmf)
+                    pmf->NotifyChildrenResize();
                 
                 wxRect rect(m_frame->ClientToScreen(pos), m_actionPart->rect.GetSize());
                 wxScreenDC dc;
@@ -197,7 +207,8 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
                     m_0actionHintRect = rect;
                 }
                 
-                m_frame->CaptureMouse();
+                if(bhasMouse)
+                    m_frame->CaptureMouse();
                 
             }
         }
