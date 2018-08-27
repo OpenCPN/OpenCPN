@@ -213,11 +213,23 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxStaticBoxSizer* boxENC = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Vector Charts")), wxVERTICAL);
     generalSizer->Add(boxENC, 0, wxALL | wxEXPAND, border_size);
     
-    pCDOENCText = new wxCheckBox(pDisplayPanel, ID_ENCTEXT_CHECKBOX1, _("Show Text"));
+    pCDOENCText = new wxCheckBox(pDisplayPanel, ID_ENCTEXT_CHECKBOX1, _("Show text"));
     boxENC->Add(pCDOENCText, verticleInputFlags);
     pCDOENCText->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
-    // dislay category
+    pCBENCDepth = new wxCheckBox(pDisplayPanel, ID_ENCDEPTH_CHECKBOX1, _("Show depths"));
+    boxENC->Add(pCBENCDepth, verticleInputFlags);
+    pCBENCDepth->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    pCBENCLightDesc = new wxCheckBox(pDisplayPanel, ID_ENCBUOY_CHECKBOX1, _("Light Descriptions"));
+    boxENC->Add(pCBENCLightDesc, verticleInputFlags);
+    pCBENCLightDesc->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+        
+    pCBENCBuoyLabels = new wxCheckBox(pDisplayPanel, ID_ENCBUOYLABEL_CHECKBOX1, _("Buoy/Light Labels"));
+    boxENC->Add(pCBENCBuoyLabels, verticleInputFlags);
+    pCBENCBuoyLabels->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    // display category
     boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
     wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
     m_pDispCat = new wxChoice(pDisplayPanel, ID_CODISPCAT, wxDefaultPosition,  wxDefaultSize, 4, pDispCatStrings);
@@ -268,7 +280,10 @@ void CanvasOptions::RefreshControlValues( void )
     
     //ENC Options
     pCDOENCText->SetValue(parentCanvas->GetShowENCText());
-
+    pCBENCDepth->SetValue(parentCanvas->GetShowENCDepth());
+    pCBENCLightDesc->SetValue(parentCanvas->GetShowENCLightDesc());
+    pCBENCBuoyLabels->SetValue(parentCanvas->GetShowENCBuoyLabels());
+    
     //  Display category
     int nset = 2;  // default OTHER
     switch (parentCanvas->GetENCDisplayCategory()) {
@@ -336,9 +351,24 @@ void CanvasOptions::UpdateCanvasOptions( void )
     //  ENC Options
     if(pCDOENCText->GetValue() != parentCanvas->GetShowENCText()){
         parentCanvas->SetShowENCText(pCDOENCText->GetValue());
-        b_needReLoad = true;
+        b_needRefresh = true;
     }
 
+    if(pCBENCDepth->GetValue() != parentCanvas->GetShowENCDepth()){
+        parentCanvas->SetShowENCDepth(pCBENCDepth->GetValue());
+        b_needReLoad = true;
+    }
+    
+    if(pCBENCLightDesc->GetValue() != parentCanvas->GetShowENCLightDesc()){
+        parentCanvas->SetShowENCLightDesc(pCBENCLightDesc->GetValue());
+        b_needReLoad = true;
+    }
+    
+    if(pCBENCBuoyLabels->GetValue() != parentCanvas->GetShowENCBuoyLabels()){
+        parentCanvas->SetShowENCBuoyLabels(pCBENCBuoyLabels->GetValue());
+        b_needReLoad = true;
+    }
+    
     int nset = 2;
     switch (parentCanvas->GetENCDisplayCategory()) {
         case (DISPLAYBASE): nset = 0; break;

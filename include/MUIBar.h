@@ -72,6 +72,7 @@ public:
     void SetBestPosition( void );
     void UpdateDynamicValues();
     int GetOrientation(){ return m_orientation; }
+    void ResetCanvasOptions();
     
 private:
     void Init( void );
@@ -92,6 +93,8 @@ private:
     wxPoint     m_targetCOPos;
     wxPoint     m_currentCOPos;
     wxPoint     m_startCOPos;
+    int         m_COTopOffset;
+    
     wxSize      m_canvasOptionsFullSize;
     
     wxTimer     m_canvasOptionsAnimationTimer;

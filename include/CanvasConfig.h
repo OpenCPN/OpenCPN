@@ -59,8 +59,12 @@ public:
     bool bShowGrid;
     bool bShowOutlines;
     bool bShowDepthUnits;
+    
+    // ENC options
     bool bShowENCText;
     int  nENCDisplayCategory;
+    bool bShowENCDepths;
+    bool bShowENCBuoyLabels;
     
 };
 

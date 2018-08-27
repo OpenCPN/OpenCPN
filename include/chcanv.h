@@ -436,6 +436,8 @@ public:
       void SetShowOutlines( bool show ){ m_bShowOutlines = show; }
       bool GetToolbarEnable(){ return m_bToolbarEnable; }
       void SetToolbarEnable( bool show );
+      wxRect GetMUIBarRect();
+      void SetMUIBarPosition();
       
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );
@@ -446,6 +448,16 @@ public:
 
       bool GetShowENCText(){ return m_encShowText; }
       void SetShowENCText( bool show );
+      
+      bool GetShowENCDepth(){ return m_encShowDepth; }
+      void SetShowENCDepth( bool show );
+      
+      bool GetShowENCLightDesc(){ return m_encShowLightDesc; }
+      void SetShowENCLightDesc( bool show );
+      
+      bool GetShowENCBuoyLabels(){ return m_encShowBuoyLabels; }
+      void SetShowENCBuoyLabels( bool show );
+      
       int GetENCDisplayCategory(){ return m_encDisplayCategory; }
       void SetENCDisplayCategory( int category );
       
@@ -794,6 +806,9 @@ private:
       // S52PLib state storage
       long         m_s52StateHash;
       bool         m_encShowText;
+      bool         m_encShowDepth;
+      bool         m_encShowLightDesc;
+      bool         m_encShowBuoyLabels;
       int          m_encDisplayCategory;
       
 DECLARE_EVENT_TABLE()

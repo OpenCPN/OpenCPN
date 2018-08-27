@@ -3587,6 +3587,8 @@ void MyFrame::OnMove( wxMoveEvent& event )
             cc->GetToolbar()->RePosition();
             cc->ReloadVP();
         }
+        if(cc)
+            cc->SetMUIBarPosition();
     }
 
     UpdateGPSCompassStatusBoxes( );
@@ -9261,7 +9263,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 #endif
 
     CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Zoom In") ) << _T(" (+)");
+    tipString = wxString( _("Menu In") ) << _T(" (+)");
     tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
@@ -9270,7 +9272,14 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
         tb->AddTool( ID_SETTINGS, _T("settings"),
             style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
-    
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
+    if( GetMasterToolItemShow( ID_ROUTE ) )
+        tb->AddTool( ID_ROUTE, _T("route"),
+                     style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
+                     style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+                     
+                     
 #if 0        
     bool gs = false;
 #ifdef USE_S57

@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -6032,6 +6032,8 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     //  if MUIBar is active, size the bar
     if(m_muiBar){
+        SetMUIBarPosition();
+#if 0        
         int pianoWidth = 0;
         if(m_Piano)
             pianoWidth = m_Piano->GetWidth();
@@ -6051,8 +6053,14 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
         }
         
         m_muiBar->SetBestPosition();
+#endif        
         m_muiBar->Raise();
     }
+    
+    // Tell MUIBar to kill any open CanvasOptions dialog
+//     if(m_muiBar)
+//         m_muiBar->ResetCanvasOptions();
+        
     
 //    Set up the scroll margins
     xr_margin = m_canvas_width * 95 / 100;
@@ -6095,6 +6103,33 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Invalidate the whole window
     ReloadVP();
 }
+
+void ChartCanvas::SetMUIBarPosition()
+{
+    //  if MUIBar is active, size the bar
+    if(m_muiBar){
+        int pianoWidth = 0;
+        if(m_Piano)
+            pianoWidth = m_Piano->GetWidth();
+        
+        if((m_muiBar->GetOrientation() == wxHORIZONTAL)){
+            if(m_muiBarHOSize.x > (GetSize().x - pianoWidth)){
+                delete m_muiBar;
+                m_muiBar = new MUIBar(this, wxVERTICAL);
+            }
+        }
+        
+        if((m_muiBar->GetOrientation() == wxVERTICAL)){
+            if(m_muiBarHOSize.x < (GetSize().x - pianoWidth)){
+                delete m_muiBar;
+                m_muiBar = new MUIBar(this, wxHORIZONTAL);
+            }
+        }
+        
+        m_muiBar->SetBestPosition();
+    }
+}
+
 
 void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {
@@ -12209,12 +12244,16 @@ void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
 bool ChartCanvas::UpdateS52State()
 {
     bool retval = false;
-    printf("    update %d\n", IsPrimaryCanvas());
+//    printf("    update %d\n", IsPrimaryCanvas());
     
     if(ps52plib){
         ps52plib->SetShowS57Text( m_encShowText );
-    
         ps52plib->SetDisplayCategory( (DisCat) m_encDisplayCategory );
+        ps52plib->m_bShowSoundg = m_encShowDepth;
+        ps52plib->m_bShowAtonText = m_encShowBuoyLabels;
+        ps52plib->m_bShowLdisText = m_encShowLightDesc;
+        // TODO ps52plib->m_bShowAtons = m_encShowBuoys;
+        ps52plib->m_bExtendLightSectors = true;
     }
     
     return retval;
@@ -12235,6 +12274,34 @@ void ChartCanvas::SetENCDisplayCategory( int category )
 }
     
 
+void ChartCanvas::SetShowENCDepth( bool show )
+{
+    m_encShowDepth = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
+void ChartCanvas::SetShowENCLightDesc( bool show )
+{
+    m_encShowLightDesc = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
+void ChartCanvas::SetShowENCBuoyLabels( bool show )
+{
+    m_encShowBuoyLabels = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
+
+wxRect ChartCanvas::GetMUIBarRect()
+{
+    wxRect rv;
+    if(m_muiBar){
+        rv = m_muiBar->GetRect();
+    }
+    
+    return rv;
+}
 
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines

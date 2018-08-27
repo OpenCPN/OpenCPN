@@ -340,6 +340,10 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoin
 
 MUIBar::~MUIBar()
 {
+    if(m_canvasOptions){
+        m_canvasOptions->Destroy();
+        m_canvasOptions = 0;
+    }
 }
 
 void MUIBar::Init()
@@ -482,6 +486,11 @@ void MUIBar::SetBestPosition( void )
 #endif        
         
         Move( screenPos );
+ 
+        if(m_canvasOptions){
+            m_canvasOptions->Destroy();
+            m_canvasOptions = 0;
+        }
         
     }
 #endif
@@ -524,12 +533,22 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         {
             if(!m_canvasOptions){
                 m_canvasOptions = new CanvasOptions(m_parent);
-                m_canvasOptions->SetSize(wxSize(-1, 400));
+                
+                // calculate best size for CanvasOptions dialog
+                m_COTopOffset = 60;  //  TODO should be below GPS/Compass
+                
+                wxPoint parentClientUpperRight = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, 0));
+                wxRect rmui = m_parentCanvas->GetMUIBarRect();
+                int size_y = rmui.y - (parentClientUpperRight.y + m_COTopOffset);
+                size_y -= GetCharHeight();
+                size_y = wxMax(size_y, 100);            // ensure always big enough to see
+                
+                m_canvasOptions->SetSize(wxSize(-1, size_y));
                 m_canvasOptionsFullSize = m_canvasOptions->GetSize();
                 m_canvasOptionsFullSize.x += m_canvasOptions->GetCharWidth();  // Allow for scroll bar, since sizer won't do it.
                 
                 if(1)
-                    m_currentCOPos = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, 20));
+                    m_currentCOPos = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, m_COTopOffset));
                 else
                     m_currentCOPos = wxPoint( m_parent->GetSize().x, 20);
                 
@@ -575,14 +594,19 @@ void MUIBar::OnPaint( wxPaintEvent& event )
 //    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );
 }
 
-
+void MUIBar::ResetCanvasOptions()
+{
+    delete m_canvasOptions;
+    m_canvasOptions = NULL;
+}
+    
 void MUIBar::PullCanvasOptions()
 {
     //  Setup animation parameters
     
     //  Target position
     int cox = m_parent->GetSize().x - m_canvasOptionsFullSize.x; //m_canvasOptions->GetSize().x;
-    int coy = 20;
+    int coy = m_COTopOffset;
     if(1)
         m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
     else

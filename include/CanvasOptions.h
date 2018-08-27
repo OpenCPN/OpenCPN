@@ -48,6 +48,9 @@ enum {
     ID_ENCTEXT_CHECKBOX1,
     ID_TOOLBARCHECKBOX,
     ID_CODISPCAT,
+    ID_ENCDEPTH_CHECKBOX1,
+    ID_ENCBUOY_CHECKBOX1,
+    ID_ENCBUOYLABEL_CHECKBOX1
 };
 
 class MyFrame;
@@ -92,6 +95,7 @@ private:
     wxCheckBox *pCDOTides, *pCDOCurrents;
     wxCheckBox *pCDOENCText, *pCBToolbar;
     wxChoice *m_pDispCat;
+    wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels;
 };
 
 #endif //guard

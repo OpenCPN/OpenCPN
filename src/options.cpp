@@ -299,6 +299,8 @@ extern bool g_bInlandEcdis;
 extern bool g_bDarkDecorations;
 extern bool g_bSpaceDropMark;
 extern unsigned int g_canvasConfig;
+extern bool g_useMUI;
+
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -1030,6 +1032,13 @@ void options::Init(void) {
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
+  pCheck_SOUNDG = NULL;
+  pCheck_META = NULL;
+  pCheck_SHOWIMPTEXT = NULL;
+  pCheck_SCAMIN = NULL;
+  pCheck_ATONTEXT = NULL;
+  pCheck_LDISTEXT = NULL;
+  
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
   m_textSample = NULL;
@@ -3212,65 +3221,62 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
-    // dislay category
-    optionsColumn->Add(
-        new wxStaticText(ps57Ctl, wxID_ANY, _("Display Category")), labelFlags);
-    wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"),
-                                  _("Mariner's Standard")};
-    pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
+    if(!g_useMUI){
+    // display category
+        optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Display Category")), labelFlags);
+        wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
+        pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                             wxDefaultSize, 4, pDispCatStrings);
-    optionsColumn->Add(pDispCat, 0, wxALL, 2);
+        optionsColumn->Add(pDispCat, 0, wxALL, 2);
+    }
 
     // spacer
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
+    
     // display options
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Display")),
-                       groupLabelFlags);
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Display")), groupLabelFlags);
 
     wxBoxSizer* miscSizer = new wxBoxSizer(wxVERTICAL);
     optionsColumn->Add(miscSizer, groupInputFlags);
 
-    pCheck_SOUNDG =
-        new wxCheckBox(ps57Ctl, ID_SOUNDGCHECKBOX, _("Depth Soundings"));
-    pCheck_SOUNDG->SetValue(FALSE);
-    miscSizer->Add(pCheck_SOUNDG, verticleInputFlags);
+    if(!g_useMUI){
+        pCheck_SOUNDG = new wxCheckBox(ps57Ctl, ID_SOUNDGCHECKBOX, _("Depth Soundings"));
+        pCheck_SOUNDG->SetValue(FALSE);
+        miscSizer->Add(pCheck_SOUNDG, verticleInputFlags);
+    }
 
-    pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
-                                 _("Chart Information Objects"));
+    pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX, _("Chart Information Objects"));
     pCheck_META->SetValue(FALSE);
     miscSizer->Add(pCheck_META, verticleInputFlags);
 
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")),
-                       groupLabelFlags);
+    
+    if(!g_useMUI){
+        optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")), groupLabelFlags);
 
-    wxBoxSizer* lightSizer = new wxBoxSizer(wxVERTICAL);
-    optionsColumn->Add(lightSizer, groupInputFlags);
+        wxBoxSizer* lightSizer = new wxBoxSizer(wxVERTICAL);
+        optionsColumn->Add(lightSizer, groupInputFlags);
+        
+        pCheck_ATONTEXT = new wxCheckBox(ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels"));
+        pCheck_ATONTEXT->SetValue(FALSE);
+        lightSizer->Add(pCheck_ATONTEXT, verticleInputFlags);
 
-    pCheck_ATONTEXT =
-        new wxCheckBox(ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels"));
-    pCheck_ATONTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_ATONTEXT, verticleInputFlags);
+        pCheck_LDISTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX, _("Light Descriptions"));
+        pCheck_LDISTEXT->SetValue(FALSE);
+        lightSizer->Add(pCheck_LDISTEXT, verticleInputFlags);
 
-    pCheck_LDISTEXT =
-        new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX, _("Light Descriptions"));
-    pCheck_LDISTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_LDISTEXT, verticleInputFlags);
+        pCheck_XLSECTTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX, _("Extended Light Sectors"));
+        pCheck_XLSECTTEXT->SetValue(FALSE);
+        lightSizer->Add(pCheck_XLSECTTEXT, verticleInputFlags);
+    }
 
-    pCheck_XLSECTTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX,
-                                       _("Extended Light Sectors"));
-    pCheck_XLSECTTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_XLSECTTEXT, verticleInputFlags);
-
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Texts")),
-                       groupLabelFlags);
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Texts")), groupLabelFlags);
 
     wxBoxSizer* textSizer = new wxBoxSizer(wxVERTICAL);
     optionsColumn->Add(textSizer, groupInputFlags);
 
-    pCheck_NATIONALTEXT = new wxCheckBox(ps57Ctl, ID_NATIONALTEXTCHECKBOX,
-                                         _("National text on chart"));
+    pCheck_NATIONALTEXT = new wxCheckBox(ps57Ctl, ID_NATIONALTEXTCHECKBOX, _("National text on chart"));
     pCheck_NATIONALTEXT->SetValue(FALSE);
     textSizer->Add(pCheck_NATIONALTEXT, verticleInputFlags);
 
@@ -3426,15 +3432,15 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     // spacer
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
-    // dislay category
-    optionsColumn->Add(
-        new wxStaticText(ps57Ctl, wxID_ANY, _("Display Category")), inputFlags);
-    wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"),
-                                  _("Mariner's Standard")};
-    pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
+    // display category
+    if(!g_useMUI){
+        optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Display Category")), inputFlags);
+        wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
+        pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                             wxSize(350, -1), 4, pDispCatStrings);
-    optionsColumn->Add(pDispCat, 0, wxALL, 2);
-
+        optionsColumn->Add(pDispCat, 0, wxALL, 2);
+    }
+        
     // spacer
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
@@ -3466,8 +3472,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_LDISTEXT->SetValue(FALSE);
     lightSizer->Add(pCheck_LDISTEXT, inputFlags);
 
-    pCheck_XLSECTTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX,
-                                       _("Extended Light Sectors"));
+    pCheck_XLSECTTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX, _("Extended Light Sectors"));
     pCheck_XLSECTTEXT->SetValue(FALSE);
     lightSizer->Add(pCheck_XLSECTTEXT, inputFlags);
 
@@ -5473,7 +5478,8 @@ void options::SetInitialVectorSettings(void)
                 break;
         }
         
-        pDispCat->SetSelection(nset);
+        if(pDispCat)
+            pDispCat->SetSelection(nset);
         
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
@@ -5482,13 +5488,14 @@ void options::SetInitialVectorSettings(void)
         itemButtonSetStd->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
                 
         //  Other Display Filters
-        pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
+        if(pCheck_SOUNDG) pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
+        if(pCheck_ATONTEXT) pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
+        if(pCheck_LDISTEXT) pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
+        if(pCheck_XLSECTTEXT) pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
+        
         pCheck_META->SetValue(ps52plib->m_bShowMeta);
         pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
         pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
-        pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
-        pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
-        pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
         pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
         pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
         
@@ -5715,13 +5722,13 @@ void options::OnChartDirListSelect(wxCommandEvent& event) {
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
-  const bool select = pDispCat->GetSelection() == 3;
-  ps57CtlListBox->Enable(select);
-  itemButtonClearList->Enable(select);
-  itemButtonSelectList->Enable(select);
-  itemButtonSetStd->Enable(select);
-  
-
+    if(pDispCat){
+        const bool select = pDispCat->GetSelection() == 3;
+        ps57CtlListBox->Enable(select);
+        itemButtonClearList->Enable(select);
+        itemButtonSelectList->Enable(select);
+        itemButtonSetStd->Enable(select);
+    }
   event.Skip();
 }
 
@@ -6394,42 +6401,43 @@ void options::OnApplyClick(wxCommandEvent& event) {
       ps52plib->GenerateStateHash();
     }
 
-    enum _DisCat nset = OTHER;
-    switch (pDispCat->GetSelection()) {
-      case 0:
-        nset = DISPLAYBASE;
-        break;
-      case 1:
-        nset = STANDARD;
-        break;
-      case 2:
-        nset = OTHER;
-        break;
-      case 3:
-        nset = MARINERS_STANDARD;
-        break;
+    if(pDispCat) {
+        enum _DisCat nset = OTHER;
+        switch (pDispCat->GetSelection()) {
+        case 0:
+            nset = DISPLAYBASE;
+            break;
+        case 1:
+            nset = STANDARD;
+            break;
+        case 2:
+            nset = OTHER;
+            break;
+        case 3:
+            nset = MARINERS_STANDARD;
+            break;
+        }
+        ps52plib->SetDisplayCategory(nset);
     }
-    ps52plib->SetDisplayCategory(nset);
 
-    ps52plib->m_bShowSoundg = pCheck_SOUNDG->GetValue();
+    if(pCheck_SOUNDG) ps52plib->m_bShowSoundg = pCheck_SOUNDG->GetValue();
+    if(pCheck_ATONTEXT) ps52plib->m_bShowAtonText = pCheck_ATONTEXT->GetValue();
+    if(pCheck_LDISTEXT) ps52plib->m_bShowLdisText = pCheck_LDISTEXT->GetValue();
+    if(pCheck_XLSECTTEXT) ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
+    
     ps52plib->m_bShowMeta = pCheck_META->GetValue();
-    ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
-    ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
-    ps52plib->m_bShowAtonText = pCheck_ATONTEXT->GetValue();
-    ps52plib->m_bShowLdisText = pCheck_LDISTEXT->GetValue();
-    ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
     ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
-
-    ps52plib->m_nSymbolStyle =
-        pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;
+    ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
+    ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
+    
+    ps52plib->m_nSymbolStyle = pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;
 
     ps52plib->m_nBoundaryStyle = pBoundStyle->GetSelection() == 0
                                      ? PLAIN_BOUNDARIES
                                      : SYMBOLIZED_BOUNDARIES;
 
-    S52_setMarinerParam(S52_MAR_TWO_SHADES,
-                        (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
+    S52_setMarinerParam(S52_MAR_TWO_SHADES, (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
 
     // Depths
     double dval;
@@ -6441,10 +6449,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       conv = 0.3048f * 6;     // 1 fathom is 6 feet
 
     if (m_SafetyCtl->GetValue().ToDouble(&dval)) {
-      S52_setMarinerParam(S52_MAR_SAFETY_DEPTH,
-                          dval * conv);  // controls sounding display
-      S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR,
-                          dval * conv);  // controls colour
+      S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, dval * conv);  // controls sounding display
+      S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, dval * conv);  // controls colour
     }
 
     if (m_ShallowCtl->GetValue().ToDouble(&dval))

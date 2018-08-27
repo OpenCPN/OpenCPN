@@ -634,7 +634,6 @@ void s52plib::UpdateMarinerParams( void )
 
 void s52plib::GenerateStateHash()
 {
-    printf("GEnHash\n");
     unsigned char state_buffer[512];  // Needs to be at least this big...
     memset(state_buffer, 0, sizeof(state_buffer));
     
