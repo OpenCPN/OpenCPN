@@ -143,7 +143,7 @@ IF(TINYXML_FOUND)
   ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES})
 ELSE(TINYXML_FOUND)
-  message (STATUS "Chartdldr_pi building with embedded tinyxml")
+  message (STATUS "Chartdldr_pi building with bundled tinyxml")
   INCLUDE_DIRECTORIES(src/tinyxml/)
   SET(SRC_LTINYXML
              src/tinyxml/tinyxml.cpp

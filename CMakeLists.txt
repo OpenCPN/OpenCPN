@@ -43,6 +43,7 @@ ENDIF (COMMAND cmake_policy)
 PROJECT(OpenCPN)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
+message(STATUS "cmake version: ${CMAKE_VERSION}")
 
 IF(APPLE)
   SET(PACKAGE_NAME OpenCPN)
@@ -666,7 +667,7 @@ IF(OCPN_USE_CURL)
       INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
     ELSE(OCPN_USE_EXTERN_CURL)
       INCLUDE("Curl.cmake")
-      MESSAGE (STATUS "Using local curl library...")
+      MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
       src/wxcurl/base.cpp
@@ -1377,11 +1378,11 @@ ENDIF(OPENGL_FOUND)
 
 
 IF(TINYXML_FOUND)
-  message (STATUS "Building with tinyxml includes")
+  message (STATUS "Building with system tinyxml")
   INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ELSE(TINYXML_FOUND)
-  message (STATUS "tinyxml library not found")
+  message (STATUS "Building with bundled tinyxml")
   SET(SRCS ${SRCS} ${SRC_TINYXML})
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
