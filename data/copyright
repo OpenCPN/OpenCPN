@@ -9,6 +9,7 @@ Files-Excluded: .*
  plugins/chartdldr_pi/src/tinyxml
  plugins/grib_pi/src/bzip2
  src/texcmp/lz4
+ src/wxcurl
  src/wxsvg
 
 
@@ -237,10 +238,6 @@ Copyright: 2001-2002, Michael David Adams.
   2004, Michael David Adams.
 License: Jasper
 
-Files: src/wxcurl/*
-Copyright: 2004, Casey O'Donnell.
-License: wxWidgets
-
 Files: src/SQLiteCpp/*
 Copyright: 2012-2013, Sebastien Rombauts (sebastien.rombauts@gmail.com)
   2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
@@ -306,24 +303,6 @@ Copyright: 2004, 2006, Robert Lipe, robertlipe@usa.net
   2006, Robert Lipe, robertlipe@usa.net
 License: GPL-2+
 
-Files: src/wxcurl/include/curl/curl.h
- src/wxcurl/include/curl/curlbuild.h
- src/wxcurl/include/curl/curlbuild.h.cmake
- src/wxcurl/include/curl/curlbuild.h.in
- src/wxcurl/include/curl/curlrules.h
- src/wxcurl/include/curl/curlver.h
- src/wxcurl/include/curl/easy.h
- src/wxcurl/include/curl/mprintf.h
- src/wxcurl/include/curl/multi.h
- src/wxcurl/include/curl/stdcheaders.h
- src/wxcurl/include/curl/typecheck-gcc.h
-Copyright: 1998-2008, Daniel Stenberg, <daniel@haxx.se>, et al.
-  1998-2010, Daniel Stenberg, <daniel@haxx.se>, et al.
-  1998-2012, Daniel Stenberg, <daniel@haxx.se>, et al.
-  1998-2013, Daniel Stenberg, <daniel@haxx.se>, et al.
-  1998-2014, Daniel Stenberg, <daniel@haxx.se>, et al.
-License: MIT
-
 Files: Curl.cmake
  plugins/chartdldr_pi/cmake/PluginConfigure.cmake
  plugins/chartdldr_pi/cmake/PluginInstall.cmake
@@ -347,17 +326,6 @@ Copyright: 2007, The Khronos Group Inc.
   2008-2009, The Khronos Group Inc.
   2013, The Khronos Group Inc.
 License: MIT
-
-Files: src/wxcurl/dialog.cpp
- src/wxcurl/panel.cpp
- src/wxcurl/thread.cpp
- src/wxcurl/utils.cpp
- src/wxcurl/wx/curl/dialog.h
- src/wxcurl/wx/curl/panel.h
- src/wxcurl/wx/curl/thread.h
- src/wxcurl/wx/curl/utils.h
-Copyright: (c) 2007 Francesco Montorsi
-License: wxWidgets
 
 Files: src/mygdal/ogr_feature.h
  src/mygdal/ogr_spatialref.h
