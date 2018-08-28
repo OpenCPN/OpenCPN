@@ -1029,6 +1029,19 @@ void options::Init(void) {
   k_tides = 0;
   m_pConfig = NULL;
   
+  pCBNorthUp = NULL;
+  pCBCourseUp = NULL;
+  pCBLookAhead = NULL;
+  pCDOQuilting = NULL;
+  pPreserveScale = NULL;
+  pSmoothPanZoom = NULL;
+  pEnableZoomToCursor = NULL;
+  pSDisplayGrid = NULL;
+  pCDOOutlines = NULL;
+  pSDepthUnits = NULL;
+  pSLiveETA = NULL;
+  pSDefaultBoatSpeed = NULL;
+  
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
@@ -3803,6 +3816,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
+    if(!g_useMUI){
     // Nav Mode
     generalSizer->Add(
         new wxStaticText(pDisplayPanel, wxID_ANY, _("Navigation Mode")),
@@ -3848,7 +3862,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-
+    }
+    
     // Control Options
     generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Controls")),
                       groupLabelFlags);
@@ -3868,6 +3883,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
+    if(!g_useMUI){
     // Display Options
     generalSizer->Add(
         new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Features")),
@@ -3887,6 +3903,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
       
+    }
+    
     // CUSTOMIZATION - LIVE ETA OPTION
     // -------------------------------
     // Add a checkbox to activate live ETA option in status bar, and
@@ -5096,11 +5114,11 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%d"), g_COGAvgSec);
   pCOGUPUpdateSecs->SetValue(s);
 
-  pCDOOutlines->SetValue(g_bShowOutlines);
-  pCDOQuilting->SetValue(g_bQuiltEnable);
-  pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
-  pSDepthUnits->SetValue(g_bShowDepthUnits);
-  pSkewComp->SetValue(g_bskew_comp);
+  if(pCDOOutlines) pCDOOutlines->SetValue(g_bShowOutlines);
+  if(pCDOQuilting) pCDOQuilting->SetValue(g_bQuiltEnable);
+  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
+  if(pSDepthUnits) pSDepthUnits->SetValue(g_bShowDepthUnits);
+  if(pSkewComp) pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
@@ -5110,7 +5128,7 @@ void options::SetInitialSettings(void) {
   pDarkDecorations->SetValue(g_bDarkDecorations);
 #endif
   pOpenGL->SetValue(g_bopengl);
-  pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
+  if(pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
   pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
 
@@ -5142,12 +5160,12 @@ void options::SetInitialSettings(void) {
   itemStaticTextUserVar2->Enable(!b_haveWMM);
   pMagVar->Enable(!b_haveWMM);
   
-  pSDisplayGrid->SetValue(g_bDisplayGrid);
+  if(pSDisplayGrid) pSDisplayGrid->SetValue(g_bDisplayGrid);
     
   // LIVE ETA OPTION
     
   // Checkbox
-  pSLiveETA->SetValue(g_bShowLiveETA);
+  if(pSLiveETA) pSLiveETA->SetValue(g_bShowLiveETA);
     
   // Defaut boat speed text input field
   // Speed always in knots, and converted to user speed unit
@@ -5158,13 +5176,13 @@ void options::SetInitialSettings(void) {
       g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
   }
   stringDefaultBoatSpeed.Printf(_T("%d"), (int)g_defaultBoatSpeedUserUnit);
-  pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
+  if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
   
   // END LIVE ETA OPTION
 
-  pCBCourseUp->SetValue(g_bCourseUp);
-  pCBNorthUp->SetValue(!g_bCourseUp);
-  pCBLookAhead->SetValue(g_bLookAhead);
+  if(pCBCourseUp) pCBCourseUp->SetValue(g_bCourseUp);
+  if(pCBNorthUp) pCBNorthUp->SetValue(!g_bCourseUp);
+  if(pCBLookAhead) pCBLookAhead->SetValue(g_bLookAhead);
 
   if (fabs(wxRound(g_ownship_predictor_minutes) - g_ownship_predictor_minutes) >
       1e-4)
@@ -5220,9 +5238,9 @@ void options::SetInitialSettings(void) {
   pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
   pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
 
-  pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
+  if(pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
 
-  pPreserveScale->SetValue(g_bPreserveScaleOnX);
+  if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
   pSoundDeviceIndex->SetValue(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
@@ -6179,17 +6197,18 @@ void options::OnApplyClick(wxCommandEvent& event) {
       m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
 
   // End of Connections page
-  g_bShowOutlines = pCDOOutlines->GetValue();
-  g_bDisplayGrid = pSDisplayGrid->GetValue();
-    
-  bool temp_bquilting = pCDOQuilting->GetValue();
+  if(pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
+  if(pSDisplayGrid) g_bDisplayGrid = pSDisplayGrid->GetValue();
+  
+  if(pCDOQuilting){
+    bool temp_bquilting = pCDOQuilting->GetValue();
 //   if (!g_bQuiltEnable && temp_bquilting)
 //     cc1->ReloadVP(); /* compose the quilt */
-  g_bQuiltEnable = temp_bquilting;
-
+    g_bQuiltEnable = temp_bquilting;
+  }
   g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
 
-  g_bShowDepthUnits = pSDepthUnits->GetValue();
+  if(pSDepthUnits) g_bShowDepthUnits = pSDepthUnits->GetValue();
   g_bskew_comp = pSkewComp->GetValue();
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
@@ -6204,7 +6223,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //g_fog_overzoom = !pOverzoomEmphasis->GetValue();
   //g_oz_vector_scale = !pOZScaleVector->GetValue();
 
-  g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
+  if(pSmoothPanZoom) g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
   long update_val = 1;
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
@@ -6212,7 +6231,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   //TODO if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
 
-  g_bLookAhead = pCBLookAhead->GetValue();
+  if(pCBLookAhead) g_bLookAhead = pCBLookAhead->GetValue();
 
   g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
@@ -6245,7 +6264,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
-  g_bPreserveScaleOnX = pPreserveScale->GetValue();
+  if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
   g_iSoundDeviceIndex = pSoundDeviceIndex->GetValue();
@@ -6255,8 +6274,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSpeedFormat = pSpeedFormat->GetSelection();
     
   // LIVE ETA OPTION
-  g_bShowLiveETA = pSLiveETA->GetValue();
-  pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
+  if(pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
+  if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
@@ -6284,7 +6303,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bHighliteTracks = pTrackHighlite->GetValue();
 
-  g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
+  if(pEnableZoomToCursor) g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
   g_colourOwnshipRangeRingsColour =  m_colourOwnshipRangeRingColour->GetColour();
   g_colourOwnshipRangeRingsColour =  wxColour(g_colourOwnshipRangeRingsColour.Red(), g_colourOwnshipRangeRingsColour.Green(), g_colourOwnshipRangeRingsColour.Blue());
