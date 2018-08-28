@@ -7,6 +7,7 @@ Files-Excluded: .*
  buildandroid
  buildwin
  plugins/chartdldr_pi/src/tinyxml
+ plugins/chartdldr_pi/src/unarr
  plugins/grib_pi/src/bzip2
  src/texcmp/lz4
  src/wxcurl
@@ -47,14 +48,6 @@ Copyright: National Oceanic and Atmospheric Administration
           2010 Dave Flater <dave@flaterco.com>
           2010-2011 David S Register <bdbcat@yahoo.com>
 License: tcdata
-
-Files:  plugins/chartdldr_pi/src/unarr/lzmasdk/7zTypes.h
- plugins/chartdldr_pi/src/unarr/lzmasdk/*
- plugins/wmm_pi/src/WMM_SubLibrary.c
- src/SQLiteCpp/sqlite3/sqlite3.c
- src/SQLiteCpp/sqlite3/sqlite3.h
-Copyright: NONE
-License: public-domain
 
 Files:plugins/wmm_pi/src/*
 Copyright: 2014 ESA-VirES
@@ -163,10 +156,6 @@ License: Expat
 Files: src/glu/*
 Copyright: 1991-2000, Silicon Graphics, Inc.
 License: SGI-B-2.0
-
-Files: plugins/chartdldr_pi/src/unarr/*
-Copyright: 2015, the unarr project authors (see AUTHORS file).
-License: LGPL-3
 
 Files: include/wx/json_defs.h
  include/wx/jsonreader.h
