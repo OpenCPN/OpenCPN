@@ -484,11 +484,14 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Compass = NULL;
     
     g_ChartNotRenderScaleFactor = 2.0;
+    m_bShowScaleInStatusBar = true;
     
     m_muiBar = NULL;
     if(g_useMUI){
         m_muiBar = new MUIBar(this, wxHORIZONTAL);
         m_muiBarHOSize = m_muiBar->GetSize();
+        
+        m_bShowScaleInStatusBar = false;
     }
 
     m_bShowOutlines = false;
@@ -4898,12 +4901,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 text += fps_str;
             }
 #endif            
-            
+        
+        m_scaleValue = true_scale_display;
         m_scaleText = text;
         if(m_muiBar)
             m_muiBar->UpdateDynamicValues();
         
-        if( parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
+        if( m_bShowScaleInStatusBar && parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
                 // Check to see if the text will fit in the StatusBar field...
                 bool b_noshow = false;
                 {
