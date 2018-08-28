@@ -138,6 +138,7 @@ enum
     ID_DEF_MENU_SCALE_IN,
     ID_DEF_MENU_SCALE_OUT,
     ID_DEF_MENU_DROP_WP,
+    ID_DEF_MENU_NEW_RT,
     ID_DEF_MENU_QUERY,
     ID_DEF_MENU_MOVE_BOAT_HERE,
     ID_DEF_MENU_GOTO_HERE,
@@ -408,7 +409,8 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 
     if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
         MenuAppend1( contextMenu, ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
-
+        MenuAppend1( contextMenu, ID_DEF_MENU_NEW_RT, _menuText( _( "New Route..." ), _T("Ctrl-R") ) );
+        
         if( !bGPSValid )
             MenuAppend1( contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
     }
@@ -1008,6 +1010,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         break;
     }
 
+    case ID_DEF_MENU_NEW_RT: {
+        parent->StartRoute();
+        break;
+    }
+    
     case ID_DEF_MENU_AISTARGETLIST:
         parent->ShowAISTargetList();
         break;

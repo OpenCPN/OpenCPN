@@ -9284,8 +9284,8 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
-    if( GetMasterToolItemShow( ID_ROUTE ) )
-        tb->AddTool( ID_ROUTE, _T("route"),
+    if( GetMasterToolItemShow( ID_MENU_ROUTE_NEW ) )
+        tb->AddTool( ID_MENU_ROUTE_NEW, _T("route"),
                      style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
                      style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
                      
