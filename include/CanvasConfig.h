@@ -65,6 +65,7 @@ public:
     int  nENCDisplayCategory;
     bool bShowENCDepths;
     bool bShowENCBuoyLabels;
+    bool bShowENCLightDescriptions;
     
 };
 

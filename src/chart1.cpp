@@ -745,7 +745,7 @@ bool             b_reloadForPlugins;
 
 unsigned int     g_canvasConfig;
 bool             g_useMUI;
-bool             g_bmasterToolbarFull = true;
+bool             g_bmasterToolbarFull;// = true;
 
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
@@ -3085,7 +3085,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc->SetToolbarConfigString(g_toolbarConfig);
            //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-           //cc->SetToolbarOrientation( g_maintoolbar_orient);
+           cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
            
@@ -3120,7 +3120,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            //cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
            //cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc2->SetToolbarConfigString(g_toolbarConfig);
-           cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
+           //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );

@@ -351,7 +351,7 @@ void CanvasOptions::UpdateCanvasOptions( void )
     //  ENC Options
     if(pCDOENCText->GetValue() != parentCanvas->GetShowENCText()){
         parentCanvas->SetShowENCText(pCDOENCText->GetValue());
-        b_needRefresh = true;
+        b_needReLoad = true;
     }
 
     if(pCBENCDepth->GetValue() != parentCanvas->GetShowENCDepth()){

@@ -2074,6 +2074,9 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
     // ENC options
     Read( _T ( "canvasShowENCText" ), &cConfig->bShowENCText, 1 );
     Read( _T ( "canvasENCDisplayCategory" ), &cConfig->nENCDisplayCategory, STANDARD );
+    Read( _T ( "canvasENCShowDepths" ), &cConfig->bShowENCDepths, 1 );
+    Read( _T ( "canvasENCShowBuoyLabels" ), &cConfig->bShowENCBuoyLabels, 0 );
+    Read( _T ( "canvasENCShowLightDescriptions" ), &cConfig->bShowENCLightDescriptions, 0 );
     
     int sx, sy;
     Read( _T ( "canvasSizeX" ), &sx, 0 );
@@ -2136,7 +2139,7 @@ void MyConfig::SaveCanvasConfigs( )
 }
     
 
-    void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
+void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
 {
     wxString st1;
     
@@ -2177,6 +2180,10 @@ void MyConfig::SaveCanvasConfigs( )
         // ENC options
         Write( _T ( "canvasShowENCText" ), cConfig->canvas->GetShowENCText() );
         Write( _T ( "canvasENCDisplayCategory" ), cConfig->canvas->GetENCDisplayCategory() );
+        Write( _T ( "canvasENCShowDepths" ), cConfig->canvas->GetShowENCDepth() );
+        Write( _T ( "canvasENCShowBuoyLabels" ), cConfig->canvas->GetShowENCBuoyLabels() );
+        Write( _T ( "canvasENCShowLightDescriptions" ), cConfig->canvas->GetShowENCLightDesc() );
+        
         
         int width = cConfig->canvas->GetSize().x;
         //         if(cConfig->canvas->IsPrimaryCanvas()){

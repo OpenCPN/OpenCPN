@@ -189,6 +189,7 @@ public:
       void canvasRefreshGroupIndex( void );
       void canvasChartsRefresh( int dbi_hint );
       
+      void UpdateCanvasS52PLIBConfig();
       
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);

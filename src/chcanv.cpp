@@ -945,10 +945,14 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     SetShowDepthUnits( pcc->bShowDepthUnits );
     SetShowGrid( pcc->bShowGrid );
     SetShowOutlines( pcc->bShowOutlines );
-    
+
+    // ENC options
     SetShowENCText( pcc->bShowENCText );
     m_encDisplayCategory = pcc->nENCDisplayCategory;
-    
+    m_encShowDepth = pcc->bShowENCDepths;
+    m_encShowLightDesc = pcc->bShowENCLightDescriptions;
+    m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
+
 }
 
 void ChartCanvas::SetToolbarEnable( bool bShow )
@@ -9208,6 +9212,23 @@ void ChartCanvas::WarpPointerDeferred( int x, int y )
     warp_flag = true;
 }
 
+
+void ChartCanvas::UpdateCanvasS52PLIBConfig()
+{
+    if( VPoint.b_quilt ){          // quilted
+        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
+            return;  // not ready
+            
+        if(m_pQuilt->IsQuiltVector()){    
+            if(ps52plib->GetStateHash() != m_s52StateHash){
+                UpdateS52State();
+                m_s52StateHash = ps52plib->GetStateHash();
+            }
+        }
+    }
+}
+
+
 int spaint;
 int s_in_update;
 void ChartCanvas::OnPaint( wxPaintEvent& event )
@@ -9225,6 +9246,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         return;
     }
 
+    
+    //  If necessary, reconfigure the S52 PLIB
+    UpdateCanvasS52PLIBConfig();
+    
+    
 #ifdef ocpnUSE_GL
     if( !g_bdisable_opengl && m_glcc )
         m_glcc->Show( g_bopengl );
@@ -9347,21 +9373,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             busy = true;
         }
         
-        if(bvectorQuilt){
-            printf("Render %d\n", IsPrimaryCanvas());
-            
-            if(ps52plib->GetStateHash() != m_s52StateHash){
-                if(!IsPrimaryCanvas()){
-                    int yyp = 3;
-                    UpdateS52State();
-                }
-                else
-                    UpdateS52State();
-                
-                m_s52StateHash = ps52plib->GetStateHash();
-            }
-        }
-            
         if( ( m_working_bm.GetWidth() != svp.pix_width )
                 || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
                         svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug

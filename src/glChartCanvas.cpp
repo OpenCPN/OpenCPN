@@ -1108,6 +1108,22 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
         return;
     //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
     if( m_in_glpaint ) return;
+    
+    //  If necessary, reconfigure the S52 PLIB
+    m_pParentCanvas->UpdateCanvasS52PLIBConfig();
+    
+//     if( m_pParentCanvas->VPoint.b_quilt ){          // quilted
+//         if( !m_pParentCanvas->m_pQuilt || !m_pParentCanvas->m_pQuilt->IsComposed() ) 
+//             return;  // not ready
+//             
+//             if(m_pParentCanvas->m_pQuilt->IsQuiltVector()){    
+//                 if(ps52plib->GetStateHash() != m_pParentCanvas->m_s52StateHash){
+//                     m_pParentCanvas->UpdateS52State();
+//                     m_pParentCanvas->m_s52StateHash = ps52plib->GetStateHash();
+//                 }
+//             }
+//     }
+    
     m_in_glpaint++;
     Render();
     m_in_glpaint--;
