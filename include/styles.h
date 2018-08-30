@@ -73,6 +73,7 @@ public:
             disabledLoaded = false;
             activeLoaded =false;
             toggledLoaded =false;
+            customSize = wxSize( 32, 32 );
       }
 
       Tool(void) {

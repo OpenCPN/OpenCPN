@@ -745,7 +745,7 @@ bool             b_reloadForPlugins;
 
 unsigned int     g_canvasConfig;
 bool             g_useMUI;
-bool             g_bmasterToolbarFull;// = true;
+bool             g_bmasterToolbarFull = true;
 
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
@@ -9274,20 +9274,18 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Menu In") ) << _T(" (+)");
-    tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("MUI_menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Options");
     if( GetMasterToolItemShow(ID_SETTINGS) )
-        tb->AddTool( ID_SETTINGS, _T("settings"),
-            style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+        tb->AddTool( ID_SETTINGS, _T("MUI_settings"), style->GetToolIcon( _T("MUI_settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
     if( GetMasterToolItemShow( ID_MENU_ROUTE_NEW ) )
-        tb->AddTool( ID_MENU_ROUTE_NEW, _T("route"),
-                     style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
-                     style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+        tb->AddTool( ID_MENU_ROUTE_NEW, _T("MUI_route"), style->GetToolIcon( _T("MUI_route"), TOOLICON_NORMAL ),
+                     style->GetToolIcon( _T("MUI_route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
                      
                      
 #if 0        
@@ -9331,28 +9329,24 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
     CheckAndAddPlugInTool( tb );
     tipString = _("Print Chart");
     if( GetMasterToolItemShow(ID_PRINT) )
-        tb->AddTool( ID_PRINT, _T("print"),
-            style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+        tb->AddTool( ID_PRINT, _T("MUI_print"), style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Route & Mark Manager");
     if( GetMasterToolItemShow(ID_ROUTEMANAGER) )
-        tb->AddTool( ID_ROUTEMANAGER,
-            _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
-            tipString, wxITEM_NORMAL );
+        tb->AddTool( ID_ROUTEMANAGER,_T("MUI_RMD"), style->GetToolIcon( _T("MUI_RMD"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
-//     CheckAndAddPlugInTool( tb );
-//     tipString = _("Enable Tracking");
-//     if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TRACK, tipString ) )
-//         tb->AddTool( ID_TRACK, _T("track"),
-//             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
-//             style->GetToolIcon( _T("track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+     CheckAndAddPlugInTool( tb );
+     tipString = _("Enable Tracking");
+     if( GetMasterToolItemShow( ID_TRACK ) )
+         tb->AddTool( ID_TRACK, _T("MUI_track"),
+                      style->GetToolIcon( _T("MUI_track"), TOOLICON_NORMAL ),
+                      style->GetToolIcon( _T("MUI_track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Change Color Scheme") ) << _T(" (F5)");
     if( GetMasterToolItemShow(ID_COLSCHEME) ){
-        tb->AddTool( ID_COLSCHEME,
-            _T("colorscheme"), style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ),
+        tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL ),
             tipString, wxITEM_NORMAL );
         tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to always be visible, whatever
                                                         //  the colorscheme
@@ -9361,8 +9355,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
     CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
     if( GetMasterToolItemShow(ID_ABOUT) )
-        tb->AddTool( ID_ABOUT, _T("help"),
-            style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+        tb->AddTool( ID_ABOUT, _T("MUI_help"), style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     //      Add any PlugIn toolbar tools that request default positioning
     if(g_bmasterToolbarFull)

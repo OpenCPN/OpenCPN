@@ -160,11 +160,54 @@
 				<rollover-location x="300" y="260"/>
 				<disabled-location x="300" y="360"/>
 			</tool>
-                        <tool name="menu">
+                        <tool name="MUI_menu">
                                 <icon-location x="500" y="20"/>
                                 <rollover-location x="500" y="220"/>
                                 <disabled-location x="500" y="320"/>
                         </tool>
+
+                        <tool name="MUI_settings">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_route">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_print">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_RMD">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_colorscheme">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_track">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
+                        <tool name="MUI_help">
+                                <icon-location x="500" y="20"/>
+                                <rollover-location x="500" y="220"/>
+                                <disabled-location x="500" y="320"/>
+                        </tool>
+
 
 		</tools>
 
