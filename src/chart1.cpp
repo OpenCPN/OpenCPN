@@ -1845,6 +1845,12 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
+    if(g_useMUI){
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        style->chartStatusWindowTransparent = true;
+    }
+    
+
     //      Init the WayPoint Manager
     pWayPointMan = NULL;
 
