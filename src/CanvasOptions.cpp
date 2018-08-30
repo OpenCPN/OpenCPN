@@ -161,12 +161,16 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
 
     pCBNorthUp = new wxRadioButton(pDisplayPanel, wxID_ANY, _("North Up"));
     rowOrientation->Add(pCBNorthUp, inputFlags);
+    pCBNorthUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+
     pCBCourseUp = new wxRadioButton(pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up"));
     rowOrientation->Add(pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing * 2));
-
+    pCBCourseUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
     pCBLookAhead = new wxCheckBox(pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode"));
     boxNavMode->Add(pCBLookAhead, verticleInputFlags);
-
+    pCBLookAhead->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
     // spacer
     generalSizer->Add(0, border_size * 4);
 
@@ -366,6 +370,17 @@ void CanvasOptions::UpdateCanvasOptions( void )
     
     if(pCBENCBuoyLabels->GetValue() != parentCanvas->GetShowENCBuoyLabels()){
         parentCanvas->SetShowENCBuoyLabels(pCBENCBuoyLabels->GetValue());
+        b_needReLoad = true;
+    }
+
+    bool setcourseUp = pCBCourseUp->GetValue();
+    if(setcourseUp != parentCanvas->GetCourseUP()){
+        parentCanvas->ToggleCourseUp();
+        b_needReLoad = true;
+    }
+
+    if(pCBLookAhead->GetValue() != parentCanvas->GetLookahead()){
+        parentCanvas->ToggleLookahead();
         b_needReLoad = true;
     }
     

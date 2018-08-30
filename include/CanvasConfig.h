@@ -59,6 +59,8 @@ public:
     bool bShowGrid;
     bool bShowOutlines;
     bool bShowDepthUnits;
+    bool bCourseUp;
+    bool bLookahead;
     
     // ENC options
     bool bShowENCText;
@@ -66,6 +68,17 @@ public:
     bool bShowENCDepths;
     bool bShowENCBuoyLabels;
     bool bShowENCLightDescriptions;
+    
+    void Reset( void){
+        bFollow = false;
+        bShowTides = false;
+        bShowCurrents = false;
+        bShowToolbar = false;
+        toolbarOrientation = wxTB_HORIZONTAL;
+        toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        bCourseUp = false;
+        bLookahead = false;
+    }
     
 };
 

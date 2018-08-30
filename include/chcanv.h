@@ -306,6 +306,7 @@ public:
       void UpdateCanvasOnGroupChange(void);
       int AdjustQuiltRefChart( void );
       void ToggleCourseUp( );
+      void ToggleLookahead( );
       
  
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
@@ -368,6 +369,7 @@ public:
       int          m_routeState;
       ChartBase   *m_singleChart;
       bool        m_bCourseUp;
+      bool        m_bLookAhead;
       double      m_VPRotate;
       
       void RemovePointFromRoute( RoutePoint* point, Route* route );
@@ -464,6 +466,9 @@ public:
       
       int GetENCDisplayCategory(){ return m_encDisplayCategory; }
       void SetENCDisplayCategory( int category );
+      
+      bool GetCourseUP(){ return m_bCourseUp; }
+      bool GetLookahead(){ return m_bLookAhead; }
       
 private:
       bool UpdateS52State();

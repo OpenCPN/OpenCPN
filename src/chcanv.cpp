@@ -687,9 +687,11 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_b_rot_hidef = true;
     
     proute_bm = NULL;
-
     m_prot_bm = NULL;
 
+    m_bCourseUp = false;
+    m_bLookAhead = false;
+    
 // Set some benign initial values
 
     m_cs = GLOBAL_COLOR_SCHEME_DAY;
@@ -953,6 +955,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowLightDesc = pcc->bShowENCLightDescriptions;
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
 
+    m_bCourseUp = pcc->bCourseUp;
+    m_bLookAhead = pcc->bLookahead;
 }
 
 void ChartCanvas::SetToolbarEnable( bool bShow )
@@ -1057,7 +1061,7 @@ void ChartCanvas::ShowCurrents(bool bShow)
 
 
 //TODO
-extern bool     g_bLookAhead;
+//extern bool     g_bLookAhead;
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
 extern int      g_sticky_chart;
@@ -1284,7 +1288,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         vpLon = gLon;
         
         // on lookahead mode, adjust the vp center point
-        if( g_bLookAhead ) {
+        if( m_bLookAhead ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
             
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * GetCanvasHeight() / 4;
@@ -2985,6 +2989,12 @@ void ChartCanvas::ToggleChartOutlines( void )
     if( g_bopengl )
         InvalidateGL();
     #endif
+}
+
+
+void ChartCanvas::ToggleLookahead( )
+{
+    m_bLookAhead = !m_bLookAhead;
 }
 
 

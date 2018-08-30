@@ -2077,6 +2077,9 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
     Read( _T ( "canvasENCShowDepths" ), &cConfig->bShowENCDepths, 1 );
     Read( _T ( "canvasENCShowBuoyLabels" ), &cConfig->bShowENCBuoyLabels, 0 );
     Read( _T ( "canvasENCShowLightDescriptions" ), &cConfig->bShowENCLightDescriptions, 0 );
+
+    Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
+    Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
     
     int sx, sy;
     Read( _T ( "canvasSizeX" ), &sx, 0 );
@@ -2183,6 +2186,9 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "canvasENCShowDepths" ), cConfig->canvas->GetShowENCDepth() );
         Write( _T ( "canvasENCShowBuoyLabels" ), cConfig->canvas->GetShowENCBuoyLabels() );
         Write( _T ( "canvasENCShowLightDescriptions" ), cConfig->canvas->GetShowENCLightDesc() );
+
+        Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetCourseUP() );
+        Write( _T ( "canvasLookahead" ), cConfig->canvas->GetLookahead() );
         
         
         int width = cConfig->canvas->GetSize().x;

@@ -3900,10 +3900,11 @@ void MyFrame::ODoSetSize( void )
     if( g_pi_manager ) g_pi_manager->SendResizeEventToAllPlugIns( x, y );
 
 //  Force redraw if in lookahead mode
-    if( g_bLookAhead ) {
-        DoCOGSet();
-        DoChartUpdate();
-    }
+    // TODO is this all right?
+//     if( g_bLookAhead ) {
+//         DoCOGSet();
+//         DoChartUpdate();
+//     }
 
     if( pthumbwin )
         pthumbwin->SetMaxSize( GetClientSize() );
