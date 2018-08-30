@@ -1047,7 +1047,9 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 /** Return UINT_MAX on errors. */
 static int mapStatisticalEndTime(GRIBMessage *grid)
 {
-  switch (grid->md.time_unit) { // table 4.4
+   // lovely md.fcst_time is in grid->md.time_unit but md.stat_proc.t[0].time_length is in grid->md.stat_proc.t[0].time_unit
+   // not always the same.
+  if (grid->md.time_unit == grid->md.stat_proc.t[0].time_unit) switch (grid->md.time_unit) { // table 4.4
     case 0:  // minute
 	// return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:  // hour
@@ -1063,8 +1065,23 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
 	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
 	return UINT_MAX;
   }
+
+  if (grid->md.time_unit == 0 && grid->md.stat_proc.t[0].time_unit == 1) {
+         // in minute + hourly increment
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length *60;
+  }
+
+  if (grid->md.time_unit == 1 && grid->md.stat_proc.t[0].time_unit == 0 && (grid->md.stat_proc.t[0].time_unit  % 60) != 0 ) {
+          // convert in hour
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length /60;
+  }
+
+  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time, 
+            grid->md.stat_proc.t[0].time_length);
+  return UINT_MAX;
 }
 
+// map GRIB2 msg time to GRIB1 P1 and P2 in sec
 static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_range,int *n_avg,int *n_missing, int center)
 {
   switch (grid->md.pds_templ_num) {
