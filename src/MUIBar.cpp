@@ -371,13 +371,12 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
-        //wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
-        wxString iconDir = _T("/home/dsr/Projects/opencpn/data/svg/MUI/");
+        wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
         
-        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("zoom-in.svg"));
+        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 1, wxSHAPED);
     
-        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("zoom-out.svg"));
+        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("MUI_zoom-out.svg"));
         barSizer->Add(m_zoutButton, 1, wxSHAPED);
     
         barSizer->AddSpacer(2);
@@ -392,12 +391,12 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("follow.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(2);
         
-        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("menu.svg"));
+        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
     }
     else{
