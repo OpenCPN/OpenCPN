@@ -128,9 +128,18 @@ IF (NOT WIN32)
   # default
   SET (ARCH "i386")
   SET (LIB_INSTALL_DIR "lib")
-  IF (EXISTS /etc/debian_version)
+  IF (EXISTS /etc/debian_version) #Could be debian or Ubuntu
     SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
+    execute_process(COMMAND lsb_release -is
+    OUTPUT_VARIABLE DISTRIBUTOR_ID
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    IF (DISTRIBUTOR_ID STREQUAL "Ubuntu") #Should be good for xenial (16.04LTS) and later
+      SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0v5, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2v5, libportaudio2, libsqlite3-0")
+    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8") #Probably debian
+      SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
+    ENDIF (DISTRIBUTOR_ID STREQUAL "Ubuntu")
+    
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
