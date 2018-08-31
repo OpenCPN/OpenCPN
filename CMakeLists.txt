@@ -1880,6 +1880,13 @@ IF(OCPN_USE_SVG)
             ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
   ENDFOREACH (_currentSvgFile )
 
+  #MUI_flat theme SVG icons
+  FILE(GLOB MUI_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/MUI_flat/*")
+  FOREACH (_currentSvgFile ${MUI_FLAT_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/MUI_flat )
+  ENDFOREACH (_currentSvgFile )
+
   #Default SVG Icons
   FILE(GLOB DEFAULT_ICON_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/markicons/*")
   FOREACH (_currentSvgFile ${DEFAULT_ICON_SVG_FILES})
@@ -2106,6 +2113,7 @@ IF(OCPN_USE_SVG)
   INSTALL(DIRECTORY data/svg/traditional/ DESTINATION ${PREFIX_PKGDATA}/uidata/traditional)
   INSTALL(DIRECTORY data/svg/journeyman/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman)
   INSTALL(DIRECTORY data/svg/journeyman_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman_flat)
+  INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
 ENDIF(OCPN_USE_SVG)
 
 IF (USE_S57)
