@@ -355,6 +355,8 @@ public:
       
       void CreateConfigMenu();
       bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
+
+      void SetCornerRadius( int radius){ m_cornerRadius = radius; }
       
       void SetGrabberEnable( bool bShow ){ m_bGrabberEnable = bShow; }
       void Submerge();
@@ -448,7 +450,7 @@ private:
       bool m_bGrabberEnable;
       
       wxString m_backcolorString;
-
+      int m_cornerRadius;
 };
 
 //---------------------------------------------------------------------------

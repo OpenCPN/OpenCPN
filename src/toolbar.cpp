@@ -338,14 +338,15 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 
     m_opacity = 255;
 
-    m_pGrabberwin = new GrabberWin( this, this, size_factor, _T("grabber_hi") );
-    m_pGrabberwin->Hide();
-    m_bGrabberEnable = true;
+    m_pGrabberwin = NULL; //new GrabberWin( this, this, size_factor, _T("grabber_hi") );
+    //m_pGrabberwin->Hide();
+    m_bGrabberEnable = true;            // default
     
     m_pRecoverwin = NULL;
     m_position = position;
     m_orient = orient;
     m_sizefactor = size_factor;
+    m_cornerRadius = 0;
     
     m_bAutoHideToolbar = false;
     m_nAutoHideToolbar = 5;
@@ -353,7 +354,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_backcolorString = _T("GREY2") ;
     
     m_ptoolbar = CreateNewToolbar();
-
+    
     m_cs = (ColorScheme)-1;
 
     m_style = g_StyleManager->GetCurrentStyle();
@@ -794,6 +795,9 @@ void ocpnFloatingToolbarDialog::ShowTooltips()
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
 {
+    if(!m_pGrabberwin)
+        return;
+    
     if( m_orient == wxTB_HORIZONTAL )
         m_orient = wxTB_VERTICAL;
     else
@@ -951,6 +955,11 @@ void ocpnFloatingToolbarDialog::Realize()
         m_topSizer->Add( m_ptoolbar );
         
         if(m_bGrabberEnable){
+            if(!m_pGrabberwin){
+                m_pGrabberwin = new GrabberWin( this, this, m_sizefactor, _T("grabber_hi") );
+                m_pGrabberwin->Hide();
+            }
+            
             m_pGrabberwin->Show();
             m_topSizer->Add( m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin() );
         }
@@ -1078,6 +1087,22 @@ void ocpnFloatingToolbarDialog::Realize()
             if(shape.GetWidth() && shape.GetHeight())
                 SetShape( wxRegion( shape, *wxWHITE, 10 ) );
 #endif
+        }
+        else{
+#if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)       
+            if(m_cornerRadius) {
+                wxBitmap m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
+                wxMemoryDC sdc( m_MaskBmp );
+                sdc.SetBackground( *wxWHITE_BRUSH );
+                sdc.Clear();
+                sdc.SetBrush( *wxBLACK_BRUSH );
+                sdc.SetPen( *wxBLACK_PEN );
+                sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), m_cornerRadius );
+                sdc.SelectObject( wxNullBitmap );
+                SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
+            }
+ #endif
+            
         }
     }
 }
@@ -2034,12 +2059,14 @@ bool ocpnToolBarSimple::Realize()
     if( lastTool && (m_LineCount > 1 || IsVertical()) )
         lastTool->lastInLine = true;
 
-    if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) m_maxHeight += toolSize.y;
-    else
+    if( GetWindowStyleFlag() & wxTB_HORIZONTAL ){
+        m_maxHeight += toolSize.y;
+        m_maxHeight += m_style->GetBottomMargin();
+    }
+    else{
         m_maxWidth += toolSize.x;
-
-    m_maxWidth += m_style->GetRightMargin();
-    m_maxHeight += m_style->GetBottomMargin();
+        m_maxWidth += m_style->GetRightMargin();
+    }
 
     SetSize( m_maxWidth, m_maxHeight );
     SetMinSize( wxSize( m_maxWidth, m_maxHeight ) );
