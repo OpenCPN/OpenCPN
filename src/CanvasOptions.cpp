@@ -271,6 +271,10 @@ void CanvasOptions::RefreshControlValues( void )
 
     // Control options
     pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
+
+    // Navaigation Mode
+    pCBCourseUp->SetValue(parentCanvas->GetCourseUP());
+    pCBLookAhead->SetValue(parentCanvas->GetLookahead());
     
     //  Display options
     pCDOQuilting->SetValue(parentCanvas->GetQuiltMode());

@@ -1494,7 +1494,7 @@ extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&Min
 extern wxString CalcGridText( float latlon, float spacing, bool bPostfix );
 void glChartCanvas::GridDraw( )
 {
-    if( !g_bDisplayGrid ) return;
+    if( !m_pParentCanvas->m_bDisplayGrid ) return;
 
     ViewPort &vp = m_pParentCanvas->GetVP();
 
