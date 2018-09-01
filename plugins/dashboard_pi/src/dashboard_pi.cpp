@@ -1409,8 +1409,13 @@ void dashboard_pi::UpdateAuiStatus( void )
         wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
+        
+        //  Defulat (i.e. first) dashboard window always comes up as right docked
+        if(i == 0)
+            pane.Right().Layer(2).Dock();
     }
-
+    m_pauimgr->Update();
+    
     //    We use this callback here to keep the context menu selection in sync with the window state
 
     SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
@@ -1598,7 +1603,7 @@ void dashboard_pi::ApplyConfig( void )
                 wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                     !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                         sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
-                        
+            
             m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
                 //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
