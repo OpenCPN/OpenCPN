@@ -1051,6 +1051,7 @@ void options::Init(void) {
   pCheck_SCAMIN = NULL;
   pCheck_ATONTEXT = NULL;
   pCheck_LDISTEXT = NULL;
+  pCheck_XLSECTTEXT = NULL;
   
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
