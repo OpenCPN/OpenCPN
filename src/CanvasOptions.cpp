@@ -94,63 +94,39 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     topsizer->Add(m_sWindow, 1, wxEXPAND );
     
     m_sWindow->SetScrollRate(0, 5);
-#if 0    
-    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
     
-    wxBoxSizer *icon_text = new wxBoxSizer( wxHORIZONTAL );
+    int border_size = 4;
+    int group_item_spacing = 0;
+    int interGroupSpace = border_size * 2;
     
-    wxCheckBox *pcb = new wxCheckBox(this, 49, _T("Test CB with very long name cccccccccccccccccccccccccc"));
-    topsizer->Add(pcb, 0 );;
-#endif
-    
-    int border_size = 5;
-    int group_item_spacing = 1;
-    
-    wxSizerFlags groupLabelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_TOP).Border(wxALL, group_item_spacing);
-    wxSizerFlags groupInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_TOP).Border(wxBOTTOM, group_item_spacing * 2).Expand();
-    wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
-    wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
-    wxSizerFlags labelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT).Border(wxALL, group_item_spacing);
+     wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
+     wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
     
     wxScrolledWindow *pDisplayPanel = m_sWindow;
-
-#if 0    
-    wxFlexGridSizer* generalSizer = new wxFlexGridSizer(2);
-    generalSizer->SetHGap(border_size);
-    //    generalSizer->AddGrowableCol( 0, 1 );
-    //    generalSizer->AddGrowableCol( 1, 1 );
-    //    pDisplayPanel->SetSizer( generalSizer );
-
-    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
-    // another sizer instead of letting it grow.
-    wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
-    pDisplayPanel->SetSizer(wrapperSizer);
-    wrapperSizer->Add(generalSizer, 1, wxALL | wxALIGN_CENTER, border_size);
-#endif
 
     wxBoxSizer* generalSizer = new wxBoxSizer(wxVERTICAL);
     pDisplayPanel->SetSizer(generalSizer);
 
+    
     //  Options Label
-    generalSizer->Add(0, border_size * 2);
     wxStaticText* optionsLabelBox = new wxStaticText(pDisplayPanel, wxID_ANY, _("Chart Panel Options"));
     generalSizer->Add(optionsLabelBox, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
     wxStaticLine *m_staticLine121 = new wxStaticLine(pDisplayPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
     generalSizer->Add(m_staticLine121, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
     
     // spacer
-    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, interGroupSpace);
 
     // Control Options
     wxStaticBoxSizer* boxCont = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Control Options")), wxVERTICAL);
     generalSizer->Add(boxCont, 0, wxALL | wxEXPAND, border_size);
     
-    pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Enable Toolbar"));
+    pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Show Toolbar"));
     boxCont->Add(pCBToolbar, verticleInputFlags);
     pCBToolbar->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
     // spacer
-    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, interGroupSpace);
     
     // Nav Mode
     wxStaticBoxSizer* boxNavMode = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Navigation Mode")), wxVERTICAL);
@@ -172,7 +148,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pCBLookAhead->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // spacer
-    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, interGroupSpace);
 
     
     // Display Options
@@ -196,7 +172,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pSDepthUnits->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // spacer
-    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, interGroupSpace);
     
     // Tide/Current Options
     wxStaticBoxSizer* boxTC = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Tides and Currents")), wxVERTICAL);
@@ -211,7 +187,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pCDOCurrents->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // spacer
-    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, interGroupSpace);
  
     // ENC Options
     wxStaticBoxSizer* boxENC = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Vector Charts")), wxVERTICAL);
@@ -244,7 +220,6 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     
     SetAutoLayout( true );
     
-//    topsizer->SetSizeHints( this );
     topsizer->Fit( this );
     
 }
