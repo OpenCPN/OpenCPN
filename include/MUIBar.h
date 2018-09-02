@@ -73,6 +73,7 @@ public:
     void UpdateDynamicValues();
     int GetOrientation(){ return m_orientation; }
     void ResetCanvasOptions();
+    void SetFollowButton( bool bFollow );
     
 private:
     void Init( void );

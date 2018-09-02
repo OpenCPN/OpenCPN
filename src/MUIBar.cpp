@@ -89,16 +89,18 @@ class MUIButton: public wxWindow
     wxSize DoGetBestSize() const;
 public:
     MUIButton();
-    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString,
+    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
               const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
-    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString,
+    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
     ~MUIButton();
     
     void Init();
     void CreateControls();
+    
+    void ToggleBitmap( bool bt );
     
     void OnSize( wxSizeEvent& event );
     void OnPaint( wxPaintEvent& event );
@@ -116,8 +118,12 @@ public:
     
 private:
     wxString m_bitmapFile;
+    wxString m_bitmapFileToggle;
     wxBitmap m_bitmap;
-    
+    wxBitmap m_bitmapNormal;
+    wxBitmap m_bitmapToggle;
+
+    bool mToggle;
 };
 
 
@@ -141,17 +147,18 @@ MUIButton::MUIButton()
     Init();
 }
 
-MUIButton::MUIButton(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxPoint& pos, const wxSize& size, long style)
+MUIButton::MUIButton(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
 {
     Init();
-    Create(parent, id, bitmap, pos, size, style);
+    Create(parent, id, bitmap, bitmapToggle, pos, size, style);
 }
 
 
-bool MUIButton::Create(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxPoint& pos, const wxSize& size, long style)
+bool MUIButton::Create(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
 {
     wxWindow::Create(parent, id, pos, size, style);
     m_bitmapFile = bitmap;
+    m_bitmapFileToggle = bitmapToggle;
     
     CreateControls();
     return true;
@@ -165,6 +172,7 @@ MUIButton::~MUIButton()
 
 void MUIButton::Init()
 {
+    bool mToggle = false;
 }
 
 
@@ -184,6 +192,17 @@ bool MUIButton::ShowToolTips()
     return true;
 }
 
+void MUIButton::ToggleBitmap(bool bt)
+{
+    mToggle = bt;
+    if(mToggle)
+        m_bitmap = m_bitmapToggle;
+    else
+        m_bitmap = m_bitmapNormal;
+    Refresh();
+}
+
+
 void MUIButton::OnSize( wxSizeEvent& event )
 {
     if(m_bitmap.IsOk()){
@@ -192,7 +211,18 @@ void MUIButton::OnSize( wxSizeEvent& event )
     }
 
     if(!m_bitmapFile.IsEmpty())
-        m_bitmap = LoadSVG( m_bitmapFile, event.GetSize().x, event.GetSize().y );
+        m_bitmapNormal = LoadSVG( m_bitmapFile, event.GetSize().x, event.GetSize().y );
+
+    if(!m_bitmapFileToggle.IsEmpty())
+        m_bitmapToggle = LoadSVG( m_bitmapFileToggle, event.GetSize().x, event.GetSize().y );
+    
+    if(!m_bitmapToggle.IsOk() || m_bitmapFileToggle.IsEmpty())
+        m_bitmapToggle = m_bitmapNormal;
+    
+    if(mToggle)
+        m_bitmap = m_bitmapToggle;
+    else
+        m_bitmap = m_bitmapNormal;
         
     Refresh();
 }
@@ -353,6 +383,7 @@ void MUIBar::Init()
     m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
     m_backcolorString = _T("GREY3");
     m_scaleTextBox = NULL;
+    
 }
 
 void MUIBar::CreateControls()
@@ -363,7 +394,7 @@ void MUIBar::CreateControls()
     SetBackgroundColour(backColor);
     wxBoxSizer *topSizer;
 
-    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
+    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
     
     if(m_orientation == wxHORIZONTAL){
         topSizer = new wxBoxSizer(wxVERTICAL);
@@ -392,7 +423,7 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(2);
@@ -427,7 +458,7 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
@@ -464,7 +495,7 @@ void MUIBar::SetBestPosition( void )
     
     //if(x > 0)
     {
-        int bottomOffset = 0;
+        int bottomOffset = 2;
     
         ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
 //         bottomOffset += pcc->GetPianoHeight();
@@ -533,6 +564,10 @@ void MUIBar::UpdateDynamicValues()
     m_scaleTextBox->SetLabel(scaleString);
 }
 
+void MUIBar::SetFollowButton( bool bFollow )
+{
+    m_followButton->ToggleBitmap( bFollow );
+}
 
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
 {

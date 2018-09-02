@@ -4226,6 +4226,9 @@ void ChartCanvas::ClearbFollow( void )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
     
+    if(m_muiBar)
+        m_muiBar->SetFollowButton(false);
+    
     DoCanvasUpdate();
     ReloadVP();
     parent_frame->SetChartUpdatePeriod( );
@@ -4240,6 +4243,9 @@ void ChartCanvas::SetbFollow( void )
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
+
+    if(m_muiBar)
+        m_muiBar->SetFollowButton(true);
     
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
@@ -4345,6 +4351,9 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     m_bFollow = false;      // update the follow flag
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    
+    if(m_muiBar)
+        m_muiBar->SetFollowButton( false );
     
     Refresh( false );
 
