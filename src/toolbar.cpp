@@ -339,7 +339,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_opacity = 255;
 
     m_pGrabberwin = NULL; //new GrabberWin( this, this, size_factor, _T("grabber_hi") );
-    //m_pGrabberwin->Hide();
     m_bGrabberEnable = true;            // default
     
     m_pRecoverwin = NULL;
@@ -352,6 +351,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_nAutoHideToolbar = 5;
     m_toolbar_scale_tools_shown = false;
     m_backcolorString = _T("GREY2") ;
+    m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
     
     m_ptoolbar = CreateNewToolbar();
     
@@ -403,6 +403,32 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
     delete m_FloatingToolbarConfigMenu;
     
     DestroyToolBar();
+}
+
+size_t ocpnFloatingToolbarDialog::GetToolCount()
+{
+    if(m_ptoolbar)
+        return m_ptoolbar->GetToolsCount();
+    else
+        return 0;
+}
+
+void ocpnFloatingToolbarDialog::SetToolShowMask( wxString mask )
+{
+}
+
+void ocpnFloatingToolbarDialog::SetToolShowCount( int count )
+{
+    if(m_ptoolbar)
+        m_ptoolbar->SetToolShowCount( count);
+}
+
+int ocpnFloatingToolbarDialog::GetToolShowCount( void )
+{
+    if(m_ptoolbar)
+        return m_ptoolbar->GetToolShowCount();
+    else
+        return 0;
 }
 
 void ocpnFloatingToolbarDialog::SetBackGroundColorString( wxString colorRef )
@@ -1748,6 +1774,7 @@ void ocpnToolBarSimple::Init()
 
     m_last_plugin_down_id = -1;
     m_leftDown = false;
+    m_nShowTools = 0;
     
     EnableTooltips();
 }
@@ -1808,7 +1835,8 @@ wxToolBarToolBase *ocpnToolBarSimple::InsertTool( size_t pos, wxToolBarToolBase 
     }
 
     m_tools.Insert( pos, tool );
-
+    m_nShowTools++;
+    
     return tool;
 }
 
@@ -1969,7 +1997,13 @@ bool ocpnToolBarSimple::Realize()
     bool firstNode = true;
     wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
 
+    int iNode = 0;
+    
     while( node ) {
+        
+        if(iNode >= m_nShowTools)
+            break;
+        
         ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
 
         // Set the tool size to be the size of the first non-separator tool, usually the first one
@@ -1988,11 +2022,13 @@ bool ocpnToolBarSimple::Realize()
         
         if( tool->IsSeparator() ) {
             if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) {
-                if( m_currentRowsOrColumns >= m_maxCols ) m_lastY += separatorSize;
+                if( m_currentRowsOrColumns >= m_maxCols )
+                    m_lastY += separatorSize;
                 else
                     m_lastX += separatorSize;
             } else {
-                if( m_currentRowsOrColumns >= m_maxRows ) m_lastX += separatorSize;
+                if( m_currentRowsOrColumns >= m_maxRows )
+                    m_lastX += separatorSize;
                 else
                     m_lastY += separatorSize;
             }
@@ -2011,8 +2047,7 @@ bool ocpnToolBarSimple::Realize()
                     tool->m_y = (wxCoord) m_lastY;
 
                     tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2,
-                            m_style->GetTopMargin() );
+                    tool->trect.Inflate( m_style->GetToolSeparation() / 2, m_style->GetTopMargin() );
 
                     m_lastX += toolSize.x + m_style->GetToolSeparation();
                 } else {
@@ -2028,8 +2063,7 @@ bool ocpnToolBarSimple::Realize()
                     tool->m_y = (wxCoord) m_lastY;
 
                     tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2,
-                            m_style->GetTopMargin() );
+                    tool->trect.Inflate( m_style->GetToolSeparation() / 2,  m_style->GetTopMargin() );
 
                     m_lastY += toolSize.y + m_style->GetToolSeparation();
                 }
@@ -2039,22 +2073,23 @@ bool ocpnToolBarSimple::Realize()
                     tool->m_x = (wxCoord) ( m_lastX );
                     tool->m_y = (wxCoord) ( m_lastY - ( m_style->GetTopMargin() / 2 ) );
 
-                    tool->trect = wxRect( tool->m_x, tool->m_y, tool->GetWidth(),
-                            tool->GetHeight() );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2,
-                            m_style->GetTopMargin() );
-                    ;
+                    tool->trect = wxRect( tool->m_x, tool->m_y, tool->GetWidth(), tool->GetHeight() );
+                    tool->trect.Inflate( m_style->GetToolSeparation() / 2, m_style->GetTopMargin() );
+                    
 
                     wxSize s = tool->GetControl()->GetSize();
                     m_lastX += s.x + m_style->GetToolSeparation();
 
                 }
 
-        if( m_lastX > m_maxWidth ) m_maxWidth = m_lastX;
-        if( m_lastY > m_maxHeight ) m_maxHeight = m_lastY;
+        if( m_lastX > m_maxWidth ) 
+            m_maxWidth = m_lastX;
+        if( m_lastY > m_maxHeight ) 
+            m_maxHeight = m_lastY;
 
         lastTool = tool;
         node = node->GetNext();
+        iNode++;
     }
     if( lastTool && (m_LineCount > 1 || IsVertical()) )
         lastTool->lastInLine = true;
@@ -2091,8 +2126,7 @@ void ocpnToolBarSimple::OnPaint( wxPaintEvent& WXUNUSED(event) )
     if( count > 0 ) return;
     count++;
 
-    for( wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst(); node;
-            node = node->GetNext() ) {
+    for( wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst(); node; node = node->GetNext() ) {
         wxToolBarToolBase *tool = node->GetData();
         ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
         wxRect toolRect = tools->trect;
@@ -2801,7 +2835,8 @@ wxToolBarToolBase *ocpnToolBarSimple::InsertSeparator( size_t pos )
     }
 
     m_tools.Insert( pos, tool );
-
+    m_nShowTools++;
+    
     return tool;
 }
 

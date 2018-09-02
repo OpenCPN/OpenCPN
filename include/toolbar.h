@@ -135,9 +135,9 @@ public:
       virtual void OnMouseEnter( int toolid );
       virtual void DoPluginToolUp();
 
-      size_t GetToolsCount() const {
-            return m_tools.GetCount();
-      }
+      size_t GetToolsCount() const { return m_tools.GetCount(); }
+      void SetToolShowCount( int count ){ m_nShowTools = count; }
+      int GetToolShowCount(){ return m_nShowTools; }
 
       int GetNoRowsOrColumns() { return m_currentRowsOrColumns; };
       int GetLineCount() { return m_LineCount; };
@@ -317,6 +317,7 @@ protected:
 
       int m_last_plugin_down_id;
       bool m_leftDown;
+      int m_nShowTools;
 
 private:
 DECLARE_EVENT_TABLE()
@@ -383,23 +384,26 @@ public:
       
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
       void SetMinX( int offset ){ m_dock_min_x = offset; }
-      long GetOrient() {
-            return m_orient;
-      }
+      long GetOrient() { return m_orient; }
+      
       void RefreshFadeTimer();
       void SetAutoHideTimer(int time);
       void SetAutoHide( bool hide ){ m_bAutoHideToolbar = hide; }
+      
+      size_t GetToolCount();
+      void SetToolShowMask( wxString mask );
+      wxString GetToolShowMask( void ){ return m_toolShowMask; }
+      
+      void SetToolShowCount( int count );
+      int GetToolShowCount( void );
       
       bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
       bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
       ocpnToolBarSimple *CreateMyToolbar();
       
-      int GetDockX() {
-            return m_dock_x;
-      }
-      int GetDockY() {
-            return m_dock_y;
-      }
+      int GetDockX() { return m_dock_x; }
+      int GetDockY() { return m_dock_y; }
+      
       bool toolbarConfigChanged;
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
@@ -451,6 +455,7 @@ private:
       
       wxString m_backcolorString;
       int m_cornerRadius;
+      wxString m_toolShowMask;
 };
 
 //---------------------------------------------------------------------------
