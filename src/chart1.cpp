@@ -2647,6 +2647,7 @@ EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
+EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
 #ifdef wxHAS_POWER_EVENTS
 EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
 EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
@@ -2691,6 +2692,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //      Redirect the Bells timer to this frame
     BellsTimer.SetOwner( this, BELLS_TIMER );
 
+    //      Direct the Toolbar Animation timer to this frame
+    ToolbarAnimateTimer.SetOwner( this, TOOLBAR_ANIMATE_TIMER );
+    
 #ifdef __OCPN__ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
 //    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler( MyFrame::OnPreferencesResultTimer ), NULL, this );
@@ -4283,7 +4287,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MASTERTOGGLE:{
             g_bmasterToolbarFull = !g_bmasterToolbarFull;
-            RequestNewMasterToolbar(true);
+
+            m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
+            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+            
             break;
         }
             
@@ -4372,6 +4379,32 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
+{
+    if(g_bmasterToolbarFull){
+        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount()){
+            m_nMasterToolCountShown++;
+            g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+            g_MainToolbar->Realize();
+            
+            //  Add a slight "easing" function by adjusting the timer trigger value
+            float t = m_nMasterToolCountShown / (float)g_MainToolbar->GetToolCount();
+            float nt = t*t*t*50;
+            int next_time = (int) wxRound(nt);
+            ToolbarAnimateTimer.Start( next_time, wxTIMER_ONE_SHOT );
+        }
+    }
+    else{
+        if(m_nMasterToolCountShown > 1){
+            m_nMasterToolCountShown--;
+            g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+            g_MainToolbar->Realize();
+            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+        }
+    }
+}
+
 
 void MyFrame::InvalidateAllGL()
 {

@@ -521,6 +521,9 @@ class MyFrame: public wxFrame
     void SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx);
 
     bool GetMasterToolItemShow( int toolid );
+    void OnToolbarAnimateTimer( wxTimerEvent& event );
+    
+    
     
     int                 m_StatusBarFieldCount;
 
@@ -561,6 +564,8 @@ class MyFrame: public wxFrame
     
     time_t              m_last_track_rotation_ts;
     wxRect              m_mainlast_tb_rect;
+    wxTimer             ToolbarAnimateTimer;
+    int                 m_nMasterToolCountShown;
     
     DECLARE_EVENT_TABLE()
 };
@@ -609,7 +614,8 @@ enum {
     MEMORY_FOOTPRINT_TIMER,
     BELLS_TIMER,
     ID_NMEA_THREADMSG,
-    RESIZE_TIMER
+    RESIZE_TIMER,
+    TOOLBAR_ANIMATE_TIMER
 
 };
 
