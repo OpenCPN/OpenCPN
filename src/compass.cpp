@@ -43,9 +43,11 @@ extern int g_SatsInView;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
-ocpnCompass::ocpnCompass( ChartCanvas *parent)
+ocpnCompass::ocpnCompass( ChartCanvas *parent, bool bShowGPS)
 {
     m_parent = parent;
+    m_bshowGPS = bShowGPS;
+    
      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
      _img_compass = style->GetIcon( _T("CompassRose") );
      _img_gpsRed = style->GetIcon( _T("gpsRed") );
@@ -259,7 +261,10 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     if( !b_need_refresh )
         return;
 
-    int width = compassBg.GetWidth() + gpsBg.GetWidth() + leftmargin;
+    int width = compassBg.GetWidth();
+    if(m_bshowGPS)
+        width += gpsBg.GetWidth() + leftmargin;
+    
     if( !style->marginsInvisible ) 
         width += leftmargin + style->GetToolSeparation();
         
@@ -343,30 +348,32 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     m_rose_angle = rose_angle;
 
-    //  GPS Icon
-    int twidth = style->GetToolSize().x * m_scale;
-    int theight = style->GetToolSize().y * m_scale;
-    theight = wxMin(cheight, compassBg.GetHeight());
-    int swidth = wxMax( twidth, theight );
-    int sheight = wxMin( twidth, theight );
-    
-    //  Sometimes, the SVG renderer gets the size wrong due to some internal rounding error.
-    //  If so found, it seems to work OK by just reducing the requested size by one pixel....
-    wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
-    if( gicon.GetHeight() != sheight )
-        gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
+    if(m_bshowGPS){
+        //  GPS Icon
+        int twidth = style->GetToolSize().x * m_scale;
+        int theight = style->GetToolSize().y * m_scale;
+        theight = wxMin(cheight, compassBg.GetHeight());
+        int swidth = wxMax( twidth, theight );
+        int sheight = wxMin( twidth, theight );
+        
+        //  Sometimes, the SVG renderer gets the size wrong due to some internal rounding error.
+        //  If so found, it seems to work OK by just reducing the requested size by one pixel....
+        wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
+        if( gicon.GetHeight() != sheight )
+            gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
 
-    if( style->HasBackground() ) {
-        iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
-    } else {
-        iconBm = gicon;
+        if( style->HasBackground() ) {
+            iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
+        } else {
+            iconBm = gicon;
+        }
+        
+        iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
+        mdc.DrawBitmap( iconBm, offset );
+        mdc.SelectObject( wxNullBitmap );
+        
+        m_lastgpsIconName = gpsIconName;
     }
-    
-    iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
-    mdc.DrawBitmap( iconBm, offset );
-    mdc.SelectObject( wxNullBitmap );
-    
-    m_lastgpsIconName = gpsIconName;
 
 #if defined(ocpnUSE_GLES)   // GLES does not do ocpnDC::DrawBitmap(), so use texture
     if(g_bopengl){

@@ -746,6 +746,7 @@ bool             b_reloadForPlugins;
 unsigned int     g_canvasConfig;
 bool             g_useMUI;
 bool             g_bmasterToolbarFull = true;
+bool             g_bEffects = true;
 
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
@@ -3069,7 +3070,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
     
             cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
             
-            cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
+            //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
             //cc->m_bFollow = pConfig->st_bFollow;               // set initial state
             //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
             //cc->SetToolbarConfigString(g_toolbarConfig);
@@ -3094,7 +3095,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
+           //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
            //cc->m_bFollow = pConfig->st_bFollow;               // set initial state
            //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc->SetToolbarConfigString(g_toolbarConfig);
@@ -3102,6 +3103,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
+           cc->SetShowGPS( false);
            
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
@@ -3130,7 +3132,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(1));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
+           //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
            //cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
            //cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc2->SetToolbarConfigString(g_toolbarConfig);

@@ -30,7 +30,7 @@ class ChartCanvas;
 class ocpnCompass
 {
 public:
-      ocpnCompass(ChartCanvas *parent);
+      ocpnCompass(ChartCanvas *parent, bool bShowGPS = true);
       ~ocpnCompass();
 
       bool IsShown() const { return m_shown; }
@@ -67,6 +67,8 @@ private:
 
       wxRect m_rect;
       bool m_shown;
+      bool m_bshowGPS;
+      
 #ifdef ocpnUSE_GL
       unsigned int texobj;
 #endif

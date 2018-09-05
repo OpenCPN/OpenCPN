@@ -307,7 +307,7 @@ public:
       int AdjustQuiltRefChart( void );
       void ToggleCourseUp( );
       void ToggleLookahead( );
-      
+      void SetShowGPS( bool show );
  
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
@@ -801,6 +801,8 @@ private:
       int         menu_selected_dbIndex, menu_selected_index;
       
       ocpnCompass *m_Compass;
+      bool         m_bShowGPS;
+      
       wxRect       m_mainlast_tb_rect;
       int          m_restore_dbindex;
       int          m_restore_group;

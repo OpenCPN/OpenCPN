@@ -499,6 +499,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bShowDepthUnits = true;
     m_encDisplayCategory = (int)STANDARD;
     
+    m_bShowGPS = true;
+    
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
@@ -957,6 +959,17 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 
     m_bCourseUp = pcc->bCourseUp;
     m_bLookAhead = pcc->bLookahead;
+}
+
+void ChartCanvas::SetShowGPS( bool bshow )
+{
+    if(m_bShowGPS != bshow){
+        delete m_Compass;
+        m_Compass = new ocpnCompass( this, bshow );
+        m_Compass->Show(pConfig->m_bShowCompassWin);
+    }
+    m_bShowGPS = bshow;
+    
 }
 
 void ChartCanvas::SetToolbarEnable( bool bShow )
