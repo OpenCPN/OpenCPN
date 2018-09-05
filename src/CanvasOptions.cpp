@@ -83,7 +83,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
-    SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
+    //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
     wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, mstyle);
     
@@ -222,6 +222,10 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     
     topsizer->Fit( this );
     
+}
+
+void CanvasOptions::OnEraseBackground( wxEraseEvent& event )
+{
 }
 
 

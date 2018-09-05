@@ -56,6 +56,7 @@
 //------------------------------------------------------------------------------
 
 extern OCPNPlatform              *g_Platform;
+extern bool                      g_bEffects;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -71,7 +72,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
     #endif // ocpnUSE_SVG
 }
 
-double getValue(int animationType, double animateStep, double animateSteps);
+double getValue(int animationType, double t);
 
 
 //  Helper classes
@@ -330,6 +331,7 @@ void MUIButton::OnEraseBackground( wxEraseEvent& event )
 
 
 #define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
+#define CANVAS_OPTIONS_TIMER 801
 
 //------------------------------------------------------------------------------
 //          MUIBar Window Implementation
@@ -339,6 +341,7 @@ EVT_TIMER ( CANVAS_OPTIONS_ANIMATION_TIMER_1, MUIBar::onCanvasOptionsAnimationTi
 EVT_PAINT ( MUIBar::OnPaint )
 EVT_SIZE( MUIBar::OnSize )
 EVT_MENU(-1, MUIBar::OnToolLeftClick)
+EVT_TIMER(CANVAS_OPTIONS_TIMER, MUIBar::CaptureCanvasOptionsBitmapChain)
 
 END_EVENT_TABLE()
 
@@ -384,6 +387,11 @@ void MUIBar::Init()
     m_backcolorString = _T("GREY3");
     m_scaleTextBox = NULL;
     
+    m_COTopOffset = 60;  //  TODO should be below GPS/Compass
+    
+    CanvasOptionTimer.SetOwner( this, CANVAS_OPTIONS_TIMER );
+    
+    //CaptureCanvasOptionsBitmap();
 }
 
 void MUIBar::CreateControls()
@@ -596,7 +604,6 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
                 m_canvasOptions = new CanvasOptions(m_parent);
                 
                 // calculate best size for CanvasOptions dialog
-                m_COTopOffset = 60;  //  TODO should be below GPS/Compass
                 
                 wxPoint parentClientUpperRight = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, 0));
                 wxRect rmui = m_parentCanvas->GetMUIBarRect();
@@ -616,11 +623,24 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
                 m_canvasOptions->Move(m_currentCOPos);
                 m_canvasOptions->Hide();
             }
-            
+
+           
             if(m_canvasOptions->IsShown())
-                PushCanvasOptions();
-            else
+                PushCanvasOptions();            // hide it
+            else{
+                // Grab the backing bitmap
+                
+                int overShoot_x = m_canvasOptions->GetSize().x * 2 / 10;    //20%
+                m_backingPoint = wxPoint(m_capturePoint.x - overShoot_x, m_capturePoint.y);
+                
+                m_backingBitmap = wxBitmap(m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, -1);
+                wxMemoryDC mdcb;
+                mdcb.SelectObject(m_backingBitmap);
+                wxScreenDC sdc;
+                mdcb.Blit(0, 0, m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, &sdc, m_capturePoint.x - overShoot_x, m_capturePoint.y, wxCOPY); 
+                mdcb.SelectObject(wxNullBitmap);
                 PullCanvasOptions();
+            }
             break;
         }
         
@@ -629,6 +649,64 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
     }        
 }
 
+void MUIBar::CaptureCanvasOptionsBitmap()
+{
+    m_coSequence = 0;
+    CanvasOptionTimer.Start(100, wxTIMER_ONE_SHOT );
+}
+    
+    
+
+void MUIBar::CaptureCanvasOptionsBitmapChain( wxTimerEvent& event )
+{
+    if(m_coSequence == 0){
+        
+        
+        if(!m_canvasOptions)
+            m_canvasOptions = new CanvasOptions(m_parent);
+        
+        wxPoint parentClientUpperRight = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, 0));
+        wxRect rmui = m_parentCanvas->GetMUIBarRect();
+        int size_y = rmui.y - (parentClientUpperRight.y + m_COTopOffset);
+        size_y -= GetCharHeight();
+        size_y = wxMax(size_y, 100);            // ensure always big enough to see
+        m_capture_size_y = size_y;
+        
+        m_canvasOptions->SetSize(wxSize(-1, size_y));
+        
+        m_capturePoint = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, m_COTopOffset));
+        m_canvasOptions->Move(m_capturePoint);
+        m_canvasOptions->Show();
+        
+        m_coSequence++;
+        CanvasOptionTimer.Start(1, wxTIMER_ONE_SHOT );
+    }
+    
+    else if(m_coSequence == 1){
+        m_capturePoint = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x - m_canvasOptionsFullSize.x, m_COTopOffset));
+        m_canvasOptions->Move(m_capturePoint);
+        
+        m_coSequence++;
+        CanvasOptionTimer.Start(1, wxTIMER_ONE_SHOT );
+    }
+    
+    else if(m_coSequence == 2){
+        m_animateBitmap = wxBitmap(m_canvasOptions->GetSize().x, m_capture_size_y, -1);
+        wxMemoryDC mdc(m_animateBitmap);
+        
+        wxScreenDC sdc;
+        
+        mdc.Blit(0, 0, m_canvasOptions->GetSize().x, m_capture_size_y, &sdc, m_capturePoint.x, m_capturePoint.y, wxCOPY); 
+        mdc.SelectObject(wxNullBitmap);
+        
+        //delete m_canvasOptions;
+        //m_canvasOptions = NULL;
+    }
+    
+}
+    
+    
+    
 
 void MUIBar::OnEraseBackground( wxEraseEvent& event )
 {
@@ -663,15 +741,30 @@ void MUIBar::ResetCanvasOptions()
     
 void MUIBar::PullCanvasOptions()
 {
+    //  Target position
+    int cox = m_parent->GetSize().x - m_canvasOptionsFullSize.x;
+    int coy = m_COTopOffset;
+        m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
+
+    if(!g_bEffects){
+        m_canvasOptions->Move(m_targetCOPos);
+        m_canvasOptions->Show();
+        return;
+    }
+    
+    //  Capture the animation bitmap, if required..
+    
+    if(!m_animateBitmap.IsOk()){
+        m_canvasOptions->Move(m_targetCOPos);
+        m_canvasOptions->Show();
+        CaptureCanvasOptionsBitmap();
+        return;
+    }
+        
+        
+    
     //  Setup animation parameters
     
-    //  Target position
-    int cox = m_parent->GetSize().x - m_canvasOptionsFullSize.x; //m_canvasOptions->GetSize().x;
-    int coy = m_COTopOffset;
-    if(1)
-        m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
-    else
-        m_targetCOPos = wxPoint(cox, coy);
     
     //  Start Position
     m_startCOPos = m_canvasOptions->GetPosition();
@@ -680,9 +773,14 @@ void MUIBar::PullCanvasOptions()
     m_currentCOPos = m_startCOPos;
     
     //  Animation type
-    m_animationType = CO_ANIMATION_LINEAR;
-    m_animateSteps = 20; 
-    m_animationTotalTime = 100;  // msec
+//    m_animationType = CO_ANIMATION_CUBIC_BOUNCE_IN;
+//    m_animateSteps = 50; 
+//    m_animationTotalTime = 1000;  // msec
+    
+    m_animationType = CO_ANIMATION_CUBIC_BACK_IN;
+    m_animateSteps = 50; 
+    m_animationTotalTime = 200;  // msec
+    
     m_pushPull = CO_PULL;
     ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
     pcc->m_b_paint_enable = false;
@@ -690,13 +788,21 @@ void MUIBar::PullCanvasOptions()
     // Start the animation....
     m_animateStep = 0;
     m_canvasOptionsAnimationTimer.Start(10, true);
-    m_canvasOptions->Show();
+    //m_canvasOptions->Show();
+    m_canvasOptions->Move(m_targetCOPos);
+    m_canvasOptions->Hide();
+    
 }
 
 
 
 void MUIBar::PushCanvasOptions()
 {
+    if(!g_bEffects){
+        m_canvasOptions->Hide();
+        return;
+    }
+    
     //  Setup animation parameters
     
     //  Target position
@@ -731,7 +837,9 @@ void MUIBar::PushCanvasOptions()
 
 void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
 {
-    double valueX = getValue(m_animationType, m_animateStep, m_animateSteps);
+    double progress = m_animateStep / (double) m_animateSteps;
+    double valueX = getValue(m_animationType, progress);
+    
     double dx = (m_targetCOPos.x - m_startCOPos.x) * valueX;
     
     wxPoint newPos = wxPoint(m_startCOPos.x + dx, m_currentCOPos.y);
@@ -742,19 +850,36 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
     else
         size_x = (m_targetCOPos.x - m_startCOPos.x) - abs(dx);
     
-    m_canvasOptions->SetSize(newPos.x, newPos.y, size_x, wxDefaultCoord, wxSIZE_USE_EXISTING);
-    m_canvasOptions->GetSizer()->Layout();
+    if(0){
+        m_canvasOptions->SetSize(newPos.x, newPos.y, size_x, wxDefaultCoord, wxSIZE_USE_EXISTING);
+        m_canvasOptions->GetSizer()->Layout();
+    }
+    else{
+        m_canvasOptions->Hide();
+        wxScreenDC sdc;
+        
+         if(1/*m_pushPull == CO_PULL*/){
+            //  restore Backing bitmap, to cover any overshoot
+            wxMemoryDC mdc_back(m_backingBitmap);
+            sdc.Blit(m_backingPoint.x, m_backingPoint.y, m_backingBitmap.GetWidth() - size_x, m_backingBitmap.GetHeight(), &mdc_back, 0, 0, wxCOPY); 
+        }
+        
+         wxMemoryDC mdc(m_animateBitmap);
+         sdc.Blit(newPos.x, newPos.y, size_x, m_animateBitmap.GetHeight(), &mdc, 0, 0, wxCOPY); 
+         mdc.SelectObject(wxNullBitmap);
+        
+    }
     
-    //m_canvasOptions->Move(newPos);
     m_currentCOPos = newPos;
-    m_canvasOptions->Show();
+//    m_canvasOptions->Show();
     
     double dt = m_animationTotalTime / m_animateSteps;
     
-    if(m_animateStep++ < m_animateSteps)
+    if(m_animateStep++ < m_animateSteps){
         m_canvasOptionsAnimationTimer.Start(dt, true);
+    }
     else{
-        m_canvasOptions->Move(m_targetCOPos);
+        //m_canvasOptions->Move(m_targetCOPos);
         m_currentCOPos = m_targetCOPos;
         m_canvasOptions->Show(m_pushPull == CO_PULL);
         
@@ -765,20 +890,53 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
             delete m_canvasOptions;
             m_canvasOptions = NULL;
         }
+        pcc->Refresh();
         
     }
     
 }
 
 //   Animation support 
-double getValue(int animationType, double animateStep, double animateSteps)
+
+double bounceMaker(double t, double c, double a)
+{
+    if (t == 1.0) return c;
+    if (t < (4/11.0)) {
+        return c*(7.5625*t*t);
+    } else if (t < (8/11.0)) {
+        t -= (6/11.0);
+        return -a * (1. - (7.5625*t*t + .75)) + c;
+    } else if (t < (10/11.0)) {
+        t -= (9/11.0);
+        return -a * (1. - (7.5625*t*t + .9375)) + c;
+    } else {
+        t -= (21/22.0);
+        return -a * (1. - (7.5625*t*t + .984375)) + c;
+    }
+}
+
+double getValue(int animationType, double t)
 {
     double value = 0;
+    double s = 1;
+    
     switch (animationType){
         case CO_ANIMATION_LINEAR:
         default:
-            value = animateStep / animateSteps;
+            value = t;
             break;
+        case CO_ANIMATION_CUBIC:
+            value = t*t*t;
+            break;
+        case CO_ANIMATION_CUBIC_BOUNCE_IN:
+            value = bounceMaker(t, 1, s);
+            break;
+    
+        case CO_ANIMATION_CUBIC_BACK_IN:
+            double tp = t - 1.0;
+            value = tp*tp*((s+1)*tp+ s) + 1;
+            break;
+            
     }
     
     return value;

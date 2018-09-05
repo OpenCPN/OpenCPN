@@ -71,6 +71,7 @@ public:
     
     void RefreshControlValues( void );
     void UpdateCanvasOptions( void );
+    void OnEraseBackground( wxEraseEvent& event );
     
 private:
     int m_style;

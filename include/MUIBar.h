@@ -41,6 +41,10 @@ enum
     
 enum{
     CO_ANIMATION_LINEAR = 0,
+    CO_ANIMATION_QUADRATIC,
+    CO_ANIMATION_CUBIC,
+    CO_ANIMATION_CUBIC_BOUNCE_IN,
+    CO_ANIMATION_CUBIC_BACK_IN,
     CO_PULL,
     CO_PUSH
 };
@@ -81,6 +85,9 @@ private:
     void PullCanvasOptions();
     void PushCanvasOptions();
     
+    void CaptureCanvasOptionsBitmap();
+    void CaptureCanvasOptionsBitmapChain( wxTimerEvent& event );
+    
     ChartCanvas *m_parentCanvas;
     int         m_orientation;
     
@@ -106,6 +113,14 @@ private:
     int         m_pushPull;
     
     wxString    m_backcolorString;
+    wxBitmap    m_animateBitmap;
+    wxBitmap    m_backingBitmap;
+    wxTimer     CanvasOptionTimer;
+    int         m_coSequence;
+    int         m_capture_size_y;
+    wxPoint     m_capturePoint;
+    wxPoint     m_backingPoint;
+    
     
 DECLARE_EVENT_TABLE()
 };
