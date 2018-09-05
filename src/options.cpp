@@ -2891,9 +2891,9 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                _("De-skew Raster Charts"));
     boxCharts->Add(pSkewComp, inputFlags);
 
-    pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                      _("Disable Full Screen Quilting"));
-    boxCharts->Add(pFullScreenQuilt, inputFlags);
+//     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                       _("Disable Full Screen Quilting"));
+//     boxCharts->Add(pFullScreenQuilt, inputFlags);
 
 //     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
 //                                        _("Suppress blur/fog effects on overzoom"));
@@ -3046,9 +3046,9 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                _("Show Skewed Raster Charts as North-Up"));
     boxCharts->Add(pSkewComp, verticleInputFlags);
 
-    pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                      _("Disable Full Screen Quilting"));
-    boxCharts->Add(pFullScreenQuilt, verticleInputFlags);
+//     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                       _("Disable Full Screen Quilting"));
+//     boxCharts->Add(pFullScreenQuilt, verticleInputFlags);
 
 //     pOverzoomEmphasis =
 //         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
@@ -5117,7 +5117,7 @@ void options::SetInitialSettings(void) {
 
   if(pCDOOutlines) pCDOOutlines->SetValue(g_bShowOutlines);
   if(pCDOQuilting) pCDOQuilting->SetValue(g_bQuiltEnable);
-  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
+//  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
   if(pSDepthUnits) pSDepthUnits->SetValue(g_bShowDepthUnits);
   if(pSkewComp) pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
@@ -6207,7 +6207,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 //     cc1->ReloadVP(); /* compose the quilt */
     g_bQuiltEnable = temp_bquilting;
   }
-  g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
+//  g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
 
   if(pSDepthUnits) g_bShowDepthUnits = pSDepthUnits->GetValue();
   g_bskew_comp = pSkewComp->GetValue();

@@ -500,6 +500,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encDisplayCategory = (int)STANDARD;
     
     m_bShowGPS = true;
+    SetQuiltMode(true);
     
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
