@@ -487,12 +487,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bShowScaleInStatusBar = true;
     
     m_muiBar = NULL;
-    if(g_useMUI){
-        m_muiBar = new MUIBar(this, wxHORIZONTAL);
-        m_muiBarHOSize = m_muiBar->GetSize();
-        
-        m_bShowScaleInStatusBar = false;
-    }
+    m_bShowScaleInStatusBar = false;
 
     m_bShowOutlines = false;
     m_bDisplayGrid = false;
@@ -6072,10 +6067,10 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     }
     
     //  if MUIBar is active, size the bar
-    if(g_useMUI && !m_muiBar){                          // rebuild if necessary
-        m_muiBar = new MUIBar(this, wxHORIZONTAL);
-        m_muiBarHOSize = m_muiBar->GetSize();
-    }
+//     if(g_useMUI && !m_muiBar){                          // rebuild if necessary
+//         m_muiBar = new MUIBar(this, wxHORIZONTAL);
+//         m_muiBarHOSize = m_muiBar->GetSize();
+//     }
     
     
     if(m_muiBar){
@@ -6127,6 +6122,22 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Invalidate the whole window
     ReloadVP();
 }
+
+void ChartCanvas::CreateMUIBar()
+{
+    if(g_useMUI && !m_muiBar){                          // rebuild if necessary
+        m_muiBar = new MUIBar(this, wxHORIZONTAL);
+        m_muiBarHOSize = m_muiBar->GetSize();
+    }
+    
+    
+    if(m_muiBar){
+        SetMUIBarPosition();
+        m_muiBar->Raise();
+    }
+    
+}
+
 
 void ChartCanvas::SetMUIBarPosition()
 {
@@ -9863,7 +9874,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     
     if(m_muiBar){
-        //m_muiBar->Raise();
         m_muiBar->Refresh();
     }
     

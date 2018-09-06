@@ -2137,7 +2137,7 @@ bool MyApp::OnInit()
     wxLogMessage(fmsg);
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
-
+    
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
 
@@ -3019,12 +3019,12 @@ void MyFrame::CancelAllMouseRoute()
 
 void MyFrame::NotifyChildrenResize()
 {
-    // ..For each canvas...
-    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if(cc)
-            cc->DestroyMuiBar();                // A new one will automatically be recreated.
-    }
+//    // ..For each canvas...
+//    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+//        ChartCanvas *cc = g_canvasArray.Item(i);
+//         if(cc)
+//             cc->DestroyMuiBar();                // A new one will automatically be recreated.
+//    }
 }
     
 void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
@@ -5605,6 +5605,13 @@ int MyFrame::DoOptionsDialog()
         // so that the toolbars will be sized correctly
         wxYield();
         
+        // ..For each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc)
+                cc->CreateMUIBar();  
+        }
+        
         rr |= GENERIC_CHANGED;
         
         if(g_bopengl)           // Force mark/waypoint icon reload
@@ -6332,6 +6339,12 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             InitTimer.Stop(); // Initialization complete
             g_bDeferredInitDone = true;
             
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc)
+                    cc-> CreateMUIBar();
+            }
+                
             if(b_reloadForPlugins)
                 ChartsRefresh();
 

@@ -442,6 +442,7 @@ public:
       wxRect GetMUIBarRect();
       void SetMUIBarPosition();
       void DestroyMuiBar();
+      void CreateMUIBar();
       
       
       void ToggleChartOutlines(void);
