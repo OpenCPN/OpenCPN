@@ -105,7 +105,6 @@ public:
     
     void OnSize( wxSizeEvent& event );
     void OnPaint( wxPaintEvent& event );
-    void OnEraseBackground( wxEraseEvent& event );
     void OnLeftDown( wxMouseEvent& event );
     void OnLeftUp( wxMouseEvent& event );
     
@@ -136,7 +135,6 @@ BEGIN_EVENT_TABLE( MUIButton, wxWindow )
 
 EVT_SIZE( MUIButton::OnSize )
 EVT_PAINT( MUIButton::OnPaint )
-EVT_ERASE_BACKGROUND( MUIButton::OnEraseBackground )
 EVT_LEFT_DOWN( MUIButton::OnLeftDown )
 EVT_LEFT_UP( MUIButton::OnLeftUp )
 
@@ -184,7 +182,7 @@ void MUIButton::CreateControls()
     wxColour backColor = GetGlobalColor( _("GREY3"));
     SetBackgroundColour(backColor);
     
-    this->SetFont(wxFont(8, wxSWISS, wxNORMAL, wxBOLD, false, wxT("Tahoma")));
+    this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxT("Tahoma")));
 }
 
 
@@ -256,7 +254,7 @@ void MUIButton::OnPaint( wxPaintEvent& event )
     wxPaintDC dc( this );
     
     if(m_bitmap.IsOk()){
-        dc.DrawBitmap(m_bitmap, 0, 0);
+        dc.DrawBitmap(m_bitmap, 0, 0, true);
     }
     
         
@@ -322,9 +320,6 @@ void MUIButton::OnLeftUp( wxMouseEvent& event )
 }
 #endif
 
-void MUIButton::OnEraseBackground( wxEraseEvent& event )
-{
-}
 
 
 
@@ -338,7 +333,7 @@ void MUIButton::OnEraseBackground( wxEraseEvent& event )
 //------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(MUIBar, wxDialog)
 EVT_TIMER ( CANVAS_OPTIONS_ANIMATION_TIMER_1, MUIBar::onCanvasOptionsAnimationTimerEvent )
-EVT_PAINT ( MUIBar::OnPaint )
+//EVT_PAINT ( MUIBar::OnPaint )
 EVT_SIZE( MUIBar::OnSize )
 EVT_MENU(-1, MUIBar::OnToolLeftClick)
 EVT_TIMER(CANVAS_OPTIONS_TIMER, MUIBar::CaptureCanvasOptionsBitmapChain)
@@ -351,7 +346,6 @@ MUIBar::MUIBar()
 }
 
 MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-        : wxDialog()
 {
     m_parentCanvas = parent;
     m_orientation = orientation;
@@ -414,10 +408,10 @@ void MUIBar::CreateControls()
         // Buttons
         
         m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("MUI_zoom-in.svg"));
-        barSizer->Add(m_zinButton, 1, wxSHAPED);
+        barSizer->Add(m_zinButton, 1);
     
         m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("MUI_zoom-out.svg"));
-        barSizer->Add(m_zoutButton, 1, wxSHAPED);
+        barSizer->Add(m_zoutButton, 1);
     
         barSizer->AddSpacer(2);
         
@@ -437,7 +431,7 @@ void MUIBar::CreateControls()
         barSizer->AddSpacer(2);
         
         m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("MUI_menu.svg"));
-        barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
+        barSizer->Add(m_menuButton, 1,  wxSHAPED);
     }
     else{
         topSizer = new wxBoxSizer(wxVERTICAL);
@@ -715,12 +709,14 @@ void MUIBar::OnEraseBackground( wxEraseEvent& event )
 
 void MUIBar::OnPaint( wxPaintEvent& event )
 {
+    return;
+    
     int width, height;
     GetClientSize( &width, &height );
     wxPaintDC dc( this );
    
-    dc.SetBackgroundMode(wxTRANSPARENT);
-    dc.SetBackground(*wxTRANSPARENT_BRUSH);
+//    dc.SetBackgroundMode(wxTRANSPARENT);
+//    dc.SetBackground(*wxTRANSPARENT_BRUSH);
     
 //     dc.SetPen( *wxTRANSPARENT_PEN );
 //     dc.SetBrush( *wxTRANSPARENT_BRUSH );
@@ -728,9 +724,10 @@ void MUIBar::OnPaint( wxPaintEvent& event )
     
     wxColour backColor = GetGlobalColor( m_backcolorString );
     
-    dc.SetBrush( wxBrush( wxColour(200, 200, 200)) );
+    
+    dc.SetBrush( wxBrush( backColor/*wxColour(200, 200, 200)*/) );
     dc.SetPen( wxPen( backColor) );
-//    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );
+    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );
 }
 
 void MUIBar::ResetCanvasOptions()
