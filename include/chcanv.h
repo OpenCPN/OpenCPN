@@ -48,12 +48,12 @@
 #include "emboss_data.h"
 #include "S57Sector.h"
 #include "gshhs.h"
+#include "MUIBar.h"
 
 class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
 class ocpnCompass;
-class MUIBar;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -469,6 +469,8 @@ public:
       
       bool GetCourseUP(){ return m_bCourseUp; }
       bool GetLookahead(){ return m_bLookAhead; }
+      
+      MUIBar *GetMUIBar(){ return m_muiBar; }
       
 private:
       bool UpdateS52State();
