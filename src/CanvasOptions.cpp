@@ -99,8 +99,8 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     int group_item_spacing = 0;
     int interGroupSpace = border_size * 2;
     
-     wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
-     wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+    wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
+    wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
     
     wxScrolledWindow *pDisplayPanel = m_sWindow;
 
@@ -110,9 +110,9 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     
     //  Options Label
     wxStaticText* optionsLabelBox = new wxStaticText(pDisplayPanel, wxID_ANY, _("Chart Panel Options"));
-    generalSizer->Add(optionsLabelBox, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
+    generalSizer->Add(optionsLabelBox, 0, wxALL | wxEXPAND , border_size);
     wxStaticLine *m_staticLine121 = new wxStaticLine(pDisplayPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-    generalSizer->Add(m_staticLine121, 0, wxALL | wxEXPAND | wxALIGN_CENTER, border_size);
+    generalSizer->Add(m_staticLine121, 0, wxALL | wxEXPAND , border_size);
     
     // spacer
     generalSizer->Add(0, interGroupSpace);
