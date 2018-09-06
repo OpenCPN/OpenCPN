@@ -515,7 +515,9 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( int toolid, wxString tip
 
 void ocpnFloatingToolbarDialog::OnWindowCreate( wxWindowCreateEvent& event )
 {
-    Realize();
+    // At least on MSW, this call leads to recursion and stack overflow.
+    //  Probably not needed any longer
+    //Realize();
 }
 
 void ocpnFloatingToolbarDialog::SetGrabber( wxString icon_name )
