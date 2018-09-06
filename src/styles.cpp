@@ -1175,22 +1175,22 @@ void StyleManager::SetStyle(wxString name)
         }
     }
 
-    if( !ok ) {
+    if( !ok || !currentStyle->graphics ) {
         wxString msg( _T("The requested style was not found: ") );
         msg += name;
         wxLogMessage( msg );
         return;
     }
 
-    if(style) {
-        if( (style->consoleTextBackgroundSize.x) && (style->consoleTextBackgroundSize.y)) {
-            style->consoleTextBackground = style->graphics->GetSubBitmap(
-            wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
+    if(currentStyle) {
+        if( (currentStyle->consoleTextBackgroundSize.x) && (currentStyle->consoleTextBackgroundSize.y)) {
+            currentStyle->consoleTextBackground = currentStyle->graphics->GetSubBitmap(
+                wxRect( currentStyle->consoleTextBackgroundLoc, currentStyle->consoleTextBackgroundSize ) );
         }
     }
 
-    if(style)
-        nextInvocationStyle = style->name;
+    if(currentStyle)
+        nextInvocationStyle = currentStyle->name;
     
     return;
 }
