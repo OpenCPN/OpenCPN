@@ -5857,9 +5857,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         while( rules ){
 
             //  Render a raster or vector symbol, as specified by LUP rules
-            if( rules->razRule->definition.SYDF == 'V' )
-                RenderHPGL( rzRules, rules->razRule, r, vp, angle );
-
+            if( rules->razRule->definition.SYDF == 'V' ){
+                // On OpenGL, arrange to render the drying height "underline" symbol as un-rotated.
+                double dryAngle = 0;
+                if( !m_pdc && !strncmp(rules->razRule->name.SYNM, "SOUNDSA1", 8))
+                    dryAngle = -vp->rotation * 180./PI;
+                RenderHPGL( rzRules, rules->razRule, r, vp, dryAngle );
+            }
             else if( rules->razRule->definition.SYDF == 'R' )
                 RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
 
