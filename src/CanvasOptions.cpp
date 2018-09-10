@@ -170,6 +170,20 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
     pSDepthUnits->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+
+    // AIS Options
+    wxStaticBoxSizer* boxAIS = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("AIS")), wxVERTICAL);
+    generalSizer->Add(boxAIS, 0, wxALL | wxEXPAND, border_size);
+    
+    pCBShowAIS = new wxCheckBox(pDisplayPanel, ID_SHOW_AIS_CHECKBOX, _("Show AIS targets"));
+    boxAIS->Add(pCBShowAIS, verticleInputFlags);
+    pCBShowAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    pCBAttenAIS = new wxCheckBox(pDisplayPanel, ID_ATTEN_AIS_CHECKBOX, _("Hide less critical targets"));
+    boxAIS->Add(pCBAttenAIS, verticleInputFlags);
+    pCBAttenAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    
     
     // spacer
     generalSizer->Add(0, interGroupSpace);
@@ -261,6 +275,10 @@ void CanvasOptions::RefreshControlValues( void )
     pCDOOutlines->SetValue(parentCanvas->GetShowOutlines());
     pSDepthUnits->SetValue(parentCanvas->GetShowDepthUnits());
  
+    // AIS Options
+    pCBShowAIS->SetValue(parentCanvas->GetShowAIS());
+    pCBAttenAIS->SetValue(parentCanvas->GetAttenAIS());
+    
     // Tide/Current
     pCDOTides->SetValue(parentCanvas->GetbShowTide());
     pCDOCurrents->SetValue(parentCanvas->GetbShowCurrent());;
@@ -326,6 +344,16 @@ void CanvasOptions::UpdateCanvasOptions( void )
         b_needRefresh = true;
     }
 
+    if(pCBShowAIS->GetValue() != parentCanvas->GetShowAIS()){
+        parentCanvas->SetShowAIS(pCBShowAIS->GetValue());
+        b_needRefresh = true;
+    }
+    
+    if(pCBAttenAIS->GetValue() != parentCanvas->GetAttenAIS()){
+        parentCanvas->SetAttenAIS(pCBAttenAIS->GetValue());
+        b_needRefresh = true;
+    }
+    
     if(pCDOTides->GetValue() != parentCanvas->GetbShowTide()){
         parentCanvas->ShowTides(pCDOTides->GetValue());
         b_needRefresh = true;

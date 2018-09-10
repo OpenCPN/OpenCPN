@@ -230,7 +230,7 @@ wxString ais_get_short_type(int index);
 
 void AISDrawAreaNotices (ocpnDC& dc, ViewPort &vp, ChartCanvas *cp );
 void AISDraw(ocpnDC& dc, ViewPort &vp, ChartCanvas *cp );
-bool AnyAISTargetsOnscreen( ViewPort &vp );
+bool AnyAISTargetsOnscreen( ChartCanvas *cc, ViewPort &vp );
 
 
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );

@@ -215,7 +215,6 @@ extern bool             bGPSValid;
 extern bool             g_bTempShowMenuBar;
 
 extern AIS_Decoder      *g_pAIS;
-extern bool             g_bShowAIS;
 extern bool             g_bShowAreaNotices;
 extern int              g_Show_Target_Name_Scale;
 
@@ -426,6 +425,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_groupIndex = 0;
     m_singleChart = NULL;
     m_bCourseUp = false;
+    m_bShowAIS = true;
+    m_bShowAISScaled = false;
     
     m_vLat = 0.;
     m_vLon = 0.;
@@ -946,6 +947,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     SetShowGrid( pcc->bShowGrid );
     SetShowOutlines( pcc->bShowOutlines );
 
+    SetShowAIS(pcc->bShowAIS);
+    SetAttenAIS(pcc->bAttenAIS);
+    
     // ENC options
     SetShowENCText( pcc->bShowENCText );
     m_encDisplayCategory = pcc->nENCDisplayCategory;
@@ -3388,7 +3392,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
     //  Handle the AIS Rollover Window first
     bool showAISRollover = false;
-    if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
+    if( g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS ) {
         SelectItem *pFind = pSelectAIS->FindSelection( this, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET );
         if( pFind ) {
             int FoundAIS_MMSI = (wxIntPtr) pFind->m_pData1;
@@ -6986,7 +6990,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         double zlat, zlon;
         GetCanvasPixPoint( x, y, zlat, zlon );
         
-        if(g_bShowAIS){
+        if(m_bShowAIS){
             SelectItem *pFindAIS;
             pFindAIS = pSelectAIS->FindSelection( this, zlat, zlon, SELTYPE_AISTARGET );
         
@@ -7886,7 +7890,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             //      Check to see if there is a route or AIS target under the cursor
             //      If so, start the rollover timer which creates the popup
             bool b_start_rollover = false;
-            if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
+            if( g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS ) {
                 SelectItem *pFind = pSelectAIS->FindSelection( this, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET );
                 if( pFind )
                     b_start_rollover = true;
@@ -8300,7 +8304,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
     std::vector<Ais8_001_22*> area_notices;
 
-    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+    if( g_pAIS && m_bShowAIS && g_bShowAreaNotices ) {
         AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
 
         float vp_scale = GetVPScale();
@@ -11561,8 +11565,18 @@ void ChartCanvas::SetCanvasToolbarItemState( int tool_id, bool state )
 }
 
 
-extern bool     g_bAllowShowScaled;
-extern bool     g_bShowScaled;
+extern bool    g_bAllowShowScaled;
+
+void ChartCanvas::SetShowAIS( bool show )
+{
+    m_bShowAIS = show;
+}
+
+void ChartCanvas::SetAttenAIS( bool show )
+{
+    m_bShowAISScaled = show;
+}
+
 
 void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx)
 {
@@ -11579,7 +11593,7 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx)
     if (StyleIndx == -1){// -1 means coming from toolbar button
         //find current state of switch 
         for ( int i = 1; i < ArraySize; i++){
-            if( (bShowAIS_Array[i] == g_bShowAIS) && (bShowScaled_Array[i] == g_bShowScaled) )
+            if( (bShowAIS_Array[i] == m_bShowAIS) && (bShowScaled_Array[i] == m_bShowAISScaled) )
                 AIS_Toolbar_Switch = i;
         }
         AIS_Toolbar_Switch++; // we did click so continu with next item
@@ -11601,8 +11615,8 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx)
         AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
     
     //Set found values to global and member variables
-    g_bShowAIS = bShowAIS_Array[AIS_Toolbar_Switch];
-    g_bShowScaled = bShowScaled_Array[AIS_Toolbar_Switch];
+    m_bShowAIS = bShowAIS_Array[AIS_Toolbar_Switch];
+    m_bShowAISScaled = bShowScaled_Array[AIS_Toolbar_Switch];
     if( m_toolBar ) {
         m_toolBar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
         if( m_toolBar->m_pTBAISTool ) {
@@ -11628,7 +11642,7 @@ void ChartCanvas::TouchAISToolActive( void )
             wxString iconName = _T("AIS_Normal_Active");
             if( g_pAIS->IsAISAlertGeneral() ) iconName = _T("AIS_AlertGeneral_Active");
             if( g_pAIS->IsAISSuppressed() ) iconName = _T("AIS_Suppressed_Active");
-            if( !g_bShowAIS ) iconName = _T("AIS_Disabled");
+            if( !m_bShowAIS ) iconName = _T("AIS_Disabled");
             
             if( m_toolBar->m_tblastAISiconName != iconName ) {
                 if( m_toolBar->GetToolbar()) {
@@ -11659,7 +11673,7 @@ void ChartCanvas::UpdateAISTBTool( void )
             iconName = _T("AIS_Suppressed");
         if( g_pAIS->IsAISAlertGeneral() )
             iconName = _T("AIS_AlertGeneral");
-        if( !g_bShowAIS )
+        if( !m_bShowAIS )
             iconName = _T("AIS_Disabled");
         
         //  Manage timeout for AIS activity indicator
@@ -11673,7 +11687,7 @@ void ChartCanvas::UpdateAISTBTool( void )
                         iconName = _T("AIS_Suppressed_Active");
                     if( g_pAIS->IsAISAlertGeneral() )
                         iconName = _T("AIS_AlertGeneral_Active");
-                    if( !g_bShowAIS )
+                    if( !m_bShowAIS )
                         iconName = _T("AIS_Disabled");
                 }
             }

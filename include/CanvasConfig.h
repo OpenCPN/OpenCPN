@@ -61,7 +61,8 @@ public:
     bool bShowDepthUnits;
     bool bCourseUp;
     bool bLookahead;
-    
+    bool bShowAIS;
+    bool bAttenAIS;
     // ENC options
     bool bShowENCText;
     int  nENCDisplayCategory;
@@ -78,6 +79,8 @@ public:
         toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         bCourseUp = false;
         bLookahead = false;
+        bShowAIS = true;
+        bAttenAIS = false;
     }
     
 };

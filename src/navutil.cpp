@@ -1938,6 +1938,8 @@ void MyConfig::LoadCanvasConfigs( )
         pcc->toolbarConfig = g_toolbarConfig;
         pcc->bShowToolbar = false;
         pcc->toolbarOrientation = wxTB_HORIZONTAL;
+        pcc->bShowAIS = true;
+        pcc->bAttenAIS = false;
         
         g_canvasConfigArray.Add(pcc);
         
@@ -2070,6 +2072,9 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
     Read( _T ( "canvasShowGrid" ), &cConfig->bShowGrid, 0 );
     Read( _T ( "canvasShowOutlines" ), &cConfig->bShowOutlines, 0 );
     Read( _T ( "canvasShowDepthUnits" ), &cConfig->bShowDepthUnits, 0 );
+
+    Read( _T ( "canvasShowAIS" ), &cConfig->bShowAIS, 1 );
+    Read( _T ( "canvasAttenAIS" ), &cConfig->bAttenAIS, 0 );
     
     // ENC options
     Read( _T ( "canvasShowENCText" ), &cConfig->bShowENCText, 1 );
@@ -2176,6 +2181,9 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "canvasShowGrid" ), cConfig->canvas->GetShowGrid() );
         Write( _T ( "canvasShowOutlines" ), cConfig->canvas->GetShowOutlines() );
         Write( _T ( "canvasShowDepthUnits" ), cConfig->canvas->GetShowDepthUnits() );
+
+        Write( _T ( "canvasShowAIS" ), cConfig->canvas->GetShowAIS() );
+        Write( _T ( "canvasAttenAIS" ), cConfig->canvas->GetAttenAIS() );
         
         Write( _T ( "canvasShowTides" ), cConfig->canvas->GetbShowTide() );
         Write( _T ( "canvasShowCurrents" ), cConfig->canvas->GetbShowCurrent() );

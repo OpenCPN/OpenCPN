@@ -149,7 +149,6 @@ extern bool                      g_bWayPointPreventDragging;
 extern bool                      g_bConfirmObjectDelete;
 
 // AIS Global configuration
-extern bool                      g_bShowAIS;
 extern bool                      g_bCPAMax;
 extern double                    g_CPAMax_NM;
 extern bool                      g_bCPAWarn;

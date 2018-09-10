@@ -1193,7 +1193,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
 extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
 extern bool     g_bTrackActive;
-extern bool     g_bShowAIS;
 extern s52plib *ps52plib;
 
 
@@ -1370,9 +1369,9 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 #endif
 
     wxString initiconName;
-    if( g_bShowAIS ) {
+    if( parentCanvas->GetShowAIS() ) {
         if (g_bAllowShowScaled){
-            if(!g_bShowScaled)
+            if(!parentCanvas->GetAttenAIS())
                 tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS targets") );
             else
                 tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );

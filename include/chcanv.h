@@ -470,6 +470,11 @@ public:
       
       bool GetCourseUP(){ return m_bCourseUp; }
       bool GetLookahead(){ return m_bLookAhead; }
+
+      bool GetShowAIS(){ return m_bShowAIS; }
+      void SetShowAIS( bool show );
+      bool GetAttenAIS(){ return m_bShowAISScaled; }
+      void SetAttenAIS( bool show );
       
       MUIBar *GetMUIBar(){ return m_muiBar; }
       
@@ -817,6 +822,8 @@ private:
       bool         m_bDisplayGrid;
       bool         m_bShowDepthUnits;
       bool         m_bToolbarEnable;
+      bool         m_bShowAIS;
+      bool         m_bShowAISScaled;
       
       // S52PLib state storage
       long         m_s52StateHash;

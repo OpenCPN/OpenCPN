@@ -89,7 +89,6 @@ extern void pupHandler_PasteWaypoint();
 
 
 extern AIS_Decoder      *g_pAIS;
-extern bool             g_bShowAIS;
 extern bool             g_bShowAreaNotices;
 extern bool             bGPSValid;
 extern Routeman         *g_pRouteMan;
@@ -331,7 +330,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     bool ais_areanotice = false;
-    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+    if( g_pAIS && parent->GetShowAIS() && g_bShowAreaNotices ) {
 
         AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
 
@@ -583,7 +582,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 	wxString name;
     if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
         if( g_pAIS ) {
-            if( g_bShowAIS && (seltype & SELTYPE_AISTARGET) ) {
+            if( parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET) ) {
                 AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
 				if (!g_bBasicMenus && myptarget) {
 					name = myptarget->GetFullName();

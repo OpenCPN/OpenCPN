@@ -66,7 +66,6 @@ extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
 
 //    AIS Global configuration
-extern bool             g_bShowAIS;
 extern bool             g_bCPAMax;
 extern double           g_CPAMax_NM;
 extern bool             g_bCPAWarn;
@@ -483,7 +482,8 @@ static void transrot_pts( int n, wxPoint *pt, float sin_theta, float cos_theta, 
 
 void AISDrawAreaNotices( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
-    if( !g_pAIS || !g_bShowAIS || !g_bShowAreaNotices ) return;
+    if( !g_pAIS || !cp->GetShowAIS() || !g_bShowAreaNotices )
+        return;
 
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
@@ -1762,8 +1762,9 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     if( !g_pAIS ) return;
 
     // Toggling AIS display on and off
-    if( !g_bShowAIS )
-        return;//
+    if( !cp->GetShowAIS() )
+        return;
+    
     //      Iterate over the AIS Target Hashmap
     AIS_Target_Hash::iterator it;
 
@@ -1828,12 +1829,12 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     p_Array = NULL; 
 }
 
-bool AnyAISTargetsOnscreen( ViewPort &vp )
+bool AnyAISTargetsOnscreen( ChartCanvas *cc, ViewPort &vp )
 {
     if( !g_pAIS )
         return false;
     
-    if( !g_bShowAIS )
+    if( !cc->GetShowAIS() )
         return false;//
         
     //      Iterate over the AIS Target Hashmap

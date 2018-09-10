@@ -49,7 +49,6 @@ extern int g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx;
 extern int g_ais_alert_dialog_sy;
 extern bool bGPSValid;
-extern bool     g_bShowAIS;
 extern bool     g_bCPAMax;
 extern double   g_CPAMax_NM;
 extern bool     g_bCPAWarn;
