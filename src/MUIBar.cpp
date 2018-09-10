@@ -380,6 +380,7 @@ void MUIBar::Init()
     m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
     m_backcolorString = _T("GREY3");
     m_scaleTextBox = NULL;
+    m_capture_size_y = 0;
     
     m_COTopOffset = 60;  //  TODO should be below GPS/Compass
     
@@ -622,17 +623,19 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
             if(m_canvasOptions->IsShown())
                 PushCanvasOptions();            // hide it
             else{
-                // Grab the backing bitmap
+                // Grab the backing bitmap, if available
                 
-                int overShoot_x = m_canvasOptions->GetSize().x * 2 / 10;    //20%
-                m_backingPoint = wxPoint(m_capturePoint.x - overShoot_x, m_capturePoint.y);
+                if(m_capture_size_y){
+                    int overShoot_x = m_canvasOptions->GetSize().x * 2 / 10;    //20%
+                    m_backingPoint = wxPoint(m_capturePoint.x - overShoot_x, m_capturePoint.y);
                 
-                m_backingBitmap = wxBitmap(m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, -1);
-                wxMemoryDC mdcb;
-                mdcb.SelectObject(m_backingBitmap);
-                wxScreenDC sdc;
-                mdcb.Blit(0, 0, m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, &sdc, m_capturePoint.x - overShoot_x, m_capturePoint.y, wxCOPY); 
-                mdcb.SelectObject(wxNullBitmap);
+                    m_backingBitmap = wxBitmap(m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, -1);
+                    wxMemoryDC mdcb;
+                    mdcb.SelectObject(m_backingBitmap);
+                    wxScreenDC sdc;
+                    mdcb.Blit(0, 0, m_canvasOptionsFullSize.x  + overShoot_x, m_capture_size_y, &sdc, m_capturePoint.x - overShoot_x, m_capturePoint.y, wxCOPY); 
+                    mdcb.SelectObject(wxNullBitmap);
+                }
                 PullCanvasOptions();
             }
             break;
@@ -857,8 +860,10 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
         
          if(1/*m_pushPull == CO_PULL*/){
             //  restore Backing bitmap, to cover any overshoot
-            wxMemoryDC mdc_back(m_backingBitmap);
-            sdc.Blit(m_backingPoint.x, m_backingPoint.y, m_backingBitmap.GetWidth() - size_x, m_backingBitmap.GetHeight(), &mdc_back, 0, 0, wxCOPY); 
+            if(m_backingBitmap.IsOk()){
+                wxMemoryDC mdc_back(m_backingBitmap);
+                sdc.Blit(m_backingPoint.x, m_backingPoint.y, m_backingBitmap.GetWidth() - size_x, m_backingBitmap.GetHeight(), &mdc_back, 0, 0, wxCOPY); 
+            }
         }
         
          wxMemoryDC mdc(m_animateBitmap);
