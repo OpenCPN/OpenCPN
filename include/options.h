@@ -524,7 +524,7 @@ class options : private Uncopyable,
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
-  wxCheckBox *pFullScreenToolbar, *pTransparentToolbar;
+  wxCheckBox *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
 #if wxCHECK_VERSION(2, 9, 0)

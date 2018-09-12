@@ -644,10 +644,6 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ChartQuilting" ), &g_bQuiltEnable, 0 );
     Read( _T ( "ChartQuiltingInitial" ), &g_bQuiltStart, 0 );
 
-    Read( _T ( "UseRasterCharts" ), &g_bUseRaster, 1 );             // default is true......
-    Read( _T ( "UseVectorCharts" ), &g_bUseVector, 0 );
-    Read( _T ( "UseCM93Charts" ), &g_bUseCM93, 0 );
-
     Read( _T ( "CourseUpMode" ), &g_bCourseUp, 0 );
     Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec, 15 );
     g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
@@ -2235,7 +2231,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
-    Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
     Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__
@@ -2302,10 +2297,6 @@ void MyConfig::UpdateSettings()
 #endif
     Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
 
-    Write( _T ( "UseRasterCharts" ), g_bUseRaster );
-    Write( _T ( "UseVectorCharts" ), g_bUseVector );
-    Write( _T ( "UseCM93Charts" ), g_bUseCM93 );
-
     Write( _T ( "CourseUpMode" ), g_bCourseUp );
     if (!g_bInlandEcdis ) Write( _T ( "LookAheadMode" ), g_bLookAhead );
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
@@ -2329,9 +2320,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.2f"), g_n_arrival_circle_radius ));
 
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
-    Write( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
-
-    if( cc1 ) Write( _T ( "ChartQuiltingInitial" ), cc1->GetQuiltMode() );
 
     if( cc1 ) Write( _T ( "ShowTide" ), cc1->GetbShowTide() );
     if( cc1 ) Write( _T ( "ShowCurrent" ), cc1->GetbShowCurrent() );
