@@ -4546,12 +4546,12 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         double blat, blon, tlat, tlon;
 
 //        int x_origin = g_bDisplayGrid ? 50 : 10;
-        int x_origin = m_canvas_width - 200;
+        int x_origin = m_canvas_width - 20;
         int chartbar_height = GetChartbarHeight();
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         if (style->chartStatusWindowTransparent)
             chartbar_height = 0;
-        int y_origin = m_canvas_height - chartbar_height - 5;
+        int y_origin = m_canvas_height - chartbar_height - 8;
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
         GetCanvasPixPoint( x_origin + m_canvas_width, y_origin, tlat, tlon );
@@ -4565,7 +4565,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
         
         // nice number
-        float dist = toUsrDistance( d, unit ), logdist = log(dist) / log(10.F);
+        float dist = toUsrDistance( d, unit ), logdist = log(dist) / log(10.f);
         float places = floor(logdist), rem = logdist - places;
         dist = pow(10, places);
 
@@ -4578,7 +4578,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
         double rotation = -VPoint.rotation;
 
-        ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
+        ll_gc_ll( blat, blon, rotation * 180 / PI - 90, fromUsrDistance(dist, unit), &tlat, &tlon );
         wxPoint r;
         GetCanvasPointPix( tlat, tlon, &r );
         int l1 = r.x - x_origin;
