@@ -304,6 +304,20 @@ extern bool g_useMUI;
 
 extern "C" bool CheckSerialAccess(void);
 
+//  Helper utilities
+static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
+{
+    #ifdef ocpnUSE_SVG
+    wxSVGDocument svgDoc;
+    if( svgDoc.Load(filename) )
+        return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
+    else
+        return wxBitmap(width, height);
+    #else
+        return wxBitmap(width, height);
+        #endif // ocpnUSE_SVG
+}
+
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
@@ -2839,12 +2853,36 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
     if (m_bcompact) {
     }
     else {
-//        wxFlexGridSizer* itemGridSizerUI = new wxFlexGridSizer(2);
+        
+        wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
+        m_DisplayConfigsPage->SetSizer(wrapperSizer);
+        
+        wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"));
+        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxVERTICAL);
+        wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 0, wxALL | wxEXPAND, 5);
+        
+        //  The standard screen configs...
+        wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+        int bmpSize = GetCharHeight() * 5;
+        
+        wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_single = new CanvasConfigSelect( m_DisplayConfigsPage, this, ID_SCREENCONFIG1, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
+        
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+        
+        bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_twovertical = new CanvasConfigSelect( m_DisplayConfigsPage, this, ID_SCREENCONFIG2, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
+ 
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+        
+        
+        
+        //        wxFlexGridSizer* itemGridSizerUI = new wxFlexGridSizer(2);
 //        itemGridSizerUI->SetHGap(border_size);
         // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
         // another sizer instead of letting it grow.
-        wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
-        m_DisplayConfigsPage->SetSizer(wrapperSizer);
         //wrapperSizer->Add(itemGridSizerUI, 1, wxALL | wxALIGN_CENTER, border_size);
         
         // spacer, for both columns
@@ -2856,13 +2894,6 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
  //       wxBoxSizer* boxLayouts = new wxBoxSizer(wxVERTICAL);
  //       itemGridSizerUI->Add(boxLayouts, groupInputFlags);
         
-        wxString m_rbcanvasConfigChoices[] = { _("Single Canvas"), _("Two Canvas Horizontal") };
-        int nrbcanvasConfigChoices = sizeof( m_rbcanvasConfigChoices ) / sizeof( wxString );
-        
-        m_rbcanvasConfig = new wxRadioBox( m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"), wxDefaultPosition, wxDefaultSize, nrbcanvasConfigChoices, m_rbcanvasConfigChoices, 1, wxRA_SPECIFY_COLS );
-        m_rbcanvasConfig->SetSelection( 0 );
-
-        wrapperSizer->Add(m_rbcanvasConfig, 0, wxALIGN_CENTER);
         
        
     }
@@ -5066,6 +5097,22 @@ void options::SetColorScheme(ColorScheme cs) {
 #endif
 }
 
+void options::OnCanvasConfigSelectClick( int ID, bool selected)
+{
+    switch(ID){
+        case ID_SCREENCONFIG1:
+            m_sconfigSelect_twovertical->SetSelected(false);
+            m_screenConfig = 0;
+            break;
+
+        case ID_SCREENCONFIG2:
+            m_sconfigSelect_single->SetSelected(false);
+            m_screenConfig = 1;
+            break;
+    }
+            
+}
+
 void options::SetInitialSettings(void) {
   wxString s;
 
@@ -5076,8 +5123,19 @@ void options::SetInitialSettings(void) {
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
 
   // Canvas configuration
-  m_rbcanvasConfig->SetSelection( g_canvasConfig );
-  
+  switch(g_canvasConfig){
+      case 0:
+      default:
+          m_sconfigSelect_single->SetSelected(true);
+          m_sconfigSelect_twovertical->SetSelected(false);
+          break;
+      case 1:
+          m_sconfigSelect_single->SetSelected(false);
+          m_sconfigSelect_twovertical->SetSelected(true);
+          break;
+  }
+  m_screenConfig = g_canvasConfig;
+          
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
 
@@ -5394,6 +5452,8 @@ void options::SetInitialSettings(void) {
   
   //  Reset the touch flag...
   connectionsaved = true;
+  
+          
   
 }
 
@@ -6558,7 +6618,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     TideCurrentDataSet.Add(tcDataSelected->GetString(i));
 
   // Canvas configuration
-    g_canvasConfig = m_rbcanvasConfig->GetSelection(  );
+    g_canvasConfig = m_screenConfig;
     
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
@@ -8915,6 +8975,101 @@ const wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
   if (mb < 10000.0) return wxString::Format(_T( "%.1f MB" ), mb);
   mb = mb / 1024.0;
   return wxString::Format(_T( "%.1f GB" ), mb);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+//  CanvasConfig selection panel
+//-------------------------------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(CanvasConfigSelect, wxPanel)
+EVT_PAINT ( CanvasConfigSelect::OnPaint )
+END_EVENT_TABLE()
+
+CanvasConfigSelect::CanvasConfigSelect(wxWindow *parent, options *parentOptions, wxWindowID id, wxBitmap &bmp, const wxPoint &pos, const wxSize &size)
+:wxPanel(parent, id, pos, size, wxBORDER_NONE)
+{
+    m_parentOptions = parentOptions;
+    m_bmpNormal = bmp;
+    m_borderWidth = 5;
+    SetSelected(false);
+    
+    int refHeight = GetCharHeight();
+    //SetMinSize(wxSize(-1, 5 * refHeight));
+    SetMinSize(wxSize(bmp.GetSize().x + m_borderWidth * 2, bmp.GetSize().y + m_borderWidth * 2));
+    
+    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(CanvasConfigSelect::OnMouseSelected), NULL, this);
+}
+
+CanvasConfigSelect::~CanvasConfigSelect()
+{
+}
+
+void CanvasConfigSelect::OnMouseSelected( wxMouseEvent &event )
+{
+    if(!m_bSelected){
+        SetSelected( true );
+    }
+    else{
+        SetSelected( false );
+    }
+    if(m_parentOptions)
+        m_parentOptions->OnCanvasConfigSelectClick( GetId(), GetSelected());
+        
+}
+
+void CanvasConfigSelect::SetSelected( bool selected )
+{
+    m_bSelected = selected;
+    wxColour colour;
+    
+    if (selected)
+    {
+        GetGlobalColor(_T("UIBCK"), &colour);
+        m_boxColour = colour;
+    }
+    else
+    {
+        GetGlobalColor(_T("DILG0"), &colour);
+        m_boxColour = colour;
+    }
+    
+    Refresh( true );
+    
+}
+
+void CanvasConfigSelect::OnPaint( wxPaintEvent &event )
+{
+    int width, height;
+    GetSize( &width, &height );
+    wxPaintDC dc( this );
+    
+    dc.SetBackground(*wxLIGHT_GREY);
+    
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(GetBackgroundColour()));
+    dc.DrawRectangle(GetVirtualSize());
+    
+    wxColour c;
+    
+    if(m_bSelected){
+        dc.SetBrush( wxBrush( m_boxColour ) );
+        
+        GetGlobalColor( _T ( "UITX1" ), &c );
+        dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
+        
+        dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
+    }
+    else {
+        dc.SetBrush( wxBrush( m_boxColour ) );
+        
+        GetGlobalColor( _T ( "UITX1" ), &c );
+        dc.SetPen( wxPen( wxColor(0xCE, 0xD5, 0xD6), 3 ));
+        
+        dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
+    }
+    
+    dc.DrawBitmap(m_bmpNormal, m_borderWidth, m_borderWidth, false);
 }
 
 #endif  // ocpnUSE_GL

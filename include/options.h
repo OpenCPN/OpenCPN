@@ -61,6 +61,7 @@ class ChartGroup;
 class MMSI_Props_Panel;
 class MMSIProperties;
 class OCPNCheckedListCtrl;
+class CanvasConfigSelect;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -186,7 +187,9 @@ enum {
   // LIVE ETA OPTION
   ID_CHECK_LIVEETA,
   ID_DEFAULT_BOAT_SPEED,
-  ID_DARKDECORATIONSBOX
+  ID_DARKDECORATIONSBOX,
+  ID_SCREENCONFIG1,
+  ID_SCREENCONFIG2
 };
 
 /* Define an int bit field for dialog return value
@@ -423,6 +426,8 @@ class options : private Uncopyable,
   void OnConnectionToggleEnable(wxListEvent &event);
   void OnConnectionToggleEnableMouse(wxMouseEvent &event);
 
+  void OnCanvasConfigSelectClick( int ID, bool selected);
+  
   bool connectionsaved;
   bool m_connection_enabled;
 
@@ -489,7 +494,8 @@ class options : private Uncopyable,
   // For Display->Configs page...
   wxScrolledWindow *m_DisplayConfigsPage;
   
-  wxRadioBox *m_rbcanvasConfig;
+  CanvasConfigSelect *m_sconfigSelect_single;
+  CanvasConfigSelect *m_sconfigSelect_twovertical;
   
   // For the ship page
   wxFlexGridSizer *realSizes;
@@ -590,6 +596,8 @@ class options : private Uncopyable,
   void FillSourceList();
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
 
+  int m_screenConfig;
+  
   wxNotebookPage *m_groupsPage;
   wxFont smallFont;
   wxFont *dialogFont;
@@ -604,6 +612,29 @@ class options : private Uncopyable,
   bool m_bVectorInit;
   
   DECLARE_EVENT_TABLE()
+};
+
+class CanvasConfigSelect: public wxPanel
+{
+public:
+    CanvasConfigSelect( wxWindow *parent, options *parentOptions, int id, wxBitmap &bmp, 
+                        const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
+    ~CanvasConfigSelect();
+    
+    void OnMouseSelected( wxMouseEvent &event );
+    void SetSelected( bool selected );
+    void OnPaint( wxPaintEvent &event );
+    
+    bool GetSelected(){ return m_bSelected; }
+    
+private:
+    options *m_parentOptions;
+    bool m_bSelected;
+    wxColour m_boxColour;
+    wxBitmap m_bmpNormal;
+    int m_borderWidth;
+    
+    DECLARE_EVENT_TABLE()
 };
 
 class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
@@ -660,7 +691,7 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   ChartGroupArray *m_pGroupArray;
 
   int m_border_size, m_group_item_spacing, m_GroupSelectedPage;
-
+  
   DECLARE_EVENT_TABLE()
 };
 
@@ -839,7 +870,7 @@ class MMSIListCtrl : private Uncopyable, public wxListCtrl {
 
   wxWindow *m_parent;
   int m_context_item;
-
+  
   DECLARE_EVENT_TABLE()
 };
 
