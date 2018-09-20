@@ -263,6 +263,9 @@ extern double           g_ownship_HDTpredictor_miles;
 extern bool             g_own_ship_sog_cog_calc;
 extern int              g_own_ship_sog_cog_calc_damp_sec;
 
+extern bool             g_bShowMenuBar;
+extern bool             g_bShowCompassWin;
+
 #ifdef USE_S57
 extern s52plib          *ps52plib;
 #endif
@@ -741,10 +744,10 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
     Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar, 1 );
 #ifndef __WXOSX__
-    Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
+    Read( _T ( "ShowMenuBar" ), &g_bShowMenuBar, 0 );
 #endif
     Read( _T ( "Fullscreen" ), &g_bFullscreen, 0 );
-    Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
+    Read( _T ( "ShowCompassWindow" ), &g_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, -1 );
@@ -2234,12 +2237,12 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__
-    Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
+    Write( _T ( "ShowMenuBar" ), g_bShowMenuBar );
 #endif
     Write( _T ( "DefaultFontSize" ), g_default_font_size );
     
     Write( _T ( "Fullscreen" ), g_bFullscreen );
-    Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
+    Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
@@ -2654,9 +2657,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
-    Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
-    Write( _T ( "TideRectangleScale" ), g_tide_rectangle_scale );
-    Write( _T ( "TideCurrentWindowScale" ), g_tcwin_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
     DeleteGroup(_T ( "/MMSIProperties" ));

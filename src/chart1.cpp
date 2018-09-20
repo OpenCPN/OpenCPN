@@ -116,6 +116,7 @@
 #include "Route.h"
 #include "OCPN_AUIManager.h"
 #include "CanvasConfig.h"
+#include "ConfigMgr.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -681,6 +682,8 @@ long                      g_maintoolbar_orient;
 float                     g_toolbar_scalefactor;
 
 float                     g_compass_scalefactor;
+bool                      g_bShowMenuBar;
+bool                      g_bShowCompassWin;
 
 bool                      g_benable_rotate;
 
@@ -1803,7 +1806,10 @@ bool MyApp::OnInit()
 #endif
 
 
-     bool b_initial_load = false;
+    // Instantiate and initialize the Config Manager
+    ConfigMgr::Get();
+    
+    bool b_initial_load = false;
 
     wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
     if( config_test_file_name.FileExists() ) wxLogMessage(
@@ -1824,6 +1830,11 @@ bool MyApp::OnInit()
     pConfig = g_Platform->GetConfigObject();
     pConfig->LoadMyConfig();
 
+    // TODO testing...
+    //bool templateTest = ConfigMgr::Get().SaveTemplate( ConfigMgr::Get().GetConfigDir() + _T("TestTemplate1") );
+    
+    wxString gg = ConfigMgr::Get().CreateNamedConfig( _T("My Title"), _T("My Description") );
+    
     //  Override for some safe and nice default values if the config file was created from scratch
     if(b_initial_load)
         g_Platform->SetDefaultOptions();
@@ -5174,7 +5185,7 @@ void MyFrame::BuildMenuBar( void )
 #ifdef __WXOSX__
     bool showMenuBar = true;    // the menu bar is always visible in OS X
 #else
-    bool showMenuBar = pConfig->m_bShowMenuBar; // get visibility from options
+    bool showMenuBar = g_bShowMenuBar; // get visibility from options
     
     if (!showMenuBar && g_bTempShowMenuBar)     // allows pressing alt to temporarily show
         showMenuBar = true;

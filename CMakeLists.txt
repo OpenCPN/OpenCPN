@@ -1216,6 +1216,7 @@ SET(HDRS
                 include/MUIBar.h
                 include/CanvasOptions.h
                 include/CanvasConfig.h
+                include/ConfigMgr.h
 )
 
 SET(SRCS
@@ -1314,6 +1315,7 @@ SET(SRCS
                 src/MUIBar.cpp
                 src/CanvasOptions.cpp
                 src/CanvasConfig.cpp
+                src/ConfigMgr.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}

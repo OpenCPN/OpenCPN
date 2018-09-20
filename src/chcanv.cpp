@@ -213,6 +213,8 @@ extern bool             bGPSValid;
 //extern bool             g_bShowOutlines;
 //extern bool             g_bShowDepthUnits;
 extern bool             g_bTempShowMenuBar;
+extern bool             g_bShowMenuBar;
+extern bool             g_bShowCompassWin;
 
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bShowAreaNotices;
@@ -847,7 +849,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Piano = new Piano(this);
 
     m_Compass = new ocpnCompass(this);
-    m_Compass->Show(pConfig->m_bShowCompassWin);
+    m_Compass->Show(g_bShowCompassWin);
 
     m_bToolbarEnable = true;
 }
@@ -966,7 +968,7 @@ void ChartCanvas::SetShowGPS( bool bshow )
     if(m_bShowGPS != bshow){
         delete m_Compass;
         m_Compass = new ocpnCompass( this, bshow );
-        m_Compass->Show(pConfig->m_bShowCompassWin);
+        m_Compass->Show(g_bShowCompassWin);
     }
     m_bShowGPS = bshow;
     
@@ -2376,7 +2378,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
     // Alt + a letter is presssed (for the top-menu-level hotkeys).
     // The toggling normally takes place in OnKeyUp, but here we handle some special cases.
-    if ( IsTempMenuBarEnabled() && event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
+    if ( IsTempMenuBarEnabled() && event.AltDown()  &&  !g_bShowMenuBar ) {
         // If Alt + a letter is pressed, and the menubar is hidden, show it now
         if ( event.GetKeyCode() >= 'A' && event.GetKeyCode() <= 'Z' ) {
             if ( !g_bTempShowMenuBar ) {
@@ -2748,7 +2750,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            if ( pConfig->m_bShowMenuBar == false )
+            if ( g_bShowMenuBar == false )
                 parent_frame->ToggleChartBar( this );
             break;
 
@@ -2943,7 +2945,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 #ifndef __WXOSX__
         // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
         // then show the menu bar temporarily when Alt is released (or hide it if already visible).
-        if ( IsTempMenuBarEnabled() && !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
+        if ( IsTempMenuBarEnabled() && !g_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
             g_bTempShowMenuBar = !g_bTempShowMenuBar;
             parent_frame->ApplyGlobalSettings(false);
         }
@@ -6476,7 +6478,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
 #ifndef __WXOSX__
     if (event.LeftDown()) {
-        if ( pConfig->m_bShowMenuBar == false && g_bTempShowMenuBar == true ) {
+        if ( g_bShowMenuBar == false && g_bTempShowMenuBar == true ) {
             // The menu bar is temporarily visible due to alt having been pressed.
             // Clicking will hide it, and do nothing else.
             g_bTempShowMenuBar = false;
@@ -10291,7 +10293,7 @@ emboss_data *ChartCanvas::EmbossDepthScale()
 
     ped->x = ( GetVP().pix_width - ped->width );
 
-    if(m_Compass && pConfig->m_bShowCompassWin){
+    if(m_Compass && g_bShowCompassWin){
         wxRect r = m_Compass->GetRect();
         ped->y = r.y + r.height;
      }
