@@ -191,7 +191,7 @@ public:
       bool                    m_bSkipChangeSetUpdate;
       
 //    These members are set/reset in Options dialog
-      bool  m_bShowMenuBar, m_bShowCompassWin;
+      //bool  m_bShowMenuBar, m_bShowCompassWin;
 
 
 

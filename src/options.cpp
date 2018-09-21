@@ -283,6 +283,9 @@ extern bool g_bserial_access_checked;
 
 options* g_pOptions;
 
+extern bool g_bShowMenuBar;
+extern bool g_bShowCompassWin;
+
 extern bool g_btouch;
 extern bool g_bresponsive;
 extern bool g_bAutoHideToolbar;
@@ -5165,9 +5168,9 @@ void options::SetInitialSettings(void) {
   if (m_pConfig) {
     pShowStatusBar->SetValue(g_bShowStatusBar);
 #ifndef __WXOSX__
-    pShowMenuBar->SetValue(m_pConfig->m_bShowMenuBar);
+    pShowMenuBar->SetValue(g_bShowMenuBar);
 #endif
-    pShowCompassWin->SetValue(m_pConfig->m_bShowCompassWin);
+    pShowCompassWin->SetValue(g_bShowCompassWin);
   }
 
   s.Printf(_T("%d"), g_COGAvgSec);
@@ -6144,9 +6147,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (m_pConfig) {
     g_bShowStatusBar = pShowStatusBar->GetValue();
 #ifndef __WXOSX__
-    m_pConfig->m_bShowMenuBar = pShowMenuBar->GetValue();
+    g_bShowMenuBar = pShowMenuBar->GetValue();
 #endif
-    m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
+    g_bShowCompassWin = pShowCompassWin->GetValue();
   }
 
   g_bShowChartBar = pShowChartBar->GetValue();
