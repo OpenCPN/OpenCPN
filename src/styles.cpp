@@ -1137,6 +1137,7 @@ void StyleManager::SetStyle(wxString name)
         style = (Style*) ( styles[i] );
         if( style->name == name || selectFirst ) {
             if( style->graphics ) {
+                if (currentStyle) currentStyle->Unload();
                 currentStyle = style;
                 ok = true;
                 break;
@@ -1164,6 +1165,7 @@ void StyleManager::SetStyle(wxString name)
                 break;
             }
             style->graphics = new wxBitmap( img );
+            if (currentStyle) currentStyle->Unload();
             currentStyle = style;
             ok = true;
             break;
@@ -1177,17 +1179,12 @@ void StyleManager::SetStyle(wxString name)
         return;
     }
 
-    if(style) {
-        if (currentStyle) currentStyle->Unload();
-        if( (style->consoleTextBackgroundSize.x) && (style->consoleTextBackgroundSize.y)) {
-            style->consoleTextBackground = style->graphics->GetSubBitmap(
-            wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
-        }
+    if( (style->consoleTextBackgroundSize.x) && (style->consoleTextBackgroundSize.y)) {
+        style->consoleTextBackground = style->graphics->GetSubBitmap(
+        wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
     }
 
-    if(style)
-        nextInvocationStyle = style->name;
-    
+    nextInvocationStyle = style->name;
     return;
 }
 
