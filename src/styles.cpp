@@ -1127,9 +1127,7 @@ void StyleManager::Init(const wxString & fromPath)
 void StyleManager::SetStyle(wxString name)
 {
     Style* style = NULL;
-    bool ok = true;
-    if( currentStyle ) currentStyle->Unload();
-    else ok = false;
+    bool ok = false;
 
     bool selectFirst = false;
 
@@ -1180,6 +1178,7 @@ void StyleManager::SetStyle(wxString name)
     }
 
     if(style) {
+        if (currentStyle) currentStyle->Unload();
         if( (style->consoleTextBackgroundSize.x) && (style->consoleTextBackgroundSize.y)) {
             style->consoleTextBackground = style->graphics->GetSubBitmap(
             wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
