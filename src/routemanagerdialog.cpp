@@ -1287,7 +1287,7 @@ void RouteManagerDialog::OnRteExportClick( wxCommandEvent &event )
         }
     }
 
-    pConfig->ExportGPXRoutes( this, &list, suggested_name );
+    ExportGPXRoutes( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
@@ -1862,7 +1862,7 @@ void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
         }
     }
 
-    pConfig->ExportGPXTracks( this, &list, suggested_name );
+    ExportGPXTracks( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::TrackToRoute( Track *track )
@@ -2330,7 +2330,7 @@ void RouteManagerDialog::OnWptExportClick( wxCommandEvent &event )
         }
     }
 
-    pConfig->ExportGPXWaypoints( this, &list, suggested_name );
+    ExportGPXWaypoints( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
@@ -2479,7 +2479,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
     bool show_flag = g_bShowLayers;
     g_bShowLayers = true;
     
-    pConfig->UI_ImportGPX( this, true, _T("") );
+    UI_ImportGPX( this, true, _T("") );
     
     g_bShowLayers = show_flag;
     UpdateLists();
@@ -2812,7 +2812,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     // FIXME there is no way to instruct this function about what to import.
     // Suggest to add that!
     
-    pConfig->UI_ImportGPX( this );
+    UI_ImportGPX( this );
     
     UpdateLists();
 
@@ -2820,12 +2820,12 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
 }
 void RouteManagerDialog::OnExportClick( wxCommandEvent &event )
 {
-    pConfig->ExportGPX( this );
+    ExportGPX( this );
 }
 
 void RouteManagerDialog::OnExportVizClick( wxCommandEvent &event )
 {
-    pConfig->ExportGPX( this, true, true );     // only visible objects, layers included
+    ExportGPX( this, true, true );     // only visible objects, layers included
 }
 
 void RouteManagerDialog::OnFilterChanged( wxCommandEvent &event )

@@ -430,6 +430,8 @@ extern bool             g_bDarkDecorations;
 extern unsigned int     g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
+wxString                g_gpx_path;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -475,8 +477,6 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
     m_pNavObjectChangesSet = NULL;
 
     m_bSkipChangeSetUpdate = false;
-
-    g_pConnectionParams = new wxArrayOfConnPrm();
 }
 
 void MyConfig::CreateRotatingNavObjBackup()
@@ -839,7 +839,6 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader, 0 );
     
     SetPath( _T ( "/Settings/GlobalState" ) );
-    Read( _T ( "bFollow" ), &st_bFollow );
 
     Read( _T ( "FrameWinX" ), &g_nframewin_x );
     Read( _T ( "FrameWinY" ), &g_nframewin_y );
@@ -993,13 +992,14 @@ int MyConfig::LoadMyConfig()
         }
     }
 
-    Read( _T ( "GPXIODir" ), &m_gpx_path );           // Get the Directory name
+    Read( _T ( "GPXIODir" ), &g_gpx_path );           // Get the Directory name
     Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
     Read( _T ( "BasemapDir"), &gWorldMapLocation );
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
-    if ( g_bInlandEcdis ) global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
+    if ( g_bInlandEcdis )
+        global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
     else{
         Read( _T ( "nColorScheme" ), &read_int, 0 );
         global_color_scheme = (ColorScheme) read_int;
@@ -1008,17 +1008,19 @@ int MyConfig::LoadMyConfig()
 
     wxString connectionconfigs;
     Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
-    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-    g_pConnectionParams->Clear();
-    for (size_t i = 0; i < confs.Count(); i++)
-    {
-        ConnectionParams * prm = new ConnectionParams(confs[i]);
-        if (!prm->Valid) {
-            wxLogMessage( _T( "Skipped invalid DataStream config") );
-            delete prm;
-            continue;
+    if(!connectionconfigs.IsEmpty()){
+        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+        g_pConnectionParams->Clear();
+        for (size_t i = 0; i < confs.Count(); i++)
+        {
+            ConnectionParams * prm = new ConnectionParams(confs[i]);
+            if (!prm->Valid) {
+                wxLogMessage( _T( "Skipped invalid DataStream config") );
+                delete prm;
+                continue;
+            }
+            g_pConnectionParams->Add(prm);
         }
-        g_pConnectionParams->Add(prm);
     }
 
     //  Automatically handle the upgrade to DataSources architecture...
@@ -1162,6 +1164,7 @@ int MyConfig::LoadMyConfig()
     SetPath( _T ( "/Settings/GlobalState" ) );
     wxString st;
 
+    double st_lat, st_lon;
     if( Read( _T ( "VPLatLon" ), &st ) ) {
         sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
 
@@ -1181,6 +1184,7 @@ int MyConfig::LoadMyConfig()
     s.Printf( _T ( "Setting Viewpoint Lat/Lon %g, %g" ), vLat, vLon );
     wxLogMessage( s );
 
+    double st_view_scale, st_rotation;
     if( Read( wxString( _T ( "VPScale" ) ), &st ) ) {
         sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
 //    Sanity check the scale
@@ -2558,7 +2562,7 @@ void MyConfig::UpdateSettings()
 
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "InitChartDir" ), *pInit_Chart_Dir );
-    Write( _T ( "GPXIODir" ), m_gpx_path );
+    Write( _T ( "GPXIODir" ), g_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
     Write( _T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation) );
     
@@ -2693,20 +2697,20 @@ void MyConfig::UpdateNavObj( void )
 
 }
 
-bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
+bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
     wxString path;
     
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
-                                                     m_gpx_path,
+                                                     g_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
     );
     
     if( response == wxID_OK ) {
         wxFileName fn(path);
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
 #ifndef __WXMAC__
@@ -2727,20 +2731,20 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
         return false;
 }
 
-bool MyConfig::ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString suggestedName )
+bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString suggestedName )
 {
     wxString path;
     
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
-                                                     m_gpx_path,
+                                                     g_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
     );
     
     if( response == wxID_OK ) {
         wxFileName fn(path);
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
 #ifndef __WXMAC__
@@ -2761,13 +2765,13 @@ bool MyConfig::ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxSt
         return false;
 }
 
-bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
+bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
     wxString path;
     
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
-                                                     m_gpx_path,
+                                                     g_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
                                                      );
@@ -2775,7 +2779,7 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 
     if( response == wxID_OK ) {
         wxFileName fn( path );
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
 #ifndef __WXMAC__
@@ -2796,13 +2800,13 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
         return false;
 }
 
-void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
+void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
     wxString path;
     
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
-                                                     m_gpx_path,
+                                                     g_gpx_path,
                                                      _T("userobjects.gpx"),
                                                      wxT ( "*.gpx" )
     );
@@ -2812,7 +2816,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
     
     if( response == wxID_OK ) {
         wxFileName fn(path);
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
 #ifndef __WXMAC__
@@ -2913,7 +2917,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
     }
 }
 
-void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdirectory )
+void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdirectory )
 {
     int response = wxID_CANCEL;
     wxArrayString file_array;
@@ -2924,7 +2928,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
         //  Platform DoFileSelectorDialog method does not properly handle multiple selections  
         //  So use native method if not Android, which means Android gets single selection only.
 #ifndef __OCPN__ANDROID__        
-        wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
+        wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Import GPX file" ), g_gpx_path, wxT ( "" ),
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
 
@@ -2951,7 +2955,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
             //    Record the currently selected directory for later use
             if( file_array.GetCount() ) {
                 wxFileName fn( file_array[0] );
-                m_gpx_path = fn.GetPath();
+                g_gpx_path = fn.GetPath();
             }
         }
         delete popenDialog;
@@ -2989,7 +2993,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
             if( file_array.GetCount() <= 1 ) wxFileName::SplitPath( file_array[0], NULL, NULL,
                     &( l->m_LayerName ), NULL, NULL );
             else {
-                if( dirpath.IsSameAs( _T("") ) ) wxFileName::SplitPath( m_gpx_path, NULL, NULL,
+                if( dirpath.IsSameAs( _T("") ) ) wxFileName::SplitPath( g_gpx_path, NULL, NULL,
                         &( l->m_LayerName ), NULL, NULL );
                 else
                     wxFileName::SplitPath( dirpath, NULL, NULL, &( l->m_LayerName ), NULL, NULL );

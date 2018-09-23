@@ -1794,6 +1794,9 @@ bool MyApp::OnInit()
 //      Who am I?
     phost_name = new wxString( ::wxGetHostName() );
 
+//      Initialize connection parameters array
+    g_pConnectionParams = new wxArrayOfConnPrm();
+    
 //      (Optionally) Capture the user and file(effective) ids
 //  Some build environments may need root privileges for hardware
 //  port I/O, as in the NMEA data input class.  Set that up here.
@@ -1830,11 +1833,6 @@ bool MyApp::OnInit()
     pConfig = g_Platform->GetConfigObject();
     pConfig->LoadMyConfig();
 
-    // TODO testing...
-    //bool templateTest = ConfigMgr::Get().SaveTemplate( ConfigMgr::Get().GetConfigDir() + _T("TestTemplate1") );
-    
-    //wxString gg = ConfigMgr::Get().CreateNamedConfig( _T("My Title"), _T("My Description") );
-    
     //  Override for some safe and nice default values if the config file was created from scratch
     if(b_initial_load)
         g_Platform->SetDefaultOptions();
@@ -3082,8 +3080,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
             cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
             
             //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-            //cc->m_bFollow = pConfig->st_bFollow;               // set initial state
-            //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
             //cc->SetToolbarConfigString(g_toolbarConfig);
             cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             //cc->SetToolbarOrientation( g_maintoolbar_orient);
@@ -3107,8 +3103,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            
            cc->SetDisplaySizeMM(g_display_size_mm);
            //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc->m_bFollow = pConfig->st_bFollow;               // set initial state
-           //cc->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc->SetToolbarConfigString(g_toolbarConfig);
            //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
@@ -3144,8 +3138,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            
            cc->SetDisplaySizeMM(g_display_size_mm);
            //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
-           //cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            //cc2->SetToolbarConfigString(g_toolbarConfig);
            //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
@@ -5337,7 +5329,7 @@ void MyFrame::UpdateGlobalMenuItems()
 {
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
-    if ( pConfig ) m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( pConfig->st_bFollow );
+    m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( GetPrimaryCanvas()->m_bFollow );
     m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !GetPrimaryCanvas()->m_bCourseUp );
     m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->m_bCourseUp );
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );

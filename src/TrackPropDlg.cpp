@@ -1312,7 +1312,7 @@ void TrackPropDlg::OnExportBtnClick( wxCommandEvent& event )
     list.Append( m_pTrack );
     if( m_pTrack->GetName() != wxEmptyString )
         suggested_name = m_pTrack->GetName();
-    pConfig->ExportGPXTracks( this, &list, suggested_name );
+    ExportGPXTracks( this, &list, suggested_name );
 }
 
 void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )

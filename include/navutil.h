@@ -127,6 +127,13 @@ Route *RouteExists( Route * pTentRoute );
 Track *TrackExists( const wxString& guid );
 const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
+void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
+void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
+ 
+bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
+bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));
+bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
+
 //----------------------------------------------------------------------------
 //    Config
 //----------------------------------------------------------------------------
@@ -165,24 +172,12 @@ public:
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
-      virtual void UpdateNavObj();
 
       bool LoadLayers(wxString &path);
 
-      void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
-      void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
-
-      bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
-      bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));
-      bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
-
       void CreateRotatingNavObjBackup();
-
-      double st_lat, st_lon, st_view_scale, st_rotation;      // startup values
-      bool  st_bFollow;
-
-      wxString                m_gpx_path;
-
+      virtual void UpdateNavObj();
+      
       wxString                m_sNavObjSetFile;
       wxString                m_sNavObjSetChangesFile;
 
@@ -190,28 +185,9 @@ public:
       NavObjectCollection1    *m_pNavObjectInputSet;
       bool                    m_bSkipChangeSetUpdate;
       
-//    These members are set/reset in Options dialog
-      //bool  m_bShowMenuBar, m_bShowCompassWin;
-
-
-
 };
 
 void SwitchInlandEcdisMode( bool Switch );
-/*
-#include <wx/fontdlg.h>
-
-class WXDLLEXPORT X11FontPicker : public wxGenericFontDialog
-{
-public:
-      X11FontPicker(wxFrame *parent);
-      ~X11FontPicker();
-
-      virtual void CreateWidgets();
-
-
-};
-*/
 
 /*
  * X11FontPicker DIALOG
