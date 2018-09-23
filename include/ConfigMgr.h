@@ -48,7 +48,7 @@ class ConfigMgr
         static void Shutdown();
         
         wxString CreateNamedConfig( wxString title, wxString description );
-        ConfigObjectList *GetConfigList(){ return configList; }
+        wxArrayString GetConfigGUIDArray();
         
         wxPanel *GetConfigPanel( wxWindow *parent, wxString GUID );
         
@@ -65,6 +65,7 @@ class ConfigMgr
         wxString GetUUID(void);
         bool SaveTemplate( wxString fileName);
         wxString GetConfigDir(){ return m_configDir; }
+        ConfigObjectList *GetConfigList(){ return configList; }
         
         wxString m_configDir;
         wxString m_configCatalogName;
@@ -78,8 +79,11 @@ public:
     ConfigPanel( OCPNConfigObject *config, wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
     ~ConfigPanel();
     
+    wxString GetConfigGUID();
     
 private:
+    void OnConfigPanelMouseSelected( wxMouseEvent &event);
+    OCPNConfigObject *m_config;
 };
 
 #endif

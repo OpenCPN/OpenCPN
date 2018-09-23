@@ -1833,7 +1833,7 @@ bool MyApp::OnInit()
     // TODO testing...
     //bool templateTest = ConfigMgr::Get().SaveTemplate( ConfigMgr::Get().GetConfigDir() + _T("TestTemplate1") );
     
-    wxString gg = ConfigMgr::Get().CreateNamedConfig( _T("My Title"), _T("My Description") );
+    //wxString gg = ConfigMgr::Get().CreateNamedConfig( _T("My Title"), _T("My Description") );
     
     //  Override for some safe and nice default values if the config file was created from scratch
     if(b_initial_load)

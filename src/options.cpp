@@ -92,6 +92,7 @@ extern GLuint g_raster_format;
 #endif
 
 #include "OCPNPlatform.h"
+#include "ConfigMgr.h"
 
 #if !defined(__WXOSX__) || wxCHECK_VERSION(3, 1, 0) 
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -443,6 +444,85 @@ void OCPNCheckedListCtrl::Clear() {
 }
 
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class ConfigCreateDialog
+///////////////////////////////////////////////////////////////////////////////
+
+BEGIN_EVENT_TABLE(ConfigCreateDialog, wxDialog)
+ EVT_BUTTON(ID_CONFIGEDIT_CANCEL, ConfigCreateDialog::OnConfigEditCancelClick)
+ EVT_BUTTON(ID_CONFIGEDIT_OK, ConfigCreateDialog::OnConfigEditOKClick)
+END_EVENT_TABLE()
+
+ConfigCreateDialog::ConfigCreateDialog(wxWindow* parent,
+                               wxWindowID id, const wxString& caption,
+                               const wxPoint& pos, const wxSize& size,
+                               long style)
+: wxDialog(parent, id, caption, pos, size,
+           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+    CreateControls();
+    GetSizer()->SetSizeHints(this);
+    Centre();
+}
+           
+ConfigCreateDialog::~ConfigCreateDialog(void)
+{
+}
+           
+void ConfigCreateDialog::CreateControls(void)
+{
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    SetSizer(mainSizer);
+    
+    mainSizer->Add(new wxStaticText(this, wxID_STATIC, _("Title")), 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+    
+    m_TitleCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(40 * GetCharHeight(), -1), 0);
+    mainSizer->Add(m_TitleCtl, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+    mainSizer->AddSpacer(2 * GetCharHeight());
+    
+    mainSizer->Add(new wxStaticText(this, wxID_STATIC, _("Description")), 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+    
+    m_DescriptionCtl = new wxTextCtrl(this, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(-1, 6 * GetCharHeight()), wxTE_MULTILINE);
+    mainSizer->Add(m_DescriptionCtl, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+    mainSizer->AddSpacer(2 * GetCharHeight());
+
+    mainSizer->Add(new wxStaticText(this, wxID_STATIC,
+            _("Create a private configuration template.\n \
+               This template will be saved, and may be selected for furthur use at any time.\n\
+               ")),            
+               0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
+    
+    mainSizer->AddSpacer(2 * GetCharHeight());
+    
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
+    
+    m_CancelButton = new wxButton(this, ID_CONFIGEDIT_CANCEL, _("Cancel"));
+    btnSizer->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+    
+    m_OKButton = new wxButton(this, ID_CONFIGEDIT_OK, _("OK"));
+    btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+    m_OKButton->SetDefault();
+    
+}
+               
+void ConfigCreateDialog::OnConfigEditCancelClick(wxCommandEvent& event)
+{
+    EndModal(wxID_CANCEL);
+}
+               
+void ConfigCreateDialog::OnConfigEditOKClick(wxCommandEvent& event)
+{
+    wxString GUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue());
+    EndModal(wxID_OK);
+    
+}
+                   
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MMSIEditDialog
@@ -2866,7 +2946,7 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         
         //  The standard screen configs...
         wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
-        int bmpSize = GetCharHeight() * 5;
+        int bmpSize = GetCharHeight() * 3;
         
         wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
         m_sconfigSelect_single = new CanvasConfigSelect( m_DisplayConfigsPage, this, ID_SCREENCONFIG1, bmp);
@@ -2880,29 +2960,150 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
  
         itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
         
+        // Configs management
+        
+        wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Configuration Templates"));
+        wxStaticBoxSizer* configSizer = new wxStaticBoxSizer(configsBox, wxHORIZONTAL);
+        wrapperSizer->Add(configSizer, 1, wxALL | wxEXPAND, border_size);
+        
+        wxPanel *cPanel = new wxPanel(m_DisplayConfigsPage, wxID_ANY );
+        configSizer->Add(cPanel, 1, wxALL | wxEXPAND, border_size);
+        
+        wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
+        cPanel->SetSizer(boxSizercPanel);
+         
+        m_scrollWinConfigList = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED | wxVSCROLL );
+        m_scrollWinConfigList->SetScrollRate(1, 1);
+        boxSizercPanel->Add(m_scrollWinConfigList, 0, wxALL|wxEXPAND, border_size);
+        m_scrollWinConfigList->SetMinSize(wxSize(-1,15 * GetCharHeight()));
+        
+        m_boxSizerConfigs = new wxBoxSizer(wxVERTICAL);
+        m_scrollWinConfigList->SetSizer(m_boxSizerConfigs);
         
         
-        //        wxFlexGridSizer* itemGridSizerUI = new wxFlexGridSizer(2);
-//        itemGridSizerUI->SetHGap(border_size);
-        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
-        // another sizer instead of letting it grow.
-        //wrapperSizer->Add(itemGridSizerUI, 1, wxALL | wxALIGN_CENTER, border_size);
+        wxBoxSizer* btnSizer = new wxBoxSizer(wxVERTICAL);
+        configSizer->Add(btnSizer);
         
-        // spacer, for both columns
-        //itemGridSizerUI->Add(0, border_size * 3);
-        //itemGridSizerUI->Add(0, border_size * 3);
+        //    Add the "Insert/Remove" buttons
+        wxButton* createButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Create Config..."));
+        btnSizer->Add(createButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        createButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnCreateConfig), NULL, this);
         
-        // canvas Layout Options
-        //itemGridSizerUI->Add( new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout")), groupLabelFlags);
- //       wxBoxSizer* boxLayouts = new wxBoxSizer(wxVERTICAL);
- //       itemGridSizerUI->Add(boxLayouts, groupInputFlags);
+        wxButton* editButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Edit Config..."));
+        btnSizer->Add(editButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        editButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnEditConfig), NULL, this);
         
+        wxButton* deleteButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Delete Selected Config..."));
+        btnSizer->Add(deleteButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        deleteButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnDeleteConfig), NULL, this);
         
-       
+        // Populate the configs list from the ConfigMgr
+        ClearConfigList();
+        BuildConfigList();
+        
     }
             
 }
+
+void options::ClearConfigList()
+{
+    if(m_scrollWinConfigList){
+        wxWindowList kids = m_scrollWinConfigList->GetChildren();
+        for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+            wxWindowListNode *node = kids.Item(i);
+            wxWindow *win = node->GetData();
+            delete win;
+        }
+    }
+}
+
+void options::BuildConfigList()
+{
+    wxArrayString configGUIDs = ConfigMgr::Get().GetConfigGUIDArray();
+    
+    for(size_t i=0 ; i < configGUIDs.GetCount() ; i++){
+        wxPanel *pp = ConfigMgr::Get().GetConfigPanel( m_scrollWinConfigList,configGUIDs[i]);
+        m_panelBackgroundUnselected = pp->GetBackgroundColour();
+        m_boxSizerConfigs->Add(pp, 1, wxEXPAND);
+        pp->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConfigMouseSelected), NULL, this);
         
+        //  Set mouse handler for children of the panel, too.
+        wxWindowList kids = pp->GetChildren();
+        for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+            wxWindowListNode *node = kids.Item(i);
+            wxWindow *win = node->GetData();
+            win->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConfigMouseSelected), NULL, this);
+        }
+    }
+    
+    m_selectedConfigPanelGUID = _T("");
+}
+
+void options::OnCreateConfig( wxCommandEvent &event)
+{
+    ConfigCreateDialog* pd = new ConfigCreateDialog(this, -1, _("Create Config"), wxDefaultPosition, wxSize(200, 200));
+    int rv = pd->ShowModal();
+    if( wxID_OK == rv ){
+        ClearConfigList();
+        BuildConfigList();
+        m_DisplayConfigsPage->Layout();
+    }
+}
+
+void options::OnEditConfig( wxCommandEvent &event)
+{
+}
+
+void options::OnDeleteConfig( wxCommandEvent &event)
+{
+}
+
+void options::OnConfigMouseSelected( wxMouseEvent &event)
+{
+    wxPanel *selectedPanel = NULL;
+    wxObject* obj = event.GetEventObject();
+    if(obj){
+        wxPanel *panel = wxDynamicCast(obj, wxPanel);
+        if(panel){
+            selectedPanel = panel;
+        }
+        //Clicked on child?
+        else{
+            wxWindow *win = wxDynamicCast(obj, wxWindow);
+            if(win){
+                wxPanel *parentpanel = wxDynamicCast(win->GetParent(), wxPanel);
+                if(parentpanel){
+                    selectedPanel = parentpanel;
+                }
+            }
+        }
+        
+        if(m_scrollWinConfigList){
+            wxWindowList kids = m_scrollWinConfigList->GetChildren();
+            for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+                wxWindowListNode *node = kids.Item(i);
+                wxWindow *win = node->GetData();
+                wxPanel *panel = wxDynamicCast(win, wxPanel);
+                if(panel && (panel == selectedPanel) ){
+                    wxColour colour;
+                    GetGlobalColor(_T("UIBCK"), &colour);
+                    panel->SetBackgroundColour(colour);
+                    ConfigPanel *cPanel = wxDynamicCast(panel, ConfigPanel);
+                    if(cPanel)
+                        m_selectedConfigPanelGUID = cPanel->GetConfigGUID();
+                }
+                else
+                    panel->SetBackgroundColour(m_panelBackgroundUnselected);
+            }
+        }
+        
+        m_DisplayConfigsPage->Layout();
+        
+    }
+}
+
+    
+
 void options::CreatePanel_Advanced(size_t parent, int border_size,
                                    int group_item_spacing) {
   m_ChartDisplayPage = AddPage(parent, _("Advanced"));

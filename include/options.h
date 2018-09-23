@@ -189,7 +189,9 @@ enum {
   ID_DEFAULT_BOAT_SPEED,
   ID_DARKDECORATIONSBOX,
   ID_SCREENCONFIG1,
-  ID_SCREENCONFIG2
+  ID_SCREENCONFIG2,
+  ID_CONFIGEDIT_OK,
+  ID_CONFIGEDIT_CANCEL
 };
 
 /* Define an int bit field for dialog return value
@@ -325,6 +327,13 @@ class options : private Uncopyable,
 
   void UpdateWorkArrayFromTextCtl(void);
 
+  void OnCreateConfig( wxCommandEvent &event);
+  void OnEditConfig( wxCommandEvent &event);
+  void OnDeleteConfig( wxCommandEvent &event);
+  void ClearConfigList();
+  void BuildConfigList();
+  void OnConfigMouseSelected( wxMouseEvent &event);
+  
   // Should we show tooltips?
   static bool ShowToolTips(void);
 
@@ -497,6 +506,9 @@ class options : private Uncopyable,
   CanvasConfigSelect *m_sconfigSelect_single;
   CanvasConfigSelect *m_sconfigSelect_twovertical;
   
+  // For Configuration Tempalstes panel
+  wxScrolledWindow *m_scrollWinConfigList;
+  
   // For the ship page
   wxFlexGridSizer *realSizes;
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
@@ -610,6 +622,10 @@ class options : private Uncopyable,
   int m_btlastResultCount;
   bool m_bfontChanged;
   bool m_bVectorInit;
+  
+  wxBoxSizer *m_boxSizerConfigs;
+  wxColour m_panelBackgroundUnselected;
+  wxString m_selectedConfigPanelGUID;
   
   DECLARE_EVENT_TABLE()
 };
@@ -919,6 +935,26 @@ class MMSI_Props_Panel : private Uncopyable, public wxPanel {
 
  private:
   wxWindow *m_pparent;
+};
+
+class ConfigCreateDialog : private Uncopyable, public wxDialog
+{
+public:
+    explicit ConfigCreateDialog(wxWindow *parent, wxWindowID id = wxID_ANY,
+                            const wxString &caption = wxEmptyString,
+                            const wxPoint &pos = wxDefaultPosition,
+                            const wxSize &size = wxDefaultSize, long style = 0);
+    ~ConfigCreateDialog(void);
+    
+    void SetColorScheme(ColorScheme cs);
+    void CreateControls(void);
+    void OnConfigEditCancelClick(wxCommandEvent& event);
+    void OnConfigEditOKClick(wxCommandEvent& event);
+    
+    wxTextCtrl *m_TitleCtl, *m_DescriptionCtl; 
+    wxButton *m_CancelButton, *m_OKButton;
+    
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

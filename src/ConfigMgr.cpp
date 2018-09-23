@@ -564,9 +564,10 @@ bool OCPNConfigCatalog::AddConfig( OCPNConfigObject *config, unsigned int flags 
 //--------------------------------------------------------------------
     
 ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size)
-    :wxPanel(parent, id, pos, size, wxBORDER_NONE)
+:wxPanel(parent, id, pos, size, wxSIMPLE_BORDER)
 
 {
+    m_config = config;
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
     
@@ -577,12 +578,26 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID 
     mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_GUID));
     
     SetMinSize(wxSize(-1, 8 * GetCharHeight()) );
+    
+    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
+    
 }
 
 ConfigPanel::~ConfigPanel()
 {
 }
-    
+
+void ConfigPanel::OnConfigPanelMouseSelected( wxMouseEvent &event)
+{
+//     SetBackgroundColour(*wxRED);
+//     event.Skip();
+}
+
+wxString ConfigPanel::GetConfigGUID()
+{
+    return m_config->m_GUID;
+}
+
 
 //--------------------------------------------------------------------
 //   ConfigMgr implementation
@@ -652,6 +667,31 @@ bool ConfigMgr::LoadCatalog()
 {
     wxLogMessage( _T("Loading Configs catalog: ") + m_configCatalogName );
     m_configCatalog->LoadFile( m_configCatalogName );
+    
+    // Parse the config catalog
+    pugi::xml_node objects = m_configCatalog->child("configs");
+
+    //pugi::xml_node node = m_config_root.append_child("config");
+    
+    //node.append_attribute("GUID") = config->m_GUID.mb_str();
+    //node.append_attribute("title") = config->m_title.mb_str();
+    //node.append_attribute("description") = config->m_description.mb_str();
+    //node.append_attribute("templateFile") = config->templateFileName.mb_str();
+    
+    for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
+    {
+        if( !strcmp(object.name(), "config") ) {
+            OCPNConfigObject *newConfig = new OCPNConfigObject;
+            
+            newConfig->m_GUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
+            newConfig->m_title = wxString::FromUTF8(object.attribute( "title" ).as_string());
+            newConfig->m_description = wxString::FromUTF8(object.attribute( "description" ).as_string());
+            newConfig->templateFileName = wxString::FromUTF8(object.attribute( "templateFile" ).as_string());
+
+            // Add to the class list of configs
+            configList->Append(newConfig);
+        }
+    }
     
     return true;
     
@@ -731,7 +771,18 @@ wxPanel *ConfigMgr::GetConfigPanel( wxWindow *parent, wxString GUID )
     
 }
 
-
+wxArrayString ConfigMgr::GetConfigGUIDArray()
+{
+    wxArrayString ret_val;
+    
+    for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
+    {
+        OCPNConfigObject *look = node->GetData();
+        ret_val.Add(look->m_GUID);
+    }
+    
+    return ret_val;
+}
 
 int GetRandomNumber(int range_min, int range_max)
 {
