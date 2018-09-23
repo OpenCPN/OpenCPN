@@ -1400,6 +1400,13 @@ bool ChartCanvas::DoCanvasUpdate( void )
                                 SetQuiltRefChart( initial_db_index );
                                 m_pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
                             }
+                            
+                            // Check proposed scale, see how much underzoom results
+                            // Adjust as necessary to prevent slow loading on initial startup
+                            if(pc){
+                                double chart_scale = pc->GetNativeScale();
+                                proposed_scale_onscreen = wxMin(proposed_scale_onscreen, chart_scale * 4);
+                            }
                         }
                         
                         bNewView |= SetViewPoint( vpLat, vpLon,
