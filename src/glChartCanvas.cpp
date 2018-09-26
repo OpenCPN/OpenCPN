@@ -181,6 +181,7 @@ extern TCMgr            *ptcmgr;
 
 
 ocpnGLOptions g_GLOptions;
+bool g_IntelHD3_4000 = false;
 
 //    For VBO(s)
 bool         g_b_EnableVBO;
@@ -732,6 +733,13 @@ void glChartCanvas::SetupOpenGL()
 
     bool bad_stencil_code = false;
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
+      // HD Graphics 3000 and 4000 "hate" glFinish(). Dont use it for these cards.
+      if (GetRendererString().Upper().Find(_T("HD GRAPHICS 3000")) != wxNOT_FOUND ||
+        GetRendererString().Upper().Find(_T("HD GRAPHICS 4000")) != wxNOT_FOUND )
+          {
+        wxLogMessage(_T("OpenGL-> Detected Intel HD Graphics 3 or 4000, disable glFinish") );
+        g_IntelHD3_4000 = true;
+      }
         wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
         bad_stencil_code = true;
     }
@@ -884,7 +892,7 @@ void glChartCanvas::SetupOpenGL()
             wxLogMessage( _T("OpenGL-> Detected Windows Intel Mobile renderer, disabling Frame Buffer Objects") );
             m_b_DisableFBO = true;
             BuildFBO();
-        }
+        }        
     }
 #endif
     
@@ -3388,7 +3396,7 @@ void glChartCanvas::Render()
 
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
-            glFinish();   
+            if (!g_IntelHD3_4000) glFinish();
             g_glstopwatch.Start();
         }
     }
@@ -3850,13 +3858,13 @@ void glChartCanvas::Render()
 #ifdef __WXMSW__    
      //  MSW OpenGL drivers are generally very unstable.
      //  This helps...   
-     glFinish();
+     if (!g_IntelHD3_4000) glFinish();
 #endif    
     
     SwapBuffers();
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
-            glFinish();
+            if (!g_IntelHD3_4000) glFinish();
         
             double filter = .05;
         
