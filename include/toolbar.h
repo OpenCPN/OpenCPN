@@ -62,6 +62,11 @@ DECLARE_EVENT_TABLE()
 #define TOOLTIPON_TIMER       10000
 #define TOOLTIPOFF_TIMER      10001
 
+enum {
+    TOOLBAR_HIDE_TO_GRABBER = 0,
+    TOOLBAR_HIDE_TO_FIRST_TOOL,
+};
+
 class ToolTipWin;
 class ocpnToolBarTool;
 
@@ -353,6 +358,7 @@ public:
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       ocpnToolBarSimple *CreateNewToolbar();
+      void SetToolbarHideMethod(int n_method ){ n_toolbarHideMethod = n_method; }
       
       void CreateConfigMenu();
       bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
@@ -414,6 +420,7 @@ public:
       wxToolBarToolBase *m_pTBAISTool;
       bool m_toolbar_scale_tools_shown;
       void SetBackGroundColorString( wxString colorRef );
+      void SetULDockPosition(wxPoint position){ m_dock_min_x = position.x; m_dock_min_y = position.y; }
       
 protected:
     ocpnToolBarSimple *m_ptoolbar;
@@ -438,6 +445,7 @@ private:
       int m_dock_x;
       int m_dock_y;
       int m_dock_min_x;
+      int m_dock_min_y;
       
       ocpnStyle::Style* m_style;
       bool m_block;
@@ -456,6 +464,8 @@ private:
       wxString m_backcolorString;
       int m_cornerRadius;
       wxString m_toolShowMask;
+      int n_toolbarHideMethod;
+      
 };
 
 //---------------------------------------------------------------------------

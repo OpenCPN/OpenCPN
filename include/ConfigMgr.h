@@ -48,9 +48,11 @@ class ConfigMgr
         static void Shutdown();
         
         wxString CreateNamedConfig( wxString title, wxString description );
+        bool DeleteConfig(wxString GUID);
         wxArrayString GetConfigGUIDArray();
         
         wxPanel *GetConfigPanel( wxWindow *parent, wxString GUID );
+        bool ApplyConfigGUID( wxString GUID);
         
     private: // private for singleton
         ConfigMgr();
@@ -66,6 +68,7 @@ class ConfigMgr
         bool SaveTemplate( wxString fileName);
         wxString GetConfigDir(){ return m_configDir; }
         ConfigObjectList *GetConfigList(){ return configList; }
+        OCPNConfigObject *GetConfig( wxString GUID );
         
         wxString m_configDir;
         wxString m_configCatalogName;

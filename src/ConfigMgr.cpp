@@ -27,6 +27,7 @@
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
+#include <wx/statline.h>
 
 
 #include "dychart.h"
@@ -268,7 +269,6 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern bool             g_bUseGreenShip;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern int              g_nautosave_interval_seconds;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -421,6 +421,8 @@ extern int              g_nCPUCount;
 extern bool             g_bDarkDecorations;
 extern unsigned int     g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
+//extern OCPN_AUIManager  *g_pauimgr;
+//extern arrayofCanvasPtr  g_canvasArray;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -434,6 +436,20 @@ static const long long lNaN = 0xfff8000000000000;
 
 
 ConfigMgr * ConfigMgr::instance = NULL;
+
+//--------------------------------------------------------------------------
+//
+//      Utility functions
+//
+//--------------------------------------------------------------------------
+int GetRandomNumber(int range_min, int range_max)
+{
+    long u = (long)wxRound(((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) + range_min);
+    return (int)u;
+}
+
+
+
 
 class OCPNConfigObject
 {
@@ -489,6 +505,7 @@ public:
     ~OCPNConfigCatalog();
     
     bool AddConfig( OCPNConfigObject *config, unsigned int flags );
+    bool RemoveConfig( wxString GUID);
     
     
     void SetRootConfigNode(void);
@@ -556,6 +573,24 @@ bool OCPNConfigCatalog::AddConfig( OCPNConfigObject *config, unsigned int flags 
     return true;
 }
     
+bool OCPNConfigCatalog::RemoveConfig( wxString GUID)
+{
+    for (pugi::xml_node child = m_config_root.first_child(); child; )
+    {
+        pugi::xml_node next = child.next_sibling();
+        const char* guid = child.attribute("GUID").value();
+        
+        if(!strcmp(guid, GUID.mb_str())){
+            child.parent().remove_child(child);
+            return true;
+        }
+        
+        child = next;
+    }
+    
+    return false;
+}
+
     
 
 
@@ -574,12 +609,14 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID 
     mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Title")));
     mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_title));
     
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("GUID")));
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_GUID));
+    mainSizer->Add(new wxStaticLine(this, wxID_ANY), 0, wxEXPAND | wxALL, 1);
     
-    SetMinSize(wxSize(-1, 8 * GetCharHeight()) );
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Description")));
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_description));
     
-    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
+    SetMinSize(wxSize(-1, 6 * GetCharHeight()) );
+    
+    //Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
     
 }
 
@@ -628,8 +665,6 @@ ConfigMgr::ConfigMgr()
     // Load any existing configs from the catalog
     LoadCatalog();
     
-    
-
 }
 
 ConfigMgr::~ConfigMgr()
@@ -746,29 +781,62 @@ wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description )
     return GUID;
 }
 
+bool ConfigMgr::DeleteConfig(wxString GUID)
+{
+    OCPNConfigObject *cfg = GetConfig( GUID );
+    if(!cfg)
+        return false;
+    
+    // Find and delete the template file
+    wxString templateFullFileName = GetConfigDir() + cfg->templateFileName;
+    if(wxFileExists(templateFullFileName))
+        wxRemoveFile(templateFullFileName);
+    
+    // Remove the config from the catalog
+    bool rv = m_configCatalog->RemoveConfig(GUID);
+    
+    if(rv)
+        SaveCatalog();
+    
+    //  Remove the config from the member list
+    bool bDel = configList->DeleteObject(cfg);
+    if(bDel)
+        delete cfg;
+        
+    return rv;
+}
+
+
+
 wxPanel *ConfigMgr::GetConfigPanel( wxWindow *parent, wxString GUID )
 {
     wxPanel *retPanel = NULL;
     
     // Find the GUID-matching config in the member list
-    OCPNConfigObject *config = NULL;
-    for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
-    {
-        OCPNConfigObject *look = node->GetData();
-        if(look->m_GUID == GUID){
-            config = look;
-            break;
-        }
-    }
+    OCPNConfigObject *config = GetConfig( GUID );
     
     //  Found it?
     if(config){
         retPanel = new ConfigPanel( config, parent );
     }
         
-
     return retPanel;
+}
+
+OCPNConfigObject *ConfigMgr::GetConfig( wxString GUID )
+{
+    // Find the GUID-matching config in the member list
+    OCPNConfigObject *config = NULL;
+    for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
+    {
+        OCPNConfigObject *look = node->GetData();
+        if(look->m_GUID == GUID){
+            return look;
+            break;
+        }
+    }
     
+    return NULL;
 }
 
 wxArrayString ConfigMgr::GetConfigGUIDArray()
@@ -784,11 +852,55 @@ wxArrayString ConfigMgr::GetConfigGUIDArray()
     return ret_val;
 }
 
-int GetRandomNumber(int range_min, int range_max)
+bool ConfigMgr::ApplyConfigGUID( wxString GUID)
 {
-    long u = (long)wxRound(((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) + range_min);
-    return (int)u;
+    //MyConfig fconf;
+    // Find the GUID-matching config in the member list
+    OCPNConfigObject *config = GetConfig( GUID );
+    
+    //  Found it?
+    if(config){
+        // Record current canvas config
+        unsigned int last_canvasConfig = g_canvasConfig;
+        
+        wxString thisConfig = GetConfigDir() + config->templateFileName;
+        MyConfig fconf( thisConfig );
+        
+        //  Load the template contents, without resetting defaults
+        fconf.LoadMyConfigRaw();
+        //if( ps52plib->m_bOK ) 
+            //fconf.LoadS57Config();
+#if 0        
+        if( (g_canvasConfig != last_canvasConfig) ){
+            gFrame->UpdateCanvasConfigDescriptors();
+            
+            if( (g_canvasConfig > 0) && (last_canvasConfig == 0) )
+                gFrame->CreateCanvasLayout(true);    
+            else
+                gFrame->CreateCanvasLayout();
+            
+            gFrame->SendSizeEvent();
+            
+            g_pauimgr->Update();
+            
+            // We need a yield() here to pick up the size event
+            // so that the toolbars will be sized correctly
+            wxYield();
+            
+            // ..For each canvas...
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc)
+                    cc->CreateMUIBar();  
+            }
+        }
+#endif            
+        return true;
+    }
+    
+    return false;
 }
+
 
 // RFC4122 version 4 compliant random UUIDs generator.
 wxString ConfigMgr::GetUUID(void)
@@ -838,7 +950,8 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     //  Assuming the file exists, and is empty....
     
     //  Create a private wxFileConfig object
-    wxFileConfig *conf = new wxFileConfig( _T(""), _T(""), fileName, _T (""),  wxCONFIG_USE_LOCAL_FILE );
+    //wxFileConfig *conf = new wxFileConfig( _T(""), _T(""), fileName, _T (""),  wxCONFIG_USE_LOCAL_FILE );
+    MyConfig *conf = new MyConfig( fileName );
     
     //  Write out all the elements of a config template....
     
@@ -1138,6 +1251,9 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "TrackLineWidth" ), g_track_line_width );
     conf->Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     conf->Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
+    
+    //  Save the per-canvas config options
+    conf->SaveCanvasConfigs( );
     
     conf->Flush();
     

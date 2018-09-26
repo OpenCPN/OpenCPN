@@ -313,6 +313,9 @@ extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
 
 extern bool              g_bSpaceDropMark;
+extern bool              g_bAutoHideToolbar;
+extern int               g_nAutoHideToolbar;
+extern bool              g_bDeferredInitDone;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -11513,7 +11516,18 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
     if( !m_toolBar ) {
         m_toolBar = new ocpnFloatingToolbarDialog( this, m_toolbarPosition, m_toolbarOrientation, m_toolbar_scalefactor );
         m_toolBar->CreateConfigMenu();
-    }
+        
+        if(g_bDeferredInitDone){
+            m_toolBar->SetAutoHide(g_bAutoHideToolbar);
+            m_toolBar->SetAutoHideTimer(g_nAutoHideToolbar);
+        
+            // Adjust toolbar position if necessary
+            if(g_MainToolbar && IsPrimaryCanvas()){
+                wxRect masterToolbarRect = g_MainToolbar->GetRect();
+                m_toolBar->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, 0));
+            }
+        }
+     }
 
     if( m_toolBar ) {
         if( m_toolBar->IsToolbarShown() )

@@ -141,8 +141,7 @@ class MyConfig:public wxFileConfig
 {
 public:
 
-      MyConfig(const wxString &appName, const wxString &vendorName,
-                              const wxString &LocalFileName);
+      MyConfig(const wxString &LocalFileName);
 
       int LoadMyConfig();
       void LoadS57Config();
@@ -174,7 +173,8 @@ public:
       virtual void UpdateSettings();
 
       bool LoadLayers(wxString &path);
-
+      int LoadMyConfigRaw();
+      
       void CreateRotatingNavObjBackup();
       virtual void UpdateNavObj();
       

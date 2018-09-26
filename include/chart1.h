@@ -501,11 +501,11 @@ class MyFrame: public wxFrame
     bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
 
     void NotifyChildrenResize( void );
+    void UpdateCanvasConfigDescriptors();
     
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
-    void UpdateCanvasConfigDescriptors();
     
     void UpdateAllToolbars( ColorScheme cs );
     

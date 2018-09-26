@@ -230,7 +230,7 @@ double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
 
-int                       g_nbrightness;
+int                       g_nbrightness = 100;
 
 bool                      bDBUpdateInProgress;
 
@@ -358,7 +358,7 @@ bool                      g_bDebugCM93;
 bool                      g_bDebugS57;
 
 bool                      g_bfilter_cogsog;
-int                       g_COGFilterSec;
+int                       g_COGFilterSec = 1;
 int                       g_SOGFilterSec;
 
 int                       g_ChartUpdatePeriod;
@@ -453,8 +453,7 @@ FILE                      *s_fpdebug;
 bool                      bAutoOpen;
 bool                      bFirstAuto;
 
-bool                      g_bUseRMC;
-bool                      g_bUseGLL;
+bool                      g_bUseGLL = true;
 
 int                       g_nCacheLimit;
 int                       g_memCacheLimit;
@@ -462,7 +461,7 @@ bool                      g_bGDAL_Debug;
 
 double                    g_VPRotate; // Viewport rotation angle, used on "Course Up" mode
 bool                      g_bCourseUp;
-int                       g_COGAvgSec; // COG average period (sec.) for Course Up Mode
+int                       g_COGAvgSec = 15; // COG average period (sec.) for Course Up Mode
 double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
@@ -474,7 +473,7 @@ bool                      g_fog_overzoom;
 double                    g_overzoom_emphasis_base;
 bool                      g_oz_vector_scale;
 
-int                       g_nCOMPortCheck;
+int                       g_nCOMPortCheck = 32;
 
 bool                      g_b_legacy_input_filter_behaviour;  // Support original input filter process or new process
 
@@ -615,7 +614,7 @@ bool                      g_bUseGreenShip;
 wxString                  g_AW1GUID;
 wxString                  g_AW2GUID;
 
-bool                      g_b_overzoom_x; // Allow high overzoom
+bool                      g_b_overzoom_x = true; // Allow high overzoom
 
 int                       g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
@@ -626,7 +625,6 @@ int                       g_n_ownship_min_mm;
 
 double                    g_n_arrival_circle_radius;
 
-int                       g_nautosave_interval_seconds;
 
 bool                      g_bPreserveScaleOnX;
 
@@ -687,7 +685,9 @@ bool                      g_bShowCompassWin;
 
 bool                      g_benable_rotate;
 
-bool                      g_bShowTrue, g_bShowMag;
+bool                      g_bShowTrue = true;
+bool                      g_bShowMag;
+
 double                    g_UserVar;
 bool                      g_bMagneticAPB;
 
@@ -1796,6 +1796,15 @@ bool MyApp::OnInit()
 
 //      Initialize connection parameters array
     g_pConnectionParams = new wxArrayOfConnPrm();
+    
+//      Initialize some lists    
+    //    Layers
+    pLayerList = new LayerList;
+    //  Routes
+    pRouteList = new RouteList;
+    // Tracks
+    pTrackList = new TrackList;
+    
     
 //      (Optionally) Capture the user and file(effective) ids
 //  Some build environments may need root privileges for hardware
@@ -5623,6 +5632,21 @@ int MyFrame::DoOptionsDialog()
         b_refresh = true;
     }
     
+    if( rr & CONFIG_CHANGED){
+        // Apply the changed canvas configs to each canvas
+        // ..For each canvas...
+        for(unsigned int i=0 ; i < g_canvasConfigArray.GetCount() ; i++){
+            canvasConfig *cc = g_canvasConfigArray.Item(i);
+            if(cc ){
+                ChartCanvas *chartCanvas = cc->canvas;
+                if(chartCanvas){
+                    chartCanvas->ApplyCanvasConfig(cc);
+                }
+            }
+        }
+    }
+    
+    
     if( rr ) {
         bDBUpdateInProgress = true;
         b_refresh |= ProcessOptionsDialog( rr,  g_options->GetWorkDirListPtr() );
@@ -6318,6 +6342,16 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
             }
             
+              // .. for each canvas...
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc && cc->GetToolbarEnable()){
+                    cc->GetToolbar()->SetAutoHide(g_bAutoHideToolbar);
+                    cc->GetToolbar()->SetAutoHideTimer(g_nAutoHideToolbar);
+                }
+            }
+            
+            
             break;
         }
 
@@ -6422,7 +6456,6 @@ void MyFrame::OnMemFootTimer( wxTimerEvent& event )
 
     }
 
-//      MemFootTimer.Start(wxMax(g_MemFootSec * 1000, 60 * 1000), wxTIMER_CONTINUOUS);
     MemFootTimer.Start( 9000, wxTIMER_CONTINUOUS );
 }
 
@@ -9228,7 +9261,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->SetGrabberEnable( false );
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
-        
+        g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
         
     }
     
@@ -9249,9 +9282,11 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     
     //  We need to move the toolbar for the primary (leftmost) ChartCanvas out of the way...
     ChartCanvas *cc = g_canvasArray[0];
-     if(cc && cc->GetToolbar()){
-          cc->GetToolbar()->SetMinX( g_MainToolbar->GetSize().x * 12 / 10 );           // leave room for global toolbar on the left side of primary canvas
-          cc->RequestNewCanvasToolbar( false );
+    if(cc && cc->GetToolbar()){
+        wxRect masterToolbarRect = g_MainToolbar->GetRect();
+        cc->GetToolbar()->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, 0));
+        cc->GetToolbar()->SetMinX( masterToolbarRect.width + 8 );           // leave room for master toolbar on the left side of primary canvas
+        cc->RequestNewCanvasToolbar( false );
      }
         
         

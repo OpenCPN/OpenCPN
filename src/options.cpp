@@ -2941,7 +2941,7 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         m_DisplayConfigsPage->SetSizer(wrapperSizer);
         
         wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"));
-        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxVERTICAL);
+        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
         wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 0, wxALL | wxEXPAND, 5);
         
         //  The standard screen configs...
@@ -2989,18 +2989,23 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         btnSizer->Add(createButton, 1, wxALL | wxEXPAND, group_item_spacing);
         createButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnCreateConfig), NULL, this);
         
-        wxButton* editButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Edit Config..."));
-        btnSizer->Add(editButton, 1, wxALL | wxEXPAND, group_item_spacing);
-        editButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnEditConfig), NULL, this);
+        //wxButton* editButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Edit Config..."));
+        //btnSizer->Add(editButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        //editButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnEditConfig), NULL, this);
         
-        wxButton* deleteButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Delete Selected Config..."));
-        btnSizer->Add(deleteButton, 1, wxALL | wxEXPAND, group_item_spacing);
-        deleteButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnDeleteConfig), NULL, this);
+        m_configDeleteButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Delete Selected Config..."));
+        btnSizer->Add(m_configDeleteButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        m_configDeleteButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnDeleteConfig), NULL, this);
+
+        m_configApplyButton = new wxButton(m_DisplayConfigsPage, wxID_ANY, _("Apply Selected Config"));
+        btnSizer->Add(m_configApplyButton, 1, wxALL | wxEXPAND, group_item_spacing);
+        m_configApplyButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(options::OnApplyConfig), NULL, this);
         
         // Populate the configs list from the ConfigMgr
         ClearConfigList();
         BuildConfigList();
         
+        SetConfigButtonState();
     }
             
 }
@@ -3015,6 +3020,7 @@ void options::ClearConfigList()
             delete win;
         }
     }
+    SetConfigButtonState();
 }
 
 void options::BuildConfigList()
@@ -3037,7 +3043,14 @@ void options::BuildConfigList()
     }
     
     m_selectedConfigPanelGUID = _T("");
+    SetConfigButtonState();
 }
+
+void options::SetConfigButtonState()
+{
+    m_configDeleteButton->Enable(!m_selectedConfigPanelGUID.IsEmpty());
+    m_configApplyButton->Enable(!m_selectedConfigPanelGUID.IsEmpty());
+}    
 
 void options::OnCreateConfig( wxCommandEvent &event)
 {
@@ -3048,6 +3061,7 @@ void options::OnCreateConfig( wxCommandEvent &event)
         BuildConfigList();
         m_DisplayConfigsPage->Layout();
     }
+    SetConfigButtonState();
 }
 
 void options::OnEditConfig( wxCommandEvent &event)
@@ -3056,7 +3070,52 @@ void options::OnEditConfig( wxCommandEvent &event)
 
 void options::OnDeleteConfig( wxCommandEvent &event)
 {
+    if(m_selectedConfigPanelGUID.IsEmpty())
+        return;
+    
+    ConfigMgr::Get().DeleteConfig( m_selectedConfigPanelGUID);
+    m_selectedConfigPanelGUID = _T("");
+    
+    ClearConfigList();
+    BuildConfigList();
+    
+    m_DisplayConfigsPage->Layout();
+    SetConfigButtonState();
 }
+
+void options::OnApplyConfig( wxCommandEvent &event)
+{
+    if(m_selectedConfigPanelGUID.IsEmpty())
+        return;
+
+    //  Apply any changed settings other than the target config template.
+    wxCommandEvent evt;
+    evt.SetId(ID_APPLY);
+    OnApplyClick(evt);
+    
+    // Then Apply the target config template
+    bool bApplyStat = ConfigMgr::Get().ApplyConfigGUID( m_selectedConfigPanelGUID);
+    if(bApplyStat){
+        OCPNMessageBox(this, _("Configuration successfully applied."), _("OpenCPN Info"), wxOK);
+    }
+    
+    //  Clear all selections
+    if(m_scrollWinConfigList){
+        wxWindowList kids = m_scrollWinConfigList->GetChildren();
+        for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+            wxWindowListNode *node = kids.Item(i);
+            wxWindow *win = node->GetData();
+            wxPanel *panel = wxDynamicCast(win, wxPanel);
+            panel->SetBackgroundColour(m_panelBackgroundUnselected);
+        }
+    }
+    m_selectedConfigPanelGUID = wxEmptyString;
+    
+    m_returnChanges |= CONFIG_CHANGED;
+    
+    Finish();
+}
+
 
 void options::OnConfigMouseSelected( wxMouseEvent &event)
 {
@@ -3098,7 +3157,7 @@ void options::OnConfigMouseSelected( wxMouseEvent &event)
         }
         
         m_DisplayConfigsPage->Layout();
-        
+        SetConfigButtonState();
     }
 }
 
@@ -6366,8 +6425,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   long filter_val = 1;
   m_tFilterSec->GetValue().ToLong(&filter_val);
-  g_COGFilterSec =
-      wxMin(static_cast<int>(filter_val), MAX_COGSOG_FILTER_SECONDS);
+  g_COGFilterSec = wxMin(static_cast<int>(filter_val), MAX_COGSOG_FILTER_SECONDS);
   g_COGFilterSec = wxMax(g_COGFilterSec, 1);
   g_SOGFilterSec = g_COGFilterSec;
 
@@ -6375,8 +6433,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
 
   // NMEA Source
-  long itemIndex =
-      m_lcSources->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+  long itemIndex = m_lcSources->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 
   //  If the stream selected exists, capture some of its existing parameters
   //  to facility identification and allow stop and restart of the stream
@@ -6458,8 +6515,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   }
 
   g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
-  g_GPS_Ident =
-      m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
+  g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
 
   // End of Connections page
   if(pCDOOutlines) g_bShowOutlines = pCDOOutlines->GetValue();
@@ -6517,10 +6573,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iWaypointRangeRingsNumber = pWaypointRangeRingsNumber->GetSelection();
   if (pWaypointRangeRingsStep->GetValue().ToDouble(&temp_dbl))
     g_fWaypointRangeRingsStep = temp_dbl;
-  g_iWaypointRangeRingsStepUnits =
-      m_itemWaypointRangeRingsUnits->GetSelection();
-  g_colourWaypointRangeRingsColour =
-      m_colourWaypointRangeRingsColour->GetColour();
+  g_iWaypointRangeRingsStepUnits = m_itemWaypointRangeRingsUnits->GetSelection();
+  g_colourWaypointRangeRingsColour =  m_colourWaypointRangeRingsColour->GetColour();
    g_colourWaypointRangeRingsColour =
        wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
@@ -6543,8 +6597,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
 
-  g_bAdvanceRouteWaypointOnArrivalOnly =
-      pAdvanceRouteWaypointOnArrivalOnly->GetValue();
+  g_bAdvanceRouteWaypointOnArrivalOnly = pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
   g_colourTrackLineColour =  m_colourTrackLineColour->GetColour();
   g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());

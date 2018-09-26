@@ -278,7 +278,6 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern bool             g_bUseGreenShip;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern int              g_nautosave_interval_seconds;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -463,9 +462,8 @@ wxString GetLayerName( int id )
 //          MyConfig Implementation
 //-----------------------------------------------------------------------------
 
-MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
-        const wxString &LocalFileName ) :
-        wxFileConfig( appName, vendorName, LocalFileName, _T (""),  wxCONFIG_USE_LOCAL_FILE )
+MyConfig::MyConfig( const wxString &LocalFileName ) :
+    wxFileConfig( _T (""), _T (""), LocalFileName, _T (""),  wxCONFIG_USE_LOCAL_FILE )
 {
     //    Create the default NavObjectCollection FileName
     wxFileName config_file( LocalFileName );
@@ -537,6 +535,180 @@ void MyConfig::CreateRotatingNavObjBackup()
 
 int MyConfig::LoadMyConfig()
 {
+    int display_width, display_height;
+    wxDisplaySize( &display_width, &display_height );
+    
+    //  Set up any defaults not set elsewhere
+    g_useMUI = true;
+    g_TalkerIdText = _T("EC");
+    g_maxWPNameLength = 6;
+    g_NMEAAPBPrecision = 3;
+
+    #ifdef ocpnUSE_GL
+    g_GLOptions.m_bUseAcceleratedPanning = true;
+    g_GLOptions.m_GLPolygonSmoothing = true;
+    g_GLOptions.m_GLLineSmoothing = true;
+    g_GLOptions.m_iTextureDimension = 512;
+    g_GLOptions.m_iTextureMemorySize = 128;
+    if(!g_bGLexpert){
+        g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
+        g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
+    }
+    #endif
+
+    g_maintoolbar_orient = wxTB_HORIZONTAL;
+    g_iENCToolbarPosX = -1;
+    g_iENCToolbarPosY = -1;
+    g_restore_dbindex = -1;
+    g_ChartNotRenderScaleFactor = 1.5;
+    g_detailslider_dialog_x = 200L;
+    g_detailslider_dialog_y = 200L;
+    g_SENC_LOD_pixels = 2;
+    g_SkewCompUpdatePeriod = 10;
+    
+    g_bShowStatusBar = 1;
+    g_bShowCompassWin = 1;
+    g_iSoundDeviceIndex = -1;
+    g_bFullscreenToolbar = 1;
+    g_bTransparentToolbar =  1;
+    g_bShowLayers = 1;
+    g_bShowDepthUnits = 1;
+    g_bShowActiveRouteHighway = 1;
+    g_bShowChartBar = 1;
+    g_defaultBoatSpeed = 6.0;
+    g_ownship_predictor_minutes = 5;
+    g_cog_predictor_width = 3;
+    g_ownship_HDTpredictor_miles = 1;
+    g_n_ownship_min_mm = 1;
+    g_own_ship_sog_cog_calc_damp_sec = 1;
+    g_bFullScreenQuilt = 1;
+    g_track_rotate_time_type =  TIME_TYPE_COMPUTER;
+    g_bHighliteTracks = 1;
+    g_bPreserveScaleOnX = 1;
+    g_navobjbackups = 5;
+    g_benableAISNameCache = true;
+    g_n_arrival_circle_radius = 50;
+    
+    g_AISShowTracks_Mins = 20;
+    g_ShowScaled_Num = 10L;
+    g_ScaledNumWeightSOG = 50;
+    g_ScaledNumWeightCPA = 60;
+    g_ScaledNumWeightTCPA = 25;
+    g_ScaledNumWeightRange = 75;
+    g_ScaledNumWeightSizeOfT = 25;
+    g_ScaledSizeMinimal = 50;
+    g_Show_Target_Name_Scale = 250000L;
+    g_bWplIsAprsPosition = 1;
+    g_ais_cog_predictor_width = 3;
+    g_ais_alert_dialog_sx = 200L;
+    g_ais_alert_dialog_sy = 200L;
+    g_ais_alert_dialog_x = 200L;
+    g_ais_alert_dialog_y = 200L;
+    g_ais_query_dialog_x = 200L;
+    g_ais_query_dialog_y = 200L;
+    g_AisTargetList_range = 40L;
+    g_AisTargetList_sortColumn = 2L; // Column #2 is MMSI
+    g_S57_dialog_sx = 400;
+    g_S57_dialog_sy = 400;
+
+    //    Reasonable starting point
+    vLat = START_LAT;                   // display viewpoint
+    vLon = START_LON;
+    gLat = START_LAT;                   // GPS position, as default
+    gLon = START_LON;
+    initial_scale_ppm = .0003;        // decent initial value
+    initial_rotation = 0;
+
+    g_iNavAidRadarRingsNumberVisible = 0;
+    g_fNavAidRadarRingsStep = 1.0;
+    g_pNavAidRadarRingsStepUnits = 0;
+    g_colourOwnshipRangeRingsColour = *wxRED;
+    g_iWaypointRangeRingsNumber = 0;
+    g_fWaypointRangeRingsStep = 1.0;
+    g_iWaypointRangeRingsStepUnits = 0;
+    g_colourWaypointRangeRingsColour = wxColour( *wxRED );
+    g_bConfirmObjectDelete = true;
+    
+    g_TrackIntervalSeconds = 60.0;
+    g_TrackDeltaDistance = 0.10;
+    g_route_line_width = 2;
+    g_track_line_width = 2;
+    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    
+    g_current_arrow_scale = 100;
+    g_tide_rectangle_scale = 100;
+    g_tcwin_scale = 100;
+    g_default_wp_icon = _T("triangle");
+    
+    // Load the raw value, with no defaults, and no processing
+    int ret_Val = LoadMyConfigRaw();
+    
+    //  Perform any required post processing and validation
+    if(!ret_Val){
+        g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
+        g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ShipScaleFactor );
+        
+        g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
+        g_COGFilterSec = wxMax(g_COGFilterSec, 1);
+        g_SOGFilterSec = g_COGFilterSec;
+
+        if(!g_bShowTrue && !g_bShowMag)
+            g_bShowTrue = true;
+        g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
+
+        if( g_bInlandEcdis )
+            g_bLookAhead=1;
+        
+        if ( g_bdisable_opengl )
+            g_bopengl = false;
+        
+        #ifdef ocpnUSE_GL
+            if(!g_bGLexpert){
+            g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
+            g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
+        }
+        #endif
+
+        g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
+        g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
+        g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
+        g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
+        g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
+        g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
+        
+        if( ( g_detailslider_dialog_x < 0 ) || ( g_detailslider_dialog_x > display_width ) )
+            g_detailslider_dialog_x = 5;
+        if( ( g_detailslider_dialog_y < 0 ) || ( g_detailslider_dialog_y > display_height ) )
+            g_detailslider_dialog_y =  5;
+        
+        g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
+        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+        if( g_navobjbackups > 99 ) g_navobjbackups = 99;
+        if( g_navobjbackups < 0 ) g_navobjbackups = 0;
+        g_n_arrival_circle_radius = wxMax(g_n_arrival_circle_radius, .001);
+        
+        g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
+
+        if( ( g_ais_alert_dialog_x < 0 ) || ( g_ais_alert_dialog_x > display_width ) )
+            g_ais_alert_dialog_x = 5;
+        if( ( g_ais_alert_dialog_y < 0 ) || ( g_ais_alert_dialog_y > display_height ) )
+            g_ais_alert_dialog_y = 5;
+        if( ( g_ais_query_dialog_x < 0 ) || ( g_ais_query_dialog_x > display_width ) )
+            g_ais_query_dialog_x = 5;
+        if( ( g_ais_query_dialog_y < 0 ) || ( g_ais_query_dialog_y > display_height ) )
+            g_ais_query_dialog_y = 5;
+
+        SwitchInlandEcdisMode( g_bInlandEcdis );
+        if ( g_bInlandEcdis )
+            global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
+            
+    }
+    
+    return ret_Val;
+}
+
+int MyConfig::LoadMyConfigRaw()
+{
 
     int read_int;
     wxString val;
@@ -548,287 +720,240 @@ int MyConfig::LoadMyConfig()
     SetPath( _T ( "/Settings" ) );    
     
     // Some undocumented values
-    Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
-    Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
+    Read( _T ( "ConfigVersionString" ), &g_config_version_string );
+    Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
-    Read( _T ( "UIexpert" ), &g_bUIexpert, 1 );
+    Read( _T ( "UIexpert" ), &g_bUIexpert );
     
-    Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
+    Read( _T ( "UIStyle" ), &g_uiStyle  );
 
-    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, 0 );
+    Read( _T ( "NCacheLimit" ), &g_nCacheLimit );
      
-    Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );// First read if in iENC mode as this will override some config settings
+    Read( _T ( "InlandEcdis" ), &g_bInlandEcdis );// First read if in iENC mode as this will override some config settings
     
-    Read( _T ("DarkDecorations" ), &g_bDarkDecorations, 0 );
+    Read( _T ("DarkDecorations" ), &g_bDarkDecorations );
 
-    Read( _T( "SpaceDropMark" ), &g_bSpaceDropMark, 0 );
-    int mem_limit;
-    Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+    Read( _T( "SpaceDropMark" ), &g_bSpaceDropMark );
 
-    Read( _T ( "UseModernUI5" ), &g_useMUI, 1 );
-    
+    int mem_limit = 0;
+    Read( _T ( "MEMCacheLimit" ), &mem_limit );
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
 
-    Read( _T( "NCPUCount" ), &g_nCPUCount, -1);    
-
-    Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
-    Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
-    Read( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );
-    Read( _T ( "AnchorWatchDefault" ), &g_nAWDefault, 50 );
-    Read( _T ( "AnchorWatchMax" ), &g_nAWMax, 1852 );
-    Read( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks, GPS_TIMEOUT_SECONDS );
-    Read( _T ( "DebugCM93" ), &g_bDebugCM93, 0 );
-    Read( _T ( "DebugS57" ), &g_bDebugS57, 0 );         // Show LUP and Feature info in object query
-    Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug, 0 );
-    Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
-
-    Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
+    Read( _T ( "UseModernUI5" ), &g_useMUI );
     
-    Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
-    g_b_overzoom_x = true;
-    Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
+    Read( _T( "NCPUCount" ), &g_nCPUCount);    
 
-    Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
-    Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload, 0 );
+    Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug );
+    Read( _T ( "DebugNMEA" ), &g_nNMEADebug );
+    Read( _T ( "DebugOpenGL" ), &g_bDebugOGL );
+    Read( _T ( "AnchorWatchDefault" ), &g_nAWDefault );
+    Read( _T ( "AnchorWatchMax" ), &g_nAWMax );
+    Read( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks );
+    Read( _T ( "DebugCM93" ), &g_bDebugCM93 );
+    Read( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
+    Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
+    Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
 
-    Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
-    Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
-    Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
-
-    Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar, 0 );
-    Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
+    Read( _T ( "DefaultFontSize"), &g_default_font_size );
     
-    Read( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar, 0 );
-    Read( _T ( "ShowTide" ), &g_bShowTide, 0 );
-    Read( _T ( "ShowCurrent" ), &g_bShowCurrent, 0 );
+    Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
+
+    Read( _T ( "GPSIdent" ), &g_GPS_Ident );
+    Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
+
+    Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
+
+    Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar );
+    Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar );
     
-    int size_mm;
-    Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
-    g_config_display_size_mm = size_mm;
-    if((size_mm > 100) && (size_mm < 2000)){
-        g_display_size_mm = size_mm;
+    Read( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar );
+    Read( _T ( "ShowTide" ), &g_bShowTide );
+    Read( _T ( "ShowCurrent" ), &g_bShowCurrent );
+    
+    int size_mm = -1;
+    Read( _T ( "DisplaySizeMM" ), &size_mm );
+    if(size_mm > 0){
+        g_config_display_size_mm = size_mm;
+        if((size_mm > 100) && (size_mm < 2000)){
+            g_display_size_mm = size_mm;
+        }
     }
-    Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual, 0 );
+    Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual );
     
-    Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
-    Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
-    g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
-    Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor, 0 );
-    g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ShipScaleFactor );
+    Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor );
     
-    Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
-    Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
-    g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
-    g_COGFilterSec = wxMax(g_COGFilterSec, 1);
-    g_SOGFilterSec = g_COGFilterSec;
+    Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
+    Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+    
+    Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog );
+    Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec );
 
-    Read( _T ( "ShowTrue" ), &g_bShowTrue, 1 );
-    Read( _T ( "ShowMag" ), &g_bShowMag, 0 );
+    Read( _T ( "ShowTrue" ), &g_bShowTrue );
+    Read( _T ( "ShowMag" ), &g_bShowMag );
 
-    if(!g_bShowTrue && !g_bShowMag)
-        g_bShowTrue = true;
-
-    g_UserVar = 0.0;
     wxString umv;
     Read( _T ( "UserMagVariation" ), &umv );
     if(umv.Len())
         umv.ToDouble( &g_UserVar );
 
-    Read( _T ( "UseMagAPB" ), &g_bMagneticAPB, 0 );
+    Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
 
-    Read( _T ( "ScreenBrightness" ), &g_nbrightness, 100 );
+    Read( _T ( "ScreenBrightness" ), &g_nbrightness );
 
-    Read( _T ( "MemFootprintMgrTimeSec" ), &g_MemFootSec, 60 );
-    Read( _T ( "MemFootprintTargetMB" ), &g_MemFootMB, 200 );
+    Read( _T ( "MemFootprintTargetMB" ), &g_MemFootMB );
 
-    Read( _T ( "WindowsComPortMax" ), &g_nCOMPortCheck, 32 );
+    Read( _T ( "WindowsComPortMax" ), &g_nCOMPortCheck );
 
-    Read( _T ( "ChartQuilting" ), &g_bQuiltEnable, 0 );
-    Read( _T ( "ChartQuiltingInitial" ), &g_bQuiltStart, 0 );
+    Read( _T ( "ChartQuilting" ), &g_bQuiltEnable );
+    Read( _T ( "ChartQuiltingInitial" ), &g_bQuiltStart );
 
-    Read( _T ( "CourseUpMode" ), &g_bCourseUp, 0 );
-    Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec, 15 );
-    g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
-    if( g_bInlandEcdis ) g_bLookAhead=1;
-        else Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
-    Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
-    Read( _T ( "OpenGL" ), &g_bopengl, 0 );
-    if ( g_bdisable_opengl )
-        g_bopengl = false;
-    Read( _T ( "SoftwareGL" ), &g_bSoftwareGL, 0 );
+    Read( _T ( "CourseUpMode" ), &g_bCourseUp );
+    Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec );
+    Read( _T ( "LookAheadMode" ), &g_bLookAhead );
+    Read( _T ( "SkewToNorthUp" ), &g_bskew_comp );
+    Read( _T ( "OpenGL" ), &g_bopengl );
+    Read( _T ( "SoftwareGL" ), &g_bSoftwareGL );
     
-    Read( _T ( "ShowFPS" ), &g_bShowFPS, 0 );
+    Read( _T ( "ShowFPS" ), &g_bShowFPS );
     
-    Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
+    Read( _T ( "ActiveChartGroup" ), &g_GroupIndex );
 
-    Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
+    Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision );
     
-    Read( _T( "TalkerIdText" ), &g_TalkerIdText, _T("EC") );
-    Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength, 6 );
+    Read( _T( "TalkerIdText" ), &g_TalkerIdText );
+    Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
     Read( _T ( "OpenGLExpert" ), &g_bGLexpert, false );
     Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
-
-    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
-    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
-    Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing, true);
-    Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing, true);
-
-    Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
-    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
-    if(!g_bGLexpert){
-        g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
-        g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
-    }
+    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression);
+    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching);
+    Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing);
+    Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing);
+    Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension );
+    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize );
 
 #endif
-    Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
+    Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom );
 
-    Read( _T ( "ToolbarX"), &g_maintoolbar_x, 0 );
-    Read( _T ( "ToolbarY" ), &g_maintoolbar_y, 0 );
-    Read( _T ( "ToolbarOrient" ), &g_maintoolbar_orient, wxTB_HORIZONTAL );
+    Read( _T ( "ToolbarX"), &g_maintoolbar_x );
+    Read( _T ( "ToolbarY" ), &g_maintoolbar_y );
+    Read( _T ( "ToolbarOrient" ), &g_maintoolbar_orient );
     Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
 
-    Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX, -1 );
-    Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY, -1 );
+    Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX );
+    Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY );
     
-    Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX, -1 );
-    Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY, -1 );
-    
-    Read( _T ( "AnchorWatch1GUID" ), &g_AW1GUID, _T("") );
-    Read( _T ( "AnchorWatch2GUID" ), &g_AW2GUID, _T("") );
+    Read( _T ( "AnchorWatch1GUID" ), &g_AW1GUID );
+    Read( _T ( "AnchorWatch2GUID" ), &g_AW2GUID );
 
-    Read( _T ( "InitialStackIndex" ), &g_restore_stackindex, 0 );
-    Read( _T ( "InitialdBIndex" ), &g_restore_dbindex, -1 );
+    Read( _T ( "InitialStackIndex" ), &g_restore_stackindex );
+    Read( _T ( "InitialdBIndex" ), &g_restore_dbindex );
 
-    Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor, 1.5 );
+    Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor );
 
-    Read( _T ( "MobileTouch" ), &g_btouch, 0 );
-    Read( _T ( "ResponsiveGraphics" ), &g_bresponsive, 0 );
+    Read( _T ( "MobileTouch" ), &g_btouch );
+    Read( _T ( "ResponsiveGraphics" ), &g_bresponsive );
 
-    Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier, 0 );
-    g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
-    g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
-
-    Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector, 0 );
-    g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
-    g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
-    
-//     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
-//     Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
-//     Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
+    Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
+    Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
     
 #ifdef USE_S57
-    Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
-    g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
-    g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
+    Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor );
 
-    g_detailslider_dialog_x = Read( _T ( "CM93DetailZoomPosX" ), 200L );
-    g_detailslider_dialog_y = Read( _T ( "CM93DetailZoomPosY" ), 200L );
-    if( ( g_detailslider_dialog_x < 0 ) || ( g_detailslider_dialog_x > display_width ) ) g_detailslider_dialog_x =
-            5;
-    if( ( g_detailslider_dialog_y < 0 ) || ( g_detailslider_dialog_y > display_height ) ) g_detailslider_dialog_y =
-            5;
+    Read( _T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x );
+    Read( _T ( "CM93DetailZoomPosY" ), &g_detailslider_dialog_y );
+    Read( _T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider );
 
-    Read( _T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider, 0 );
-
-    Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels, 2 );
+    Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels );
 
 #endif
 
-    Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
+    Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod );
 
-    Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar, 1 );
+    Read( _T ( "SetSystemTime" ), &s_bSetSystemTime );
+    Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar );
 #ifndef __WXOSX__
-    Read( _T ( "ShowMenuBar" ), &g_bShowMenuBar, 0 );
+    Read( _T ( "ShowMenuBar" ), &g_bShowMenuBar );
 #endif
-    Read( _T ( "Fullscreen" ), &g_bFullscreen, 0 );
-    Read( _T ( "ShowCompassWindow" ), &g_bShowCompassWin, 1 );
-    Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
-    Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
-    Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, -1 );
-    Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
-    Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
-    Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon, 0 );
-    Read( _T ( "ShowLayers" ), &g_bShowLayers, 1 );
-    Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
-    Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
-    Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
-    Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
-    Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
-    Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
-    Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
-    Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
+    Read( _T ( "Fullscreen" ), &g_bFullscreen );
+    Read( _T ( "ShowCompassWindow" ), &g_bShowCompassWin );
+    Read( _T ( "ShowGrid" ), &g_bDisplayGrid );
+    Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
+    Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
+    Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
+    Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
+    Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
+    Read( _T ( "ShowLayers" ), &g_bShowLayers );
+    Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
+    Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark );
+    Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines );
+    Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway );
+    Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal );
+    Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection);
+    Read( _T ( "ShowChartBar" ), &g_bShowChartBar );
+    Read( _T ( "SDMMFormat" ), &g_iSDMMFormat ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
       
-    Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
-    Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+    Read( _T ( "DistanceFormat" ), &g_iDistanceFormat ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
+    Read( _T ( "SpeedFormat" ), &g_iSpeedFormat ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
     // LIVE ETA OPTION
-    Read( _T ( "LiveETA" ), &g_bShowLiveETA, 0 );
-    Read( _T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed, 6.0 );
-    // Calculate user selected speed unit
-    g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
+    Read( _T ( "LiveETA" ), &g_bShowLiveETA );
+    Read( _T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed );
     
-    Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
-    Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
-    Read( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles, 1 );
+    Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes );
+    Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width );
+    Read( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles );
 
-    Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
-    Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
-    Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
-    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
-    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
-    Read( _T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc, false );
-    Read( _T ( "OwnShipSogCogCalcDampSec"), &g_own_ship_sog_cog_calc_damp_sec, 1 );
-    g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+    Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType );
+    Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters );
+    Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters );
+    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x );
+    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y );
+    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm );
+    Read( _T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc );
+    Read( _T ( "OwnShipSogCogCalcDampSec"), &g_own_ship_sog_cog_calc_damp_sec );
 
-    g_n_arrival_circle_radius = .050;           // default
     wxString racr;
     Read( _T ( "RouteArrivalCircleRadius" ), &racr );
     if(racr.Len())
         racr.ToDouble( &g_n_arrival_circle_radius);
-    g_n_arrival_circle_radius = wxMax(g_n_arrival_circle_radius, .001);
 
-    Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
+    Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt );
 
-    Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
-    Read( _T ( "AutomaticDailyTracks" ), &g_bTrackDaily, 0 );
-    Read( _T ( "TrackRotateAt" ), &g_track_rotate_time, 0 );
-    Read( _T ( "TrackRotateTimeType" ), &g_track_rotate_time_type, TIME_TYPE_COMPUTER );
-    Read( _T ( "HighlightTracks" ), &g_bHighliteTracks, 1 );
+    Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver );
+    Read( _T ( "AutomaticDailyTracks" ), &g_bTrackDaily );
+    Read( _T ( "TrackRotateAt" ), &g_track_rotate_time );
+    Read( _T ( "TrackRotateTimeType" ), &g_track_rotate_time_type );
+    Read( _T ( "HighlightTracks" ), &g_bHighliteTracks );
 
     wxString stps;
     Read( _T ( "PlanSpeed" ), &stps );
-    stps.ToDouble( &g_PlanSpeed );
+    if(!stps.IsEmpty())
+        stps.ToDouble( &g_PlanSpeed );
 
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
 
-    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 1 );
+    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
-    g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
     
     //We allow 0-99 backups ov navobj.xml
-    Read( _T ( "KeepNavobjBackups" ), &g_navobjbackups, 5 );
-    if( g_navobjbackups > 99 ) g_navobjbackups = 99;
-    if( g_navobjbackups < 0 ) g_navobjbackups = 0;
+    Read( _T ( "KeepNavobjBackups" ), &g_navobjbackups );
 
     NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L), Read(_T("NMEALogWindowSizeY"), 400L));
     NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L), Read(_T("NMEALogWindowPosY"), 10L));
     NMEALogWindow::Get().CheckPos(display_width, display_height);
 
     // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg filtered but put msg on bus.
-    Read( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour, 0 );
+    Read( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour );
     
     // Boolean to cater for sailing when not approaching waypoint
-    Read( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly, 0);
+    Read( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly);
 
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
@@ -836,25 +961,28 @@ int MyConfig::LoadMyConfig()
     g_benableAISNameCache = true;
     Read( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
     
-    Read( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader, 0 );
+    Read( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader );
     
     SetPath( _T ( "/Settings/GlobalState" ) );
 
     Read( _T ( "FrameWinX" ), &g_nframewin_x );
     Read( _T ( "FrameWinY" ), &g_nframewin_y );
-    Read( _T ( "FrameWinPosX" ), &g_nframewin_posx, 0 );
-    Read( _T ( "FrameWinPosY" ), &g_nframewin_posy, 0 );
+    Read( _T ( "FrameWinPosX" ), &g_nframewin_posx );
+    Read( _T ( "FrameWinPosY" ), &g_nframewin_posy );
     Read( _T ( "FrameMax" ), &g_bframemax );
 
-    Read( _T ( "ClientPosX" ), &g_lastClientRectx, 0 );
-    Read( _T ( "ClientPosY" ), &g_lastClientRecty, 0 );
-    Read( _T ( "ClientSzX" ), &g_lastClientRectw, 0 );
-    Read( _T ( "ClientSzY" ), &g_lastClientRecth, 0 );
+    Read( _T ( "ClientPosX" ), &g_lastClientRectx );
+    Read( _T ( "ClientPosY" ), &g_lastClientRecty );
+    Read( _T ( "ClientSzX" ), &g_lastClientRectw );
+    Read( _T ( "ClientSzY" ), &g_lastClientRecth );
     
-    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
-    read_int = wxMax(read_int, 0);                      // qualify value
-    read_int = wxMin(read_int, 2);
-    g_nDepthUnitDisplay = read_int;
+    read_int = -1;
+    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int );   // default is metres
+    if(read_int >= 0){
+        read_int = wxMax(read_int, 0);                      // qualify value
+        read_int = wxMin(read_int, 2);
+        g_nDepthUnitDisplay = read_int;
+    }
     
     //    AIS
     wxString s;
@@ -890,94 +1018,81 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "CogArrowMinutes" ), &s );
     s.ToDouble( &g_ShowCOG_Mins );
 
-    Read( _T ( "bShowTargetTracks" ), &g_bAISShowTracks, 0 );
+    Read( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
 
     if( Read( _T ( "TargetTracksMinutes" ), &s ) ) {
         s.ToDouble( &g_AISShowTracks_Mins );
         g_AISShowTracks_Mins = wxMax(1.0, g_AISShowTracks_Mins);
         g_AISShowTracks_Mins = wxMin(300.0, g_AISShowTracks_Mins);
-    } else
-        g_AISShowTracks_Mins = 20;
+    }
 
-    Read( _T ( "bHideMooredTargets" ), &g_bHideMoored, false );
-    Read( _T ( "MooredTargetMaxSpeedKnots" ), &s );
-    s.ToDouble( &g_ShowMoored_Kts );
+    Read( _T ( "bHideMooredTargets" ), &g_bHideMoored );
+    if(Read( _T ( "MooredTargetMaxSpeedKnots" ), &s ))
+        s.ToDouble( &g_ShowMoored_Kts );
     
-    Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled, false );
-    g_ShowScaled_Num = Read( _T ( "AISScaledNumber" ), 10L );
-    g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 50L );
-    g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 60L );
-    g_ScaledNumWeightTCPA = Read( _T ( "AISScaledNumberWeightTCPA" ), 25L );
-    g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 75L );
-    g_ScaledNumWeightSizeOfT = Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), 25L );
-    g_ScaledSizeMinimal = Read( _T ( "AISScaledSizeMinimal" ), 50L );
-    Read(_T("AISShowScaled"), &g_bShowScaled, false );
+    Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled );
+    Read( _T ( "AISScaledNumber" ), g_ShowScaled_Num );
+    Read( _T ( "AISScaledNumberWeightSOG" ), g_ScaledNumWeightSOG );
+    Read( _T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA );
+    Read( _T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA );
+    Read( _T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange );
+    Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT );
+    Read( _T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal );
+    Read(_T("AISShowScaled"), &g_bShowScaled );
     
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
-    g_Show_Target_Name_Scale = Read( _T ( "ShowAISTargetNameScale" ), 250000L );
-    g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
-    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition, 1 );
-    Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width, 3 );
+    Read( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
+    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
+    Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
     Read( _T ( "AISAlertAudioFile" ), &g_sAIS_Alert_Sound_File );
     Read( _T ( "bAISAlertSuppressMoored" ), &g_bAIS_CPA_Alert_Suppress_Moored );
 
-    Read( _T ( "bAISAlertAckTimeout" ), &g_bAIS_ACK_Timeout, 0 );
-    Read( _T ( "AlertAckTimeoutMinutes" ), &s );
-    s.ToDouble( &g_AckTimeout_Mins );
+    Read( _T ( "bAISAlertAckTimeout" ), &g_bAIS_ACK_Timeout );
+    if(Read( _T ( "AlertAckTimeoutMinutes" ), &s ))
+        s.ToDouble( &g_AckTimeout_Mins );
 
-    g_ais_alert_dialog_sx = Read( _T ( "AlertDialogSizeX" ), 200L );
-    g_ais_alert_dialog_sy = Read( _T ( "AlertDialogSizeY" ), 200L );
-    g_ais_alert_dialog_x = Read( _T ( "AlertDialogPosX" ), 200L );
-    g_ais_alert_dialog_y = Read( _T ( "AlertDialogPosY" ), 200L );
-    g_ais_query_dialog_x = Read( _T ( "QueryDialogPosX" ), 200L );
-    g_ais_query_dialog_y = Read( _T ( "QueryDialogPosY" ), 200L );
-
-    if( ( g_ais_alert_dialog_x < 0 ) || ( g_ais_alert_dialog_x > display_width ) ) g_ais_alert_dialog_x =
-            5;
-    if( ( g_ais_alert_dialog_y < 0 ) || ( g_ais_alert_dialog_y > display_height ) ) g_ais_alert_dialog_y =
-            5;
-
-    if( ( g_ais_query_dialog_x < 0 ) || ( g_ais_query_dialog_x > display_width ) ) g_ais_query_dialog_x =
-            5;
-    if( ( g_ais_query_dialog_y < 0 ) || ( g_ais_query_dialog_y > display_height ) ) g_ais_query_dialog_y =
-            5;
+    Read( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
+    Read( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
+    Read( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
+    Read( _T ( "AlertDialogPosY" ), g_ais_alert_dialog_y );
+    Read( _T ( "QueryDialogPosX" ), g_ais_query_dialog_x );
+    Read( _T ( "QueryDialogPosY" ), g_ais_query_dialog_y );
 
     Read( _T ( "AISTargetListPerspective" ), &g_AisTargetList_perspective );
-    g_AisTargetList_range = Read( _T ( "AISTargetListRange" ), 40L );
-    g_AisTargetList_sortColumn = Read( _T ( "AISTargetListSortColumn" ), 2L ); // Column #2 is MMSI
-    Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse, false );
+    Read( _T ( "AISTargetListRange" ), g_AisTargetList_range );
+    Read( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
+    Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     Read( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
 
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
 
-    Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
-    Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
+    Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
+    Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
     
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
     SetPath( _T ( "/Directories" ) );
     Read( strpres, &valpres );              // Get the File name
-    g_UserPresLibData = valpres;
+    if(!valpres.IsEmpty())
+        g_UserPresLibData = valpres;
 
 #ifdef USE_S57
     wxString strs( _T ( "SENCFileLocation" ) );
     SetPath( _T ( "/Directories" ) );
     wxString vals;
     Read( strs, &vals );              // Get the Directory name
-
-    g_SENCPrefix = vals;
-
+    if(!vals.IsEmpty())
+        g_SENCPrefix = vals;
 #endif
 
-    SwitchInlandEcdisMode( g_bInlandEcdis );
     
     SetPath( _T ( "/Directories" ) );
     wxString vald;
@@ -998,16 +1113,13 @@ int MyConfig::LoadMyConfig()
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
-    if ( g_bInlandEcdis )
-        global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
-    else{
-        Read( _T ( "nColorScheme" ), &read_int, 0 );
+    if(Read( _T ( "nColorScheme" ), &read_int ))
         global_color_scheme = (ColorScheme) read_int;
-    }
+    
     SetPath( _T ( "/Settings/NMEADataSource" ) );
 
     wxString connectionconfigs;
-    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+    Read ( _T( "DataConnections" ),  &connectionconfigs );
     if(!connectionconfigs.IsEmpty()){
         wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
         g_pConnectionParams->Clear();
@@ -1023,6 +1135,7 @@ int MyConfig::LoadMyConfig()
         }
     }
 
+#if 0    
     //  Automatically handle the upgrade to DataSources architecture...
     //  Capture Garmin host configuration
     SetPath( _T ( "/Settings" ) );
@@ -1151,15 +1264,8 @@ int MyConfig::LoadMyConfig()
         }
     }
 
-//    Reasonable starting point
-    vLat = START_LAT;                   // display viewpoint
-    vLon = START_LON;
+#endif
 
-    gLat = START_LAT;                   // GPS position, as default
-    gLon = START_LON;
-
-    initial_scale_ppm = .0003;        // decent initial value
-    initial_rotation = 0;
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     wxString st;
@@ -1180,9 +1286,11 @@ int MyConfig::LoadMyConfig()
         }
 
         if( fabs( st_lat ) < 90.0 ) vLat = st_lat;
+        
+        s.Printf( _T ( "Setting Viewpoint Lat/Lon %g, %g" ), vLat, vLon );
+        wxLogMessage( s );
+        
     }
-    s.Printf( _T ( "Setting Viewpoint Lat/Lon %g, %g" ), vLat, vLon );
-    wxLogMessage( s );
 
     double st_view_scale, st_rotation;
     if( Read( wxString( _T ( "VPScale" ) ), &st ) ) {
@@ -1218,9 +1326,11 @@ int MyConfig::LoadMyConfig()
         }
 
         if( fabs( lat ) < 90.0 ) gLat = lat;
+        
+        s.Printf( _T ( "Setting Ownship Lat/Lon %g, %g" ), gLat, gLon );
+        wxLogMessage( s );
+        
     }
-    s.Printf( _T ( "Setting Ownship Lat/Lon %g, %g" ), gLat, gLon );
-    wxLogMessage( s );
 
 //    Fonts
     
@@ -1296,8 +1406,8 @@ int MyConfig::LoadMyConfig()
 
 //  Tide/Current Data Sources
     SetPath( _T ( "/TideCurrentDataSources" ) );
-    TideCurrentDataSet.Clear();
     if( GetNumberOfEntries() ) {
+        TideCurrentDataSet.Clear();
         wxString str, val;
         long dummy;
         int iDir = 0;
@@ -1310,14 +1420,6 @@ int MyConfig::LoadMyConfig()
     }
 
 
-    //    Layers
-    pLayerList = new LayerList;
-
-    //  Routes
-    pRouteList = new RouteList;
-
-    // Tracks
-    pTrackList = new TrackList;
 
     //    Groups
     LoadConfigGroups( g_pGroupArray );
@@ -1328,46 +1430,39 @@ int MyConfig::LoadMyConfig()
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
-    g_iNavAidRadarRingsNumberVisible = 0;
     Read( _T ( "RadarRingsNumberVisible" ), &val );
     if( val.Length() > 0 ) g_iNavAidRadarRingsNumberVisible = atoi( val.mb_str() );
 
-    g_fNavAidRadarRingsStep = 1.0;
     Read( _T ( "RadarRingsStep" ), &val );
     if( val.Length() > 0 ) g_fNavAidRadarRingsStep = atof( val.mb_str() );
 
-    g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
-    g_colourOwnshipRangeRingsColour = *wxRED;
     wxString l_wxsOwnshipRangeRingsColour;
     Read( _T ( "RadarRingsColour" ), &l_wxsOwnshipRangeRingsColour );
     if(l_wxsOwnshipRangeRingsColour.Length()) g_colourOwnshipRangeRingsColour.Set( l_wxsOwnshipRangeRingsColour );
     
     // Waypoint Radar rings
-    g_iWaypointRangeRingsNumber = 0;
     Read( _T ( "WaypointRangeRingsNumber" ), &val );
     if( val.Length() > 0 ) g_iWaypointRangeRingsNumber = atoi( val.mb_str() );
 
-    g_fWaypointRangeRingsStep = 1.0;
     Read( _T ( "WaypointRangeRingsStep" ), &val );
     if( val.Length() > 0 ) g_fWaypointRangeRingsStep = atof( val.mb_str() );
 
-    g_iWaypointRangeRingsStepUnits = 0;
     Read( _T ( "WaypointRangeRingsStepUnits" ), &g_iWaypointRangeRingsStepUnits );
     
-    g_colourWaypointRangeRingsColour = wxColour( *wxRED );
     wxString l_wxsWaypointRangeRingsColour;
     Read( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
     g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
 
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
-    Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
-    if(!b300RadarRings)
-        g_iNavAidRadarRingsNumberVisible = 0;
+    if(Read ( _T ( "ShowRadarRings" ), &b300RadarRings )){
+        if(!b300RadarRings)
+            g_iNavAidRadarRingsNumberVisible = 0;
+    }
 
-    Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
+    Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete );
 
     // Waypoint dragging with mouse
     g_bWayPointPreventDragging = false;
@@ -1376,7 +1471,6 @@ int MyConfig::LoadMyConfig()
     g_bEnableZoomToCursor = false;
     Read( _T ( "EnableZoomToCursor" ), &g_bEnableZoomToCursor );
 
-    g_TrackIntervalSeconds = 60.0;
     val.Clear();
     Read( _T ( "TrackIntervalSeconds" ), &val );
     if( val.Length() > 0 ) {
@@ -1384,7 +1478,6 @@ int MyConfig::LoadMyConfig()
         if( tval >= 2. ) g_TrackIntervalSeconds = tval;
     }
 
-    g_TrackDeltaDistance = 0.10;
     val.Clear();
     Read( _T ( "TrackDeltaDistance" ), &val );
     if( val.Length() > 0 ) {
@@ -1392,21 +1485,20 @@ int MyConfig::LoadMyConfig()
         if( tval >= 0.05 ) g_TrackDeltaDistance = tval;
     }
 
-    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision, 0 );
+    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision );
 
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
-    Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
-    Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
-    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    Read( _T ( "RouteLineWidth" ), &g_route_line_width );
+    Read( _T ( "TrackLineWidth" ), &g_track_line_width );
     wxString l_wxsTrackLineColour;
-    Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour );
-    g_colourTrackLineColour.Set( l_wxsTrackLineColour );
+    if(Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour ))
+        g_colourTrackLineColour.Set( l_wxsTrackLineColour );
 
-    Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
-    Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale, 100 );
-    Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale, 100 );
-    Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
+    Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale );
+    Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
+    Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
+    Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
 
     SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = GetNumberOfEntries();
@@ -1950,56 +2042,39 @@ void MyConfig::LoadCanvasConfigs( )
     }
     
     Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
-
-#if 0    
-    switch( g_canvasConfig ){
+    
+    // Do not recreate canvasConfigs when applying config dynamically
+    if(g_canvasConfigArray.GetCount() == 0){
+        s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+        SetPath( s );
+        canvasConfig *pcca = new canvasConfig(0);
+        LoadConfigCanvas(pcca);
+        g_canvasConfigArray.Add(pcca);
+            
+        s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+        SetPath( s );
+        pcca = new canvasConfig(1);
+        LoadConfigCanvas(pcca);
+        g_canvasConfigArray.Add(pcca);
+    } else {
+        canvasConfig *pcca = g_canvasConfigArray[0];
+        s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+        SetPath( s );
+        LoadConfigCanvas(pcca);
         
-        case 0:
-        default:
-            n_canvas = 1;
-            
-            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
-            SetPath( s );
-            
-            pcc = new canvasConfig(0);
-            
-            LoadConfigCanvas(pcc);
-            g_canvasConfigArray.Add(pcc);
-            
-            break;
-        case 1:
-            n_canvas = 1;
-            
-            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
-            SetPath( s );
-            canvasConfig *pcc = new canvasConfig(0);
-            LoadConfigCanvas(pcc);
-            g_canvasConfigArray.Add(pcc);
-            
+        if(g_canvasConfigArray.GetCount() > 1){
+            canvasConfig *pcca = g_canvasConfigArray[1];
             s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
             SetPath( s );
-            pcc = new canvasConfig(1);
-            LoadConfigCanvas(pcc);
-            g_canvasConfigArray.Add(pcc);
-            
-            
-            break;
-            
-    }
-#endif
-
-            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
-            SetPath( s );
-            canvasConfig *pcca = new canvasConfig(0);
             LoadConfigCanvas(pcca);
-            g_canvasConfigArray.Add(pcca);
-            
+        } else {
             s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
             SetPath( s );
             pcca = new canvasConfig(1);
             LoadConfigCanvas(pcca);
             g_canvasConfigArray.Add(pcca);
-
+        }
+    }
 }
             
 void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )

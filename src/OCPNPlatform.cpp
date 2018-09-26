@@ -835,6 +835,10 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
+    g_nAWDefault = 50;
+    g_nAWMax = 1852;
+    gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
+    
     
     // Initial S52/S57 options
     if(pConfig){
@@ -933,6 +937,9 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_GUIScaleFactor = 0;               // nominal
+    g_uiStyle = wxT("Traditional"
+    g_useMUI = true;
+    g_b_overzoom_x = true;
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
@@ -1448,7 +1455,7 @@ MyConfig *OCPNPlatform::GetConfigObject()
 {
     MyConfig *result = NULL;
 
-    result = new MyConfig( wxString( _T("") ), wxString( _T("") ), GetConfigFileName() );
+    result = new MyConfig( GetConfigFileName() );
 
     return result;
 }

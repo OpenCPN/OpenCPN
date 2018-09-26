@@ -50,6 +50,8 @@ Multiplexer::Multiplexer()
     m_gpsconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     m_pdatastreams = new wxArrayOfDataStreams();
+    if(g_GPS_Ident.IsEmpty())
+        g_GPS_Ident = wxT("Generic");
 }
 
 Multiplexer::~Multiplexer()

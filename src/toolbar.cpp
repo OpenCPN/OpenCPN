@@ -59,6 +59,7 @@ extern bool                       g_bPermanentMOBIcon;
 extern bool                       g_btouch;
 extern bool                       g_bsmoothpanzoom;
 extern OCPNPlatform               *g_Platform;
+extern bool                       g_bmasterToolbarFull;
 extern bool                       g_useMUI;
 
 //----------------------------------------------------------------------------
@@ -352,13 +353,14 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_toolbar_scale_tools_shown = false;
     m_backcolorString = _T("GREY2") ;
     m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
+    n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
     
     m_ptoolbar = CreateNewToolbar();
     
     m_cs = (ColorScheme)-1;
 
     m_style = g_StyleManager->GetCurrentStyle();
-    m_dock_min_x = 0;
+    SetULDockPosition(wxPoint(4,4));
     
     SetGeometry(false, wxRect());
     
@@ -642,7 +644,7 @@ void ocpnFloatingToolbarDialog::RePosition()
             if( 1 == m_dock_x ) m_position.x = cs.x - GetSize().x;
 
         if( -1 == m_dock_y )
-            m_position.y = 0;
+            m_position.y = m_dock_min_y;
         else
             if( 1 == m_dock_y ) m_position.y = cs.y - GetSize().y;
 
@@ -650,7 +652,7 @@ void ocpnFloatingToolbarDialog::RePosition()
         m_position.y = wxMin(cs.y - GetSize().y, m_position.y);
 
         m_position.x = wxMax(m_dock_min_x, m_position.x);
-        m_position.y = wxMax(0, m_position.y);
+        m_position.y = wxMax(m_dock_min_y, m_position.y);
 
         wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
 
@@ -698,8 +700,12 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     Hide();
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
-    if(!m_pRecoverwin)
-        m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
+    if(!m_pRecoverwin){
+        wxPoint tbPoint = GetPosition();
+        wxPoint tbPosInCanvas = m_pparent->ScreenToClient(tbPoint);
+        //tbPosInCanvas.y += 2;           // prettify
+        m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), tbPosInCanvas );
+    }
    
     m_pRecoverwin->Show();
     m_pRecoverwin->Raise();
@@ -873,18 +879,29 @@ void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
 {
-    if(m_bnavgrabber){
-        m_fade_timer.Start( 5000 );           // do nothing if nav grabber is shown
+    if(n_toolbarHideMethod == TOOLBAR_HIDE_TO_FIRST_TOOL){
+        if(g_bmasterToolbarFull){
+            if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged){
+                wxCommandEvent event;
+                event.SetId(ID_MASTERTOGGLE);
+                gFrame->OnToolLeftClick(event);
+            }
+        }
     }
     else{
-        if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
-            DoFade( 128 );
-            m_fade_timer.Start( 5000 );           // retrigger the continuous timer
-        }
         
-        if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged){
-            SubmergeToGrabber();
-//            m_fade_timer.Stop();
+        if(m_bnavgrabber){
+            m_fade_timer.Start( 5000 );           // do nothing if nav grabber is shown
+        }
+        else{
+            if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
+                DoFade( 128 );
+                m_fade_timer.Start( 5000 );           // retrigger the continuous timer
+            }
+            
+            if( m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged){
+               SubmergeToGrabber();
+            }
         }
     }
 }
@@ -2132,6 +2149,9 @@ void ocpnToolBarSimple::OnPaint( wxPaintEvent& WXUNUSED(event) )
         ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
         wxRect toolRect = tools->trect;
 
+        if(toolRect.height != 48)
+            int yyp = 4;
+        
         if( toolRect.Intersects( upRect ) ) {
 
             if( tool->IsButton() ) {

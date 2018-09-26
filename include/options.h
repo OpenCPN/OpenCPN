@@ -210,6 +210,7 @@ enum {
 #define TIDES_CHANGED 2048
 #define GL_CHANGED 4096
 #define REBUILD_RASTER_CACHE 8192
+#define CONFIG_CHANGED 8192 * 2
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -330,6 +331,8 @@ class options : private Uncopyable,
   void OnCreateConfig( wxCommandEvent &event);
   void OnEditConfig( wxCommandEvent &event);
   void OnDeleteConfig( wxCommandEvent &event);
+  void OnApplyConfig( wxCommandEvent &event);
+  void SetConfigButtonState();
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected( wxMouseEvent &event);
@@ -407,7 +410,8 @@ class options : private Uncopyable,
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-
+  wxButton *m_configDeleteButton, *m_configApplyButton;
+  
   void OnSelectDatasource(wxListEvent &event);
   void OnAddDatasourceClick(wxCommandEvent &event);
   void OnRemoveDatasourceClick(wxCommandEvent &event);
