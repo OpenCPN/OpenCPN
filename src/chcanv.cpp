@@ -938,6 +938,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_bFollow = pcc->bFollow;
     m_groupIndex = pcc->GroupID;
     
+    SetQuiltMode(pcc->bQuilt);
+    
     m_toolbarConfig = pcc->toolbarConfig;
     if(m_toolbarConfig.IsEmpty() && (pcc->configIndex != 0)){
         m_toolbarConfig = g_toolbarConfigSecondary;

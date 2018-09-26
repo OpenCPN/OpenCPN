@@ -2149,9 +2149,6 @@ void ocpnToolBarSimple::OnPaint( wxPaintEvent& WXUNUSED(event) )
         ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
         wxRect toolRect = tools->trect;
 
-        if(toolRect.height != 48)
-            int yyp = 4;
-        
         if( toolRect.Intersects( upRect ) ) {
 
             if( tool->IsButton() ) {
