@@ -340,6 +340,7 @@ class MyFrame: public wxFrame
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
     void OnBellsTimer(wxTimerEvent& event);
+    void OnRecaptureTimer(wxTimerEvent& event);
 #ifdef wxHAS_POWER_EVENTS
     void OnSuspending(wxPowerEvent &event);
     void OnSuspended(wxPowerEvent &event);
@@ -367,6 +368,8 @@ class MyFrame: public wxFrame
     
     void TriggerResize(wxSize sz);
     void OnResizeTimer(wxTimerEvent &event);
+    
+    void TriggerRecaptureTimer();
     
     void MouseEvent(wxMouseEvent& event);
 //     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
@@ -566,6 +569,7 @@ class MyFrame: public wxFrame
     wxRect              m_mainlast_tb_rect;
     wxTimer             ToolbarAnimateTimer;
     int                 m_nMasterToolCountShown;
+    wxTimer             m_recaptureTimer;
     
     DECLARE_EVENT_TABLE()
 };
@@ -615,7 +619,8 @@ enum {
     BELLS_TIMER,
     ID_NMEA_THREADMSG,
     RESIZE_TIMER,
-    TOOLBAR_ANIMATE_TIMER
+    TOOLBAR_ANIMATE_TIMER,
+    RECAPTURE_TIMER
 
 };
 

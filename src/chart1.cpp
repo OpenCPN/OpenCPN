@@ -2666,6 +2666,7 @@ EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
+EVT_TIMER(RECAPTURE_TIMER, MyFrame::OnRecaptureTimer)
 EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
 #ifdef wxHAS_POWER_EVENTS
 EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
@@ -2796,6 +2797,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_BellsToPlay = 0;
 
     m_resizeTimer.SetOwner(this, RESIZE_TIMER);
+    m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
+    
 }
 
 MyFrame::~MyFrame()
@@ -2885,7 +2888,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             break;
     }
 
-    
+   
     if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
         g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
         
@@ -3653,6 +3656,16 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( console && console->IsShown() )
         PositionConsole();
+}
+
+void MyFrame::TriggerRecaptureTimer()
+{
+    m_recaptureTimer.Start(1000, wxTIMER_ONE_SHOT);     //One second seems enough, on average
+}
+
+void MyFrame::OnRecaptureTimer(wxTimerEvent &event)
+{
+    Raise();
 }
 
 
@@ -4552,6 +4565,7 @@ void MyFrame::ToggleFullScreen()
     SurfaceAllToolbars();
     UpdateControlBar( GetPrimaryCanvas());
     Layout();
+    TriggerRecaptureTimer();
 }
 
 void MyFrame::ActivateMOB( void )
@@ -6381,6 +6395,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 if(cc)
                     cc-> CreateMUIBar();
             }
+            
+            GetPrimaryCanvas()->SetFocus();
+            gFrame->Raise();
                 
             if(b_reloadForPlugins)
                 ChartsRefresh();
