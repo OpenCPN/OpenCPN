@@ -3777,18 +3777,22 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
                int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
                int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
                
-               ccw = wxMin(ccw, cccw * 9 / 10);
-               ccw = wxMax(ccw, cccw * 1 / 10);
+               ccw = wxMin(ccw, cccw * 7 / 10);
+               ccw = wxMax(ccw, cccw * 3 / 10);
+               if(cccw < 100)
+                   ccw = 20;
                
                g_canvasConfigArray.Item(1)->canvasSize = wxSize(ccw, cch);
-               
-               if(!cch)
-                   g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
-               else
-                   g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
-                   
-               //  Set min size for the docked canvas(1).
-               //g_pauimgr->GetPane( cc ).MinSize( cccw * 1 / 10, ccch);
+
+               //wxAUI hack: set width to desired value, then call wxAuiPaneInfo::Fixed() to apply it
+                g_pauimgr->GetPane(cc).MinSize(ccw, cch);
+                g_pauimgr->GetPane(cc).Fixed();
+                g_pauimgr->Update();
+                //now make resizable again
+                g_pauimgr->GetPane(cc).Resizable();
+               //g_pauimgr->Update();  //Deferred
+
+               g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
             }
             
             break;
