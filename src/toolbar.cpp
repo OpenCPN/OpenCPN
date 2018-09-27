@@ -784,6 +784,8 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     
     RePosition();
     Show();
+    m_ptoolbar->Refresh();              // Added to force redraw of all the tools
+    
     if( m_ptoolbar )
         m_ptoolbar->EnableTooltips();
     
