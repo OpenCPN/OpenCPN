@@ -3656,6 +3656,8 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( console && console->IsShown() )
         PositionConsole();
+    
+    TriggerRecaptureTimer();
 }
 
 void MyFrame::TriggerRecaptureTimer()
