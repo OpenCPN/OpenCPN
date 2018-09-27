@@ -645,6 +645,7 @@ bool Routeman::UpdateAutopilot()
             else
                 m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
+            m_NMEA0183.Rmb.FAAModeIndicator = "A";
             m_NMEA0183.Rmb.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );
@@ -687,7 +688,7 @@ bool Routeman::UpdateAutopilot()
 
             wxString date = utc.Format( _T("%d%m%y") );
             m_NMEA0183.Rmc.Date = date;
-
+            m_NMEA0183.Rmc.FAAModeIndicator = "A";
             m_NMEA0183.Rmc.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );
