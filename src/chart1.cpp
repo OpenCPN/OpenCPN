@@ -2910,7 +2910,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     }
     
     g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
-    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 20);
+    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
     
     g_pauimgr->Update();
     
