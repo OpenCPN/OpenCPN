@@ -4146,8 +4146,6 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
         return RenderLCLegacy(rzRules, rules, vp);
     
-    wxPoint *ptp;
-    int npt;
     wxPoint r;
     
     
@@ -4385,8 +4383,6 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     //  Must be cm93
         
-    wxPoint *ptp;
-    int npt;
     wxPoint r;
 
     int isym_len = rules->razRule->pos.line.bnbox_w.SYHL;
@@ -4554,7 +4550,6 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-    int npt;
     wxPoint r;
     
     int isym_len = rules->razRule->pos.line.bnbox_w.SYHL;
@@ -7202,13 +7197,13 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     //      We may need to translate object coordinates by 360 degrees to conform.
                     if( BBView.GetMaxLon() >= 180. ) {
                         if(rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
-                            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                            x_origin += (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
                     }
                     else
                     if( (BBView.GetMinLon() <= -180. && rzRules->obj->BBObj.GetMaxLon() > BBView.GetMinLon() + 360.)
                     || (rzRules->obj->BBObj.GetMaxLon() > 180 && BBView.GetMinLon() + 360 < rzRules->obj->BBObj.GetMaxLon() )
                     )
-                    x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                    x_origin -= (float)(mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI);
                 }
             }
             

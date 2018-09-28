@@ -143,7 +143,7 @@ void ChartSymbols::ProcessColorTables( pugi::xml_node &node )
                     
                 }
             
-next:           colorNode = colorNode.next_sibling();
+	            colorNode = colorNode.next_sibling();
             }
             
             colorTables->Add( (void *) colortable );
