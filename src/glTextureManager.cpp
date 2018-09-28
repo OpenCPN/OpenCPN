@@ -57,7 +57,7 @@
 WX_DEFINE_LIST(JobList);
 WX_DEFINE_LIST(ProgressInfoList);
 
-WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
 extern double           gLat, gLon, gCog, gSog, gHdt;
 

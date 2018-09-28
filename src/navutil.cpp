@@ -85,6 +85,10 @@
 #include "glChartCanvas.h"
 #endif
 
+#ifdef __WXOSX__
+#include "DarkMode.h"
+#endif
+
 //    Statics
 
 extern OCPNPlatform     *g_Platform;

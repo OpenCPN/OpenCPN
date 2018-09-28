@@ -751,10 +751,7 @@ bool             g_useMUI;
 bool             g_bmasterToolbarFull = true;
 bool             g_bEffects = true;
 
-WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
-WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
-
-WX_DEFINE_OBJARRAY(arrayofCanvasConfigPtr);
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
 arrayofCanvasPtr   g_canvasArray;
 arrayofCanvasConfigPtr g_canvasConfigArray;
@@ -11126,7 +11123,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 
 #ifdef __WXOSX__
     if(gFrame && b_toolviz)
-        gFrame->SurfaceToolbar();
+        gFrame->SurfaceAllToolbars();
 
     if(parent){
         parent->Raise();
