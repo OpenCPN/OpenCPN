@@ -85,6 +85,6 @@ public:
     
 };
 
-WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
+WX_DEFINE_ARRAY_PTR(canvasConfig*, arrayofCanvasConfigPtr);
 
 #endif
