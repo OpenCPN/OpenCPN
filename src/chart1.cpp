@@ -5609,6 +5609,7 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowSize = g_options->lastWindowSize;
 
     if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
+        g_MainToolbar->Surface();
         SurfaceAllToolbars();
         GetPrimaryCanvas()->SetFocus();
     }
