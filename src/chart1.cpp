@@ -3779,28 +3779,36 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
             
             
         case 1:
+#if 0            
             cc = g_canvasArray.Item(1);
             if( cc ) {
                int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
                int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
                
-               ccw = wxMin(ccw, cccw * 7 / 10);
-               ccw = wxMax(ccw, cccw * 3 / 10);
+               ccw = wxMin(ccw, cccw * 8 / 10);
+               ccw = wxMax(ccw, cccw * 2 / 10);
                if(cccw < 100)
                    ccw = 20;
                
                g_canvasConfigArray.Item(1)->canvasSize = wxSize(ccw, cch);
+//               g_pauimgr->GetPane(cc).MinSize(cccw * 2 / 10, ccch);
+               
 
-               //wxAUI hack: set width to desired value, then call wxAuiPaneInfo::Fixed() to apply it
+#if 1 //ndef __WXMSW__               
+               //wxAUI hack: This is needed to explicietly set a docked pane size
+               //Set MinSize to desired value, then call wxAuiPaneInfo::Fixed() to apply it
                 g_pauimgr->GetPane(cc).MinSize(ccw, cch);
                 g_pauimgr->GetPane(cc).Fixed();
                 g_pauimgr->Update();
+                
                 //now make resizable again
                 g_pauimgr->GetPane(cc).Resizable();
-               //g_pauimgr->Update();  //Deferred
-
-                g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+                ///g_pauimgr->GetPane(cc).MinSize(cccw * 2 / 10, ccch);
+                //g_pauimgr->Update();  //Deferred
+                //g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+#endif
             }
+#endif            
             
             break;
             
@@ -6342,12 +6350,24 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if( !bno_load )
                 g_pauimgr->LoadPerspective( perspective, false );
 
+#if 0            
             // Undefine the canvas sizes as expressed by the loaded perspective
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
                 ChartCanvas *cc = g_canvasArray.Item(i);
                 if(cc)
                     g_pauimgr->GetPane(cc).MinSize(10,10);
             }
+ 
+
+            // Touch up the AUI manager
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc){
+                    wxSize frameSize = GetClientSize();
+                    g_pauimgr->GetPane(cc).MinSize(frameSize.x * 1 / 10, frameSize.y);
+                }
+            }
+#endif            
             g_pauimgr->Update();
 
             //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
@@ -6944,8 +6964,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 
                 if(g_bopengl) {
 #ifdef ocpnUSE_GL
-                    if(m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
-                        bnew_view = true;
+					if (cc->GetglCanvas()) {
+						if (m_fixtime - cc->GetglCanvas()->m_last_render_time > 0)
+							bnew_view = true;
+					}
 
                     if( AnyAISTargetsOnscreen( cc, cc->GetVP() ) )
                         bnew_view = true;
@@ -11880,8 +11902,8 @@ void ApplyLocale()
         }
     }
     
-    if( !bno_load )
-        g_pauimgr->LoadPerspective( perspective, false );
+     if( !bno_load )
+         g_pauimgr->LoadPerspective( perspective, false );
     
     g_pauimgr->Update();
     
