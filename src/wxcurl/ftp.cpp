@@ -348,7 +348,7 @@ bool wxCurlFTP::RmDir(const wxString& szRemoteLoc /*= wxEmptyString*/)
 			str += wxS("/");
         SetCurlHandleToDefaults(str);
 
-        wxString url(GetURL().c_str(), wxConvUTF8);
+        wxString url(GetURL().mb_str(), wxConvUTF8);
 		m_szCurrFullPath = url.Left(url.Len() - 1).BeforeLast(wxS('/'));
 		m_szCurrFullPath += wxS("/");
 		m_szCurrFilename = url.Left(url.Len() - 1).AfterLast(wxS('/'));
@@ -380,7 +380,7 @@ bool wxCurlFTP::Delete(const wxString& szRemoteLoc /*= wxEmptyString*/)
 	{
 		SetCurlHandleToDefaults(szRemoteLoc);
 
-        wxString url(GetURL().c_str(), wxConvUTF8);
+        wxString url(GetURL().mb_str(), wxConvUTF8);
 		m_szCurrFullPath = url.BeforeLast('/');
 		m_szCurrFullPath += wxS("/");
 		m_szCurrFilename = url.AfterLast('/');
@@ -413,7 +413,7 @@ bool wxCurlFTP::Rename(const wxString& szRemoteLocName,
 	{
 		SetCurlHandleToDefaults(szRemoteFile);
 
-        wxString url(GetURL().c_str(), wxConvUTF8);
+        wxString url(GetURL().mb_str(), wxConvUTF8);
 		m_szCurrFullPath = url.BeforeLast('/');
 		m_szCurrFullPath += wxS("/");
 		m_szCurrFilename = url.AfterLast('/');

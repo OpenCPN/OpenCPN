@@ -6374,7 +6374,7 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
     
     if( res )
     {
-        result = wxString(post.GetResponseBody().c_str(), wxConvUTF8);
+        result = wxString(post.GetResponseBody().mb_str(), wxConvUTF8);
         return OCPN_DL_NO_ERROR;
     } else
         result = wxEmptyString;
@@ -6485,7 +6485,7 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThrea
             {
                 wxString err = wxS("unknown");
                 if (p->GetCurlSession())
-                    err = wxString(p->GetCurlSession()->GetErrorString().c_str(), wxConvUTF8);
+                    err = wxString(p->GetCurlSession()->GetErrorString().mb_str(), wxConvUTF8);
                 wxLogError(wxS("Network error: %s"), err.c_str());
             }
             break;
