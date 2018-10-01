@@ -868,8 +868,8 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
         
         //  Load the template contents, without resetting defaults
         fconf.LoadMyConfigRaw();
-        //if( ps52plib->m_bOK ) 
-            //fconf.LoadS57Config();
+        if( ps52plib && ps52plib->m_bOK ) 
+            fconf.LoadS57Config();
 #if 0        
         if( (g_canvasConfig != last_canvasConfig) ){
             gFrame->UpdateCanvasConfigDescriptors();
