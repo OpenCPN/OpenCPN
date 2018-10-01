@@ -3111,9 +3111,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc->SetToolbarConfigString(g_toolbarConfig);
-           //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
@@ -3124,11 +3121,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            
            g_pauimgr->GetPane( cc ).CenterPane();
-           
-           //g_pauimgr->GetPane( cc ).LeftDockable(true);
-           //g_pauimgr->GetPane( cc ).Left();
-           //g_pauimgr->GetPane( cc ).DockFixed( true );
-           //g_pauimgr->GetPane( cc ).PaneBorder( true );
            
            cc = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc);
@@ -3146,9 +3138,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(1));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc2->SetToolbarConfigString(g_toolbarConfig);
-           //cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
@@ -3158,18 +3147,17 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
-           //g_pauimgr->GetPane( cc ).LeftDockable(true);
-           //g_pauimgr->GetPane( cc ).Left();
-           ///g_pauimgr->GetPane( cc ).DockFixed( true );
-           //g_pauimgr->GetPane( cc ).PaneBorder( true );
 
-//            if(b_useStoredSize){
-//                int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
-//                int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
-//                
-//                g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
-//                cc->SetSize(ccw, cch);
-//            }
+            
+           // If switching fromsingle canvas to 2-canvas mode dynamically,
+           //  try to use the latest persisted size for the new second canvas.
+           if(b_useStoredSize){
+                int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
+                int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
+                
+                g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+                cc->SetSize(ccw, cch);
+            }
            
            break;
         }
