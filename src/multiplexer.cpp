@@ -265,7 +265,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
-                message.Mid(1,2).IsSameAs(_T("CD")) ||
+                message.Mid(1,4).IsSameAs(_T("CDDS")) ||
                 message.Mid(3,3).IsSameAs(_T("TLL")) ||
                 message.Mid(3,3).IsSameAs(_T("TTM")) ||
                 message.Mid(3,3).IsSameAs(_T("OSD")) ||
