@@ -938,12 +938,14 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_bFollow = pcc->bFollow;
     m_groupIndex = pcc->GroupID;
     
-    SetQuiltMode(pcc->bQuilt);
-    
+    if( pcc->bQuilt != GetQuiltMode() )
+        ToggleCanvasQuiltMode();
+        
     m_toolbarConfig = pcc->toolbarConfig;
     if(m_toolbarConfig.IsEmpty() && (pcc->configIndex != 0)){
         m_toolbarConfig = g_toolbarConfigSecondary;
     }
+    
     SetToolbarOrientation( pcc->toolbarOrientation );
     SetToolbarEnable(pcc->bShowToolbar);
     
@@ -11252,20 +11254,20 @@ void ChartCanvas::ToggleCanvasQuiltMode( void )
             }
             
             
-            if( cur_mode != GetQuiltMode() ){
-                SetupCanvasQuiltMode();
-                DoCanvasUpdate();
-                InvalidateGL();
-                Refresh();
-            }
+        if( cur_mode != GetQuiltMode() ){
+            SetupCanvasQuiltMode();
+            DoCanvasUpdate();
+            InvalidateGL();
+            Refresh();
+        }
             //  TODO What to do about this?
             //g_bQuiltEnable = GetQuiltMode();
             
-            #ifdef USE_S57
+#ifdef USE_S57
             // Recycle the S52 PLIB so that vector charts will flush caches and re-render
-            if(ps52plib)
-                ps52plib->GenerateStateHash();
-            #endif
+        if(ps52plib)
+            ps52plib->GenerateStateHash();
+#endif
                 
 }
 
