@@ -2181,7 +2181,10 @@ void ocpnToolBarSimple::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 
 void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
 {
-    if( !gFrame->IsActive() ) return;
+    if( !gFrame ) //In case gFrame was already destroyed, but the toolbar still exists (Which should not happen, ever.)
+        return;
+    if( !gFrame->IsActive() )
+        return;
 
     if( m_btooltip_show && IsShown() && m_pToolTipWin && ( !m_pToolTipWin->IsShown() ) ) {
         if( m_last_ro_tool ) {
