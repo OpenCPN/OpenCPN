@@ -5823,11 +5823,16 @@ void options::SetInitialVectorSettings(void)
         if(pDispCat)
             pDispCat->SetSelection(nset);
         
+        bool benableMarStd = MARINERS_STANDARD == ps52plib->GetDisplayCategory();
+        if(g_useMUI)
+            benableMarStd = true;
+        
         if( ps57CtlListBox )
-            ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-        itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-        itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-        itemButtonSetStd->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+            ps57CtlListBox->Enable(benableMarStd);
+        itemButtonClearList->Enable(benableMarStd);
+        itemButtonSelectList->Enable(benableMarStd);
+        itemButtonSetStd->Enable(benableMarStd);
+        
                 
         //  Other Display Filters
         if(pCheck_SOUNDG) pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
@@ -6064,12 +6069,15 @@ void options::OnChartDirListSelect(wxCommandEvent& event) {
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
-    if(pDispCat){
-        const bool select = pDispCat->GetSelection() == 3;
-        ps57CtlListBox->Enable(select);
-        itemButtonClearList->Enable(select);
-        itemButtonSelectList->Enable(select);
-        itemButtonSetStd->Enable(select);
+    
+    if(!g_useMUI){
+        if(pDispCat){
+            const bool select = pDispCat->GetSelection() == 3;
+            ps57CtlListBox->Enable(select);
+            itemButtonClearList->Enable(select);
+            itemButtonSelectList->Enable(select);
+            itemButtonSetStd->Enable(select);
+        }
     }
   event.Skip();
 }
@@ -6854,7 +6862,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // PlugIn Manager Panel
 
   // Pick up any changes to selections
-  if (g_pi_manager->UpdatePlugIns()) m_returnChanges |= TOOLBAR_CHANGED;
+  if (g_pi_manager->UpdatePlugIns())
+      m_returnChanges |= TOOLBAR_CHANGED;
 
   // And keep config in sync
   if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder();
