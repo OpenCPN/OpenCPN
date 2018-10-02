@@ -5698,6 +5698,9 @@ int MyFrame::DoOptionsDialog()
     SetAllToolbarScale();
     RequestNewToolbars();
 
+    if(rr & TOOLBAR_CHANGED)
+        RequestNewMasterToolbar( true );
+    
     if( g_MainToolbar ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )
             g_MainToolbar->Submerge();
@@ -9148,6 +9151,9 @@ void MyFrame::applySettingsString( wxString settings)
     if(previous_expert != g_bUIexpert)
         b_newToolbar = true;
 
+    if(rr & TOOLBAR_CHANGED)
+        b_newToolbar = true;
+    
 
     if(b_newToolbar){
         // .. for each canvas...
@@ -9186,6 +9192,8 @@ void MyFrame::applySettingsString( wxString settings)
         RequestNewToolbars(true);    // Force rebuild, to pick up bGUIexpert and scale settings.
 
         g_Platform->HideBusySpinner();
+        
+        RequestNewMasterToolbar( true );
     }
 
     SurfaceAllToolbars();
