@@ -868,33 +868,13 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
         
         //  Load the template contents, without resetting defaults
         fconf.LoadMyConfigRaw();
+        
+        //  Load Canvas configs, applying only the "templateable" items
+        fconf.LoadCanvasConfigs( true );
+        
         if( ps52plib && ps52plib->m_bOK ) 
             fconf.LoadS57Config();
-#if 0        
-        if( (g_canvasConfig != last_canvasConfig) ){
-            gFrame->UpdateCanvasConfigDescriptors();
-            
-            if( (g_canvasConfig > 0) && (last_canvasConfig == 0) )
-                gFrame->CreateCanvasLayout(true);    
-            else
-                gFrame->CreateCanvasLayout();
-            
-            gFrame->SendSizeEvent();
-            
-            g_pauimgr->Update();
-            
-            // We need a yield() here to pick up the size event
-            // so that the toolbars will be sized correctly
-            wxYield();
-            
-            // ..For each canvas...
-            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-                ChartCanvas *cc = g_canvasArray.Item(i);
-                if(cc)
-                    cc->CreateMUIBar();  
-            }
-        }
-#endif            
+
         return true;
     }
     

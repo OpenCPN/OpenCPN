@@ -163,8 +163,9 @@ public:
       virtual void DestroyConfigGroups ( void );
       virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
 
-      virtual void LoadCanvasConfigs( );
-      virtual void LoadConfigCanvas( canvasConfig *cc );
+      virtual void LoadCanvasConfigs( bool bApplyAsTemplate = false );
+      virtual void LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate );
+      
       virtual void SaveCanvasConfigs( );
       virtual void SaveConfigCanvas( canvasConfig *cc );
       

@@ -705,7 +705,9 @@ int MyConfig::LoadMyConfig()
         SwitchInlandEcdisMode( g_bInlandEcdis );
         if ( g_bInlandEcdis )
             global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
-            
+        
+        //    Multicanvas Settings
+        LoadCanvasConfigs();
     }
     
     return ret_Val;
@@ -1428,8 +1430,8 @@ int MyConfig::LoadMyConfigRaw()
     //    Groups
     LoadConfigGroups( g_pGroupArray );
 
-    //    Multicanvas Settings
-    LoadCanvasConfigs();
+//     //    Multicanvas Settings
+//     LoadCanvasConfigs();
     
     SetPath( _T ( "/Settings/Others" ) );
 
@@ -2014,7 +2016,7 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 }
 
-void MyConfig::LoadCanvasConfigs( )
+void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
 {
     int n_canvas;
     wxString s;
@@ -2052,86 +2054,91 @@ void MyConfig::LoadCanvasConfigs( )
         s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
         SetPath( s );
         canvasConfig *pcca = new canvasConfig(0);
-        LoadConfigCanvas(pcca);
+        LoadConfigCanvas(pcca, bApplyAsTemplate);
         g_canvasConfigArray.Add(pcca);
             
         s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
         SetPath( s );
         pcca = new canvasConfig(1);
-        LoadConfigCanvas(pcca);
+        LoadConfigCanvas(pcca, bApplyAsTemplate);
         g_canvasConfigArray.Add(pcca);
     } else {
         canvasConfig *pcca = g_canvasConfigArray[0];
         s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
         SetPath( s );
-        LoadConfigCanvas(pcca);
+        LoadConfigCanvas(pcca, bApplyAsTemplate);
         
         if(g_canvasConfigArray.GetCount() > 1){
             canvasConfig *pcca = g_canvasConfigArray[1];
             s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
             SetPath( s );
-            LoadConfigCanvas(pcca);
+            LoadConfigCanvas(pcca, bApplyAsTemplate);
         } else {
             s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
             SetPath( s );
             pcca = new canvasConfig(1);
-            LoadConfigCanvas(pcca);
+            LoadConfigCanvas(pcca, bApplyAsTemplate);
             g_canvasConfigArray.Add(pcca);
         }
     }
 }
             
-void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
+void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
 {
     wxString st;
     double st_lat, st_lon;
     
-    //    Reasonable starting point
-    cConfig->iLat = START_LAT;                   // display viewpoint
-    cConfig->iLon = START_LON;
-    
-    if( Read( _T ( "canvasVPLatLon" ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
+    if(!bApplyAsTemplate){
+        //    Reasonable starting point
+        cConfig->iLat = START_LAT;                   // display viewpoint
+        cConfig->iLon = START_LON;
         
-        //    Sanity check the lat/lon...both have to be reasonable.
-        if( fabs( st_lon ) < 360. ) {
-            while( st_lon < -180. )
-                st_lon += 360.;
+        if( Read( _T ( "canvasVPLatLon" ), &st ) ) {
+            sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
             
-            while( st_lon > 180. )
-                st_lon -= 360.;
+            //    Sanity check the lat/lon...both have to be reasonable.
+            if( fabs( st_lon ) < 360. ) {
+                while( st_lon < -180. )
+                    st_lon += 360.;
+                
+                while( st_lon > 180. )
+                    st_lon -= 360.;
+                
+                cConfig->iLon = st_lon;
+            }
             
-            cConfig->iLon = st_lon;
+            if( fabs( st_lat ) < 90.0 )
+                cConfig->iLat = st_lat;
         }
         
-        if( fabs( st_lat ) < 90.0 )
-            cConfig->iLat = st_lat;
-    }
-    
-    cConfig->iScale = .0003;        // decent initial value
-    cConfig->iRotation = 0;
-    
-    double st_view_scale;
-    if( Read( wxString( _T ( "canvasVPScale" ) ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
-        //    Sanity check the scale
-        st_view_scale = fmax ( st_view_scale, .001/32 );
-        st_view_scale = fmin ( st_view_scale, 4 );
-        cConfig->iScale = st_view_scale;
-    }
-    
-    double st_rotation;
-    if( Read( wxString( _T ( "canvasVPRotation" ) ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
-        //    Sanity check the rotation
-        st_rotation = fmin ( st_rotation, 360 );
-        st_rotation = fmax ( st_rotation, 0 );
-        cConfig->iRotation = st_rotation * PI / 180.;
-    }
+        cConfig->iScale = .0003;        // decent initial value
+        cConfig->iRotation = 0;
+        
+        double st_view_scale;
+        if( Read( wxString( _T ( "canvasVPScale" ) ), &st ) ) {
+            sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
+            //    Sanity check the scale
+            st_view_scale = fmax ( st_view_scale, .001/32 );
+            st_view_scale = fmin ( st_view_scale, 4 );
+            cConfig->iScale = st_view_scale;
+        }
+        
+        double st_rotation;
+        if( Read( wxString( _T ( "canvasVPRotation" ) ), &st ) ) {
+            sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
+            //    Sanity check the rotation
+            st_rotation = fmin ( st_rotation, 360 );
+            st_rotation = fmax ( st_rotation, 0 );
+            cConfig->iRotation = st_rotation * PI / 180.;
+        }
 
-    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
-    Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
-    Read( _T ( "ActiveChartGroup" ), &cConfig->GroupID, 0 );
+        Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
+        Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
+        Read( _T ( "ActiveChartGroup" ), &cConfig->GroupID, 0 );
+    
+        Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
+        Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
+    }
     
     Read( _T ( "canvasShowTides" ), &cConfig->bShowTides, 0 );
     Read( _T ( "canvasShowCurrents" ), &cConfig->bShowCurrents, 0 );
@@ -2165,17 +2172,13 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig )
     Read( _T ( "canvasENCShowBuoyLabels" ), &cConfig->bShowENCBuoyLabels, 0 );
     Read( _T ( "canvasENCShowLightDescriptions" ), &cConfig->bShowENCLightDescriptions, 0 );
 
-    Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
-    Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
     
     int sx, sy;
     Read( _T ( "canvasSizeX" ), &sx, 0 );
     Read( _T ( "canvasSizeY" ), &sy, 0 );
     cConfig->canvasSize = wxSize(sx, sy);
 
-    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
-    Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
-    
+     
 
     
 }   
