@@ -385,8 +385,8 @@ void MUIBar::Init()
     m_COTopOffset = 60;  //  TODO should be below GPS/Compass
     
     CanvasOptionTimer.SetOwner( this, CANVAS_OPTIONS_TIMER );
+    m_coAnimateByBitmaps = false;
     
-    //CaptureCanvasOptionsBitmap();
 }
 
 void MUIBar::CreateControls()
@@ -625,7 +625,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
             else{
                 // Grab the backing bitmap, if available
                 
-                if(m_capture_size_y){
+                if(m_coAnimateByBitmaps && m_capture_size_y){
                     int overShoot_x = m_canvasOptions->GetSize().x * 2 / 10;    //20%
                     m_backingPoint = wxPoint(m_capturePoint.x - overShoot_x, m_capturePoint.y);
                 
@@ -754,7 +754,7 @@ void MUIBar::PullCanvasOptions()
     
     //  Capture the animation bitmap, if required..
     
-    if(!m_animateBitmap.IsOk()){
+    if(m_coAnimateByBitmaps && !m_animateBitmap.IsOk() ){
         m_canvasOptions->Move(m_targetCOPos);
         m_canvasOptions->Show();
         CaptureCanvasOptionsBitmap();
@@ -764,22 +764,15 @@ void MUIBar::PullCanvasOptions()
         
     
     //  Setup animation parameters
-    
-    
     //  Start Position
     m_startCOPos = m_canvasOptions->GetPosition();
 
     //  Present Position
     m_currentCOPos = m_startCOPos;
     
-    //  Animation type
-//    m_animationType = CO_ANIMATION_CUBIC_BOUNCE_IN;
-//    m_animateSteps = 50; 
-//    m_animationTotalTime = 1000;  // msec
-    
     m_animationType = CO_ANIMATION_CUBIC_BACK_IN;
-    m_animateSteps = 50; 
-    m_animationTotalTime = 200;  // msec
+    m_animateSteps = 10; 
+    m_animationTotalTime = 100;  // msec
     
     m_pushPull = CO_PULL;
     ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
@@ -788,7 +781,6 @@ void MUIBar::PullCanvasOptions()
     // Start the animation....
     m_animateStep = 0;
     m_canvasOptionsAnimationTimer.Start(10, true);
-    //m_canvasOptions->Show();
     m_canvasOptions->Move(m_targetCOPos);
     m_canvasOptions->Hide();
     
@@ -822,11 +814,10 @@ void MUIBar::PushCanvasOptions()
     
     //  Animation type
     m_animationType = CO_ANIMATION_LINEAR;
-    m_animateSteps = 20; 
+    m_animateSteps = 5; 
     m_animationTotalTime = 100;  // msec
     m_pushPull = CO_PUSH;
     ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
-    //pcc->m_b_paint_enable = false;
     
     // Start the animation....
     m_animateStep = 0;
@@ -850,9 +841,10 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
     else
         size_x = (m_targetCOPos.x - m_startCOPos.x) - abs(dx);
     
-    if(0){
+    if(!m_coAnimateByBitmaps){
         m_canvasOptions->SetSize(newPos.x, newPos.y, size_x, wxDefaultCoord, wxSIZE_USE_EXISTING);
-        m_canvasOptions->GetSizer()->Layout();
+        //m_canvasOptions->GetSizer()->Layout();
+        m_canvasOptions->Show();
     }
     else{
         m_canvasOptions->Hide();
@@ -873,15 +865,13 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
     }
     
     m_currentCOPos = newPos;
-//    m_canvasOptions->Show();
     
     double dt = m_animationTotalTime / m_animateSteps;
     
-    if(m_animateStep++ < m_animateSteps){
+    if(m_animateStep++ < m_animateSteps + 1){
         m_canvasOptionsAnimationTimer.Start(dt, true);
     }
     else{
-        //m_canvasOptions->Move(m_targetCOPos);
         m_currentCOPos = m_targetCOPos;
         m_canvasOptions->Show(m_pushPull == CO_PULL);
         

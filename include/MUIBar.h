@@ -120,7 +120,7 @@ private:
     int         m_capture_size_y;
     wxPoint     m_capturePoint;
     wxPoint     m_backingPoint;
-    
+    bool        m_coAnimateByBitmaps;
     
 DECLARE_EVENT_TABLE()
 };
