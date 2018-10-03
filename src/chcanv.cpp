@@ -9281,6 +9281,9 @@ void ChartCanvas::WarpPointerDeferred( int x, int y )
 
 void ChartCanvas::UpdateCanvasS52PLIBConfig()
 {
+    if(!ps52plib)
+        return;
+    
     if( VPoint.b_quilt ){          // quilted
         if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
             return;  // not ready
@@ -9290,6 +9293,12 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
                 UpdateS52State();
                 m_s52StateHash = ps52plib->GetStateHash();
             }
+        }
+    }
+    else{
+        if(ps52plib->GetStateHash() != m_s52StateHash){
+            UpdateS52State();
+            m_s52StateHash = ps52plib->GetStateHash();
         }
     }
 }
