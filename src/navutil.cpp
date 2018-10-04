@@ -2041,6 +2041,7 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
         pcc->toolbarOrientation = wxTB_HORIZONTAL;
         pcc->bShowAIS = true;
         pcc->bAttenAIS = false;
+        pcc->bQuilt = true;
         
         g_canvasConfigArray.Add(pcc);
         
@@ -2157,7 +2158,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
     Read( _T ( "canvasShowToolbar" ), &cConfig->bShowToolbar, 0 );
     Read( _T ( "canvasToolbarOrientation" ), &cConfig->toolbarOrientation, wxTB_HORIZONTAL );
 
-    Read( _T ( "canvasQuilt" ), &cConfig->bQuilt, 0 );
+    Read( _T ( "canvasQuilt" ), &cConfig->bQuilt, 1 );
     Read( _T ( "canvasShowGrid" ), &cConfig->bShowGrid, 0 );
     Read( _T ( "canvasShowOutlines" ), &cConfig->bShowOutlines, 0 );
     Read( _T ( "canvasShowDepthUnits" ), &cConfig->bShowDepthUnits, 0 );
