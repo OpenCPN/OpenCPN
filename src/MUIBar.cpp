@@ -770,9 +770,9 @@ void MUIBar::PullCanvasOptions()
     //  Present Position
     m_currentCOPos = m_startCOPos;
     
-    m_animationType = CO_ANIMATION_CUBIC_BACK_IN;
+    m_animationType = CO_ANIMATION_CUBIC_REVERSE; //CO_ANIMATION_CUBIC_BACK_IN;
     m_animateSteps = 10; 
-    m_animationTotalTime = 100;  // msec
+    m_animationTotalTime = 200;  // msec
     
     m_pushPull = CO_PULL;
     ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
@@ -911,21 +911,27 @@ double getValue(int animationType, double t)
 {
     double value = 0;
     double s = 1;
-    
+    double tp;
     switch (animationType){
         case CO_ANIMATION_LINEAR:
         default:
             value = t;
             break;
         case CO_ANIMATION_CUBIC:
-            value = t*t*t;
+            tp = t - 1.0;
+            value = tp*tp*tp + 1;
+            //value = t*t*t;
+            break;
+        case CO_ANIMATION_CUBIC_REVERSE:
+            tp = t - 1.0;
+            value = tp*tp*tp + 1;
             break;
         case CO_ANIMATION_CUBIC_BOUNCE_IN:
             value = bounceMaker(t, 1, s);
             break;
     
         case CO_ANIMATION_CUBIC_BACK_IN:
-            double tp = t - 1.0;
+            tp = t - 1.0;
             value = tp*tp*((s+1)*tp+ s) + 1;
             break;
             
