@@ -1,12 +1,11 @@
 /******************************************************************************
  *
- * Project:  OpenCP
+ * Project:  OpenCPN
  * Purpose:  Optimized wxBitmap Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,34 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
- * $Log: ocpn_pixel.cpp,v $
- * Revision 1.10  2010/05/15 04:02:12  bdbcat
- * Build 514
- *
- * Revision 1.9  2010/04/27 01:41:36  bdbcat
- * Build 426
- *
- * Revision 1.8  2010/03/29 03:28:25  bdbcat
- * 2.1.0 Beta Initial
- *
- * Revision 1.7  2008/08/09 23:58:40  bdbcat
- * Numerous revampings....
- *
- * Revision 1.6  2008/04/11 03:25:59  bdbcat
- * Clean up GTK Optimize option
- *
- * Revision 1.5  2008/04/10 01:03:09  bdbcat
- * Cleanup
- *
- * Revision 1.4  2008/03/30 22:27:32  bdbcat
- * Update for Mac OSX/Unicode
- *
- * Revision 1.3  2008/01/10 03:37:02  bdbcat
- * Update for Mac OSX
- *
  *
  */
 
@@ -147,6 +120,59 @@ static int HandleXError( Display *dpy, XErrorEvent *event )
     return 0;
 }
 #endif
+
+
+
+//---------------------------------------------------------------------------------------------------------
+//              Private Memory Management
+//---------------------------------------------------------------------------------------------------------
+
+static void *x_malloc(size_t t)
+{
+    void *pr = malloc( t );
+
+    //      malloc fails
+    if( NULL == pr ) {
+        wxLogMessage( _T("x_malloc...malloc fails with request of %d bytes."), t );
+
+        // Cat the /proc/meminfo file
+
+        char *p;
+        char buf[2000];
+        int len;
+
+        int fd = open( "/proc/meminfo", O_RDONLY );
+
+        if( fd == -1 ) exit( 1 );
+
+        len = read( fd, buf, sizeof( buf ) - 1 );
+        if( len <= 0 ) {
+            close( fd );
+            exit( 1 );
+        }
+        close( fd );
+        buf[len] = 0;
+
+        p = buf;
+        while( *p ) {
+//                        printf("%c", *p++);
+        }
+
+        exit( 0 );
+        return NULL;                            // for MSVC
+    }
+
+    else {
+        if( t > malloc_max ) {
+            malloc_max = t;
+//                      wxLogMessage(_T("New malloc_max: %d", malloc_max));
+        }
+
+        return pr;                                      // good return
+    }
+
+}
+
 
 //----------------------------------------------------------------------
 //      ocpnXImage Implementation
@@ -307,8 +333,7 @@ PixelCache::PixelCache(int width, int height, int depth)
     m_rgbo = RGB;                        // default value;
     pData = NULL;
 
-    line_pitch_bytes =
-            bytes_per_pixel = BPP / 8;
+    bytes_per_pixel = BPP / 8;
     line_pitch_bytes = bytes_per_pixel * width;
 
 
@@ -323,6 +348,9 @@ PixelCache::PixelCache(int width, int height, int depth)
 #ifdef __PIX_CACHE_DIBSECTION__
       m_pDS = new wxDIB(width, -height, BPP);
       pData = m_pDS->GetData();
+      //        For DIBsections, each scan line is DWORD aligned, padded on the right
+      line_pitch_bytes = (((m_width * 24) + 31) & ~31) >> 3;
+      
 #endif
 
 
@@ -376,6 +404,16 @@ PixelCache::~PixelCache()
 #endif
 
 }
+
+size_t PixelCache::GetLength(void)
+{
+#ifdef __PIX_CACHE_WXIMAGE__
+    return m_width * m_height * 3;
+#else
+    return 0;
+#endif    
+}
+    
 
 void PixelCache::Update(void)
 {

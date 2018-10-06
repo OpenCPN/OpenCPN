@@ -12,7 +12,7 @@ a.  Opencpn was built with the following objectives in mind.
     iii. Those and only those toolbar buttons really needed for
          daily operation.
     iv.  Portability, thus wxWidgets core components.  Currently
-         tested and in production use on W98, XP, OS X, and Linux.
+         tested and in production use on Windows XP-8.1, OS X, and Linux.
     v.   Conventional ( i.e. popular and modern ) chart format
          support.  In the real world, this means BSB format raster
          charts, and S57ENC format vector charts.
@@ -28,3 +28,5 @@ a.  Opencpn was built with the following objectives in mind.
     M/V Dyad, a 48 ft trawler yacht cruising from Newfoundland to the
     Bahamas yearly.
 
+    Our thanks go to MAXCDN for providing a CDN network delivering
+    the OpenCPN downloads worldwide.

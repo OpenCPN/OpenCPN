@@ -1,0 +1,52 @@
+{% extends "base/wrap.c.j2" %}
+{% block headers %}
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+{{ super() }}
+
+{% endblock %}
+
+{% block main %}
+{{ super() }}
+
+snd_config_t *snd_config = NULL;
+
+__GLXextFuncPtr glXGetProcAddressARB(const GLubyte *name) {
+    {% for func in functions %}
+    {% if not func.name.startswith('snd_') %}
+    if (strcmp(name, "{{ func.name }}") == 0) {
+        return (void *){{ func.name }};
+    }
+    {% endif %}
+    {% endfor %}
+    printf("glXGetProcAddress(%s) not found\n", name);
+    return NULL;
+}
+
+__GLXextFuncPtr glXGetProcAddress(const GLubyte *name) {
+    return glXGetProcAddressARB(name);
+}
+{% endblock %}
+
+{% block definition %}
+#if !defined(skip_client_{{ func.name }}) && !defined(skip_index_{{ func.name }})
+{{ super() -}}
+#endif
+{% endblock %}
+
+{% block call %}
+    {{ func.name }}_INDEXED packed_data;
+    packed_data.func = {{ func.name }}_INDEX;
+    {% for arg in func.args %}
+    packed_data.args.a{{ loop.index }} = ({{ arg.type|unconst }}){{ arg.name }};
+    {% endfor %}
+    {% if not func.void %}
+    {{ func.return }} ret;
+    syscall(SYS_proxy, (void *)&packed_data, &ret);
+    return ret;
+    {% else %}
+    syscall(SYS_proxy, (void *)&packed_data, NULL);
+    {% endif %}
+{% endblock %}

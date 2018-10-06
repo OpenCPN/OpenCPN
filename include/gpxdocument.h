@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                                  *
- *   bdbcat@yahoo.com                                                                  *
  *                                                                            *
  *   This program is free software; you can redistribute it and/or modify     *
  *   it under the terms of the GNU General Public License as published by     *
@@ -21,19 +20,22 @@
  *   You should have received a copy of the GNU General Public License        *
  *   along with this program; if not, write to the                            *
  *   Free Software Foundation, Inc.,                                          *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.                *
  ***************************************************************************
 */
 #ifndef _GPXDOCUMENT_H_
 #define _GPXDOCUMENT_H_
 
 #include <wx/wx.h>
+#include <wx/regex.h>
 #include <tinyxml.h>
-#include <tinystr.h>
+//#include <tinystr.h>
 #include <stdio.h>
 
-const wxString GpxxColorNames[] = { _("Black"), _("DarkRed"), _("DarkGreen"), _("DarkYellow"), _("DarkBlue"), _("DarkMagenta"), _("DarkCyan"), _("LightGray"), _("DarkGray"), _("Red"), _("Green"), _("Yellow"), _("Blue"), _("Magenta"), _("Cyan"), _("White") };//The last color defined by Garmin is transparent - we ignore it
+const wxString GpxxColorNames[] = { _T("Black"), _T("DarkRed"), _T("DarkGreen"), _T("DarkYellow"), _T("DarkBlue"), _T("DarkMagenta"), _T("DarkCyan"), _T("LightGray"), _T("DarkGray"), _T("Red"), _T("Green"), _T("Yellow"), _T("Blue"), _T("Magenta"), _T("Cyan"), _T("White") };//The last color defined by Garmin is transparent - we ignore it
 const wxColour GpxxColors[] = { wxColour(0x00, 0x00, 0x00), wxColour(0x60, 0x00, 0x00), wxColour(0x00, 0x60, 0x00), wxColour(0x80, 0x80, 0x00), wxColour(0x00, 0x00, 0x60), wxColour(0x60, 0x00, 0x60), wxColour(0x00, 0x80, 0x80), wxColour(0xC0, 0xC0, 0xC0), wxColour(0x60, 0x60, 0x60), wxColour(0xFF, 0x00, 0x00), wxColour(0x00, 0xFF, 0x00), wxColour(0xF0, 0xF0, 0x00), wxColour(0x00, 0x00, 0xFF), wxColour(0xFE, 0x00, 0xFE), wxColour(0x00, 0xFF, 0xFF), wxColour(0xFF, 0xFF, 0xFF) };
+const int StyleValues[] = { -1, wxSOLID, wxDOT, wxLONG_DASH, wxSHORT_DASH, wxDOT_DASH };
+const int WidthValues[] = { -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 
 // Forward declarations

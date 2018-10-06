@@ -1,3 +1,28 @@
+/********************************************************************
+** @source JEEPS chart datum structures
+**
+** @author Copyright (C) 1999 Alan Bleasby
+** @version 1.0
+** @modified Dec 28 1999 Alan Bleasby. First version
+** @modified Copyright (C) 2004, 2005, 2006 Robert Lipe
+** @modified Copyright (C) 2007 Achim Schumacher
+** @@
+**
+** This library is free software; you can redistribute it and/or
+** modify it under the terms of the GNU Library General Public
+** License as published by the Free Software Foundation; either
+** version 2 of the License, or (at your option) any later version.
+**
+** This library is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+** Library General Public License for more details.
+**
+** You should have received a copy of the GNU Library General Public
+** License along with this library; if not, write to the
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
+********************************************************************/
 #ifdef __cplusplus
 extern "C"
 {
@@ -184,7 +209,7 @@ GPS_ODatum GPS_Datum[]=
 /* 121 */    { "Sweden",          	4,  	424.3, 	-80.5, 	613.1 	},
 /* 122 */    { "GDA 94",		21,  	0, 	0, 	0 	},
 /* 123 */    { "CH-1903",		4,  	674, 	15, 	405 	},
-/* 124 */    { "Palestine 1923",        27,     -235,   -85,    264     },                 
+/* 124 */    { "Palestine 1923",        27,     -235,   -85,    264     },
 /* 125 */    { "ITM (Israeli New)",     21,     -48,     55,    -52     },
 	     { NULL,                 	0,  	0,    	0,     	0 	}
 };

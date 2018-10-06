@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -102,13 +102,18 @@
 #include "gga.hpp"
 #include "dbt.hpp"
 #include "dpt.hpp"
-#include "mtw.hpp"
+#include "mta.hpp" //Air temperature
+#include "mtw.hpp" //Water temperature
+#include "mda.hpp" //barometric pressure
 #include "mwd.hpp"
 #include "mwv.hpp"
 #include "vhw.hpp"
 #include "vwr.hpp"
 #include "vwt.hpp"
 #include "zda.hpp"
+#include "vlw.hpp"
+#include "xdr.hpp" //transducer data
+#include "xte.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -195,9 +200,11 @@ class NMEA0183
       HSC Hsc;
       LCD Lcd;
 */
+      MTA Mta; //Air temperature
       MTW Mtw;
       MWD Mwd;
       MWV Mwv;
+      MDA Mda; //Metrological comopsite	
 /*
       OLN Oln;
       OSD Osd;
@@ -224,8 +231,9 @@ class NMEA0183
       VDR Vdr;
 */
       VHW Vhw;
+	  VLW Vlw;
 /*
-      VLW Vlw;
+      
       VPW Vpw;
 */
       VTG Vtg;
@@ -236,9 +244,9 @@ class NMEA0183
       WNC Wnc;
 */
       WPL Wpl;
-/*
+
       XDR Xdr;
-      XTE Xte;
+/*    XTE Xte;
       XTR Xtr;
 */
       ZDA Zda;

@@ -18,7 +18,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
 */
 
 
@@ -65,10 +65,6 @@ typedef enum _S52_MAR_param_t {
     S52_MAR_NUM             = 16    // number of parameters
 } S52_MAR_param_t;
 
-#define MAXL 256    // MAX lenght of buffer _including_ '\0'
-typedef char valueBuf[MAXL];
-
-extern int    S52_getConfig(const char *label, valueBuf *vbuf);
 extern double S52_getMarinerParam(S52_MAR_param_t param);
 extern int    S52_setMarinerParam(S52_MAR_param_t param, double val);
 #endif

@@ -27,7 +27,6 @@
  ******************************************************************************
  *
  * $Log: ogrgeometry.cpp,v $
- * Revision 1.2  2008/03/30 22:59:17  bdbcat
  * Cleanup
  *
  * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
@@ -272,7 +271,7 @@ OGRBoolean OGRGeometry::Intersect( OGRGeometry *poOtherGeom ) const
 {
     OGREnvelope         oEnv1, oEnv2;
 
-    if( this == NULL || poOtherGeom == NULL )
+    if( poOtherGeom == NULL )
         return FALSE;
 
     this->getEnvelope( &oEnv1 );

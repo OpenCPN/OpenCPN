@@ -1,0 +1,1347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<specification xmlns="http://www.opengl.org/registry/" name="GLX" specversion="1.3" fileversion="0.0.1" >
+	<typemap >
+		<type-def typename="GLXPixmap" C-lang="GLXPixmap" />
+		<type-def typename="FunctionPointer" C-lang="__GLXextFuncPtr" />
+		<type-def typename="GLXPbufferSGIX" C-lang="GLXPbufferSGIX" />
+		<type-def typename="long" C-lang="long" />
+		<type-def typename="DMbuffer" C-lang="DMbuffer" />
+		<type-def typename="GLXFBConfig" C-lang="GLXFBConfig" />
+		<type-def typename="VLServer" C-lang="VLServer" />
+		<type-def typename="GLXPbuffer" C-lang="GLXPbuffer" />
+		<type-def typename="int64_t" C-lang="int64_t" />
+		<type-def typename="GLXFBConfigSGIX" C-lang="GLXFBConfigSGIX" />
+		<type-def typename="GLubyte" C-lang="GLubyte" />
+		<type-def typename="GLenum" C-lang="GLenum" />
+		<type-def typename="VLPath" C-lang="VLPath" />
+		<type-def typename="GLXHyperpipeConfigSGIXPointer" C-lang="GLXHyperpipeConfigSGIX *" />
+		<type-def typename="constGLXContext" C-lang="const GLXContext" />
+		<type-def typename="GLXDrawable" C-lang="GLXDrawable" />
+		<type-def typename="Pixmap" C-lang="Pixmap" />
+		<type-def typename="Colormap" C-lang="Colormap" />
+		<type-def typename="GLXFBConfigPointer" C-lang="GLXFBConfig *" />
+		<type-def typename="Uint" C-lang="unsigned int" />
+		<type-def typename="int32_t" C-lang="int32_t" />
+		<type-def typename="GLint" C-lang="GLint" />
+		<type-def typename="uintPointer" C-lang="unsigned int *" />
+		<type-def typename="GLXVideoDeviceNV" C-lang="GLXVideoDeviceNV" />
+		<type-def typename="Window" C-lang="Window" />
+		<type-def typename="GLfunction" C-lang="GLfunction" />
+		<type-def typename="GLXVideoCaptureDeviceNVPointer" C-lang="GLXVideoCaptureDeviceNV *" />
+		<type-def typename="GLXVideoSourceSGIX" C-lang="GLXVideoSourceSGIX" />
+		<type-def typename="Display" C-lang="Display" />
+		<type-def typename="GLXFBConfigSGIXPointer" C-lang="GLXFBConfigSGIX *" />
+		<type-def typename="XVisualInfoPointer" C-lang="XVisualInfo *" />
+		<type-def typename="Status" C-lang="Status" />
+		<type-def typename="GLboolean" C-lang="GLboolean" />
+		<type-def typename="Bool" C-lang="Bool" />
+		<type-def typename="GLXVideoCaptureDeviceNV" C-lang="GLXVideoCaptureDeviceNV" />
+		<type-def typename="GLXHyperpipeNetworkSGIXPointer" C-lang="GLXHyperpipeNetworkSGIX *" />
+		<type-def typename="DisplayPointer" C-lang="Display *" />
+		<type-def typename="VLNode" C-lang="VLNode" />
+		<type-def typename="GLuint" C-lang="GLuint" />
+		<type-def typename="GLXContext" C-lang="GLXContext" />
+		<type-def typename="GLXContextID" C-lang="GLXContextID" />
+		<type-def typename="GLsizei" C-lang="GLsizei" />
+		<type-def typename="DMparams" C-lang="DMparams" />
+		<type-def typename="GLXHyperpipeConfigSGIX" C-lang="GLXHyperpipeConfigSGIX" />
+		<type-def typename="GLXWindow" C-lang="GLXWindow" />
+		<type-def typename="XVisualInfo" C-lang="XVisualInfo" />
+		<type-def typename="float" C-lang="float" />
+		<type-def typename="void" C-lang="void" />
+		<type-def typename="int" C-lang="int" />
+		<type-def typename="uint" C-lang="unsigned int" />
+		<type-def typename="ulong" C-lang="unsigned long" />
+	</typemap>
+	<extensions >
+		<ext name="ARB_get_proc_address" />
+		<ext name="ARB_multisample" />
+		<ext name="ARB_vertex_buffer_object" />
+		<ext name="ARB_fbconfig_float" />
+		<ext name="ARB_framebuffer_sRGB" />
+		<ext name="ARB_create_context" />
+		<ext name="ARB_create_context_profile" />
+		<ext name="ARB_create_context_robustness" />
+		<ext name="SGIS_multisample" />
+		<ext name="EXT_visual_info" />
+		<ext name="SGI_swap_control" />
+		<ext name="SGI_video_sync" />
+		<ext name="SGI_make_current_read" />
+		<ext name="SGIX_video_source" />
+		<ext name="EXT_visual_rating" />
+		<ext name="EXT_import_context" />
+		<ext name="SGIX_fbconfig" />
+		<ext name="SGIX_pbuffer" />
+		<ext name="SGI_cushion" />
+		<ext name="SGIX_video_resize" />
+		<ext name="SGIX_dmbuffer" />
+		<ext name="SGIX_swap_group" />
+		<ext name="SGIX_swap_barrier" />
+		<ext name="SGIS_blended_overlay" />
+		<ext name="SGIS_shared_multisample" />
+		<ext name="SUN_get_transparent_index" />
+		<ext name="3DFX_multisample" />
+		<ext name="MESA_copy_sub_buffer" />
+		<ext name="MESA_pixmap_colormap" />
+		<ext name="MESA_release_buffers" />
+		<ext name="MESA_set_3dfx_mode" />
+		<ext name="SGIX_visual_select_group" />
+		<ext name="OML_swap_method" />
+		<ext name="OML_sync_control" />
+		<ext name="NV_float_buffer" />
+		<ext name="SGIX_hyperpipe" />
+		<ext name="MESA_agp_offset" />
+		<ext name="EXT_fbconfig_packed_float" />
+		<ext name="EXT_framebuffer_sRGB" />
+		<ext name="EXT_texture_from_pixmap" />
+		<ext name="NV_present_video" />
+		<ext name="NV_video_out" />
+		<ext name="NV_swap_group" />
+		<ext name="NV_video_capture" />
+		<ext name="EXT_swap_control" />
+		<ext name="NV_copy_image" />
+		<ext name="INTEL_swap_event" />
+		<ext name="NV_multisample_coverage" />
+		<ext name="AMD_gpu_association" />
+		<ext name="EXT_create_context_es2_profile" />
+		<ext name="EXT_create_context_es_profile" />
+		<ext name="EXT_swap_control_tear" />
+		<ext name="EXT_buffer_age" />
+	</extensions>
+	<enumerations >
+		<enum name="WINDOW_BIT" value="0x00000001" version="1.3" />
+		<enum name="PIXMAP_BIT" value="0x00000002" version="1.3" />
+		<enum name="PBUFFER_BIT" value="0x00000004" version="1.3" />
+		<enum name="RGBA_BIT" value="0x00000001" version="1.3" />
+		<enum name="COLOR_INDEX_BIT" value="0x00000002" version="1.3" />
+		<enum name="PBUFFER_CLOBBER_MASK" value="0x08000000" version="1.3" />
+		<enum name="FRONT_LEFT_BUFFER_BIT" value="0x00000001" version="1.3" />
+		<enum name="FRONT_RIGHT_BUFFER_BIT" value="0x00000002" version="1.3" />
+		<enum name="BACK_LEFT_BUFFER_BIT" value="0x00000004" version="1.3" />
+		<enum name="BACK_RIGHT_BUFFER_BIT" value="0x00000008" version="1.3" />
+		<enum name="AUX_BUFFERS_BIT" value="0x00000010" version="1.3" />
+		<enum name="DEPTH_BUFFER_BIT" value="0x00000020" version="1.3" />
+		<enum name="STENCIL_BUFFER_BIT" value="0x00000040" version="1.3" />
+		<enum name="ACCUM_BUFFER_BIT" value="0x00000080" version="1.3" />
+		<enum name="CONFIG_CAVEAT" value="0x20" version="1.3" />
+		<enum name="X_VISUAL_TYPE" value="0x22" version="1.3" />
+		<enum name="TRANSPARENT_TYPE" value="0x23" version="1.3" />
+		<enum name="TRANSPARENT_INDEX_VALUE" value="0x24" version="1.3" />
+		<enum name="TRANSPARENT_RED_VALUE" value="0x25" version="1.3" />
+		<enum name="TRANSPARENT_GREEN_VALUE" value="0x26" version="1.3" />
+		<enum name="TRANSPARENT_BLUE_VALUE" value="0x27" version="1.3" />
+		<enum name="TRANSPARENT_ALPHA_VALUE" value="0x28" version="1.3" />
+		<enum name="DONT_CARE" value="0xFFFFFFFF" version="1.3" />
+		<enum name="NONE" value="0x8000" version="1.3" />
+		<enum name="SLOW_CONFIG" value="0x8001" version="1.3" />
+		<enum name="TRUE_COLOR" value="0x8002" version="1.3" />
+		<enum name="DIRECT_COLOR" value="0x8003" version="1.3" />
+		<enum name="PSEUDO_COLOR" value="0x8004" version="1.3" />
+		<enum name="STATIC_COLOR" value="0x8005" version="1.3" />
+		<enum name="GRAY_SCALE" value="0x8006" version="1.3" />
+		<enum name="STATIC_GRAY" value="0x8007" version="1.3" />
+		<enum name="TRANSPARENT_RGB" value="0x8008" version="1.3" />
+		<enum name="TRANSPARENT_INDEX" value="0x8009" version="1.3" />
+		<enum name="VISUAL_ID" value="0x800B" version="1.3" />
+		<enum name="SCREEN" value="0x800C" version="1.3" />
+		<enum name="NON_CONFORMANT_CONFIG" value="0x800D" version="1.3" />
+		<enum name="DRAWABLE_TYPE" value="0x8010" version="1.3" />
+		<enum name="RENDER_TYPE" value="0x8011" version="1.3" />
+		<enum name="X_RENDERABLE" value="0x8012" version="1.3" />
+		<enum name="FBCONFIG_ID" value="0x8013" version="1.3" />
+		<enum name="RGBA_TYPE" value="0x8014" version="1.3" />
+		<enum name="COLOR_INDEX_TYPE" value="0x8015" version="1.3" />
+		<enum name="MAX_PBUFFER_WIDTH" value="0x8016" version="1.3" />
+		<enum name="MAX_PBUFFER_HEIGHT" value="0x8017" version="1.3" />
+		<enum name="MAX_PBUFFER_PIXELS" value="0x8018" version="1.3" />
+		<enum name="PRESERVED_CONTENTS" value="0x801B" version="1.3" />
+		<enum name="LARGEST_PBUFFER" value="0x801C" version="1.3" />
+		<enum name="WIDTH" value="0x801D" version="1.3" />
+		<enum name="HEIGHT" value="0x801E" version="1.3" />
+		<enum name="EVENT_MASK" value="0x801F" version="1.3" />
+		<enum name="DAMAGED" value="0x8020" version="1.3" />
+		<enum name="SAVED" value="0x8021" version="1.3" />
+		<enum name="WINDOW" value="0x8022" version="1.3" />
+		<enum name="PBUFFER" value="0x8023" version="1.3" />
+		<enum name="PBUFFER_HEIGHT" value="0x8040" version="1.3" />
+		<enum name="PBUFFER_WIDTH" value="0x8041" version="1.3" />
+		<enum name="SAMPLE_BUFFERS" value="100000" version="1.4" />
+		<enum name="SAMPLES" value="100001" version="1.4" />
+		<enum name="SAMPLE_BUFFERS_ARB" value="100000" >
+			<ext name="ARB_multisample" />
+		</enum>
+		<enum name="SAMPLES_ARB" value="100001" >
+			<ext name="ARB_multisample" />
+		</enum>
+		<enum name="CONTEXT_ALLOW_BUFFER_BYTE_ORDER_MISMATCH_ARB" value="0x2095" >
+			<ext name="ARB_vertex_buffer_object" />
+		</enum>
+		<enum name="RGBA_FLOAT_TYPE_ARB" value="0x20B9" >
+			<ext name="ARB_fbconfig_float" />
+		</enum>
+		<enum name="RGBA_FLOAT_BIT_ARB" value="0x00000004" >
+			<ext name="ARB_fbconfig_float" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_ARB" value="0x20B2" >
+			<ext name="ARB_framebuffer_sRGB" />
+		</enum>
+		<enum name="CONTEXT_DEBUG_BIT_ARB" value="0x00000001" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_FORWARD_COMPATIBLE_BIT_ARB" value="0x00000002" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_MAJOR_VERSION_ARB" value="0x2091" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_MINOR_VERSION_ARB" value="0x2092" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_FLAGS_ARB" value="0x2094" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_CORE_PROFILE_BIT_ARB" value="0x00000001" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB" value="0x00000002" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_PROFILE_MASK_ARB" value="0x9126" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_ROBUST_ACCESS_BIT_ARB" value="0x00000004" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="LOSE_CONTEXT_ON_RESET_ARB" value="0x8252" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB" value="0x8256" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="NO_RESET_NOTIFICATION_ARB" value="0x8261" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_SGIS" value="100000" >
+			<ext name="SGIS_multisample" />
+		</enum>
+		<enum name="SAMPLES_SGIS" value="100001" >
+			<ext name="SGIS_multisample" />
+		</enum>
+		<enum name="X_VISUAL_TYPE_EXT" value="0x22" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_TYPE_EXT" value="0x23" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_VALUE_EXT" value="0x24" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_RED_VALUE_EXT" value="0x25" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_GREEN_VALUE_EXT" value="0x26" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_BLUE_VALUE_EXT" value="0x27" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_ALPHA_VALUE_EXT" value="0x28" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="NONE_EXT" value="0x8000" >
+			<ext name="EXT_visual_info" />
+			<ext name="EXT_visual_rating" />
+		</enum>
+		<enum name="TRUE_COLOR_EXT" value="0x8002" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="DIRECT_COLOR_EXT" value="0x8003" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="PSEUDO_COLOR_EXT" value="0x8004" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="STATIC_COLOR_EXT" value="0x8005" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="GRAY_SCALE_EXT" value="0x8006" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="STATIC_GRAY_EXT" value="0x8007" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_RGB_EXT" value="0x8008" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_EXT" value="0x8009" >
+			<ext name="EXT_visual_info" />
+		</enum>
+		<enum name="VISUAL_CAVEAT_EXT" value="0x20" >
+			<ext name="EXT_visual_rating" />
+		</enum>
+		<enum name="SLOW_VISUAL_EXT" value="0x8001" >
+			<ext name="EXT_visual_rating" />
+		</enum>
+		<enum name="NON_CONFORMANT_VISUAL_EXT" value="0x800D" >
+			<ext name="EXT_visual_rating" />
+		</enum>
+		<enum name="SHARE_CONTEXT_EXT" value="0x800A" >
+			<ext name="EXT_import_context" />
+		</enum>
+		<enum name="VISUAL_ID_EXT" value="0x800B" >
+			<ext name="EXT_import_context" />
+		</enum>
+		<enum name="SCREEN_EXT" value="0x800C" >
+			<ext name="EXT_import_context" />
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="WINDOW_BIT_SGIX" value="0x00000001" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="PIXMAP_BIT_SGIX" value="0x00000002" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="RGBA_BIT_SGIX" value="0x00000001" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="COLOR_INDEX_BIT_SGIX" value="0x00000002" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="DRAWABLE_TYPE_SGIX" value="0x8010" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="RENDER_TYPE_SGIX" value="0x8011" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="X_RENDERABLE_SGIX" value="0x8012" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="FBCONFIG_ID_SGIX" value="0x8013" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="RGBA_TYPE_SGIX" value="0x8014" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="COLOR_INDEX_TYPE_SGIX" value="0x8015" >
+			<ext name="SGIX_fbconfig" />
+		</enum>
+		<enum name="PBUFFER_BIT_SGIX" value="0x00000004" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="BUFFER_CLOBBER_MASK_SGIX" value="0x08000000" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="FRONT_LEFT_BUFFER_BIT_SGIX" value="0x00000001" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="FRONT_RIGHT_BUFFER_BIT_SGIX" value="0x00000002" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="BACK_LEFT_BUFFER_BIT_SGIX" value="0x00000004" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="BACK_RIGHT_BUFFER_BIT_SGIX" value="0x00000008" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="AUX_BUFFERS_BIT_SGIX" value="0x00000010" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="DEPTH_BUFFER_BIT_SGIX" value="0x00000020" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="STENCIL_BUFFER_BIT_SGIX" value="0x00000040" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="ACCUM_BUFFER_BIT_SGIX" value="0x00000080" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_BIT_SGIX" value="0x00000100" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_WIDTH_SGIX" value="0x8016" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_HEIGHT_SGIX" value="0x8017" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_PIXELS_SGIX" value="0x8018" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_WIDTH_SGIX" value="0x8019" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_HEIGHT_SGIX" value="0x801A" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="PRESERVED_CONTENTS_SGIX" value="0x801B" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="LARGEST_PBUFFER_SGIX" value="0x801C" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="WIDTH_SGIX" value="0x801D" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="HEIGHT_SGIX" value="0x801E" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="EVENT_MASK_SGIX" value="0x801F" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="DAMAGED_SGIX" value="0x8020" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="SAVED_SGIX" value="0x8021" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="WINDOW_SGIX" value="0x8022" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_SGIX" value="0x8023" >
+			<ext name="SGIX_pbuffer" />
+		</enum>
+		<enum name="SYNC_FRAME_SGIX" value="0x00000000" >
+			<ext name="SGIX_video_resize" />
+		</enum>
+		<enum name="SYNC_SWAP_SGIX" value="0x00000001" >
+			<ext name="SGIX_video_resize" />
+		</enum>
+		<enum name="DIGITAL_MEDIA_PBUFFER_SGIX" value="0x8024" >
+			<ext name="SGIX_dmbuffer" />
+		</enum>
+		<enum name="BLENDED_RGBA_SGIS" value="0x8025" >
+			<ext name="SGIS_blended_overlay" />
+		</enum>
+		<enum name="MULTISAMPLE_SUB_RECT_WIDTH_SGIS" value="0x8026" >
+			<ext name="SGIS_shared_multisample" />
+		</enum>
+		<enum name="MULTISAMPLE_SUB_RECT_HEIGHT_SGIS" value="0x8027" >
+			<ext name="SGIS_shared_multisample" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_3DFX" value="0x8050" >
+			<ext name="3DFX_multisample" />
+		</enum>
+		<enum name="SAMPLES_3DFX" value="0x8051" >
+			<ext name="3DFX_multisample" />
+		</enum>
+		<enum name="3DFX_WINDOW_MODE_MESA" value="0x1" >
+			<ext name="MESA_set_3dfx_mode" />
+		</enum>
+		<enum name="3DFX_FULLSCREEN_MODE_MESA" value="0x2" >
+			<ext name="MESA_set_3dfx_mode" />
+		</enum>
+		<enum name="VISUAL_SELECT_GROUP_SGIX" value="0x8028" >
+			<ext name="SGIX_visual_select_group" />
+		</enum>
+		<enum name="SWAP_METHOD_OML" value="0x8060" >
+			<ext name="OML_swap_method" />
+		</enum>
+		<enum name="SWAP_EXCHANGE_OML" value="0x8061" >
+			<ext name="OML_swap_method" />
+		</enum>
+		<enum name="SWAP_COPY_OML" value="0x8062" >
+			<ext name="OML_swap_method" />
+		</enum>
+		<enum name="SWAP_UNDEFINED_OML" value="0x8063" >
+			<ext name="OML_swap_method" />
+		</enum>
+		<enum name="FLOAT_COMPONENTS_NV" value="0x20B0" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="HYPERPIPE_PIPE_NAME_LENGTH_SGIX" value="80" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="BAD_HYPERPIPE_CONFIG_SGIX" value="91" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="BAD_HYPERPIPE_SGIX" value="92" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="HYPERPIPE_DISPLAY_PIPE_SGIX" value="0x00000001" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="HYPERPIPE_RENDER_PIPE_SGIX" value="0x00000002" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="PIPE_RECT_SGIX" value="0x00000001" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="PIPE_RECT_LIMITS_SGIX" value="0x00000002" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="HYPERPIPE_STEREO_SGIX" value="0x00000003" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="HYPERPIPE_PIXEL_AVERAGE_SGIX" value="0x00000004" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="HYPERPIPE_ID_SGIX" value="0x8030" >
+			<ext name="SGIX_hyperpipe" />
+		</enum>
+		<enum name="RGBA_UNSIGNED_FLOAT_TYPE_EXT" value="0x20B1" >
+			<ext name="EXT_fbconfig_packed_float" />
+		</enum>
+		<enum name="RGBA_UNSIGNED_FLOAT_BIT_EXT" value="0x00000008" >
+			<ext name="EXT_fbconfig_packed_float" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_EXT" value="0x20B2" >
+			<ext name="EXT_framebuffer_sRGB" />
+		</enum>
+		<enum name="TEXTURE_1D_BIT_EXT" value="0x00000001" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_2D_BIT_EXT" value="0x00000002" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_RECTANGLE_BIT_EXT" value="0x00000004" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGB_EXT" value="0x20D0" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGBA_EXT" value="0x20D1" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BIND_TO_MIPMAP_TEXTURE_EXT" value="0x20D2" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_TARGETS_EXT" value="0x20D3" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="Y_INVERTED_EXT" value="0x20D4" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_EXT" value="0x20D5" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_TARGET_EXT" value="0x20D6" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="MIPMAP_TEXTURE_EXT" value="0x20D7" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_NONE_EXT" value="0x20D8" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_RGB_EXT" value="0x20D9" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_RGBA_EXT" value="0x20DA" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_1D_EXT" value="0x20DB" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_2D_EXT" value="0x20DC" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="TEXTURE_RECTANGLE_EXT" value="0x20DD" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="FRONT_LEFT_EXT" value="0x20DE" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="FRONT_RIGHT_EXT" value="0x20DF" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BACK_LEFT_EXT" value="0x20E0" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BACK_RIGHT_EXT" value="0x20E1" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="FRONT_EXT" ref="FRONT_LEFT_EXT" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="BACK_EXT" ref="BACK_LEFT_EXT" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX0_EXT" value="0x20E2" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX1_EXT" value="0x20E3" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX2_EXT" value="0x20E4" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX3_EXT" value="0x20E5" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX4_EXT" value="0x20E6" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX5_EXT" value="0x20E7" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX6_EXT" value="0x20E8" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX7_EXT" value="0x20E9" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX8_EXT" value="0x20EA" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="AUX9_EXT" value="0x20EB" >
+			<ext name="EXT_texture_from_pixmap" />
+		</enum>
+		<enum name="NUM_VIDEO_SLOTS_NV" value="0x20F0" >
+			<ext name="NV_present_video" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_NV" value="0x20C3" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_ALPHA_NV" value="0x20C4" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_DEPTH_NV" value="0x20C5" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_ALPHA_NV" value="0x20C6" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_DEPTH_NV" value="0x20C7" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_FRAME_NV" value="0x20C8" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_1_NV" value="0x20C9" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_2_NV" value="0x20CA" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_1_2_NV" value="0x20CB" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_2_1_NV" value="0x20CC" >
+			<ext name="NV_video_out" />
+		</enum>
+		<enum name="DEVICE_ID_NV" value="0x20CD" >
+			<ext name="NV_video_capture" />
+		</enum>
+		<enum name="UNIQUE_ID_NV" value="0x20CE" >
+			<ext name="NV_video_capture" />
+		</enum>
+		<enum name="NUM_VIDEO_CAPTURE_SLOTS_NV" value="0x20CF" >
+			<ext name="NV_video_capture" />
+		</enum>
+		<enum name="SWAP_INTERVAL_EXT" value="0x20F1" >
+			<ext name="EXT_swap_control" />
+		</enum>
+		<enum name="MAX_SWAP_INTERVAL_EXT" value="0x20F2" >
+			<ext name="EXT_swap_control" />
+		</enum>
+		<enum name="BUFFER_SWAP_COMPLETE_INTEL_MASK" value="0x04000000" >
+			<ext name="INTEL_swap_event" />
+		</enum>
+		<enum name="EXCHANGE_COMPLETE_INTEL" value="0x8180" >
+			<ext name="INTEL_swap_event" />
+		</enum>
+		<enum name="COPY_COMPLETE_INTEL" value="0x8181" >
+			<ext name="INTEL_swap_event" />
+		</enum>
+		<enum name="FLIP_COMPLETE_INTEL" value="0x8182" >
+			<ext name="INTEL_swap_event" />
+		</enum>
+		<enum name="COVERAGE_SAMPLES_NV" value="100001" >
+			<ext name="NV_multisample_coverage" />
+		</enum>
+		<enum name="COLOR_SAMPLES_NV" value="0x20B3" >
+			<ext name="NV_multisample_coverage" />
+		</enum>
+		<enum name="GPU_VENDOR_AMD" value="0x1F00" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RENDERER_STRING_AMD" value="0x1F01" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_OPENGL_VERSION_STRING_AMD" value="0x1F02" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_FASTEST_TARGET_GPUS_AMD" value="0x21A2" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RAM_AMD" value="0x21A3" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_CLOCK_AMD" value="0x21A4" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_PIPES_AMD" value="0x21A5" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SIMD_AMD" value="0x21A6" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_RB_AMD" value="0x21A7" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SPI_AMD" value="0x21A8" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="CONTEXT_ES2_PROFILE_BIT_EXT" value="0x00000004" >
+			<ext name="EXT_create_context_es2_profile" />
+		</enum>
+		<enum name="CONTEXT_ES_PROFILE_BIT_EXT" value="0x00000004" >
+			<ext name="EXT_create_context_es_profile" />
+		</enum>
+		<enum name="LATE_SWAPS_TEAR_EXT" value="0x20F3" >
+			<ext name="EXT_swap_control_tear" />
+		</enum>
+		<enum name="BACK_BUFFER_AGE_EXT" value="0x20F4" >
+			<ext name="EXT_buffer_age" />
+		</enum>
+	</enumerations>
+	<functions >
+		<passthru ><![CDATA[#ifndef GLX_ARB_get_proc_address
+typedef void (*__GLXextFuncPtr)(void);
+#endif
+#ifndef GLX_SGIX_video_source
+typedef XID GLXVideoSourceSGIX;
+#endif
+#ifndef GLX_SGIX_fbconfig
+typedef XID GLXFBConfigIDSGIX;
+typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
+#endif
+#ifndef GLX_SGIX_pbuffer
+typedef XID GLXPbufferSGIX;
+typedef struct {
+    int type;
+    unsigned long serial;	  /* # of last request processed by server */
+    Bool send_event;		  /* true if this came for SendEvent request */
+    Display *display;		  /* display the event was read from */
+    GLXDrawable drawable;	  /* i.d. of Drawable */
+    int event_type;		  /* GLX_DAMAGED_SGIX or GLX_SAVED_SGIX */
+    int draw_type;		  /* GLX_WINDOW_SGIX or GLX_PBUFFER_SGIX */
+    unsigned int mask;	  /* mask indicating which buffers are affected*/
+    int x, y;
+    int width, height;
+    int count;		  /* if nonzero, at least this many more */
+} GLXBufferClobberEventSGIX;
+#endif
+#ifndef GLX_NV_video_output
+typedef unsigned int GLXVideoDeviceNV;
+#endif
+#ifndef GLX_NV_video_capture
+typedef XID GLXVideoCaptureDeviceNV;
+#endif
+#ifndef GLEXT_64_TYPES_DEFINED
+/* This code block is duplicated in glext.h, so must be protected */
+#define GLEXT_64_TYPES_DEFINED
+/* Define int32_t, int64_t, and uint64_t types for UST/MSC */
+/* (as used in the GLX_OML_sync_control extension). */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#include <inttypes.h>
+#elif defined(__sun__) || defined(__digital__)
+#include <inttypes.h>
+#if defined(__STDC__)
+#if defined(__arch64__) || defined(_LP64)
+typedef long int int64_t;
+typedef unsigned long int uint64_t;
+#else
+typedef long long int int64_t;
+typedef unsigned long long int uint64_t;
+#endif /* __arch64__ */
+#endif /* __STDC__ */
+#elif defined( __VMS ) || defined(__sgi)
+#include <inttypes.h>
+#elif defined(__SCO__) || defined(__USLC__)
+#include <stdint.h>
+#elif defined(__UNIXOS2__) || defined(__SOL64__)
+typedef long int int32_t;
+typedef long long int int64_t;
+typedef unsigned long long int uint64_t;
+#elif defined(_WIN32) && defined(__GNUC__)
+#include <stdint.h>
+#elif defined(_WIN32)
+typedef __int32 int32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#else
+#include <inttypes.h>     /* Fallback option */
+#endif
+#endif]]></passthru>
+		<property-defs >
+			<property name="glxvendorglx" any="true" />
+			<property name="vectorequiv" any="true" />
+			<property name="required-props" any="true" />
+			<property name="category" >
+				<value >VERSION_1_3</value>
+				<value >VERSION_1_4</value>
+				<value >ARB_get_proc_address</value>
+				<value >ARB_multisample</value>
+				<value >ARB_fbconfig_float</value>
+				<value >EXT_import_context</value>
+				<value >SGIX_dmbuffer</value>
+				<value >SGIX_fbconfig</value>
+				<value >SGIX_pbuffer</value>
+				<value >SGIX_swap_barrier</value>
+				<value >SGIX_swap_group</value>
+				<value >SGIX_video_resize</value>
+				<value >SGIX_video_source</value>
+				<value >SGI_cushion</value>
+				<value >SGI_make_current_read</value>
+				<value >SGI_swap_control</value>
+				<value >SGI_video_sync</value>
+				<value >SUN_get_transparent_index</value>
+				<value >MESA_agp_offset</value>
+				<value >MESA_copy_sub_buffer</value>
+				<value >MESA_pixmap_colormap</value>
+				<value >MESA_release_buffers</value>
+				<value >MESA_set_3dfx_mode</value>
+				<value >SGIX_visual_select_group</value>
+				<value >OML_sync_control</value>
+				<value >SGIX_hyperpipe</value>
+				<value >EXT_texture_from_pixmap</value>
+				<value >NV_swap_group</value>
+				<value >NV_video_output</value>
+				<value >NV_present_video</value>
+				<value >ARB_create_context</value>
+				<value >NV_video_capture</value>
+				<value >NV_copy_image</value>
+				<value >EXT_swap_control</value>
+				<value >ARB_framebuffer_sRGB</value>
+			</property>
+			<property name="glxflags" >
+				<value >client-handcode</value>
+				<value >client-intercept</value>
+				<value >server-handcode</value>
+			</property>
+			<property name="glxopcode" any="true" />
+			<property name="passthru" any="true" />
+			<property name="param" >
+				<value >retval</value>
+				<value >retained</value>
+			</property>
+		</property-defs>
+		<function-defs >
+			<function name="glXGetFBConfigs" return="GLXFBConfigPointer" category="VERSION_1_3" glxopcode="21" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="nelements" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXChooseFBConfig" return="GLXFBConfigPointer" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+				<param name="nelements" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXGetFBConfigAttrib" return="int" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXGetVisualFromFBConfig" return="XVisualInfoPointer" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+			</function>
+			<function name="glXCreateWindow" return="GLXWindow" category="VERSION_1_3" glxopcode="31" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="win" kind="value" type="Window" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXDestroyWindow" return="void" category="VERSION_1_3" glxopcode="32" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="win" kind="value" type="GLXWindow" input="true" />
+			</function>
+			<function name="glXCreatePixmap" return="GLXPixmap" category="VERSION_1_3" glxopcode="22" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="pixmap" kind="value" type="Pixmap" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXDestroyPixmap" return="void" category="VERSION_1_3" glxopcode="23" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pixmap" kind="value" type="GLXPixmap" input="true" />
+			</function>
+			<function name="glXCreatePbuffer" return="GLXPbuffer" category="VERSION_1_3" glxopcode="27" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXDestroyPbuffer" return="void" category="VERSION_1_3" glxopcode="28" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuf" kind="value" type="GLXPbuffer" input="true" />
+			</function>
+			<function name="glXQueryDrawable" return="void" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="draw" kind="value" type="GLXDrawable" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="uint" input="false" />
+			</function>
+			<function name="glXCreateNewContext" return="GLXContext" category="VERSION_1_3" glxopcode="24" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="render_type" kind="value" type="int" input="true" />
+				<param name="share_list" kind="value" type="GLXContext" input="true" />
+				<param name="direct" kind="value" type="Bool" input="true" />
+			</function>
+			<function name="glXMakeContextCurrent" return="Bool" category="VERSION_1_3" glxopcode="26" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="draw" kind="value" type="GLXDrawable" input="true" />
+				<param name="read" kind="value" type="GLXDrawable" input="true" />
+				<param name="ctx" kind="value" type="GLXContext" input="true" />
+			</function>
+			<function name="glXGetCurrentReadDrawable" return="GLXDrawable" category="VERSION_1_3" glxflags="client-handcode" />
+			<function name="glXGetCurrentDisplay" return="DisplayPointer" category="VERSION_1_3" glxflags="client-handcode" />
+			<function name="glXQueryContext" return="int" category="VERSION_1_3" glxopcode="25" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="ctx" kind="value" type="GLXContext" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXSelectEvent" return="void" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="draw" kind="value" type="GLXDrawable" input="true" />
+				<param name="event_mask" kind="value" type="ulong" input="true" />
+			</function>
+			<function name="glXGetSelectedEvent" return="void" category="VERSION_1_3" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="draw" kind="value" type="GLXDrawable" input="true" />
+				<param name="event_mask" kind="reference" type="ulong" input="false" />
+			</function>
+			<function name="glXGetProcAddress" return="FunctionPointer" category="VERSION_1_4" glxflags="client-handcode" >
+				<param name="procName" kind="reference" type="GLubyte" input="true" />
+			</function>
+			<function name="glXGetProcAddressARB" return="FunctionPointer" category="ARB_get_proc_address" glxflags="client-handcode" >
+				<param name="procName" kind="reference" type="GLubyte" input="true" />
+			</function>
+			<function name="glXCreateContextAttribsARB" return="GLXContext" category="ARB_create_context" glxopcode="34" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfig" input="true" />
+				<param name="share_context" kind="value" type="GLXContext" input="true" />
+				<param name="direct" kind="value" type="Bool" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXSwapIntervalSGI" return="int" glxvendorglx="65536" category="SGI_swap_control" glxflags="client-handcode" >
+				<param name="interval" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXGetVideoSyncSGI" return="int" category="SGI_video_sync" glxflags="client-handcode" >
+				<param name="count" kind="reference" type="uint" input="false" />
+			</function>
+			<function name="glXWaitVideoSyncSGI" return="int" category="SGI_video_sync" glxflags="client-handcode" >
+				<param name="divisor" kind="value" type="int" input="true" />
+				<param name="remainder" kind="value" type="int" input="true" />
+				<param name="count" kind="reference" type="uint" input="false" />
+			</function>
+			<function name="glXMakeCurrentReadSGI" return="Bool" glxvendorglx="65537" category="SGI_make_current_read" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="draw" kind="value" type="GLXDrawable" input="true" />
+				<param name="read" kind="value" type="GLXDrawable" input="true" />
+				<param name="ctx" kind="value" type="GLXContext" input="true" />
+			</function>
+			<function name="glXGetCurrentReadDrawableSGI" return="GLXDrawable" category="SGI_make_current_read" glxflags="client-handcode" />
+			<function name="glXCreateGLXVideoSourceSGIX" return="GLXVideoSourceSGIX" glxvendorglx="65538" category="SGIX_video_source" glxflags="client-handcode" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="server" kind="value" type="VLServer" input="true" />
+				<param name="path" kind="value" type="VLPath" input="true" />
+				<param name="nodeClass" kind="value" type="int" input="true" />
+				<param name="drainNode" kind="value" type="VLNode" input="true" />
+			</function>
+			<function name="glXDestroyGLXVideoSourceSGIX" return="void" glxvendorglx="65539" category="SGIX_video_source" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="glxvideosource" kind="value" type="GLXVideoSourceSGIX" input="true" />
+			</function>
+			<function name="glXGetCurrentDisplayEXT" return="DisplayPointer" category="EXT_import_context" glxflags="client-handcode" />
+			<function name="glXQueryContextInfoEXT" return="int" glxvendorglx="1024" category="EXT_import_context" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="context" kind="value" type="GLXContext" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXGetContextIDEXT" return="GLXContextID" category="EXT_import_context" glxflags="client-handcode" >
+				<param name="context" kind="value" type="constGLXContext" input="true" />
+			</function>
+			<function name="glXImportContextEXT" return="GLXContext" category="EXT_import_context" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="contextID" kind="value" type="GLXContextID" input="true" />
+			</function>
+			<function name="glXFreeContextEXT" return="void" category="EXT_import_context" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="context" kind="value" type="GLXContext" input="true" />
+			</function>
+			<function name="glXGetFBConfigAttribSGIX" return="int" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfigSGIX" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXChooseFBConfigSGIX" return="GLXFBConfigSGIXPointer" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="false" />
+				<param name="nelements" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXCreateGLXPixmapWithConfigSGIX" return="GLXPixmap" glxvendorglx="65542" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfigSGIX" input="true" />
+				<param name="pixmap" kind="value" type="Pixmap" input="true" />
+			</function>
+			<function name="glXCreateContextWithConfigSGIX" return="GLXContext" glxvendorglx="65541" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfigSGIX" input="true" />
+				<param name="render_type" kind="value" type="int" input="true" />
+				<param name="share_list" kind="value" type="GLXContext" input="true" />
+				<param name="direct" kind="value" type="Bool" input="true" />
+			</function>
+			<function name="glXGetVisualFromFBConfigSGIX" return="XVisualInfoPointer" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfigSGIX" input="true" />
+			</function>
+			<function name="glXGetFBConfigFromVisualSGIX" return="GLXFBConfigSGIX" category="SGIX_fbconfig" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="vis" kind="reference" type="XVisualInfo" input="false" />
+			</function>
+			<function name="glXCreateGLXPbufferSGIX" return="GLXPbufferSGIX" glxvendorglx="65543" category="SGIX_pbuffer" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="config" kind="value" type="GLXFBConfigSGIX" input="true" />
+				<param name="width" kind="value" type="uint" input="true" />
+				<param name="height" kind="value" type="uint" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXDestroyGLXPbufferSGIX" return="void" glxvendorglx="65544" category="SGIX_pbuffer" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuf" kind="value" type="GLXPbufferSGIX" input="true" />
+			</function>
+			<function name="glXQueryGLXPbufferSGIX" return="int" category="SGIX_pbuffer" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuf" kind="value" type="GLXPbufferSGIX" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="reference" type="uint" input="false" />
+			</function>
+			<function name="glXSelectEventSGIX" return="void" category="SGIX_pbuffer" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="mask" kind="value" type="ulong" input="true" />
+			</function>
+			<function name="glXGetSelectedEventSGIX" return="void" category="SGIX_pbuffer" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="mask" kind="reference" type="ulong" input="false" />
+			</function>
+			<function name="glXCushionSGI" return="void" category="SGI_cushion" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="window" kind="value" type="Window" input="true" />
+				<param name="cushion" kind="value" type="float" input="true" />
+			</function>
+			<function name="glXBindChannelToWindowSGIX" return="int" category="SGIX_video_resize" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="channel" kind="value" type="int" input="true" />
+				<param name="window" kind="value" type="Window" input="true" />
+			</function>
+			<function name="glXChannelRectSGIX" return="int" category="SGIX_video_resize" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="channel" kind="value" type="int" input="true" />
+				<param name="x" kind="value" type="int" input="true" />
+				<param name="y" kind="value" type="int" input="true" />
+				<param name="w" kind="value" type="int" input="true" />
+				<param name="h" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXQueryChannelRectSGIX" return="int" category="SGIX_video_resize" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="channel" kind="value" type="int" input="true" />
+				<param name="dx" kind="reference" type="int" input="false" />
+				<param name="dy" kind="reference" type="int" input="false" />
+				<param name="dw" kind="reference" type="int" input="false" />
+				<param name="dh" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXQueryChannelDeltasSGIX" return="int" category="SGIX_video_resize" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="channel" kind="value" type="int" input="true" />
+				<param name="x" kind="reference" type="int" input="false" />
+				<param name="y" kind="reference" type="int" input="false" />
+				<param name="w" kind="reference" type="int" input="false" />
+				<param name="h" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXChannelRectSyncSGIX" return="int" category="SGIX_video_resize" >
+				<param name="display" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="channel" kind="value" type="int" input="true" />
+				<param name="synctype" kind="value" type="GLenum" input="true" />
+			</function>
+			<function name="glXAssociateDMPbufferSGIX" return="Bool" category="SGIX_dmbuffer" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuffer" kind="value" type="GLXPbufferSGIX" input="true" />
+				<param name="params" kind="reference" type="DMparams" input="false" />
+				<param name="dmbuffer" kind="value" type="DMbuffer" input="true" />
+			</function>
+			<function name="glXJoinSwapGroupSGIX" return="void" glxvendorglx="65547" category="SGIX_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="member" kind="value" type="GLXDrawable" input="true" />
+			</function>
+			<function name="glXBindSwapBarrierSGIX" return="void" glxvendorglx="65548" category="SGIX_swap_barrier" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="barrier" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXQueryMaxSwapBarriersSGIX" return="Bool" glxvendorglx="65549" category="SGIX_swap_barrier" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="max" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXGetTransparentIndexSUN" return="Status" category="SUN_get_transparent_index" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="overlay" kind="value" type="Window" input="true" />
+				<param name="underlay" kind="value" type="Window" input="true" />
+				<param name="pTransparentIndex" kind="reference" type="long" input="false" />
+			</function>
+			<function name="glXCopySubBufferMESA" return="void" category="MESA_copy_sub_buffer" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="x" kind="value" type="int" input="true" />
+				<param name="y" kind="value" type="int" input="true" />
+				<param name="width" kind="value" type="int" input="true" />
+				<param name="height" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXCreateGLXPixmapMESA" return="GLXPixmap" category="MESA_pixmap_colormap" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="visual" kind="reference" type="XVisualInfo" input="false" />
+				<param name="pixmap" kind="value" type="Pixmap" input="true" />
+				<param name="cmap" kind="value" type="Colormap" input="true" />
+			</function>
+			<function name="glXReleaseBuffersMESA" return="Bool" category="MESA_release_buffers" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+			</function>
+			<function name="glXSet3DfxModeMESA" return="Bool" category="MESA_set_3dfx_mode" glxflags="client-handcode" >
+				<param name="mode" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXGetSyncValuesOML" return="Bool" category="OML_sync_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="ust" kind="reference" type="int64_t" input="false" />
+				<param name="msc" kind="reference" type="int64_t" input="false" />
+				<param name="sbc" kind="reference" type="int64_t" input="false" />
+			</function>
+			<function name="glXGetMscRateOML" return="Bool" category="OML_sync_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="numerator" kind="reference" type="int32_t" input="false" />
+				<param name="denominator" kind="reference" type="int32_t" input="false" />
+			</function>
+			<function name="glXSwapBuffersMscOML" return="int64_t" category="OML_sync_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="target_msc" kind="value" type="int64_t" input="true" />
+				<param name="divisor" kind="value" type="int64_t" input="true" />
+				<param name="remainder" kind="value" type="int64_t" input="true" />
+			</function>
+			<function name="glXWaitForMscOML" return="Bool" category="OML_sync_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="target_msc" kind="value" type="int64_t" input="true" />
+				<param name="divisor" kind="value" type="int64_t" input="true" />
+				<param name="remainder" kind="value" type="int64_t" input="true" />
+				<param name="ust" kind="reference" type="int64_t" input="false" />
+				<param name="msc" kind="reference" type="int64_t" input="false" />
+				<param name="sbc" kind="reference" type="int64_t" input="false" />
+			</function>
+			<function name="glXWaitForSbcOML" return="Bool" category="OML_sync_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="target_sbc" kind="value" type="int64_t" input="true" />
+				<param name="ust" kind="reference" type="int64_t" input="false" />
+				<param name="msc" kind="reference" type="int64_t" input="false" />
+				<param name="sbc" kind="reference" type="int64_t" input="false" />
+			</function>
+			<function name="glXQueryHyperpipeNetworkSGIX" return="GLXHyperpipeNetworkSGIXPointer" glxvendorglx="65550" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="npipes" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXHyperpipeConfigSGIX" return="int" glxvendorglx="65552" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="networkId" kind="value" type="int" input="true" />
+				<param name="npipes" kind="value" type="int" input="true" />
+				<param name="cfg" kind="array" type="GLXHyperpipeConfigSGIX" input="false" compute="[COMPSIZE(npipes)]" />
+				<param name="hpId" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXQueryHyperpipeConfigSGIX" return="GLXHyperpipeConfigSGIXPointer" glxvendorglx="65551" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+				<param name="npipes" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXDestroyHyperpipeConfigSGIX" return="int" glxvendorglx="65553" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXBindHyperpipeSGIX" return="int" glxvendorglx="???" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXQueryHyperpipeBestAttribSGIX" return="int" glxvendorglx="???" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="attribList" kind="array" type="void" input="false" compute="[COMPSIZE(size)]" />
+				<param name="returnAttribList" kind="array" type="void" input="false" compute="[COMPSIZE(size)]" />
+			</function>
+			<function name="glXHyperpipeAttribSGIX" return="int" glxvendorglx="???" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="attribList" kind="array" type="void" input="false" compute="[COMPSIZE(size)]" />
+			</function>
+			<function name="glXQueryHyperpipeAttribSGIX" return="int" glxvendorglx="???" category="SGIX_hyperpipe" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="returnAttribList" kind="array" type="void" input="false" compute="[COMPSIZE(size)]" />
+			</function>
+			<function name="glXGetAGPOffsetMESA" return="uint" category="MESA_agp_offset" glxflags="client-handcode" >
+				<param name="pointer" kind="reference" type="void" input="true" />
+			</function>
+			<function name="glXBindTexImageEXT" return="void" glxvendorglx="1330" category="EXT_texture_from_pixmap" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="buffer" kind="value" type="int" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXReleaseTexImageEXT" return="void" glxvendorglx="1331" category="EXT_texture_from_pixmap" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="buffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXEnumerateVideoDevicesNV" return="uintPointer" category="NV_present_video" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="nelements" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXBindVideoDeviceNV" return="int" category="NV_present_video" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="video_slot" kind="value" type="uint" input="true" />
+				<param name="video_device" kind="value" type="uint" input="true" />
+				<param name="attrib_list" kind="reference" type="int" input="true" />
+			</function>
+			<function name="glXGetVideoDeviceNV" return="int" glxvendorglx="1313" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="numVideoDevices" kind="value" type="int" input="true" />
+				<param name="pVideoDevice" kind="array" type="GLXVideoDeviceNV" input="false" compute="[COMPSIZE(numVideoDevices)]" />
+			</function>
+			<function name="glXReleaseVideoDeviceNV" return="int" glxvendorglx="1314" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="VideoDevice" kind="value" type="GLXVideoDeviceNV" input="true" />
+			</function>
+			<function name="glXBindVideoImageNV" return="int" glxvendorglx="1315" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="VideoDevice" kind="value" type="GLXVideoDeviceNV" input="true" />
+				<param name="pbuf" kind="value" type="GLXPbuffer" input="true" />
+				<param name="iVideoBuffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXReleaseVideoImageNV" return="int" glxvendorglx="1316" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuf" kind="value" type="GLXPbuffer" input="true" />
+			</function>
+			<function name="glXSendPbufferToVideoNV" return="int" glxvendorglx="1317" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="pbuf" kind="value" type="GLXPbuffer" input="true" />
+				<param name="iBufferType" kind="value" type="int" input="true" />
+				<param name="pulCounterPbuffer" kind="reference" type="ulong" input="false" />
+				<param name="bBlock" kind="value" type="GLboolean" input="true" />
+			</function>
+			<function name="glXGetVideoInfoNV" return="int" glxvendorglx="1318" category="NV_video_output" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="VideoDevice" kind="value" type="GLXVideoDeviceNV" input="true" />
+				<param name="pulCounterOutputPbuffer" kind="reference" type="ulong" input="false" />
+				<param name="pulCounterOutputVideo" kind="reference" type="ulong" input="false" />
+			</function>
+			<function name="glXJoinSwapGroupNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="group" kind="value" type="GLuint" input="true" />
+			</function>
+			<function name="glXBindSwapBarrierNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="group" kind="value" type="GLuint" input="true" />
+				<param name="barrier" kind="value" type="GLuint" input="true" />
+			</function>
+			<function name="glXQuerySwapGroupNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="group" kind="reference" type="GLuint" input="false" />
+				<param name="barrier" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="glXQueryMaxSwapGroupsNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="maxGroups" kind="reference" type="GLuint" input="false" />
+				<param name="maxBarriers" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="glXQueryFrameCountNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="count" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="glXResetFrameCountNV" return="Bool" category="NV_swap_group" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXBindVideoCaptureDeviceNV" return="int" category="NV_video_capture" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="video_capture_slot" kind="value" type="uint" input="true" />
+				<param name="device" kind="value" type="GLXVideoCaptureDeviceNV" input="true" />
+			</function>
+			<function name="glXEnumerateVideoCaptureDevicesNV" return="GLXVideoCaptureDeviceNVPointer" category="NV_video_capture" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="screen" kind="value" type="int" input="true" />
+				<param name="nelements" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXLockVideoCaptureDeviceNV" return="void" category="NV_video_capture" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="device" kind="value" type="GLXVideoCaptureDeviceNV" input="true" />
+			</function>
+			<function name="glXQueryVideoCaptureDeviceNV" return="int" category="NV_video_capture" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="device" kind="value" type="GLXVideoCaptureDeviceNV" input="true" />
+				<param name="attribute" kind="value" type="int" input="true" />
+				<param name="value" kind="array" type="int" input="false" compute="[COMPSIZE(attribute)]" />
+			</function>
+			<function name="glXReleaseVideoCaptureDeviceNV" return="void" category="NV_video_capture" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="device" kind="value" type="GLXVideoCaptureDeviceNV" input="true" />
+			</function>
+			<function name="glXSwapIntervalEXT" return="void" glxvendorglx="1416" category="EXT_swap_control" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="drawable" kind="value" type="GLXDrawable" input="true" />
+				<param name="interval" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXCopyImageSubDataNV" return="void" glxvendorglx="1360" category="NV_copy_image" glxflags="client-handcode" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="srcCtx" kind="value" type="GLXContext" input="true" />
+				<param name="srcName" kind="value" type="GLuint" input="true" />
+				<param name="srcTarget" kind="value" type="GLenum" input="true" />
+				<param name="srcLevel" kind="value" type="GLint" input="true" />
+				<param name="srcX" kind="value" type="GLint" input="true" />
+				<param name="srcY" kind="value" type="GLint" input="true" />
+				<param name="srcZ" kind="value" type="GLint" input="true" />
+				<param name="dstCtx" kind="value" type="GLXContext" input="true" />
+				<param name="dstName" kind="value" type="GLuint" input="true" />
+				<param name="dstTarget" kind="value" type="GLenum" input="true" />
+				<param name="dstLevel" kind="value" type="GLint" input="true" />
+				<param name="dstX" kind="value" type="GLint" input="true" />
+				<param name="dstY" kind="value" type="GLint" input="true" />
+				<param name="dstZ" kind="value" type="GLint" input="true" />
+				<param name="width" kind="value" type="GLsizei" input="true" />
+				<param name="height" kind="value" type="GLsizei" input="true" />
+				<param name="depth" kind="value" type="GLsizei" input="true" />
+			</function>
+		</function-defs>
+	</functions>
+</specification>

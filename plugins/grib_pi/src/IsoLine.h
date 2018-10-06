@@ -29,11 +29,12 @@ Dessin des données GRIB (avec QT)
 #include <list>
 #include <set>
 
+#include "../../../include/ocpn_plugin.h"
+
 #include "GribReader.h"
-#include "grib_pi.h"
 
 class ViewPort;
-class wxMemoryDC;
+class wxDC;
 
 class Segment;
 WX_DECLARE_LIST(Segment, MySegList);
@@ -79,11 +80,10 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 // c  d
 // Rejoint l'arête (i,j)-(k,l) à l'arête (m,n)-(o,p) (indices ds la grille GRIB)
 
-
 class Segment
 {
     public:
-        Segment (int I, int J,
+        Segment (int I, int w, int J,
                 char c1, char c2, char c3, char c4,
                 const GribRecord *rec, double pressure);
 
@@ -94,35 +94,44 @@ class Segment
         bool  bUsed;
 
     private:
-        void traduitCode(int I, int J, char c1, int &i, int &j);
+        void traduitCode(int I, int w, int J, char c1, int &i, int &j);
 
         void intersectionAreteGrille(int i,int j, int k,int l,
                 double *x, double *y,
                 const GribRecord *rec, double pressure);
 };
 
+class GRIBOverlayFactory;
+class TexFont;
+
 //===============================================================
 class IsoLine
 {
     public:
-        IsoLine(double val, const GribRecord *rec);
+         IsoLine(double val, double coeff, double offset, const GribRecord *rec);
         ~IsoLine();
 
 
-        void drawIsoLine(wxMemoryDC *pmdc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp, bool bHiDef);
 
-        void drawIsoLineLabels(wxMemoryDC *pmdc, wxColour couleur, PlugIn_ViewPort *vp,
-                                int density, int first, double coef);
+        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
+                               PlugIn_ViewPort *vp, int density, int first,
+                               wxImage &imageLabel);
+        void drawIsoLineLabelsGL(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp,
+                                 int density, int first,
+                                 wxString label, wxColour &color, TexFont &texfont);
 
         int getNbSegments()     {return trace.size();}
 
+        double getValue() {return value;}
     private:
         double value;
         int    W, H;     // taille de la grille
         const  GribRecord *rec;
 
-        wxColour isoLineColor;
+        wxColour  isoLineColor;
         std::list<Segment *> trace;
+
 
         void intersectionAreteGrille(int i,int j, int k,int l, double *x, double *y,
                         const GribRecord *rec);
@@ -136,6 +145,8 @@ class IsoLine
 
         MySegList       m_seglist;
         MySegListList   m_SegListList;
+        
+        double m_pixelMM;
 };
 
 

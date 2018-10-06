@@ -20,8 +20,8 @@
 **
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-** Boston, MA  02111-1307, USA.
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
 ********************************************************************/
 #include "garmin_gps.h"
 #include "gpsserial.h"
@@ -63,6 +63,20 @@ void VerifySerialPortClosed()
             GPS_Device_Off(g_gps_devh);
 }
 
+int Garmin_Serial_GPS_PVT_On( const char *port_name )
+{
+    return GPS_A800_On(port_name, &g_gps_devh);
+}
+
+int Garmin_Serial_GPS_PVT_Off( const char *port_name )
+{
+    return GPS_A800_Off(port_name, &g_gps_devh);
+}
+
+int GPS_Serial_Command_Pvt_Get(GPS_PPvt_Data *pvt )
+{
+    return GPS_Command_Pvt_Get(&g_gps_devh, pvt );
+}
 
 /*
  * termio on Cygwin is apparently broken, so we revert to Windows serial.
@@ -220,7 +234,20 @@ int32 GPS_Serial_Wait(gpsdevh *fd)
 
 int32 GPS_Serial_Flush(gpsdevh *fd)
 {
-	return 1;
+    unsigned char u;
+    int n;
+    
+    GPS_Diag("Flush:");
+    n=0;
+    while( (GPS_Serial_Chars_Ready(fd)) && (n < 1000))
+    {
+        GPS_Serial_Read(fd,&u,1);
+        GPS_Diag("%02x ", u);
+        
+        n++;
+    }
+    GPS_Diag("\r\n");
+    return 1;
 }
 
 int32 GPS_Serial_Write(gpsdevh *dh, const void *obuf, int size)

@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -34,7 +33,28 @@
 #ifndef __OCPNTYPES_H__
 #define __OCPNTYPES_H__
 
-#include "bbox.h"
+
+typedef struct _S52color{
+    char colName[20];
+    unsigned char  R;
+    unsigned char  G;
+    unsigned char  B;
+}S52color;
+
+WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
+WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
+
+typedef struct _colTable {
+    wxString *tableName;
+    wxString rasterFileName;
+    wxArrayPtrVoid *color;
+    colorHashMap colors;
+    wxColorHashMap wxColors;
+} colTable;
+
+
+
+WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 
 //    ChartType constants
 typedef enum ChartTypeEnum
@@ -69,68 +89,26 @@ typedef enum ColorScheme
 }_ColorScheme;
 
 
+
 //----------------------------------------------------------------------------
-// ViewPort
-//    Implementation is in chcanv.cpp
+// ocpn Toolbar stuff
 //----------------------------------------------------------------------------
-class ViewPort
-{
-      public:
-//  ctor
-            ViewPort();
-
-            wxPoint GetPixFromLL(double lat, double lon) const;
-            void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
-            wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
-
-            wxRegion GetVPRegion( size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
-
-            void SetBoxes(void);
-
-//  Accessors
-            void Invalidate() { bValid = false; }
-            void Validate() { bValid = true; }
-            bool IsValid() const { return bValid; }
-
-            void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
-            void SetProjectionType(int type){ m_projection_type = type; }
-
-            LLBBox &GetBBox() { return vpBBox; }
-//  Generic
-            double   clat;                   // center point
-            double   clon;
-            double   view_scale_ppm;
-            double   skew;
-            double   rotation;
+class ChartBase;
+class wxSocketEvent;
+class ocpnToolBarSimple;
 
 
-
-            double    chart_scale;            // conventional chart displayed scale
-
-            int      pix_width;
-            int      pix_height;
-
-            bool     b_quilt;
-            bool     b_FullScreenQuilt;
-
-            int      m_projection_type;
-
-            wxRect   rv_rect;
-
-      private:
-            //    Methods
-
-            //    Data
-            LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
-                                            // which contains the entire vieport
-
-
-            bool     bValid;                 // This VP is valid
-
-};
-
-
-
-
+//    A generic Position Data structure
+typedef struct {
+    double kLat;
+    double kLon;
+    double kCog;
+    double kSog;
+    double kVar;            // Variation, typically from RMC message
+    double kHdm;            // Magnetic heading
+    double kHdt;            // true heading
+    time_t FixTime;
+    int    nSats;
+} GenericPosDatEx;
 
 #endif

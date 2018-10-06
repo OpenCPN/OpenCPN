@@ -7,7 +7,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,11 +21,12 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
 #include "rudder_angle.h"
+#include "wx28compat.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -53,19 +53,19 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
       wxString labels[] = {_T("40"), _T("30"), _T("20"), _T("10"), _T("0"), _T("10"), _T("20"), _T("30"), _T("40")};
       SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_RudderAngle::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_RudderAngle::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      m_width = width;
-      m_height = m_TitleHeight+width*.7;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      if( orient == wxHORIZONTAL ) {
+          w = wxMax(hint.y, (DefaultWidth-m_TitleHeight)/.7);
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+      }
+      return wxSize( w, m_TitleHeight+w*.7 );
 }
 
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
@@ -79,32 +79,33 @@ void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit
             if (data < m_MainValueMin) m_MainValue = m_MainValueMin;
             else if (data > m_MainValueMax) m_MainValue = m_MainValueMax;
             else m_MainValue = data;
+            m_MainValueUnit = unit;
       }
       else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
+            m_ExtraValueUnit = unit;
       }
       else return;
-
-      Refresh(false);
 }
 
-void DashboardInstrument_RudderAngle::DrawFrame(wxBufferedDC* dc)
+void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
 {
       // We don't need the upper part
       // Move center up
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
 
-      m_cx = rect.width / 2;
-      m_cy = m_TitleHeight + (rect.height - m_TitleHeight) * 0.38;
-      m_radius = (rect.height - m_TitleHeight)*.6;
+      m_cx = size.x / 2;
+      m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
+      m_radius = (size.y - m_TitleHeight)*.6;
 
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
-      pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      pen.SetStyle(wxPENSTYLE_SOLID);
+      pen.SetWidth(2);
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
 
@@ -118,10 +119,13 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxBufferedDC* dc)
       dc->DrawLine(x1, y1, x2, y2);
 }
 
-void DashboardInstrument_RudderAngle::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
       wxCoord y = m_cy - (m_radius * 0.5);
+      wxColour cl;
+      GetGlobalColor(_T("DASH1"), &cl);
+      dc->SetBrush( cl );
       dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
 }
 

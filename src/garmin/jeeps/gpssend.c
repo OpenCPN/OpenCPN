@@ -19,8 +19,8 @@
 **
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-** Boston, MA  02111-1307, USA.
+** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+** Boston, MA 02110-1301,  USA.
 ********************************************************************/
 #include "garmin_gps.h"
 #include "gpsserial.h"
@@ -129,6 +129,9 @@ int32 GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet)
     GPS_Serial_OPacket ser_pkt;
     UC ser_pkt_data[MAX_GPS_PACKET_SIZE * sizeof(UC)];
     US bytes;
+    
+    if(!fd)
+        return 0;
 
     if (packet->type >= 0xff || packet->n >= 0xff) {
 	GPS_Error("SEND: Unsupported packet type/size for serial protocol");

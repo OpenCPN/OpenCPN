@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -104,40 +104,36 @@ bool RMC::Parse( const SENTENCE& sentence )
    ** First we check the checksum...
    */
 
-   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 12 );
-
+   int nFields = sentence.GetNumberOfDataFields( );
+   
+   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( nFields + 1 );
+   
    if ( check == NTrue )
    {
-   /*
-   ** This may be an NMEA Version 2.3 sentence, with "Mode" field
-   */
-       wxString checksum_in_sentence = sentence.Field( 12 );
+       /*
+        * * This may be an NMEA Version 3+ sentence, with added fields
+        */
+       wxString checksum_in_sentence = sentence.Field( nFields + 1 );
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
-         SetErrorMessage( _T("Invalid Checksum") );
-         return( FALSE );
-       }
-       else
-       {
-         check = sentence.IsChecksumBad( 13 );
-         if( check == NTrue)
-         {
-            SetErrorMessage( _T("Invalid Checksum") );
-            return( FALSE );
-         }
+           SetErrorMessage( _T("Invalid Checksum") );
+           return( FALSE );
        }
    }
-
-/*
-   if ( check == Unknown0183 )
-   {
-       SetErrorMessage( _T("Missing Checksum") );
-      return( FALSE );
+   
+   //   Is this at least a 2.3 message?
+   bool bext_valid = true;
+   wxString checksum_in_sentence = sentence.Field( nFields );
+   if(!checksum_in_sentence.StartsWith(_T("*"))) {
+       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S"))) 
+           bext_valid = false;
    }
-*/
-
+   
    UTCTime                    = sentence.Field( 1 );
    IsDataValid                = sentence.Boolean( 2 );
+   if( !bext_valid )
+       IsDataValid = NFalse;
+
    Position.Parse( 3, 4, 5, 6, sentence );
    SpeedOverGroundKnots       = sentence.Double( 7 );
    TrackMadeGoodDegreesTrue   = sentence.Double( 8 );

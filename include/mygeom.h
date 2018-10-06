@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,64 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- * $Log: mygeom.h,v $
- * Revision 1.13  2010/06/07 15:28:56  bdbcat
- * 607a
- *
- * Revision 1.12  2010/06/06 20:49:58  bdbcat
- * 606a
- *
- * Revision 1.11  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.10  2009/06/03 03:21:51  bdbcat
- * Cleanup.
- *
- * Revision 1.9  2009/03/26 22:35:35  bdbcat
- * Opencpn 1.3.0 Update
- *
- * Revision 1.8  2008/12/09 03:32:16  bdbcat
- * Add stream method
- *
- * Revision 1.7  2008/03/30 23:28:29  bdbcat
- * Cleanup/optimize
- *
- * Revision 1.6  2007/06/10 02:37:18  bdbcat
- * Cleanup
- *
- * Revision 1.5  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.4  2007/03/02 02:06:21  dsr
- * Convert to UTM Projection
- *
- * Revision 1.3  2006/10/01 03:24:40  dsr
- * no message
- *
- * Revision 1.2  2006/09/21 01:38:23  dsr
- * Major refactor/cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.5  2006/07/28 20:47:50  dsr
- * Cleanup
- *
- * Revision 1.4  2006/06/02 02:06:57  dsr
- * Cleanup
- *
- * Revision 1.1.1.1  2006/04/19 03:23:27  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.3  2006/03/16 03:28:12  dsr
- * Cleanup tabs
- *
- * Revision 1.2  2006/02/23 01:22:42  dsr
- * Cleanup
- *
  *
  *
  */
@@ -91,9 +34,8 @@
 #include "wx/wxprec.h"
 #include <wx/wfstream.h>
 
-
-#include <ogr_geometry.h>
-#include "s52s57.h"
+class OGRGeometry;
+class OGRPolygon;
 
 #define TESS_VERT   0                           // constants describing preferred tess orientation
 #define TESS_HORZ   1
@@ -107,9 +49,14 @@
 #define PTG_TRIANGLE_FAN                   0x0006
 
 //  Error Return Codes
+#define ERROR_NONE              0
 #define ERROR_NO_DLL            1
+#define ERROR_BAD_OGRPOLY       2
 
 //  Some external prototypes
+
+#define DATA_TYPE_FLOAT         0
+#define DATA_TYPE_DOUBLE        1
 
 
 //--------------------------------------------------------------------------------------------------
@@ -121,6 +68,8 @@
 class Extended_Geometry
 {
 public:
+      Extended_Geometry();
+      ~Extended_Geometry();
 
       OGRGeometry       *pogrGeom;
       int               n_vector_indices;
@@ -133,6 +82,14 @@ public:
       wxPoint2DDouble   *vertex_array;
       int               xmin, xmax, ymin, ymax;
       int               n_max_edge_points;
+
+      //    Conversion parameters
+      //    for (assummed linear) convertions from vertex_array points to easting/northing, metres from 0,0
+      //    To convert to lat/lon, use simple merctor equations
+      double            x_rate;
+      double            x_offset;
+      double            y_rate;
+      double            y_offset;
 };
 
 
@@ -141,6 +98,7 @@ class TriPrim
 public:
         TriPrim();
         ~TriPrim();
+        void FreeMem(void);
 
         unsigned int type;                  // Type of triangle primitive
                                             //  May be PTG_TRIANGLES
@@ -150,17 +108,40 @@ public:
         int         nVert;
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
-        wxBoundingBox *p_bbox;
-
+        LLBBox      tri_box;
+//        double      minxt, minyt, maxxt, maxyt;
+        
         TriPrim     *p_next;                // chain link
+        
 };
 
+class LegacyTriPrim
+{
+public:
+    LegacyTriPrim();
+    ~LegacyTriPrim();
+    void FreeMem(void);
+    
+    unsigned int type;                  // Type of triangle primitive
+    //  May be PTG_TRIANGLES
+    //         PTG_TRIANGLE_STRIP
+    //         PTG_TRIANGLE_FAN
+    
+    int         nVert;
+    double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
+    
+    double      minx, miny, maxx, maxy;
+    
+    LegacyTriPrim     *p_next;                // chain link
+    
+};
 
 
 class PolyTriGroup
 {
 public:
         PolyTriGroup();
+        PolyTriGroup(Extended_Geometry *pxGeom);
         ~PolyTriGroup();
 
         int             nContours;
@@ -168,7 +149,12 @@ public:
         float           *pgroup_geom;           // pointer to Raw geometry, used for contour line drawing
 
         TriPrim         *tri_prim_head;         // head of linked list of TriPrims
-
+        bool            m_bSMSENC;
+        bool            bsingle_alloc;
+        unsigned char   *single_buffer;
+        int             single_buffer_size;
+        int             data_type;              //  p_vertex in TriPrim chain is FLOAT or DOUBLE
+        
     private:
         int my_bufgets( char *buf, int buf_len_max );
 
@@ -215,46 +201,66 @@ class PolyTessGeo
         PolyTessGeo();
         ~PolyTessGeo();
 
-        PolyTessGeo(unsigned char *polybuf, int nrecl, int index);      // Build this from SENC file record
+        PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
 
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
-            double ref_lat, double ref_lon,  bool bUseInternalTess);  // Build this from OGRPolygon
+            double ref_lat, double ref_lon, double LOD_meters);  // Build this from OGRPolygon
+
+        PolyTessGeo(Extended_Geometry *pxGeom);
+
+        bool IsOk(){ return m_bOK;}
+
+        int BuildDeferredTess(void);
 
         int Write_PolyTriGroup( FILE *ofs);
-        int Write_PolyTriGroup( wxOutputStream &ostream);
 
         double Get_xmin(){ return xmin;}
         double Get_xmax(){ return xmax;}
         double Get_ymin(){ return ymin;}
         double Get_ymax(){ return ymax;}
+        void SetExtents(double x_left, double y_bot, double x_right, double y_top);
+        
+        
         PolyTriGroup *Get_PolyTriGroup_head(){ return m_ppg_head;}
         int GetnVertexMax(){ return m_nvertex_max; }
+        void SetnVertexMax( int max ){ m_nvertex_max = max; }
+        int GetnContours(){ return m_ncnt; }
+        
         int     ErrorCode;
+        void Set_PolyTriGroup_head( PolyTriGroup *head ){ m_ppg_head = head;}
+        void Set_OK( bool bok ){ m_bOK = bok;}
+        
+        void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
 
-
+        
     private:
+        int BuildTessGL(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
-        int PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
         int my_bufgets( char *buf, int buf_len_max );
 
 
 
     //  Data
 
+        bool            m_bOK;
+
+        Extended_Geometry     *m_pxgeom;
+        
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain
         int             m_nvertex_max;                 // and computed max vertex count
                                                       // used by drawing primitives as
                                                       // optimization
 
-        int             ncnt;
-        int             nwkb;
+        int             m_ncnt;
+        int             m_nwkb;
 
         char           *m_buf_head;
         char           *m_buf_ptr;                   // used to read passed SENC record
         int            m_nrecl;
 
         double         m_ref_lat, m_ref_lon;
+        double         m_LOD_meters;
 
 };
 
@@ -281,6 +287,7 @@ class PolyTessGeoTrap
             double Get_ymax(){ return ymax;}
             PolyTrapGroup *Get_PolyTrapGroup_head(){ return m_ptg_head;}
             int GetnVertexMax(){ return m_nvertex_max; }
+            void SetnVertexMax( int max ){ m_nvertex_max = max; }
             bool IsOk(){ return m_bOK;}
             int     ErrorCode;
 

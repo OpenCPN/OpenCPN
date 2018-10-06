@@ -1,7 +1,7 @@
 /*
     Garmin Jeeps - OpenCPN Interface Wrapper.
 
-    Copyright (C) 2010 David S Register, bdbcat@yahoo.com
+    Copyright (C) 2010 David S Register
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111 USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
 
  */
 
@@ -23,11 +23,11 @@
 
 #include "gpsapp.h"
 #include "garmin_gps.h"
+#include "gpsserial.h"
 
 #define GPS_DEBUG
 
 extern char last_error[];
-extern gpsdevh *g_gps_devh;
 
 gpsdevh *my_gps_devh;
 
@@ -43,21 +43,19 @@ wxString GetLastGarminError(void)
 */
 
 /*  Wrapped interface from higher level objects   */
-int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
+int Garmin_GPS_Init( const wxString &port_name)
 {
       int ret;
-#ifdef GPS_DEBUG
-      if (getenv("OPENCPN_GPS_ERROR") != NULL)
+#ifdef GPS_DEBUG0
+//      if (getenv("OPENCPN_GPS_ERROR") != NULL)
 	GPS_Enable_Error();
-      if (getenv("OPENCPN_GPS_WARNING") != NULL)
+//      if (getenv("OPENCPN_GPS_WARNING") != NULL)
 	GPS_Enable_Warning();
-      if (getenv("OPENCPN_GPS_USER") != NULL)
+//      if (getenv("OPENCPN_GPS_USER") != NULL)
 	GPS_Enable_User();
-      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
+//      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
 	GPS_Enable_Diagnose();
 #endif
-//      GPS_Enable_Diagnose();
-      GPS_Enable_Error();
       char m[1];
       m[0] = '\0';
 
@@ -69,12 +67,48 @@ int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
       return ret;
 }
 
+int Garmin_GPS_Open( wxString &port_name )
+{
+    return GPS_Init(port_name.mb_str());
+}
+
+
+int Garmin_GPS_PVT_On( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_On( port_name.mb_str() );
+}
+
+int Garmin_GPS_PVT_Off( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_Off( port_name.mb_str() );
+}
+
+int Garmin_GPS_GetPVT(void *pvt)
+{
+    return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt );
+    
+}
+
+void Garmin_GPS_ClosePortVerify(void)
+{
+    VerifyPortClosed();
+}
+
 wxString Garmin_GPS_GetSaveString()
 {
       return wxString(gps_save_string,  wxConvUTF8);
 }
 
-int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, RoutePointList *wplist)
+void Garmin_GPS_PrepareWptData(GPS_PWay pway, RoutePoint *prp)
+{
+      pway->lat = prp->m_lat;
+      pway->lon = prp->m_lon;
+      pway->alt_is_unknown = 1;
+      pway->alt = 0.0;
+      strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+}
+
+int Garmin_GPS_SendWaypoints( const wxString &port_name, RoutePointList *wplist)
 {
       int ret_val = 0;
 
@@ -96,10 +130,7 @@ int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, Rout
             wxRoutePointListNode *node = wplist->Item(i);
             RoutePoint *prp = node->GetData();
 
-            pway->lat = prp->m_lat;
-            pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
-
+            Garmin_GPS_PrepareWptData(pway, prp);
       }
 
 
@@ -164,9 +195,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
             wxRoutePointListNode *node = wplist->Item(i-1);
             RoutePoint *prp = node->GetData();
 
-            pway->lat = prp->m_lat;
-            pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+            Garmin_GPS_PrepareWptData(pway, prp);
       }
 
       return ppway;
@@ -226,9 +255,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
                   wxRoutePointListNode *node = wplist->Item((i-1)/2);
                   RoutePoint *prp = node->GetData();
 
-                  pway->lat = prp->m_lat;
-                  pway->lon = prp->m_lon;
-                  strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+                  Garmin_GPS_PrepareWptData(pway, prp);
 	    }
 	    else  /* Even */
 	    {
@@ -244,7 +271,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       return ppway;
 }
 
-int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress)
+int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgress)
 {
       int ret_val = 0;
 
@@ -299,7 +326,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             //  Ask the user if it is all right to overwrite
             if(!bfound_empty)
             {
-                  int rv = OCPNMessageBox(_("Overwrite Garmin device route number 1?"),
+                  int rv = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
                                           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
                   if(rv != wxOK)
                         return 0;

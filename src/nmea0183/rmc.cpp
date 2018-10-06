@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -96,7 +96,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    ** 12) Checksum
 
    ** Version 2.3
-   ** 12) Mode (D or A), optional, may be NULL
+   ** 12) The value can be A=autonomous, D=differential, E=Estimated, N=not valid, S=Simulator, optional, may be NULL
    ** 13) Checksum
    */
 
@@ -104,47 +104,47 @@ bool RMC::Parse( const SENTENCE& sentence )
    ** First we check the checksum...
    */
 
-   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 12 );
+   int nFields = sentence.GetNumberOfDataFields( );
+   
+   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( nFields + 1 );
 
    if ( check == NTrue )
    {
    /*
-   ** This may be an NMEA Version 2.3 sentence, with "Mode" field
+   ** This may be an NMEA Version 3+ sentence, with added fields
    */
-       wxString checksum_in_sentence = sentence.Field( 12 );
+        wxString checksum_in_sentence = sentence.Field( nFields + 1 );
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
          SetErrorMessage( _T("Invalid Checksum") );
          return( FALSE );
        }
-       else
-       {
-         check = sentence.IsChecksumBad( 13 );
-         if( check == NTrue)
-         {
-            SetErrorMessage( _T("Invalid Checksum") );
-            return( FALSE );
-         }
+   }
+
+   // If sentence is at least Version 2.3, check the extra mode indicator field
+   bool mode_valid = true;
+   if(nFields >= 12){
+       wxString mode_string = sentence.Field( 12 );
+       if(!mode_string.StartsWith(_T("*"))) {
+           if((mode_string == _T("N")) || (mode_string == _T("S")))     // Not valid, or simulator mode
+               mode_valid = false;
        }
    }
-
-/*
-   if ( check == Unknown0183 )
-   {
-       SetErrorMessage( _T("Missing Checksum") );
-      return( FALSE );
-   }
-*/
+       
 
    UTCTime                    = sentence.Field( 1 );
+   
    IsDataValid                = sentence.Boolean( 2 );
+   if( !mode_valid )
+       IsDataValid = NFalse;
+       
    Position.Parse( 3, 4, 5, 6, sentence );
    SpeedOverGroundKnots       = sentence.Double( 7 );
    TrackMadeGoodDegreesTrue   = sentence.Double( 8 );
    Date                       = sentence.Field( 9 );
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
-
+   
    return( TRUE );
 }
 
@@ -164,8 +164,14 @@ bool RMC::Write( SENTENCE& sentence )
    sentence += SpeedOverGroundKnots;
    sentence += TrackMadeGoodDegreesTrue;
    sentence += Date;
-   sentence += MagneticVariation;
-   sentence += MagneticVariationDirection;
+
+   if(MagneticVariation > 360.)
+         sentence += _T(",,");
+   else
+   {
+         sentence += MagneticVariation;
+         sentence += MagneticVariationDirection;
+   }
 
    sentence.Finish();
 
