@@ -1,15 +1,17 @@
-Third party plugins (.so) should go into /usr/lib/opencpn/. If you have
-not installed the opencpn-plugins package you will need to create this
-directory yourself.
+opencpn for Debian
+------------------
 
+The bundled manual has been removed since it contains privacy breaching
+code and also lacks sources. It can be downloaded from the opencpn website
+at https://opencpn.org/OpenCPN/info/downloads.html.
 
-Free NOAA nautical charts can be downloaded here:
+Third-party plugins (.so files) should be installed in /usr/lib/*/opencpn
+with possible data located in /usr/share/opencpn/plugins/<plugin>
+
+Free NOAA nautical charts can be downloaded from:
   http://www.nauticalcharts.noaa.gov/mcd/Raster/
 
 
-User-visible differences from upstream:
- - Xtide's higher-resolution vector shoreline is used for the default backdrop.
 
 
---
-Hamish Bowman, January 2012
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 22 Jul 2018 14:26:36 +0200

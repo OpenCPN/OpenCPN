@@ -1,4 +1,25 @@
-opencpn (2.5.0+dfsg-1) UNRELEASED; urgency=low
+opencpn (4.8.6+dfsg.1-1) unstable; urgency=medium
+
+  * New upstream version
+  * README.harmonics: dropped, we now use the opencpn data.
+  * README.lucid: dropped, outdated.
+  * Dropped all existing patches (outdated).
+  * Added ten patches (0001..0010) backported from current upstream/master.
+  * compat level bumped to 11.
+  * The -doc package is dropped in favor of downloading the manual from
+    the opencon website. Added patch providing a HTML pointer-to-docs page.
+  * A large number of new build dependencies.
+  * The -plugins package is dropped, opencpn is not usable without the
+    default, limited set of plugins.
+  * The copyright file is updated and now also supports creating a tarball
+    without sources unusable in the Debian context with get-orig-source.
+  * The manpage  which used to be a debian patch is upstreamed.
+  * A debian/upstream/metadata file added.
+  * Closing ITP. (Closes: #907065)
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Oct 2018 13:38:05 -0400
+
+opencpn (2.5.0+dfsg-1) unstable; urgency=low
 
   * Packaged for upstream version 2.5.0
   * Drop most of TinyXML patch (superseded by upstream)
@@ -16,9 +37,6 @@ opencpn (2.5.0+dfsg-1) UNRELEASED; urgency=low
 
   [ Anton Martchukov ]
   * Additional copyright file auditing
-
-  [ Andreas Tille ]
-  * Moved from SVN to Git
 
  -- M. Hamish Bowman <hamish_b@yahoo.com>  Sun, 16 Mar 2014 13:51:34 +1300
 

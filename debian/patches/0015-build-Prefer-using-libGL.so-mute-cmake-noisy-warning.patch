@@ -1,0 +1,26 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 8 Oct 2018 12:23:53 -0400
+Subject: build: Prefer using libGL.so, mute cmake noisy warning.
+
+Using libglvnd, libGL is just a common interface to whatever
+openGL stacks available. Using libOpenGL is basically the same,
+but without GLX functions. Since we up to now have been using libGL
+I see no point changing this.
+
+See: https://github.com/OpenCPN/OpenCPN/issues/1157 
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 47375be..ab5f3dd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,6 +34,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+ IF (COMMAND cmake_policy)
+   if (POLICY CMP0043)
+     CMAKE_POLICY(SET CMP0043 NEW)
++    CMAKE_POLICY(SET CMP0072 OLD)
+   endif (POLICY CMP0043)
+ ENDIF (COMMAND cmake_policy)
+ 

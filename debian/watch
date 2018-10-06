@@ -1,3 +1,22 @@
-version=3
-opts=dversionmangle=s/\+dfsg// \
+version=4
+
+# Using git tag:
+#
+# opts="dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.2,\
+#   filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%opencpn-$1.tar.gz%" \
+#     https://github.com/OpenCPN/OpenCPN/tags \
+#     (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+#
+# However, upstream  does not always tag the release. 
+# See:  https://github.com/OpenCPN/OpenCPN/issues/1132
+
+
+# Pre/post-release  git snapshots
+#
+#  opts="mode=git,pretty=0~%cd.%h,\
+#    dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
+#      https://github.com/OpenCPN/OpenCPN.git HEAD
+
+opts="dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
 http://sf.net/opencpn/OpenCPN-([\d\.]+)-Source\.tar\.gz
+

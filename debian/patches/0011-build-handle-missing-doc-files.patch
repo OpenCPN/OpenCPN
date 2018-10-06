@@ -1,0 +1,66 @@
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Sat, 15 Sep 2018 07:29:15 -0400
+Subject: build: handle missing doc/ files.
+
+---
+ data/doc/help_web.html | 51 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 data/doc/help_web.html
+
+diff --git a/data/doc/help_web.html b/data/doc/help_web.html
+new file mode 100644
+index 0000000..7146245
+--- /dev/null
++++ b/data/doc/help_web.html
+@@ -0,0 +1,51 @@
++<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
++<html>
++<head>
++
++  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
++  <title>index</title>
++
++
++</head>
++
++
++<body style="background-color: rgb(255, 255, 204);">
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<br>
++
++<div style="text-align: center;"><span style="color: rgb(51, 51, 51);">For Online Help</span><br style="color: rgb(51, 51, 51);">
++
++<span style="color: rgb(51, 51, 51);">click on</span><br>
++
++<a href="http://opencpn.org/">OpenCPN.org</a><br>
++
++</div>
++
++</body>
++</html>

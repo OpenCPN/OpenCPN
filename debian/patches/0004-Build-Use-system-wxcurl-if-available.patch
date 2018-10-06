@@ -1,0 +1,38 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 28 Aug 2018 23:03:11 +0200
+Subject: Build: Use system wxcurl if available.
+
+---
+ CMakeLists.txt | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c26fe24..4bd2dbb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -641,12 +641,20 @@ IF(NOT QT_ANDROID)
+         src/wxcurl/thread.cpp
+         src/wxcurl/utils.cpp
+     )
+-    ADD_LIBRARY(WXCURL ${SRC_WXCURL})
+-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
+-    SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
++    INCLUDE( FindPkgConfig )
++    PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
++    IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
++      message (STATUS "Building with system wxcurl")
++      INCLUDE_DIRECTORIES(${SYS_WXCURL_INCLUDE_DIR})
++      SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
++    ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
++      message (STATUS "Building with bundled wxcurl")
++      ADD_LIBRARY(WXCURL ${SRC_WXCURL})
++      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
++      SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
++    ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
++
+     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+-    
+-    MESSAGE (STATUS "wxCurl configured...")
+     MESSAGE (STATUS "CURL_LIBRARIES:"  ${CURL_LIBRARIES})
+     
+     IF(WIN32 AND OCPN_USE_EXTERN_CURL)

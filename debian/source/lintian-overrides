@@ -1,0 +1,13 @@
+# None of these packages makes sense without the other, and there are no 
+# postinst scripts. Together, this makes the circular dependency motivated.
+opencpn source: intra-source-package-circular-dependency opencpn opencpn-data
+
+# Package does not define a testsuit.
+opencpn source: testsuite-autopkgtest-missing
+
+# Used to work around #831870
+opencpn source: debian-rules-contains-unnecessary-get-orig-source-target
+
+# These files are not shipped in packages (removed in rules)
+opencpn source: source-is-missing */MathJax.js *
+opencpn source: source-is-missing */highlight.min.js

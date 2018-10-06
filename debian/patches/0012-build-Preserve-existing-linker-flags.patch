@@ -1,0 +1,109 @@
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Sat, 15 Sep 2018 21:45:29 -0400
+Subject: build: Preserve existing linker flags.
+
+Submitted to upstream at https://github.com/OpenCPN/OpenCPN/pull/1145.
+---
+ plugins/chartdldr_pi/cmake/PluginConfigure.cmake   | 4 ++--
+ plugins/chartdldr_pi/cmake/PluginInstall.cmake     | 2 +-
+ plugins/dashboard_pi/CMakeLists.txt                | 2 +-
+ plugins/demo_pi_sample/CMakeLists.txt              | 2 +-
+ plugins/demo_pi_sample/cmake/PluginConfigure.cmake | 2 +-
+ plugins/grib_pi/CMakeLists.txt                     | 2 +-
+ plugins/wmm_pi/cmake/PluginConfigure.cmake         | 2 +-
+ 7 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/plugins/chartdldr_pi/cmake/PluginConfigure.cmake b/plugins/chartdldr_pi/cmake/PluginConfigure.cmake
+index 08189d9..ad22240 100644
+--- a/plugins/chartdldr_pi/cmake/PluginConfigure.cmake
++++ b/plugins/chartdldr_pi/cmake/PluginConfigure.cmake
+@@ -39,9 +39,9 @@ IF(NOT MSVC)
+  ENDIF(PROFILING)
+ 
+  IF(NOT APPLE)
+-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+  ELSE(NOT APPLE)
+-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
++  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl -undefined dynamic_lookup")
+  ENDIF(NOT APPLE)
+ 
+ ENDIF(NOT MSVC)
+diff --git a/plugins/chartdldr_pi/cmake/PluginInstall.cmake b/plugins/chartdldr_pi/cmake/PluginInstall.cmake
+index 6908c37..5b2569a 100644
+--- a/plugins/chartdldr_pi/cmake/PluginInstall.cmake
++++ b/plugins/chartdldr_pi/cmake/PluginInstall.cmake
+@@ -27,7 +27,7 @@ IF(WIN32)
+     ADD_DEFINITIONS( " -DUNICODE" )
+     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${OPENGL_LIBRARIES})
+     SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
+-    SET( CMAKE_SHARED_LINKER_FLAGS "-L../buildwin" )
++    SET( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L../buildwin" )
+   ENDIF(MINGW)
+ 
+   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
+diff --git a/plugins/dashboard_pi/CMakeLists.txt b/plugins/dashboard_pi/CMakeLists.txt
+index bfcc4e9..c86cc13 100644
+--- a/plugins/dashboard_pi/CMakeLists.txt
++++ b/plugins/dashboard_pi/CMakeLists.txt
+@@ -46,7 +46,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+ #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
+ IF(NOT WIN32 AND NOT APPLE)
+     ADD_DEFINITIONS( "-Wall -O2 -fexceptions -fvisibility=hidden" )
+-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+ ENDIF(NOT WIN32 AND NOT APPLE)
+ 
+ IF( APPLE )
+diff --git a/plugins/demo_pi_sample/CMakeLists.txt b/plugins/demo_pi_sample/CMakeLists.txt
+index 682a003..dedf29f 100644
+--- a/plugins/demo_pi_sample/CMakeLists.txt
++++ b/plugins/demo_pi_sample/CMakeLists.txt
+@@ -67,7 +67,7 @@ IF(NOT WIN32)
+  ADD_DEFINITIONS( "-Wall -g -fexceptions -fvisibility=hidden" )
+ 
+  IF(NOT APPLE)
+-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+  ELSE(NOT APPLE)
+   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl")
+  ENDIF(NOT APPLE)
+diff --git a/plugins/demo_pi_sample/cmake/PluginConfigure.cmake b/plugins/demo_pi_sample/cmake/PluginConfigure.cmake
+index 68043b0..1a54dcb 100644
+--- a/plugins/demo_pi_sample/cmake/PluginConfigure.cmake
++++ b/plugins/demo_pi_sample/cmake/PluginConfigure.cmake
+@@ -50,7 +50,7 @@ IF(NOT MSVC)
+  ENDIF(PROFILING)
+ 
+  IF(NOT APPLE)
+-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+  ELSE(NOT APPLE)
+   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
+  ENDIF(NOT APPLE)
+diff --git a/plugins/grib_pi/CMakeLists.txt b/plugins/grib_pi/CMakeLists.txt
+index fa785b9..b662ef9 100644
+--- a/plugins/grib_pi/CMakeLists.txt
++++ b/plugins/grib_pi/CMakeLists.txt
+@@ -45,7 +45,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+ #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
+ IF(NOT WIN32 AND NOT APPLE)
+     ADD_DEFINITIONS( "-Wall -fexceptions -fvisibility=hidden" )
+-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+ ENDIF(NOT WIN32 AND NOT APPLE)
+ 
+ IF( APPLE )
+diff --git a/plugins/wmm_pi/cmake/PluginConfigure.cmake b/plugins/wmm_pi/cmake/PluginConfigure.cmake
+index e9968d9..f420988 100644
+--- a/plugins/wmm_pi/cmake/PluginConfigure.cmake
++++ b/plugins/wmm_pi/cmake/PluginConfigure.cmake
+@@ -44,7 +44,7 @@ IF(NOT MSVC)
+  ENDIF(PROFILING)
+ 
+  IF(NOT APPLE)
+-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
++  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+  ELSE(NOT APPLE)
+   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
+  ENDIF(NOT APPLE)
