@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -86,8 +86,23 @@ bool DPT::Parse( const SENTENCE& sentence )
 
    if ( sentence.IsChecksumBad( 3 ) == TRUE )
    {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+            /*
+            * * This may be an NMEA Version 3 sentence, with "Max depth range" field
+            */
+       wxString checksum_in_sentence = sentence.Field( 3 );
+       if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
+       {
+            SetErrorMessage( _T("Invalid Checksum") );
+            return( FALSE );
+       }
+       else
+       {
+           if( sentence.IsChecksumBad( 4 ) == TRUE)
+           {
+               SetErrorMessage( _T("Invalid Checksum") );
+               return( FALSE );
+           }
+       }
    } 
 
    DepthMeters                = sentence.Double( 1 );

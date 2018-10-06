@@ -7,7 +7,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
@@ -50,14 +49,14 @@ class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
             DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title);
             ~DashboardInstrument_RudderAngle(void){}
 
-            void SetInstrumentWidth(int width);
+            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString);
 
       private:
 
       protected:
-            void DrawFrame(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
+            void DrawFrame(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
 };
 
 #endif // __RudderAngle_H__

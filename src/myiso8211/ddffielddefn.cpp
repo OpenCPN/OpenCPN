@@ -101,7 +101,7 @@
  */
 
 #include "iso8211.h"
-#include "cpl_string.h"
+#include "mygdal/cpl_string.h"
 #include <ctype.h>
 
 /************************************************************************/
@@ -394,6 +394,18 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
         _data_type_code = dtc_char_string;
     }
 
+    // Pick up the "truncated escape sequence",
+    // and decode lexical level
+    char seq[4];
+    strncpy(seq, (char *)&pachFieldArea[6], 3);
+    if(seq[0] == ' ')
+        _lex_level = 0;
+    else if(seq[0] == '-')
+        _lex_level = 1;
+    else 
+        _lex_level = 2;
+    
+    
 /* -------------------------------------------------------------------- */
 /*      Capture the field name, description (sub field names), and      */
 /*      format statements.                                              */
@@ -431,6 +443,8 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
             return FALSE;
     }
 
+//    Dump(stdout);
+    
     return TRUE;
 }
 
@@ -521,6 +535,8 @@ void DDFFieldDefn::Dump( FILE * fp )
 
     fprintf( fp, "      _data_type_code = %s\n", pszValue );
 
+    fprintf( fp, "      _lex_level = %d\n", _lex_level );
+    
     for( int i = 0; i < nSubfieldCount; i++ )
         papoSubfields[i]->Dump( fp );
 }
@@ -870,6 +886,10 @@ DDFSubfieldDefn *DDFFieldDefn::GetSubfield( int i )
 char *DDFFieldDefn::GetDefaultValue( int *pnSize )
 
 {
+    bool maybe_UTF16 = false;
+    bool b_isUTF16 = false;
+    if(!strncmp(pszTag, "NATF", 4))
+        maybe_UTF16 = true;
 /* -------------------------------------------------------------------- */
 /*      Loop once collecting the sum of the subfield lengths.           */
 /* -------------------------------------------------------------------- */
@@ -880,8 +900,14 @@ char *DDFFieldDefn::GetDefaultValue( int *pnSize )
     {
         int nSubfieldSize;
 
-        if( !papoSubfields[iSubfield]->GetDefaultValue( NULL, 0,
-                                                        &nSubfieldSize ) )
+        DDFSubfieldDefn *posf = papoSubfields[iSubfield];
+        if( maybe_UTF16 ){
+            if(!strncmp(posf->GetName(), "ATVL", 4))
+                b_isUTF16 = true;
+        }
+        
+        
+        if( !posf->GetDefaultValue( NULL, 0, &nSubfieldSize, b_isUTF16 ) )
             return NULL;
         nTotalSize += nSubfieldSize;
     }
@@ -903,7 +929,7 @@ char *DDFFieldDefn::GetDefaultValue( int *pnSize )
         int nSubfieldSize;
 
         if( !papoSubfields[iSubfield]->GetDefaultValue(
-                pachData + nOffset, nTotalSize - nOffset, &nSubfieldSize ) )
+                pachData + nOffset, nTotalSize - nOffset, &nSubfieldSize, b_isUTF16 ) )
         {
             CPLAssert( FALSE );
             return NULL;

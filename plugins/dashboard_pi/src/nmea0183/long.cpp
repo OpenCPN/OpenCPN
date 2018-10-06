@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -81,11 +81,11 @@ void LONGITUDE::Set( double position, const wxString& east_or_west )
    Longitude = position;
    wxString ts = east_or_west;
 
-   if ( ts.Trim(false)[ 0 ] == 'E' )
+   if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'E' )
    {
       Easting = East;
    }
-   else if ( ts.Trim(false)[ 0 ] == 'W' )
+   else if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'W' )
    {
       Easting = West;
    }

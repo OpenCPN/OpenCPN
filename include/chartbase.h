@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  ChartBase Definition
@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef _CHARTBASE_H_
 #define _CHARTBASE_H_
@@ -33,13 +30,14 @@
 
 #include "bbox.h"
 #include "ocpn_types.h"
-
-
+#include "LLRegion.h"
 
 //----------------------------------------------------------------------------
 //  Forward Declarations
 //----------------------------------------------------------------------------
 class ViewPort;
+class wxGLContext;
+class OCPNRegion;
 
 //----------------------------------------------------------------------------
 // Constants. etc
@@ -87,10 +85,10 @@ public:
 
 
 typedef struct _Extent{
-  double SLAT;
-  double WLON;
-  double NLAT;
-  double ELON;
+  float SLAT;
+  float WLON;
+  float NLAT;
+  float ELON;
 }Extent;
 
 //          Depth unit type enum
@@ -108,7 +106,13 @@ typedef enum OcpnProjType
       PROJECTION_UNKNOWN,
       PROJECTION_MERCATOR,
       PROJECTION_TRANSVERSE_MERCATOR,
-      PROJECTION_POLYCONIC
+      PROJECTION_POLYCONIC,
+
+      PROJECTION_ORTHOGRAPHIC,
+      PROJECTION_POLAR,
+      PROJECTION_STEREOGRAPHIC,
+      PROJECTION_GNOMONIC,
+      PROJECTION_EQUIRECTANGULAR
 }_OcpnProjType;
 
 
@@ -154,6 +158,7 @@ public:
       virtual wxString GetPubDate(){ return m_PubYear;}
       virtual int GetNativeScale(){ return m_Chart_Scale;}
       wxString GetFullPath() const { return m_FullPath;}
+      wxString GetHashKey() const;
       wxString GetName(){ return m_Name;}
       wxString GetDescription() { return m_Description;}
       wxString GetID(){ return m_ID;}
@@ -171,13 +176,16 @@ public:
       virtual ChartDepthUnitType GetDepthUnitType(void) { return m_depth_unit_id;}
 
       virtual bool IsReadyToRender(){ return bReadyToRender;}
-
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region) = 0;
+                                        const OCPNRegion &Region) = 0;
+
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const OCPNRegion &RectRegion, const LLRegion &Region) = 0;
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion) = 0;
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion) = 0;
+      virtual LLRegion GetValidRegion() = 0;
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate = true ) = 0;
 
@@ -188,6 +196,11 @@ public:
       virtual int  GetCOVRTablenPoints(int iTable){ return m_pCOVRTablePoints[iTable]; }
       virtual float *GetCOVRTableHead(int iTable){ return m_pCOVRTable[iTable]; }
 
+      virtual int GetNoCOVREntries(){ return  m_nNoCOVREntries; }
+      virtual int GetNoCOVRTablePoints(int iTable) { return m_pNoCOVRTablePoints[iTable]; }
+      virtual int  GetNoCOVRTablenPoints(int iTable){ return m_pNoCOVRTablePoints[iTable]; }
+      virtual float *GetNoCOVRTableHead(int iTable){ return m_pNoCOVRTable[iTable]; }
+      
 protected:
 
       int               m_Chart_Scale;
@@ -209,8 +222,6 @@ protected:
       ChartDepthUnitType m_depth_unit_id;
 
       wxDateTime        m_EdDate;
-
-      wxBitmap          *pcached_bitmap;
 
       ThumbData         *pThumbData;
 
@@ -236,7 +247,9 @@ protected:
       int         *m_pCOVRTablePoints;                  // int table of number of points in each coverage table entry
       float       **m_pCOVRTable;                       // table of pointers to list of floats describing valid COVR
 
-      //    Todo  Define invalid COVR regions
+      int         m_nNoCOVREntries;                       // number of NoCoverage table entries
+      int         *m_pNoCOVRTablePoints;                  // int table of number of points in each NoCoverage table entry
+      float       **m_pNoCOVRTable;                       // table of pointers to list of floats describing valid NOCOVR
 
 };
 
@@ -265,11 +278,15 @@ public:
       virtual bool GetChartExtent(Extent *pext);
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region);
+                                        const OCPNRegion &Region);
+
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
+      virtual LLRegion GetValidRegion();
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
@@ -280,58 +297,6 @@ private:
 
       wxBitmap    *m_pBM;
 };
-
-
-// ----------------------------------------------------------------------------
-// ChartPlugInWrapper
-//    This class is a wrapper/interface to PlugIn charts(PlugInChartBase) as defined in ocpn_plugin.h
-// ----------------------------------------------------------------------------
-
-class PlugInChartBase;                  // found in ocpn_plugin.h
-
-class ChartPlugInWrapper : public ChartBase
-{
-      public:
-            ChartPlugInWrapper();
-            ChartPlugInWrapper(wxString &chart_class);
-            virtual ~ChartPlugInWrapper();
-
-            virtual wxString GetFileSearchMask(void);
-
-            virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
-
-//    Accessors
-            virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
-            virtual ThumbData *GetThumbData();
-            virtual bool UpdateThumbData(double lat, double lon);
-
-            double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-            double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
-
-            virtual bool GetChartExtent(Extent *pext);
-
-            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                              const wxRegion &Region);
-
-            virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-
-            virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
-
-            virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
-
-            virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
-
-            virtual int GetCOVREntries();
-            virtual int GetCOVRTablePoints(int iTable);
-            virtual int GetCOVRTablenPoints(int iTable);
-            virtual float *GetCOVRTableHead(int iTable);
-
-
-      private:
-            PlugInChartBase *m_ppicb;
-            wxObject          *m_ppo;
-};
-
 
 
 #endif

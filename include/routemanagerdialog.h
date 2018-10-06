@@ -28,24 +28,54 @@
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
 
+enum {
+      SORT_ON_DISTANCE  = 1,
+      SORT_ON_NAME
+};
+
+enum TrackContextMenu {
+      TRACK_MERGE  = 1,
+      TRACK_COPY_TEXT,
+      TRACK_CLEAN
+};
+
 class wxButton;
 class Route;
+class Track;
 class Layer;
+class RoutePoint;
 
 class RouteManagerDialog : public wxDialog {
       DECLARE_EVENT_TABLE()
 
       public:
-            RouteManagerDialog(wxWindow *parent);
+            static RouteManagerDialog* getInstance(wxWindow *parent);
+            static bool getInstanceFlag(){ return instanceFlag; } 
             ~RouteManagerDialog();
+            
+            void OnClose(wxCloseEvent& event);
+            void OnOK(wxCommandEvent& event);
+            
             void SetColorScheme();
+            void RecalculateSize();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
-            void UpdateWptListCtrl();
+            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
             void UpdateLayListCtrl();
+            void UpdateWptListCtrlViz();
+
+            void UpdateLists();
+
             void OnTabSwitch(wxNotebookEvent& event);
+            static void WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent );
+            void TrackToRoute( Track *track );
 
       private:
+            static bool instanceFlag;
+            static RouteManagerDialog *single;
+            
+            RouteManagerDialog(wxWindow *parent);
+            
             void Create();
             void UpdateRteButtons();           // Correct button state
             void MakeAllRoutesInvisible();  // Mark all routes as invisible. Does not flush settings.
@@ -81,6 +111,8 @@ class RouteManagerDialog : public wxDialog {
             void OnTrkSelected(wxListEvent &event);
             void OnTrkToggleVisibility(wxMouseEvent &event);
             void OnTrkColumnClicked(wxListEvent &event);
+            void OnTrkRightClick(wxListEvent &event);
+            void OnTrkMenuSelected(wxCommandEvent &event);
             void OnWptDefaultAction(wxListEvent &event);
             void OnWptNewClick(wxCommandEvent &event);
             void OnWptPropertiesClick(wxCommandEvent &event);
@@ -105,7 +137,8 @@ class RouteManagerDialog : public wxDialog {
             void OnLayColumnClicked(wxListEvent &event);
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
-
+            void OnExportVizClick(wxCommandEvent &event);
+            
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
@@ -147,11 +180,18 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnLayDelete;
             wxButton *btnImport;
             wxButton *btnExport;
-
+            wxButton *btnExportViz;
+            
             bool m_bPossibleClick;    // do
             bool m_bCtrlDown;         // record control key state for some action buttons
             bool m_bNeedConfigFlush;  // if true, update config in destructor
 
+            int m_lastWptItem;
+            int m_lastTrkItem;
+            int m_lastRteItem;
+            
+            int m_charWidth;
+            int m_listIconSize;
 };
 
 #endif // _RouteManagerDialog_h_

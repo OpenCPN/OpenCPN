@@ -26,47 +26,6 @@
  * DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  *
- * $Log: cpl_csv.cpp,v $
- * Revision 1.4  2008/08/09 23:52:56  bdbcat
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:29  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.9  2003/07/18 12:45:18  warmerda
- * added GDALDefaultCSVFilename
- *
- * Revision 1.8  2003/05/21 03:04:14  warmerda
- * fixed bFinderInitialized
- *
- * Revision 1.7  2003/05/20 19:13:31  warmerda
- * reorganize default file search rules, use GDAL_DATA and CPLGetConfigOptions
- *
- * Revision 1.6  2002/11/30 16:56:31  warmerda
- * fixed up to support quoted newlines properly
- *
- * Revision 1.5  2002/11/27 19:09:40  warmerda
- * implement in-memory caching of whole CSV file
- *
- * Revision 1.4  2002/09/04 06:16:32  warmerda
- * added CPLReadLine(NULL) to cleanup
- *
- * Revision 1.3  2001/07/18 04:00:49  warmerda
- *
- * Revision 1.2  2001/01/19 21:16:41  warmerda
- * expanded tabs
- *
- * Revision 1.1  2000/10/06 15:20:45  warmerda
- * New
- *
- * Revision 1.2  2000/08/29 21:08:08  warmerda
- * fallback to use CPLFindFile()
- *
- * Revision 1.1  2000/04/05 21:55:59  warmerda
- * New
  *
  */
 

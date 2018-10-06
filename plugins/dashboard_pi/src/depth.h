@@ -7,7 +7,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
@@ -54,7 +53,7 @@ class DashboardInstrument_Depth: public DashboardInstrument
 
             ~DashboardInstrument_Depth(void){}
 
-            void SetInstrumentWidth(int width);
+            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString);
 
       private:
@@ -63,11 +62,12 @@ class DashboardInstrument_Depth: public DashboardInstrument
             double m_ArrayDepth[DEPTH_RECORD_COUNT];
             double m_MaxDepth;
             double m_Depth;
+            wxString m_DepthUnit;
             wxString m_Temp;
 
-            void Draw(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+            void Draw(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __DEPTH_H__

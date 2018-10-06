@@ -1,0 +1,16 @@
+void glPackedCall(const packed_call_t *packed) {
+    switch (packed->format) {
+        {% for f in formats %}
+        case FORMAT_{{ f.types }}: {
+            PACKED_{{ f.types }} *unpacked = (PACKED_{{ f.types }} *)packed;
+            {% if f.args %}
+            ARGS_{{ f.types }} args = unpacked->args;
+            {% endif %}
+            unpacked->func({% for arg in f.args -%}
+                args.a{{ loop.index }}{% if not arg.last %}, {% endif %}
+            {% endfor %});
+            break;
+        }
+        {% endfor %}
+    }
+}

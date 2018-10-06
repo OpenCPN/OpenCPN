@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Project:  OpenCPN
@@ -6,7 +7,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *
@@ -32,8 +32,6 @@
 #define _OCPN_PIXEL_H_
 
 #include "dychart.h"                // for configuration stuff
-void *x_malloc(size_t t);
-
 
 wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_of_rotation, bool interpolating, wxPoint * offset_after_rotation);
 
@@ -64,12 +62,17 @@ wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_o
 #endif
 
 #ifdef __WXMSW__
-#define __PIX_CACHE_DIBSECTION__
-#define     ocpnUSE_DIBSECTION
-#define     ocpnUSE_ocpnBitmap
+#define __PIX_CACHE_WXIMAGE__
+//#define __PIX_CACHE_DIBSECTION__
+//#define     ocpnUSE_DIBSECTION
+//#define     ocpnUSE_ocpnBitmap
 #endif
 
 #ifdef __WXOSX__
+#define __PIX_CACHE_WXIMAGE__
+#endif
+
+#ifdef __WXQT__
 #define __PIX_CACHE_WXIMAGE__
 #endif
 
@@ -185,6 +188,7 @@ class PixelCache
         int GetLinePitch() const { return line_pitch_bytes; }
         int GetWidth(void){ return m_width; }
         int GetHeight(void){ return m_height; }
+        size_t GetLength(void);
 
       //    Data storage
     private:

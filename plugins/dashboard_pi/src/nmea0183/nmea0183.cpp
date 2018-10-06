@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -84,7 +84,9 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Lcd );
 */
    response_table.Append( (RESPONSE *) &Mwd );
-   response_table.Append( (RESPONSE *) &Mtw );
+   response_table.Append( (RESPONSE *) &Mda ); //Barometric pressure	
+   response_table.Append( (RESPONSE *) &Mta ); //Air Temperature
+   response_table.Append( (RESPONSE *) &Mtw ); //Water Temperature
    response_table.Append( (RESPONSE *) &Mwv );
 /*
    response_table.Append( (RESPONSE *) &Oln );
@@ -111,9 +113,10 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Vbw );
 */
    response_table.Append( (RESPONSE *) &Vhw );
-/*
-   response_table.Append( (RESPONSE *) &Vdr );
    response_table.Append( (RESPONSE *) &Vlw );
+   /*
+   response_table.Append( (RESPONSE *) &Vdr );
+
    response_table.Append( (RESPONSE *) &Vpw );
 */
    response_table.Append( (RESPONSE *) &Vtg );
@@ -124,9 +127,9 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Wnc );
 */
    response_table.Append( (RESPONSE *) &Wpl );
-/*
+
    response_table.Append( (RESPONSE *) &Xdr );
-   response_table.Append( (RESPONSE *) &Xte );
+/*   response_table.Append( (RESPONSE *) &Xte );
    response_table.Append( (RESPONSE *) &Xtr );
 */
    response_table.Append( (RESPONSE *) &Zda );
@@ -229,7 +232,8 @@ bool NMEA0183::IsGood( void ) const
    /*
    ** Next to last character must be a CR
    */
-
+   /*  This seems too harsh for cross platform work
+    * 
    if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != wxString(_T("\r")) )
    {
       return( FALSE );
@@ -239,13 +243,18 @@ bool NMEA0183::IsGood( void ) const
    {
       return( FALSE );
    }
-
+   */
+   
    return( TRUE );
 }
 
 
 bool NMEA0183::PreParse( void )
 {
+    wxCharBuffer buf = sentence.Sentence.ToUTF8();
+    if( !buf.data() )                            // badly formed sentence?
+        return false;
+    
       if ( IsGood() )
       {
             wxString mnemonic = sentence.Field( 0 );

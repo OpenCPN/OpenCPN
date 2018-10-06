@@ -1,0 +1,292 @@
+ALSA_0.9 {
+  global:
+    gl*;
+    __snd_*;
+    _snd_*;
+    snd_*;
+    snd_pcm_recover;
+  local:
+    *;
+};
+
+ALSA_0.9.0rc4 {
+  global:
+
+    snd_pcm_hw_params_get_access;
+    snd_pcm_hw_params_set_access_first;
+    snd_pcm_hw_params_set_access_last;
+
+    snd_pcm_hw_params_get_format;
+    snd_pcm_hw_params_set_format_first;
+    snd_pcm_hw_params_set_format_last;
+
+    snd_pcm_hw_params_get_subformat;
+    snd_pcm_hw_params_set_subformat_first;
+    snd_pcm_hw_params_set_subformat_last;
+
+    snd_pcm_hw_params_get_channels;
+    snd_pcm_hw_params_get_channels_min;
+    snd_pcm_hw_params_get_channels_max;
+    snd_pcm_hw_params_set_channels_near;
+    snd_pcm_hw_params_set_channels_first;
+    snd_pcm_hw_params_set_channels_last;
+
+    snd_pcm_hw_params_get_rate;
+    snd_pcm_hw_params_get_rate_min;
+    snd_pcm_hw_params_get_rate_max;
+    snd_pcm_hw_params_set_rate_near;
+    snd_pcm_hw_params_set_rate_first;
+    snd_pcm_hw_params_set_rate_last;
+
+    snd_pcm_hw_params_get_period_time;
+    snd_pcm_hw_params_get_period_time_min;
+    snd_pcm_hw_params_get_period_time_max;
+    snd_pcm_hw_params_set_period_time_near;
+    snd_pcm_hw_params_set_period_time_first;
+    snd_pcm_hw_params_set_period_time_last;
+
+    snd_pcm_hw_params_get_period_size;
+    snd_pcm_hw_params_get_period_size_min;
+    snd_pcm_hw_params_get_period_size_max;
+    snd_pcm_hw_params_set_period_size_near;
+    snd_pcm_hw_params_set_period_size_first;
+    snd_pcm_hw_params_set_period_size_last;
+
+    snd_pcm_hw_params_get_periods;
+    snd_pcm_hw_params_get_periods_min;
+    snd_pcm_hw_params_get_periods_max;
+    snd_pcm_hw_params_set_periods_near;
+    snd_pcm_hw_params_set_periods_first;
+    snd_pcm_hw_params_set_periods_last;
+
+    snd_pcm_hw_params_get_buffer_time;
+    snd_pcm_hw_params_get_buffer_time_min;
+    snd_pcm_hw_params_get_buffer_time_max;
+    snd_pcm_hw_params_set_buffer_time_near;
+    snd_pcm_hw_params_set_buffer_time_first;
+    snd_pcm_hw_params_set_buffer_time_last;
+
+    snd_pcm_hw_params_get_buffer_size;
+    snd_pcm_hw_params_get_buffer_size_min;
+    snd_pcm_hw_params_get_buffer_size_max;
+    snd_pcm_hw_params_set_buffer_size_near;
+    snd_pcm_hw_params_set_buffer_size_first;
+    snd_pcm_hw_params_set_buffer_size_last;
+
+    snd_pcm_hw_params_get_tick_time;
+    snd_pcm_hw_params_get_tick_time_min;
+    snd_pcm_hw_params_get_tick_time_max;
+    snd_pcm_hw_params_set_tick_time_near;
+    snd_pcm_hw_params_set_tick_time_first;
+    snd_pcm_hw_params_set_tick_time_last;
+
+} ALSA_0.9;
+
+ALSA_0.9.0rc8 {
+  global:
+
+    snd_pcm_forward;
+    snd_pcm_status_get_trigger_htstamp;
+    snd_pcm_status_get_htstamp;
+
+} ALSA_0.9.0rc4;
+
+ALSA_0.9.0 {
+  global:
+
+    snd_pcm_type_name;
+    snd_timer_query_info;
+    snd_timer_query_params;
+    snd_timer_query_status;
+    snd_timer_params_set_exclusive;
+    snd_timer_params_get_exclusive;
+    snd_timer_params_set_filter;
+    snd_timer_params_get_filter;
+} ALSA_0.9.0rc8;
+
+ALSA_0.9.3 {
+  global:
+
+    snd_ctl_elem_info_get_dimensions;
+    snd_ctl_elem_info_get_dimension;
+} ALSA_0.9.0;
+
+ALSA_0.9.5 {
+  global:
+
+    alsa_lisp;
+} ALSA_0.9.3;
+
+ALSA_0.9.6 {
+  global:
+
+    snd_hctl_open_ctl;
+    snd_seq_port_info_get_timestamping;
+    snd_seq_port_info_get_timestamp_real;
+    snd_seq_port_info_get_timestamp_queue;
+    snd_seq_port_info_set_timestamping;
+    snd_seq_port_info_set_timestamp_real;
+    snd_seq_port_info_set_timestamp_queue;
+} ALSA_0.9.5;
+
+ALSA_0.9.7 {
+  global:
+
+    snd_user_file;
+    snd_hctl_ctl;
+    sndo_*;
+    alsa_lisp_*;
+} ALSA_0.9.6;
+
+ALSA_0.9.8 {
+  global:
+
+    snd_ctl_elem_add;
+    snd_ctl_elem_replace;
+    snd_ctl_elem_remove;
+    snd_hctl_poll_descriptors_revents;
+} ALSA_0.9.7;
+
+ALSA_1.0.4 {
+  global:
+
+    snd_spcm_init;
+    snd_spcm_init_duplex;
+    snd_spcm_init_get_params;
+} ALSA_0.9.8;
+
+ALSA_1.0.5 {
+  global:
+
+    snd_asoundlib_version;
+    snd_timer_params_set_early_event;
+    snd_timer_params_get_early_event;
+} ALSA_1.0.4;
+
+ALSA_1.0.8 {
+  global:
+
+    snd_ctl_elem_add_integer;
+    snd_ctl_elem_add_integer64;
+    snd_ctl_elem_add_boolean;
+    snd_ctl_elem_add_iec958;
+    snd_ctl_elem_remove;
+} ALSA_1.0.5;
+
+ALSA_1.0.9 {
+  global:
+
+    snd_names_list;
+    snd_names_list_free;
+
+    snd_pcm_hw_params_set_rate_resample;
+    snd_pcm_hw_params_get_rate_resample;
+    snd_pcm_hw_params_set_export_buffer;
+    snd_pcm_hw_params_get_export_buffer;
+
+    snd_pcm_ioplug_create;
+    snd_pcm_ioplug_delete;
+    snd_pcm_ioplug_reinit_status;
+    snd_pcm_ioplug_params_reset;
+    snd_pcm_ioplug_set_param_minmax;
+    snd_pcm_ioplug_set_param_list;
+
+    snd_pcm_extplug_create;
+    snd_pcm_extplug_delete;
+    snd_pcm_extplug_params_reset;
+    snd_pcm_extplug_set_param_list;
+    snd_pcm_extplug_set_param_minmax;
+    snd_pcm_extplug_set_slave_param_list;
+    snd_pcm_extplug_set_slave_param_minmax;
+
+    snd_pcm_parse_control_id;
+
+    snd_async_add_timer_handler;
+    snd_async_handler_get_timer;
+
+    snd_timer_ginfo_sizeof;
+    snd_timer_ginfo_malloc;
+    snd_timer_ginfo_free;
+    snd_timer_ginfo_copy;
+    snd_timer_ginfo_set_tid;
+    snd_timer_ginfo_get_tid;
+    snd_timer_ginfo_get_flags;
+    snd_timer_ginfo_get_card;
+    snd_timer_ginfo_get_id;
+    snd_timer_ginfo_get_name;
+    snd_timer_ginfo_get_resolution;
+    snd_timer_ginfo_get_resolution_min;
+    snd_timer_ginfo_get_resolution_max;
+    snd_timer_ginfo_get_clients;
+
+} ALSA_1.0.8;
+
+ALSA_1.0.10 {
+  global:
+
+    snd_mixer_get_hctl;
+    snd_mixer_elem_get_private;
+    snd_mixer_attach_hctl;
+    snd_mixer_detach_hctl;
+
+    snd_mixer_class_register;
+    snd_mixer_add_elem;
+    snd_mixer_remove_elem;
+    snd_mixer_elem_new;
+    snd_mixer_elem_add;
+    snd_mixer_elem_remove;
+    snd_mixer_elem_free;
+    snd_mixer_elem_info;
+    snd_mixer_elem_value;
+    snd_mixer_elem_attach;
+    snd_mixer_elem_detach;
+    snd_mixer_elem_empty;
+
+    snd_mixer_class_malloc;
+    snd_mixer_class_free;
+    snd_mixer_class_copy;
+    snd_mixer_class_get_mixer;
+    snd_mixer_class_get_event;
+    snd_mixer_class_get_private;
+    snd_mixer_class_get_compare;
+    snd_mixer_class_set_event;
+    snd_mixer_class_set_private;
+    snd_mixer_class_set_private_free;
+    snd_mixer_class_set_compare;
+
+    snd_mixer_selem_set_playback_dB_all;
+    snd_mixer_selem_set_capture_dB_all;
+    snd_mixer_selem_is_enum_playback;
+    snd_mixer_selem_is_enum_capture;
+    snd_mixer_selem_compare;
+    snd_mixer_sbasic_info;
+    snd_mixer_sbasic_get_private;
+    snd_mixer_sbasic_set_private;
+    snd_mixer_sbasic_set_private_free;
+
+    snd_ctl_ext_create;
+    snd_ctl_ext_delete;
+
+} ALSA_1.0.9;
+
+ALSA_1.0.11 {
+  global:
+
+    snd_pcm_recover;
+    snd_pcm_set_params;
+    snd_pcm_get_params;
+} ALSA_1.0.10;
+
+ALSA_1.0.12 {
+  global:
+
+    snd_ctl_elem_tlv_read;
+    snd_ctl_elem_tlv_write;
+    snd_ctl_elem_tlv_command;
+    snd_ctl_elem_info_is_tlv_readable;
+    snd_ctl_elem_info_is_tlv_writable;
+    snd_ctl_elem_info_is_tlv_commandable;
+    snd_hctl_elem_tlv_read;
+    snd_hctl_elem_tlv_write;
+    snd_hctl_elem_tlv_command;
+} ALSA_1.0.11;

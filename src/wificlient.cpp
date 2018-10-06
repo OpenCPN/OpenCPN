@@ -1,12 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  NMEA Data Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,11 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************
- *
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -44,8 +40,6 @@
 #include "wificlient.h"
 #include "chart1.h"
 #include "statwin.h"
-
-extern StatWin          *stats;
 
 static int              wifi_s_dns_test_flag;
 
@@ -337,14 +331,14 @@ void WIFIWindow::OnSocketEvent(wxSocketEvent& event)
                 {
                     if(station_data[ilocal].bisvalid)
                     {
-//                        stats->pWiFi->SetStationQuality(ilocal, station_data[ilocal].sig_quality);
-//                        stats->pWiFi->SetStationSecureFlag(ilocal, station_data[ilocal].secure);
-//                        stats->pWiFi->SetStationAge(ilocal, station_data[ilocal].age);
+//                        g_ChartBarWin->pWiFi->SetStationQuality(ilocal, station_data[ilocal].sig_quality);
+//                        g_ChartBarWin->pWiFi->SetStationSecureFlag(ilocal, station_data[ilocal].secure);
+//                        g_ChartBarWin->pWiFi->SetStationAge(ilocal, station_data[ilocal].age);
                     }
 //                    else
-//                        stats->pWiFi->SetStationQuality(ilocal, 0);
+//                        g_ChartBarWin->pWiFi->SetStationQuality(ilocal, 0);
                 }
-            stats->Refresh(true);
+            g_ChartBarWin->Refresh(true);
 
             break;
 
@@ -441,12 +435,12 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
     if(m_sock->IsConnected())
     {
         //      Keep a watchdog on received data
-        if(stats)
+        if(g_ChartBarWin)
         {
             if(m_watchtick++ > WIFI_DOG_TIMEOUT)       // nothing received recently
             {
-//                stats->pWiFi->SetServerStatus(false);
-                stats->Refresh(true);
+//                g_ChartBarWin->pWiFi->SetServerStatus(false);
+                g_ChartBarWin->Refresh(true);
 
                 // Try to totally reset the socket
                 m_sock->Destroy();
@@ -463,7 +457,7 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
                 m_watchtick = 0;
             }
 //            else
-//                stats->pWiFi->SetServerStatus(true);
+//                g_ChartBarWin->pWiFi->SetServerStatus(true);
         }
 
         unsigned char c = WIFI_TRANSMIT_DATA_EXT;       // and call for more data
@@ -471,10 +465,10 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
     }
     else                                     // try to connect
     {
-        if(stats)
+        if(g_ChartBarWin)
         {
-//            stats->pWiFi->SetServerStatus(false);
-            stats->Refresh(true);
+//            g_ChartBarWin->pWiFi->SetServerStatus(false);
+            g_ChartBarWin->Refresh(true);
         }
         m_sock->Connect(addr, FALSE);       // Non-blocking connect
     }
@@ -489,7 +483,7 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
 //    A simple thread to test host name resolution without blocking the main thread
 //
 //-------------------------------------------------------------------------------------------------------------
-WIFIDNSTestThread::WIFIDNSTestThread(wxString &name_or_ip)
+WIFIDNSTestThread::WIFIDNSTestThread(const wxString &name_or_ip)
 {
     m_pip = new wxString(name_or_ip);
 

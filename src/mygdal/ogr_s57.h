@@ -27,46 +27,6 @@
  * DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  *
- * $Log: ogr_s57.h,v $
- * Revision 1.4  2009/09/25 15:22:05  bdbcat
- * Improve SENC creation progress dialog
- *
- * Revision 1.3  2008/08/27 22:51:38  bdbcat
- * Add error returns to ENC update logic
- *
- * Revision 1.2  2008/03/30 23:05:02  bdbcat
- * Cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.8  2003/11/15 21:50:52  warmerda
- * Added limited creation support
- *
- * Revision 1.7  2003/09/05 19:12:05  warmerda
- * added RETURN_PRIMITIVES support to get low level prims
- *
- * Revision 1.6  2002/03/05 14:25:43  warmerda
- * expanded tabs
- *
- * Revision 1.5  2001/12/17 22:34:16  warmerda
- * added GetFeature() method on OGRS57Layer
- *
- * Revision 1.4  2001/12/14 19:40:18  warmerda
- * added optimized feature counting, and extents collection
- *
- * Revision 1.3  1999/11/18 19:01:25  warmerda
- * expanded tabs
- *
- * Revision 1.2  1999/11/08 22:23:00  warmerda
- * added object class support
- *
- * Revision 1.1  1999/11/03 22:12:43  warmerda
- * New
- *
  */
 
 #ifndef _OGR_S57_H_INCLUDED

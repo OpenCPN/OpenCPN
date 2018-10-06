@@ -1,12 +1,11 @@
 /******************************************************************************
  *
- * Project:  OpenCP
+ * Project:  OpenCPN
  * Purpose:  Extern C Linked Utilities
  * Author:   David Register
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,36 +20,9 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
- * $Log: cutil.h,v $
- * Revision 1.7  2010/05/23 23:27:16  bdbcat
- * Build 523a
- *
- * Revision 1.6  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.5  2009/12/17 02:45:42  bdbcat
- * Cleanup definitions
- *
- * Revision 1.4  2009/12/14 23:32:46  bdbcat
- * Correct "C" definitions
- *
- * Revision 1.3  2007/05/03 13:31:19  dsr
- * Major refactor for 1.2.0
- *
- * Revision 1.2  2007/03/02 02:06:00  dsr
- * Cleanup
- *
- * Revision 1.1.1.1  2006/08/21 05:52:11  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.2  2006/06/02 02:06:04  dsr
- * MyPoint becomes double
- *
- * Revision 1.1  2006/05/19 19:37:07  dsr
- * Initial
  *
  */
 
@@ -62,6 +34,7 @@
 #include <windows.h>
 #endif
 
+#include <wx/dynarray.h>
 
 typedef struct  {
       double x;
@@ -76,7 +49,13 @@ typedef struct {
 #ifdef __cplusplus
       extern "C" int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern "C" int G_PtInPolygon_FL(float_2Dpt *, int, float, float) ;
+      extern "C" int Intersect_FL(float_2Dpt, float_2Dpt, float_2Dpt, float_2Dpt);
+          
       extern "C" int mysnprintf( char *buffer, int count, const char *format, ... );
+      extern "C" int NextPow2(int size);
+      extern "C" void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep);
+      extern "C" void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep);
+      
 #else /* __cplusplus */
       extern int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern int mysnprintf( char *buffer, int count, const char *format, ... );
@@ -90,8 +69,28 @@ typedef struct {
      extern  long  __stdcall MyUnhandledExceptionFilter( struct _EXCEPTION_POINTERS *ExceptionInfo );
 #endif
 #endif
+     
 
-
+     //      Replacement for round(x)???
+#ifdef __cplusplus
+     extern "C"  double     round_msvc (double flt);
+#else
+     extern double round_msvc (double flt);
+#endif /* __cplusplus */
+     
+     
+inline int roundint (double x)
+{
+#ifdef __WXOSX__
+    return (int)round(x);     //FS#1278
+#else
+    int tmp = static_cast<int> (x);
+    tmp += (x-tmp>=.5) - (x-tmp<=-.5);
+    return tmp;
+#endif    
+}
+     
+     
 
 //-------------------------------------------------------------------------------------------------------
 //  Cohen & Sutherland Line clipping algorithms
@@ -118,11 +117,9 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 #endif
 
 
-//      Replacement for round(x)???
-#ifdef __cplusplus
-extern "C"  double     round_msvc (double flt);
-#endif /* __cplusplus */
+//      Simple and fast CRC32 calculator
 
+extern "C" unsigned int crc32buf(unsigned char *buf, size_t len);
 
 
 #endif

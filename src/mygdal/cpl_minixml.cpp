@@ -907,7 +907,8 @@ CPLSerializeXMLNode( CPLXMLNode *psNode, int nIndent,
         int             bHasNonAttributeChildren = FALSE;
         CPLXMLNode      *psChild;
 
-        memset( *ppszText + *pnLength, ' ', nIndent );
+        if(nIndent)
+            memset( *ppszText + *pnLength, ' ', nIndent );
         *pnLength += nIndent;
         (*ppszText)[*pnLength] = '\0';
 
@@ -961,7 +962,8 @@ CPLSerializeXMLNode( CPLXMLNode *psNode, int nIndent,
 
             if( !bJustText )
             {
-                memset( *ppszText + *pnLength, ' ', nIndent );
+                if(nIndent)
+                    memset( *ppszText + *pnLength, ' ', nIndent );
                 *pnLength += nIndent;
                 (*ppszText)[*pnLength] = '\0';
             }
@@ -1434,6 +1436,9 @@ int CPLSetXMLValue( CPLXMLNode *psRoot,  const char *pszPath,
                     const char *pszValue )
 
 {
+    if( psRoot == NULL )
+        return FALSE;
+    
     char        **papszTokens;
     int         iToken = 0;
 
@@ -1479,17 +1484,22 @@ int CPLSetXMLValue( CPLXMLNode *psRoot,  const char *pszPath,
 /* -------------------------------------------------------------------- */
 /*      Now set a value node under this node.                           */
 /* -------------------------------------------------------------------- */
-    if( psRoot->psChild == NULL )
-        CPLCreateXMLNode( psRoot, CXT_Text, pszValue );
-    else if( psRoot->psChild->eType != CXT_Text )
-        return FALSE;
-    else
-    {
-        CPLFree( psRoot->psChild->pszValue );
-        psRoot->psChild->pszValue = CPLStrdup( pszValue );
-    }
+    if( psRoot ){
+        if( psRoot->psChild == NULL )
+            CPLCreateXMLNode( psRoot, CXT_Text, pszValue );
+        else if( psRoot->psChild->eType != CXT_Text )
+            return FALSE;
+        else
+        {
+            CPLFree( psRoot->psChild->pszValue );
+            psRoot->psChild->pszValue = CPLStrdup( pszValue );
+        }
 
-    return TRUE;
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
 }
 
 /************************************************************************/

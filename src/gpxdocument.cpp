@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                                      *
- *   bdbcat@yahoo.com                                                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,12 +20,13 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
 */
 
 #include <wx/wx.h>
-
+#include <wx/ffile.h>
+#include <wx/filename.h>
 #include "gpxdocument.h"
 
 #ifdef __MSVC__
@@ -55,7 +55,55 @@ GpxDocument::GpxDocument(const wxString &filename)
 bool GpxDocument::LoadFile(const wxString &filename)
 {
       SeedRandom();
-      return TiXmlDocument::LoadFile((const char*)filename.mb_str());
+      wxRegEx re; //We try to fix popularily broken GPX files. Unencoded '&' is an illegal character in XML, but seems higly popular amongst users (and perhaps even vendors not aware of what XML is...)
+      //The same as above is true for '<' but it would be harder to solve - it's illegal just inside a value, not when it starts a tag
+      int re_compile_flags = wxRE_ICASE;
+#ifdef wxHAS_REGEX_ADVANCED
+      re_compile_flags |= wxRE_ADVANCED;
+#endif
+      bool b = re.Compile(wxT("&(?!amp;|lt;|gt;|apos;|quot;|#[0-9]{1,};|#x[0-f]{1,};)"), re_compile_flags); //Should find all the non-XML entites to be encoded as text
+      wxFFile file(filename);
+      wxString s;
+      if(file.IsOpened()) {
+            file.ReadAll(&s, wxConvUTF8);
+
+            //Fallback for not-well formed (non-UTF8) GPX files
+            //the "garbage" characters are lost, but the important part of the information should survive...
+            if (s == wxEmptyString)
+            {
+                  file.Seek(0);
+                  file.ReadAll(&s, wxConvISO8859_1);
+                  wxLogMessage(wxString::Format(wxT("File %s seems not to be well-formed UTF-8 XML, used fallback ASCII format conversion - some text information might have not been imported."), filename.c_str()));
+            }
+
+            file.Close();
+      }
+      if(b)
+      {
+            //CDATA handling makes this task way too complex for regular expressions to handle,
+            // so we do nothing and just let the possible damage happen...
+            if (!s.Contains(wxT("![CDATA[")))
+            {
+                  int cnt = re.ReplaceAll(&s, wxT("&amp;"));
+                  if (cnt > 0)
+                        wxLogMessage(wxString::Format(wxT("File %s seems broken, %i occurences of '&' were replaced with '&amp;' to try to fix it."), filename.c_str(), cnt));
+            }
+      }
+      wxFFile gpxfile;
+      wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"), &gpxfile);
+      gpxfile.Write(s);
+      gpxfile.Close();
+      bool res = TiXmlDocument::LoadFile((const char*)gpxfilename.mb_str());
+
+	  if( ! res ) {
+		  wxString msg = _T("Failed to load ");
+		  msg << filename;
+		  msg << _T(": ");
+		  msg << wxString( TiXmlDocument::ErrorDesc(), wxConvUTF8 );
+ 		  wxLogMessage( msg );
+	  }
+      ::wxRemoveFile(gpxfilename);
+      return res;
 }
 
 bool GpxDocument::SaveFile(const wxString &filename)
@@ -317,9 +365,10 @@ void GpxRootElement::SetMetadata(GpxMetadataElement *metadata)
 
 void GpxRootElement::RemoveMetadata()
 {
-      if(my_metadata)
-            RemoveChild(my_metadata);
-      delete my_metadata;
+      if(!my_metadata)
+            return;
+      if (!RemoveChild(my_metadata))
+            return;
       my_metadata = NULL;
 }
 
@@ -342,9 +391,10 @@ void GpxRootElement::SetExtensions(GpxExtensionsElement *extensions)
 
 void GpxRootElement::RemoveExtensions()
 {
-      if(my_extensions)
-            RemoveChild(my_extensions);
-      delete my_extensions;
+      if(!my_extensions)
+            return;
+      if (!RemoveChild(my_extensions))
+            return;
       my_extensions = NULL;
 }
 
@@ -364,11 +414,11 @@ GpxxExtensionsElement::GpxxExtensionsElement(const wxString &element_name) : TiX
 GpxLinkElement::GpxLinkElement(const wxString &uri, const wxString &description, const wxString &mime_type) : TiXmlElement("link")
 {
       SetAttribute("href", uri.ToUTF8()); //TODO: some checks?
-      if(description && description.Length() > 0) {
+      if(!description.IsEmpty()) {
             GpxSimpleElement * g = new GpxSimpleElement(wxString(_T("text")), description);
             LinkEndChild(g);
       }
-      if(mime_type && mime_type.Length() > 0)
+      if(!mime_type.IsEmpty())
             LinkEndChild(new GpxSimpleElement(wxString(_T("type")), mime_type));
 }
 
@@ -391,13 +441,13 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
             SetProperty(wxString(_T("magvar")), wxString::Format(_T("%f"), magvar));
       if (geoidheight != -1)
             SetProperty(wxString(_T("geoidheight")), wxString::Format(_T("%f"), geoidheight));
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links) {
             wxListOfGpxLinksNode *link = links->GetFirst();
@@ -407,9 +457,9 @@ GpxWptElement::GpxWptElement(char *waypoint_type, double lat, double lon, double
                   link = link->GetNext();
             }
       }
-      if (sym && sym.Length() > 0)
+      if (!sym.IsEmpty() /*&& (sym != _T("empty"))*/) //"empty" is a valid symbol for us, we need to preserve it, otherwise it would be non existent and replaced by a circle on next load...
             SetProperty(wxString(_T("sym")), sym);
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (fixtype != fix_undefined)
             SetProperty(wxString(_T("fix")), FixTypeToStr(fixtype));
@@ -514,13 +564,13 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
               const wxString &src, ListOfGpxLinks *links, int number,
               const wxString &type, GpxExtensionsElement *extensions, ListOfGpxWpts *waypoints) : TiXmlElement("rte")
 {
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
@@ -533,7 +583,7 @@ GpxRteElement::GpxRteElement(const wxString &name, const wxString &cmt, const wx
       }
       if (number != -1)
             SetProperty(wxString(_T("number")), wxString::Format(_T("%u"), number));
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (extensions)
             LinkEndChild(extensions);
@@ -589,13 +639,13 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
               const wxString &src, ListOfGpxLinks *links, int number,
               const wxString &type, GpxExtensionsElement *extensions, ListOfGpxTrksegs *segments) : TiXmlElement("trk")
 {
-      if (name && name.Length() > 0)
+      if (!name.IsEmpty())
             SetProperty(wxString(_T("name")), name);
-      if (cmt && cmt.Length() > 0)
+      if (!cmt.IsEmpty())
             SetProperty(wxString(_T("cmt")), cmt);
-      if (desc && desc.Length() > 0)
+      if (!desc.IsEmpty())
             SetProperty(wxString(_T("desc")), desc);
-      if (src && src.Length() > 0)
+      if (!src.IsEmpty())
             SetProperty(wxString(_T("src")), src);
       if (links)
       {
@@ -608,7 +658,7 @@ GpxTrkElement::GpxTrkElement(const wxString &name, const wxString &cmt, const wx
       }
       if (number != -1)
             SetProperty(wxString(_T("number")), wxString::Format(_T("%u"), number));
-      if (type && type.Length() > 0)
+      if (!type.IsEmpty())
             SetProperty(wxString(_T("type")), type);
       if (extensions)
             LinkEndChild(extensions);
@@ -644,11 +694,12 @@ void GpxTrkElement::SetProperty(const wxString &name, const wxString &value)
                   ReplaceChild(curelement, *element);
                   element->Clear();
                   delete element;
+                  element = NULL;
                   break;
             }
             curelement = curelement->NextSiblingElement();
       }
-      if (!found)
+      if (!found && element)
             LinkEndChild(element);
 }
 

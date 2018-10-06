@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,21 +20,13 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
 
  ***************************************************************************
  *  Parts of this file were adapted from source code found in              *
  *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
  ***************************************************************************
-
- * $Log: georef.h,v $
- * Revision 1.13  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
- * Revision 1.12  2010/03/29 02:59:02  bdbcat
- * 2.1.0 Beta Initial
- *
 
  */
 
@@ -44,12 +35,12 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
+//#include <math.h>
 #include <ctype.h>
 
 //------------------------
 struct DATUM {
-        char *name;
+        const char *name;
         short ellipsoid;
         double dx;
         double dy;
@@ -57,7 +48,7 @@ struct DATUM {
 };
 
 struct ELLIPSOID {
-        char *name;             // name of ellipsoid
+        const char *name;             // name of ellipsoid
         double a;               // semi-major axis, meters
         double invf;            // 1/f
 };
@@ -92,7 +83,7 @@ struct GeoRef {
 #define DEGREE    (PI/180.0)
 #define RADIAN    (180.0/PI)
 
-#define DATUM_INDEX_WGS84     100
+#define DATUM_INDEX_WGS84     101
 #define DATUM_INDEX_UNKNOWN   -1
 
 
@@ -116,6 +107,8 @@ extern "C" void toTM(float lat, float lon, float lat0, float lon0, double *x, do
 extern "C" void fromTM(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" void toSM(double lat, double lon, double lat0, double lon0, double *x, double *y);
+extern "C" double toSMcache_y30(double lat0);
+extern "C" void toSMcache(double lat, double lon, double y30, double lon0, double *x, double *y);
 extern "C" void fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y);
@@ -124,10 +117,32 @@ extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double 
 extern "C" void toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y);
 extern "C" void fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
+extern "C" void cache_phi0(double lat0, double *sin_phi0, double *cos_phi0);
+
+extern "C" void toORTHO(double lat, double lon, double sin_phi0, double cos_phi0, double lon0, double *x, double *y);
+extern "C" void fromORTHO(double x, double y, double lat0, double lon0, double *lat, double *lon);
+
+extern "C" double toPOLARcache_e(double lat0);
+extern "C" void toPOLAR(double lat, double lon, double e, double lat0, double lon0, double *x, double *y);
+extern "C" void fromPOLAR(double x, double y, double lat0, double lon0, double *lat, double *lon);
+
+extern "C" void toSTEREO(double lat, double lon, double sin_phi0, double cos_phi0, double lon0, double *x, double *y);
+extern "C" void fromSTEREO(double x, double y, double lat0, double lon0, double *lat, double *lon);
+
+extern "C" void toGNO(double lat, double lon, double sin_phi0, double cos_phi0, double lon0, double *x, double *y);
+extern "C" void fromGNO(double x, double y, double lat0, double lon0, double *lat, double *lon);
+
+extern "C" void toEQUIRECT(double lat, double lon, double lat0, double lon0, double *x, double *y);
+extern "C" void fromEQUIRECT(double x, double y, double lat0, double lon0, double *lat, double *lon);
+
+/// distance in nautical miles
 extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double *dlat, double *dlon);
 extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                                 double *bearing, double *dist);
 
+
+extern "C" void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
+                                                double *dlat, double *dlon);
 extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
 
 extern "C" int GetDatumIndex(const char *str);
@@ -137,12 +152,16 @@ extern "C" void DistanceBearingMercator(double lat0, double lon0, double lat1, d
 
 extern "C" int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon);
 extern "C" int Georef_Calculate_Coefficients_Proj(struct GeoRef *cp);
+extern "C" double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
+extern "C" double lat_rl_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
 
 #else
 void toDMS(double a, char *bufp, int bufplen);
 void toDMM(double a, char *bufp, int bufplen);
 int GetDatumIndex(const char *str);
 void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index);
+double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
+double lat_rl_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
 
 #endif
 
@@ -218,8 +237,8 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
 
 
 #ifndef _LMDIF
-extern char *lm_infmsg[];
-extern char *lm_shortmsg[];
+extern const char *lm_infmsg[];
+extern const char *lm_shortmsg[];
 #endif
 
 //      This is an opaque (to lmfit) structure set up before the call to lmfit()

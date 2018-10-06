@@ -74,7 +74,7 @@
  */
 
 #include "iso8211.h"
-#include "cpl_conv.h"
+#include "mygdal/cpl_conv.h"
 
 /************************************************************************/
 /*                          DDFSubfieldDefn()                           */
@@ -302,6 +302,7 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
             return nFormatWidth;
         }
     }
+#if 0    
     else
     {
         int     nLength = 0;
@@ -339,6 +340,86 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
 
         return nLength;
     }
+#else
+    // This improved UTF-16 detection code comes from GDAL V110
+    else
+    {
+        int     nLength = 0;
+        int     bAsciiField = TRUE;
+        int     extraConsumedBytes = 0;
+
+        /* We only check for the field terminator because of some buggy 
+         * datasets with missing format terminators.  However, we have found
+         * the field terminator and unit terminators are legal characters 
+         * within the fields of some extended datasets (such as JP34NC94.000).
+         * So we don't check for the field terminator and unit terminators as 
+         * a single byte if the field appears to be multi-byte which we 
+         * establish by checking for the buffer ending with 0x1e 0x00 (a
+         * two byte field terminator). 
+         *
+         * In the case of S57, the subfield ATVL of the NATF field can be 
+         * encoded in lexical level 2 (see S57 specification, Edition 3.1, 
+         * paragraph 2.4 and 2.5). In that case the Unit Terminator and Field 
+         * Terminator are followed by the NULL character.
+         * A better fix would be to read the NALL tag in the DSSI to check 
+         * that the lexical level is 2, instead of relying on the value of 
+         * the first byte as we are doing - but that is not information
+         * that is available at the libiso8211 level (bug #1526)
+         */
+
+        // If the whole field ends with 0x1e 0x00 then we assume this
+        // field is a double byte character set.
+        if( nMaxBytes > 1 
+            && (pachSourceData[nMaxBytes-2] == chFormatDelimeter
+                || pachSourceData[nMaxBytes-2] == DDF_FIELD_TERMINATOR) 
+            && pachSourceData[nMaxBytes-1] == 0x00 )
+            bAsciiField = FALSE;
+
+//        if( !bAsciiField )
+//            CPLDebug( "ISO8211", "Non-ASCII field detected." );
+
+        while( nLength < nMaxBytes)
+        {
+            if (bAsciiField)
+            {
+                if (pachSourceData[nLength] == chFormatDelimeter ||
+                    pachSourceData[nLength] == DDF_FIELD_TERMINATOR)
+                    break;
+            }
+            else
+            {
+                if (nLength > 0 
+                    && (pachSourceData[nLength-1] == chFormatDelimeter 
+                        || pachSourceData[nLength-1] == DDF_FIELD_TERMINATOR) 
+                    && pachSourceData[nLength] == 0)
+                {
+                    // Suck up the field terminator if one follows
+                    // or else it will be interpreted as a new subfield.
+                    // This is a pretty ugly counter-intuitive hack!
+                    if (nLength+1 < nMaxBytes &&  pachSourceData[nLength+1] == DDF_FIELD_TERMINATOR)
+                        extraConsumedBytes++;
+                    if (nLength+2 < nMaxBytes &&  pachSourceData[nLength+2] == 0)
+                        extraConsumedBytes++;
+                    
+                    
+                    break;
+                } 
+            }
+            
+            nLength++;
+        }
+
+        if( pnConsumedBytes != NULL )
+        {
+            if( nMaxBytes == 0 )
+                *pnConsumedBytes = nLength + extraConsumedBytes;
+            else
+                *pnConsumedBytes = nLength + extraConsumedBytes + 1;
+        }
+        
+        return nLength;
+    }
+#endif    
 }
 
 /************************************************************************/
@@ -450,7 +531,7 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
       case 'B':
       case 'b':
       {
-          unsigned char   abyData[8];
+          unsigned char   abyData[8] = {0,0,0,0,0,0,0,0};
 
           CPLAssert( nFormatWidth <= nMaxBytes );
           if( pnConsumedBytes != NULL )
@@ -577,7 +658,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
       case 'B':
       case 'b':
       {
-          unsigned char   abyData[8];
+          unsigned char   abyData[8] = {0,0,0,0,0,0,0,0};
 
           if( nFormatWidth > nMaxBytes )
           {
@@ -738,13 +819,15 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
  */
 
 int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
-                                      int *pnBytesUsed )
+                                      int *pnBytesUsed, bool b_isUTF16 )
 
 {
     int nDefaultSize;
 
     if( !bIsVariable )
         nDefaultSize = nFormatWidth;
+    else if(b_isUTF16 )
+        nDefaultSize = 2;
     else
         nDefaultSize = 1;
 
@@ -760,6 +843,8 @@ int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
     if( bIsVariable )
     {
         pachData[0] = DDF_UNIT_TERMINATOR;
+        if(b_isUTF16)
+            pachData[1] = 0;
     }
     else
     {

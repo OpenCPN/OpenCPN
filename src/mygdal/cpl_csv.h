@@ -27,21 +27,6 @@
  * DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  *
- * $Log: cpl_csv.h,v $
- * Revision 1.4  2008/08/09 23:53:12  bdbcat
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2006/08/21 05:52:19  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.2  2003/06/27 16:14:22  warmerda
- * export CSV functions with CPL_DLL
- *
- * Revision 1.1  2000/04/05 21:55:59  warmerda
- * New
  *
  */
 

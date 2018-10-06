@@ -28,102 +28,6 @@
  * DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  *
- * $Log: s57.h,v $
- * Revision 1.4  2009/09/25 15:22:05  bdbcat
- * Improve SENC creation progress dialog
- *
- * Revision 1.3  2008/08/27 22:51:38  bdbcat
- * Add error returns to ENC update logic
- *
- * Revision 1.2  2008/03/30 23:09:35  bdbcat
- * Cleanup/optimize
- *
- * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
- * Initial import as opencpn, GNU Automake compliant.
- *
- * Revision 1.1.1.1  2006/04/19 03:23:28  dsr
- * Rename/Import to OpenCPN
- *
- * Revision 1.27  2003/11/17 20:10:46  warmerda
- * added support for writing FFPT linkages
- *
- * Revision 1.26  2003/11/12 21:24:23  warmerda
- * updates to new featuredefn generators
- *
- * Revision 1.25  2003/09/15 20:53:06  warmerda
- * fleshed out feature writing
- *
- * Revision 1.24  2003/09/09 16:43:02  warmerda
- * added writer class
- *
- * Revision 1.23  2003/09/05 19:12:05  warmerda
- * added RETURN_PRIMITIVES support to get low level prims
- *
- * Revision 1.22  2003/08/21 21:25:30  warmerda
- * Rodney Jensen: Addd FindRecordByObjl()
- *
- * Revision 1.21  2002/10/28 22:30:24  warmerda
- * tab expanded
- *
- * Revision 1.20  2002/05/14 20:34:27  warmerda
- * added PRESERVE_EMPTY_NUMBERS support
- *
- * Revision 1.19  2002/03/05 14:25:43  warmerda
- * expanded tabs
- *
- * Revision 1.18  2002/02/18 21:26:34  warmerda
- * removed declaration for OGRBuildPolygonFromEdges
- *
- * Revision 1.17  2001/12/19 22:44:53  warmerda
- * added ADD_SOUNDG_DEPTH support
- *
- * Revision 1.16  2001/12/17 22:35:16  warmerda
- * added ReadFeature method
- *
- * Revision 1.15  2001/12/14 19:40:18  warmerda
- * added optimized feature counting, and extents collection
- *
- * Revision 1.14  2001/09/12 17:03:21  warmerda
- * auto update support
- *
- * Revision 1.13  2001/08/30 21:18:39  warmerda
- * fixed typedef
- *
- * Revision 1.12  2001/08/30 21:06:55  warmerda
- * expand tabs
- *
- * Revision 1.11  2001/08/30 03:48:43  warmerda
- * preliminary implementation of S57 Update Support
- *
- * Revision 1.10  2000/06/16 18:10:05  warmerda
- * expanded tabs
- *
- * Revision 1.9  1999/11/26 16:17:58  warmerda
- * added DSNM
- *
- * Revision 1.8  1999/11/26 15:08:38  warmerda
- * added setoptions, and LNAM support
- *
- * Revision 1.7  1999/11/25 20:53:49  warmerda
- * added sounding and S57_SPLIT_MULTIPOINT support
- *
- * Revision 1.6  1999/11/18 19:01:25  warmerda
- * expanded tabs
- *
- * Revision 1.5  1999/11/18 18:58:37  warmerda
- * added s57FileCollector()
- *
- * Revision 1.4  1999/11/16 21:47:32  warmerda
- * updated class occurance collection
- *
- * Revision 1.3  1999/11/08 22:23:00  warmerda
- * added object class support
- *
- * Revision 1.2  1999/11/04 21:19:13  warmerda
- * added polygon support
- *
- * Revision 1.1  1999/11/03 22:12:43  warmerda
- * New
  *
  */
 
@@ -132,6 +36,7 @@
 
 #include "ogr_feature.h"
 #include "iso8211.h"
+#include "S57ClassRegistrar.h"
 
 class S57Reader;
 
@@ -188,78 +93,6 @@ char **S57FileCollector( const char * pszDataset );
 
 #define MAX_CLASSES 23000
 #define MAX_ATTRIBUTES 25000
-
-class S57ClassRegistrar
-{
-    // Class information:
-    int         nClasses;
-
-    int         iCurrentClass;
-
-    char      **papszCurrentFields;
-
-    char      **papszTempResult;
-
-    int        *pnClassesOBJL;
-    char     ***papapszClassesTokenized;
-
-    // Attribute Information:
-    int         nAttrMax;
-    int         nAttrCount;
-    char      **papszAttrNames;
-    char      **papszAttrAcronym;
-    char     ***papapszAttrValues;
-    char       *pachAttrType;
-    char       *pachAttrClass;
-    int        *panAttrIndex; // sorted by acronym.
-
-    int         FindFile( const char *pszTarget, const char *pszDirectory,
-                          int bReportErr, FILE **fp );
-
-    const char *ReadLine( FILE * fp );
-    char      **papszNextLine;
-    void        DestroySparseStringlist(char **papszStrList);
-
-public:
-                S57ClassRegistrar();
-               ~S57ClassRegistrar();
-
-    int         LoadInfo( const char *, int );
-
-    // class table methods.
-    int         SelectClassByIndex( int );
-    int         SelectClass( int );
-    int         SelectClass( const char * );
-
-    int         Rewind() { return SelectClassByIndex(0); }
-    int         NextClass() { return SelectClassByIndex(iCurrentClass+1); }
-
-    int         GetOBJL();
-    const char *GetDescription();
-    const char *GetAcronym();
-
-    char      **GetAttributeList( const char * = NULL );
-
-    char        GetClassCode();
-    char      **GetPrimitives();
-
-    // attribute table methods.
-    int         GetMaxAttrIndex() { return nAttrMax; }
-    const char *GetAttrName( int i ) { return papszAttrNames[i]; }
-    const char *GetAttrAcronym( int i ) { return papszAttrAcronym[i]; }
-    char      **GetAttrValues( int i ) { return papapszAttrValues[i]; }
-    char        GetAttrType( int i ) { return pachAttrType[i]; }
-#define SAT_ENUM        'E'
-#define SAT_LIST        'L'
-#define SAT_FLOAT       'F'
-#define SAT_INT         'I'
-#define SAT_CODE_STRING 'A'
-#define SAT_FREE_TEXT   'S'
-
-    char        GetAttrClass( int i ) { return pachAttrClass[i]; }
-    int         FindAttrByAcronym( const char * );
-
-};
 
 
 
@@ -370,6 +203,10 @@ class S57Reader
 
     int                 bMissingWarningIssued;
     int                 bAttrWarningIssued;
+    
+    int                 Nall;
+    int                 Aall;
+    
 
   public:
                         S57Reader( const char * );
@@ -389,7 +226,7 @@ class S57Reader
     int                 GetCSCL() { return nCSCL; }
 
     int                 Ingest(CallBackFunction pcallback = NULL);
-    int                 ApplyUpdates( DDFModule * );
+    int                 ApplyUpdates( DDFModule *, int );
     int                 FindAndApplyUpdates( const char *pszPath=NULL );
 
     void                Rewind();
@@ -405,7 +242,12 @@ class S57Reader
     int                 CollectClassList( int *, int);
 
     OGRErr              GetExtent( OGREnvelope *psExtent, int bForce );
+    
+    int                 GetNall(){ return Nall; }
+    int                 GetAall(){ return Aall; }
 
+    int                 GetFeatureCount() { return oFE_Index.GetCount(); }
+    
  };
 
 /************************************************************************/

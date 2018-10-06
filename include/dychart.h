@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,13 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
- * $Log: dychart.h,v $
- * Revision 1.20  2010/04/27 01:44:56  bdbcat
- * Build 426
- *
  *
  */
 
@@ -105,14 +99,14 @@
       #define __min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
       #define fmin __min
       #define fmax __max
 
-//      #define round(x) floor(x)
+      #define round(x) round_msvc(x)
+
 #endif
 
-#define round(x) round_msvc(x)
 //------------------------------------------------------------------------------
 //          Some Build constants
 //------------------------------------------------------------------------------
@@ -144,12 +138,12 @@
 
 
 
-#ifdef __MSVC__66
+#ifdef __MSVC__
         #ifdef _DEBUG
             #define _CRTDBG_MAP_ALLOC
             #include <crtdbg.h>
-//            #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
-//            #define new DEBUG_NEW
+            #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
+            #define new DEBUG_NEW
         #endif
 #endif
 
@@ -174,7 +168,7 @@
 
 #ifdef USE_S57
 #define USE_CPL
-#include "cpl_port.h"
+#include "mygdal/cpl_port.h"
 #endif
 
 #ifndef NULL
@@ -202,20 +196,31 @@
 #define __POSIX__
 #endif
 
+#ifndef OCPN_GL_INCLUDES
+#define OCPN_GL_INCLUDES 1
 
-/***********************************************************************
- * Enable GTK Display Optimization
- * Note this requires libgtk+2-devel
- * which is not often available on basic systems.
- * On standard linux platforms, configure will set
- * ocpnUSE_GTK_OPTIMIZE if possible, i.e. if libgtk+2-devel is installed
- */
 
-#ifdef __WXGTK__
-#ifdef ocpnUSE_GTK_OPTIMIZE
-    #include <gtk/gtk.h>
+#ifdef __WXMSW__
+    #include "GL/gl.h"            // local copy for Windows
+    #include "GL/glu.h"
+#else
+    #ifndef __OCPN__ANDROID__
+        #include <GL/gl.h>
+        #include <GL/glu.h>
+        #include <GL/glext.h>
+    #else
+        #include <qopengl.h>
+        #include <GL/gl_private.h>              // this is a cut-down version of gl.h
+                                                // which allows use of gl functions with gles2 headers
+                                                // to be included as well, and avoids colisions.
+    #endif
+
 #endif
-#endif
 
+#endif      //OCPN_GL_INCLUDES
+
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
 
 #endif      // __FILE__

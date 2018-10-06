@@ -1,0 +1,68 @@
+glx:
+  glXBindHyperpipeSGIX: [int, Display *dpy, int hpId]
+  glXBindSwapBarrierSGIX: [void, uint32_t window, uint32_t barrier]
+  glXChangeDrawableAttributes: [void, uint32_t drawable]
+  glXChangeDrawableAttributesSGIX: [void, uint32_t drawable]
+  glXClientInfo: [void]
+  glXCopyContext: [void, uint32_t source, uint32_t dest, uint32_t mask]
+  glXCreateContext: [void, uint32_t gc_id, uint32_t screen, uint32_t visual, uint32_t
+      share_list]
+  glXCreateContextWithConfigSGIX: [void, uint32_t gc_id, uint32_t screen, uint32_t
+      config, uint32_t share_list]
+  glXCreateGLXPbufferSGIX: [void, uint32_t config, uint32_t pbuffer]
+  glXCreateGLXPixmap: [void, uint32_t visual, uint32_t pixmap, uint32_t glxpixmap]
+  glXCreateGLXPixmapWithConfigSGIX: [void, uint32_t config, uint32_t pixmap, uint32_t
+      glxpixmap]
+  glXCreateGLXVideoSourceSGIX: [void, uint32_t dpy, uint32_t screen, uint32_t server,
+    uint32_t path, uint32_t class, uint32_t node]
+  glXCreateNewContext: [void, uint32_t config, uint32_t render_type, uint32_t share_list,
+    uint32_t direct]
+  glXCreatePbuffer: [void, uint32_t config, uint32_t pbuffer]
+  glXCreatePixmap: [void, uint32_t config, uint32_t pixmap, uint32_t glxpixmap]
+  glXCreateWindow: [void, uint32_t config, uint32_t window, uint32_t glxwindow]
+  glXDestroyContext: [void, uint32_t context]
+  glXDestroyGLXPbufferSGIX: [void, uint32_t pbuffer]
+  glXDestroyGLXPixmap: [void, uint32_t pixmap]
+  glXDestroyGLXVideoSourceSGIX: [void, uint32_t dpy, uint32_t glxvideosource]
+  glXDestroyHyperpipeConfigSGIX: [int, Display *dpy, int hpId]
+  glXDestroyPbuffer: [void, uint32_t pbuffer]
+  glXDestroyPixmap: [void, uint32_t glxpixmap]
+  glXDestroyWindow: [void, uint32_t glxwindow]
+  glXGetDrawableAttributes: [void, uint32_t drawable]
+  glXGetDrawableAttributesSGIX: [void, uint32_t drawable]
+  glXGetFBConfigs: [void]
+  glXGetFBConfigsSGIX: [void]
+  glXGetVisualConfigs: [void]
+  glXHyperpipeAttribSGIX: [int, Display *dpy, int timeSlice, int attrib, int size,
+    const void *attribList]
+  glXHyperpipeConfigSGIX: [int, Display *dpy, int networkId, int npipes, GLXHyperpipeConfigSGIX
+      cfg, int *hpId]
+  glXIsDirect: [void, uint32_t dpy, uint32_t context]
+  glXJoinSwapGroupSGIX: [void, uint32_t window, uint32_t group]
+  glXMakeContextCurrent: [void, uint32_t drawable, uint32_t readdrawable, uint32_t
+      context]
+  glXMakeCurrent: [void, uint32_t drawable, uint32_t context]
+  glXMakeCurrentReadSGI: [void, uint32_t drawable, uint32_t readdrawable, uint32_t
+      context]
+  glXQueryContext: [void]
+  glXQueryContextInfoEXT: [void]
+  glXQueryExtensionsString: [void, uint32_t screen]
+  glXQueryHyperpipeAttribSGIX: [int, Display *dpy, int timeSlice, int attrib, int
+      size, const void *returnAttribList]
+  glXQueryHyperpipeBestAttribSGIX: [int, Display *dpy, int timeSlice, int attrib,
+    int size, const void *attribList, void *returnAttribList]
+  glXQueryHyperpipeConfigSGIX: [GLXHyperpipeConfigSGIX *, Display *dpy, int hpId,
+    int *npipes]
+  glXQueryHyperpipeNetworkSGIX: [GLXHyperpipeNetworkSGIX *, Display *dpy, int *npipes]
+  glXQueryMaxSwapBarriersSGIX: [void]
+  glXQueryServerString: [void, uint32_t screen, uint32_t name]
+  glXQueryVersion: [void, uint32_t *major, uint32_t *minor]
+  glXRender: [void]
+  glXRenderLarge: [void]
+  glXSwapBuffers: [void, uint32_t drawable]
+  glXSwapIntervalSGI: [void]
+  glXUseXFont: [void, uint32_t font, uint32_t first, uint32_t count, uint32_t list_base]
+  glXVendorPrivate: [void]
+  glXVendorPrivateWithReply: [void]
+  glXWaitGL: [void, uint32_t context]
+  glXWaitX: [void]

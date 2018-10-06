@@ -8,7 +8,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
- *   bdbcat@yahoo.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,7 +22,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
 
@@ -92,7 +91,7 @@ class DashboardInstrument_Dial: public DashboardInstrument
 
             ~DashboardInstrument_Dial(void){}
 
-            virtual void SetInstrumentWidth(int width);
+            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString);
             void SetOptionMarker(double step, DialMarkerOption option, int offset) { m_MarkerStep = step; m_MarkerOption = option; m_MarkerOffset = offset; }
             void SetOptionLabel(double step, DialLabelOption option, wxArrayString labels=wxArrayString()) { m_LabelStep = step; m_LabelOption = option; m_LabelArray = labels; }
@@ -110,10 +109,12 @@ class DashboardInstrument_Dial: public DashboardInstrument
             int m_MainValueCap;
             double m_MainValueMin, m_MainValueMax;
             wxString m_MainValueFormat;
+            wxString m_MainValueUnit;
             DialPositionOption m_MainValueOption;
             double m_ExtraValue;
             int m_ExtraValueCap;
             wxString m_ExtraValueFormat;
+            wxString m_ExtraValueUnit;
             DialPositionOption m_ExtraValueOption;
             DialMarkerOption m_MarkerOption;
             int m_MarkerOffset;
@@ -121,14 +122,18 @@ class DashboardInstrument_Dial: public DashboardInstrument
             DialLabelOption m_LabelOption;
             wxArrayString m_LabelArray;
 
-            virtual void Draw(wxBufferedDC* dc);
-            virtual void DrawFrame(wxBufferedDC* dc);
-            virtual void DrawMarkers(wxBufferedDC* dc);
-            virtual void DrawLabels(wxBufferedDC* dc);
-            virtual void DrawBackground(wxBufferedDC* dc);
-            virtual void DrawData(wxBufferedDC* dc, double value, wxString format, DialPositionOption position);
-            virtual void DrawForeground(wxBufferedDC* dc);
+            virtual void Draw(wxGCDC* dc);
+            virtual void DrawFrame(wxGCDC* dc);
+            virtual void DrawMarkers(wxGCDC* dc);
+            virtual void DrawLabels(wxGCDC* dc);
+            virtual void DrawBackground(wxGCDC* dc);
+            virtual void DrawData(wxGCDC* dc, double value, wxString unit, wxString format, DialPositionOption position);
+            virtual void DrawForeground(wxGCDC* dc);
 };
+
+/* Shared functions */
+void DrawCompassRose( wxGCDC* dc, int cx, int cy, int radius, int startangle, bool showlabels );
+void DrawBoat( wxGCDC* dc, int cx, int cy, int radius );
 
 #endif // __Dial_H__
 

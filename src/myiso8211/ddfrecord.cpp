@@ -27,7 +27,6 @@
  ******************************************************************************
  *
  * $Log: ddfrecord.cpp,v $
- * Revision 1.2  2008/03/30 22:46:31  bdbcat
  * Add Copy() method
  *
  * Revision 1.1.1.1  2006/08/21 05:52:20  dsr
@@ -121,7 +120,7 @@
  */
 
 #include "iso8211.h"
-#include "cpl_conv.h"
+#include "mygdal/cpl_conv.h"
 
 static const size_t nLeaderSize = 24;
 
@@ -426,6 +425,7 @@ int DDFRecord::ReadHeader()
             return FALSE;
         }
 
+#if 0        
 /* -------------------------------------------------------------------- */
 /*      If we don't find a field terminator at the end of the record    */
 /*      we will read extra bytes till we get to it.                     */
@@ -438,15 +438,33 @@ int DDFRecord::ReadHeader()
             if( VSIFRead( pachData + nDataSize - 1, 1, 1, poModule->GetFP() )
                 != 1 )
             {
-                CPLError( CE_Failure, CPLE_FileIO,
-                          "Data record is short on DDF file." );
+                //      File end, without finding a DDF_FIELD_TERMINATOR
+                //      Probably this is a UTF-16 encoded string,
+                //      So we manually place the terminator in the buffer, and carry on
+                
+                pachData[nDataSize-1] = DDF_FIELD_TERMINATOR;
+//                CPLError( CE_Failure, CPLE_FileIO,
+//                          "Data record is short on DDF file." );
 
-                return FALSE;
+//                return FALSE;
             }
-            CPLDebug( "ISO8211",
-                      "Didn't find field terminator, read one more byte." );
+//            CPLDebug( "ISO8211",
+//                      "Didn't find field terminator, read one more byte." );
         }
+#endif
 
+    if( pachData[nDataSize-1] != DDF_FIELD_TERMINATOR )
+    {
+        if( (pachData[nDataSize-2] == DDF_FIELD_TERMINATOR) && (pachData[nDataSize-1] == 0) )
+        {
+            nDataSize++;
+            pachData = (char *) CPLRealloc(pachData,nDataSize);
+            pachData[nDataSize-1] = DDF_FIELD_TERMINATOR;
+        }
+    }
+    
+        
+    
 /* -------------------------------------------------------------------- */
 /*      Loop over the directory entries, making a pass counting them.   */
 /* -------------------------------------------------------------------- */
@@ -544,6 +562,7 @@ int DDFRecord::ReadHeader()
                (int) VSIFRead(tmpBuf, 1, nFieldEntryWidth, poModule->GetFP())) {
                 CPLError(CE_Failure, CPLE_FileIO,
                          "Data record is short on DDF file.");
+                CPLFree(tmpBuf);
                 return FALSE;
             }
 
@@ -584,6 +603,7 @@ int DDFRecord::ReadHeader()
                (int) VSIFRead(tmpBuf, 1, nFieldLength, poModule->GetFP())) {
                 CPLError(CE_Failure, CPLE_FileIO,
                          "Data record is short on DDF file.");
+                CPLFree(tmpBuf);
                 return FALSE;
             }
 
@@ -630,6 +650,7 @@ int DDFRecord::ReadHeader()
                 CPLError( CE_Failure, CPLE_AppDefined,
                           "Undefined field `%s' encountered in data record.",
                           szTag );
+                CPLFree(tmpBuf);
                 return FALSE;
             }
 
@@ -642,7 +663,7 @@ int DDFRecord::ReadHeader()
                                      + nFieldPos - nLeaderSize,
                                      nFieldLength );
         }
-
+        CPLFree(tmpBuf);
         return TRUE;
     }
 }
@@ -1367,18 +1388,70 @@ DDFRecord::SetFieldRaw( DDFField *poField, int iIndexWithinField,
         if( !poField->GetFieldDefn()->IsRepeating() && iIndexWithinField != 0 )
             return FALSE;
 
+        bool b_new_16 = false;    
+        // is the new data UTF-16?    
+        if( pachRawData && (pachRawData[nRawDataSize-1] == 0) && (pachRawData[nRawDataSize-2] == DDF_UNIT_TERMINATOR)){
+            b_new_16 = true;
+        }
+
+//        poField->Dump(stdout);
+        
         nOldSize = poField->GetDataSize();
-        if( nOldSize == 0 )
-            nOldSize++; // for added DDF_FIELD_TERMINATOR.
+        if( nOldSize == 0 ) {
+            int nNewSize = nRawDataSize + 1;
+            
+            if(b_new_16)
+                nNewSize++;     // and a 00 for UTF16
 
-        if( !ResizeField( poField, nOldSize + nRawDataSize ) )
-            return FALSE;
+           if( !ResizeField( poField, nNewSize ) )
+               return FALSE;
 
-        pachFieldData = (char *) poField->GetData();
-        memcpy( pachFieldData + nOldSize - 1,
-                pachRawData, nRawDataSize );
-        pachFieldData[nOldSize+nRawDataSize-1] = DDF_FIELD_TERMINATOR;
+           pachFieldData = (char *) poField->GetData();
+           
+           memcpy( pachFieldData, pachRawData, nRawDataSize );
+ 
+           if(b_new_16){
+               pachFieldData[nNewSize-2] = DDF_FIELD_TERMINATOR;
+               pachFieldData[nNewSize-1] = 0;
+           }
+           else
+               pachFieldData[nNewSize-1] = DDF_FIELD_TERMINATOR;
+           
+        }
+        
+        else {
+            int nNewSize = nOldSize + nRawDataSize;
+            
+            if( !ResizeField( poField, nNewSize ) )
+                return FALSE;
 
+            
+            pachFieldData = (char *) poField->GetData();
+
+       
+        //      We may be appending to a UTF-16 field
+            if( (pachFieldData[nOldSize-1] == 0) && (pachFieldData[nOldSize-2] == DDF_UNIT_TERMINATOR)){
+                memcpy( pachFieldData + nOldSize, pachRawData, nRawDataSize );
+            }
+            else if( (pachFieldData[nOldSize-1] == 0) && (pachFieldData[nOldSize-2] == DDF_FIELD_TERMINATOR)){
+                memcpy( pachFieldData + nOldSize - 2, pachRawData, nRawDataSize );
+            }
+            else{
+                memcpy( pachFieldData + nOldSize - 1, pachRawData, nRawDataSize );
+            }
+        
+            if(b_new_16){
+                pachFieldData[nOldSize+nRawDataSize-2] = DDF_FIELD_TERMINATOR;
+                pachFieldData[nOldSize+nRawDataSize-1] = 0;
+            }
+            else
+                pachFieldData[nOldSize+nRawDataSize-1] = DDF_FIELD_TERMINATOR;
+        
+        }
+            
+            
+
+//        poField->Dump(stdout);
         return TRUE;
     }
 
@@ -1429,6 +1502,8 @@ DDFRecord::SetFieldRaw( DDFField *poField, int iIndexWithinField,
     memcpy( (void *) poField->GetData(), pachNewImage, nNewFieldSize );
     CPLFree( pachNewImage );
 
+//    poField->Dump(stdout);
+    
     return TRUE;
 }
 
