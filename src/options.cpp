@@ -2939,27 +2939,7 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         
         wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
         m_DisplayConfigsPage->SetSizer(wrapperSizer);
-        
-        wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"));
-        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
-        wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 0, wxALL | wxEXPAND, 5);
-        
-        //  The standard screen configs...
-        wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
-        int bmpSize = GetCharHeight() * 3;
-        
-        wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
-        m_sconfigSelect_single = new CanvasConfigSelect( m_DisplayConfigsPage, this, ID_SCREENCONFIG1, bmp);
-        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
-        
-        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-        
-        bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
-        m_sconfigSelect_twovertical = new CanvasConfigSelect( m_DisplayConfigsPage, this, ID_SCREENCONFIG2, bmp);
-        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
- 
-        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-        
+
         // Configs management
         
         wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Configuration Templates"));
@@ -4233,8 +4213,27 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
     
-      
-      
+    // MultiChart selection panel 
+    wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
+    wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
+    wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
+    
+    //  The standard screen configs...
+    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+    int bmpSize = GetCharHeight() * 3;
+    
+    wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
+    m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
+    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
+    
+    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+    
+    bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
+    m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
+    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
+    
+    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+    
   } else {
       
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
