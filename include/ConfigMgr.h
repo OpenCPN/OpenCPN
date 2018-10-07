@@ -69,6 +69,7 @@ class ConfigMgr
         wxString GetConfigDir(){ return m_configDir; }
         ConfigObjectList *GetConfigList(){ return configList; }
         OCPNConfigObject *GetConfig( wxString GUID );
+        bool CheckTemplate( wxString fileName);
         
         wxString m_configDir;
         wxString m_configCatalogName;
