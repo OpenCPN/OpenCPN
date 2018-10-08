@@ -81,6 +81,7 @@ public:
         bLookahead = false;
         bShowAIS = true;
         bAttenAIS = false;
+        bQuilt = true;
     }
     
 };

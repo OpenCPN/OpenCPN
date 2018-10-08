@@ -930,6 +930,8 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 {
+    printf("ApplyCanvasConfig  configIndex : %d  bQuilt:  %d\n", pcc->configIndex, pcc->bQuilt);
+    
     SetViewPoint( pcc->iLat, pcc->iLon, pcc->iScale, 0., pcc->iRotation );
     m_vLat = pcc->iLat;
     m_vLon = pcc->iLon;
@@ -11252,6 +11254,8 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
 
 void ChartCanvas::ToggleCanvasQuiltMode( void )
 {
+    printf("ToggleCanvasQuiltMode, canvasIndex:  %d  old mode is %d\n", m_canvasIndex, GetQuiltMode());
+    
         bool cur_mode = GetQuiltMode();
         
         if( !GetQuiltMode() )
