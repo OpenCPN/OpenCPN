@@ -2,7 +2,25 @@ Source: opencpn
 Section: misc
 Priority: optional
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
-Build-Depends: debhelper (>= 11)
+Build-Depends: debhelper (>= 11),
+ cmake,
+ desktop-file-utils,
+ libarchive-dev,
+ libbz2-dev,
+ libcurl4-gnutls-dev,
+ libelf-dev,
+ libexif-dev,
+ libgdk-pixbuf2.0-dev,
+ libgtk-3-dev,
+ liblzma-dev,
+ libpango1.0-dev,
+ libsqlite3-dev,
+ libtinyxml-dev,
+ libunarr-dev,
+ libwxgtk3.0-dev,
+ libwxgtk3.0-gtk3-dev,
+# libwxsvg-dev, ## under review.
+ portaudio19-dev
 Standards-Version: 4.2.1
 Homepage: http://opencpn.org
 Vcs-Browser: https://github.com/OpenCPN/OpenCPN
@@ -13,22 +31,6 @@ Architecture: any
 Depends:
  opencpn-data (= ${source:Version}),
  bzip2,
- cmake,
- libarchive-dev,
- libbz2-dev,
- libcurl4-gnutls-dev,
- libelf-dev,
- libexif-dev,
- libgdk-pixbuf2.0-dev,
- libgtk-3-dev,
- liblzma-dev,
- libpango1.0-dev,
- libportaudio2,
- libsqlite3-dev,
- libtinyxml-dev,
- libwxgtk3.0-dev,
- libwxgtk3.0-gtk3-dev,
-# libwxsvg-dev, ## under review.
  wx3.0-i18n,
  ${shlibs:Depends}, ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software
