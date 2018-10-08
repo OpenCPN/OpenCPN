@@ -1,7 +1,8 @@
 Source: opencpn
+Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
+Uploaders: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Build-Depends: debhelper (>= 11),
  cmake,
  desktop-file-utils,
