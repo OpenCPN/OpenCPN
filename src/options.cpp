@@ -304,6 +304,7 @@ extern bool g_bDarkDecorations;
 extern bool g_bSpaceDropMark;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
+extern wxString g_lastAppliedTemplateGUID;
 
 
 extern "C" bool CheckSerialAccess(void);
@@ -2929,9 +2930,28 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   chartPanel->Layout();
 }
 
+void options::UpdateTemplateTitleText()
+{
+    if(!m_templateTitleText)
+        return;
+    
+    wxString activeTitle;
+    if(!g_lastAppliedTemplateGUID.IsEmpty()){
+        activeTitle = ConfigMgr::Get().GetTemplateTitle(g_lastAppliedTemplateGUID);
+        
+        bool configCompare = ConfigMgr::Get().CheckTemplateGUID(g_lastAppliedTemplateGUID);
+        if(!configCompare)
+            activeTitle += _(" [Modified]");
+        m_templateTitleText->SetLabel(activeTitle);
+    }
+    else
+        m_templateTitleText->SetLabel(_("None"));
+}
+
+    
 void options::CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing)
 {
-    m_DisplayConfigsPage = AddPage(parent, _("Configs"));
+    m_DisplayConfigsPage = AddPage(parent, _("Templates"));
     
     if (m_bcompact) {
     }
@@ -2940,11 +2960,25 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
         m_DisplayConfigsPage->SetSizer(wrapperSizer);
 
-        // Configs management
+        // Template management
+
+        wxStaticBox* templateStatusBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Template Status"));
+        wxStaticBoxSizer* templateStatusBoxSizer = new wxStaticBoxSizer(templateStatusBox, wxHORIZONTAL);
+        wrapperSizer->Add(templateStatusBoxSizer, 1, wxALL | wxEXPAND, border_size);
         
-        wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Configuration Templates"));
+        wxBoxSizer* statSizer = new wxBoxSizer(wxVERTICAL);
+        templateStatusBoxSizer->Add(statSizer, 0, wxALL | wxEXPAND, border_size);
+        
+        statSizer->Add(new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Active Template Title:")));
+        
+        m_templateTitleText = new wxStaticText(m_DisplayConfigsPage, wxID_ANY, wxEmptyString);
+        statSizer->Add(m_templateTitleText);
+        
+        UpdateTemplateTitleText();
+        
+        wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Saved Templates"));
         wxStaticBoxSizer* configSizer = new wxStaticBoxSizer(configsBox, wxHORIZONTAL);
-        wrapperSizer->Add(configSizer, 1, wxALL | wxEXPAND, border_size);
+        wrapperSizer->Add(configSizer, 4, wxALL | wxEXPAND, border_size);
         
         wxPanel *cPanel = new wxPanel(m_DisplayConfigsPage, wxID_ANY );
         configSizer->Add(cPanel, 1, wxALL | wxEXPAND, border_size);
@@ -3077,6 +3111,9 @@ void options::OnApplyConfig( wxCommandEvent &event)
     bool bApplyStat = ConfigMgr::Get().ApplyConfigGUID( m_selectedConfigPanelGUID);
     if(bApplyStat){
         OCPNMessageBox(this, _("Configuration successfully applied."), _("OpenCPN Info"), wxOK);
+        g_lastAppliedTemplateGUID = m_selectedConfigPanelGUID;
+        wxString activeTitle = ConfigMgr::Get().GetTemplateTitle(g_lastAppliedTemplateGUID);
+        m_templateTitleText->SetLabel(activeTitle);
     }
     
     //  Clear all selections
@@ -6897,6 +6934,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
     gFrame->RefreshAllCanvas();
   }
 
+  
+  //  Record notice of any changes to last applied template
+  UpdateTemplateTitleText();
+  
   ::wxEndBusyCursor();
 }
 

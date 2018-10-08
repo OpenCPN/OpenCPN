@@ -510,8 +510,9 @@ class options : private Uncopyable,
   CanvasConfigSelect *m_sconfigSelect_single;
   CanvasConfigSelect *m_sconfigSelect_twovertical;
   
-  // For Configuration Tempalstes panel
+  // For Configuration Template panel
   wxScrolledWindow *m_scrollWinConfigList;
+  wxStaticText *m_templateTitleText;
   
   // For the ship page
   wxFlexGridSizer *realSizes;
@@ -581,6 +582,7 @@ class options : private Uncopyable,
   void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
+  void UpdateTemplateTitleText();
   
   int m_returnChanges;
   wxListBox *tcDataSelected;

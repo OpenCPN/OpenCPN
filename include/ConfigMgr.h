@@ -52,7 +52,9 @@ class ConfigMgr
         wxArrayString GetConfigGUIDArray();
         
         wxPanel *GetConfigPanel( wxWindow *parent, wxString GUID );
-        bool ApplyConfigGUID( wxString GUID);
+        wxString GetTemplateTitle( wxString GUID );
+        bool ApplyConfigGUID( wxString GUID );
+        bool CheckTemplateGUID( wxString GUID );
         
     private: // private for singleton
         ConfigMgr();

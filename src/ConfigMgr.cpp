@@ -840,6 +840,21 @@ OCPNConfigObject *ConfigMgr::GetConfig( wxString GUID )
     return NULL;
 }
 
+wxString ConfigMgr::GetTemplateTitle( wxString GUID)
+{
+    for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
+    {
+        OCPNConfigObject *look = node->GetData();
+        if(look->m_GUID == GUID){
+            return look->m_title;
+            break;
+        }
+    }
+    
+    return wxEmptyString;
+}
+    
+
 wxArrayString ConfigMgr::GetConfigGUIDArray()
 {
     wxArrayString ret_val;
@@ -1243,11 +1258,26 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     return true;
 }
 
+
+bool ConfigMgr::CheckTemplateGUID( wxString GUID )
+{
+    bool rv = false;
     
-#define CHECK_INT(s, t)         conf->Read( s , &read_int); \
+    OCPNConfigObject *config = GetConfig( GUID );
+    if(config){
+        rv = CheckTemplate( GetConfigDir() + config->templateFileName );
+    }
+    
+    return rv;
+}
+
+
+#define CHECK_INT(s, t)         read_int = *t; \
+                                if(!conf->Read( s , &read_int)) wxLogMessage(s); \
                                 if( *t  != read_int) return false;
 
-#define CHECK_STR(s, t)         conf->Read( s , &val); \
+#define CHECK_STR(s, t)         val = t;  \
+                                conf->Read( s , &val); \
                                 if( !t.IsSameAs( val )) return false;
 
 #define CHECK_STRP(s, t)        conf->Read( s , &val); \
@@ -1265,42 +1295,40 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     int read_int;
     wxString val;
     double dval;
+    char buf[256];
 
     MyConfig *conf = new MyConfig( fileName );
     
 //    Global options and settings
     conf->SetPath( _T ( "/Settings" ) );    
     
-    // Some undocumented values
-//    Read( _T ( "ConfigVersionString" ), &g_config_version_string );
     
     
-    CHECK_INT( _T ( "NavMessageShown" ), &n_NavMessageShown )
-
     CHECK_INT( _T ( "UIexpert" ), &g_bUIexpert );
     
-    CHECK_STR( _T ( "UIStyle" ), g_uiStyle  );
+    ///CHECK_STR( _T ( "UIStyle" ), g_uiStyle  );
 
-    CHECK_INT( _T ( "NCacheLimit" ), &g_nCacheLimit );
      
-    CHECK_INT( _T ( "InlandEcdis" ), &g_bInlandEcdis );// First read if in iENC mode as this will override some config settings
+    CHECK_INT( _T ( "InlandEcdis" ), &g_bInlandEcdis );
     
     CHECK_INT( _T ("DarkDecorations" ), &g_bDarkDecorations );
 
     CHECK_INT( _T( "SpaceDropMark" ), &g_bSpaceDropMark );
 
-    CHECK_INT( _T ( "UseModernUI5" ), &g_useMUI );
-    
+    ///CHECK_INT( _T ( "UseModernUI5" ), &g_useMUI );
+
+#if 0    
     CHECK_INT( _T ( "DebugGDAL" ), &g_bGDAL_Debug );
     CHECK_INT( _T ( "DebugNMEA" ), &g_nNMEADebug );
     CHECK_INT( _T ( "DebugOpenGL" ), &g_bDebugOGL );
-    CHECK_INT( _T ( "AnchorWatchDefault" ), &g_nAWDefault );
-    CHECK_INT( _T ( "AnchorWatchMax" ), &g_nAWMax );
-    CHECK_INT( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks );
+    ///CHECK_INT( _T ( "AnchorWatchDefault" ), &g_nAWDefault );
+    ///CHECK_INT( _T ( "AnchorWatchMax" ), &g_nAWMax );
+    ///CHECK_INT( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks );
     CHECK_INT( _T ( "DebugCM93" ), &g_bDebugCM93 );
     CHECK_INT( _T ( "DebugS57" ), &g_bDebugS57 );         // Show LUP and Feature info in object query
     CHECK_INT( _T ( "DebugBSBImg" ), &g_BSBImgDebug );
     CHECK_INT( _T ( "DebugGPSD" ), &g_bDebugGPSD );
+#endif
 
     CHECK_INT( _T ( "DefaultFontSize"), &g_default_font_size );
     
@@ -1313,8 +1341,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar );
     
     CHECK_INT( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar );
-//    Read( _T ( "ShowTide" ), &g_bShowTide );
-//    Read( _T ( "ShowCurrent" ), &g_bShowCurrent );
     
     CHECK_INT( _T ( "DisplaySizeMM" ), &g_display_size_mm );
     CHECK_INT( _T ( "DisplaySizeManual" ), &g_config_display_size_manual );
@@ -1434,15 +1460,15 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles );
 
     CHECK_INT( _T ( "OwnShipIconType" ), &g_OwnShipIconType );
-    CHECK_INT( _T ( "OwnShipLength" ), &g_n_ownship_length_meters );
-    CHECK_INT( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters );
-    CHECK_INT( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x );
-    CHECK_INT( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y );
+    CHECK_FLT( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0.1 );
+    CHECK_FLT( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0.1 );
+    CHECK_FLT( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0.1 );
+    CHECK_FLT( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0.1 );
     CHECK_INT( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm );
     CHECK_INT( _T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc );
     CHECK_INT( _T ( "OwnShipSogCogCalcDampSec"), &g_own_ship_sog_cog_calc_damp_sec );
 
-    CHECK_INT( _T ( "RouteArrivalCircleRadius" ), &g_n_arrival_circle_radius );
+    CHECK_FLT( _T ( "RouteArrivalCircleRadius" ), &g_n_arrival_circle_radius, .01 );
 
     CHECK_INT( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt );
 
@@ -1454,8 +1480,8 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     CHECK_FLT( _T ( "PlanSpeed" ), &g_PlanSpeed, 0.1)
     
-    CHECK_STR( _T ( "VisibleLayers" ), g_VisibleLayers );
-    CHECK_STR( _T ( "InvisibleLayers" ), g_InvisibleLayers );
+    ///CHECK_STR( _T ( "VisibleLayers" ), g_VisibleLayers );
+    ///CHECK_STR( _T ( "InvisibleLayers" ), g_InvisibleLayers );
 
     CHECK_INT( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
@@ -1472,7 +1498,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg filtered but put msg on bus.
     CHECK_INT( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour );
     
-    // Boolean to cater for sailing when not approaching waypoint
     CHECK_INT( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly);
 
     CHECK_INT( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
@@ -1499,39 +1524,23 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
     //    AIS
     conf->SetPath( _T ( "/Settings/AIS" ) );
-
     CHECK_INT( _T ( "bNoCPAMax" ), &g_bCPAMax );
-
     CHECK_FLT( _T ( "NoCPAMaxNMi" ), &g_CPAMax_NM, .01 )
-
     CHECK_INT( _T ( "bCPAWarn" ), &g_bCPAWarn );
-
     CHECK_FLT( _T ( "CPAWarnNMi" ), &g_CPAWarn_NM, .01 )
-
     CHECK_INT( _T ( "bTCPAMax" ), &g_bTCPA_Max );
-
     CHECK_FLT( _T ( "TCPAMaxMinutes" ), &g_TCPA_Max, 1  )
-
     CHECK_INT( _T ( "bMarkLostTargets" ), &g_bMarkLost );
-
     CHECK_FLT( _T ( "MarkLost_Minutes" ), &g_MarkLost_Mins, 1 )
-
     CHECK_INT( _T ( "bRemoveLostTargets" ), &g_bRemoveLost );
-
     CHECK_FLT( _T ( "RemoveLost_Minutes" ), &g_RemoveLost_Mins, 1 )
-
     CHECK_INT( _T ( "bShowCOGArrows" ), &g_bShowCOG );
-
     CHECK_FLT( _T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1 );
-
     CHECK_INT( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
-
     CHECK_FLT( _T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1 )
-
     CHECK_INT( _T ( "bHideMooredTargets" ), &g_bHideMoored )
     CHECK_FLT( _T ( "MooredTargetMaxSpeedKnots" ), &g_ShowMoored_Kts, .1 )
-    
-    CHECK_INT(_T ("bShowScaledTargets"), &g_bAllowShowScaled );
+    CHECK_INT( _T ( "bShowScaledTargets"), &g_bAllowShowScaled );
     CHECK_INT( _T ( "AISScaledNumber" ), &g_ShowScaled_Num );
     CHECK_INT( _T ( "AISScaledNumberWeightSOG" ), &g_ScaledNumWeightSOG );
     CHECK_INT( _T ( "AISScaledNumberWeightCPA" ), &g_ScaledNumWeightCPA );
@@ -1539,8 +1548,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "AISScaledNumberWeightRange" ), &g_ScaledNumWeightRange );
     CHECK_INT( _T ( "AISScaledNumberWeightSizeOfTarget" ), &g_ScaledNumWeightSizeOfT );
     CHECK_INT( _T ( "AISScaledSizeMinimal" ), &g_ScaledSizeMinimal );
-    CHECK_INT(_T("AISShowScaled"), &g_bShowScaled );
-    
+    CHECK_INT( _T(  "AISShowScaled"), &g_bShowScaled );
     CHECK_INT( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     CHECK_INT( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     CHECK_INT( _T ( "bShowAISName" ), &g_bShowAISName );
@@ -1548,37 +1556,33 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
     CHECK_INT( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
     CHECK_INT( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width );
-
     CHECK_INT( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
     CHECK_STR( _T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File );
     CHECK_INT( _T ( "bAISAlertSuppressMoored" ), &g_bAIS_CPA_Alert_Suppress_Moored );
-
     CHECK_INT( _T ( "bAISAlertAckTimeout" ), &g_bAIS_ACK_Timeout );
     CHECK_FLT( _T ( "AlertAckTimeoutMinutes" ), &g_AckTimeout_Mins, 1 )
-
+    CHECK_STR( _T ( "AISTargetListPerspective" ), g_AisTargetList_perspective );
+    CHECK_INT( _T ( "AISTargetListRange" ), &g_AisTargetList_range );
+    CHECK_INT( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
+    CHECK_INT( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
+    CHECK_STR( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    CHECK_INT( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
+    CHECK_INT( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
+    CHECK_INT( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
+    
+    CHECK_INT( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
+    CHECK_INT( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
     CHECK_INT( _T ( "AlertDialogSizeX" ), &g_ais_alert_dialog_sx );
     CHECK_INT( _T ( "AlertDialogSizeY" ), &g_ais_alert_dialog_sy );
     CHECK_INT( _T ( "AlertDialogPosX" ), &g_ais_alert_dialog_x );
     CHECK_INT( _T ( "AlertDialogPosY" ), &g_ais_alert_dialog_y );
     CHECK_INT( _T ( "QueryDialogPosX" ), &g_ais_query_dialog_x );
     CHECK_INT( _T ( "QueryDialogPosY" ), &g_ais_query_dialog_y );
-
-    CHECK_STR( _T ( "AISTargetListPerspective" ), g_AisTargetList_perspective );
-    CHECK_INT( _T ( "AISTargetListRange" ), &g_AisTargetList_range );
-    CHECK_INT( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
-    CHECK_INT( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
-    CHECK_STR( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
-
-    CHECK_INT( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
-    CHECK_INT( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
-    CHECK_INT( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
-
-    CHECK_INT( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
-    CHECK_INT( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
+    
     
     conf->SetPath( _T ( "/Directories" ) );
     CHECK_STR( _T ( "PresentationLibraryData" ), g_UserPresLibData)
-    CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
+    ///CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
     
 #ifdef USE_S57
     CHECK_STR( _T ( "SENCFileLocation" ), g_SENCPrefix)
@@ -1588,98 +1592,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_STR( _T ( "GPXIODir" ), g_gpx_path );           // Get the Directory name
     CHECK_STR( _T ( "TCDataDir" ), g_TCData_Dir );           // Get the Directory name
     CHECK_STR( _T ( "BasemapDir"), gWorldMapLocation );
-#if 0
-    SetPath( _T ( "/Settings/GlobalState" ) );
-    
-    if(Read( _T ( "nColorScheme" ), &read_int ))
-        global_color_scheme = (ColorScheme) read_int;
-    
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
-
-    wxString connectionconfigs;
-    Read ( _T( "DataConnections" ),  &connectionconfigs );
-    if(!connectionconfigs.IsEmpty()){
-        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-        g_pConnectionParams->Clear();
-        for (size_t i = 0; i < confs.Count(); i++)
-        {
-            ConnectionParams * prm = new ConnectionParams(confs[i]);
-            if (!prm->Valid) {
-                wxLogMessage( _T( "Skipped invalid DataStream config") );
-                delete prm;
-                continue;
-            }
-            g_pConnectionParams->Add(prm);
-        }
-    }
-#endif
-
-#if 0
-    SetPath( _T ( "/Settings/GlobalState" ) );
-    wxString st;
-
-    double st_lat, st_lon;
-    if( Read( _T ( "VPLatLon" ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
-
-        //    Sanity check the lat/lon...both have to be reasonable.
-        if( fabs( st_lon ) < 360. ) {
-            while( st_lon < -180. )
-                st_lon += 360.;
-
-            while( st_lon > 180. )
-                st_lon -= 360.;
-
-            vLon = st_lon;
-        }
-
-        if( fabs( st_lat ) < 90.0 ) vLat = st_lat;
-        
-        s.Printf( _T ( "Setting Viewpoint Lat/Lon %g, %g" ), vLat, vLon );
-        wxLogMessage( s );
-        
-    }
-
-    double st_view_scale, st_rotation;
-    if( Read( wxString( _T ( "VPScale" ) ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
-//    Sanity check the scale
-        st_view_scale = fmax ( st_view_scale, .001/32 );
-        st_view_scale = fmin ( st_view_scale, 4 );
-        initial_scale_ppm = st_view_scale;
-    }
-
-    if( Read( wxString( _T ( "VPRotation" ) ), &st ) ) {
-        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
-//    Sanity check the rotation
-        st_rotation = fmin ( st_rotation, 360 );
-        st_rotation = fmax ( st_rotation, 0 );
-        initial_rotation = st_rotation * PI / 180.;
-    }
-
-    wxString sll;
-    double lat, lon;
-    if( Read( _T ( "OwnShipLatLon" ), &sll ) ) {
-        sscanf( sll.mb_str( wxConvUTF8 ), "%lf,%lf", &lat, &lon );
-
-        //    Sanity check the lat/lon...both have to be reasonable.
-        if( fabs( lon ) < 360. ) {
-            while( lon < -180. )
-                lon += 360.;
-
-            while( lon > 180. )
-                lon -= 360.;
-
-            gLon = lon;
-        }
-
-        if( fabs( lat ) < 90.0 ) gLat = lat;
-        
-        s.Printf( _T ( "Setting Ownship Lat/Lon %g, %g" ), gLat, gLon );
-        wxLogMessage( s );
-        
-    }
-#endif
 
 //    Fonts
 
@@ -1723,6 +1635,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     conf->SetPath ( _T ( "/Settings/QTFonts" ) );
 #endif
 
+#if 0    
     if(conf->GetNumberOfEntries() != (unsigned int)FontMgr::Get().GetNumFonts() )
         return false;
     
@@ -1757,8 +1670,9 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
         }
     }
 
+#endif
 
-
+#if 0
     //    Groups
     conf->SetPath( _T ( "/Groups" ) );
     unsigned int group_count;
@@ -1795,7 +1709,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     }
         
     
-    
+#endif    
     
     
     
@@ -1871,82 +1785,23 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 
         CHECK_BFN( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
        
-        //conf->Read( _T ( "bShowS57Text" ), &read_int, 0 );
-        //ps52plib->SetShowS57Text( !( read_int == 0 ) );
-        
         CHECK_BFN( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
-        //conf->Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
-        //ps52plib->SetShowS57ImportantTextOnly( !( read_int == 0 ) );
-        
         CHECK_BFN( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
-        //Read( _T ( "bShowLightDescription" ), &read_int, 0 );
-        //ps52plib->SetShowLdisText( !( read_int == 0 ) );
-        
         CHECK_BFN( _T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors );
-        //Read( _T ( "bExtendLightSectors" ), &read_int, 0 );
-        //ps52plib->SetExtendLightSectors( !( read_int == 0 ) );
-        
         CHECK_BFN( _T ( "bShowSoundg" ), ps52plib->m_bShowSoundg );
-        //Read( _T ( "bShowSoundg" ), &read_int, 1 );
-        //ps52plib->m_bShowSoundg = !( read_int == 0 );
-        
         CHECK_BFN( _T ( "bShowMeta" ), ps52plib->m_bShowMeta );
-        //Read( _T ( "bShowMeta" ), &read_int, 0 );
-        //ps52plib->m_bShowMeta = !( read_int == 0 );
-        
         CHECK_BFN( _T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN );
-        //Read( _T ( "bUseSCAMIN" ), &read_int, 1 );
-        //ps52plib->m_bUseSCAMIN = !( read_int == 0 );
-        
         CHECK_BFN( _T ( "bShowAtonText" ), ps52plib->m_bShowAtonText );
-        //Read( _T ( "bShowAtonText" ), &read_int, 1 );
-        //ps52plib->m_bShowAtonText = !( read_int == 0 );
-        
         CHECK_BFN( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
-        //Read( _T ( "bDeClutterText" ), &read_int, 0 );
-        //ps52plib->m_bDeClutterText = !( read_int == 0 );
-        
         CHECK_BFN( _T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts );
-        //Read( _T ( "bShowNationalText" ), &read_int, 0 );
-        //ps52plib->m_bShowNationalTexts = !( read_int == 0 );
-        
         CHECK_IFN( _T ( "nDisplayCategory" ), ps52plib->GetDisplayCategory() );
-        //Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
-        //ps52plib->SetDisplayCategory((enum _DisCat) read_int );
-        
         CHECK_IFN( _T ( "nSymbolStyle" ), ps52plib->m_nSymbolStyle );
-        //Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
-        //ps52plib->m_nSymbolStyle = (LUPname) read_int;
-        
         CHECK_IFN( _T ( "nBoundaryStyle" ), ps52plib->m_nBoundaryStyle );
-        //Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
-        //ps52plib->m_nBoundaryStyle = (LUPname) read_int;
-        
-        
         CHECK_FFN( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ));
-        //if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
-        //    S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
-        //    S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
-        //}
-        
         CHECK_FFN( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ));
-        //if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval );
-        
         CHECK_FFN( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ));
-        //if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(S52_MAR_DEEP_CONTOUR, dval );
-        
         CHECK_FFN( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ));
-        //if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam( S52_MAR_TWO_SHADES, dval );
-        
-
         CHECK_INT( _T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay );
-        
-//         SetPath( _T ( "/Settings/GlobalState" ) );
-//         Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
-//         read_int = wxMax(read_int, 0);                      // qualify value
-//         read_int = wxMin(read_int, 2);
-//         ps52plib->m_nDepthUnitDisplay = read_int;
-//         g_nDepthUnitDisplay = read_int;
         
         //    S57 Object Class Visibility
         
@@ -1976,8 +1831,9 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
                         pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
                         if( !strncmp( pOLE->OBJLName, sObj.mb_str(), 6 ) ) {
                             bfound = true;
-                            if(pOLE->nViz != val)
+                            if(pOLE->nViz != val){
                                 return false;
+                            }
                         }
                     }
                     

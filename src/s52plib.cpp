@@ -8671,7 +8671,6 @@ void s52plib::SetDisplayCategory(enum _DisCat cat)
     m_nDisplayCategory = cat;
     
     if(old != cat){
-        printf("Cat Miss\n");
         ClearNoshow();
     }
     GenerateStateHash();

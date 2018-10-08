@@ -432,6 +432,7 @@ int                     g_nCPUCount;
 extern bool             g_bDarkDecorations;
 extern unsigned int     g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
+extern wxString         g_lastAppliedTemplateGUID;
 
 wxString                g_gpx_path;
 
@@ -724,6 +725,8 @@ int MyConfig::LoadMyConfigRaw()
 
 //    Global options and settings
     SetPath( _T ( "/Settings" ) );    
+    
+    Read( _T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID );
     
     // Some undocumented values
     Read( _T ( "ConfigVersionString" ), &g_config_version_string );
@@ -2311,6 +2314,8 @@ void MyConfig::UpdateSettings()
     
 //    Global options and settings
     SetPath( _T ( "/Settings" ) );
+
+    Write( _T ( "LastAppliedTemplate" ), g_lastAppliedTemplateGUID );
     
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );

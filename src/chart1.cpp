@@ -755,6 +755,7 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
 arrayofCanvasPtr   g_canvasArray;
 arrayofCanvasConfigPtr g_canvasConfigArray;
+wxString         g_lastAppliedTemplateGUID;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
