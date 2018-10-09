@@ -617,6 +617,9 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID 
     
     SetMinSize(wxSize(-1, 6 * GetCharHeight()) );
     
+    wxColour colour;
+    GetGlobalColor(_T("COMP1"), &colour);
+    SetBackgroundColour(colour);
     //Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
     
 }

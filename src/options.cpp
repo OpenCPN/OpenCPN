@@ -3170,6 +3170,8 @@ void options::OnConfigMouseSelected( wxMouseEvent &event)
                 }
                 else
                     panel->SetBackgroundColour(m_panelBackgroundUnselected);
+                
+                panel->Refresh(true);
             }
         }
         
