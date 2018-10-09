@@ -1307,7 +1307,7 @@ bool ConfigMgr::CheckTemplateGUID( wxString GUID )
 
 #define CHECK_INT(s, t)         read_int = *t; \
                                 if(!conf->Read( s , &read_int)) wxLogMessage(s); \
-                                if( *t  != read_int) return false;
+                                if( (int)*t  != read_int) return false;
 
 #define CHECK_STR(s, t)         val = t;  \
                                 conf->Read( s , &val); \
@@ -1328,7 +1328,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     int read_int;
     wxString val;
     double dval;
-    char buf[256];
 
     MyConfig *conf = new MyConfig( fileName );
     
