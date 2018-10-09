@@ -24,8 +24,8 @@ Build-Depends: debhelper (>= 11),
  portaudio19-dev
 Standards-Version: 4.2.1
 Homepage: http://opencpn.org
-Vcs-Browser: https://github.com/OpenCPN/OpenCPN
-Vcs-Git: https://github.com/OpenCPN/OpenCPN.git
+Vcs-Browser: https://salsa.debian.org/debian-gis-team/opencpn
+Vcs-Git: https://salsa.debian.org/debian-gis-team/opencpn.git
 
 Package: opencpn
 Architecture: any
