@@ -5814,10 +5814,10 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         g_pActiveTrack->SetPrecision( g_nTrackPrecision );
     }
 
-    if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt ) ) {
-        GetPrimaryCanvas()->SetQuiltMode( g_bQuiltEnable );
-        GetPrimaryCanvas()->SetupCanvasQuiltMode();
-    }
+//     if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt ) ) {
+//         GetPrimaryCanvas()->SetQuiltMode( g_bQuiltEnable );
+//         GetPrimaryCanvas()->SetupCanvasQuiltMode();
+//     }
 
 #if 0
 //TODO Not need with per-canvas CourseUp
