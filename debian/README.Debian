@@ -5,7 +5,7 @@ The bundled manual has been removed since it contains privacy breaching
 code and also lacks sources. It can be downloaded from the opencpn website
 at https://opencpn.org/OpenCPN/info/downloads.html.
 
-Third-party plugins (.so files) should be installed in /usr/lib/*/opencpn
+Third-party plugins (.so files) should be installed in /usr/lib/opencpn
 with possible data located in /usr/share/opencpn/plugins/<plugin>
 
 Free NOAA nautical charts can be downloaded from:
