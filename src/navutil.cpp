@@ -714,7 +714,7 @@ int MyConfig::LoadMyConfig()
     return ret_Val;
 }
 
-int MyConfig::LoadMyConfigRaw()
+int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 {
 
     int read_int;
@@ -755,7 +755,6 @@ int MyConfig::LoadMyConfigRaw()
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug );
-    Read( _T ( "DebugOpenGL" ), &g_bDebugOGL );
     Read( _T ( "AnchorWatchDefault" ), &g_nAWDefault );
     Read( _T ( "AnchorWatchMax" ), &g_nAWMax );
     Read( _T ( "GPSDogTimeout" ), &gps_watchdog_timeout_ticks );
@@ -768,10 +767,6 @@ int MyConfig::LoadMyConfigRaw()
     
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
 
-    Read( _T ( "GPSIdent" ), &g_GPS_Ident );
-    Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
-
-    Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
 
     Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar );
     Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar );
@@ -782,31 +777,39 @@ int MyConfig::LoadMyConfigRaw()
     
     int size_mm = -1;
     Read( _T ( "DisplaySizeMM" ), &size_mm );
-    if(size_mm > 0){
-        g_config_display_size_mm = size_mm;
-        if((size_mm > 100) && (size_mm < 2000)){
-            g_display_size_mm = size_mm;
+    
+    if(!bAsTemplate){
+        if(size_mm > 0){
+            g_config_display_size_mm = size_mm;
+            if((size_mm > 100) && (size_mm < 2000)){
+                g_display_size_mm = size_mm;
+            }
         }
+        Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual );
     }
-    Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual );
     
     Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor );
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
     
-    Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog );
-    Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec );
+    
+    //  NMEA connection options.
+    if( !bAsTemplate ){
+        Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog );
+        Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec );
+        Read( _T ( "GPSIdent" ), &g_GPS_Ident );
+        Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
+        Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
+        Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
+    }
 
     Read( _T ( "ShowTrue" ), &g_bShowTrue );
     Read( _T ( "ShowMag" ), &g_bShowMag );
 
     wxString umv;
     Read( _T ( "UserMagVariation" ), &umv );
-    if(umv.Len())
-        umv.ToDouble( &g_UserVar );
-
-    Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
+    if(umv.Len()) umv.ToDouble( &g_UserVar );
 
     Read( _T ( "ScreenBrightness" ), &g_nbrightness );
 
@@ -821,8 +824,6 @@ int MyConfig::LoadMyConfigRaw()
     Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec );
     Read( _T ( "LookAheadMode" ), &g_bLookAhead );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp );
-    Read( _T ( "OpenGL" ), &g_bopengl );
-    Read( _T ( "SoftwareGL" ), &g_bSoftwareGL );
     
     Read( _T ( "ShowFPS" ), &g_bShowFPS );
     
@@ -835,16 +836,21 @@ int MyConfig::LoadMyConfigRaw()
 
     /* opengl options */
 #ifdef ocpnUSE_GL
-    Read( _T ( "OpenGLExpert" ), &g_bGLexpert, false );
-    Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
-    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression);
-    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching);
-    Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing);
-    Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing);
-    Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension );
-    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize );
-
+    if(!bAsTemplate ){
+        Read( _T ( "OpenGLExpert" ), &g_bGLexpert, false );
+        Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
+        Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression);
+        Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching);
+        Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing);
+        Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing);
+        Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension );
+        Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize );
+        Read( _T ( "DebugOpenGL" ), &g_bDebugOGL );
+        Read( _T ( "OpenGL" ), &g_bopengl );
+        Read( _T ( "SoftwareGL" ), &g_bSoftwareGL );
+    }
 #endif
+
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom );
 
     Read( _T ( "ToolbarX"), &g_maintoolbar_x );
@@ -1125,155 +1131,27 @@ int MyConfig::LoadMyConfigRaw()
     if(Read( _T ( "nColorScheme" ), &read_int ))
         global_color_scheme = (ColorScheme) read_int;
     
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    if(! bAsTemplate ){
+        SetPath( _T ( "/Settings/NMEADataSource" ) );
 
-    wxString connectionconfigs;
-    Read ( _T( "DataConnections" ),  &connectionconfigs );
-    if(!connectionconfigs.IsEmpty()){
-        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-        g_pConnectionParams->Clear();
-        for (size_t i = 0; i < confs.Count(); i++)
-        {
-            ConnectionParams * prm = new ConnectionParams(confs[i]);
-            if (!prm->Valid) {
-                wxLogMessage( _T( "Skipped invalid DataStream config") );
-                delete prm;
-                continue;
-            }
-            g_pConnectionParams->Add(prm);
-        }
-    }
-
-#if 0    
-    //  Automatically handle the upgrade to DataSources architecture...
-    //  Capture Garmin host configuration
-    SetPath( _T ( "/Settings" ) );
-    int b_garmin_host;
-    Read ( _T ( "UseGarminHost" ), &b_garmin_host );
-
-    //  Is there an existing NMEADataSource definition?
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
-    wxString xSource;
-    wxString xRate;
-    Read ( _T ( "Source" ), &xSource );
-    Read ( _T ( "BaudRate" ), &xRate );
-    if(xSource.Len()) {
-        wxString port;
-        if(xSource.Mid(0, 6) == _T("Serial"))
-            port = xSource.Mid(7);
-        else
-            port = _T("");
-
-        if( port.Len() && (port != _T("None")) && (port != _T("AIS Port (Shared)")) ) {
-        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;
-            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        wxString connectionconfigs;
+        Read ( _T( "DataConnections" ),  &connectionconfigs );
+        if(!connectionconfigs.IsEmpty()){
+            wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+            g_pConnectionParams->Clear();
+            for (size_t i = 0; i < confs.Count(); i++)
             {
-                ConnectionParams *cp = g_pConnectionParams->Item(i);
-                if(cp->GetAddressStr() == port) {
-                    bfound = true;
-                    break;
+                ConnectionParams * prm = new ConnectionParams(confs[i]);
+                if (!prm->Valid) {
+                    wxLogMessage( _T( "Skipped invalid DataStream config") );
+                    delete prm;
+                    continue;
                 }
-            }
-
-            if(!bfound) {
-                ConnectionParams * prm = new ConnectionParams();
-                prm->Baudrate = wxAtoi(xRate);
-                prm->Port = port;
-                prm->Garmin = (b_garmin_host == 1);
-
-                g_pConnectionParams->Add(prm);
-
-                g_bGarminHostUpload = (b_garmin_host == 1);
-            }
-        }
-
-        DeleteEntry ( _T ( "Source" ) );
-        DeleteEntry ( _T ( "BaudRate" ), _T("") );
-    }
-
-   //  Is there an existing AISPort definition?
-    SetPath( _T ( "/Settings/AISPort" ) );
-    wxString aSource;
-    wxString aRate;
-    Read ( _T ( "Port" ), &aSource );
-    Read ( _T ( "BaudRate" ), &aRate );
-    if(aSource.Len()) {
-        wxString port;
-        if(aSource.Mid(0, 6) == _T("Serial"))
-            port = aSource.Mid(7);
-        else
-            port = _T("");
-
-        if(port.Len() && port != _T("None") ) {
-            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;
-            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-            {
-                ConnectionParams *cp = g_pConnectionParams->Item(i);
-                if(cp->GetAddressStr() == port) {
-                    bfound = true;
-                    break;
-                }
-            }
-
-            if(!bfound) {
-                ConnectionParams * prm = new ConnectionParams();
-                if( aRate.Len() )
-                    prm->Baudrate = wxAtoi(aRate);
-                else
-                    prm->Baudrate = 38400;              // default for most AIS receivers
-                prm->Port = port;
-
                 g_pConnectionParams->Add(prm);
             }
         }
-        DeleteEntry ( _T ( "Source" ) );
-        DeleteEntry ( _T ( "BaudRate" ) );
     }
 
-
-    //  Is there an existing NMEAAutoPilotPort definition?
-    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-    Read ( _T ( "Port" ), &xSource );
-    if(xSource.Len()) {
-        wxString port;
-        if(xSource.Mid(0, 6) == _T("Serial"))
-            port = xSource.Mid(7);
-        else
-            port = _T("");
-
-        if(port.Len() && port != _T("None") ) {
-            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;
-            ConnectionParams *cp;
-            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-            {
-                cp = g_pConnectionParams->Item(i);
-                if(cp->GetAddressStr() == port) {
-                    bfound = true;
-                    break;
-                }
-            }
-
-            if(!bfound) {
-                ConnectionParams * prm = new ConnectionParams();
-                prm->Port = port;
-                prm->OutputSentenceListType = WHITELIST;
-                prm->OutputSentenceList.Add( _T("RMB") );
-                prm->IOSelect = DS_TYPE_INPUT_OUTPUT;
-
-                g_pConnectionParams->Add(prm);
-            }
-            else {                                  // port was found, so make sure it is set for output
-                cp->IOSelect = DS_TYPE_INPUT_OUTPUT;
-                cp->OutputSentenceListType = WHITELIST;
-                cp->OutputSentenceList.Add( _T("RMB") );
-            }
-        }
-    }
-
-#endif
 
 
     SetPath( _T ( "/Settings/GlobalState" ) );
@@ -1500,6 +1378,7 @@ int MyConfig::LoadMyConfigRaw()
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width );
+
     wxString l_wxsTrackLineColour;
     if(Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour ))
         g_colourTrackLineColour.Set( l_wxsTrackLineColour );
@@ -2054,7 +1933,7 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
     Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
     
     // Do not recreate canvasConfigs when applying config dynamically
-    if(g_canvasConfigArray.GetCount() == 0){
+    if(g_canvasConfigArray.GetCount() == 0){            // This is initial load from startup
         s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
         SetPath( s );
         canvasConfig *pcca = new canvasConfig(0);
@@ -2066,7 +1945,7 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
         pcca = new canvasConfig(1);
         LoadConfigCanvas(pcca, bApplyAsTemplate);
         g_canvasConfigArray.Add(pcca);
-    } else {
+    } else {                                            // This is a dynamic (i.e. Template) load
         canvasConfig *pcca = g_canvasConfigArray[0];
         s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
         SetPath( s );
@@ -2138,10 +2017,17 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
 
         Read( _T ( "canvasInitialdBIndex" ), &cConfig->DBindex, 0 );
         Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
-        Read( _T ( "ActiveChartGroup" ), &cConfig->GroupID, 0 );
     
         Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
         Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
+    }
+
+    Read( _T ( "ActiveChartGroup" ), &cConfig->GroupID, 0 );
+    
+    // Special check for group selection when applied as template
+    if(cConfig->GroupID && bApplyAsTemplate){
+        if( cConfig->GroupID > (int) g_pGroupArray->GetCount() )
+            cConfig->GroupID = 0;
     }
     
     Read( _T ( "canvasShowTides" ), &cConfig->bShowTides, 0 );

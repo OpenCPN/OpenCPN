@@ -491,8 +491,8 @@ void ConfigCreateDialog::CreateControls(void)
     mainSizer->AddSpacer(2 * GetCharHeight());
 
     mainSizer->Add(new wxStaticText(this, wxID_STATIC,
-            _("Create a private configuration template.\n \
-               This template will be saved, and may be selected for furthur use at any time.\n\
+                                    _("Create a private configuration template based on current settings.\n\
+This template will be saved, and may be selected for further use at any time.\n\
                ")),            
                0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5);
     

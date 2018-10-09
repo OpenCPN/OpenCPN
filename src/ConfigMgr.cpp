@@ -883,7 +883,7 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
         MyConfig fconf( thisConfig );
         
         //  Load the template contents, without resetting defaults
-        fconf.LoadMyConfigRaw();
+        fconf.LoadMyConfigRaw( true );
         
         //  Load Canvas configs, applying only the "templateable" items
         fconf.LoadCanvasConfigs( true );
@@ -946,7 +946,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     //  Assuming the file exists, and is empty....
     
     //  Create a private wxFileConfig object
-    //wxFileConfig *conf = new wxFileConfig( _T(""), _T(""), fileName, _T (""),  wxCONFIG_USE_LOCAL_FILE );
     MyConfig *conf = new MyConfig( fileName );
     
     //  Write out all the elements of a config template....
@@ -956,14 +955,13 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     wxLogNull logNo;
     #endif    
     
-    
     //    Global options and settings
     conf->SetPath( _T ( "/Settings" ) );
     
     conf->Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     conf->Write( _T ( "DarkDecorations"), g_bDarkDecorations );
     conf->Write( _T ( "UIexpert" ), g_bUIexpert );
-    conf->Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
+    conf->Write( _T ( "SpaceDropMark" ), g_bSpaceDropMark );
     
     conf->Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
     #ifndef __WXOSX__
@@ -1002,25 +1000,10 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider );
     
     conf->Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
-    conf->Write( _T ( "OpenGL" ), g_bopengl );
-    conf->Write( _T ( "SoftwareGL" ), g_bSoftwareGL );
-    conf->Write( _T ( "ShowFPS" ), g_bShowFPS );
     
     conf->Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
     conf->Write( _T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector );
     
-    
-    #ifdef ocpnUSE_GL
-    /* opengl options */
-    conf->Write( _T ( "UseAcceleratedPanning" ), g_GLOptions.m_bUseAcceleratedPanning );
-    
-    conf->Write( _T ( "GPUTextureCompression" ), g_GLOptions.m_bTextureCompression);
-    conf->Write( _T ( "GPUTextureCompressionCaching" ), g_GLOptions.m_bTextureCompressionCaching);
-    conf->Write( _T ( "GPUTextureDimension" ), g_GLOptions.m_iTextureDimension );
-    conf->Write( _T ( "GPUTextureMemSize" ), g_GLOptions.m_iTextureMemorySize );
-    conf->Write( _T ( "PolygonSmoothing" ), g_GLOptions.m_GLPolygonSmoothing);
-    conf->Write( _T ( "LineSmoothing" ), g_GLOptions.m_GLLineSmoothing);
-    #endif
     conf->Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
     
     conf->Write( _T ( "CourseUpMode" ), g_bCourseUp );
@@ -1081,7 +1064,8 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
     
     conf->Write( _T ( "PlanSpeed" ), wxString::Format( _T("%.2f"), g_PlanSpeed ));
-    
+
+#if 0    
     wxString vis, invis;
     LayerList::iterator it;
     int index = 0;
@@ -1093,10 +1077,10 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     }
     conf->Write( _T ( "VisibleLayers" ), vis );
     conf->Write( _T ( "InvisibleLayers" ), invis );
-    
+#endif
+
     conf->Write( _T ( "Locale" ), g_locale );
     conf->Write( _T ( "LocaleOverride" ), g_localeOverride );
-    
     
     // LIVE ETA OPTION
     conf->Write( _T( "LiveETA" ), g_bShowLiveETA);
@@ -1247,6 +1231,52 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "TrackLineWidth" ), g_track_line_width );
     conf->Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     conf->Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
+
+    //    Fonts
+    
+    //  Store the persistent Auxiliary Font descriptor Keys
+    conf->SetPath( _T ( "/Settings/AuxFontKeys" ) );
+    
+    wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
+    for(unsigned int i=0 ; i <  keyArray.GetCount() ; i++){
+        wxString key;
+        key.Printf(_T("Key%i"), i);
+        wxString keyval = keyArray[i];
+        conf->Write( key, keyval );
+    }
+    
+    wxString font_path;
+    #ifdef __WXX11__
+    font_path = ( _T ( "/Settings/X11Fonts" ) );
+    #endif
+    
+    #ifdef __WXGTK__
+    font_path = ( _T ( "/Settings/GTKFonts" ) );
+    #endif
+    
+    #ifdef __WXMSW__
+    font_path = ( _T ( "/Settings/MSWFonts" ) );
+    #endif
+    
+    #ifdef __WXMAC__
+    font_path = ( _T ( "/Settings/MacFonts" ) );
+    #endif
+    
+    #ifdef __WXQT__
+    font_path = ( _T ( "/Settings/QTFonts" ) );
+    #endif
+    
+    conf->DeleteGroup(font_path);
+    
+    conf->SetPath( font_path );
+    
+    int nFonts = FontMgr::Get().GetNumFonts();
+    
+    for( int i = 0; i < nFonts; i++ ) {
+        wxString cfstring(FontMgr::Get().GetConfigString(i));
+        wxString valstring = FontMgr::Get().GetFullConfigDesc( i );
+        conf->Write( cfstring, valstring );
+    }
     
     //  Save the per-canvas config options
     conf->SaveCanvasConfigs( );
