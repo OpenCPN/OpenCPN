@@ -9296,6 +9296,7 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
 
 void MyFrame::RequestNewMasterToolbar(bool bforcenew)
 {
+    bool btbRebuild = false;
     
     bool b_reshow = true;
     if( g_MainToolbar ) {
@@ -9306,6 +9307,8 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
             delete g_MainToolbar;
             g_MainToolbar = NULL;
         }
+        
+        btbRebuild = true;
     }
     
     if( !g_MainToolbar ) {
@@ -9316,14 +9319,11 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
+        g_bmasterToolbarFull = true;
         
     }
     
     if( g_MainToolbar ) {
-//         if( g_MainToolbar->IsToolbarShown() )
-//             g_MainToolbar->DestroyToolBar();
-        
-        
         CreateMasterToolbar();
         if (g_MainToolbar->isSubmergedToGrabber()) {
             g_MainToolbar->SubmergeToGrabber();
@@ -9332,6 +9332,11 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
             g_MainToolbar->SetColorScheme(global_color_scheme);
             g_MainToolbar->Show(b_reshow && g_bshowToolbar);
         }
+    }
+    
+    if(btbRebuild){
+        g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+        g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
     }
     
     //  We need to move the toolbar for the primary (leftmost) ChartCanvas out of the way...
