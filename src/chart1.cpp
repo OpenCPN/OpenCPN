@@ -3305,11 +3305,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     
     // Make sure the saved perspective minimum canvas sizes are essentially undefined
-    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if(cc)
-            g_pauimgr->GetPane( cc ).MinSize(10,10);
-    }
+//     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+//         ChartCanvas *cc = g_canvasArray.Item(i);
+//         if(cc)
+//             g_pauimgr->GetPane( cc ).MinSize(10,10);
+//     }
     
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
@@ -6351,16 +6351,19 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     g_pauimgr->GetPane(cc).MinSize(10,10);
             }
  
-
+ #endif            
+ 
             // Touch up the AUI manager
+            //  Make sure that any pane width is reasonable default value
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
                 ChartCanvas *cc = g_canvasArray.Item(i);
                 if(cc){
                     wxSize frameSize = GetClientSize();
-                    g_pauimgr->GetPane(cc).MinSize(frameSize.x * 1 / 10, frameSize.y);
+                    wxSize minSize = g_pauimgr->GetPane(cc).min_size;
+                    int width = wxMax(minSize.x, frameSize.x / 10);
+                    g_pauimgr->GetPane(cc).MinSize(frameSize.x * 1 / 5, frameSize.y);
                 }
             }
-#endif            
             g_pauimgr->Update();
 
             //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
