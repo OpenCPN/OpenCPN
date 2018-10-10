@@ -9314,7 +9314,6 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     if( !g_MainToolbar ) {
         g_MainToolbar = new ocpnFloatingToolbarDialog( this,
                                                        wxPoint( -1, -1/*g_maintoolbar_x, g_maintoolbar_y*/ ), wxTB_VERTICAL, g_toolbar_scalefactor );
-        g_MainToolbar->CreateConfigMenu();
         g_MainToolbar->SetGrabberEnable( false );
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
