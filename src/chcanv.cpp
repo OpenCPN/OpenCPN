@@ -2746,11 +2746,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 #endif
         case 'S':
-            parent_frame->ToggleSoundings();
+            SetShowENCDepth( !m_encShowDepth );
+            ReloadVP();
             break;
 
         case 'T':
-            parent_frame->ToggleENCText();
+            SetShowENCText(!GetShowENCText());
+            ReloadVP();
             break;
 
         case 'U':
