@@ -592,7 +592,7 @@ int MyConfig::LoadMyConfig()
     g_bPreserveScaleOnX = 1;
     g_navobjbackups = 5;
     g_benableAISNameCache = true;
-    g_n_arrival_circle_radius = 50;
+    g_n_arrival_circle_radius = 0.05;
     
     g_AISShowTracks_Mins = 20;
     g_ShowScaled_Num = 10L;
@@ -690,8 +690,8 @@ int MyConfig::LoadMyConfig()
         g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
-        g_n_arrival_circle_radius = wxMax(g_n_arrival_circle_radius, .001);
-        
+        g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
+
         g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
 
         if( ( g_ais_alert_dialog_x < 0 ) || ( g_ais_alert_dialog_x > display_width ) )
