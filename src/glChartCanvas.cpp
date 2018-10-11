@@ -173,6 +173,7 @@ extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
+extern unsigned int     g_canvasConfig;
 
 
 ocpnGLOptions g_GLOptions;
@@ -3865,6 +3866,25 @@ void glChartCanvas::Render()
     if( g_bcompression_wait)
         DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
 
+    
+    // If multi-canvas, indicate which canvas has keyboard focus
+    // by drawing a simple blue bar at the top.
+    if(g_canvasConfig != 0){             // multi-canvas?
+        if( m_pParentCanvas == wxWindow::FindFocus()){
+            wxColour colour = GetGlobalColor(_T("BLUE4"));
+            glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
+                
+            int xw = m_pParentCanvas->GetClientSize().x;
+            glBegin(GL_QUADS);
+            glVertex2i(0, 0);
+            glVertex2i(xw, 0);
+            glVertex2i(xw, 4);
+            glVertex2i(0, 4);
+            glEnd();
+        }
+    }
+    
+    
 #ifdef __WXMSW__    
      //  MSW OpenGL drivers are generally very unstable.
      //  This helps...   

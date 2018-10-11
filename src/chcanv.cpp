@@ -349,6 +349,7 @@ extern int              g_COGAvgSec; // COG average period (sec.) for Course Up 
 wxGLContext             *g_pGLcontext;   //shared common context
 
 extern bool             g_useMUI;
+extern unsigned int     g_canvasConfig;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -376,6 +377,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
+    EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
     EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
     
 END_EVENT_TABLE()
@@ -926,6 +928,11 @@ ChartCanvas::~ChartCanvas()
     }
 #endif
 
+}
+
+void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
+{
+    RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
@@ -9900,6 +9907,20 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
      }
 */
 
+
+    // If multi-canvas, indicate which canvas has keyboard focus
+    // by drawing a simple blue bar at the top.
+    if(g_canvasConfig != 0){             // multi-canvas?
+        if( this == wxWindow::FindFocus()){
+            wxColour colour = GetGlobalColor(_T("BLUE4"));
+            dc.SetPen(wxPen(colour));
+            dc.SetBrush(wxBrush(colour));
+            wxRect activeRect(0, 0, GetClientSize().x, 4);
+            dc.DrawRectangle(activeRect);
+        }
+    }
+    
+    
 //    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
     temp_dc.SelectObject( wxNullBitmap );
 //    And for the scratch bitmap

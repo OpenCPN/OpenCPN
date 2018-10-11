@@ -10595,6 +10595,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1; 211;211;211;",              // Compass Window Background
         
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        "BLUE4; 107;153;177;",              // Canvas Focus Bar
+        
         
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
@@ -10644,6 +10646,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1; 107;107;107;",              // Compass Window Background
 
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        "BLUE4; 107;153;177;",              // Canvas Focus Bar
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -10692,6 +10695,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1;  24; 24; 24;",              // Compass Window Background
         
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        "BLUE4; 107;153;177;",              // Canvas Focus Bar
         
         "*****" };
 
