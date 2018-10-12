@@ -365,6 +365,7 @@ class MyFrame: public wxFrame
     ChartCanvas *GetPrimaryCanvas();
     void DoStackDelta( ChartCanvas *cc, int direction );
     void DoSettings( void );
+    void SwitchKBFocus( ChartCanvas *pCanvas );
     
     void TriggerResize(wxSize sz);
     void OnResizeTimer(wxTimerEvent &event);

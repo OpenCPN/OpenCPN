@@ -130,6 +130,7 @@ extern float  g_ChartScaleFactorExp;
 extern float  g_ShipScaleFactorExp;
 
 #include <vector>
+#include <wx-3.0/wx/aui/auibar.h>
 
 #if defined(__MSVC__) &&  (_MSC_VER < 1700) 
 #define  trunc(d) ((d>0) ? floor(d) : ceil(d))
@@ -378,6 +379,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
     EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
+    EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
     EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
     
 END_EVENT_TABLE()
@@ -932,6 +934,15 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
+    printf("kill %d\n", m_canvasIndex);
+    
+    RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
+}
+
+void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
+{
+    printf("set %d\n", m_canvasIndex);
+    
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
@@ -2356,6 +2367,12 @@ void ChartCanvas::SetVP(ViewPort &vp)
     VPoint = vp;
 }
 
+// void ChartCanvas::SetFocus()
+// {
+//     printf("set %d\n", m_canvasIndex);
+//     //wxWindow:SetFocus();
+// }
+    
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
     if(g_pi_manager)
@@ -2422,6 +2439,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
+        
+    case WXK_TAB:
+        //parent_frame->SwitchKBFocus( this );
+        break;
+            
     case WXK_MENU:
         int x, y;
         event.GetPosition( &x, &y );
@@ -2912,13 +2934,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            if (m_Compass) {
-                m_Compass->Show(!m_Compass->IsShown());
-                if (m_Compass->IsShown())
-                    m_Compass->UpdateStatus();
-                m_brepaint_piano = true;
-                Refresh( false );
-            }
+//             if (m_Compass) {
+//                 m_Compass->Show(!m_Compass->IsShown());
+//                 if (m_Compass->IsShown())
+//                     m_Compass->UpdateStatus();
+//                 m_brepaint_piano = true;
+//                 Refresh( false );
+//             }
             break;
 
         default:
@@ -2942,6 +2964,11 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
             return;                     // PlugIn did something, and does not want the canvas to do anything else
             
     switch( event.GetKeyCode() ) {
+    case WXK_TAB:
+        //printf("switch %d\n", m_canvasIndex);
+        parent_frame->SwitchKBFocus( this );
+        break;
+                
     case WXK_LEFT:
     case WXK_RIGHT:
         m_panx = 0;

@@ -2239,12 +2239,12 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
 #ifndef __OCPN__ANDROID__
     if( event.LeftDown() ) {
-        CaptureMouse();
+///        CaptureMouse();
         s_dragx = x;
         s_dragy = y;
     }
     if( event.LeftUp() ) {
-        if( HasCapture() ) ReleaseMouse();
+///        if( HasCapture() ) ReleaseMouse();
     }
 #endif
 

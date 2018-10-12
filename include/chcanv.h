@@ -155,6 +155,7 @@ public:
       bool MouseEventProcessCanvas( wxMouseEvent& event );
       void SetCanvasCursor( wxMouseEvent& event );
       void OnKillFocus( wxFocusEvent& WXUNUSED(event) );
+      void OnSetFocus( wxFocusEvent& WXUNUSED(event) );
       
       void PopupMenuHandler(wxCommandEvent& event);
       bool IsPrimaryCanvas(){ return (m_canvasIndex == 0); }
