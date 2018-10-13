@@ -6398,6 +6398,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_OwnShipIconType = m_pShipIconType->GetSelection();
 
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
+  g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6); // Correct abnormally
 
   //  Any Font changes?
   if(m_bfontChanged)

@@ -1027,7 +1027,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "OwnShipSogCogCalc" ), g_own_ship_sog_cog_calc );
     conf->Write( _T ( "OwnShipSogCogCalcDampSec"), g_own_ship_sog_cog_calc_damp_sec );
     
-    conf->Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.2f"), g_n_arrival_circle_radius ));
+    conf->Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.3f"), g_n_arrival_circle_radius ));
     conf->Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
     
     conf->Write( _T ( "StartWithTrackActive" ), g_bTrackCarryOver );
