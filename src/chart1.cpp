@@ -3236,6 +3236,72 @@ void MyFrame::SetGPSCompassScale()
 
 }
 
+ChartCanvas *MyFrame::GetCanvasUnderMouse()
+{
+    wxPoint screenPoint = ::wxGetMousePosition();
+    ChartCanvas *canvas = NULL;
+    canvasConfig *cc;
+    
+    switch(g_canvasConfig){
+        case 1:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(/*canvas->ScreenToClient*/(screenPoint)))
+                    return canvas;
+            }
+            cc = g_canvasConfigArray.Item(1);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(/*canvas->ScreenToClient*/(screenPoint)))
+                    return canvas;
+            }
+            break;
+            
+        default:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(canvas->ScreenToClient(screenPoint)))
+                    return canvas;
+            }
+    }
+        
+    return NULL;    
+}
+
+bool MyFrame::DropMarker( bool atOwnShip )
+{
+    double lat, lon;
+    if(atOwnShip){
+        lat = gLat;
+        lon = gLon;
+    }
+    else{
+        ChartCanvas *canvas = GetCanvasUnderMouse();
+        if(!canvas)
+            return false;
+    
+        lat = canvas->m_cursor_lat;
+        lon = canvas->m_cursor_lon;
+    }
+    
+    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
+    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+    pSelect->AddSelectableRoutePoint( lat, lon, pWP );
+    pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateWptListCtrl();
+//     undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+//     undo->AfterUndoableAction( NULL );
+    
+    InvalidateAllGL();
+    RefreshAllCanvas( false );
+    
+    return true;
+}
+
 void MyFrame::SwitchKBFocus( ChartCanvas *pCanvas )
 {
     if(g_canvasConfig != 0){             // multi-canvas?
@@ -4144,12 +4210,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_MARK_BOAT: {
-            GetPrimaryCanvas()->DropMarker(true);
+            DropMarker(true);
             break;
         }
 
         case ID_MENU_MARK_CURSOR: {
-            GetPrimaryCanvas()->DropMarker(false);
+            DropMarker(false);
             break;
         }
 

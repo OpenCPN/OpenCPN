@@ -2335,24 +2335,6 @@ void ChartCanvas::CancelMeasureRoute()
     m_pMeasureRoute = NULL;
 }
 
-void ChartCanvas::DropMarker( bool atOwnShip )
-{
-    double lat, lon;
-    lat = atOwnShip ? gLat : m_cursor_lat;
-    lon = atOwnShip ? gLon : m_cursor_lon;
-    
-    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
-    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-    pSelect->AddSelectableRoutePoint( lat, lon, pWP );
-    pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-    
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-    undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-    undo->AfterUndoableAction( NULL );
-    InvalidateGL();
-    Refresh( false );
-}
-
 ViewPort &ChartCanvas::GetVP()
 {
     return VPoint;
@@ -2801,7 +2783,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 13:             // Ctrl M // Drop Marker at cursor
         {
-            DropMarker(false);
+            if(!g_bShowMenuBar)
+                gFrame->DropMarker(false);
             break;
         }
 
@@ -2820,14 +2803,15 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 15:             // Ctrl O - Drop Marker at boat's position
         {
-            DropMarker(true);
+            if(!g_bShowMenuBar)
+                gFrame->DropMarker(true);
             break;
         }
 
         case 32:            // Special needs use space bar
         {
             if ( g_bSpaceDropMark )
-                DropMarker( true );
+                gFrame->DropMarker( true );
             break;
         }
 

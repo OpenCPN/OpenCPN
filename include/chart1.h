@@ -362,10 +362,14 @@ class MyFrame: public wxFrame
     void RefreshAllCanvas( bool bErase = true);
     void CancelAllMouseRoute();
     
+    wxMenuBar *GetMainMenuBar(){ return m_pMenuBar; }
+    
     ChartCanvas *GetPrimaryCanvas();
     void DoStackDelta( ChartCanvas *cc, int direction );
     void DoSettings( void );
     void SwitchKBFocus( ChartCanvas *pCanvas );
+    ChartCanvas *GetCanvasUnderMouse();
+    bool DropMarker( bool atOwnShip = true );
     
     void TriggerResize(wxSize sz);
     void OnResizeTimer(wxTimerEvent &event);

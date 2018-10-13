@@ -327,7 +327,6 @@ public:
     
       void StartMeasureRoute();
       void CancelMeasureRoute();
-      void DropMarker(bool atOwnShip = true);
 
       bool DoCanvasUpdate( void );
       void SelectQuiltRefdbChart( int db_index, bool b_autoscale = true );
