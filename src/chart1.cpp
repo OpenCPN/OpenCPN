@@ -3241,30 +3241,41 @@ void MyFrame::SwitchKBFocus( ChartCanvas *pCanvas )
     if(g_canvasConfig != 0){             // multi-canvas?
         canvasConfig *cc;
         int nTarget = -1;
+        int nTargetGTK = -1;
         ChartCanvas *target;
         wxWindow *source = FindFocus();
         ChartCanvas *test = wxDynamicCast(source, ChartCanvas);
         if(!test)
             return;
         
+        // On linux(GTK), the TAB key causes a loss of focus immediately
+        //  So the logic needs a switch    
         switch(g_canvasConfig){
             case 1:
                 cc = g_canvasConfigArray.Item(0);
                 if(cc ){
                     ChartCanvas *canvas = cc->canvas;
-                    if(canvas && (canvas == test))
-                        nTarget = 0;
+                    if(canvas && (canvas == test)){
+                        nTarget = 1;
+                        nTargetGTK = 0;
+                    }
                 }
                 cc = g_canvasConfigArray.Item(1);
                 if(cc ){
                     ChartCanvas *canvas = cc->canvas;
-                    if(canvas && (canvas == test))
-                        nTarget = 1;
+                    if(canvas && (canvas == test)){
+                        nTarget = 0;
+                        nTargetGTK = 1;
+                    }
                 }
                 
                 if(nTarget >= 0){
-                    printf("sw %d\n", nTarget);
-                    target = g_canvasConfigArray.Item(nTarget)->canvas;
+                    //printf("sw %d\n", nTarget);
+                    int nfinalTarget = nTarget;
+#ifdef __WXGTK__
+                    nfinalTarget = nTargetGTK;
+#endif                    
+                    target = g_canvasConfigArray.Item(nfinalTarget)->canvas;
                     if(target){
                         wxWindow *win = wxDynamicCast(target, wxWindow);
                         win->SetFocus();

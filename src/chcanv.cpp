@@ -130,7 +130,7 @@ extern float  g_ChartScaleFactorExp;
 extern float  g_ShipScaleFactorExp;
 
 #include <vector>
-#include <wx-3.0/wx/aui/auibar.h>
+//#include <wx-3.0/wx/aui/auibar.h>
 
 #if defined(__MSVC__) &&  (_MSC_VER < 1700) 
 #define  trunc(d) ((d>0) ? floor(d) : ceil(d))
@@ -934,15 +934,11 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    printf("kill %d\n", m_canvasIndex);
-    
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    printf("set %d\n", m_canvasIndex);
-    
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
@@ -2965,7 +2961,6 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
             
     switch( event.GetKeyCode() ) {
     case WXK_TAB:
-        //printf("switch %d\n", m_canvasIndex);
         parent_frame->SwitchKBFocus( this );
         break;
                 
