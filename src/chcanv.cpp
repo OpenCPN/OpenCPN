@@ -2741,7 +2741,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'Q':
-            parent_frame->ToggleQuiltMode( this );
+            ToggleCanvasQuiltMode();
             break;
 
         case 'P':
