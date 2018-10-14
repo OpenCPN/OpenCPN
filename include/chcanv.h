@@ -465,6 +465,9 @@ public:
       
       bool GetShowENCBuoyLabels(){ return m_encShowBuoyLabels; }
       void SetShowENCBuoyLabels( bool show );
+
+      bool GetShowENCLights(){ return m_encShowLights; }
+      void SetShowENCLights( bool show );
       
       int GetENCDisplayCategory(){ return m_encDisplayCategory; }
       void SetENCDisplayCategory( int category );
@@ -833,6 +836,7 @@ private:
       bool         m_encShowLightDesc;
       bool         m_encShowBuoyLabels;
       int          m_encDisplayCategory;
+      bool         m_encShowLights;
       
 DECLARE_EVENT_TABLE()
 };

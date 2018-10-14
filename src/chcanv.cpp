@@ -503,6 +503,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bDisplayGrid = false;
     m_bShowDepthUnits = true;
     m_encDisplayCategory = (int)STANDARD;
+
+    m_encShowLights = true;
     
     m_bShowGPS = true;
     SetQuiltMode(true);
@@ -981,7 +983,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowDepth = pcc->bShowENCDepths;
     m_encShowLightDesc = pcc->bShowENCLightDescriptions;
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
-
+    m_encShowLights = pcc->bShowENCLights;
+    
     m_bCourseUp = pcc->bCourseUp;
     m_bLookAhead = pcc->bLookahead;
 }
@@ -2718,7 +2721,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }
 
        case 'L':
-            parent_frame->ToggleLights();
+            SetShowENCLights(!GetShowENCLights());
+            ReloadVP();
+            
             break;
 
         case 'M':
@@ -8395,7 +8400,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         // not displaying lights on the chart.
 
         SetCursor( wxCURSOR_WAIT );
-        bool lightsVis = gFrame->ToggleLights( false );
+        bool lightsVis = m_encShowLights; //gFrame->ToggleLights( false );
         if( !lightsVis ) gFrame->ToggleLights( true, true );
 
         ListOfObjRazRules* rule_list = NULL;
@@ -12385,8 +12390,16 @@ bool ChartCanvas::UpdateS52State()
         ps52plib->m_bShowSoundg = m_encShowDepth;
         ps52plib->m_bShowAtonText = m_encShowBuoyLabels;
         ps52plib->m_bShowLdisText = m_encShowLightDesc;
-        // TODO ps52plib->m_bShowAtons = m_encShowBuoys;
+        
+        // Lights
+        if(!m_encShowLights)                     // On, going off
+            ps52plib->AddObjNoshow("LIGHTS");
+        else                                   // Off, going on
+            ps52plib->RemoveObjNoshow("LIGHTS");
+        ps52plib->SetLightsOff( !m_encShowLights );
         ps52plib->m_bExtendLightSectors = true;
+        
+        // TODO ps52plib->m_bShowAtons = m_encShowBuoys;
     }
     
     return retval;
@@ -12422,6 +12435,12 @@ void ChartCanvas::SetShowENCLightDesc( bool show )
 void ChartCanvas::SetShowENCBuoyLabels( bool show )
 {
     m_encShowBuoyLabels = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
+void ChartCanvas::SetShowENCLights( bool show )
+{
+    m_encShowLights = show;
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     

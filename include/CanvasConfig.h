@@ -69,6 +69,8 @@ public:
     bool bShowENCDepths;
     bool bShowENCBuoyLabels;
     bool bShowENCLightDescriptions;
+    bool bShowENCLights;
+    
     
     void Reset( void){
         bFollow = false;

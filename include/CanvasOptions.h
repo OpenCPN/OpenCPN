@@ -98,7 +98,7 @@ private:
     wxCheckBox *pCDOTides, *pCDOCurrents;
     wxCheckBox *pCDOENCText, *pCBToolbar;
     wxChoice *m_pDispCat;
-    wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels;
+    wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights;
     wxCheckBox *pCBShowAIS, *pCBAttenAIS;
 };
 

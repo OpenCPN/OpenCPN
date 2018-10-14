@@ -222,6 +222,10 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     pCBENCBuoyLabels = new wxCheckBox(pDisplayPanel, ID_ENCBUOYLABEL_CHECKBOX1, _("Buoy/Light Labels"));
     boxENC->Add(pCBENCBuoyLabels, verticleInputFlags);
     pCBENCBuoyLabels->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+ 
+    pCBENCLights = new wxCheckBox(pDisplayPanel, ID_ENCBUOYLABEL_CHECKBOX1, _("Lights"));
+    boxENC->Add(pCBENCLights, verticleInputFlags);
+    pCBENCLights->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
     // display category
     boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
@@ -289,6 +293,7 @@ void CanvasOptions::RefreshControlValues( void )
     pCBENCDepth->SetValue(parentCanvas->GetShowENCDepth());
     pCBENCLightDesc->SetValue(parentCanvas->GetShowENCLightDesc());
     pCBENCBuoyLabels->SetValue(parentCanvas->GetShowENCBuoyLabels());
+    pCBENCLights->SetValue(parentCanvas->GetShowENCLights());
     
     //  Display category
     int nset = 2;  // default OTHER
@@ -385,6 +390,11 @@ void CanvasOptions::UpdateCanvasOptions( void )
         b_needReLoad = true;
     }
 
+    if(pCBENCLights->GetValue() != parentCanvas->GetShowENCLights()){
+        parentCanvas->SetShowENCLights(pCBENCLights->GetValue());
+        b_needReLoad = true;
+    }
+    
     bool setcourseUp = pCBCourseUp->GetValue();
     if(setcourseUp != parentCanvas->GetCourseUP()){
         parentCanvas->ToggleCourseUp();

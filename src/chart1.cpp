@@ -5056,6 +5056,7 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
     return oldstate;
 }
 
+#if 0
 void MyFrame::ToggleRocks( void )
 {
 #ifdef USE_S57
@@ -5084,6 +5085,7 @@ void MyFrame::ToggleRocks( void )
     }
 #endif
 }
+#endif
 
 void MyFrame::ToggleAnchor( void )
 {
