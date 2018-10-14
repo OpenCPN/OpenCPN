@@ -420,7 +420,7 @@ public:
       wxToolBarToolBase *m_pTBAISTool;
       bool m_toolbar_scale_tools_shown;
       void SetBackGroundColorString( wxString colorRef );
-      void SetULDockPosition(wxPoint position){ m_dock_min_x = position.x; m_dock_min_y = position.y; }
+      void SetULDockPosition(wxPoint position);
       
 protected:
     ocpnToolBarSimple *m_ptoolbar;

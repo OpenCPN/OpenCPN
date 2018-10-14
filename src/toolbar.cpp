@@ -407,6 +407,14 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
     DestroyToolBar();
 }
 
+void ocpnFloatingToolbarDialog::SetULDockPosition(wxPoint position)
+{
+    if(position.x >= 0)
+        m_dock_min_x = position.x;
+    if(position.y >= 0)
+        m_dock_min_y = position.y;
+}
+
 size_t ocpnFloatingToolbarDialog::GetToolCount()
 {
     if(m_ptoolbar)

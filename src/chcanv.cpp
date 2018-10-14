@@ -1005,9 +1005,10 @@ void ChartCanvas::SetToolbarEnable( bool bShow )
     //if(GetToolbarEnable() != bShow)
     {
         m_bToolbarEnable = bShow;
-        if(!m_toolBar)
-            RequestNewCanvasToolbar( true );
-        GetToolbar()->Show( bShow );
+//         if(!m_toolBar)
+//             RequestNewCanvasToolbar( true );
+        if(GetToolbar())
+            GetToolbar()->Show( bShow );
     }
 }
 
@@ -11574,12 +11575,13 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
             m_toolBar->SetAutoHide(g_bAutoHideToolbar);
             m_toolBar->SetAutoHideTimer(g_nAutoHideToolbar);
         
-            // Adjust toolbar position if necessary
-            if(g_MainToolbar && IsPrimaryCanvas()){
-                wxRect masterToolbarRect = g_MainToolbar->GetRect();
-                m_toolBar->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, 0));
-            }
         }
+        // Adjust toolbar position if necessary
+        if(g_MainToolbar && IsPrimaryCanvas()){
+            wxRect masterToolbarRect = g_MainToolbar->GetRect();
+            m_toolBar->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, -1));
+        }
+        
      }
 
     if( m_toolBar ) {

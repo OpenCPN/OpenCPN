@@ -6515,6 +6515,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
               // .. for each canvas...
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
                 ChartCanvas *cc = g_canvasArray.Item(i);
+                cc->RequestNewCanvasToolbar( true );
+                
                 if(cc && cc->GetToolbarEnable()){
                     cc->GetToolbar()->SetAutoHide(g_bAutoHideToolbar);
                     cc->GetToolbar()->SetAutoHideTimer(g_nAutoHideToolbar);
@@ -9468,8 +9470,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     ChartCanvas *cc = g_canvasArray[0];
     if(cc && cc->GetToolbar()){
         wxRect masterToolbarRect = g_MainToolbar->GetRect();
-        cc->GetToolbar()->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, 0));
-        cc->GetToolbar()->SetMinX( masterToolbarRect.width + 8 );           // leave room for master toolbar on the left side of primary canvas
+        cc->GetToolbar()->SetULDockPosition(wxPoint(masterToolbarRect.width + 8, -1));
         cc->RequestNewCanvasToolbar( false );
      }
         
