@@ -10719,7 +10719,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1; 211;211;211;",              // Compass Window Background
         
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
-        "BLUE4; 107;153;177;",              // Canvas Focus Bar
+        "BLUE4; 100;100;200;",              // Canvas Focus Bar
         
         
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
