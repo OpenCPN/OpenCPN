@@ -223,6 +223,8 @@ public:
     bool IsChartInQuilt( wxString &full_path);
     
     bool IsQuiltVector( void );
+    bool DoesQuiltContainPlugins( void );
+    
     LLRegion GetHiliteRegion( );
     static LLRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
 

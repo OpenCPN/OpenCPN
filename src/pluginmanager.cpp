@@ -143,6 +143,7 @@ static const char* const DEFAULT_PLUGIN_DIRS =
     "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
 
 unsigned int      gs_plib_flags;
+wxString          g_lastPluginMessage;
 
 enum
 {
@@ -1865,6 +1866,8 @@ void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJS
 
 void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body)
 {
+    g_lastPluginMessage = message_body;
+    
     wxString decouple_message_id(message_id); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     wxString decouple_message_body(message_body); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)

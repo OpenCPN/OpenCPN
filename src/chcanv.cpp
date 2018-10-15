@@ -90,6 +90,7 @@
 #include "OCPN_AUIManager.h"
 #include "MUIBar.h"
 #include "CanvasConfig.h"
+#include <version.h>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -351,6 +352,7 @@ wxGLContext             *g_pGLcontext;   //shared common context
 
 extern bool             g_useMUI;
 extern unsigned int     g_canvasConfig;
+extern wxString         g_lastPluginMessage;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -9302,6 +9304,8 @@ void ChartCanvas::WarpPointerDeferred( int x, int y )
 }
 
 
+int s_msg;
+
 void ChartCanvas::UpdateCanvasS52PLIBConfig()
 {
     if(!ps52plib)
@@ -9324,9 +9328,39 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
             m_s52StateHash = ps52plib->GetStateHash();
         }
     }
+    
+    // Plugin charts
+    bool bSendPlibState = true;
+    if( VPoint.b_quilt ){          // quilted
+        if(!m_pQuilt->DoesQuiltContainPlugins())
+            bSendPlibState = false;
+    }
+       
+    if(bSendPlibState){   
+        wxJSONValue v;
+        v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
+        v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
+        v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
+        v[_T("OpenCPN Version Date")] = VERSION_DATE;
+        
+        //  S52PLIB state
+        v[_T("OpenCPN S52PLIB ShowText")] = GetShowENCText();
+        v[_T("OpenCPN S52PLIB ShowSoundings")] = GetShowENCDepth();
+        v[_T("OpenCPN S52PLIB ShowLights")] = GetShowENCLights();
+        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = false; //ps52plib->GetAnchorOn();
+        //v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
+        v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
+        
+        wxJSONWriter w;
+        wxString out;
+        w.Write(v, out);
+        
+        if(!g_lastPluginMessage.IsSameAs(out)){
+            //printf("message %d  %d\n", s_msg++, m_canvasIndex);
+            g_pi_manager->SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
+        }
+    }
 }
-
-
 int spaint;
 int s_in_update;
 void ChartCanvas::OnPaint( wxPaintEvent& event )

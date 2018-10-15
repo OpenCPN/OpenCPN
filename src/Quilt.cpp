@@ -617,6 +617,37 @@ bool Quilt::IsQuiltVector( void )
     return ret;
 }
 
+bool Quilt::DoesQuiltContainPlugins( void )
+{
+    if( m_bbusy )
+        return false;
+    
+    m_bbusy = true;
+    
+    bool ret = false;
+    
+    wxPatchListNode *cnode = m_PatchList.GetFirst();
+    while( cnode ) {
+        if( cnode->GetData() ) {
+            QuiltPatch *pqp = cnode->GetData();
+            
+            if( ( pqp->b_Valid ) && ( !pqp->b_eclipsed ) ) {
+                const ChartTableEntry &ctei = ChartData->GetChartTableEntry( pqp->dbIndex );
+                
+                if( ctei.GetChartType() == CHART_TYPE_PLUGIN ) {
+                    ret = true;
+                    break;
+                }
+                
+            }
+        }
+        cnode = cnode->GetNext();
+    }
+    
+    m_bbusy = false;
+    return ret;
+}
+
 int Quilt::GetChartdbIndexAtPix( ViewPort &VPoint, wxPoint p )
 {
     if( m_bbusy )
