@@ -63,17 +63,13 @@
 #include <wx/apptrait.h>
 #include "OCPNPlatform.h"
 #include "Track.h"
-
-//#include <wx/arrimpl.cpp> // this is a magic incantation which must be done!
-//WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
-//WX_DEFINE_OBJARRAY( ArrayOfMarkIcon); 
-
+#include "chcanv.h"
 
 #ifdef ocpnUSE_SVG
 #include "wxsvg/include/wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
-
+extern MyFrame          *gFrame;
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
 
@@ -224,6 +220,30 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining( RoutePoint *pWP )
         delete pArray;
         return NULL;
     }
+}
+
+void Routeman::RemovePointFromRoute( RoutePoint* point, Route* route, ChartCanvas *cc )
+{
+    //  Rebuild the route selectables
+    pSelect->DeleteAllSelectableRoutePoints( route );
+    pSelect->DeleteAllSelectableRouteSegments( route );
+    
+    route->RemovePoint( point );
+    
+    //  Check for 1 point routes. If we are creating a route, this is an undo, so keep the 1 point.
+    if( cc && (route->GetnPoints() <= 1) && (cc->m_routeState == 0) ) {
+         pConfig->DeleteConfigRoute( route );
+         g_pRouteMan->DeleteRoute( route );
+         route = NULL;
+     }
+    //  Add this point back into the selectables
+    pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
+    
+    if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        pRoutePropDialog->SetRouteAndUpdate( route, true );
+    }
+    
+    gFrame->InvalidateAllGL();
 }
 
 RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, double cog,

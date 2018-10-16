@@ -1480,7 +1480,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     case ID_RT_MENU_REMPOINT:
         if( m_pSelectedRoute ) {
             if( m_pSelectedRoute->m_bIsInLayer ) break;
-            parent->RemovePointFromRoute( m_pFoundRoutePoint, m_pSelectedRoute );
+            g_pRouteMan->RemovePointFromRoute( m_pFoundRoutePoint, m_pSelectedRoute, parent );
             gFrame->InvalidateAllGL();
             gFrame->RefreshAllCanvas();
         }

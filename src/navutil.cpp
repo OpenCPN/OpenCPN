@@ -92,7 +92,6 @@
 //    Statics
 
 extern OCPNPlatform     *g_Platform;
-extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 
 extern double           g_ChartNotRenderScaleFactor;
@@ -2304,9 +2303,6 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
 
-    if( cc1 ) Write( _T ( "ShowTide" ), cc1->GetbShowTide() );
-    if( cc1 ) Write( _T ( "ShowCurrent" ), cc1->GetbShowCurrent() );
-
     Write( _T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
     Write( _T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
     Write( _T ( "NMEALogWindowPosX" ), NMEALogWindow::Get().GetPosX());
@@ -2408,25 +2404,24 @@ void MyConfig::UpdateSettings()
 
     wxString st1;
 
-    if( cc1 ) {
-        ViewPort vp = cc1->GetVP();
-
-        if( vp.IsValid() ) {
-            st1.Printf( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
-            Write( _T ( "VPLatLon" ), st1 );
-            st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
-            Write( _T ( "VPScale" ), st1 );
-            st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
-            Write( _T ( "VPRotation" ), st1 );
-        }
-    }
+//     if( cc1 ) {
+//         ViewPort vp = cc1->GetVP();
+// 
+//         if( vp.IsValid() ) {
+//             st1.Printf( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
+//             Write( _T ( "VPLatLon" ), st1 );
+//             st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
+//             Write( _T ( "VPScale" ), st1 );
+//             st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
+//             Write( _T ( "VPRotation" ), st1 );
+//         }
+//     }
 
     st1.Printf( _T ( "%10.4f, %10.4f" ), gLat, gLon );
     Write( _T ( "OwnShipLatLon" ), st1 );
 
     //    Various Options
     SetPath( _T ( "/Settings/GlobalState" ) );
-    if( cc1 ) Write( _T ( "bFollow" ), cc1->m_bFollow );
     if ( !g_bInlandEcdis ) Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
 
     Write( _T ( "FrameWinX" ), g_nframewin_x );

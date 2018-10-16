@@ -480,7 +480,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
 
     SetOwnShipState( SHIP_INVALID );
     
-    undo = new Undo;
+    undo = new Undo(this);
 
     VPoint.Invalidate();
 
@@ -8504,28 +8504,6 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 #endif    
 }
 
-void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
-    //  Rebuild the route selectables
-    pSelect->DeleteAllSelectableRoutePoints( route );
-    pSelect->DeleteAllSelectableRouteSegments( route );
-
-    route->RemovePoint( point );
-
-    //  Check for 1 point routes. If we are creating a route, this is an undo, so keep the 1 point.
-    if( (route->GetnPoints() <= 1) && (m_routeState == 0) ) {
-        pConfig->DeleteConfigRoute( route );
-        g_pRouteMan->DeleteRoute( route );
-        route = NULL;
-    }
-    //  Add this point back into the selectables
-    pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
-
-    if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-        pRoutePropDialog->SetRouteAndUpdate( route, true );
-    }
-
-    InvalidateGL();
-}
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     pMarkPropDialog = MarkInfoImpl::getInstance( this );     // There is one global instance of the MarkProp Dialog

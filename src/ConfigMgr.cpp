@@ -82,7 +82,6 @@
 //    Statics
 
 extern OCPNPlatform     *g_Platform;
-extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 
 extern double           g_ChartNotRenderScaleFactor;

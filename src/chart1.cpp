@@ -191,10 +191,7 @@ bool                      g_parse_all_enc;
 
 MyFrame                   *gFrame;
 
-ChartCanvas               *cc1;
-
 ConsoleCanvas             *console;
-//Piano                     *g_Piano;
 wxWindowList              AppActivateList;
 
 MyConfig                  *pConfig;
@@ -5533,6 +5530,17 @@ void MyFrame::UpdateGlobalMenuItems()
 #endif
 }
 
+void MyFrame::InvalidateAllCanvasUndo()
+{
+    // .. for each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->undo->InvalidateUndo( );
+    }
+}
+    
+    
 
 void MyFrame::SubmergeAllToolbars( void )
 {
@@ -9654,18 +9662,6 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
     style->Unload();
     g_MainToolbar->Realize();
 
-#if 0    
-//      Set up the toggle states
-
-    if( cc1 ) {
-        //  Re-establish toggle states
-        tb->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
-        tb->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
-    }
-
-    if( pConfig && cc1 )
-        tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
-#endif
 
 
 #if 0    

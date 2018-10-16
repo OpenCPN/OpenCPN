@@ -67,7 +67,6 @@ extern TCMgr              *ptcmgr;
 extern long               gStart_LMT_Offset;
 extern MyConfig           *pConfig;
 extern WayPointman        *pWayPointMan;
-extern ChartCanvas        *cc1;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -1496,7 +1495,7 @@ void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
                 RoutePoint *wp;
                 wp = (RoutePoint *) m_wpList->GetItemData( item );
 
-                cc1->RemovePointFromRoute( wp, m_pRoute );
+                g_pRouteMan->RemovePointFromRoute( wp, m_pRoute, NULL );
             }
             break;
         }

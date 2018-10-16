@@ -71,7 +71,6 @@ extern RouteProp *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
-extern ChartCanvas *cc1;
 extern ActiveTrack      *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoImpl     *pMarkPropDialog;
@@ -1142,7 +1141,7 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
         UpdateRouteListCtrl();
         UpdateTrkListCtrl();
 
-        cc1->undo->InvalidateUndo();
+        gFrame->InvalidateAllCanvasUndo();
         gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
@@ -1172,7 +1171,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
 
         if( pRoutePropDialog ) pRoutePropDialog->Hide();
-        cc1->undo->InvalidateUndo();
+        gFrame->InvalidateAllCanvasUndo();
         gFrame->RefreshAllCanvas();
 
         m_bNeedConfigFlush = true;
@@ -1835,7 +1834,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 //        UpdateRouteListCtrl();
         UpdateTrkListCtrl();
 
-        cc1->undo->InvalidateUndo();
+        gFrame->InvalidateAllCanvasUndo();
         gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
@@ -2262,7 +2261,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
             pMarkPropDialog->UpdateProperties();
         }
 
-        cc1->undo->InvalidateUndo();
+        gFrame->InvalidateAllCanvasUndo();
         gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
@@ -2390,7 +2389,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
     m_lastWptItem = -1;
     UpdateRouteListCtrl();
     UpdateWptListCtrl();
-    cc1->undo->InvalidateUndo();
+    gFrame->InvalidateAllCanvasUndo();
     gFrame->RefreshAllCanvas();
 }
 

@@ -435,6 +435,7 @@ class MyFrame: public wxFrame
     void ToggleAllToolbars( bool b_smooth = false );
     void SetAllToolbarScale(void);
     void SetGPSCompassScale(void);
+    void InvalidateAllCanvasUndo();
     
     void RefreshGroupIndices(void);
 

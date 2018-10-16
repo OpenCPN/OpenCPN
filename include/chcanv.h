@@ -373,8 +373,6 @@ public:
       bool        m_bLookAhead;
       double      m_VPRotate;
       
-      void RemovePointFromRoute( RoutePoint* point, Route* route );
-
       void DrawBlinkObjects( void );
 
       void StartRoute(void);
