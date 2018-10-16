@@ -2483,7 +2483,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
 
     case WXK_F3: {
-        parent_frame->ToggleENCText();
+        SetShowENCText( !GetShowENCText() );
+        Refresh(true);
+        InvalidateGL();
         break;
     }
     case WXK_F4:
