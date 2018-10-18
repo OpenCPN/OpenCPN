@@ -2451,6 +2451,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         } else {
             PanCanvas( -panspeed, 0 );
         }
+        b_handled = true;
         break;
 
     case WXK_UP:
@@ -2459,6 +2460,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             m_pany = -1;
         } else
             PanCanvas( 0, -panspeed );
+        b_handled = true;
         break;
 
     case WXK_RIGHT:
@@ -2468,6 +2470,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             m_panx = 1;
         } else
             PanCanvas( panspeed, 0 );
+        b_handled = true;
+        
         break;
 
     case WXK_DOWN:
@@ -2476,6 +2480,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             m_pany = 1;
         } else
             PanCanvas( 0, panspeed );
+        b_handled = true;
         break;
 
     case WXK_F2:
