@@ -8844,7 +8844,7 @@ void s52plib::PrepareForRender()
     
     int core_config = PI_GetPLIBStateHash();
     //TODO  Think this through. I think s63_pi hits this, since oesenc_pi has its own PLIB.....
-    if(0/*core_config != m_myConfig*/){
+    if(core_config != m_myConfig){
         
         g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
         

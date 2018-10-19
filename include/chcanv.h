@@ -469,6 +469,9 @@ public:
       
       int GetENCDisplayCategory(){ return m_encDisplayCategory; }
       void SetENCDisplayCategory( int category );
+
+      bool GetShowENCAnchor(){ return m_encShowAnchor; }
+      void SetShowENCAnchor( bool show );
       
       bool GetCourseUP(){ return m_bCourseUp; }
       bool GetLookahead(){ return m_bLookAhead; }
@@ -835,6 +838,7 @@ private:
       bool         m_encShowBuoyLabels;
       int          m_encDisplayCategory;
       bool         m_encShowLights;
+      bool         m_encShowAnchor;
       
 DECLARE_EVENT_TABLE()
 };

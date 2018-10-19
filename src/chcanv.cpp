@@ -507,6 +507,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encDisplayCategory = (int)STANDARD;
 
     m_encShowLights = true;
+    m_encShowAnchor = true;
     
     m_bShowGPS = true;
     SetQuiltMode(true);
@@ -2675,7 +2676,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         switch( key_char ) {
         case 'A':
-            parent_frame->ToggleAnchor();
+            SetShowENCAnchor(!GetShowENCAnchor());
+            ReloadVP();
+            
             break;
 
         case 'C':
@@ -9332,7 +9335,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB ShowText")] = GetShowENCText();
         v[_T("OpenCPN S52PLIB ShowSoundings")] = GetShowENCDepth();
         v[_T("OpenCPN S52PLIB ShowLights")] = GetShowENCLights();
-        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = false; //ps52plib->GetAnchorOn();
+        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = m_encShowAnchor; //ps52plib->GetAnchorOn();
         //v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
         
@@ -12421,6 +12424,7 @@ bool ChartCanvas::UpdateS52State()
         ps52plib->m_bExtendLightSectors = true;
         
         // TODO ps52plib->m_bShowAtons = m_encShowBuoys;
+        ps52plib->SetAnchorOn( m_encShowAnchor);
     }
     
     return retval;
@@ -12465,6 +12469,11 @@ void ChartCanvas::SetShowENCLights( bool show )
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
+void ChartCanvas::SetShowENCAnchor( bool show )
+{
+    m_encShowAnchor = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
 
 wxRect ChartCanvas::GetMUIBarRect()
 {
