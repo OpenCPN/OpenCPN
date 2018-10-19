@@ -876,13 +876,17 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
         m_canvasOptions->Show(m_pushPull == CO_PULL);
         
         ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
-        pcc->m_b_paint_enable = true;
+        if(pcc){
+            pcc->m_b_paint_enable = true;
 
-        if(m_pushPull == CO_PUSH){
-            delete m_canvasOptions;
-            m_canvasOptions = NULL;
+            if(m_pushPull == CO_PUSH){
+                delete m_canvasOptions;
+                m_canvasOptions = NULL;
+                pcc->TriggerDeferredFocus();
+            }
+        
+            pcc->Refresh();
         }
-        pcc->Refresh();
         
     }
     

@@ -193,6 +193,9 @@ public:
       
       void UpdateCanvasS52PLIBConfig();
       
+      void TriggerDeferredFocus();
+      void OnDeferredFocusTimerEvent( wxTimerEvent &event);
+      
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);
       
@@ -839,6 +842,8 @@ private:
       int          m_encDisplayCategory;
       bool         m_encShowLights;
       bool         m_encShowAnchor;
+      
+      wxTimer      m_deferredFocusTimer;
       
 DECLARE_EVENT_TABLE()
 };

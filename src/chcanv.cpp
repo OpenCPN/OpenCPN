@@ -383,6 +383,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KILL_FOCUS(ChartCanvas::OnKillFocus)
     EVT_SET_FOCUS(ChartCanvas::OnSetFocus)
     EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
+    EVT_TIMER ( DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent )
+    
     
 END_EVENT_TABLE()
 
@@ -695,6 +697,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
+    m_deferredFocusTimer.SetOwner( this, DEFERRED_FOCUS_TIMER );
+    
     m_rollover_popup_timer_msec = 20;
 
     m_b_rot_hidef = true;
@@ -939,11 +943,13 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
+    printf("kill %d\n", m_canvasIndex);
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
 {
+    printf("set %d\n", m_canvasIndex);
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
@@ -2357,7 +2363,25 @@ void ChartCanvas::SetVP(ViewPort &vp)
 //     printf("set %d\n", m_canvasIndex);
 //     //wxWindow:SetFocus();
 // }
-    
+
+
+void ChartCanvas::TriggerDeferredFocus()
+{
+#ifdef __WXGTK__
+    m_deferredFocusTimer.Start(200, true);
+    gFrame->Raise();
+#else
+    SetFocus();
+    Refresh(true);
+#endif    
+}
+
+void ChartCanvas::OnDeferredFocusTimerEvent( wxTimerEvent &event)
+{
+    SetFocus();
+    Refresh(true);
+}
+
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
     if(g_pi_manager)
