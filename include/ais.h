@@ -61,6 +61,8 @@
 #define TIMER_AIS_MSEC      998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
+#define AIS_TARGETDATA_MAX_CANVAS 6
+
 enum {
     tlTRK = 0,
     tlNAME,
