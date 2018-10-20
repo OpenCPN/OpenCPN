@@ -4475,6 +4475,8 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 {
     if(m_ppicb)
     {
+        wxWindow *pa = wxWindow::FindFocus();
+        
         InitReturn ret_val = (InitReturn)m_ppicb->Init(name, (int)init_flags);
 
         //    Here we transcribe all the required wrapped member elements up into the chartbase object which is the parent of this class
@@ -4519,8 +4521,9 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 
         //  PlugIn may invoke wxExecute(), which steals the keyboard focus
         //  So take it back
-        if(gFrame->GetPrimaryCanvas())
-            gFrame->GetPrimaryCanvas()->SetFocus();
+        ChartCanvas *pc = wxDynamicCast(pa, ChartCanvas);
+        if(pc)
+            pc->SetFocus();
         
         return ret_val;
     }
