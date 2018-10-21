@@ -1757,7 +1757,7 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
         for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )  {
             //calculate the importancefactor for each target
             AIS_Target_Data *td = it->second;
-            double  So, Tcpa, Cpa, Rang, Siz = 0.0; 
+            double  So, Cpa, Rang, Siz = 0.0; 
             So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
             if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
                     
@@ -1780,9 +1780,11 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     }
     // If needed iterate over all targets, check if they fit in the viewport and if yes add the importancefactor to a sorted list 
     AISImportanceSwitchPoint = 0.0;    
-    float Array[g_ShowScaled_Num];
+    
+    float *Array = new float[g_ShowScaled_Num];
     for(int i=0 ; i < g_ShowScaled_Num ; i++)
         Array[i] = 0.0;     
+    
     int LowestInd = 0;
     if ( cp->GetAttenAIS() ){
         for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )  {
@@ -1804,6 +1806,7 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
             }
         }        
     }
+    delete[] Array;
 
     
 
