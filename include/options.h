@@ -956,10 +956,11 @@ public:
     void CreateControls(void);
     void OnConfigEditCancelClick(wxCommandEvent& event);
     void OnConfigEditOKClick(wxCommandEvent& event);
+    wxString GetCreatedTemplateGUID(){ return m_createdTemplateGUID; }
     
     wxTextCtrl *m_TitleCtl, *m_DescriptionCtl; 
     wxButton *m_CancelButton, *m_OKButton;
-    
+    wxString m_createdTemplateGUID;
     DECLARE_EVENT_TABLE()
 };
 

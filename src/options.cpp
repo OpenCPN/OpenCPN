@@ -517,7 +517,7 @@ void ConfigCreateDialog::OnConfigEditCancelClick(wxCommandEvent& event)
                
 void ConfigCreateDialog::OnConfigEditOKClick(wxCommandEvent& event)
 {
-    wxString GUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue());
+    m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue());
     EndModal(wxID_OK);
     
 }
@@ -3071,6 +3071,9 @@ void options::OnCreateConfig( wxCommandEvent &event)
     ConfigCreateDialog* pd = new ConfigCreateDialog(this, -1, _("Create Config"), wxDefaultPosition, wxSize(200, 200));
     int rv = pd->ShowModal();
     if( wxID_OK == rv ){
+        g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
+        UpdateTemplateTitleText();
+        
         ClearConfigList();
         BuildConfigList();
         m_DisplayConfigsPage->Layout();
