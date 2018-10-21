@@ -565,8 +565,20 @@ bool OCPNConfigCatalog::AddConfig( OCPNConfigObject *config, unsigned int flags 
     pugi::xml_node node = m_config_root.append_child("config");
     
     node.append_attribute("GUID") = config->m_GUID.mb_str();
-    node.append_attribute("title") = config->m_title.mb_str();
-    node.append_attribute("description") = config->m_description.mb_str();
+
+    //  Handle non-ASCII characters as UTF8
+    wxCharBuffer abuf = config->m_title.ToUTF8();
+    if( abuf.data() )                            
+        node.append_attribute("title") = abuf.data();
+    else 
+        node.append_attribute("title") = _T("Substitute Title");
+
+    abuf = config->m_description.ToUTF8();
+    if( abuf.data() )                            
+        node.append_attribute("description") = abuf.data();
+    else 
+        node.append_attribute("description") = _T("Substitute Description");
+    
     node.append_attribute("templateFile") = config->templateFileName.mb_str();
 
     
