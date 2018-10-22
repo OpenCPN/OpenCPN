@@ -1004,8 +1004,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
         parent->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
         parent->undo->AfterUndoableAction( NULL );
-        parent->InvalidateGL();
-        parent->Refresh( false );      // Needed for MSW, why not GTK??
+        gFrame->RefreshAllCanvas( false );
+        gFrame->InvalidateAllGL();
         break;
     }
 
@@ -1105,7 +1105,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
 
-            parent->InvalidateGL();
+            gFrame->RefreshAllCanvas( false );
+            gFrame->InvalidateAllGL();
         }
         break;
     }
