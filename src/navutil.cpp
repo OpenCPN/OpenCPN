@@ -594,24 +594,24 @@ int MyConfig::LoadMyConfig()
     g_n_arrival_circle_radius = 0.05;
     
     g_AISShowTracks_Mins = 20;
-    g_ShowScaled_Num = 10L;
+    g_ShowScaled_Num = 10;
     g_ScaledNumWeightSOG = 50;
     g_ScaledNumWeightCPA = 60;
     g_ScaledNumWeightTCPA = 25;
     g_ScaledNumWeightRange = 75;
     g_ScaledNumWeightSizeOfT = 25;
     g_ScaledSizeMinimal = 50;
-    g_Show_Target_Name_Scale = 250000L;
+    g_Show_Target_Name_Scale = 250000;
     g_bWplIsAprsPosition = 1;
     g_ais_cog_predictor_width = 3;
-    g_ais_alert_dialog_sx = 200L;
-    g_ais_alert_dialog_sy = 200L;
-    g_ais_alert_dialog_x = 200L;
-    g_ais_alert_dialog_y = 200L;
-    g_ais_query_dialog_x = 200L;
-    g_ais_query_dialog_y = 200L;
-    g_AisTargetList_range = 40L;
-    g_AisTargetList_sortColumn = 2L; // Column #2 is MMSI
+    g_ais_alert_dialog_sx = 200;
+    g_ais_alert_dialog_sy = 200;
+    g_ais_alert_dialog_x = 200;
+    g_ais_alert_dialog_y = 200;
+    g_ais_query_dialog_x = 200;
+    g_ais_query_dialog_y = 200;
+    g_AisTargetList_range = 40;
+    g_AisTargetList_sortColumn = 2; // Column #2 is MMSI
     g_S57_dialog_sx = 400;
     g_S57_dialog_sy = 400;
 
@@ -1045,20 +1045,20 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         s.ToDouble( &g_ShowMoored_Kts );
     
     Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled );
-    Read( _T ( "AISScaledNumber" ), g_ShowScaled_Num );
-    Read( _T ( "AISScaledNumberWeightSOG" ), g_ScaledNumWeightSOG );
-    Read( _T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA );
-    Read( _T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA );
-    Read( _T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange );
-    Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT );
-    Read( _T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal );
+    Read( _T ( "AISScaledNumber" ), &g_ShowScaled_Num );
+    Read( _T ( "AISScaledNumberWeightSOG" ), &g_ScaledNumWeightSOG );
+    Read( _T ( "AISScaledNumberWeightCPA" ), &g_ScaledNumWeightCPA );
+    Read( _T ( "AISScaledNumberWeightTCPA" ), &g_ScaledNumWeightTCPA );
+    Read( _T ( "AISScaledNumberWeightRange" ),& g_ScaledNumWeightRange );
+    Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), &g_ScaledNumWeightSizeOfT );
+    Read( _T ( "AISScaledSizeMinimal" ), &g_ScaledSizeMinimal );
     Read(_T("AISShowScaled"), &g_bShowScaled );
     
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
-    Read( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
+    Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
     Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
     Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width );
 
@@ -1070,16 +1070,16 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     if(Read( _T ( "AlertAckTimeoutMinutes" ), &s ))
         s.ToDouble( &g_AckTimeout_Mins );
 
-    Read( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
-    Read( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
-    Read( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
-    Read( _T ( "AlertDialogPosY" ), g_ais_alert_dialog_y );
-    Read( _T ( "QueryDialogPosX" ), g_ais_query_dialog_x );
-    Read( _T ( "QueryDialogPosY" ), g_ais_query_dialog_y );
+    Read( _T ( "AlertDialogSizeX" ), &g_ais_alert_dialog_sx );
+    Read( _T ( "AlertDialogSizeY" ), &g_ais_alert_dialog_sy );
+    Read( _T ( "AlertDialogPosX" ), &g_ais_alert_dialog_x );
+    Read( _T ( "AlertDialogPosY" ), &g_ais_alert_dialog_y );
+    Read( _T ( "QueryDialogPosX" ), &g_ais_query_dialog_x );
+    Read( _T ( "QueryDialogPosY" ), &g_ais_query_dialog_y );
 
     Read( _T ( "AISTargetListPerspective" ), &g_AisTargetList_perspective );
-    Read( _T ( "AISTargetListRange" ), g_AisTargetList_range );
-    Read( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
+    Read( _T ( "AISTargetListRange" ), &g_AisTargetList_range );
+    Read( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     Read( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
 
