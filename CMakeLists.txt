@@ -484,7 +484,7 @@ IF(NOT QT_ANDROID)
     FIND_PACKAGE(wxWidgets REQUIRED)
     IF(MSYS)
       # this is to convert msys to windows paths, and handle the missing /usr
-      STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
+      STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
     ENDIF(MSYS)
     INCLUDE(${wxWidgets_USE_FILE})
   ENDIF(WIN32 OR APPLE OR QT_ANDROID)
