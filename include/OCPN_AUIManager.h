@@ -39,6 +39,9 @@ public:
     bool DoEndResizeAction(wxMouseEvent& event);
     void OnLeftUp(wxMouseEvent& event);
     
+    wxAuiDockInfo* FindDock(wxAuiPaneInfo &pane);
+    void SetDockSize( wxAuiDockInfo *d, int size);
+    
     wxRect  m_0actionHintRect;
     
     DECLARE_EVENT_TABLE()

@@ -573,4 +573,75 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
     m_lastMouseMove = wxPoint(); // see comment in OnMotion()
 }
 
+// FindDocks() is an internal function that returns a list of docks which meet
+// the specified conditions in the parameters and returns a sorted array
+// (sorted by layer and then row)
+static void OCPNFindDocks(wxAuiDockInfoArray& docks,
+                      int dock_direction,
+                      int dock_layer,
+                      int dock_row,
+                      wxAuiDockInfoPtrArray& arr)
+{
+    int begin_layer = dock_layer;
+    int end_layer = dock_layer;
+    int begin_row = dock_row;
+    int end_row = dock_row;
+    int dock_count = docks.GetCount();
+    int layer, row, i, max_row = 0, max_layer = 0;
+    
+    // discover the maximum dock layer and the max row
+    for (i = 0; i < dock_count; ++i)
+    {
+        max_row = wxMax(max_row, docks.Item(i).dock_row);
+        max_layer = wxMax(max_layer, docks.Item(i).dock_layer);
+    }
+    
+    // if no dock layer was specified, search all dock layers
+    if (dock_layer == -1)
+    {
+        begin_layer = 0;
+        end_layer = max_layer;
+    }
+    
+    // if no dock row was specified, search all dock row
+    if (dock_row == -1)
+    {
+        begin_row = 0;
+        end_row = max_row;
+    }
+    
+    arr.Clear();
+    
+    for (layer = begin_layer; layer <= end_layer; ++layer)
+        for (row = begin_row; row <= end_row; ++row)
+            for (i = 0; i < dock_count; ++i)
+            {
+                wxAuiDockInfo& d = docks.Item(i);
+                if (dock_direction == -1 || dock_direction == d.dock_direction)
+                {
+                    if (d.dock_layer == layer && d.dock_row == row)
+                        arr.Add(&d);
+                }
+            }
+}
+
+wxAuiDockInfo* OCPN_AUIManager::FindDock(wxAuiPaneInfo &pane)
+{
+    wxAuiDockInfoPtrArray arr;
+    OCPNFindDocks(m_docks, pane.dock_direction, pane.dock_layer, pane.dock_row, arr);
+    if(arr.GetCount())
+        return arr.Item(0);
+    else
+        return NULL;
+}
+
+void OCPN_AUIManager::SetDockSize( wxAuiDockInfo *dock, int size)
+{
+    dock->size = size;
+
+    Update();
+    Repaint(NULL);
+}
+
+    
 
