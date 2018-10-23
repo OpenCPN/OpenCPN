@@ -33,6 +33,8 @@
 #include <wx/clipbrd.h>
 
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 #include "styles.h"
 #include "dychart.h"
@@ -48,70 +50,10 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
+
 #define DIALOG_MARGIN 3
 
-/* XPM */
-static const char *eye[]={
-"20 20 7 1",
-". c none",
-"# c #000000",
-"a c #333333",
-"b c #666666",
-"c c #999999",
-"d c #cccccc",
-"e c #ffffff",
-"....................",
-"....................",
-"....................",
-"....................",
-".......######.......",
-".....#aabccb#a#.....",
-"....#deeeddeebcb#...",
-"..#aeeeec##aceaec#..",
-".#bedaeee####dbcec#.",
-"#aeedbdabc###bcceea#",
-".#bedad######abcec#.",
-"..#be#d######dadb#..",
-"...#abac####abba#...",
-".....##acbaca##.....",
-".......######.......",
-"....................",
-"....................",
-"....................",
-"....................",
-"...................."};
-
-/* XPM */
-static const char *eyex[]={
-    "20 20 8 1",
-    "# c None",
-    "a c #000000",
-    "b c #333333",
-    "c c #666666",
-    "d c #999999",
-    "f c #cccccc",
-    ". c #ff0000",
-    "e c #ffffff",
-    ".##################.",
-    "..################..",
-    "#..##############..#",
-    "##..############..##",
-    "###..##aaaaaa##..###",
-    "####..bbcddcab..####",
-    "####a..eeffee..ca###",
-    "##abee..daab..beda##",
-    "#acefbe..aa..fcdeda#",
-    "abeefcfb....acddeeba",
-    "#acefbfaa..aabcdeda#",
-    "##aceafa....afbfca##",
-    "###abcb..aa..ccba###",
-    "#####a..dcbd..a#####",
-    "#####..aaaaaa..#####",
-    "####..########..####",
-    "###..##########..###",
-    "##..############..##",
-    "#..##############..#",
-    "..################.."};
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
@@ -140,6 +82,7 @@ extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
+extern OCPNPlatform     *g_Platform;
 
 static int SortRouteTrack(int column, int order, wxListCtrl *lc, wxListItem &it1, wxListItem &it2)
 {
@@ -860,10 +803,24 @@ void RouteManagerDialog::Create()
     
     RecalculateSize();
 
-    // create a image list for the list with just the eye icon
-    wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
-    imglist->Add( wxBitmap( eye ) );
-    imglist->Add( wxBitmap( eyex ) );
+    // create a image list for the list with just the eye icons
+    int bmSize = 22;
+    wxImageList *imglist = new wxImageList( bmSize, bmSize, true, 1 );
+    
+    // Load eye icons
+    wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
+    wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("eye.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));           // Avoid wxImageList size asserts
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
+    
+    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyex.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
+    
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -1523,14 +1480,11 @@ void RouteManagerDialog::OnTrkRightClick( wxListEvent &event )
     PopupMenu( &menu );
 }
 
-WX_DEFINE_ARRAY( Track*, TrackArray );
-
-static int CompareTracks( Track** track1, Track** track2 )
+static bool CompareTracks( Track* track1, Track* track2 )
 {
-    TrackPoint* start1 = ( *track1 )->GetPoint(0);
-    TrackPoint* start2 = ( *track2 )->GetPoint(0);
-    if( start1->GetCreateTime() > start2->GetCreateTime() ) return 1;
-    return -1; // Two tracks starting at the same time is not possible.
+    TrackPoint* start1 = track1->GetPoint(0);
+    TrackPoint* start2 = track2->GetPoint(0);
+    return start1->GetCreateTime() < start2->GetCreateTime();
 }
 
 void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
@@ -1616,8 +1570,8 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             TrackPoint* tPoint;
             TrackPoint* newPoint;
             TrackPoint* lastPoint;
-            TrackArray mergeList;
-            TrackArray deleteList;
+            std::vector<Track*> mergeList;
+            std::vector<Track*> deleteList;
             bool runningSkipped = false;
 
             ::wxBeginBusyCursor();
@@ -1626,17 +1580,17 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
                 Track* track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-                mergeList.Add( track );
+                mergeList.push_back( track );
             }
 
-            mergeList.Sort( (CMPFUNC_wxArrayTrackArray) CompareTracks );
+            std::sort(mergeList.begin(), mergeList.end(), CompareTracks );
 
-            targetTrack = mergeList.Item( 0 );
+            targetTrack = mergeList[ 0 ];
             lastPoint = targetTrack->GetLastPoint();
 
-            for( unsigned int t = 1; t < mergeList.Count(); t++ ) {
-
-                mergeTrack = mergeList.Item( t );
+            for(auto const& mergeTrack: mergeList) {
+                if(mergeTrack == *mergeList.begin())
+                    continue;
 
                 if( mergeTrack->IsRunning() ) {
                     runningSkipped = true;
@@ -1654,18 +1608,17 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
                     lastPoint = newPoint;
                 }
-                deleteList.Add( mergeTrack );
+                deleteList.push_back( mergeTrack );
             }
 
-            for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
-                Track* deleteTrack = deleteList.Item( i );
+            for(auto const& deleteTrack: deleteList) {
                 g_pAIS->DeletePersistentTrack( deleteTrack );
                 pConfig->DeleteConfigTrack( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );
             }
 
-            mergeList.Clear();
-            deleteList.Clear();
+            mergeList.clear();
+            deleteList.clear();
 
             ::wxEndBusyCursor();
 

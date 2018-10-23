@@ -78,8 +78,6 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
-
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {

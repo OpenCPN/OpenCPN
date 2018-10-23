@@ -1798,7 +1798,7 @@ bool MyConfig::UpdateChartDirs( ArrayOfCDI& dir_array )
     iDirMax = dir_array.GetCount();
 
     for( int iDir = 0; iDir < iDirMax; iDir++ ) {
-        ChartDirInfo cdi = dir_array.Item( iDir );
+        ChartDirInfo cdi = dir_array[iDir];
 
         wxString dirn = cdi.fullpath;
         dirn.Append( _T("^") );
@@ -1836,13 +1836,13 @@ void MyConfig::CreateConfigGroups( ChartGroupArray *pGroupArray )
             sg.Printf( _T("Group%d/Item%d"), i + 1, j );
             sg.Prepend( _T ( "/Groups/" ) );
             SetPath( sg );
-            Write( _T ( "IncludeItem" ), pGroup->m_element_array.Item( j )->m_element_name );
+            Write( _T ( "IncludeItem" ), pGroup->m_element_array[j]->m_element_name );
 
             wxString t;
-            wxArrayString u = pGroup->m_element_array.Item( j )->m_missing_name_array;
+            wxArrayString u = pGroup->m_element_array[j]->m_missing_name_array;
             if( u.GetCount() ) {
                 for( unsigned int k = 0; k < u.GetCount(); k++ ) {
-                    t += u.Item( k );
+                    t += u[k];
                     t += _T(";");
                 }
                 Write( _T ( "ExcludeItems" ), t );
@@ -2322,7 +2322,7 @@ void MyConfig::UpdateSettings()
     for( unsigned int id = 0 ; id < iDirMax ; id++ ) {
         wxString key;
         key.Printf(_T("tcds%d"), id);
-        Write( key, TideCurrentDataSet.Item(id) );
+        Write( key, TideCurrentDataSet[id] );
     }
 
     SetPath( _T ( "/Settings/Others" ) );
@@ -2364,7 +2364,7 @@ void MyConfig::UpdateSettings()
     for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
         wxString p;
         p.Printf(_T("Props%d"), i);
-        Write( p, g_MMSI_Props_Array.Item(i)->Serialize() );
+        Write( p, g_MMSI_Props_Array[i]->Serialize() );
     }
 
 
@@ -3504,7 +3504,7 @@ void X11FontPicker::SetChoiceOptionsFromFacename (const wxString &facename)
             //           printf("%s\n",facename.mb_str());
             for ( jname=0; jname<PointSizeArray.GetCount(); jname++ )
             {
-                if ( pointsize == PointSizeArray.Item ( jname ) )
+                if ( pointsize == PointSizeArray[jname] )
                 break;
             }
             if ( jname >= PointSizeArray.GetCount() )
@@ -3532,7 +3532,7 @@ void X11FontPicker::SetChoiceOptionsFromFacename (const wxString &facename)
         unsigned int jname;
         for ( jname=0; jname<WeightArray.GetCount(); jname++ )
         {
-            if ( weight == WeightArray.Item ( jname ) )
+            if ( weight == WeightArray[jname] )
             break;
         }
         if ( jname >= WeightArray.GetCount() )

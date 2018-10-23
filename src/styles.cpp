@@ -242,7 +242,7 @@ wxBitmap Style::GetIcon(const wxString & name, int width, int height, bool bforc
 
     int index = iconIndex[name]; // FIXME: this operation is not const but should be, use 'find'
 
-    Icon* icon = (Icon*) icons.Item( index );
+    Icon* icon = (Icon*) icons[index];
 
     if( icon->loaded && !bforceReload)
         return icon->icon;
@@ -290,7 +290,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
 
     int index = toolIndex[toolname];
 
-    Tool* tool = (Tool*) tools.Item( index );
+    Tool* tool = (Tool*) tools[index];
  
     wxSize size = tool->customSize;
     if( size.x == 0 )
@@ -703,12 +703,12 @@ void Style::SetColorScheme( ColorScheme cs )
 void Style::Unload()
 {
     for( unsigned int i = 0; i < tools.Count(); i++ ) {
-        Tool* tool = (Tool*) tools.Item( i );
+        Tool* tool = (Tool*) tools[i];
         tool->Unload();
     }
 
     for( unsigned int i = 0; i < icons.Count(); i++ ) {
-        Icon* icon = (Icon*) icons.Item( i );
+        Icon* icon = (Icon*) icons[i];
         icon->Unload();
     }
 }
@@ -744,12 +744,12 @@ Style::Style( void )
 Style::~Style( void )
 {
     for( unsigned int i = 0; i < tools.Count(); i++ ) {
-        delete (Tool*) ( tools.Item( i ) );
+        delete (Tool*) ( tools[i] );
     }
     tools.Clear();
 
     for( unsigned int i = 0; i < icons.Count(); i++ ) {
-        delete (Icon*) ( icons.Item( i ) );
+        delete (Icon*) ( icons[i] );
     }
     icons.Clear();
 
@@ -785,7 +785,7 @@ StyleManager::StyleManager(const wxString & configDir)
 StyleManager::~StyleManager(void)
 {
     for( unsigned int i = 0; i < styles.Count(); i++ ) {
-        delete (Style*) ( styles.Item( i ) );
+        delete (Style*) ( styles[i] );
     }
     styles.Clear();
 }
@@ -1136,7 +1136,7 @@ void StyleManager::SetStyle(wxString name)
     if( name.Length() == 0 ) selectFirst = true;
 
     for( unsigned int i = 0; i < styles.Count(); i++ ) {
-        style = (Style*) ( styles.Item( i ) );
+        style = (Style*) ( styles[i] );
         if( style->name == name || selectFirst ) {
             if( style->graphics ) {
                 currentStyle = style;

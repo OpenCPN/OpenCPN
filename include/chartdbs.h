@@ -230,9 +230,9 @@ struct ChartTableEntry
     const wxString *GetpFileName(void) const { return m_pfilename; }
     wxString *GetpsFullPath(void){ return m_psFullPath; }
     
-    const ArrayOfInts &GetGroupArray(void) const { return m_GroupArray; }
-    void ClearGroupArray(void) { m_GroupArray.Clear(); }
-    void AddIntToGroupArray( int val ) { m_GroupArray.Add( val ); }
+    const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
+    void ClearGroupArray(void) { m_GroupArray.clear(); }
+    void AddIntToGroupArray( int val ) { m_GroupArray.push_back( val ); }
     void SetAvailable(bool avail ){ m_bavail = avail;}
 
     std::vector<float> GetReducedPlyPoints();
@@ -270,7 +270,7 @@ struct ChartTableEntry
     int         *pNoCovrCntTable;
     float       **pNoCovrPlyTable;
     
-    ArrayOfInts m_GroupArray;
+    std::vector<int> m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
     LLBBox m_bbox;

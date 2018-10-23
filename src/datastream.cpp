@@ -723,7 +723,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     wxString fs;
     for (size_t i = 0; i < filter.Count(); i++)
     {
-        fs = filter.Item(i);
+        fs = filter[i];
         switch (fs.Length())
         {
             case 2:

@@ -1203,7 +1203,7 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
         int n_files = dir.GetAllFiles( UserIconPath, &FileList );
         
         for( int ifile = 0; ifile < n_files; ifile++ ) {
-            wxString name = FileList.Item( ifile );
+            wxString name = FileList[ifile];
             
             wxFileName fn( name );
             wxString iconname = fn.GetName();
@@ -1342,7 +1342,7 @@ void WayPointman::ProcessDefaultIcons()
     if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
         
         for( int ifile = 0; ifile < n_files; ifile++ ) {
-            wxString name = FileList.Item( ifile );
+            wxString name = FileList[ifile];
         
             wxFileName fn( name );
         
@@ -1356,7 +1356,7 @@ void WayPointman::ProcessDefaultIcons()
 
     
     for( int ifile = 0; ifile < n_files; ifile++ ) {
-        wxString name = FileList.Item( ifile );
+        wxString name = FileList[ifile];
             
         wxFileName fn( name );
         wxString iconname = fn.GetName();

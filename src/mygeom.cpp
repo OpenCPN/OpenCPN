@@ -142,8 +142,6 @@ HINSTANCE      s_hGLU_DLL;                   // Handle to DLL
 #endif
 
 
-wxArrayInt index_keep;
-
 /**
  * Returns TRUE if the ring has clockwise winding.
  *
@@ -790,34 +788,32 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     
     }
 
- 
+    std::vector<int> index_keep;
     if(nPoints > 5 && (m_LOD_meters > .01)){
-        index_keep.Clear();
-        index_keep.Add(0);
-        index_keep.Add(nPoints-1);
-        index_keep.Add(1);
-        index_keep.Add(nPoints-2);
+        index_keep.push_back(0);
+        index_keep.push_back(nPoints-1);
+        index_keep.push_back(1);
+        index_keep.push_back(nPoints-2);
         
         DouglasPeucker(DPbuffer, 1, nPoints-2, m_LOD_meters/(1852 * 60), &index_keep);
-//        printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
+//        printf("DP Reduction: %d/%d\n", index_keep.size(), nPoints);
         
-        g_keep += index_keep.GetCount();
+        g_keep += index_keep.size();
         g_orig += nPoints;
 //        printf("...................Running: %g\n", (double)g_keep/g_orig);
     }
     else {
-        index_keep.Clear();
+        index_keep.resize(nPoints);
         for(int i = 0 ; i < nPoints ; i++)
-            index_keep.Add(i);
+            index_keep[i] = i;
     }
     
-    cntr[0] = index_keep.GetCount();
+    cntr[0] = index_keep.size();
  
     
     // Mark the keepers by adding a simple constant to X
-    for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
-        int k = index_keep.Item(i);
-        DPbuffer[2*k] += 2000.;
+    for(unsigned int i=0 ; i < index_keep.size() ; i++){
+        DPbuffer[2*index_keep[i]] += 2000.;
     }
 
     

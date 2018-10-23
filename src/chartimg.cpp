@@ -633,7 +633,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 
             for(ifile = 0 ; ifile < nfiles ; ifile++)
             {
-                wxString file_up = file_array.Item(ifile);
+                wxString file_up = file_array[ifile];
                 file_up.MakeUpper();
 
                 wxString target_up = *pBitmapFilePath;
@@ -642,7 +642,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
                 if(file_up.IsSameAs( target_up))
                 {
                     NOS_filename.Clear();
-                    NOS_filename.Assign(file_array.Item(ifile));
+                    NOS_filename.Assign(file_array[ifile]);
                     goto found_uclc_file;
                 }
 

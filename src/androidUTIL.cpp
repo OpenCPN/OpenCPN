@@ -2066,7 +2066,7 @@ wxString BuildAndroidSettingsString( void )
 
         for(unsigned int i=0 ; i < chart_dir_array.GetCount() ; i++){
             result += _T("ChartDir:");
-            result += chart_dir_array.Item(i);
+            result += chart_dir_array[i];
             result += _T(";");
         }
     }

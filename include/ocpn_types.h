@@ -54,8 +54,6 @@ typedef struct _colTable {
 
 
 
-WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
-
 //    ChartType constants
 typedef enum ChartTypeEnum
 {

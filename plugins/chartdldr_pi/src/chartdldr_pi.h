@@ -168,9 +168,8 @@ private:
     bool            DownloadChart( wxString url, wxString file, wxString title );
     bool            downloadInProgress;
     int             to_download;
-    int             downloading;
-	int             updatingAll;
-    int             failed_downloads;
+
+    int             updatingAll;
     bool            cancelled;
     bool            DownloadIsCancel;
     chartdldr_pi   *pPlugIn;
@@ -185,6 +184,9 @@ private:
     bool            m_bTransferSuccess;
     wxString        m_totalsize;
     wxString        m_transferredsize;
+    int		    m_failed_downloads;
+    int             m_downloading;
+
     void            DisableForDownload( bool enabled );
     bool            m_bconnected;
 

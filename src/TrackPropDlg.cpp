@@ -955,7 +955,7 @@ bool TrackPropDlg::UpdateProperties()
     if(m_scrolledWindowLinks){
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowListNode *node = kids.Item(i);
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -1331,7 +1331,7 @@ void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
 
         if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {

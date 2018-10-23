@@ -380,11 +380,11 @@ public:
 
     //! Sets a transfer option for this libCURL session instance.
     //! See the curl_easy_setopt() function call for more info.
-    bool SetOpt(CURLoption option, ...);
+    bool SetOpt(int option, ...);
 
     //! Gets an info from this libCURL session instance.
     //! See the curl_easy_getinfo() function call for more info.
-    bool GetInfo(CURLINFO info, ...) const;
+    bool GetInfo(int info, ...) const;
 
     //! Start the operation as described by the options set previously with #SetOpt.
     //! If you set CURLOPT_UPLOAD to zero and the CURLOPT_WRITEFUNCTION and CURLOPT_WRITEDATA

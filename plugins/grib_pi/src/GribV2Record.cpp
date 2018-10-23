@@ -1203,8 +1203,6 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 	fprintf(stderr,"Unable to map time range for Product Definition Template %d into GRIB1\n",grid->md.pds_templ_num);
 	return false;
   }
-  if (*p2 < 0)
-      return false;
   return true;
 }
 

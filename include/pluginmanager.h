@@ -324,6 +324,7 @@ private:
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
       bool UpDateChartDataTypes(void);
       bool CheckPluginCompatibility(wxString plugin_file);
+      bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog);
 
       MyFrame                 *pParent;
 

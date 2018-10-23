@@ -13,6 +13,6 @@
 
 #include "SVGElement.h"
 #include <wx/dynarray.h>
-WX_DECLARE_OBJARRAY(wxSVGElement*, wxNodeList);
+WX_DECLARE_OBJARRAY(wxSVGElementP, wxNodeList);
 
 #endif //wxSVG_NODE_LIST_H

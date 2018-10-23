@@ -429,7 +429,7 @@ int NextPow2(int size)
     return n + 1;
 }
 
-void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
+void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep)
 {
     // Find the point with the maximum distance
     double dmax = 0;
@@ -453,7 +453,7 @@ void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayIn
     }
     // If max distance is greater than epsilon, recursively simplify
     if ( dmax > epsilon*epsilon ) {
-        keep->Add(index);
+        keep->push_back(index);
         
         // Recursive call
         DouglasPeucker(PointList, fp, index, epsilon, keep);
@@ -462,7 +462,7 @@ void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayIn
     }
 }
 
-void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
+void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep)
 {
     // Find the point with the maximum distance
     double dmax = 0;
@@ -486,7 +486,7 @@ void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, wxArrayI
     }
     // If max distance is greater than epsilon, recursively simplify
     if(lmax > epsilon){
-        keep->Add(index);
+        keep->push_back(index);
         
         // Recursive call
         DouglasPeuckerM(PointList, fp, index, epsilon, keep);

@@ -885,7 +885,7 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    wxString sentence = sentence_array.Item(ii);
+                    wxString sentence = sentence_array[ii];
                     
                     if(dstr->SendSentence( sentence ) )
                         LogOutputMessage( sentence, dstr->GetPort(), false );

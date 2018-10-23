@@ -141,7 +141,7 @@ void  GribV1Record::translateDataType()
 	//------------------------
 	// EMCWF grib1...
 	//------------------------
-	else if (idCenter==98 && idModel==148 && idGrid==255)
+	else if (idCenter==98 /*&& idModel==148*/ && idGrid==255)
 	{
         dataCenterModel = OTHER_DATA_CENTER;
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
