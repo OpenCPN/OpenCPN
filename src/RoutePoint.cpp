@@ -89,6 +89,8 @@ RoutePoint::RoutePoint()
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     
+    m_iTextTexture = 0;
+    
     m_HyperlinkList = new HyperlinkList;
 
     m_GUID = pWayPointMan->CreateGUID( this );
@@ -414,8 +416,10 @@ void RoutePoint::SetCreateTime( wxDateTime dt )
 void RoutePoint::SetName(const wxString & name)
 {
 #ifdef ocpnUSE_GL
-    glDeleteTextures(1,&m_iTextTexture);
-    m_iTextTexture = 0;
+    if(m_iTextTexture){
+        glDeleteTextures(1,&m_iTextTexture);
+        m_iTextTexture = 0;
+    }
 #endif    
     m_MarkName = name;
     CalculateNameExtents();
