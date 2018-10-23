@@ -5707,7 +5707,13 @@ int MyFrame::DoOptionsDialog()
 
     // Record current canvas config
     unsigned int last_canvasConfig = g_canvasConfig;
-    
+    wxSize cc1SizeBefore;
+    if( g_canvasConfig > 0 ){
+        canvasConfig *cc = g_canvasConfigArray.Item(0);
+        if(cc )
+            cc1SizeBefore = g_canvasArray.Item(0)->GetSize();
+    }
+        
     //  Capture the full path names of charts currently shown in all canvases
     wxArrayString pathArray;
     // ..For each canvas...
@@ -5755,6 +5761,17 @@ int MyFrame::DoOptionsDialog()
 
     bool b_refresh = false;
     
+    bool ccRightSizeChanged = false;
+    if( g_canvasConfig > 0 ){
+        canvasConfig *cc = g_canvasConfigArray.Item(0);
+        if(cc ){
+            wxSize cc1Size = cc->canvasSize;
+            if(cc1Size.x != cc1SizeBefore.x)
+                ccRightSizeChanged = true;
+            
+        }
+    }
+                
     if( (g_canvasConfig != last_canvasConfig) || ( rr & GL_CHANGED) ){
         UpdateCanvasConfigDescriptors();
         
@@ -5784,6 +5801,19 @@ int MyFrame::DoOptionsDialog()
             rr |= S52_CHANGED;
         
         b_refresh = true;
+    }
+
+    // Here check for the case wherein the relative sizes of a multicanvas layout have been changed.
+    // We do not need to reqbuild the canvases, we just need to resize whichever one is docked.
+    
+    if( (g_canvasConfig > 0)  && ccRightSizeChanged ){
+        canvasConfig *cc = g_canvasConfigArray.Item(1);
+        if(cc ){
+            wxAuiPaneInfo& p = g_pauimgr->GetPane(g_canvasArray.Item(1));
+            wxAuiDockInfo *dockRight = g_pauimgr->FindDock(p);
+            if(dockRight)
+                g_pauimgr->SetDockSize(dockRight, cc->canvasSize.x);
+        }
     }
     
     if( rr & CONFIG_CHANGED){
