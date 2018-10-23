@@ -418,7 +418,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTO_HERE, _( "Navigate To Here" ) );
 
     if( !g_bBasicMenus)
-        MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center view") + _T("...") );
+        MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _menuText( _("Center view") + _T("..."), _T("Ctrl-T") ) );
 
     if( !g_bBasicMenus){
         if( !parent->m_bCourseUp )
@@ -442,7 +442,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         
         if(!full_toggle_added){
             if(gFrame->IsFullScreen())
-                MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+                MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _menuText(_("Toggle Full Screen"), _T("F11") ) );
         }
 #endif            
         
