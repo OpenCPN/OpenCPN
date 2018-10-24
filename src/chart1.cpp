@@ -4331,6 +4331,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
+            g_MainToolbar->HideTooltip();
             DoSettings();
             break;
         }
@@ -4340,6 +4341,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         {
  #ifdef __OCPN__ANDROID__
             ///LoadS57();
+            g_MainToolbar->HideTooltip();
             DoAndroidPreferences();
  #else
             DoSettings();
@@ -4371,6 +4373,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_ABOUT:
         case ID_ABOUT: {
+            g_MainToolbar->HideTooltip();
             if( !g_pAboutDlg )
 #ifdef __WXOSX__
                 g_pAboutDlg = new about( GetPrimaryCanvas(), g_Platform->GetSharedDataDir() );
@@ -4390,6 +4393,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_PRINT: {
+            g_MainToolbar->HideTooltip();
             DoPrint();
             break;
         }
@@ -4412,6 +4416,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
+            g_MainToolbar->HideTooltip();
+            
             pRouteManagerDialog = RouteManagerDialog::getInstance( GetPrimaryCanvas() ); // There is one global instance of the Dialog
 
             if( pRouteManagerDialog->IsShown() )
@@ -4460,6 +4466,15 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
 
         case ID_MASTERTOGGLE:{
+            g_MainToolbar->HideTooltip();
+            
+            wxString tip = _("Show Toolbar");
+            if(!g_bmasterToolbarFull)
+                tip = _("Hide Toolbar");
+            if( g_MainToolbar->GetToolbar() )
+                g_MainToolbar->GetToolbar()->SetToolShortHelp( ID_MASTERTOGGLE, tip );
+            
+            
             g_bmasterToolbarFull = !g_bmasterToolbarFull;
 
 #ifdef __WXOSX__            
@@ -4535,6 +4550,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             //        If found, make the callback.
             //        TODO Modify this to allow multiple tools per plugin
             if( g_pi_manager ) {
+                g_MainToolbar->HideTooltip();
+                
                 ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
                 for( unsigned int i = 0; i < tool_array.size(); i++ ) {
                     PlugInToolbarToolContainer *pttc = tool_array[i];
@@ -9630,7 +9647,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 #endif
 
     CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Menu In") ) << _T(" (+)");
+    tipString = wxString( _("Hide Toolbar") ) ;
     tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("MUI_menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
