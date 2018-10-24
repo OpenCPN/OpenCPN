@@ -1017,8 +1017,11 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     if(!event.GetActive())
     {
 //        printf("App de-activate\n");
-        gFrame->SubmergeAllToolbars();
+        gFrame->SubmergeAllCanvasToolbars();
 
+        if(g_MainToolbar){
+            g_MainToolbar->Submerge();
+        }            
 
         AppActivateList.Clear();
         // ..For each canvas...
@@ -1049,10 +1052,10 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     {
         if(gFrame){
 //        printf("App Activate\n");
-            gFrame->SubmergeAllToolbars();          // This is needed to reset internal wxWidgets logic
+            gFrame->SubmergeAllCanvasToolbars();          // This is needed to reset internal wxWidgets logic
                                                     // Also required for other TopLevelWindows here
                                                     // reportedly not required for wx 2.9
-            gFrame->SurfaceAllToolbars();
+            gFrame->SurfaceAllCanvasToolbars();
 
             wxWindow *pOptions = NULL;
 
@@ -1070,6 +1073,12 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 pOptions->Raise();
             else
                 gFrame->Raise();
+            
+            if(g_MainToolbar){
+                g_MainToolbar->Surface();
+                g_MainToolbar->Raise();
+                //g_MainToolbar->Show();
+            }
         }
     }
 #endif
@@ -2837,8 +2846,20 @@ void MyFrame::OnActivate( wxActivateEvent& event )
                                      // after minimize/maximize.
 
 #ifdef __WXOSX__
-    if(event.GetActive())
-        SurfaceAllToolbars();
+    if(event.GetActive()){
+        SurfaceAllCanvasToolbars();
+    
+        if(g_MainToolbar)
+            g_MainToolbar->Surface();
+        
+               // ..For each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc && cc->GetMUIBar())
+                cc->GetMUIBar()->Show();  
+        }
+
+    }
 #endif
 
     event.Skip();
@@ -4441,7 +4462,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MASTERTOGGLE:{
             g_bmasterToolbarFull = !g_bmasterToolbarFull;
 
+#ifdef __WXOSX__            
+            m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+#else                
             m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
+#endif            
             ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
             
             break;
@@ -4688,7 +4713,7 @@ void MyFrame::ToggleFullScreen()
 
     ShowFullScreen( to, style );
     UpdateAllToolbars( global_color_scheme );
-    SurfaceAllToolbars();
+    SurfaceAllCanvasToolbars();
     UpdateControlBar( GetPrimaryCanvas());
     Layout();
     TriggerRecaptureTimer();
@@ -5542,7 +5567,7 @@ void MyFrame::InvalidateAllCanvasUndo()
     
     
 
-void MyFrame::SubmergeAllToolbars( void )
+void MyFrame::SubmergeAllCanvasToolbars( void )
 {
     // .. for each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -5552,7 +5577,7 @@ void MyFrame::SubmergeAllToolbars( void )
     }
 }
 
-void MyFrame::SurfaceAllToolbars( void )
+void MyFrame::SurfaceAllCanvasToolbars( void )
 {
     if(g_bshowToolbar){
         // .. for each canvas...
@@ -5687,6 +5712,18 @@ int MyFrame::DoOptionsDialog()
     }
 #endif
 
+#ifdef __WXOSX__
+       // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc && cc->GetMUIBar())
+            cc->GetMUIBar()->Hide();  
+    }
+    
+    SubmergeAllCanvasToolbars();
+    g_MainToolbar->Submerge();
+#endif        
+
     g_options->SetInitialPage(options_lastPage );
 
     if(!g_bresponsive){
@@ -5744,7 +5781,7 @@ int MyFrame::DoOptionsDialog()
 
     if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
         g_MainToolbar->Surface();
-        SurfaceAllToolbars();
+        SurfaceAllCanvasToolbars();
         GetPrimaryCanvas()->SetFocus();
     }
 
@@ -6575,7 +6612,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
             // needed to ensure that the chart window starts with keyboard focus
-            SurfaceAllToolbars();
+            SurfaceAllCanvasToolbars();
             break;
         }
 
@@ -6786,10 +6823,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     //    They will be re-Show()-n in MyFrame::OnActivate()
     if(IsIconized())
     {
-        if(g_MainToolbar) {
-            if(g_MainToolbar->IsShown())
-            g_MainToolbar->Submerge();
-        }
+         if(g_MainToolbar) {
+             if(g_MainToolbar->IsShown())
+             g_MainToolbar->Submerge();
+         }
 
         AppActivateList.Clear();
         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -7851,7 +7888,7 @@ void MyFrame::DoPrint( void )
      */
 
     #ifdef __WXGTK__
-    SurfaceAllToolbars();
+    SurfaceAllCanvasToolbars();
     GetPrimaryCanvas()->SetFocus();
     Raise();                      // I dunno why...
     #endif
@@ -9363,7 +9400,7 @@ void MyFrame::applySettingsString( wxString settings)
         RequestNewMasterToolbar( true );
     }
 
-    SurfaceAllToolbars();
+    SurfaceAllCanvasToolbars();
 
     gFrame->Raise();
 
@@ -11304,7 +11341,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 
 #ifdef __WXOSX__
     if(gFrame && b_toolviz)
-        gFrame->SurfaceAllToolbars();
+        gFrame->SurfaceAllCanvasToolbars();
 
     if(parent){
         parent->Raise();

@@ -430,8 +430,8 @@ class MyFrame: public wxFrame
     void ShowTides(bool bShow);
     void ShowCurrents(bool bShow);
 
-    void SubmergeAllToolbars(void);
-    void SurfaceAllToolbars(void);
+    void SubmergeAllCanvasToolbars(void);
+    void SurfaceAllCanvasToolbars(void);
     void ToggleAllToolbars( bool b_smooth = false );
     void SetAllToolbarScale(void);
     void SetGPSCompassScale(void);

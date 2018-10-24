@@ -354,6 +354,10 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoin
     //wxWindow::Create(parent, id, pos, size, style, name);
     //long mstyle = wxSIMPLE_BORDER;
     long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+
+#ifdef __WXOSX__
+    mstyle |= wxSTAY_ON_TOP;
+#endif
     
     wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
     Init();
