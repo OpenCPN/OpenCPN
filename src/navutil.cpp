@@ -1231,7 +1231,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     while( bContk ) {
         Read( strk, &kval );
         bNewKey = FontMgr::Get().AddAuxKey(kval);
-        if(!bNewKey) {
+        if(!bAsTemplate && !bNewKey) {
             DeleteEntry( strk );
             dummyk--;
         }

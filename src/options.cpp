@@ -3105,6 +3105,9 @@ void options::OnApplyConfig( wxCommandEvent &event)
     if(m_selectedConfigPanelGUID.IsEmpty())
         return;
 
+    // Record a few special items
+    wxString currentLocale = g_locale;
+        
     //  Apply any changed settings other than the target config template.
     wxCommandEvent evt;
     evt.SetId(ID_APPLY);
@@ -3132,6 +3135,9 @@ void options::OnApplyConfig( wxCommandEvent &event)
     m_selectedConfigPanelGUID = wxEmptyString;
     
     m_returnChanges |= CONFIG_CHANGED;
+    
+    if(!currentLocale.IsSameAs(g_locale))
+        m_returnChanges |= LOCALE_CHANGED;
     
     Finish();
 }
