@@ -827,6 +827,16 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
         case  38400: baud_parm =  B38400; break;
         case  57600: baud_parm =  B57600; break;
         case 115200: baud_parm = B115200; break;
+// Some POSIX systems have higher possible baud rates
+#ifdef B230400
+        case 230400: baud_parm = B230400; break;
+#endif /* B230400 */
+#ifdef B460800
+        case 460800: baud_parm = B460800; break;
+#endif /* B460800 */
+#ifdef B921600
+        case 921600: baud_parm = B921600; break;
+#endif /* B921600 */
         
         default: baud_parm = B4800; break;
     }
