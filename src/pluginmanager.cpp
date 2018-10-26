@@ -4410,6 +4410,12 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
                 }
             }
             
+            m_overlayENC = false;
+            if(m_ChartFamily == PI_CHART_FAMILY_VECTOR){
+                wxCharBuffer buf = m_FullPath.ToUTF8();
+                m_overlayENC = s57chart::IsCellOverlayType( buf.data() );
+            }
+                
             bReadyToRender = m_ppicb->IsReadyToRender();
 
         }
@@ -4788,7 +4794,24 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
         if(Region.IsOk())
         {
             wxRegion *r = Region.GetNew_wxRegion();
-            dc.SelectObject(m_ppicb->RenderRegionView( pivp, *r));
+            if(!m_overlayENC)
+                dc.SelectObject(m_ppicb->RenderRegionView( pivp, *r));
+            else{
+                wxBitmap &obmp = m_ppicb->RenderRegionView( pivp, *r);
+                
+                //    Create a mask to remove the NODTA areas from overlay cells.
+                wxColour nodat = GetGlobalColor( _T ( "NODTA" ) );
+                wxColour nodat_sub = nodat;
+            
+#ifdef ocpnUSE_ocpnBitmap
+                nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
+#endif
+                m_pMask = new wxMask( obmp, nodat_sub );
+                obmp.SetMask( m_pMask );
+                
+                dc.SelectObject(obmp);
+            }
+            
             delete r;
             return true;
         }
