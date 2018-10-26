@@ -271,7 +271,7 @@ bool Quilt::IsChartS57Overlay( int db_index )
         return false;
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry( db_index );
-    if( CHART_TYPE_S57 == cte.GetChartType() ){
+    if( CHART_FAMILY_VECTOR == cte.GetChartFamily() ){
         return  s57chart::IsCellOverlayType( cte.GetpFullPath() );
     }
     else
@@ -1554,7 +1554,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 #ifdef USE_S57
 
     //  If this is an S57 quilt, we need to know if there are overlays in it
-    if(  CHART_TYPE_S57 == m_reference_type ) {
+    if(  CHART_FAMILY_VECTOR == m_reference_family ) {
         for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
@@ -1626,7 +1626,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //  a geographical cell with the same extents.
             //  Overlays will be picked up in the next pass, if any are found
 #ifdef USE_S57
-            if(  CHART_TYPE_S57 == m_reference_type ) {
+            if(  CHART_FAMILY_VECTOR == m_reference_family ) {
                 if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
                     continue;
                 }
@@ -1678,7 +1678,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
     //  For S57 quilts, walk the list again to identify overlay cells found previously,
     //  and make sure they are always included and not eclipsed
-    if( b_has_overlays && (CHART_TYPE_S57 == m_reference_type) ) {
+    if( b_has_overlays && (CHART_FAMILY_VECTOR == m_reference_family) ) {
         for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
 
@@ -2222,13 +2222,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
         if( pc ) {
             m_max_error_factor = wxMax(m_max_error_factor, pc->GetChart_Error_Factor());
 #ifdef USE_S57
-            if( pc->GetChartType() == CHART_TYPE_S57 ) {
-                s57chart *ps57 = dynamic_cast<s57chart *>( pc );
-                if( ps57 ){
-                    pqp->b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                    if( pqp->b_overlay )
-                        m_bquilt_has_overlays = true;
-                }
+            if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                bool isOverlay = IsChartS57Overlay( pqp->dbIndex );
+                pqp->b_overlay = isOverlay;
+                if( isOverlay )
+                    m_bquilt_has_overlays = true;
             }
 #endif
         }
@@ -2404,8 +2402,16 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                         if( !get_region.Empty() ) {
 #ifdef USE_S57
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
-                            if (Chs57)
+                            if (Chs57){
                                 Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            }
+                            else{
+                                ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                                if(ChPI){
+                                    ChPI->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                                }
+                            }
+
 #endif
                             OCPNRegionIterator upd( get_screen_region );
                             while( upd.HaveRects() ) {

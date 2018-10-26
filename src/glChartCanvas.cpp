@@ -2720,6 +2720,13 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                     s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
                     if( Chs57 )
                         Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                    else{
+                        ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( pch );
+                        if(ChPI){
+                            ChPI->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                        }
+                    }
+
                 }
 #endif                
             }
