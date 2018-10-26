@@ -1136,7 +1136,19 @@ void StyleManager::SetStyle(wxString name)
 
     bool selectFirst = false;
 
-    if( name.Length() == 0 ) selectFirst = true;
+    // Verify the named style exists
+    //  If not, just use the "first" style
+    bool bstyleFound = false;
+    for( unsigned int i = 0; i < styles.Count(); i++ ) {
+        style = (Style*) ( styles.Item( i ) );
+        if( style->name == name ) {
+            bstyleFound = true;
+            break;
+        }
+    }
+
+    if( (name.Length() == 0) || !bstyleFound )
+        selectFirst = true;
 
     for( unsigned int i = 0; i < styles.Count(); i++ ) {
         style = (Style*) ( styles[i] );
