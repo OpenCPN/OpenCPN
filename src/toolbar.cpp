@@ -45,7 +45,7 @@
 #endif
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
 extern bool                       g_bTransparentToolbar;
