@@ -1,21 +1,25 @@
 opencpn (4.8.6~20180801.8d20a06+dfsg.1-1) unstable; urgency=medium
 
   * New upstream version
+  * Fix ITP bugs. (closes: #907065, closes: #538067).
   * README.harmonics: dropped, we now use the opencpn data.
   * README.lucid: dropped, outdated.
-  * Dropped all existing patches (outdated).
-  * Added ten patches (0001..0010) backported from current upstream/master.
+  * Drop all existing patches (outdated).
   * compat level bumped to 9.
+  * The copyright file is updated and now also supports the repacked source,
+    but #831870 makes it necessary to use get-orig-source.
+  * Add 14 patches (0001..0014) backported from current upstream/master,
+    mostly build fixes.
+  * Add two patches currently in an upstream PR (0015, 0016).
+  * Add one downstream patch 0017.
+  * Patching includes flexible freedesktop plugin paths, see new manpage.
+  * The manpage  which used to be a debian patch is upstreamed.
   * The -doc package is dropped in favor of downloading the manual from
-    the opencon website. Added patch providing a HTML pointer-to-docs page.
+    the opencpn website. Downstream patch provides HTML pointer-to-docs page.
   * A large number of new build dependencies.
   * The -plugins package is dropped, opencpn is not usable without the
     default, limited set of plugins.
-  * The copyright file is updated and now also supports creating a tarball
-    without sources unusable in the Debian context with get-orig-source.
-  * The manpage  which used to be a debian patch is upstreamed.
-  * A debian/upstream/metadata file added.
-  * Closing ITP. (Closes: #907065)
+  * A debian/upstream/metadata file is added.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sat, 06 Oct 2018 13:38:05 -0400
 
