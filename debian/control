@@ -3,7 +3,7 @@ Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
 Uploaders: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper (>= 11),
+Build-Depends: debhelper (>= 9),
  cmake,
  desktop-file-utils,
  libarchive-dev,

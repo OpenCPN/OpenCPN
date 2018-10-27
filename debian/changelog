@@ -5,7 +5,7 @@ opencpn (4.8.6~20180801.8d20a06+dfsg.1-1) unstable; urgency=medium
   * README.lucid: dropped, outdated.
   * Dropped all existing patches (outdated).
   * Added ten patches (0001..0010) backported from current upstream/master.
-  * compat level bumped to 11.
+  * compat level bumped to 9.
   * The -doc package is dropped in favor of downloading the manual from
     the opencon website. Added patch providing a HTML pointer-to-docs page.
   * A large number of new build dependencies.
