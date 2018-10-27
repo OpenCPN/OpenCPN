@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-04-16 21:57-0400\n"
+"PO-Revision-Date: 2018-10-27 01:03\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -76,7 +76,7 @@ msgstr "WMM valinnat"
 
 #: src/wmm_pi.h:79 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
-msgstr "Magneettiset piirto asetukset"
+msgstr "Magneettiset piirtoasetukset"
 
 #: src/WmmUIDialog.cpp:26
 msgid "Boat"
@@ -96,7 +96,7 @@ msgstr "H "
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
-msgstr "Vaaka intensiteetti"
+msgstr "Vaakaintensiteetti"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
@@ -120,11 +120,11 @@ msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
-msgstr "Pysty komponentti"
+msgstr "Pystykomponentti"
 
 #: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
 msgid "Incl"
-msgstr "Lisäys"
+msgstr "Kaltevuus"
 
 #: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
 msgid "(DIP) - Geomagnetic Inclination "
@@ -132,15 +132,15 @@ msgstr "(DIP) - Geomagneettinen kaltevuus "
 
 #: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
 msgid "Vari"
-msgstr "Vaihtelu"
+msgstr "Eranto"
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr "Magneettinen vaihtelu"
+msgstr "Magneettinen eranto"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
-msgstr "Kohdistin"
+msgstr "Kursori"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
@@ -160,7 +160,7 @@ msgstr "Laajennettu"
 
 #: src/WmmUIDialog.cpp:274
 msgid "Variation only"
-msgstr "Vain vaihtelu"
+msgstr "Vain eranto"
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
@@ -172,7 +172,7 @@ msgstr "Näytä piirtovaihtoehdot"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
-msgstr "Näyttää myös tietoja kohdistimen sijainnista"
+msgstr "Näytä myös tietoja kursorin sijainnissa"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
@@ -188,7 +188,7 @@ msgstr "Ikkunoiden läpinäkyvyys"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Variation"
-msgstr "Vaihtelu"
+msgstr "Eranto"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
@@ -212,7 +212,7 @@ msgstr "Askelkoko"
 
 #: src/WmmUIDialog.cpp:377
 msgid "Pole Accuracy"
-msgstr "Napa tarkkuus"
+msgstr "Napatarkkuus"
 
 #: src/WmmUIDialog.cpp:381
 msgid "About"
@@ -228,5 +228,5 @@ msgstr "Peruuta"
 
 #: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
-msgstr "Rakennetaan magneettinen kartta"
+msgstr "Muodostetaan magneettinen kartta"
 

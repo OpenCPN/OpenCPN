@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-04-16 21:57-0400\n"
+"PO-Revision-Date: 2018-10-27 01:02\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -48,11 +48,11 @@ msgstr "Ei kelvollista GRIB tiedostoa"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
 msgid "Hide data at cursor"
-msgstr "Piilota tiedot kohdistimen kohdalla"
+msgstr "Piilota tiedot kursorin sijainnissa"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
 msgid "Show data at cursor"
-msgstr "Näytä tiedot kohdistimen kohdalla"
+msgstr "Näytä tiedot kursorin sijainnissa"
 
 #: src/GribUIDialog.cpp:649 src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1168
 msgid "Start play back"
@@ -60,7 +60,7 @@ msgstr "Aloita toisto"
 
 #: src/GribUIDialog.cpp:801 src/grib_pi.cpp:389 src/CursorData.cpp:578
 msgid "Menu"
-msgstr "Valikkko"
+msgstr "Valikko"
 
 #: src/GribUIDialog.cpp:840
 msgid "Select geopotential altitude"
@@ -92,7 +92,7 @@ msgstr "Asetukset"
 
 #: src/GribUIDialog.cpp:855
 msgid "Draw requested Area or Click here to stop request"
-msgstr "Piirrä pyydetty alue tai napsautus tästä pysäyttää pyynön"
+msgstr "Piirrä pyydetty alue tai klikkaa tästä pysäyttääksesi pyynnön"
 
 #: src/GribUIDialog.cpp:1393 src/GribUIDialog.cpp:1414
 msgid "Select a GRIB file"
@@ -129,7 +129,7 @@ msgstr "km/h"
 
 #: src/GribSettingsDialog.cpp:31
 msgid "Beaufort"
-msgstr "Beaufort"
+msgstr "Boforia"
 
 #: src/GribSettingsDialog.cpp:32
 msgid "MilliBars"
@@ -199,7 +199,7 @@ msgstr "Aallot"
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:473
 #: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1775
 msgid "Current"
-msgstr "Virta"
+msgstr "Nykyhetki"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:489
 #: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1762
@@ -244,16 +244,16 @@ msgstr "mn"
 
 #: src/GribSettingsDialog.cpp:552
 msgid "Apply"
-msgstr "Lisää"
+msgstr "Käytä"
 
 #: src/GribSettingsDialog.cpp:742 src/GribSettingsDialog.cpp:751
 #: src/CursorData.cpp:495 src/CursorData.cpp:501
 msgid "Display Isotachs"
-msgstr "Näytä Isotachs"
+msgstr "Isotachs - alueet, joissa tuuli on sama"
 
 #: src/GribSettingsDialog.cpp:758 src/CursorData.cpp:506
 msgid "Display Isobars"
-msgstr "Näytä painekäyrät"
+msgstr "Isobaarit - käyrät, missä paine on sama"
 
 #: src/GribSettingsDialog.cpp:777 src/CursorData.cpp:511
 msgid "Display Isotherms"
@@ -266,29 +266,29 @@ msgstr "Näytä konvektiokäyrät"
 #: src/GribSettingsDialog.cpp:790 src/GribSettingsDialog.cpp:858
 #: src/GribUIDialogBase.cpp:818
 msgid "Spacing"
-msgstr "Välistys"
+msgstr "Erottelu"
 
 #: src/GribSettingsDialog.cpp:873
 msgid "You want to remove the dialog title/drag bar\n"
-msgstr "Haluat poistaa valintaikkunan otsikko/vetopalkin\n"
+msgstr "Työkaluikkunasta poistetaan otsikkopalkki\n"
 
 #: src/GribSettingsDialog.cpp:875
 msgid "You want to add a title/drag bar to the dialog\n"
-msgstr "Haluat lisätä otsikko/veto palkin valintaan\n"
+msgstr "Työkaluikkunaan lisätään otsikkopalkki\n"
 
 #: src/GribSettingsDialog.cpp:878
 msgid "This change needs a complete reload.\n"
 "It will be applied after closing and re-opening the plugin"
-msgstr "Tämä muutos tarvitse täydellisen uusintalatauksen. \n"
-"käyttöönotto tapahtuu, kun lisäosa suljetaan ja käynnistetään uudelleen"
+msgstr "Tämä muutos vaatii täydellisen uusintalatauksen. \n"
+"Muutokset otetaan käyttöön, kun lisäosa suljetaan ja käynnistetään uudelleen"
 
 #: src/GribSettingsDialog.cpp:898
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr "Olet päättänyt sallia interpoloinnin.\n"
-"Älä unohda, että näytetty tieto ei ole todellista vaan laskenallista\n"
-"ja tämä voi vähentää tarkkuutta!"
+msgstr "Olet sallinut interpoloinnin.\n"
+"Muista että näytetty tieto on laskennallista,\n"
+"mikä voi vähentää tarkkuutta!"
 
 #: src/GribSettingsDialog.cpp:899 src/GribSettingsDialog.cpp:945
 #: src/grib_pi.cpp:704 src/GribRequestDialog.cpp:637
@@ -299,9 +299,9 @@ msgstr "Varoitus!"
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr "Tämä vaihtoehto ehdottaa intrepolointilupaa\n"
-"Älä unohda, että tiedot eivät ole todellisia vaan laskennallisia\n"
-"ja tämä voi vähentää tarkkuutta!"
+msgstr "Asetus sallii interpoloinnin.\n"
+"Muista että näytetty tieto on laskennallista,\n"
+"mikä voi vähentää tarkkuutta!"
 
 #: src/GribUIDialogBase.cpp:35 src/GribUIDialogBase.cpp:152
 msgid "Previous"
@@ -317,7 +317,7 @@ msgstr "Valitse geopotentiaalinen korkeusasema"
 
 #: src/GribUIDialogBase.cpp:445
 msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Keskimääräinenpaine merenpinnan tasolla (MSLP)"
+msgstr "Keskimääräinen paine merenpinnan tasolla (MSLP)"
 
 #: src/GribUIDialogBase.cpp:459
 msgid "Significant Wave Height"
@@ -341,7 +341,7 @@ msgstr "Pintavirran suunta"
 
 #: src/GribUIDialogBase.cpp:493
 msgid "Cumulative Rainfall per Hour"
-msgstr "Kumulatiivinen sademäärä / tunti"
+msgstr "Kumulatiivinen sademäärä tunnissa"
 
 #: src/GribUIDialogBase.cpp:517 src/GribUIDialogBase.cpp:899
 msgid "Air Temp"
@@ -381,7 +381,7 @@ msgstr "Yksiköt"
 
 #: src/GribUIDialogBase.cpp:760 src/CursorData.cpp:494
 msgid "Barbed Arrows"
-msgstr "Nuolissa on väkäset"
+msgstr "Tuulinuolet"
 
 #: src/GribUIDialogBase.cpp:767
 msgid "Default Colour"
@@ -416,7 +416,7 @@ msgstr "samapainekäyrä"
 
 #: src/GribUIDialogBase.cpp:838 src/CursorData.cpp:524 src/CursorData.cpp:529
 msgid "Direction Arrows"
-msgstr "Suunta nuolet"
+msgstr "Suuntanuolet"
 
 #: src/GribUIDialogBase.cpp:845
 msgid "Single Arrow"
@@ -442,7 +442,7 @@ msgstr "Pieni koko"
 #: src/CursorData.cpp:515 src/CursorData.cpp:520 src/CursorData.cpp:525
 #: src/CursorData.cpp:530
 msgid "OverlayMap"
-msgstr "Peittokuvakartta"
+msgstr "Peittokuva"
 
 #: src/GribUIDialogBase.cpp:895
 msgid "Colors"
@@ -460,7 +460,7 @@ msgstr "Numerot"
 
 #: src/GribUIDialogBase.cpp:932 src/CursorData.cpp:498 src/CursorData.cpp:532
 msgid "Particle Map"
-msgstr "Lisäosa kartta"
+msgstr "Hiukkaskartta"
 
 #: src/GribUIDialogBase.cpp:935
 msgid "Density"
@@ -468,7 +468,7 @@ msgstr "Tiheys"
 
 #: src/GribUIDialogBase.cpp:956
 msgid "Transparency for all Overlay Maps"
-msgstr "Kaikkien päällyskarttojen läpinäkyvyys"
+msgstr "Kaikkien peittokuvien läpinäkyvyys"
 
 #: src/GribUIDialogBase.cpp:963
 msgid "Overlay Transparency (%)"
@@ -484,7 +484,7 @@ msgstr "Toiston asetukset"
 
 #: src/GribUIDialogBase.cpp:1000
 msgid "Speed Control"
-msgstr "Nopeudensäätö"
+msgstr "Nopeuden säätö"
 
 #: src/GribUIDialogBase.cpp:1012
 msgid "Slow"
@@ -508,7 +508,7 @@ msgstr "Grib-tiedoston yläosa"
 
 #: src/GribUIDialogBase.cpp:1040
 msgid "Current time forecast"
-msgstr "Virran aika ennuste"
+msgstr "Nykyhetken ennuste"
 
 #: src/GribUIDialogBase.cpp:1048
 msgid "Interpolate between gribs"
@@ -528,31 +528,31 @@ msgstr "Dialogien tyyli"
 
 #: src/GribUIDialogBase.cpp:1095
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr "Kursorin ikkunan tieto liitetää kuvakeriville - ilman otsake/vetoriviä"
+msgstr "Kursorin sijainnin tiedot näytetään työkaluikkunassa, joka sisältää otsikkopalkin"
 
 #: src/GribUIDialogBase.cpp:1098
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr "Kursorin ikkunan tieto liitetää kuvakeriville - ilman otsake/vetoriviä"
+msgstr "Kursorin sijainnin tiedot näytetään työkaluikkunassa, joka ei sisällä otsikkopalkkia"
 
 #: src/GribUIDialogBase.cpp:1101
 msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr "Kursorin ikkunan tieto on eristetty ja näytetään vaakasuorana"
+msgstr "Kursorin sijainnin tiedot näytetään vaakasuoraan omassa ikkunassa"
 
 #: src/GribUIDialogBase.cpp:1104
 msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr "Kursorin ikkunan tieto on eristetty ja näytetään pystysuorana"
+msgstr "Kursorin sijainnin tiedot näytetään pystysuoraan omassa ikkunassa"
 
 #: src/GribUIDialogBase.cpp:1117
 msgid "Buttons Visibility"
-msgstr "Painikkeiden näkyvyys"
+msgstr "Työkaluikkunan painikkeiden näkyvyys"
 
 #: src/GribUIDialogBase.cpp:1131
 msgid "Attached icon bar"
-msgstr "Liittetty kuvakerivin"
+msgstr "Yhdistettynä"
 
 #: src/GribUIDialogBase.cpp:1136
 msgid "Isolated icon bar"
-msgstr "Eristetty kuvakerivi"
+msgstr "Eristettynä"
 
 #: src/GribUIDialogBase.cpp:1144
 msgid "Geopot. Height Choice"
@@ -564,7 +564,7 @@ msgstr "Zoomaa keskelle"
 
 #: src/GribUIDialogBase.cpp:1192
 msgid "Show Cursor Data"
-msgstr "Näytä kohdistin tiedot"
+msgstr "Kursorin sijainnin tietojen näyttö"
 
 #: src/GribUIDialogBase.cpp:1224
 msgid "Time Slider"
@@ -596,11 +596,11 @@ msgstr "Käytä asteittaisia värejä"
 
 #: src/GribUIDialogBase.cpp:1398
 msgid "Copy First Cumulative Missing Record"
-msgstr "Kopioi ensimmäinen puuttuva kasaantuva tiedosto"
+msgstr "Kopioi ensimmäinen puuttuva kumuloituva tietue"
 
 #: src/GribUIDialogBase.cpp:1401
 msgid "Copy Missing Wave Records"
-msgstr "Kopioi puuttuvat wave tiedostot"
+msgstr "Kopioi puuttuvat aaltotietueet"
 
 #: src/GribUIDialogBase.cpp:1404
 msgid "Draw Barbed Arrows Head"
@@ -616,7 +616,7 @@ msgstr "Lataa viimeinen avattu tiedosto"
 
 #: src/GribUIDialogBase.cpp:1414
 msgid "Load File Options"
-msgstr "Lataa tiedostovaihtoehdot"
+msgstr "Tiedostojen latausvaihtoehdot"
 
 #: src/GribUIDialogBase.cpp:1418
 msgid "Start at the first forecast in GRIB file"
@@ -628,7 +628,7 @@ msgstr "Aloita lähimmästä nykyhetken ennusteesta"
 
 #: src/GribUIDialogBase.cpp:1418
 msgid "Authorize Interpolation to start at current time"
-msgstr "Anna interpoloinnin alkaa tästä hetkestä"
+msgstr "Anna interpoloinnin alkaa nykyhetkestä"
 
 #: src/GribUIDialogBase.cpp:1420
 msgid "Start Options"
@@ -644,7 +644,7 @@ msgstr "UTC"
 
 #: src/GribUIDialogBase.cpp:1426
 msgid "Time Options"
-msgstr "Time valinnat"
+msgstr "Aika-asetukset"
 
 #: src/GribUIDialogBase.cpp:1476
 msgid "Profile"
@@ -768,7 +768,7 @@ msgstr "Ilman lämpötila(2m)"
 
 #: src/GribUIDialogBase.cpp:1772
 msgid "Sea Temperature(surf.)"
-msgstr "Merin lämpötila(pinta)"
+msgstr "Meren pintalämpötila"
 
 #: src/GribUIDialogBase.cpp:1802
 msgid "Geopotential Height"
@@ -838,7 +838,7 @@ msgstr "Varoitus: Tietoa Geopotentiaalisesta korkeudesta"
 
 #: src/GribOverlayFactory.cpp:1099
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "IsoBar ei kykene laskemaan magnitude tiedostoa"
 
 #: src/GribOverlayFactory.cpp:1124
 msgid "Building Isobar map"
@@ -846,7 +846,7 @@ msgstr "Mudostetaan Isobaari kartta"
 
 #: src/GribOverlayFactory.cpp:1404
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "OverlayMap ei kykene laskemaan magnitude tiedostoa"
 
 #: src/GribOverlayFactory.cpp:1452
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -866,7 +866,7 @@ msgstr "Zoomaa tai suurenna mittakaavaa, nähdäksesi näkymättömät peittokuv
 
 #: src/GribOverlayFactory.cpp:1519
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "GribNumbers ei kykene laskemaan magnitude tiedostoa"
 
 #: src/grib_pi.cpp:137
 msgid "Grib"
@@ -892,7 +892,7 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "GRIB moduuli  OpenCPN:lle\n"
+msgstr "GRIB moduuli OpenCPN:lle\n"
 "Näyttää kartalla perusGRIB-tiedon usean tyyppisistä tiedostoista\n"
 "ja sisältää toiminnon, jolla voi hakea GRIB-tiedostoja spostilla.\n\n"
 "Tukee seuraavia GRIB-tiedon sisältöjä:\n"
@@ -904,7 +904,7 @@ msgstr "GRIB moduuli  OpenCPN:lle\n"
 "- merkitsevä aallonkorkeus ja suunta\n"
 "- ilman pintalämpötila (2 m)\n"
 "- pintaveden lämpötila\n"
-"-virran nopeus ja suunta\n"
+"-pintavirran nopeus ja suunta\n"
 "- Konvektiivinen saatavilla oleva energia (CAPE)\n"
 "- tuuli, korkeus, lämpötila ja suhteellinen kosteus 300, 500, 700, 850 hPa."
 
@@ -938,11 +938,11 @@ msgstr "Aallot,Suunta"
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "Aallot,Kork"
 
 #: src/GribTable.cpp:143
 msgid "Waves,Per"
-msgstr ""
+msgstr "Waves,Per"
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
@@ -1014,7 +1014,7 @@ msgstr "Max"
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr "Ennen kuin lähetät sähköpostia Zygrib:lle sinun täytyy syöttää käyttäjätunnus ja koodi. \n"
-"Ole hyvä ja käy www.zygrib.org/ ja seuraa ohjeita..."
+"Ole hyvä ja mene sivustolle www.zygrib.org/ ja seuraa ohjeita..."
 
 #: src/GribRequestDialog.cpp:963
 msgid "Too big file! zyGrib limit is 2Mb!"
@@ -1062,7 +1062,7 @@ msgstr "Pyyntöä ei voitu lähettää. Tarkista sähköpostisysteemisi parametr
 
 #: src/CursorData.cpp:225
 msgid "Data at cursor position"
-msgstr "Tiedot kohdistimen sijainnissa"
+msgstr "Tiedot kursorin sijainnissa"
 
 #: src/CursorData.cpp:239
 msgid "at Geopotential Height"
