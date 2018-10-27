@@ -30,7 +30,7 @@ override_dh_auto_install:
 	# Move plugin documentation to proper location
 	-mv debian/tmp/usr/share/opencpn/sounds/README.bells \
 	    debian/tmp/usr/share/opencpn/tcdata/README.harmonics \
-	    debian/tmp/usr/share/opencpn/doc
+	    debian/tmp/usr/share/doc/opencpn
 	# Don't use the legacy appdata location
 	mkdir debian/tmp/usr/share/metainfo
 	-mv debian/tmp/usr/share/appdata/opencpn.appdata.xml \
@@ -56,6 +56,7 @@ get-orig-source:
 	rm -rf utmp; mkdir utmp
 	uscan  --destdir=utmp  --force-download --safe
 	cd utmp; \
+	    rm -rf $$(find . -mindepth 1 -maxdepth 1 -type d); \
 	    tar xaf *-*.tar.*z; \
 	    test -d OpenCPN-$(VERSION) || \
 	        mv $$(find . -mindepth 1 -maxdepth 1 -type d) \

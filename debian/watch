@@ -10,13 +10,17 @@ version=4
 # However, upstream  does not always tag the release. 
 # See:  https://github.com/OpenCPN/OpenCPN/issues/1132
 
-
-# Pre/post-release  git snapshots
+# Upstream release based on a branch, no tag. Requires a recent uscan,
+# devscripts-2.17.12 is known to be OK.
 #
-#  opts="mode=git,pretty=0~%cd.%h,\
-#    dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
-#      https://github.com/OpenCPN/OpenCPN.git HEAD
+opts="mode=git,pretty=4.8.6~%cd.%h,\
+    dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
+        https://github.com/OpenCPN/OpenCPN.git heads/o486
 
-opts="dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
-http://sf.net/opencpn/OpenCPN-([\d\.]+)-Source\.tar\.gz
+# Pre/post-release git snapshots
+#
+# opts="mode=git,pretty=0~%cd.%h,\
+#     dversionmangle=s/\+dfsg.[0-9]$//,repacksuffix=+dfsg.1" \
+#         https://github.com/OpenCPN/OpenCPN.git HEAD
+
 

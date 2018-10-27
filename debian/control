@@ -13,6 +13,7 @@ Build-Depends: debhelper (>= 11),
  libexif-dev,
  libgdk-pixbuf2.0-dev,
  libgtk-3-dev,
+ liblz4-dev,
  liblzma-dev,
  libpango1.0-dev,
  libsqlite3-dev,
@@ -20,7 +21,7 @@ Build-Depends: debhelper (>= 11),
  libunarr-dev,
  libwxgtk3.0-dev,
  libwxgtk3.0-gtk3-dev,
-# libwxsvg-dev, ## under review.
+ libwxsvg-dev,
  portaudio19-dev
 Standards-Version: 4.2.1
 Homepage: http://opencpn.org

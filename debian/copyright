@@ -3,15 +3,17 @@ Upstream-Name: OpenCPN
 Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: http://www.opencpn.org
 Files-Excluded: .*
- buildosx/*
- buildandroid/*
- buildwin/*
- data/doc/*
+ buildosx*
+ buildandroid*
+ buildwin*
+ data/doc*
  include/tinyxml.h
- plugins/chartdldr_pi/src/tinyxml/*
- plugins/chartdldr_pi/src/unarr/*
- plugins/grib_pi/src/bzip2/*
+ plugins/chartdldr_pi/src/tinyxml*
+ plugins/chartdldr_pi/src/unarr*
+ plugins/grib_pi/src/bzip2*
+ src/texcmp/lz4*
  src/tinyxml*
+ src/wxsvg* 
 
 Files: *
 Copyright: 2000-2018 The OpenCPN Authors
@@ -157,11 +159,6 @@ Copyright: 2006, Simon Brown si@sjbrown.co.uk
   2013, Bartosz Taudul <wolf.pld@gmail.com>
 License: Expat
 
-Files: src/texcmp/lz4/*
-Copyright: 2011-2013, Yann Collet.
-  2011-2014, Yann Collet.
-License: BSD-2-clause
-
 Files: Curl.cmake
  plugins/chartdldr_pi/cmake/PluginConfigure.cmake
  plugins/chartdldr_pi/cmake/PluginInstall.cmake
@@ -207,59 +204,6 @@ Copyright: 2007, The Khronos Group Inc.
   2008-2009, The Khronos Group Inc.
   2013, The Khronos Group Inc.
 License: MIT-KHRONOS
-
-Files: src/wxsvg/*
-Copyright: (c) 2005 Alex Thuering
-Comment: GPLv2+ with some relaxed conditions
-License: wxWidgets
-
-Files: src/wxsvg/include/wxSVG/ExifHandler.h
- src/wxsvg/include/wxSVG/imagsvg.h
- src/wxsvg/include/wxSVG/mediadec_ffmpeg.h
- src/wxsvg/src/ExifHandler.cpp
- src/wxsvg/src/SVGAnimateMotionElement.cpp
- src/wxsvg/src/SVGCanvasItem.cpp
- src/wxsvg/src/imagsvg.cpp
- src/wxsvg/src/mediadec_ffmpeg.cpp
-Copyright: (c) Alex Thuering
-License: wxWidgets
-
-Files: src/wxsvg/include/wxSVGXML/svgxml.h
- src/wxsvg/include/wxSVGXML/svgxmlhelpr.h
- src/wxsvg/src/svgxml/svgxml.cpp
- src/wxsvg/src/svgxml/svgxmlhelpr.cpp
-Copyright: (c) 2000 Vaclav Slavik
-License: wxWidgets
-
-Files: src/wxsvg/src/cairo/SVGCanvasImageCairo.cpp
- src/wxsvg/src/cairo/SVGCanvasImageCairo.h
- src/wxsvg/src/cairo/SVGCanvasTextCairo.cpp
- src/wxsvg/src/cairo/SVGCanvasTextCairo.h
-Copyright: (c) 2011 Alex Thuering
-License: wxWidgets
-
-Files: src/wxsvg/include/wxSVG/SVGAnimatedType.h
- src/wxsvg/src/SVGAnimateTransformElement.cpp
- src/wxsvg/src/SVGAnimatedType.cpp
-Copyright: (c) 2014 Alex Thuering
-License: wxWidgets
-
-Files: src/wxsvg/include/wxSVG/SVGCoordinates.h
- src/wxsvg/src/SVGFitToViewBox.cpp
-Copyright: (c) 2006 Alex Thuering
-License: wxWidgets
-
-Files: src/wxsvg/include/wxSVG/NodeListCls.h
-Copyright: (c) 2005 Jonathan Hurtrel
-License: wxWidgets
-
-Files: src/wxsvg/src/SVGRadialGradientElement.cpp
-Copyright: (c) 2012 Alex Thuering
-License: wxWidgets
-
-Files: src/wxsvg/src/NodeList.cpp
-Copyright: (c) 2005 Edouard TISSERANT
-License: wxWidgets
 
 Files: include/crashprint.h src/crashprint.cpp
 Copyright: (c) 2004 wxCode
