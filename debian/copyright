@@ -170,7 +170,7 @@ Files: Curl.cmake
  plugins/wmm_pi/cmake/PluginConfigure.cmake
  plugins/wmm_pi/cmake/PluginInstall.cmake
  plugins/wmm_pi/cmake/PluginPackage.cmake
-Copyright: APvel Xalian
+Copyright: Pavel Xalian
 License: GPL-3+
 
 Files: src/garmin/jeeps/*
@@ -285,6 +285,7 @@ License: GPL-3+
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
 
+
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -294,6 +295,7 @@ License: LGPL-2+
  On Debian systems, the full text of the Lesser GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/LGPL-2'.
+
 
 License: wxWidgets
  wxWindows Library License, Version 3.1
@@ -470,6 +472,7 @@ License: Jasper
  RISK ACTIVITIES").  THE COPYRIGHT HOLDERS SPECIFICALLY DISCLAIM ANY
  EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
 
+
 License: BSD-2-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -530,6 +533,7 @@ License: BSD-CMAKE
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+
 
 License: MIT-KHRONOS
  Permission is hereby granted, free of charge, to any person obtaining a
