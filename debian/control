@@ -36,6 +36,7 @@ Depends:
  ${shlibs:Depends}, ${misc:Depends}
 Breaks: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
 Replaces: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
+Suggests: binutils
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
