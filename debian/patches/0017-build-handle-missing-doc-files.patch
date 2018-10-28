@@ -2,6 +2,9 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Sat, 15 Sep 2018 07:29:15 -0400
 Subject: build: handle missing doc/ files.
 
+This is a downstream patch handling the fact that we exclude the
+generated docs for various packaging reeasons. It is not, and will
+probably never be, acceptable upstream.
 ---
  data/doc/help_web.html | 51 ++++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 51 insertions(+)

@@ -2,6 +2,9 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Tue, 28 Aug 2018 08:50:01 +0200
 Subject: Build: Streamline some diagnostics, print cmake version.
 
+Origin: upstream https://github.com/OpenCPN/OpenCPN/commit/d4059ec067567
+Applied-Upstream: 5.0.0
+
 cmake version is needed when building on remote builders.
 Change messages about "library not found" the more
 meaningful "using bundled library...". Use the term bundled
@@ -12,7 +15,7 @@ consistently.
  2 files changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4bd2dbb..b702c42 100644
+index c26fe24..1117a72 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -40,6 +40,7 @@ ENDIF (COMMAND cmake_policy)
@@ -34,7 +37,7 @@ index 4bd2dbb..b702c42 100644
      ENDIF(OCPN_USE_EXTERN_CURL)
      SET(SRC_WXCURL
          src/wxcurl/base.cpp
-@@ -1271,13 +1272,13 @@ ENDIF(OPENGL_FOUND)
+@@ -1263,13 +1264,13 @@ ENDIF(OPENGL_FOUND)
  
  
  IF(TINYXML_FOUND)

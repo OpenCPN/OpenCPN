@@ -1,0 +1,28 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Fri, 23 Nov 2018 05:06:28 -0500
+Subject: Build: Add hooks to define wx-config options on build
+
+---
+ CMakeLists.txt | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ac7a55..1048018 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -437,9 +437,14 @@ SET( wxWidgets_USE_UNICODE ON)
+ SET( wxWidgets_USE_UNIVERSAL OFF)
+ SET( wxWidgets_USE_STATIC OFF)
+ 
+-set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
++set ( WXWIDGETS_FORCE_VERSION CACHE VERSION
++  "Force usage of a specific wxWidgets version, overrides WX_CONFIG_OPTIONS.")
++set ( WX_CONFIG_OPTIONS "" CACHE STRING
++  "Forced options to wxWidgets_CONFIG_OPTIONS")
+ if(WXWIDGETS_FORCE_VERSION)
+   set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
++elseif (WX_CONFIG_OPTIONS)
++  set (wxWidgets_CONFIG_OPTIONS ${WX_CONFIG_OPTIONS})
+ endif()
+ 
+ IF(WIN32 OR APPLE OR QT_ANDROID)

@@ -2,6 +2,9 @@ From: Alec Leamas <leamas@nowhere.net>
 Date: Mon, 30 Jul 2018 13:18:12 -0400
 Subject: CMakelists: Fix FTBS on Debian sid (+ likely other gtk3 platforms)
 
+Origin: upstream https://github.com/OpenCPN/OpenCPN/commit/cb614812626d
+Applied-Upstream: 5.0.0
+
 On platforms using gtk3, invoke  FIND_PACKAGE(wxWidgets) with proper
 options to handle those who have mgtk2 as default, like Debian sid.
 Also add the __WXGTK3__ symbol which seems to be missing from the
@@ -14,7 +17,7 @@ APPLE or QT_ANDROID comes to mind.
  1 file changed, 13 insertions(+), 7 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b702c42..4ed9f9f 100644
+index 1117a72..cfebf6a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -440,14 +440,16 @@ set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets
@@ -40,7 +43,7 @@ index b702c42..4ed9f9f 100644
  MESSAGE (STATUS "Found wxWidgets..." )
      MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
      MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-@@ -910,6 +912,7 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+@@ -902,6 +904,7 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
    ENDIF(NOT OCPN_FORCE_GTK3)
  
    IF(GTK2_FOUND)
@@ -48,7 +51,7 @@ index b702c42..4ed9f9f 100644
      INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
      SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
      MESSAGE(STATUS "Building against GTK2...")
-@@ -917,9 +920,12 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+@@ -909,9 +912,12 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
      FIND_PACKAGE(GTK3)
      INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
      SET(GTK_LIBRARIES ${GTK3_LIBRARIES})

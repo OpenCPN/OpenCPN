@@ -1,0 +1,58 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 29 Oct 2018 10:24:38 -0400
+Subject: Patch: Initialize display to x11 on wayland hosts (#1166).
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1166
+---
+ include/chart1.h |  1 +
+ src/chart1.cpp   | 18 ++++++++++++++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/include/chart1.h b/include/chart1.h
+index b8236b4..56e846d 100644
+--- a/include/chart1.h
++++ b/include/chart1.h
+@@ -292,6 +292,7 @@ private:
+ class MyApp: public wxApp
+ {
+   public:
++    MyApp();
+     bool OnInit();
+     int OnExit();
+     void OnInitCmdLine(wxCmdLineParser& parser);
+diff --git a/src/chart1.cpp b/src/chart1.cpp
+index cb5d18d..0302e13 100755
+--- a/src/chart1.cpp
++++ b/src/chart1.cpp
+@@ -31,6 +31,11 @@
+ //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
+ #endif
+ 
++// #1166 temporary fix.
++#ifdef __linux__
++#include <gdk/gdk.h>
++#include <gtk/gtk.h>
++#endif
+ 
+ #include "wx/print.h"
+ #include "wx/printdlg.h"
+@@ -1529,6 +1534,19 @@ void ParseAllENC()
+         delete prog;
+ }
+ 
++MyApp::MyApp()
++{
++#ifdef __linux__
++// Handle e. g., wayland default display -- see #1166.
++
++#if GTK_CHECK_VERSION(3, 10, 0)
++    gdk_set_allowed_backends("x11");
++#else
++    setenv("GDK_BACKEND", "x11", 1);
++#endif
++
++#endif   // __linux__
++}
+ 
+ bool MyApp::OnInit()
+ {

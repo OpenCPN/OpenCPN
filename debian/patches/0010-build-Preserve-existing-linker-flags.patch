@@ -2,7 +2,7 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Sat, 15 Sep 2018 21:45:29 -0400
 Subject: build: Preserve existing linker flags.
 
-Submitted to upstream at https://github.com/OpenCPN/OpenCPN/pull/1145.
+Bug:  https://github.com/OpenCPN/OpenCPN/pull/1145.
 ---
  plugins/chartdldr_pi/cmake/PluginConfigure.cmake   | 4 ++--
  plugins/chartdldr_pi/cmake/PluginInstall.cmake     | 2 +-

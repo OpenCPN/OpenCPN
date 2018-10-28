@@ -2,16 +2,16 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Mon, 17 Sep 2018 10:07:39 -0400
 Subject: build: System wxsvg detection bugfix.
 
-Upstream PR: https://github.com/OpenCPN/OpenCPN/pull/1155
+Bug: https://github.com/OpenCPN/OpenCPN/pull/1155
 ---
  CMakeLists.txt | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 51b7f01..47375be 100644
+index 0b9b5cd..fe7df11 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -885,11 +885,11 @@ IF(OCPN_USE_SVG)
+@@ -877,11 +877,11 @@ IF(OCPN_USE_SVG)
      endif()
  
      PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
@@ -25,7 +25,7 @@ index 51b7f01..47375be 100644
        message (STATUS "Building with bundled wxsvg includes")
        ADD_LIBRARY(WXSVG ${SRC_WXSVG})
        TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
-@@ -899,7 +899,7 @@ IF(OCPN_USE_SVG)
+@@ -891,7 +891,7 @@ IF(OCPN_USE_SVG)
        INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
        set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
        SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)

@@ -2,6 +2,9 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 27 Aug 2018 06:58:59 +0200
 Subject: Build: Add the USE_BUNDLED_DOCS cmake configuration
 
+Origin: upstream, https://github.com/OpenCPN/OpenCPN/commit/180299afd735
+Applied-Upstream: 5.0.0
+
 The variable basically acts as a master switch for most bundling
 alternatives. The ON alternative blocks the use of system
 libraries for (as planned) wxsvg, xwcurl and unarr. If OFF,

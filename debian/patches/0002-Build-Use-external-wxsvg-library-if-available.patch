@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 27 Aug 2018 07:00:47 +0200
 Subject: Build: Use external wxsvg library if available.
 
+Origin: upstream, https://github.com/OpenCPN/OpenCPN/commit/a220a3852557
+Applied-Upstream: 5.0.0
 ---
  CMakeLists.txt | 25 ++++++++++++++++++-------
  1 file changed, 18 insertions(+), 7 deletions(-)
