@@ -603,6 +603,10 @@ ENDIF (NOT WIN32 AND NOT APPLE)
 
 OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
 
+IF( NOT APPLE )
+    SET(OCPN_NEW_SERIAL "OFF")
+ENDIF( NOT APPLE )    
+
 IF(OCPN_NEW_SERIAL)
   if(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
