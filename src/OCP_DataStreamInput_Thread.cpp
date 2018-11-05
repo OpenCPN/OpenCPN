@@ -104,19 +104,20 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 
 #ifdef ocpnUSE_NEWSERIAL
 
-size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(const wxString& string)
-{
-    size_t status;
-    status = m_serial.write(string.c_str(), string.Len());
-    
-    return status;
-}
-
 size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
 {
-    ssize_t status;
-    status = m_serial.write((uint8_t*)msg, strlen(msg));
-    return status;
+    if( m_serial.isOpen() ) {
+        ssize_t status;
+        try {
+            status = m_serial.write((uint8_t*)msg, strlen(msg));
+        } catch (std::exception &e) {
+            //std::cerr << "Unhandled Exception while writing to serial port: " << e.what() << std::endl;
+            return -1;
+        }
+        return status;
+    } else {
+        return -1;
+    }
 }
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
@@ -289,28 +290,26 @@ void *OCP_DataStreamInput_Thread::Entry()
         }                       // if newdata > 0
         
         //      Check for any pending output message
+
+        bool b_qdata = !out_que.empty();
         
-        m_outCritical.Enter();
-        {
-            bool b_qdata = !out_que.empty();
+        while(b_qdata){
+            //  Take a copy of message
+            char *qmsg = out_que.front();
+            out_que.pop();
+            //m_outCritical.Leave();
+            char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+            strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+            free(qmsg);
             
-            while(b_qdata){
-                
-                //  Take a copy of message
-                char *qmsg = out_que.front();
-                char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-                strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
-                out_que.pop();
-                free(qmsg);
-                
-                m_outCritical.Leave();
-                WriteComPortPhysical(msg);
-                m_outCritical.Enter();
-                
-                b_qdata = !out_que.empty();
-            } //while b_qdata
-        }
-        m_outCritical.Leave();
+            if( -1 == WriteComPortPhysical(msg) && 10 < retries++ ) {
+                // We failed to write the port 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
+                retries = 0;
+                CloseComPortPhysical();
+            }
+            
+            b_qdata = !out_que.empty();
+        } //while b_qdata
 
     }
 thread_exit:
