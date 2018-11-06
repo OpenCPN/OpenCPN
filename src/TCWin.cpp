@@ -406,6 +406,9 @@ void TCWin::RePosition( void )
 
 void TCWin::OnPaint( wxPaintEvent& event )
 {
+    if(!IsShown()) {
+        return;
+    }
     int x, y;
     int i;
     char sbuf[100];
@@ -587,7 +590,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
 //    Set up the vertical parameters based on Tide or Current plot
             if( CURRENT_PLOT == m_plot_type ) {
-                it = __max ( abs (( int ) tcmin - 1 ), abs ( ( int ) tcmax + 1 ) );
+                it = std::max ( abs (( int ) tcmin - 1 ), abs ( ( int ) tcmax + 1 ) );
                 ib = -it;
 
                 im = 2 * it;
