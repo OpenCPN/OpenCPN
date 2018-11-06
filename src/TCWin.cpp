@@ -406,6 +406,9 @@ void TCWin::RePosition( void )
 
 void TCWin::OnPaint( wxPaintEvent& event )
 {
+    if(!IsShown()) {
+        return;
+    }
     int x, y;
     int i;
     char sbuf[100];
