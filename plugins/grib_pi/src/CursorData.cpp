@@ -31,9 +31,6 @@
 extern int m_Altitude;
 extern double m_cursor_lat, m_cursor_lon;
 extern int m_DialogStyle;
-#if defined (_WIN32)
-#define round(x) wxRound(x) //extern int round (double x);
-#endif
 
 enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_ABBR, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
 

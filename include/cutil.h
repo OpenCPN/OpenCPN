@@ -71,15 +71,6 @@ typedef struct {
 #endif
 #endif
      
-
-     //      Replacement for round(x)???
-#ifdef __cplusplus
-     extern "C"  double     round_msvc (double flt);
-#else
-     extern double round_msvc (double flt);
-#endif /* __cplusplus */
-     
-     
 inline int roundint (double x)
 {
 #ifdef __WXOSX__
