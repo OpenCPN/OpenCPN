@@ -114,10 +114,20 @@ size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(const wxString& string)
 
 size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
 {
-    ssize_t status;
-    status = m_serial.write((uint8_t*)msg, strlen(msg));
-    return status;
+    if( m_serial.isOpen() ) {
+        ssize_t status;
+        try {
+            status = m_serial.write((uint8_t*)msg, strlen(msg));
+        } catch (std::exception &e) {
+            //std::cerr << "Unhandled Exception while writing to serial port: " << e.what() << std::endl;
+            return -1;
+        }
+        return status;
+    } else {
+        return -1;
+    }
 }
+
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
