@@ -29,7 +29,6 @@
 #include <wx/event.h>
 #include <wx/arrstr.h>
 
-#include <mutex>                // std::mutex
 #include <queue>                // std::queue
 
 #ifdef __WXMSW__
@@ -49,47 +48,6 @@
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
 class DataStream;
-
-template<typename T>
-class atomic_queue
-{
-public:
-    size_t size()
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        return m_queque.size();
-    }
-    
-    bool empty()
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        return m_queque.empty();
-    }
-    
-    const T& front()
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        return m_queque.front();
-    }
-    
-    void push( const T& value )
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        m_queque.push(value);
-    }
-    
-    void pop()
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        m_queque.pop();
-    }
-    
-private:
-    std::queue<T> m_queque;
-    mutable std::mutex m_mutex;
-};
-
-
 
 /**
  * This thread manages reading the data stream from the declared serial port.
@@ -133,8 +91,8 @@ private:
     bool CheckComPortPhysical(int port_descriptor);
     
     void HandleASuccessfulRead( char *buf, int nread );
-    wxCriticalSection       m_outCritical;
 #endif
+    wxCriticalSection       m_outCritical;
     wxEvtHandler            *m_pMessageTarget;
     DataStream              *m_launcher;
     wxString                m_PortName;
@@ -158,7 +116,7 @@ private:
     //int                     m_putIndex;
     //char                    *m_poutQueue[OUT_QUEUE_LENGTH];
     
-    atomic_queue<char *>  out_que;
+    std::queue<char *>  out_que;
     
 
 #ifdef __WXMSW__
