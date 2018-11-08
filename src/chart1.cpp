@@ -6859,7 +6859,7 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
     bells_sound[bells - 1].Play();
     m_BellsToPlay -= bells;
 
-    BellsTimer.Start(2000, wxTIMER_ONE_SHOT);
+    BellsTimer.Start(3000, wxTIMER_ONE_SHOT);
 }
 
 int ut_index;
