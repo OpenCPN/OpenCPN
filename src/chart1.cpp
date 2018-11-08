@@ -3144,11 +3144,15 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc);
            
-           //  There is not yet a config descriptor for canvas 2, so create one.
+           //  There is not yet a config descriptor for canvas 2, so create one by copy ctor from canvas {0}.
            if(g_canvasConfigArray.GetCount() < 2){
                canvasConfig *pcc = new canvasConfig(*g_canvasConfigArray.Item(0));
                pcc->configIndex = 1;
                pcc->toolbarConfig.Clear();
+               
+               // Arbitrarily establish the initial size of the new canvas to be
+               // half the screen width.
+               pcc->canvasSize = wxSize(GetClientSize().x / 2, GetClientSize().y);
                g_canvasConfigArray.Add(pcc);
            }               
                
@@ -5664,6 +5668,7 @@ void MyFrame::UpdateCanvasConfigDescriptors()
                 cc->DBindex = chart->GetQuiltReferenceChartIndex();
                 cc->GroupID = chart->m_groupIndex;
                 cc->canvasSize = chart->GetSize();
+                int yyp = 4;
             }
             
         }
