@@ -6214,6 +6214,8 @@ void ChartCanvas::CreateMUIBar()
     
     if(m_muiBar){
         SetMUIBarPosition();
+        m_muiBar->SetFollowButton( m_bFollow );
+
         m_muiBar->Raise();
     }
     
