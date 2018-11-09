@@ -2323,13 +2323,26 @@ bool s52plib::TextRenderCheck( ObjRazRules *rzRules )
 {
     if( !m_bShowS57Text ) return false;
 
-    //    This logic:  if Aton text is off, but "light description" is on, then show light description anyway
-    if( ( rzRules->obj->bIsAton ) && ( !m_bShowAtonText ) ) {
-        if( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) {
-            if( !m_bShowLdisText ) return false;
-        } else
-            return false;
+    if(rzRules->obj->bIsAton ){
+
+       if( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) {
+           if( !m_bShowLdisText )
+               return false;
+       }
+       else{
+           if( !m_bShowAtonText )
+               return false;
+       }
     }
+        
+        
+//     //    This logic:  if Aton text is off, but "light description" is on, then show light description anyway
+//     if( ( rzRules->obj->bIsAton ) && ( !m_bShowAtonText ) ) {
+//         if( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) {
+//             if( !m_bShowLdisText ) return false;
+//         } else
+//             return false;
+//     }
 
     // Declutter LIGHTS descriptions
     if( ( rzRules->obj->bIsAton ) && ( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) ){
@@ -8836,43 +8849,48 @@ void s52plib::PLIB_LoadS57Config()
 void s52plib::PrepareForRender()
 {
     m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
+
+    g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
+
+#if 0    // This is not required for Multicanvas model.  All config items are directly set elsewhere, per-canvas.
     
     // Has the core S52PLIB configuration changed?
     //  If it has, reload from global preferences file, and other dynamic status information.
     //  This additional step is only necessary for Plugin chart rendering, as core directly sets
     //  options and updates State Hash as needed.
-    
+
     int core_config = PI_GetPLIBStateHash();
     //TODO  Think this through. I think s63_pi hits this, since oesenc_pi has its own PLIB.....
     if(core_config != m_myConfig){
         
-        g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
         
         //  If a modern (> OCPN 4.4) version of the core is active,
         //  we may rely upon having been updated on S52PLIB state by means of PlugIn messaging scheme.
         if( (m_coreVersionMajor >= 4) && (m_coreVersionMinor >= 5) ){
             
-            // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
-            bool bTextOn = m_bShowS57Text;
-            bool bSoundingsOn = m_bShowSoundg;
-            enum _DisCat old = m_nDisplayCategory;
+             // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
+             bool bTextOn = m_bShowS57Text;
+             bool bSoundingsOn = m_bShowSoundg;
+             enum _DisCat old = m_nDisplayCategory;
+             
+             PLIB_LoadS57Config();
+             
+             //  And then reset the temp values that were overwritten by config load
+             m_bShowS57Text = bTextOn;
+             m_bShowSoundg = bSoundingsOn;
+             m_nDisplayCategory = old;
             
-            PLIB_LoadS57Config();
-            
-            //  And then reset the temp values that were overwritten by config load
-            m_bShowS57Text = bTextOn;
-            m_bShowSoundg = bSoundingsOn;
-            m_nDisplayCategory = old;
-            
-            OBJLElement *pOLE = NULL;
             
             // Detect and manage "LIGHTS" toggle
-            bool bshow_lights = !m_lightsOff;
-            if(!bshow_lights)                     // On, going off
-                AddObjNoshow("LIGHTS");
-            else{                                   // Off, going on
-                RemoveObjNoshow("LIGHTS");
-            }
+             bool bshow_lights = !m_lightsOff;
+             if(!bshow_lights)                     // On, going off
+                 AddObjNoshow("LIGHTS");
+             else{                                   // Off, going on
+                 RemoveObjNoshow("LIGHTS");
+             }
+
+
+            OBJLElement *pOLE = NULL;
 
             
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
@@ -8899,7 +8917,8 @@ void s52plib::PrepareForRender()
                     RemoveObjNoshow(categories[c]);
                 }
             }
-                
+
+
             // Handle Quality of data toggle
             bool bQuality = m_qualityOfDataOn;
             if(!bQuality){
@@ -8919,11 +8938,42 @@ void s52plib::PrepareForRender()
         
         m_myConfig = PI_GetPLIBStateHash();
     }
+#endif    
     
     // Reset the LIGHTS declutter machine
     lastLightLat = 0;
     lastLightLon = 0;
     
+}
+
+void s52plib::SetAnchorOn(bool val)
+{
+    OBJLElement *pOLE = NULL;
+            
+    const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
+    unsigned int num = sizeof(categories) / sizeof(categories[0]);
+            
+    if( (m_nDisplayCategory == OTHER) || (m_nDisplayCategory == MARINERS_STANDARD) ){
+        bool bAnchor = val;
+                
+        if(!bAnchor){
+            for( unsigned int c = 0; c < num; c++ ) {
+                AddObjNoshow(categories[c]);
+            }
+        }
+        else{
+            for( unsigned int c = 0; c < num; c++ ) {
+                RemoveObjNoshow(categories[c]);
+            }
+        }
+    }
+    else{                               // if not category OTHER, then anchor-related features are always shown.
+        for( unsigned int c = 0; c < num; c++ ) {
+            RemoveObjNoshow(categories[c]);
+        }
+    }
+    
+    m_anchorOn = val;
 }
 
 void s52plib::ClearTextList( void )

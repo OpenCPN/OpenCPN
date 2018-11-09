@@ -177,7 +177,7 @@ public:
     void SetLightsOff(bool val){ m_lightsOff = val; }
     bool GetLightsOff(){ return m_lightsOff; }
     
-    void SetAnchorOn(bool val){ m_anchorOn = val; }
+    void SetAnchorOn(bool val);
     bool GetAnchorOn();
 
     void SetQualityOfDataOn(bool val){ m_qualityOfDataOn = val; }
