@@ -156,12 +156,12 @@ static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
     pc = (const unsigned char*)pos;
     v = 0;
     switch (len & 7) {
-        case 7: v ^= (uint64_t)pc[6] << 48;
-        case 6: v ^= (uint64_t)pc[5] << 40;
-        case 5: v ^= (uint64_t)pc[4] << 32;
-        case 4: v ^= (uint64_t)pc[3] << 24;
-        case 3: v ^= (uint64_t)pc[2] << 16;
-        case 2: v ^= (uint64_t)pc[1] << 8;
+        case 7: v ^= (uint64_t)pc[6] << 48;    // FALL THROUGH
+        case 6: v ^= (uint64_t)pc[5] << 40;    // FALL THROUGH
+        case 5: v ^= (uint64_t)pc[4] << 32;    // FALL THROUGH
+        case 4: v ^= (uint64_t)pc[3] << 24;    // FALL THROUGH
+        case 3: v ^= (uint64_t)pc[2] << 16;    // FALL THROUGH
+        case 2: v ^= (uint64_t)pc[1] << 8;     // FALL THROUGH
         case 1: v ^= (uint64_t)pc[0];
             v ^= v >> 23;
             v *= 0x2127599bf4325c37ULL;

@@ -1750,6 +1750,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                                     case AIS8_001_22_SHAPE_CIRCLE:
                                     case AIS8_001_22_SHAPE_SECTOR:
                                         sa.radius_m = bstr->GetInt( base + 58, 12 ) * scale_factor;
+                                        // FALL THROUGH
                                     case AIS8_001_22_SHAPE_RECT:
                                         sa.longitude = bstr->GetInt( base + 6, 25, true ) / 60000.0;
                                         sa.latitude = bstr->GetInt( base + 31, 24, true ) / 60000.0;

@@ -563,6 +563,7 @@ void AISDrawAreaNotices( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
                         }
                         case AIS8_001_22_SHAPE_POLYGON:
                             draw_polygon = true;
+                            // FALL THROUGH
                         case AIS8_001_22_SHAPE_POLYLINE: {
                             double lat = sa->latitude;
                             double lon = sa->longitude;

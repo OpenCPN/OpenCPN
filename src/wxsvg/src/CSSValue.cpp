@@ -196,7 +196,9 @@ void wxCSSPrimitiveValue::CleanUp()
 /////////////////////////////  wxCSSValueList ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-wxCSSValueList::wxCSSValueList(const wxCSSValueList& src) {
+wxCSSValueList::wxCSSValueList(const wxCSSValueList& src)
+: wxCSSValue()
+{
 	m_values = src.m_values;
 }
 

@@ -637,6 +637,7 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 break;
             }
         }
+        // FALL THROUGH
 
         case wxSOCKET_CONNECTION :
         {
@@ -1733,8 +1734,9 @@ GARMIN_USB_Thread::~GARMIN_USB_Thread()
 void *GARMIN_USB_Thread::Entry()
 {
       garmin_usb_packet iresp;
-          int n_short_read = 0;
+      int n_short_read = 0;
       m_receive_state = rs_fromintr;
+      memset(&iresp, 0, (sizeof iresp));    // Prevent compiler warnings.
 
       //    Here comes the big while loop
       while(m_parent->m_Thread_run_flag > 0)

@@ -4358,6 +4358,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
  #else
             DoSettings();
  #endif
+            break;
         }
 
         case ID_MENU_UI_FULLSCREEN: {
