@@ -666,7 +666,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriVar >= 2 ) {
-                    if( !wxIsNaN( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
+                    if( !std::isnan( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
                         mPriVar = 2;
                         if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
                             mVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
@@ -681,13 +681,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 3) ){
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 3) ){
                         mPriHeadingT = 4;
                         double heading = mHdm + mVar;
                         if (heading < 0)
@@ -708,13 +708,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 2) ){
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 2) ){
                         mPriHeadingT = 3;
                         double heading = mHdm + mVar;
                         if (heading < 0)
@@ -738,7 +738,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 _T("\u00B0T") );
                     }
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Hdt.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -927,7 +927,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
 
                     if( mPriVar >= 3 ) {
-                        if( !wxIsNaN( m_NMEA0183.Rmc.MagneticVariation ) ){
+                        if( !std::isnan( m_NMEA0183.Rmc.MagneticVariation ) ){
                             mPriVar = 3;
                             if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
                                 mVar = m_NMEA0183.Rmc.MagneticVariation;
@@ -979,9 +979,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                 }
 
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -1150,15 +1150,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         PlugIn_Position_Fix_Ex gpd;
         if( DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator) ) {
 
-            if( !wxIsNaN(gpd.Lat) )
+            if( !std::isnan(gpd.Lat) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM") );
 
-            if( !wxIsNaN(gpd.Lon) )
+            if( !std::isnan(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
             SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
             SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0") );
-            if( !wxIsNaN(gpd.Hdt) ) {
+            if( !std::isnan(gpd.Hdt) ) {
                 SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
                 mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -1184,7 +1184,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
     }
     if( mPriVar >= 1 ) {
-        if( !wxIsNaN( pfix.Var ) ){
+        if( !std::isnan( pfix.Var ) ){
             mPriVar = 1;
             mVar = pfix.Var;
             mVar_Watchdog = gps_watchdog_timeout_ticks;

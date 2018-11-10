@@ -1466,7 +1466,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
                 wxPoint2DDouble s;
                 m_pParentCanvas->GetDoubleCanvasPointPix( lat, lon, &s );
-                if(!wxIsNaN(s.m_x)) {
+                if(!std::isnan(s.m_x)) {
                     if(!begin) {
                         begin = true;
                         glBegin(GL_LINE_STRIP);
@@ -1574,7 +1574,7 @@ void glChartCanvas::GridDraw( )
 
         for(lon = wlon; lon < elon+lon_step/2; lon += lon_step) {
             m_pParentCanvas->GetDoubleCanvasPointPix( lat, lon, &r );
-            if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
+            if(!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
                 gldc.DrawLine( s.m_x, s.m_y, r.m_x, r.m_y, true );
             }
             s = r;
@@ -1605,7 +1605,7 @@ void glChartCanvas::GridDraw( )
         for(lat = slat; lat < nlat+lat_step/2; lat+=lat_step) {
             m_pParentCanvas->GetDoubleCanvasPointPix( lat, lon, &r );
 
-            if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
+            if(!std::isnan(s.m_x) && !std::isnan(r.m_x)) {
                 gldc.DrawLine( s.m_x, s.m_y, r.m_x, r.m_y, true );
             }
             s = r;
@@ -1820,8 +1820,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0,0);
 
     //  COG/SOG may be undefined in NMEA data stream
-    float pCog = wxIsNaN(gCog) ? 0 : gCog;
-    float pSog = wxIsNaN(gSog) ? 0 : gSog;
+    float pCog = std::isnan(gCog) ? 0 : gCog;
+    float pSog = std::isnan(gSog) ? 0 : gSog;
 
     m_pParentCanvas->GetCanvasPointPix( gLat, gLon, &lGPSPoint );
     lShipMidPoint = lGPSPoint;
@@ -1829,10 +1829,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
     float icon_hdt = pCog;
-    if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
+    if( !std::isnan( gHdt ) ) icon_hdt = gHdt;
 
     //  COG may be undefined in NMEA data stream
-    if( wxIsNaN(icon_hdt) ) icon_hdt = 0.0;
+    if( std::isnan(icon_hdt) ) icon_hdt = 0.0;
 
 //    Calculate the ownship drawing angle icon_rad using an assumed 10 minute predictor
     double osd_head_lat, osd_head_lon;
@@ -2329,7 +2329,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
                     fromSM(d*smj[0] + (1-d)*sml[0], d*smj[1] + (1-d)*sml[1], 0, 0, &lat, &lon);
                 }
                 wxPoint2DDouble q = vp.GetDoublePixFromLL(lat, lon);
-                if(wxIsNaN(q.m_x))
+                if(std::isnan(q.m_x))
                     continue;
 
                 double *p = new double[6];

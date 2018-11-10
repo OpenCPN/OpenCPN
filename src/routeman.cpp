@@ -686,7 +686,7 @@ bool Routeman::UpdateAutopilot()
             m_NMEA0183.Rmc.SpeedOverGroundKnots = gSog;
             m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = gCog;
 
-            if( !wxIsNaN(gVar) ) {
+            if( !std::isnan(gVar) ) {
                 if( gVar < 0. ) {
                     m_NMEA0183.Rmc.MagneticVariation = -gVar;
                     m_NMEA0183.Rmc.MagneticVariationDirection = West;
@@ -743,7 +743,7 @@ bool Routeman::UpdateAutopilot()
                                      &brg1,
                                      &dist1 );
             
-            if( g_bMagneticAPB && !wxIsNaN(gVar) ) {
+            if( g_bMagneticAPB && !std::isnan(gVar) ) {
                 
                 double brg1m = ((brg1 - gVar) >= 0.) ? (brg1 - gVar) : (brg1 - gVar + 360.);
                 double bapm = ((CurrentBrgToActivePoint - gVar) >= 0.) ? (CurrentBrgToActivePoint - gVar) : (CurrentBrgToActivePoint - gVar + 360.);

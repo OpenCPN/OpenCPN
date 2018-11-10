@@ -2525,12 +2525,12 @@ int MyApp::OnExit()
         navmsg += data;
 
         wxString cog;
-        if( wxIsNaN(gCog) ) cog.Printf( _T("COG ----- ") );
+        if( std::isnan(gCog) ) cog.Printf( _T("COG ----- ") );
         else
             cog.Printf( _T("COG %10.5f "), gCog );
 
         wxString sog;
-        if( wxIsNaN(gSog) ) sog.Printf( _T("SOG -----  ") );
+        if( std::isnan(gSog) ) sog.Printf( _T("SOG -----  ") );
         else
             sog.Printf( _T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed( gSog ) );
 
@@ -4757,7 +4757,7 @@ void MyFrame::ActivateMOB( void )
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
 
 
-    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+    if( bGPSValid && !std::isnan(gCog) && !std::isnan(gSog) ) {
         //    Create a point that is one mile along the present course
         double zlat, zlon;
         ll_gc_ll( gLat, gLon, gCog, 1.0, &zlat, &zlon );
@@ -6044,7 +6044,7 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = NAN;
-        if( !wxIsNaN(gCog) ) stuff = gCog;
+        if( !std::isnan(gCog) ) stuff = gCog;
         if( g_COGAvgSec > 0 ) {
             for( int i = 0; i < g_COGAvgSec; i++ )
                 COGTable[i] = stuff;
@@ -6061,8 +6061,8 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     //    Stuff the Filter tables
     double stuffcog = NAN;
     double stuffsog = NAN;
-    if( !wxIsNaN(gCog) ) stuffcog = gCog;
-    if( !wxIsNaN(gSog) ) stuffsog = gSog;
+    if( !std::isnan(gCog) ) stuffcog = gCog;
+    if( !std::isnan(gSog) ) stuffsog = gSog;
 
     for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
         COGFilterTable[i] = stuffcog;
@@ -7037,12 +7037,12 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 navmsg += data;
 
                 wxString cog;
-                if( wxIsNaN(gCog) ) cog.Printf( _T("COG ----- ") );
+                if( std::isnan(gCog) ) cog.Printf( _T("COG ----- ") );
                 else
                     cog.Printf( _T("COG %10.5f "), gCog );
 
                 wxString sog;
-                if( wxIsNaN(gSog) ) sog.Printf( _T("SOG -----  ") );
+                if( std::isnan(gSog) ) sog.Printf( _T("SOG -----  ") );
                 else
                     sog.Printf( _T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed( gSog ) );
 
@@ -7249,7 +7249,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 double MyFrame::GetMag(double a)
 {
-    if(!wxIsNaN(gVar)){
+    if(!std::isnan(gVar)){
         if((a - gVar) >360.)
             return (a - gVar - 360.);
         else
@@ -7265,7 +7265,7 @@ double MyFrame::GetMag(double a)
 
 double MyFrame::GetMag(double a, double lat, double lon)
 {
-    double Variance = wxIsNaN( gVar ) ? g_UserVar : gVar;
+    double Variance = std::isnan( gVar ) ? g_UserVar : gVar;
     if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
             
         // Request variation at a specific lat/lon
@@ -8309,7 +8309,7 @@ static bool ParsePosition(const LATLONG &Position)
 {
     bool ll_valid = true;
     double llt = Position.Latitude.Latitude;
-    if( !wxIsNaN(llt) )
+    if( !std::isnan(llt) )
     {
         int lat_deg_int = (int) ( llt / 100 );
         double lat_deg = lat_deg_int;
@@ -8322,7 +8322,7 @@ static bool ParsePosition(const LATLONG &Position)
         ll_valid = false;
     
     double lln = Position.Longitude.Longitude;
-    if( !wxIsNaN(lln) )
+    if( !std::isnan(lln) )
     {
         int lon_deg_int = (int) ( lln / 100 );
         double lon_deg = lon_deg_int;
@@ -8416,7 +8416,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         cog_sog_valid = true;
                     }
                     
-                    if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
+                    if( !std::isnan(m_NMEA0183.Rmc.MagneticVariation) )
                     {
                         if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
                             gVar = m_NMEA0183.Rmc.MagneticVariation;
@@ -8434,7 +8434,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
             case HDT:
                 gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Hdt.DegreesTrue) )
                 {
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
@@ -8443,7 +8443,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
             case HDG:
                 gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
@@ -8451,7 +8451,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
                     gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
 
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees) )
                 {
                     g_bVAR_Rx = true;
                     gVAR_Watchdog = gps_watchdog_timeout_ticks;
@@ -8460,18 +8460,18 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
             case HDM:
                 gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                 break;
 
             case VTG:
                 // should we allow either Sog or Cog but not both to be valid?
-                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
+                if( !g_own_ship_sog_cog_calc && !std::isnan(m_NMEA0183.Vtg.SpeedKnots) )
                     gSog = m_NMEA0183.Vtg.SpeedKnots;
-                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                if( !g_own_ship_sog_cog_calc && !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue) )
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
-                    !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
+                if( !g_own_ship_sog_cog_calc && !std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
+                    !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                     cog_sog_valid = true;
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
@@ -8530,9 +8530,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         
         if(nerr == AIS_NoError)
         {
-            if( !wxIsNaN(gpd.kLat) )
+            if( !std::isnan(gpd.kLat) )
                 gLat = gpd.kLat;
-            if( !wxIsNaN(gpd.kLon) )
+            if( !std::isnan(gpd.kLon) )
                 gLon = gpd.kLon;
 
             if( !g_own_ship_sog_cog_calc ) {
@@ -8543,14 +8543,14 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             }
             cog_sog_valid = true;
 
-            if( !wxIsNaN(gpd.kHdt) )
+            if( !std::isnan(gpd.kHdt) )
             {
                 gHdt = gpd.kHdt;
                 g_bHDT_Rx = true;
                 gHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
             
-            if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+            if( !std::isnan(gpd.kLat) && !std::isnan(gpd.kLon) )
             {
                 gGPS_Watchdog = gps_watchdog_timeout_ticks;
                 wxDateTime now = wxDateTime::Now();
@@ -8589,7 +8589,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 {
     if(cog_sog_valid) {
         //    Maintain average COG for Course Up Mode
-        if( !wxIsNaN(gCog) ) {
+        if( !std::isnan(gCog) ) {
             if( g_COGAvgSec > 0 ) {
                 //    Make a hole
                 for( int i = g_COGAvgSec - 1; i > 0; i-- )
@@ -8599,7 +8599,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
                 double sum = 0., count=0;
                 for( int i = 0; i < g_COGAvgSec; i++ ) {
                     double adder = COGTable[i];
-                    if(wxIsNaN(adder))
+                    if(std::isnan(adder))
                         continue;
 
                     if( fabs( adder - g_COGAvg ) > 180. ) {
@@ -8633,7 +8633,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
     //    but only if NMEA HDT sentence is not being received
 
     if( !g_bHDT_Rx ) {
-        if( !wxIsNaN(gVar) && !wxIsNaN(gHdm)) {
+        if( !std::isnan(gVar) && !std::isnan(gHdm)) {
             gHdt = gHdm + gVar;
             if (gHdt < 0)
                 gHdt += 360.0;
@@ -8688,12 +8688,12 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
         
         if(cog_sog_valid) {
             wxString sogcog;
-            if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
+            if( std::isnan(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
             else
                 sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
             wxString cogs;
-            if( wxIsNaN(gCog) )
+            if( std::isnan(gCog) )
                 cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
             else {
                 if( g_bShowTrue )
@@ -8813,12 +8813,12 @@ void MyFrame::FilterCogSog( void )
         COGFilterTable[0] = cog_last;
 
         //    If the lastest data is undefined, leave it
-        if( !wxIsNaN(cog_last) ) {
+        if( !std::isnan(cog_last) ) {
             //
             double sum = 0., count = 0;
             for( int i = 0; i < g_COGFilterSec; i++ ) {
                 double adder = COGFilterTable[i];
-                if(wxIsNaN(adder))
+                if(std::isnan(adder))
                     continue;
 
                 if( fabs( adder - cog_last ) > 180. ) {
@@ -8849,10 +8849,10 @@ void MyFrame::FilterCogSog( void )
 
         
         //    If the data are undefined, leave the array intact
-        if( !wxIsNaN(gSog) ) {
+        if( !std::isnan(gSog) ) {
             double sum = 0., count = 0;
             for( int i = 0; i < g_SOGFilterSec; i++ ) {
-                if(wxIsNaN(SOGFilterTable[i]))
+                if(std::isnan(SOGFilterTable[i]))
                     continue;
 
                 sum += SOGFilterTable[i];
@@ -8941,7 +8941,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
 
 
     /* We want to start tracking any MOB in range (Which will trigger false alarms with messages received over the network etc., but will a) not discard nearby event even in case our GPS is momentarily unavailable and b) work even when the boat is stationary, in which case some GPS units do not provide COG)
-    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) { */
+    if( bGPSValid && !std::isnan(gCog) && !std::isnan(gSog) ) { */
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
                                               wxString( _( "Own ship" ) ), wxEmptyString );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );

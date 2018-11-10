@@ -501,9 +501,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_brgunit = tkz.GetNextToken(); //4) Bearing Units
         if ( arpa_brgunit == _T("R") )
         {
-            if ( wxIsNaN(arpa_ref_hdg) )
+            if ( std::isnan(arpa_ref_hdg) )
             {
-                if ( !wxIsNaN(gHdt) )
+                if ( !std::isnan(gHdt) )
                     arpa_brg += gHdt;
                 else
                     arpa_brg += gCog;
@@ -520,9 +520,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_cogunit = tkz.GetNextToken(); //7) Course Units
         if ( arpa_cogunit == _T("R") )
         {
-            if ( wxIsNaN(arpa_ref_hdg) )
+            if ( std::isnan(arpa_ref_hdg) )
             {
-                if ( !wxIsNaN(gHdt) )
+                if ( !std::isnan(gHdt) )
                     arpa_cog += gHdt;
                 else
                     arpa_cog += gCog;
@@ -2112,13 +2112,13 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     double cpa_calc_target_cog = ptarget->COG;
 
 //    Ownship is not reporting valid SOG, so no way to calculate CPA
-    if( wxIsNaN(gSog) || ( gSog > 102.2 ) ) {
+    if( std::isnan(gSog) || ( gSog > 102.2 ) ) {
         ptarget->bCPA_Valid = false;
         return;
     }
 
 //    Ownship is maybe anchored and not reporting COG
-    if( wxIsNaN(gCog) || gCog == 360.0 ) {
+    if( std::isnan(gCog) || gCog == 360.0 ) {
         if( gSog < .01 ) cpa_calc_ownship_cog = 0.;          // substitute value
                                                              // for the case where SOG ~= 0, and COG is unknown.
         else {

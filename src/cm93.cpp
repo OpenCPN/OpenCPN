@@ -6242,7 +6242,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             if(fabs(lon - lastlon) > 180) {
                 if(lastvalid) {
                     wxPoint2DDouble r = vp.GetDoublePixFromLL(lastlat, lastlon > 0 ? 180 : -180);
-                    if(!wxIsNaN(r.m_x)) {
+                    if(!std::isnan(r.m_x)) {
                         q->y = l.m_x;
                         q->x = l.m_y;
                         q++;
@@ -6258,7 +6258,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
                 }
 
                 wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lon > 0 ? 180 : -180);
-                if((lastvalid = !wxIsNaN(r.m_x))) {
+                if((lastvalid = !std::isnan(r.m_x))) {
                     r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                     r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
                     l.m_x = r.m_x;
@@ -6269,7 +6269,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             lastlon = lon;
                                               
             wxPoint2DDouble s = vp.GetDoublePixFromLL( lat, lon );
-            if(!wxIsNaN(s.m_x)) {
+            if(!std::isnan(s.m_x)) {
                 //    Outlines stored in MCDs are not adjusted for offsets
                 s.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                 s.m_y -= mcd->user_yoff * vp.view_scale_ppm;

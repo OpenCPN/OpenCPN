@@ -1207,7 +1207,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         double ocpa_lat, ocpa_lon;
 
         //  Detect and handle the case where ownship COG is undefined....
-        if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
+        if( std::isnan(gCog) || std::isnan( gSog ) ) {
             ocpa_lat = gLat;
             ocpa_lon = gLon;
         }

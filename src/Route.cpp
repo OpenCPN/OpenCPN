@@ -368,7 +368,7 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
             
             wxPoint2DDouble r2;
             canvas->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
-            if(wxIsNaN(r2.m_x)) {
+            if(std::isnan(r2.m_x)) {
                 r1valid = false;
                 continue;
             }
@@ -397,7 +397,7 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
 
             if(!r1valid) {
                 canvas->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
-                if(wxIsNaN(r1.m_x))
+                if(std::isnan(r1.m_x))
                     continue;
             }
 

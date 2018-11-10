@@ -1352,7 +1352,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
             
             //    The idea here is to cancel the effect of LookAhead for slow gSog, to avoid
             //    jumping of the vp center point during slow maneuvering, or at anchor....
-            if( !wxIsNaN(gSog) ) {
+            if( !std::isnan(gSog) ) {
                 if( gSog < 1.0 ) pixel_delta = 0.;
                 else
                     if( gSog >= 3.0 ) pixel_delta = pixel_delta_tent;
@@ -3095,7 +3095,7 @@ void ChartCanvas::ToggleCourseUp( )
     if( m_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = 0;
-        if( !wxIsNaN(gCog) )
+        if( !std::isnan(gCog) )
             stuff = gCog;
         
         if( g_COGAvgSec > 0) {
@@ -3122,7 +3122,7 @@ bool ChartCanvas::DoCanvasCOGSet( void )
     if( !m_bCourseUp )
         return false;
     
-    if (wxIsNaN(g_COGAvg))
+    if (std::isnan(g_COGAvg))
         return true;
     
     double old_VPRotate = m_VPRotate;
@@ -3846,7 +3846,7 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
         
         // Calculate Estimate Time to Arrival (ETA) in minutes
         // Check before is value not closed to zero (it will make an very big number...)
-        if (!wxIsNaN(gSog))
+        if (!std::isnan(gSog))
         {
             boatSpeed = gSog;
             if (boatSpeed < 0.5)
@@ -4031,7 +4031,7 @@ bool ChartCanvas::GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, w
 
     // some projections give nan values when invisible values (other side of world) are requested
     // we should stop using integer coordinates or return false here (and test it everywhere)
-    if(wxIsNaN(p.m_x)) {
+    if(std::isnan(p.m_x)) {
         *r = wxPoint(INVALID_COORD, INVALID_COORD);
         return false;
     }
@@ -4273,7 +4273,7 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
 
-    if(rotation == VPoint.rotation || wxIsNaN(rotation))
+    if(rotation == VPoint.rotation || std::isnan(rotation))
         return;
 
     SetVPRotation( rotation );
@@ -4285,7 +4285,7 @@ void ChartCanvas::DoTiltCanvas( double tilt )
     while(tilt < 0) tilt = 0;
     while(tilt > .95) tilt = .95;
 
-    if(tilt == VPoint.tilt || wxIsNaN(tilt))
+    if(tilt == VPoint.tilt || std::isnan(tilt))
         return;
 
     VPoint.tilt = tilt;
@@ -4393,7 +4393,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
         if(iters++ > 5)
             return false;
-        if(!wxIsNaN(dlat))
+        if(!std::isnan(dlat))
             break;
 
         dx *= .5, dy *= .5;
@@ -5144,8 +5144,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
     //    Calculate ownship Position Predictor
     wxPoint lPredPoint, lHeadPoint;
 
-    float pCog = wxIsNaN(gCog) ? 0 : gCog;
-    float pSog = wxIsNaN(gSog) ? 0 : gSog;
+    float pCog = std::isnan(gCog) ? 0 : gCog;
+    float pSog = std::isnan(gSog) ? 0 : gSog;
 
     double pred_lat, pred_lon;
     ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
@@ -5162,14 +5162,14 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
     float ndelta_pix = 10.;
     double hdg_pred_lat, hdg_pred_lon;
     bool b_render_hdt = false;
-    if( !wxIsNaN( gHdt ) ) {
+    if( !std::isnan( gHdt ) ) {
         //    Calculate ownship Heading pointer as a predictor
         ll_gc_ll( gLat, gLon, gHdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
                   &hdg_pred_lon );
         GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
         float dist = sqrtf( powf(  (float) (lHeadPoint.x - lPredPoint.x), 2) +
                             powf(  (float) (lHeadPoint.y - lPredPoint.y), 2) );
-        if( dist > ndelta_pix /*&& !wxIsNaN(gSog)*/ ) {
+        if( dist > ndelta_pix /*&& !std::isnan(gSog)*/ ) {
             box.SetFromSegment(gLat, gLon, hdg_pred_lat, hdg_pred_lon);
             if( !GetVP().GetBBox().IntersectOut(box))
                 b_render_hdt = true;
@@ -5185,7 +5185,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
 
     if(lpp >= img_height / 2) {
         box.SetFromSegment(gLat, gLon, pred_lat, pred_lon);
-        if( !GetVP().GetBBox().IntersectOut(box) && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+        if( !GetVP().GetBBox().IntersectOut(box) && !std::isnan(gCog) && !std::isnan(gSog) ) {
             
             //      COG Predictor
             float dash_length = ref_dim;
@@ -5385,8 +5385,8 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0,0);
 
     //  COG/SOG may be undefined in NMEA data stream
-    float pCog = wxIsNaN(gCog) ? 0 : gCog;
-    float pSog = wxIsNaN(gSog) ? 0 : gSog;
+    float pCog = std::isnan(gCog) ? 0 : gCog;
+    float pSog = std::isnan(gSog) ? 0 : gSog;
 
     GetCanvasPointPix( gLat, gLon, &lGPSPoint );
     lShipMidPoint = lGPSPoint;
@@ -5394,10 +5394,10 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
     float icon_hdt = pCog;
-    if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
+    if( !std::isnan( gHdt ) ) icon_hdt = gHdt;
 
     //  COG may be undefined in NMEA data stream
-    if( wxIsNaN(icon_hdt) ) icon_hdt = 0.0;
+    if( std::isnan(icon_hdt) ) icon_hdt = 0.0;
 
 //    Calculate the ownship drawing angle icon_rad using an assumed 10 minute predictor
     double osd_head_lat, osd_head_lon;
@@ -7039,7 +7039,7 @@ void ChartCanvas::CallPopupMenu(int x, int y)
 bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
 {
     // For now just bail out completely if the point clicked is not on the chart
-    if(wxIsNaN(m_cursor_lat))
+    if(std::isnan(m_cursor_lat))
         return false;
 
     //          Mouse Clicks
