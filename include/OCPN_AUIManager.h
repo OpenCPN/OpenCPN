@@ -38,7 +38,8 @@ public:
     void OnMotionx(wxMouseEvent& event);
     bool DoEndResizeAction(wxMouseEvent& event);
     void OnLeftUp(wxMouseEvent& event);
-    
+    bool ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos);
+
     wxAuiDockInfo* FindDock(wxAuiPaneInfo &pane);
     void SetDockSize( wxAuiDockInfo *d, int size);
     

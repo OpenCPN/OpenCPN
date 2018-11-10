@@ -643,5 +643,17 @@ void OCPN_AUIManager::SetDockSize( wxAuiDockInfo *dock, int size)
     Repaint(NULL);
 }
 
+bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos)
+{
+//    printf("DockResult direction: %d   layer: %d   position: %d\n" , new_pos.dock_direction, new_pos.dock_layer, new_pos.dock_pos);
+
+    // If we are docking a Dashboard window, we restrict the spots that can accept the docking action    
+    if(new_pos.window->GetName().IsSameAs(_T("Dashboard"))){
+        // Dashboards can only go on layer 1, and not on the left( interferes with global toolbar )
+        if( (new_pos.dock_layer != 1)  || (new_pos.dock_direction == wxAUI_DOCK_LEFT) )
+            return false;
+    }
     
+    return wxAuiManager::ProcessDockResult(target, new_pos);
+}    
 
