@@ -1415,9 +1415,6 @@ void dashboard_pi::UpdateAuiStatus( void )
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
         
-        //  Defulat (i.e. first) dashboard window always comes up as right docked
-        if(i == 0)
-            pane.Right().Layer(2).Dock();
     }
     m_pauimgr->Update();
     
