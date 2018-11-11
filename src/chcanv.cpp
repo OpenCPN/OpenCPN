@@ -867,7 +867,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Compass = new ocpnCompass(this);
     m_Compass->Show(g_bShowCompassWin);
 
-    m_bToolbarEnable = true;
+    m_bToolbarEnable = false;
 }
 
 ChartCanvas::~ChartCanvas()
@@ -1011,6 +1011,8 @@ void ChartCanvas::SetShowGPS( bool bshow )
 
 void ChartCanvas::SetToolbarEnable( bool bShow )
 {
+    return;
+    
     //if(GetToolbarEnable() != bShow)
     {
         m_bToolbarEnable = bShow;

@@ -118,15 +118,15 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     generalSizer->Add(0, interGroupSpace);
 
     // Control Options
-    wxStaticBoxSizer* boxCont = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Control Options")), wxVERTICAL);
-    generalSizer->Add(boxCont, 0, wxALL | wxEXPAND, border_size);
+//    wxStaticBoxSizer* boxCont = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Control Options")), wxVERTICAL);
+//    generalSizer->Add(boxCont, 0, wxALL | wxEXPAND, border_size);
     
-    pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Show Toolbar"));
-    boxCont->Add(pCBToolbar, verticleInputFlags);
-    pCBToolbar->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
-
-    // spacer
-    generalSizer->Add(0, interGroupSpace);
+//     pCBToolbar = new wxCheckBox(pDisplayPanel, ID_TOOLBARCHECKBOX, _("Show Toolbar"));
+//     boxCont->Add(pCBToolbar, verticleInputFlags);
+//     pCBToolbar->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+// 
+//     // spacer
+//     generalSizer->Add(0, interGroupSpace);
     
     // Nav Mode
     wxStaticBoxSizer* boxNavMode = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Navigation Mode")), wxVERTICAL);
@@ -267,7 +267,7 @@ void CanvasOptions::RefreshControlValues( void )
         return;
 
     // Control options
-    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
+//    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
 
     // Navigation Mode
     pCBNorthUp->SetValue(!parentCanvas->GetCourseUP());
@@ -327,10 +327,10 @@ void CanvasOptions::UpdateCanvasOptions( void )
     bool b_needRefresh = false;
     bool b_needReLoad = false;
     
-    if(pCBToolbar->GetValue() != parentCanvas->GetToolbarEnable()){
-        parentCanvas->SetToolbarEnable( pCBToolbar->GetValue() );
-        b_needRefresh = true;
-    }
+//     if(pCBToolbar->GetValue() != parentCanvas->GetToolbarEnable()){
+//         parentCanvas->SetToolbarEnable( pCBToolbar->GetValue() );
+//         b_needRefresh = true;
+//     }
     
     if(pCDOQuilting->GetValue() != parentCanvas->GetQuiltMode()){
         parentCanvas->ToggleCanvasQuiltMode();

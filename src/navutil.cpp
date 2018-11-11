@@ -1917,7 +1917,7 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
         pcc->bFollow = false;
         pcc->bShowTides = false;
         pcc->bShowCurrents = false;
-        pcc->toolbarConfig = g_toolbarConfig;
+        pcc->toolbarConfig = _T("");
         pcc->bShowToolbar = false;
         pcc->toolbarOrientation = wxTB_HORIZONTAL;
         pcc->bShowAIS = true;
@@ -2043,7 +2043,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
         else
             cConfig->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
     }
-    Read( _T ( "canvasShowToolbar" ), &cConfig->bShowToolbar, 0 );
+//    Read( _T ( "canvasShowToolbar" ), &cConfig->bShowToolbar, 0 );
     Read( _T ( "canvasToolbarOrientation" ), &cConfig->toolbarOrientation, wxTB_HORIZONTAL );
 
     Read( _T ( "canvasQuilt" ), &cConfig->bQuilt, 1 );
@@ -2150,7 +2150,7 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "ActiveChartGroup" ), cConfig->canvas->m_groupIndex );
 
         Write( _T ( "canvasToolbarConfig" ), cConfig->canvas->GetToolbarConfigString() );
-        Write( _T ( "canvasShowToolbar" ), cConfig->canvas->GetToolbarEnable() );
+        Write( _T ( "canvasShowToolbar" ), 0 );  //cConfig->canvas->GetToolbarEnable() );
 
         Write( _T ( "canvasQuilt" ), cConfig->canvas->GetQuiltMode() );
         Write( _T ( "canvasShowGrid" ), cConfig->canvas->GetShowGrid() );

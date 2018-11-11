@@ -4836,8 +4836,8 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   panelAIS->Layout();
 }
 
-void options::CreatePanel_UI(size_t parent, int border_size,
-                             int group_item_spacing) {
+void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spacing)
+{
   wxScrolledWindow* itemPanelFont = AddPage(parent, _("General Options"));
 
   m_itemBoxSizerFontPanel = new wxBoxSizer(wxVERTICAL);
@@ -4846,17 +4846,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   wxBoxSizer* langStyleBox = new wxBoxSizer(wxHORIZONTAL);
   m_itemBoxSizerFontPanel->Add(langStyleBox, 0, wxEXPAND | wxALL, border_size);
 
-  wxStaticBox* itemLangStaticBox =
-      new wxStaticBox(itemPanelFont, wxID_ANY, _("Language"));
-  wxStaticBoxSizer* itemLangStaticBoxSizer =
-      new wxStaticBoxSizer(itemLangStaticBox, wxVERTICAL);
+  wxStaticBox* itemLangStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Language"));
+  wxStaticBoxSizer* itemLangStaticBoxSizer = new wxStaticBoxSizer(itemLangStaticBox, wxVERTICAL);
 
   langStyleBox->Add(itemLangStaticBoxSizer, 1, wxEXPAND | wxALL, border_size);
 
   m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG);
 
-  itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
-                              border_size);
+  itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL, border_size);
 
   wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
   
@@ -4897,6 +4894,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   wxCommandEvent e;
   OnFontChoice(e);
 
+#if 0  
   wxStaticBox* itemStyleStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Toolbar and Window Style"));
   wxStaticBoxSizer* itemStyleStaticBoxSizer =
@@ -4914,7 +4912,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       g_StyleManager->GetCurrentStyle()->name);
   itemStyleStaticBoxSizer->Add(m_itemStyleListBox, 1, wxEXPAND | wxALL,
                                border_size);
-
+#endif
   wxStaticBox* miscOptionsBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Interface Options"));
   wxStaticBoxSizer* miscOptions =
@@ -6884,8 +6882,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (g_locale != locale_old) m_returnChanges |= LOCALE_CHANGED;
 
     wxString oldStyle = g_StyleManager->GetCurrentStyle()->name;
-    g_StyleManager->SetStyleNextInvocation(
-        m_itemStyleListBox->GetStringSelection());
+    //g_StyleManager->SetStyleNextInvocation( m_itemStyleListBox->GetStringSelection());
     if (g_StyleManager->GetStyleNextInvocation() != oldStyle) {
       m_returnChanges |= STYLE_CHANGED;
     }
