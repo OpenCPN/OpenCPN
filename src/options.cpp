@@ -3026,22 +3026,6 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         
         SetConfigButtonState();
     }
-    
-  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageDisplay));
-  if (nb){
-
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__      
-      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                                  wxListbookEventHandler(options::OnDisplayPageChange),
-                                  NULL, this);
-#else
-      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                  wxNotebookEventHandler(options::OnDisplayPageChange),
-                  NULL, this);
-
-#endif
-  }
-            
 }
 
 void options::ClearConfigList()
@@ -7511,11 +7495,6 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   event.Skip();
 }
 #endif
-
-void options::OnDisplayPageChange(wxListbookEvent& event) {
-  unsigned int i = event.GetSelection();
-  int yyp = 4;
-}
 
 void options::OnChartsPageChange(wxListbookEvent& event) {
   unsigned int i = event.GetSelection();

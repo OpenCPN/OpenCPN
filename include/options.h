@@ -320,7 +320,6 @@ class options : private Uncopyable,
   void OnRemoveTideDataLocation(wxCommandEvent &event);
   void OnCharHook(wxKeyEvent &event);
   void OnChartsPageChange(wxListbookEvent &event);
-  void OnDisplayPageChange(wxListbookEvent& event);
   void OnChartDirListSelect(wxCommandEvent &event);
   void OnUnitsChoice(wxCommandEvent &event);
   void OnScanBTClick(wxCommandEvent &event);
