@@ -251,7 +251,7 @@ class options : private Uncopyable,
 #if wxCHECK_VERSION(3,0,0)
   bool SendIdleEvents(wxIdleEvent &event );
 #endif  
-  void SetInitialPage(int page_sel);
+  void SetInitialPage(int page_sel, int sub_page = -1);
   void Finish(void);
 
   void OnClose(wxCloseEvent &event);
@@ -320,6 +320,7 @@ class options : private Uncopyable,
   void OnRemoveTideDataLocation(wxCommandEvent &event);
   void OnCharHook(wxKeyEvent &event);
   void OnChartsPageChange(wxListbookEvent &event);
+  void OnDisplayPageChange(wxListbookEvent& event);
   void OnChartDirListSelect(wxCommandEvent &event);
   void OnUnitsChoice(wxCommandEvent &event);
   void OnScanBTClick(wxCommandEvent &event);
@@ -513,6 +514,8 @@ class options : private Uncopyable,
   // For Configuration Template panel
   wxScrolledWindow *m_scrollWinConfigList;
   wxStaticText *m_templateTitleText;
+  wxStaticText *m_staticTextLastAppled;
+  wxStaticBoxSizer *m_templateStatusBoxSizer;
   
   // For the ship page
   wxFlexGridSizer *realSizes;

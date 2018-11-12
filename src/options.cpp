@@ -2963,18 +2963,23 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         // Template management
 
         wxStaticBox* templateStatusBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Template Status"));
-        wxStaticBoxSizer* templateStatusBoxSizer = new wxStaticBoxSizer(templateStatusBox, wxHORIZONTAL);
-        wrapperSizer->Add(templateStatusBoxSizer, 1, wxALL | wxEXPAND, border_size);
+        m_templateStatusBoxSizer = new wxStaticBoxSizer(templateStatusBox, wxHORIZONTAL);
+        wrapperSizer->Add(m_templateStatusBoxSizer, 1, wxALL | wxEXPAND, border_size);
         
         wxBoxSizer* statSizer = new wxBoxSizer(wxVERTICAL);
-        templateStatusBoxSizer->Add(statSizer, 0, wxALL | wxEXPAND, border_size);
+        m_templateStatusBoxSizer->Add(statSizer, 0, wxALL | wxEXPAND, border_size);
         
-        statSizer->Add(new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Active Template Title:")));
+        m_staticTextLastAppled = new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Last Applied Template Title:"));
+        m_staticTextLastAppled->Hide();
+        
+        statSizer->Add(m_staticTextLastAppled);
         
         m_templateTitleText = new wxStaticText(m_DisplayConfigsPage, wxID_ANY, wxEmptyString);
         statSizer->Add(m_templateTitleText);
+        m_templateTitleText->Hide();
         
         UpdateTemplateTitleText();
+        
         
         wxStaticBox* configsBox = new wxStaticBox(m_DisplayConfigsPage, wxID_ANY, _("Saved Templates"));
         wxStaticBoxSizer* configSizer = new wxStaticBoxSizer(configsBox, wxHORIZONTAL);
@@ -3021,6 +3026,21 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
         
         SetConfigButtonState();
     }
+    
+  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageDisplay));
+  if (nb){
+
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__      
+      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                                  wxListbookEventHandler(options::OnDisplayPageChange),
+                                  NULL, this);
+#else
+      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                  wxNotebookEventHandler(options::OnDisplayPageChange),
+                  NULL, this);
+
+#endif
+  }
             
 }
 
@@ -3116,11 +3136,16 @@ void options::OnApplyConfig( wxCommandEvent &event)
     // Then Apply the target config template
     bool bApplyStat = ConfigMgr::Get().ApplyConfigGUID( m_selectedConfigPanelGUID);
     if(bApplyStat){
-        OCPNMessageBox(this, _("Configuration successfully applied."), _("OpenCPN Info"), wxOK);
+//        OCPNMessageBox(this, _("Configuration successfully applied."), _("OpenCPN Info"), wxOK);
         g_lastAppliedTemplateGUID = m_selectedConfigPanelGUID;
         wxString activeTitle = ConfigMgr::Get().GetTemplateTitle(g_lastAppliedTemplateGUID);
         m_templateTitleText->SetLabel(activeTitle);
+        m_templateTitleText->Show();
+        m_staticTextLastAppled->Show();
+        m_templateStatusBoxSizer->Layout();
     }
+    else
+        OCPNMessageBox(this, _("Problem applying selected configuration."), _("OpenCPN Info"), wxOK);
     
     //  Clear all selections
     if(m_scrollWinConfigList){
@@ -4374,6 +4399,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, inputFlags);
   }
+ 
 }
 
 void options::CreatePanel_Units(size_t parent, int border_size,
@@ -5377,13 +5403,20 @@ void options::CreateControls(void) {
   vectorPanel->SetSizeHints(ps57Ctl);
 }
 
-void options::SetInitialPage(int page_sel) {
+void options::SetInitialPage(int page_sel, int sub_page) {
   m_pListbook->SetSelection(page_sel);
 
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
     wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
-    if (nb) nb->ChangeSelection(0);
+    if (nb){
+        if(i == (size_t) page_sel){
+            if(sub_page >= 0)
+                nb->SetSelection(sub_page);
+        }
+        else
+            nb->ChangeSelection(0);
+    }
   }
 }
 
@@ -7478,6 +7511,11 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   event.Skip();
 }
 #endif
+
+void options::OnDisplayPageChange(wxListbookEvent& event) {
+  unsigned int i = event.GetSelection();
+  int yyp = 4;
+}
 
 void options::OnChartsPageChange(wxListbookEvent& event) {
   unsigned int i = event.GetSelection();

@@ -511,7 +511,8 @@ class MyFrame: public wxFrame
 
     void NotifyChildrenResize( void );
     void UpdateCanvasConfigDescriptors();
-    
+    void ScheduleSettingsDialog();
+
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);

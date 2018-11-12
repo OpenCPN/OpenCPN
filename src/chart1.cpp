@@ -507,6 +507,8 @@ bool                      g_boptionsactive;
 options                   *g_options;
 bool                      g_bDeferredInitDone;
 int                       options_lastPage = 0;
+int                       options_subpage = 0;
+
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
@@ -4579,6 +4581,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
 }
 
+void MyFrame::ScheduleSettingsDialog()
+{
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+    evt.SetId( ID_SETTINGS/*ID_MENU_SETTINGS_BASIC*/ );
+    GetEventHandler()->AddPendingEvent(evt);
+}
+
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
 {
     if(g_bmasterToolbarFull){
@@ -5746,7 +5755,7 @@ int MyFrame::DoOptionsDialog()
     g_MainToolbar->Submerge();
 #endif        
 
-    g_options->SetInitialPage(options_lastPage );
+    g_options->SetInitialPage(options_lastPage, options_subpage );
 
     if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
@@ -5981,6 +5990,15 @@ int MyFrame::DoOptionsDialog()
     
     
     g_boptionsactive = false;
+    
+    //  If we had a config chage, then schedule a re-entry to the settings dialog
+    if(rr & CONFIG_CHANGED){
+        options_subpage = 3;            // Back to the "templates" page
+        ScheduleSettingsDialog();
+    }
+    else
+        options_subpage = 0;
+
     return ret_val;
 }
 
