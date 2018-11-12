@@ -174,7 +174,7 @@ extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
 extern unsigned int     g_canvasConfig;
-
+extern ChartCanvas      *g_focusCanvas;
 
 ocpnGLOptions g_GLOptions;
 
@@ -3878,6 +3878,8 @@ void glChartCanvas::Render()
     // by drawing a simple blue bar at the top.
     if(g_canvasConfig != 0){             // multi-canvas?
         if( m_pParentCanvas == wxWindow::FindFocus()){
+            g_focusCanvas = m_pParentCanvas;
+            
             wxColour colour = GetGlobalColor(_T("BLUE4"));
             glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
                 

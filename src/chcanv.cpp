@@ -354,6 +354,8 @@ extern bool             g_useMUI;
 extern unsigned int     g_canvasConfig;
 extern wxString         g_lastPluginMessage;
 
+extern ChartCanvas      *g_focusCanvas;
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -8881,7 +8883,7 @@ void ChartCanvas::StartRoute( void )
 #ifdef __OCPN__ANDROID__
     androidSetRouteAnnunciator(true);
 #endif        
-        
+    
 }
 
 void ChartCanvas::FinishRoute( void )
@@ -9974,6 +9976,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     // by drawing a simple blue bar at the top.
     if(g_canvasConfig != 0){             // multi-canvas?
         if( this == wxWindow::FindFocus()){
+            g_focusCanvas = this;
+
             wxColour colour = GetGlobalColor(_T("BLUE4"));
             dc.SetPen(wxPen(colour));
             dc.SetBrush(wxBrush(colour));

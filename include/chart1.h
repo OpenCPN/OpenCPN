@@ -365,6 +365,8 @@ class MyFrame: public wxFrame
     wxMenuBar *GetMainMenuBar(){ return m_pMenuBar; }
     
     ChartCanvas *GetPrimaryCanvas();
+    ChartCanvas *GetFocusCanvas();
+
     void DoStackDelta( ChartCanvas *cc, int direction );
     void DoSettings( void );
     void SwitchKBFocus( ChartCanvas *pCanvas );

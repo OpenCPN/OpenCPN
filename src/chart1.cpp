@@ -756,6 +756,8 @@ arrayofCanvasPtr   g_canvasArray;
 arrayofCanvasConfigPtr g_canvasConfigArray;
 wxString         g_lastAppliedTemplateGUID;
 
+ChartCanvas      *g_focusCanvas;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -2841,11 +2843,11 @@ void MyFrame::OnActivate( wxActivateEvent& event )
 {
 //    Code carefully in this method.
 //    It is called in some unexpected places,
-//    such as on closure of dialogs, etc.
+//    such as on closure of dialogs, closure of context menu, etc.
 
-    if( GetPrimaryCanvas() )
-        GetPrimaryCanvas()->SetFocus();       // This seems to be needed for MSW, to get key and wheel events
-                                     // after minimize/maximize.
+     if( GetFocusCanvas() )
+         GetFocusCanvas()->SetFocus();       // This seems to be needed for MSW, to get key and wheel events
+                                                // after minimize/maximize.
 
 #ifdef __WXOSX__
     if(event.GetActive()){
@@ -3190,7 +3192,10 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
         case 2:                                                 // two canvas, vertical
 
             break;
-    }        
+    }
+    
+    g_focusCanvas = GetPrimaryCanvas();
+
 }
 
 
@@ -3651,6 +3656,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
         
     g_canvasArray.Clear();
+    g_focusCanvas = NULL;
     
     g_pauimgr->UnInit();
     delete g_pauimgr;
@@ -4217,14 +4223,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_ROUTE_NEW: {
-            
-            if( 0 == GetPrimaryCanvas()->m_routeState ){
-                GetPrimaryCanvas()->StartRoute();
+            if(GetFocusCanvas()){
+                if( 0 == GetFocusCanvas()->m_routeState ){
+                    GetFocusCanvas()->StartRoute();
+                }
+                else {
+                    GetFocusCanvas()->FinishRoute();
+                }
             }
-            else {
-                GetPrimaryCanvas()->FinishRoute();
-            }
-
             break;
         }
 
@@ -4586,6 +4592,11 @@ void MyFrame::ScheduleSettingsDialog()
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
     evt.SetId( ID_SETTINGS/*ID_MENU_SETTINGS_BASIC*/ );
     GetEventHandler()->AddPendingEvent(evt);
+}
+
+ChartCanvas *MyFrame::GetFocusCanvas()
+{
+    return g_focusCanvas;
 }
 
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
@@ -6638,7 +6649,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 }
             }
             
-            
             break;
         }
 
@@ -6670,6 +6680,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             }
             
             GetPrimaryCanvas()->SetFocus();
+            g_focusCanvas = GetPrimaryCanvas();
+            
             gFrame->Raise();
                 
             if(b_reloadForPlugins)
