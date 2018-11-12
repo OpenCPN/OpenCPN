@@ -248,7 +248,7 @@ public:
 
       // return true if this is a vertical toolbar, otherwise false
       bool IsVertical() const {
-            return HasFlag( wxTB_LEFT | wxTB_RIGHT );
+            return HasFlag( wxTB_LEFT | wxTB_RIGHT | wxTB_VERTICAL);
       }
 
       // the list of all our tools
