@@ -6638,7 +6638,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
             }
             
-              // .. for each canvas...
+#if 0   // per-canvas toolbars deprecated in MUI
+
+            // .. for each canvas...
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
                 ChartCanvas *cc = g_canvasArray.Item(i);
                 cc->RequestNewCanvasToolbar( true );
@@ -6648,6 +6650,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     cc->GetToolbar()->SetAutoHideTimer(g_nAutoHideToolbar);
                 }
             }
+#endif            
             
             break;
         }
