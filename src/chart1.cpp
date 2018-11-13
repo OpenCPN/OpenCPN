@@ -3255,7 +3255,6 @@ void MyFrame::SetAllToolbarScale()
         if(cc)
             cc->SetToolbarScaleFactor(scale_factor);
     }
-    
 
 }
 
@@ -5939,7 +5938,13 @@ int MyFrame::DoOptionsDialog()
     SetAllToolbarScale();
     RequestNewToolbars();
 
-    if(rr & TOOLBAR_CHANGED)
+    // Change of master toolbar scale?
+    bool b_masterScaleChange = false;
+    if(fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
+        b_masterScaleChange = true;
+
+
+    if((rr & TOOLBAR_CHANGED) || b_masterScaleChange )
         RequestNewMasterToolbar( true );
     
     if( g_MainToolbar ) {
