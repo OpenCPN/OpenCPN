@@ -710,6 +710,10 @@ void ConfigMgr::Init()
     m_configCatalog = new OCPNConfigCatalog();
     
     configList = new ConfigObjectList;
+
+    //  Add the default "Recovery" template
+     CreateNamedConfig( _("Recovery Template"), _("Apply this template to return to a known safe configuration"),
+                                                   _T("11111111-1111-1111-1111-111111111111"));
     
 }
 
@@ -731,15 +735,31 @@ bool ConfigMgr::LoadCatalog()
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "config") ) {
-            OCPNConfigObject *newConfig = new OCPNConfigObject;
             
-            newConfig->m_GUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
-            newConfig->m_title = wxString::FromUTF8(object.attribute( "title" ).as_string());
-            newConfig->m_description = wxString::FromUTF8(object.attribute( "description" ).as_string());
-            newConfig->templateFileName = wxString::FromUTF8(object.attribute( "templateFile" ).as_string());
+            //Check the GUID for duplicates
+            wxString testGUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
+            
+            bool bFound = false;
+            for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
+            {
+                OCPNConfigObject *look = node->GetData();
+                if(look->m_GUID == testGUID){
+                    bFound = true;
+                    break;
+                }
+            }
 
-            // Add to the class list of configs
-            configList->Append(newConfig);
+            if(!bFound){
+                OCPNConfigObject *newConfig = new OCPNConfigObject;
+            
+                newConfig->m_GUID = wxString::FromUTF8(object.attribute( "GUID" ).as_string());
+                newConfig->m_title = wxString::FromUTF8(object.attribute( "title" ).as_string());
+                newConfig->m_description = wxString::FromUTF8(object.attribute( "description" ).as_string());
+                newConfig->templateFileName = wxString::FromUTF8(object.attribute( "templateFile" ).as_string());
+
+                // Add to the class list of configs
+                configList->Append(newConfig);
+            }
         }
     }
     
@@ -754,7 +774,7 @@ bool ConfigMgr::SaveCatalog()
     return true;
 }
 
-wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description )
+wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description, wxString UUID )
 {
     wxString GUID;
     
@@ -764,21 +784,27 @@ wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description )
     
     OCPNConfigObject *pConfig = new OCPNConfigObject;
     
-    //Create a new GUID for this config
-    GUID = GetUUID();
+    //If no UUID is passed, then create a new GUID for this config
+    if(UUID.IsEmpty())
+        GUID = GetUUID();
+    else
+        GUID = UUID;
+    
     pConfig->m_GUID = GUID;
     pConfig->m_title = title;
     pConfig->m_description = description;
     
-    // create template file name
-    pConfig->templateFileName = _T("OCPNTemplate-") + GUID + _T(".conf");
+    if(UUID.IsEmpty()){
+        // create template file name
+        pConfig->templateFileName = _T("OCPNTemplate-") + GUID + _T(".conf");
     
-    //  Save the template contents
-    wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
-    if(!SaveTemplate( templateFullFileName )){
-        wxLogMessage(_T("Unable to save template titled: ") + title + _T(" as file: ") + templateFullFileName);
-        delete pConfig;
-        return _T("");
+        //  Save the template contents
+        wxString templateFullFileName = GetConfigDir() + pConfig->templateFileName;
+        if(!SaveTemplate( templateFullFileName )){
+            wxLogMessage(_T("Unable to save template titled: ") + title + _T(" as file: ") + templateFullFileName);
+            delete pConfig;
+            return _T("");
+        }
     }
     
     // Add this config to the catalog
@@ -791,7 +817,8 @@ wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description )
     // Add to the class list of configs
     configList->Append(pConfig);
     
-    SaveCatalog();
+    if(UUID.IsEmpty())
+        SaveCatalog();
     
     return GUID;
 }
@@ -884,7 +911,11 @@ wxArrayString ConfigMgr::GetConfigGUIDArray()
 
 bool ConfigMgr::ApplyConfigGUID( wxString GUID)
 {
-    //MyConfig fconf;
+    // Special case for Recovery template
+    if(GUID.StartsWith(_T("11111111"))){
+        int yyp = 2;
+    }
+    
     // Find the GUID-matching config in the member list
     OCPNConfigObject *config = GetConfig( GUID );
     

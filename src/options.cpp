@@ -517,7 +517,7 @@ void ConfigCreateDialog::OnConfigEditCancelClick(wxCommandEvent& event)
                
 void ConfigCreateDialog::OnConfigEditOKClick(wxCommandEvent& event)
 {
-    m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue());
+    m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue(), wxEmptyString);
     EndModal(wxID_OK);
     
 }
