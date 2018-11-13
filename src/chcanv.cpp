@@ -8879,6 +8879,7 @@ void ChartCanvas::StartRoute( void )
     m_bDrawingRoute = false;
     SetCursor( *pCursorPencil );
     SetCanvasToolbarItemState( ID_ROUTE, true );
+    gFrame->SetMasterToolbarItemState( ID_MENU_ROUTE_NEW, true );
     
 #ifdef __OCPN__ANDROID__
     androidSetRouteAnnunciator(true);
@@ -8893,7 +8894,7 @@ void ChartCanvas::FinishRoute( void )
     m_bDrawingRoute = false;
 
     SetCanvasToolbarItemState( ID_ROUTE, false );
-    
+    gFrame->SetMasterToolbarItemState( ID_MENU_ROUTE_NEW, false );
 #ifdef __OCPN__ANDROID__
     androidSetRouteAnnunciator(false);
 #endif        

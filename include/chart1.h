@@ -420,7 +420,8 @@ class MyFrame: public wxFrame
     bool ShouldRestartTrack();
     void ToggleColorScheme();
     void SetMenubarItemState ( int item_id, bool state );
-    void SetToolbarItemState( ChartCanvas *cc, int tool_id, bool state );
+    void SetMasterToolbarItemState( int tool_id, bool state );
+
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void SetToolbarItemSVG( int tool_id, wxString normalSVGfile,
                             wxString rolloverSVGfile,

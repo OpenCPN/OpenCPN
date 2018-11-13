@@ -2202,7 +2202,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle)
             if(pttc->id == item)
             {
                 pttc->b_toggle = toggle;
-                pParent->SetToolbarItemState( gFrame->GetPrimaryCanvas(), item, toggle);
+                pParent->SetMasterToolbarItemState( item, toggle);
                 break;
             }
         }

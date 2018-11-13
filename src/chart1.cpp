@@ -4840,7 +4840,7 @@ void MyFrame::TrackOn( void )
 
     g_pActiveTrack->Start();
 
-    SetToolbarItemState( GetPrimaryCanvas(), ID_TRACK, g_bTrackActive );
+    SetMasterToolbarItemState( ID_TRACK, g_bTrackActive );
     if( g_MainToolbar )
         g_MainToolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
 
@@ -4914,7 +4914,7 @@ Track *MyFrame::TrackOff( bool do_add_point )
         }
     }
 
-    SetToolbarItemState( GetPrimaryCanvas(), ID_TRACK, g_bTrackActive );
+    SetMasterToolbarItemState( ID_TRACK, g_bTrackActive );
     if( g_MainToolbar )
         g_MainToolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
@@ -5019,7 +5019,7 @@ void MyFrame::ToggleENCText( void )
             ChartCanvas *cc = g_canvasArray.Item(i);
             if(cc && cc->GetToolbar()){
                 cc->GetToolbar()->SetToolShortHelp( ID_ENC_TEXT, tip );
-                SetToolbarItemState( cc, ID_ENC_TEXT, ps52plib->GetShowS57Text() );
+                cc->SetCanvasToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
             }
             
         }
@@ -5255,7 +5255,7 @@ void MyFrame::SetbFollow( ChartCanvas *cc )
     JumpToPosition(cc, gLat, gLon, cc->GetVPScale());
     cc->m_bFollow = true;
 
-    SetToolbarItemState( cc, ID_FOLLOW, true );
+    cc->SetCanvasToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
     
     #ifdef __OCPN__ANDROID__
@@ -5278,7 +5278,7 @@ void MyFrame::ClearbFollow( ChartCanvas *cc )
     #endif
 
     cc->m_bFollow = false;
-    SetToolbarItemState( cc, ID_FOLLOW, false );
+    cc->SetCanvasToolbarItemState(ID_FOLLOW, false );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
 
     DoChartUpdate();
@@ -5317,11 +5317,12 @@ void MyFrame::SetMenubarItemState( int item_id, bool state )
      }
 }
 
-void MyFrame::SetToolbarItemState( ChartCanvas *cc, int tool_id, bool state )
+void MyFrame::SetMasterToolbarItemState( int tool_id, bool state )
 {
-    if( cc->GetToolbar() && cc->GetToolbar()->GetToolbar() )
-        cc->GetToolbar()->GetToolbar()->ToggleTool( tool_id, state );
+    if( g_MainToolbar && g_MainToolbar->GetToolbar() )
+        g_MainToolbar->GetToolbar()->ToggleTool( tool_id, state );
 }
+
 
 void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRollover )
 {
@@ -5665,7 +5666,7 @@ void MyFrame::JumpToPosition( ChartCanvas *cc, double lat, double lon, double sc
 
     cc->ReloadVP();
 
-    SetToolbarItemState(cc, ID_FOLLOW, false );
+    cc->SetCanvasToolbarItemState( ID_FOLLOW, false );
 
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( cc->GetVP() );
