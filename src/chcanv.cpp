@@ -11845,14 +11845,14 @@ void ChartCanvas::UpdateGPSCompassStatusBox( bool b_force_new )
     //    Look for change in overlap or positions
     bool b_update = false;
     int cc1_edge_comp = 2;
+    wxRect rect = m_Compass->GetRect();
+    wxSize parent_size = GetSize();
+
+    // check to see if it would overlap if it was in its home position (upper right)
+    wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
+    wxRect tentative_rect( tentative_pt, rect.GetSize() );
     
     if( m_toolBar ) {
-        wxRect rect = m_Compass->GetRect();
-        wxSize parent_size = GetSize();
-        
-        // check to see if it would overlap if it was in its home position (upper right)
-        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
-        wxRect tentative_rect( tentative_pt, rect.GetSize() );
         
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
         if( m_toolBar->GetScreenRect() != m_mainlast_tb_rect || b_force_new) {
@@ -11879,6 +11879,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox( bool b_force_new )
             
         }
     }
+    else{               // No toolbar, so just place compass in upper right.
+        m_Compass->Move( tentative_pt );
+    }
+    
     
     if( m_Compass && m_Compass->IsShown())
         m_Compass->UpdateStatus( b_force_new | b_update );
