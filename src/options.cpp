@@ -3067,6 +3067,8 @@ void options::BuildConfigList()
 void options::SetConfigButtonState()
 {
     m_configDeleteButton->Enable(!m_selectedConfigPanelGUID.IsEmpty());
+    if(m_selectedConfigPanelGUID.StartsWith(_T("11111111")))            // Cannot delete "Recovery" template
+        m_configDeleteButton->Disable();
     m_configApplyButton->Enable(!m_selectedConfigPanelGUID.IsEmpty());
 }    
 

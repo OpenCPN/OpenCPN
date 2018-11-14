@@ -911,11 +911,7 @@ wxArrayString ConfigMgr::GetConfigGUIDArray()
 
 bool ConfigMgr::ApplyConfigGUID( wxString GUID)
 {
-    // Special case for Recovery template
-    if(GUID.StartsWith(_T("11111111"))){
-        int yyp = 2;
-    }
-    
+     
     // Find the GUID-matching config in the member list
     OCPNConfigObject *config = GetConfig( GUID );
     
@@ -925,6 +921,12 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
         unsigned int last_canvasConfig = g_canvasConfig;
         
         wxString thisConfig = GetConfigDir() + config->templateFileName;
+
+        // Special case for Recovery template
+        if(GUID.StartsWith(_T("11111111"))){
+            thisConfig = *GetpSharedDataLocation() + _T("configs/OCPNTemplate-Recovery.conf");
+        }
+
         MyConfig fconf( thisConfig );
         
         //  Load the template contents, without resetting defaults
