@@ -171,7 +171,7 @@ MUIButton::~MUIButton()
 
 void MUIButton::Init()
 {
-    bool mToggle = false;
+    mToggle = false;
 }
 
 
