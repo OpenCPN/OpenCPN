@@ -582,7 +582,7 @@ bool s52plib::GetAnchorOn()
     return (old_vis != 0);
 }
 
-bool s52plib::GetQualityOfDataOn()
+bool s52plib::GetQualityOfData()
 {
     //  Investigate and report the logical condition that "Quality of Data Condition" is shown
     
@@ -8974,6 +8974,31 @@ void s52plib::SetAnchorOn(bool val)
     }
     
     m_anchorOn = val;
+}
+
+void s52plib::SetQualityOfData(bool val)
+{
+    int old_vis = GetQualityOfData();
+    if(old_vis == val)
+        return;
+    
+    if(old_vis && !val){                            // On, going off
+        AddObjNoshow("M_QUAL");
+    }
+    else if(!old_vis && val){                                   // Off, going on
+        RemoveObjNoshow("M_QUAL");
+
+        for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
+                pOLE->nViz = 1;         // force on
+                break;
+            }
+        }
+    }
+
+    m_qualityOfDataOn = val;
+    
 }
 
 void s52plib::ClearTextList( void )

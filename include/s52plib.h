@@ -180,8 +180,8 @@ public:
     void SetAnchorOn(bool val);
     bool GetAnchorOn();
 
-    void SetQualityOfDataOn(bool val){ m_qualityOfDataOn = val; }
-    bool GetQualityOfDataOn();
+    void SetQualityOfData(bool val);
+    bool GetQualityOfData();
     
     int GetMajorVersion( void ) { return m_VersionMajor; }
     int GetMinorVersion( void ) { return m_VersionMinor; }

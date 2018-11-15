@@ -4254,46 +4254,46 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_CHART_OUTLINES: {
-            ToggleChartOutlines();
+            ToggleChartOutlines(GetFocusCanvas());
             break;
         }
 
         case ID_MENU_CHART_QUILTING: {
-            ToggleQuiltMode(GetPrimaryCanvas());
+            ToggleQuiltMode(GetFocusCanvas());
             break;
         }
 
         case ID_MENU_UI_CHARTBAR: {
-            ToggleChartBar(GetPrimaryCanvas());
+            ToggleChartBar(GetFocusCanvas());
             break;
         }
 
 #ifdef USE_S57
         case ID_MENU_ENC_TEXT:
         case ID_ENC_TEXT: {
-            ToggleENCText();
+            ToggleENCText(GetFocusCanvas());
             break;
         }
         case ID_MENU_ENC_LIGHTS: {
-            ToggleLights();
+            ToggleLights(GetFocusCanvas());
             break;
         }
         case ID_MENU_ENC_SOUNDINGS: {
-            ToggleSoundings();
+            ToggleSoundings(GetFocusCanvas());
             break;
         }
         case ID_MENU_ENC_ANCHOR: {
-            ToggleAnchor();
+            ToggleAnchor( GetFocusCanvas() );
             break;
         }
         case ID_MENU_ENC_DATA_QUALITY: {
-            ToggleDataQuality();
+            ToggleDataQuality( GetFocusCanvas() );
             break;
         }
 #endif
 
         case ID_MENU_SHOW_NAVOBJECTS : {
-            ToggleNavobjects( GetPrimaryCanvas() );
+            ToggleNavobjects( GetFocusCanvas() );
             break;
         }
 
@@ -4366,18 +4366,18 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_SHOW_CURRENTS:
         {
-            GetPrimaryCanvas()->ShowCurrents( !GetPrimaryCanvas()->GetbShowCurrent() );
-            GetPrimaryCanvas()->ReloadVP();
-            GetPrimaryCanvas()->Refresh( false );
+            GetFocusCanvas()->ShowCurrents( !GetFocusCanvas()->GetbShowCurrent() );
+            GetFocusCanvas()->ReloadVP();
+            GetFocusCanvas()->Refresh( false );
             break;
 
         }
 
         case ID_MENU_SHOW_TIDES:
         {
-            GetPrimaryCanvas()->ShowTides( !GetPrimaryCanvas()->GetbShowTide() );
-            GetPrimaryCanvas()->ReloadVP();
-            GetPrimaryCanvas()->Refresh( false );
+            GetFocusCanvas()->ShowTides( !GetFocusCanvas()->GetbShowTide() );
+            GetFocusCanvas()->ReloadVP();
+            GetFocusCanvas()->Refresh( false );
             break;
 
         }
@@ -5006,33 +5006,16 @@ void MyFrame::ToggleCourseUp( ChartCanvas *cc )
     }
 }
 
-void MyFrame::ToggleENCText( void )
+void MyFrame::ToggleENCText( ChartCanvas *cc )
 {
-#ifdef USE_S57
-    if( ps52plib ) {
-        ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
-        wxString tip = _("Show ENC text") + _T(" (T)");
-        if(ps52plib->GetShowS57Text())
-            tip = _("Hide ENC text") + _T(" (T)");
-
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc && cc->GetToolbar()){
-                cc->GetToolbar()->SetToolShortHelp( ID_ENC_TEXT, tip );
-                cc->SetCanvasToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
-            }
-            
-        }
+    cc->SetShowENCText( !cc->GetShowENCText());
         
-        SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
+    SetMenubarItemState( ID_MENU_ENC_TEXT, cc->GetShowENCText() );
         
-        if(g_pi_manager)
-            g_pi_manager->SendConfigToAllPlugIns();
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
         
-        ReloadAllVP();
-    }
-
-#endif
+    ReloadAllVP();
 }
 
 void MyFrame::SetENCDisplayCategory( enum _DisCat nset )
@@ -5053,69 +5036,30 @@ void MyFrame::SetENCDisplayCategory( enum _DisCat nset )
 #endif
 }
 
-void MyFrame::ToggleSoundings( void )
+void MyFrame::ToggleSoundings( ChartCanvas *cc )
 {
-#ifdef USE_S57
-    if( ps52plib ) {
-        ps52plib->SetShowSoundings( !ps52plib->GetShowSoundings() );
-        SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, ps52plib->GetShowSoundings() );
+    cc->SetShowENCDepth( !cc->GetShowENCDepth());
+
+    SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, cc->GetShowENCDepth() );
         
-        if(g_pi_manager)
-            g_pi_manager->SendConfigToAllPlugIns();
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
         
-        ReloadAllVP();
-    }
-#endif
+    ReloadAllVP();
 }
 
-bool MyFrame::ToggleLights( bool doToggle, bool temporary )
+bool MyFrame::ToggleLights( ChartCanvas *cc )
 {
-    bool oldstate = true;
+    cc->SetShowENCLights( !cc->GetShowENCLights());
 
-#ifdef USE_S57
-    OBJLElement *pOLE = NULL;
-    if( ps52plib ) {
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
-                oldstate = pOLE->nViz != 0;
-                break;
-            }
-	    pOLE = NULL;
-        }
+    SetMenubarItemState( ID_MENU_ENC_LIGHTS, cc->GetShowENCLights() );
 
-        oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
-
-        if( doToggle ){
-            if(oldstate){                            // On, going off
-                ps52plib->AddObjNoshow("LIGHTS");
-                ps52plib->SetLightsOff(true);
-            }
-            else{                                   // Off, going on
-                if(pOLE)
-                    pOLE->nViz = 1;
-                ps52plib->RemoveObjNoshow("LIGHTS");
-                ps52plib->SetLightsOff(false);
-            }
-
-            SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
-        }
-
-        if(g_pi_manager)
-            g_pi_manager->SendConfigToAllPlugIns();
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
         
-        if( doToggle ) {
-            if( ! temporary ) {
-                ps52plib->GenerateStateHash();
-               ReloadAllVP();
-            }
-        }
-    }
+    ReloadAllVP();
 
-#endif
-
-
-    return oldstate;
+    return true;
 }
 
 #if 0
@@ -5149,90 +5093,28 @@ void MyFrame::ToggleRocks( void )
 }
 #endif
 
-void MyFrame::ToggleAnchor( void )
+void MyFrame::ToggleAnchor( ChartCanvas *cc )
 {
-#ifdef USE_S57
-    if( ps52plib ) {
-        int old_vis;
+    cc->SetShowENCAnchor( !cc->GetShowENCAnchor());
 
-        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
-        unsigned int num = sizeof(categories) / sizeof(categories[0]);
+    SetMenubarItemState( ID_MENU_ENC_ANCHOR, cc->GetShowENCAnchor() );
 
-        old_vis = ps52plib->GetAnchorOn();
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
         
-        if(old_vis){                            // On, going off
-            ps52plib->SetAnchorOn(false);
-            for( unsigned int c = 0; c < num; c++ ) {
-                ps52plib->AddObjNoshow(categories[c]);
-            }
-        }
-        else{                                   // Off, going on
-            ps52plib->SetAnchorOn(true);
-            for( unsigned int c = 0; c < num; c++ ) {
-                ps52plib->RemoveObjNoshow(categories[c]);
-            }
-
-            unsigned int cnt = 0;
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                for( unsigned int c = 0; c < num; c++ ) {
-                    if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                        pOLE->nViz = 1;         // force on
-                        cnt++;
-                        break;
-                    }
-                }
-                if( cnt == num ) break;
-            }
-
-        }
-
-        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !old_vis );
-
-        if(g_pi_manager)
-            g_pi_manager->SendConfigToAllPlugIns();
-        
-        ps52plib->GenerateStateHash();
-        ReloadAllVP();
-
-    }
-#endif
+    ReloadAllVP();
 }
 
-void MyFrame::ToggleDataQuality( )
+void MyFrame::ToggleDataQuality( ChartCanvas *cc )
 {
-#ifdef USE_S57
-    if( ps52plib == 0) 
-        return;
+    cc->SetShowENCDataQual( !cc->GetShowENCDataQual());
 
-    int old_vis;
-
-    old_vis = ps52plib->GetQualityOfDataOn();
-    if(old_vis){                            // On, going off
-        ps52plib->SetQualityOfDataOn(false);
-        ps52plib->AddObjNoshow("M_QUAL");
-    }
-    else{                                   // Off, going on
-        ps52plib->SetQualityOfDataOn(true);
-        ps52plib->RemoveObjNoshow("M_QUAL");
-
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
-                pOLE->nViz = 1;         // force on
-                break;
-            }
-        }
-    }
-
-    SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, !old_vis );
+    SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, cc->GetShowENCDataQual() );
 
     if(g_pi_manager)
         g_pi_manager->SendConfigToAllPlugIns();
 
-    ps52plib->GenerateStateHash();
     ReloadAllVP();
-#endif
 }
 
 void MyFrame::TogglebFollow( ChartCanvas *cc )
@@ -5286,11 +5168,9 @@ void MyFrame::ClearbFollow( ChartCanvas *cc )
     SetChartUpdatePeriod();
 }
 
-void MyFrame::ToggleChartOutlines( void )
+void MyFrame::ToggleChartOutlines( ChartCanvas *cc )
 {
-    if( !g_bShowOutlines ) g_bShowOutlines = true;
-    else
-        g_bShowOutlines = false;
+    cc->SetShowOutlines( !cc->GetShowOutlines() );
 
     RefreshAllCanvas( false );
 
@@ -5299,7 +5179,7 @@ void MyFrame::ToggleChartOutlines( void )
         InvalidateAllGL();
 #endif
 
-    SetMenubarItemState( ID_MENU_CHART_OUTLINES, g_bShowOutlines );
+    SetMenubarItemState( ID_MENU_CHART_OUTLINES, cc->GetShowOutlines() );
 }
 
 void MyFrame::ToggleTestPause( void )
@@ -5561,6 +5441,7 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
     m_pMenuBar->FindItem( ID_MENU_SHOW_NAVOBJECTS )->Check( GetPrimaryCanvas()->m_bShowNavobjects );
+
 #ifdef USE_S57
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
@@ -5584,6 +5465,63 @@ void MyFrame::UpdateGlobalMenuItems()
             m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
             m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, true);
             m_pMenuBar->FindItem( ID_MENU_ENC_DATA_QUALITY )->Check( !ps52plib->IsObjNoshow("M_QUAL")  );
+            m_pMenuBar->Enable( ID_MENU_ENC_DATA_QUALITY, true);
+        }
+        else{
+            m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( false );
+            m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, false);
+            m_pMenuBar->Enable( ID_MENU_ENC_DATA_QUALITY, false);
+        }            
+            
+    }
+#endif
+}
+
+void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+    m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( cc->m_bFollow );
+    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !cc->m_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( cc->m_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
+    m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( cc->GetShowOutlines() );
+    m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( cc->GetQuiltMode() );
+    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( cc->GetShowChartbar() );
+    m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( cc->GetShowAIS() );
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Check( g_bHideMoored );
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( g_bShowScaled );
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Enable(g_bAllowShowScaled);
+    m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+    m_pMenuBar->FindItem( ID_MENU_SHOW_NAVOBJECTS )->Check( cc->m_bShowNavobjects );
+    m_pMenuBar->FindItem( ID_MENU_SHOW_TIDES )->Check( cc->GetbShowTide() );
+    m_pMenuBar->FindItem( ID_MENU_SHOW_CURRENTS )->Check( cc->GetbShowCurrent() );
+    
+#ifdef USE_S57
+    if( ps52plib ) {
+        m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( cc->GetShowENCText() );
+        m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( cc->GetShowENCDepth() );
+
+        bool light_state = false;
+        if( ps52plib ) {
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                    light_state = (pOLE->nViz == 1);
+                    break;
+                }
+            }
+        }
+        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( cc->GetShowENCLights() );
+
+        // Menu "Anchor Info" entry is only accessible in "All" or "MarinersStandard" categories
+        DisCat nset = (DisCat)cc->GetENCDisplayCategory();
+        if((nset == MARINERS_STANDARD) || (nset == OTHER) ){
+            m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( cc->GetShowENCAnchor());
+            m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, true);
+            m_pMenuBar->FindItem( ID_MENU_ENC_DATA_QUALITY )->Check( cc->GetShowENCDataQual()  );
             m_pMenuBar->Enable( ID_MENU_ENC_DATA_QUALITY, true);
         }
         else{
@@ -6371,6 +6309,8 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 void MyFrame::ToggleQuiltMode( ChartCanvas *cc )
 {
     if( cc ) {
+        cc->ToggleCanvasQuiltMode();
+#if 0        
         bool cur_mode = cc->GetQuiltMode();
 
         if( !cc->GetQuiltMode() )
@@ -6395,7 +6335,7 @@ void MyFrame::ToggleQuiltMode( ChartCanvas *cc )
         if(ps52plib)
             ps52plib->GenerateStateHash();
 #endif
-        
+#endif        
     }
 }
 

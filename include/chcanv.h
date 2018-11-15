@@ -439,6 +439,7 @@ public:
       void SetShowGrid( bool show ){ m_bDisplayGrid = show; }
       bool GetShowOutlines(){ return m_bShowOutlines; }
       void SetShowOutlines( bool show ){ m_bShowOutlines = show; }
+      bool GetShowChartbar(){ return true; }
       bool GetToolbarEnable(){ return m_bToolbarEnable; }
       void SetToolbarEnable( bool show );
       wxRect GetMUIBarRect();
@@ -475,6 +476,9 @@ public:
 
       bool GetShowENCAnchor(){ return m_encShowAnchor; }
       void SetShowENCAnchor( bool show );
+
+      bool GetShowENCDataQual(){ return m_encShowDataQual; }
+      void SetShowENCDataQual( bool show );
       
       bool GetCourseUP(){ return m_bCourseUp; }
       bool GetLookahead(){ return m_bLookAhead; }
@@ -842,6 +846,7 @@ private:
       int          m_encDisplayCategory;
       bool         m_encShowLights;
       bool         m_encShowAnchor;
+      bool         m_encShowDataQual;
       
       wxTimer      m_deferredFocusTimer;
       

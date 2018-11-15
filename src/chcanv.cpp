@@ -91,6 +91,7 @@
 #include "MUIBar.h"
 #include "CanvasConfig.h"
 #include <version.h>
+#include "CanvasOptions.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -512,6 +513,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
 
     m_encShowLights = true;
     m_encShowAnchor = true;
+    m_encShowDataQual = false;
     
     m_bShowGPS = true;
     SetQuiltMode(true);
@@ -945,20 +947,19 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    printf("kill %d\n", m_canvasIndex);
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    printf("set %d\n", m_canvasIndex);
+    // Try to keep the global top-line menubar selections up to date with the current "focus" canvas
+    gFrame->UpdateGlobalMenuItems( this );
+
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
 }
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 {
-    printf("ApplyCanvasConfig  configIndex : %d  bQuilt:  %d\n", pcc->configIndex, pcc->bQuilt);
-    
     SetViewPoint( pcc->iLat, pcc->iLon, pcc->iScale, 0., pcc->iRotation );
     m_vLat = pcc->iLat;
     m_vLon = pcc->iLon;
@@ -1072,6 +1073,10 @@ void ChartCanvas::ShowTides(bool bShow)
             m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, false );
         parent_frame->SetMenubarItemState( ID_MENU_SHOW_TIDES, false );
     }
+    
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
 
     // TODO
 //     if( GetbShowTide() ) {
@@ -1104,6 +1109,10 @@ void ChartCanvas::ShowCurrents(bool bShow)
             m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, false );
         parent_frame->SetMenubarItemState( ID_MENU_SHOW_CURRENTS, false );
     }
+    
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     
     // TODO
 //     if( GetbShowCurrent() ) {
@@ -2809,7 +2818,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'U':
-            parent_frame->ToggleDataQuality();
+            SetShowENCDataQual(!GetShowENCDataQual());
+            ReloadVP();
             break;
 
         case 'V':
@@ -8444,7 +8454,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         SetCursor( wxCURSOR_WAIT );
         bool lightsVis = m_encShowLights; //gFrame->ToggleLights( false );
-        if( !lightsVis ) gFrame->ToggleLights( true, true );
+        if( !lightsVis ) SetShowENCLights( true );
+;
 
         ListOfObjRazRules* rule_list = NULL;
         ListOfPI_S57Obj* pi_rule_list = NULL;
@@ -8462,7 +8473,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                 CHs57_Overlay->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
         }
 
-        if( !lightsVis ) gFrame->ToggleLights( true, true );
+        if( !lightsVis ) SetShowENCLights( false );
 
         wxString objText;
         wxFont *dFont = FontMgr::Get().GetFont( _("ObjectQuery") );
@@ -9367,7 +9378,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB ShowSoundings")] = GetShowENCDepth();
         v[_T("OpenCPN S52PLIB ShowLights")] = GetShowENCLights();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = m_encShowAnchor; //ps52plib->GetAnchorOn();
-        //v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = GetShowENCDataQual(); //ps52plib->GetQualityOfDataOn();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
         
         wxJSONWriter w;
@@ -11344,8 +11355,6 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
 
 void ChartCanvas::ToggleCanvasQuiltMode( void )
 {
-    printf("ToggleCanvasQuiltMode, canvasIndex:  %d  old mode is %d\n", m_canvasIndex, GetQuiltMode());
-    
         bool cur_mode = GetQuiltMode();
         
         if( !GetQuiltMode() )
@@ -11371,7 +11380,9 @@ void ChartCanvas::ToggleCanvasQuiltMode( void )
         if(ps52plib)
             ps52plib->GenerateStateHash();
 #endif
-                
+
+        if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+            GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
 }
 
 void ChartCanvas::DoCanvasStackDelta( int direction )
@@ -12461,17 +12472,29 @@ bool ChartCanvas::UpdateS52State()
         ps52plib->m_bExtendLightSectors = true;
         
         // TODO ps52plib->m_bShowAtons = m_encShowBuoys;
-        ps52plib->SetAnchorOn( m_encShowAnchor);
+        ps52plib->SetAnchorOn( m_encShowAnchor );
+        ps52plib->SetQualityOfData( m_encShowDataQual );
     }
     
     return retval;
 }
     
+void ChartCanvas::SetShowENCDataQual( bool show )
+{
+    m_encShowDataQual = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
 
 
 void ChartCanvas::SetShowENCText( bool show )
 { 
     m_encShowText = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
@@ -12485,12 +12508,18 @@ void ChartCanvas::SetENCDisplayCategory( int category )
 void ChartCanvas::SetShowENCDepth( bool show )
 {
     m_encShowDepth = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
 void ChartCanvas::SetShowENCLightDesc( bool show )
 {
     m_encShowLightDesc = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
@@ -12503,12 +12532,18 @@ void ChartCanvas::SetShowENCBuoyLabels( bool show )
 void ChartCanvas::SetShowENCLights( bool show )
 {
     m_encShowLights = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
     
 void ChartCanvas::SetShowENCAnchor( bool show )
 {
     m_encShowAnchor = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     m_s52StateHash = 0;         // Force a S52 PLIB re-configure
 }
 

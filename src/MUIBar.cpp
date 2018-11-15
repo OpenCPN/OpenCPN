@@ -642,6 +642,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
                 }
                 PullCanvasOptions();
             }
+            
             break;
         }
         
@@ -886,9 +887,8 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
             if(m_pushPull == CO_PUSH){
                 delete m_canvasOptions;
                 m_canvasOptions = NULL;
-                pcc->TriggerDeferredFocus();
             }
-        
+            pcc->TriggerDeferredFocus();
             pcc->Refresh();
         }
         

@@ -2030,7 +2030,7 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
-        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
     }
 
@@ -4515,7 +4515,7 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
             }
             
             m_overlayENC = false;
-            if(m_ChartFamily == PI_CHART_FAMILY_VECTOR){
+            if(m_ChartFamily == (ChartFamilyEnum)PI_CHART_FAMILY_VECTOR){
                 wxCharBuffer buf = m_FullPath.ToUTF8();
                 m_overlayENC = s57chart::IsCellOverlayType( buf.data() );
             }

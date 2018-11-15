@@ -79,6 +79,7 @@ public:
     int GetOrientation(){ return m_orientation; }
     void ResetCanvasOptions();
     void SetFollowButton( bool bFollow );
+    CanvasOptions *GetCanvasOptions(){ return m_canvasOptions; }
     
 private:
     void Init( void );
