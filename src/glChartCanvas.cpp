@@ -120,6 +120,7 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
 #endif
 
+extern MyFrame *gFrame;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern bool g_bDebugOGL;
@@ -3883,12 +3884,14 @@ void glChartCanvas::Render()
             wxColour colour = GetGlobalColor(_T("BLUE4"));
             glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
                 
+            float rect_pix = std::round(2 * gFrame->GetSize().x / m_pParentCanvas->GetDisplaySizeMM());
+
             int xw = m_pParentCanvas->GetClientSize().x;
             glBegin(GL_QUADS);
             glVertex2i(0, 0);
             glVertex2i(xw, 0);
-            glVertex2i(xw, 4);
-            glVertex2i(0, 4);
+            glVertex2i(xw, rect_pix);
+            glVertex2i(0, rect_pix);
             glEnd();
         }
     }

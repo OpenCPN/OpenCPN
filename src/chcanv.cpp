@@ -9993,7 +9993,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             wxColour colour = GetGlobalColor(_T("BLUE4"));
             dc.SetPen(wxPen(colour));
             dc.SetBrush(wxBrush(colour));
-            wxRect activeRect(0, 0, GetClientSize().x, 4);
+            
+            float rect_pix = std::round(2 * gFrame->GetSize().x / GetDisplaySizeMM());
+
+            wxRect activeRect(0, 0, GetClientSize().x, rect_pix);
             dc.DrawRectangle(activeRect);
         }
     }
