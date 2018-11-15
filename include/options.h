@@ -50,6 +50,8 @@
 #define __OCPN__OPTIONS_USE_LISTBOOK__
 #endif
 
+//define SILLY_SOUND_TEST 1
+
 // Forward Declarations
 class wxGenericDirCtrl;
 class MyConfig;
@@ -77,6 +79,9 @@ enum {
   ID_AISALERTDIALOG,
   ID_AISALERTSELECTSOUND,
   ID_AISALERTTESTSOUND,
+#ifdef SILLY_SOUND_TEST
+  ID_AISALERTTESTSOUND2,
+#endif
   ID_APPLY,
   ID_ATONTEXTCHECKBOX,
   ID_AUTOANCHORMARKBOX1,
@@ -312,8 +317,8 @@ class options : private Uncopyable,
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
 #ifdef SILLY_SOUND_TEST
-  void OnSoundFinishedTest(wxCommandEvent &event);
   void OnButtonTestSound2(wxCommandEvent &event);
+  void OnSoundFinishedTest( wxCommandEvent& event );
 #endif
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
@@ -572,7 +577,7 @@ class options : private Uncopyable,
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
-  wxSpinCtrl *pSoundDeviceIndex;
+  wxChoice *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
   wxArrayString *m_pSerialArray;

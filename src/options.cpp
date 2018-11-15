@@ -97,9 +97,10 @@ extern GLuint g_raster_format;
 #endif
 
 #ifdef SILLY_SOUND_TEST
-#include "PortAudioSound.h"
-#include "OcpnWxSound.h"
-#include "SystemCmdSound.h"
+//#include "PortAudioSound.h"
+//#include "OcpnWxSound.h"
+//#include "SystemCmdSound.h"
+#include "SoundFactory.h"
 #endif
 
 #include "OCPNPlatform.h"
@@ -339,7 +340,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 
 int soundCount;
 
-OcpnSound* testSound = new PortAudioSound();
+OcpnSound* testSound = SoundFactory();
 
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
@@ -357,8 +358,7 @@ void options::OnSoundFinishedTest( wxCommandEvent& event )
 
 wxLogMessage("Running test callback.");
     testSound->SetFinishedCallback(onSoundFinished, this);
-    bool ok = testSound->Load(
-            "/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
+    bool ok = testSound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     wxLogWarning("Loading next: %s", ok ? "true" : "false");
     testSound->Play();
 }
@@ -1067,12 +1067,18 @@ EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
 EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
 EVT_BUTTON(ID_AISALERTSELECTSOUND, options::OnButtonSelectSound)
 EVT_BUTTON(ID_AISALERTTESTSOUND, options::OnButtonTestSound)
+#ifdef SILLY_SOUND_TEST
+EVT_BUTTON(ID_AISALERTTESTSOUND2, options::OnButtonTestSound2)
+#endif
 EVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
 EVT_CHOICE(ID_SHIPICONTYPE, options::OnShipTypeSelect)
 EVT_CHOICE(ID_RADARRINGS, options::OnRadarringSelect)
 EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
 EVT_CHAR_HOOK(options::OnCharHook)
 EVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
+#ifdef SILLY_SOUND_TEST
+   EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, options::OnSoundFinishedTest)
+#endif
 END_EVENT_TABLE()
 
 
@@ -5063,6 +5069,14 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxButton(panelAIS, ID_AISALERTTESTSOUND, _("Test Alert Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
   pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
+#ifdef SILLY_SOUND_TEST
+  wxButton* m_pPlay_Sound2 =
+      new wxButton(panelAIS, ID_AISALERTTESTSOUND2, _("Test Sound - async"),
+                   wxDefaultPosition, m_small_button_size, 0);
+  pAlertGrid->Add(m_pPlay_Sound2, 0, 
+		  wxALL | wxALIGN_CENTER_HORIZONTAL, 
+		  group_item_spacing);
+#endif
 
   m_pCheck_Alert_Moored = new wxCheckBox(
       panelAIS, -1, _("Supress Alerts for anchored/moored targets"));
@@ -5211,16 +5225,31 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pSoundDeviceIndex = new wxChoice();
   wxLogMessage("options: got device count: %d", deviceCount);
   if (deviceCount > 1) {
+    wxArrayString labels;
+    for (int i = 0; i < deviceCount; i += 1) {
+        if (!sound->IsOutputDevice(i)) {
+            continue;
+        }
+        wxString label(sound->GetDeviceInfo(i));
+        if (label == "")  {
+            label = _("Unknown device :") + std::to_string(i);
+        }
+        labels.Add(label);
+    }
+    pSoundDeviceIndex->Create(itemPanelFont,
+                              wxID_ANY,
+                              wxDefaultPosition,
+                              wxDefaultSize,
+                              labels);
+    pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
     pSoundDeviceIndex->Show();
-
     wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
     miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
                      group_item_spacing);
 
     wxStaticText* stSoundDeviceIndex =
-        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device Index"));
+        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
     pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-    pSoundDeviceIndex->SetRange(-1, deviceCount - 1);
     pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
   }
 
@@ -5863,7 +5892,7 @@ void options::SetInitialSettings(void) {
 
   if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
-  pSoundDeviceIndex->SetValue(g_iSoundDeviceIndex);
+  pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
@@ -6917,7 +6946,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
-  g_iSoundDeviceIndex = pSoundDeviceIndex->GetValue();
+  g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
@@ -8031,16 +8060,16 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
 #ifdef SILLY_SOUND_TEST
+    wxLog::SetLogLevel(wxLOG_Debug);
     wxLogMessage("Running test 1.");
-    std::unique_ptr<OcpnSound> AIS_Sound(new PortAudioSound());
+    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
     //std::unique_ptr<OcpnSound> AIS_Sound(new SystemCmdSound());
-    bool ok = AIS_Sound->Load(
-            "/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
-    wxLogWarning("Loading next: %s", ok ? "true" : "false");
+    bool ok = AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+    wxLogWarning("Loading next: %s", ok ? "ok" : "problems");
     AIS_Sound->Play();
 #else
     std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
-    AIS_Sound->Load(g_sAIS_Alert_Sound_File);
+    AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     AIS_Sound->Play();
 #endif         
 }
@@ -8049,20 +8078,21 @@ void options::OnButtonTestSound(wxCommandEvent& event) {
 #include "SystemCmdSound.h"
 
 void options::OnButtonTestSound2(wxCommandEvent& event) {
+    wxLog::SetLogLevel(wxLOG_Debug);
     wxLogMessage("Running test.");
-    OcpnSound* sound = new PortAudioSound();
+    OcpnSound* sound = SoundFactory();
     //OcpnSound* sound = new SystemCmdSound();
     wxLogMessage("Running: new OK.");
     wxLogMessage("Running, devices: %d", sound->DeviceCount());
     //sound->SetFinishedCallback( []() { wxLogMessage("Running callback"); } );
     soundCount = 8;
     testSound->SetFinishedCallback(onSoundFinished, this);
-    bool ok = testSound->Load("/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
+    bool ok = testSound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     wxLogMessage("Running: load OK: %s", ok ? "yes" : "no");
     ok = testSound->Play();
     wxLogMessage("Running: play OK: %s", ok ? "yes" : "no");
 
-//	wxSound* sound = new wxSound("/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", false);
+//	wxSound* sound = new wxSound(g_sAIS_Alert_Sound_File, false);
 //	sound->Play(wxSOUND_SYNC);
 }
 #endif // SILLY_SOUND_TEST
