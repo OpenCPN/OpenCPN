@@ -6022,6 +6022,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
       ViewPort nvp;
       bool secondpass = false;
       glChartCanvas *glcc = cc->GetglCanvas();
+      if(!glcc)
+          return false;
       
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
