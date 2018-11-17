@@ -3127,7 +3127,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
             cc->SetColorScheme( global_color_scheme );
             
             g_pauimgr->AddPane( cc );
-            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
+            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
             g_pauimgr->GetPane( cc ).Fixed();
             g_pauimgr->GetPane( cc ).CaptionVisible( false );
             g_pauimgr->GetPane( cc ).CenterPane();
@@ -3152,7 +3152,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->SetShowGPS( false);
            
            g_pauimgr->AddPane( cc );
-           g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
+           g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            
            g_pauimgr->GetPane( cc ).CenterPane();
@@ -3578,7 +3578,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_maintoolbar_x = tbp_incanvas.x;
         g_maintoolbar_y = tbp_incanvas.y;
         g_maintoolbar_orient = GetPrimaryCanvas()->GetToolbarOrientation();
-        g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
+        //g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
     }
 
     if(g_iENCToolbar){
