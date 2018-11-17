@@ -3074,13 +3074,18 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
     if(ChartData)
         ChartData->PurgeCache();
     
-    //Destroy any existing canvases
-    // ..For each canvas...
+    // Detach all canvases from AUI manager
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
+        ChartCanvas *cc = g_canvasArray[i];
         if(cc){
             g_pauimgr->DetachPane(cc);
-            
+        }
+    }
+    
+    //Destroy any existing canvases, except for Primary canvas
+    for(unsigned int i=1 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc){
             pthumbwin = NULL;           // TODO
             cc->DestroyToolbar();
             cc->Destroy();
@@ -3088,33 +3093,36 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
     }
 
     // Canvas pointers in config array are now invalid
-    for(unsigned int i=0 ; i < g_canvasConfigArray.GetCount() ; i++){
+    for(unsigned int i=1 ; i < g_canvasConfigArray.GetCount() ; i++){
         g_canvasConfigArray.Item(i)->canvas = NULL;
     }
     
-    g_canvasArray.Clear();
-    
-//      Create Children of Frame
-//              n.b.  if only one child exists, wxWindows expands the child
-//                        to the parent client area automatically, (as a favor?)
-//                        Here, we'll do explicit sizing on SIZE events
+//    g_canvasArray.Clear();
 
-    ChartCanvas *cc;
+    // Clear the canvas Array, except for Primary canvas
+    for(unsigned int i=1 ; i < g_canvasArray.GetCount() ; i++){
+        g_canvasArray.RemoveAt(i);
+    }
+
+    ChartCanvas *cc = NULL;
     switch(g_canvasConfig){
         default:
         case 0:                                                 // a single canvas
-            cc = new ChartCanvas( this, 0 );                         // the chart display canvas
-            g_canvasArray.Add(cc);
+            if(!g_canvasArray.GetCount() || !g_canvasConfigArray.Item(0)){
+                cc = new ChartCanvas( this, 0 );                         // the chart display canvas
+                g_canvasArray.Add(cc);
+            }
+            else{
+                cc = g_canvasArray[0];
+            }
+    
             g_canvasConfigArray.Item(0)->canvas = cc;
             
             cc->SetDisplaySizeMM(g_display_size_mm);
     
             cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
             
-            //cc->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-            //cc->SetToolbarConfigString(g_toolbarConfig);
-            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-            //cc->SetToolbarOrientation( g_maintoolbar_orient);
+//            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             cc->ConfigureChartBar();
             cc->SetColorScheme( global_color_scheme );
             
@@ -3127,14 +3135,18 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
             break;
             
         case 1:{                                                 // two canvas, horizontal
-           cc = new ChartCanvas( this, 0 );                         // the chart display canvas
-           g_canvasArray.Add(cc);
+            if(!g_canvasArray.GetCount() || !g_canvasArray[0]){
+                cc = new ChartCanvas( this, 0 );                         // the chart display canvas
+                g_canvasArray.Add(cc);
+           }
+            else{
+                cc = g_canvasArray[0];
+           }
            g_canvasConfigArray.Item(0)->canvas = cc;
            
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
            cc->SetShowGPS( false);
