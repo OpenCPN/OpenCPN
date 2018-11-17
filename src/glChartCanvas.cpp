@@ -2152,9 +2152,18 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
     GridDraw( );
 
-    if( g_pi_manager ) {
-        g_pi_manager->SendViewPortToRequestingPlugIns( vp );
-        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, vp );
+    bool pluginOverlayRender = true;
+    
+    if(g_canvasConfig > 0){     // Multi canvas
+        if(m_pParentCanvas->IsPrimaryCanvas())
+            pluginOverlayRender = false;
+    }
+    
+    if(pluginOverlayRender){
+        if( g_pi_manager ) {
+            g_pi_manager->SendViewPortToRequestingPlugIns( vp );
+            g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, vp );
+        }
     }
 
     // all functions called with m_pParentCanvas-> are still slow because they go through ocpndc
