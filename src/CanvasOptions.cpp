@@ -179,7 +179,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     boxAIS->Add(pCBShowAIS, verticleInputFlags);
     pCBShowAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
-    pCBAttenAIS = new wxCheckBox(pDisplayPanel, ID_ATTEN_AIS_CHECKBOX, _("Hide less critical targets"));
+    pCBAttenAIS = new wxCheckBox(pDisplayPanel, ID_ATTEN_AIS_CHECKBOX, _("Minimize less critical targets"));
     boxAIS->Add(pCBAttenAIS, verticleInputFlags);
     pCBAttenAIS->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
