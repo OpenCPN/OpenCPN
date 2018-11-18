@@ -5273,7 +5273,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
         if( b_render_hdt ) {
              float hdt_dash_length = ref_dim * 0.4;
             
-            float hdt_width = g_cog_predictor_width * 0.66;
+            float hdt_width = g_cog_predictor_width * 0.8;
             wxDash dash_short[2];
             dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length) / hdt_width );  // Short dash , in mm <---------+
             dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length * 0.9 ) / hdt_width );  // Short gap            |
