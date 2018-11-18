@@ -890,8 +890,13 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
     //  Develop empirically, making a "diamond ATON" symbol about 4 mm square
+
+    // By experience, it is found that specifying target size in pixels, then bounding rendered size
+    // for high or lo resolution displays, gives the best compromise.
     
-    float nominal_target_size_mm = gFrame->GetPrimaryCanvas()->GetDisplaySizeMM() / 60.0;
+    float nominal_target_size_mm = 30.0 / g_Platform->GetDisplayDPmm();
+    //float nominal_target_size_mm = gFrame->GetPrimaryCanvas()->GetDisplaySizeMM() / 60.0;
+    
     nominal_target_size_mm = wxMin(nominal_target_size_mm, 10.0);
     nominal_target_size_mm = wxMax(nominal_target_size_mm, 6.0);
     
