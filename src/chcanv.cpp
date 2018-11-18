@@ -6240,19 +6240,20 @@ void ChartCanvas::SetMUIBarPosition()
 {
     //  if MUIBar is active, size the bar
     if(m_muiBar){
-        int pianoWidth = 0;
-        if(m_Piano)
-            pianoWidth = m_Piano->GetWidth();
+        // We precalculate the piano width based on the canvas width
+        int pianoWidth = GetClientSize().x * (g_btouch ? 0.98f : 0.6f);
+//        if(m_Piano)
+//            pianoWidth = m_Piano->GetWidth();
         
         if((m_muiBar->GetOrientation() == wxHORIZONTAL)){
-            if(m_muiBarHOSize.x > (GetSize().x - pianoWidth)){
+            if(m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)){
                 delete m_muiBar;
                 m_muiBar = new MUIBar(this, wxVERTICAL);
             }
         }
         
         if((m_muiBar->GetOrientation() == wxVERTICAL)){
-            if(m_muiBarHOSize.x < (GetSize().x - pianoWidth)){
+            if(m_muiBarHOSize.x < (GetClientSize().x - pianoWidth)){
                 delete m_muiBar;
                 m_muiBar = new MUIBar(this, wxHORIZONTAL);
             }

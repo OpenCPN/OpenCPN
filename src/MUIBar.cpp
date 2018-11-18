@@ -413,17 +413,17 @@ void MUIBar::CreateControls()
         // Buttons
         
         m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("MUI_zoom-in.svg"));
-        barSizer->Add(m_zinButton, 1);
+        barSizer->Add(m_zinButton, 0, wxSHAPED);
     
         m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("MUI_zoom-out.svg"));
-        barSizer->Add(m_zoutButton, 1);
+        barSizer->Add(m_zoutButton, 0, wxSHAPED);
     
         barSizer->AddSpacer(2);
         
         //  Scale 
         m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
         m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
-        barSizer->Add(m_scaleTextBox, 1, wxALIGN_CENTER_VERTICAL );
+        barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL );
         barSizer->AddSpacer(5);
         
         
@@ -431,12 +431,12 @@ void MUIBar::CreateControls()
 //         barSizer->Add(pl1, 1);
         
         m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
-        barSizer->Add(m_followButton, 1, wxSHAPED);
+        barSizer->Add(m_followButton, 0, wxSHAPED);
         
         barSizer->AddSpacer(2);
         
         m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("MUI_menu.svg"));
-        barSizer->Add(m_menuButton, 1,  wxSHAPED);
+        barSizer->Add(m_menuButton, 0,  wxSHAPED);
     }
     else{
         topSizer = new wxBoxSizer(wxVERTICAL);
@@ -477,7 +477,7 @@ void MUIBar::CreateControls()
     }
     
     
-    topSizer->SetSizeHints( this );
+    //topSizer->SetSizeHints( this );
     topSizer->Fit( this );
      
     
@@ -498,7 +498,7 @@ void MUIBar::SetBestPosition( void )
     }
     
 #else   // for wxDialog
-    int x = (m_parent->GetClientSize().x - (GetSize().x * 1.02));
+    int x = (m_parent->GetClientSize().x - (GetSize().x * 1.00));
     
     //if(x > 0)
     {
