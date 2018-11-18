@@ -5783,7 +5783,7 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
 
 void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 {
-    if(!g_bsimplifiedScalebar){
+    if(0 /*!g_bsimplifiedScalebar*/){
         double blat, blon, tlat, tlon;
         wxPoint r;
 
@@ -5827,12 +5827,11 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
     else {
         double blat, blon, tlat, tlon;
 
-//        int x_origin = g_bDisplayGrid ? 50 : 10;
-        int x_origin = m_canvas_width - 200;
+        int x_origin = 5.0 * GetPixPerMM();
         int chartbar_height = GetChartbarHeight();
-        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        if (style->chartStatusWindowTransparent)
-            chartbar_height = 0;
+//         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+//         if (style->chartStatusWindowTransparent)
+//             chartbar_height = 0;
         int y_origin = m_canvas_height - chartbar_height - 5;
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
