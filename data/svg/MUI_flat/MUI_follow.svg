@@ -12,8 +12,8 @@
    id="svg10643"
    height="32"
    width="32"
-   sodipodi:docname="follow.svg"
-   inkscape:version="0.48.3.1 r9886">
+   sodipodi:docname="MUI_follow.svg"
+   inkscape:version="0.91 r13725">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -27,8 +27,8 @@
      inkscape:window-height="972"
      id="namedview34"
      showgrid="false"
-     inkscape:zoom="7.375"
-     inkscape:cx="-6.7118644"
+     inkscape:zoom="14.75"
+     inkscape:cx="16.624571"
      inkscape:cy="16"
      inkscape:window-x="10"
      inkscape:window-y="0"
@@ -198,17 +198,17 @@
        style="fill:#b4b4b4;fill-opacity:1;stroke:#b4b4b4;stroke-width:21.98171425;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0" />
   </g>
   <ellipse
-     style="fill:#241c1c;fill-opacity:0.91836733;stroke:none;stroke-width:2.53821731;stroke-opacity:0.955102"
+     style="fill:#241c1c;fill-opacity:0.91836733;stroke:#b4b4b4;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path5957"
-     cx="16.967506"
-     cy="14.816037"
-     rx="4.1961174"
-     ry="3.8073621" />
+     cx="16.831915"
+     cy="14.95163"
+     rx="3.0224087"
+     ry="3.0355487" />
   <ellipse
-     style="fill:#800000;fill-opacity:0;stroke:#9f2121;stroke-width:1.69999999999999996;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.84897959"
+     style="fill:#800000;fill-opacity:0;stroke:#9f2121;stroke-width:2.26269984;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.84897958"
      id="path5959"
      cx="16.81356"
      cy="14.915255"
-     rx="4.2033896"
-     ry="4.0677967" />
+     rx="5.5947118"
+     ry="5.4142375" />
 </svg>
