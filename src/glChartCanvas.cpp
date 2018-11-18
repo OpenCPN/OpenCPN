@@ -2020,8 +2020,19 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, ownship_tex);
                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  
+                //We choose to render the ownship bitmap at roughly the same size( in pixels ) as the DC mode renderer.
+                // For ultra-high definition displays, we clamp the actual on-screen size to be no smaller than 7.0 mm
+                // Similarly, for lo-res displays, we limit the actual size to be no larger than 15 mm maximum.
                 
-                float nominal_ownship_size_mm = m_pParentCanvas->m_display_size_mm / 44.0;
+                // Get bitmap height in pixels 
+                int image_height_bitmap = m_pParentCanvas->m_pos_image_red->GetHeight();
+                if(m_pParentCanvas->m_pos_image_user) 
+                    image_height_bitmap = m_pParentCanvas->m_pos_image_user->GetHeight();
+ 
+                //float nominal_ownship_size_mm = m_pParentCanvas->m_display_size_mm / 44.0;
+                float nominal_ownship_size_mm = image_height_bitmap / m_pParentCanvas->GetPixPerMM();
+                
                 nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
                 nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
                 
@@ -2031,6 +2042,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 float glw = ownship_tex_size.x, glh = ownship_tex_size.y;
                 float u = ownship_size.x/glw, v = ownship_size.y/glh;
                 
+//                printf("%g %g %g %g %g %g %g\n", nominal_ownship_size_mm, nominal_ownship_size_pixels, h, w, u, v, m_pParentCanvas->m_display_size_mm);
                 // tweak GPS reference point indicator size
                 gps_circle_radius = w / 5;
                 
