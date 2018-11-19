@@ -4448,7 +4448,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_ROUTEMANAGER: {
             g_MainToolbar->HideTooltip();
             
-            pRouteManagerDialog = RouteManagerDialog::getInstance( GetPrimaryCanvas() ); // There is one global instance of the Dialog
+            pRouteManagerDialog = RouteManagerDialog::getInstance( this ); // There is one global instance of the Dialog
 
             if( pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->Hide();
