@@ -3224,11 +3224,12 @@ void MyFrame::RequestNewToolbars(bool bforcenew)
     }
     
     // ..For each canvas...
-    
-    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if(cc)
-            cc->RequestNewCanvasToolbar( bforcenew );
+    if(0){
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc)
+                cc->RequestNewCanvasToolbar( bforcenew );
+        }
     }
    
     
