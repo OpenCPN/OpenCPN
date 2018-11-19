@@ -3194,6 +3194,12 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
                 int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
                 int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
                 
+                // Check for undefined size, and set a nice default size if necessary.
+                if( ccw < GetClientSize().x / 10){
+                    ccw = GetClientSize().x / 2;
+                    cch = GetClientSize().y;
+                }
+                
                 g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
                 cc->SetSize(ccw, cch);
             }
