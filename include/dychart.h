@@ -103,7 +103,7 @@
       #define fmin __min
       #define fmax __max
 
-      #define round(x) round_msvc(x)
+//      #define round(x) round_msvc(x)
 
 #endif
 
