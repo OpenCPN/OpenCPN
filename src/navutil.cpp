@@ -2212,7 +2212,7 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
-    Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
+//    Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );      //Not desired for O5 MUI
 
     Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__

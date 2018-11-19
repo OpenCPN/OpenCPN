@@ -1859,10 +1859,10 @@ bool MyApp::OnInit()
     // Now initialize UI Style.
     g_StyleManager = new ocpnStyle::StyleManager();
     
-    if(g_useMUI)
-        g_uiStyle = _T("MUI_flat");
+//     if(g_useMUI)
+//         g_uiStyle = _T("MUI_flat");
     
-    g_StyleManager->SetStyle( g_uiStyle );
+    g_StyleManager->SetStyle( _T("MUI_flat") );
     if( !g_StyleManager->IsOK() ) {
         wxString msg = _("Failed to initialize the user interface. ");
         msg << _("OpenCPN cannot start. ");
