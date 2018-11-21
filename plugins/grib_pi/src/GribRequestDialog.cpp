@@ -325,6 +325,9 @@ void GribRequestSetting::StopGraphicalZoneSelection()
 
 void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 {
+    if(!vp)
+        return;
+        
     delete m_Vp;
     m_Vp = new PlugIn_ViewPort(*vp);
 
