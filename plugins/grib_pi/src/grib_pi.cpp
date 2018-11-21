@@ -372,7 +372,7 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    if( !::wxIsBusy() ) ::wxBeginBusyCursor();
+    //if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
     bool starting = false;
 
