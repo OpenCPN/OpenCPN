@@ -49,6 +49,7 @@
 #include <gelf.h>
 #endif
 
+#include "config.h"
 #include "dychart.h"
 #include "pluginmanager.h"
 #include "navutil.h"
@@ -76,7 +77,6 @@
 #include "gshhs.h"
 #include "mygeom.h"
 #include "OCPNPlatform.h"
-#include "version.h"
 #include "toolbar.h"
 #include "Track.h"
 #include "Route.h"
@@ -3157,13 +3157,11 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 void PlugInPlaySound( wxString &sound_file )
 {
     if(g_pi_manager) {
-        g_pi_manager->m_plugin_sound.Stop();
-        g_pi_manager->m_plugin_sound.UnLoad();
+        g_pi_manager->m_plugin_sound->Stop();
+        g_pi_manager->m_plugin_sound->Load( sound_file );
 
-        g_pi_manager->m_plugin_sound.Create( sound_file );
-
-        if( g_pi_manager->m_plugin_sound.IsOk() )
-            g_pi_manager->m_plugin_sound.Play();
+        if( g_pi_manager->m_plugin_sound->IsOk() )
+            g_pi_manager->m_plugin_sound->Play();
     }
 }
 
@@ -5976,13 +5974,11 @@ void SetCanvasProjection(int projection)
 bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 {
     if(g_pi_manager) {
-        g_pi_manager->m_plugin_sound.Stop();
-        g_pi_manager->m_plugin_sound.UnLoad();
+        g_pi_manager->m_plugin_sound->Stop();
+        g_pi_manager->m_plugin_sound->Load( sound_file, deviceIndex );
 
-        g_pi_manager->m_plugin_sound.Create( sound_file, deviceIndex );
-
-        if( g_pi_manager->m_plugin_sound.IsOk() )
-            return g_pi_manager->m_plugin_sound.Play();
+        if( g_pi_manager->m_plugin_sound->IsOk() )
+            return g_pi_manager->m_plugin_sound->Play();
     }
 
     return false;

@@ -120,6 +120,15 @@ static double arpa_ref_hdg = NAN;
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 extern int              gps_watchdog_timeout_ticks;
 
+
+static void onSoundFinished(void* ptr)
+{
+   auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+   wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
+   wxPostEvent(aisDecoder, ev);
+}
+
+
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
@@ -2296,16 +2305,10 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
 void AIS_Decoder::OnTimerAISAudio( wxTimerEvent& event )
 {
     if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
-        if(!m_AIS_Sound.IsOk() )
-             m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-             
-#ifndef __WXMSW__
-       if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
-            m_AIS_Sound.Play();
-#else
-       if( m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Play();
-#endif
+        m_AIS_Sound->Load( g_sAIS_Alert_Sound_File );
+        wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
+        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
+        m_AIS_Sound->Play();
     }
     
     m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC, wxTIMER_CONTINUOUS );
@@ -2595,16 +2598,9 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             m_AIS_Audio_Alert_Timer.SetOwner( this, TIMER_AISAUDIO );
             m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC );
 
-            if( !m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-            
-#ifndef __WXMSW__
-            if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
-                m_AIS_Sound.Play();
-#else
-            if( m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Play();
-#endif
+            if( !m_AIS_Sound->IsOk() )
+                m_AIS_Sound->Load( g_sAIS_Alert_Sound_File );
+            m_AIS_Sound->Play();
         }
     } else
         m_AIS_Audio_Alert_Timer.Stop();

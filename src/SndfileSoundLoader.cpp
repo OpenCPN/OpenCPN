@@ -22,33 +22,52 @@
  ***************************************************************************
  */
 
-#include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
 #include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
 
-extern int g_iSoundDeviceIndex;
+#include "SndfileSoundLoader.h"
 
 
-OcpnSound::OcpnSound()
+bool SndfileSoundLoader::Load(const char* path)
 {
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
+    memset(&m_sfinfo, 0, sizeof(m_sfinfo));
+    m_sndfile = sf_open(path, SFM_READ, &m_sfinfo);
+    if (m_sndfile == NULL) {
+        const char* err = sf_strerror(NULL);
+        wxLogWarning("Cannot open file %s: %s", path, err);
+        return false;
+    }
+    wxLogMessage("Using libsndfile sound loader.");
+    return true;
+}
+
+bool SndfileSoundLoader::Reset() 
+{
+    if (!m_sndfile) {
+        wxLogWarning("SndfileLoader: Attempt to reset unloaded file.");
+        return false;
+    }
+    return sf_seek(m_sndfile, 0L, SEEK_SET) != -1;
+}
+
+size_t SndfileSoundLoader::Get(void* buff, size_t length)
+{
+    short* dest = static_cast<short*>(buff);
+    size_t done = sf_read_short(m_sndfile, dest, length/2);
+    return done * 2;
 }
 
 
-OcpnSound::~OcpnSound()
+unsigned SndfileSoundLoader::GetChannelCount()  const
 {
+    return m_sfinfo.channels;
 }
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
+unsigned SndfileSoundLoader::GetSamplingRate() const
 {
-    m_onFinished = cb;
-    m_callbackData = userData;
+    return m_sfinfo.samplerate; 
+}
+
+SndfileSoundLoader::~SndfileSoundLoader()
+{
+    if (m_sndfile) sf_close(m_sndfile);
 }

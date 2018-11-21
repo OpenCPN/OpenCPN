@@ -22,16 +22,7 @@
  ***************************************************************************
  */
 
-#include "OCPNSoundData.h"
+#include "SoundFileLoader.h"
 
-#ifdef OCPN_USE_PORTAUDIO
-
-OCPNSoundData::OCPNSoundData()
-	: m_dataWithHeader(NULL)
-{}
-
-OCPNSoundData::~OCPNSoundData()
-{}
-
-#endif
-
+/** Returnm the sound loader to use as configured by cmake. */
+AbstractSoundLoader* SoundLoaderFactory();

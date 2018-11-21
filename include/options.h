@@ -311,6 +311,10 @@ class options : private Uncopyable,
 
   void OnButtonSelectSound(wxCommandEvent &event);
   void OnButtonTestSound(wxCommandEvent &event);
+#ifdef SILLY_SOUND_TEST
+  void OnSoundFinishedTest(wxCommandEvent &event);
+  void OnButtonTestSound2(wxCommandEvent &event);
+#endif
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void OnZTCCheckboxClick(wxCommandEvent &event);
   void OnRadarringSelect(wxCommandEvent &event);

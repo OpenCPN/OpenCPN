@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <memory>
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -39,7 +40,6 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-#include <version.h>
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
 #include <wx/clrpicker.h>
@@ -70,6 +70,7 @@
 #include <X11/Xatom.h>
 #endif
 
+#include "config.h"
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
@@ -118,6 +119,8 @@
 #include "CanvasConfig.h"
 #include "ConfigMgr.h"
 #include "MUIBar.h"
+#include "OCPN_Sound.h"
+#include "SoundFactory.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -146,10 +149,6 @@
 #endif
 
 #include <wx/jsonreader.h>
-
-#ifdef OCPN_USE_PORTAUDIO
-#include "portaudio.h"
-#endif
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -277,9 +276,10 @@ wxArrayOfConnPrm          *g_pConnectionParams;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
-OCPN_Sound                bells_sound[2];
+static OcpnSound* _bells_sounds[]  = {SoundFactory(), SoundFactory()};
+std::vector<OcpnSound*>   bells_sound(_bells_sounds, _bells_sounds + 2  );
 
-OCPN_Sound                g_anchorwatch_sound;
+OcpnSound*                g_anchorwatch_sound = SoundFactory();
 
 RoutePoint                *pAnchorWatchPoint1;
 RoutePoint                *pAnchorWatchPoint2;
@@ -430,6 +430,7 @@ bool                      g_bAIS_CPA_Alert;
 bool                      g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog      *g_pais_alert_dialog_active;
 AISTargetQueryDialog      *g_pais_query_dialog_active;
+int                       g_iSoundDeviceIndex;
 
 int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
@@ -2616,12 +2617,6 @@ int MyApp::OnExit()
 #endif
 #endif
 #endif
-
-#ifdef OCPN_USE_PORTAUDIO
-    if(portaudio_initialized)
-        Pa_Terminate();
-#endif
-
 
     //      Restore any changed system colors
 #ifdef __WXMSW__
@@ -6873,14 +6868,14 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
     if(bells <= 0)
         return;
 
-    if( !bells_sound[bells - 1].IsOk() )            // load the bells sound
+    if( !bells_sound[bells - 1]->IsOk() )            // load the bells sound
     {
         wxString soundfile = _T("sounds");
         appendOSDirSlash( &soundfile );
         soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
         soundfile.Prepend( g_Platform->GetSharedDataDir() );
-        bells_sound[bells - 1].Create( soundfile );
-        if( !bells_sound[bells - 1].IsOk() ) {
+        bells_sound[bells - 1]->Load( soundfile );
+        if( !bells_sound[bells - 1]->IsOk() ) {
             wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
             return;
         }
@@ -6888,7 +6883,7 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         wxLogMessage( _T("Using bells sound file: ") + soundfile );
     }
 
-    bells_sound[bells - 1].Play();
+    bells_sound[bells - 1]->Play();
     m_BellsToPlay -= bells;
 
     BellsTimer.Start(2000, wxTIMER_ONE_SHOT);

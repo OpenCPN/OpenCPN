@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+#include <memory>
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -41,6 +41,7 @@
 #include <wx/clrpicker.h>
 #include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
+#include <wx/mediactrl.h>
 #include "wx/dir.h"
 
 #if wxCHECK_VERSION(2, 9, \
@@ -50,6 +51,8 @@
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
+
+#include "config.h"
 
 #include "dychart.h"
 #include "chart1.h"
@@ -66,6 +69,7 @@ extern GLuint g_raster_format;
 #include "multiplexer.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
+#include "SoundFactory.h"
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
 #include "routeman.h"
@@ -90,6 +94,12 @@ extern GLuint g_raster_format;
 
 #ifdef __WXOSX__
 #include "DarkMode.h"
+#endif
+
+#ifdef SILLY_SOUND_TEST
+#include "PortAudioSound.h"
+#include "OcpnWxSound.h"
+#include "SystemCmdSound.h"
 #endif
 
 #include "OCPNPlatform.h"
@@ -247,7 +257,7 @@ extern bool g_bGarminHostUpload;
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern OCPN_Sound g_anchorwatch_sound;
+extern OcpnSound* g_anchorwatch_sound;
 extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
@@ -324,6 +334,36 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
         return wxBitmap(width, height);
         #endif // ocpnUSE_SVG
 }
+
+#ifdef SILLY_SOUND_TEST
+
+int soundCount;
+
+OcpnSound* testSound = new PortAudioSound();
+
+wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
+
+static void onSoundFinished(void* ptr)
+{
+   auto optionsPtr  = static_cast<options*>(ptr);
+   wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
+   wxPostEvent(optionsPtr, ev);
+}
+
+void options::OnSoundFinishedTest( wxCommandEvent& event )
+{
+    if (--soundCount <= 0)
+        return;
+
+wxLogMessage("Running test callback.");
+    testSound->SetFinishedCallback(onSoundFinished, this);
+    bool ok = testSound->Load(
+            "/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
+    wxLogWarning("Loading next: %s", ok ? "true" : "false");
+    testSound->Play();
+}
+
+#endif
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1035,6 +1075,8 @@ EVT_CHAR_HOOK(options::OnCharHook)
 EVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
 END_EVENT_TABLE()
 
+
+
 options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
@@ -1045,7 +1087,6 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
   wxDialog::Create(parent, id, caption, pos, size, wstyle);
-
   SetFont(*dialogFont);
 
   CreateControls();
@@ -5165,11 +5206,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   miscOptions->Add(pPlayShipsBells, 0, wxALL, border_size);
 
-  pSoundDeviceIndex = new wxSpinCtrl(itemPanelFont, wxID_ANY);
-  pSoundDeviceIndex->SetValue(g_iSoundDeviceIndex);
-  pSoundDeviceIndex->Hide();
-
-  if (OCPN_Sound::DeviceCount() > 1) {
+  OcpnSound* sound = SoundFactory();
+  int deviceCount = sound->DeviceCount();
+  pSoundDeviceIndex = new wxChoice();
+  wxLogMessage("options: got device count: %d", deviceCount);
+  if (deviceCount > 1) {
     pSoundDeviceIndex->Show();
 
     wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
@@ -5179,7 +5220,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
     wxStaticText* stSoundDeviceIndex =
         new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device Index"));
     pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-    pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
+    pSoundDeviceIndex->SetRange(-1, deviceCount - 1);
     pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
   }
 
@@ -7984,33 +8025,48 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
   if (response == wxID_OK) {
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
 
-    g_anchorwatch_sound.UnLoad();
+    g_anchorwatch_sound->Stop();
   }
 }
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
-  OCPN_Sound AIS_Sound;
-  AIS_Sound.Create(g_sAIS_Alert_Sound_File);
-
-  if (AIS_Sound.IsOk()) {
-#if defined(__OCPN__ANDROID__)
-    qDebug() << "Options play";
-    AIS_Sound.Play();
+#ifdef SILLY_SOUND_TEST
+    wxLogMessage("Running test 1.");
+    std::unique_ptr<OcpnSound> AIS_Sound(new PortAudioSound());
+    //std::unique_ptr<OcpnSound> AIS_Sound(new SystemCmdSound());
+    bool ok = AIS_Sound->Load(
+            "/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
+    wxLogWarning("Loading next: %s", ok ? "true" : "false");
+    AIS_Sound->Play();
 #else
-#if defined(__WXMSW__) || defined(__WXOSX__)
-    AIS_Sound.Play(wxSOUND_SYNC);
-#else
-    AIS_Sound.Play();
-    int t = 0;
-    while (AIS_Sound.IsPlaying() && (t < 5)) {
-      wxSleep(1);
-      t++;
-    }
-    if (AIS_Sound.IsPlaying()) AIS_Sound.Stop();
-#endif
-#endif
-  }
+    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
+    AIS_Sound->Load(g_sAIS_Alert_Sound_File);
+    AIS_Sound->Play();
+#endif         
 }
+
+#ifdef SILLY_SOUND_TEST
+#include "SystemCmdSound.h"
+
+void options::OnButtonTestSound2(wxCommandEvent& event) {
+    wxLogMessage("Running test.");
+    OcpnSound* sound = new PortAudioSound();
+    //OcpnSound* sound = new SystemCmdSound();
+    wxLogMessage("Running: new OK.");
+    wxLogMessage("Running, devices: %d", sound->DeviceCount());
+    //sound->SetFinishedCallback( []() { wxLogMessage("Running callback"); } );
+    soundCount = 8;
+    testSound->SetFinishedCallback(onSoundFinished, this);
+    bool ok = testSound->Load("/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", 16);
+    wxLogMessage("Running: load OK: %s", ok ? "yes" : "no");
+    ok = testSound->Play();
+    wxLogMessage("Running: play OK: %s", ok ? "yes" : "no");
+
+//	wxSound* sound = new wxSound("/home/mk/OpenCPN/opencpn-salsa/data/sounds/2bells.wav", false);
+//	sound->Play(wxSOUND_SYNC);
+}
+#endif // SILLY_SOUND_TEST
+
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   wxString return_string;

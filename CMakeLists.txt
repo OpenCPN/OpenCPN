@@ -21,6 +21,37 @@
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ## ***************************************************************************
 
+#
+#  Configuring opencpn
+#  ===================
+#
+#  Sound:
+#    - Without options, defaults to using SYSTEM_CMD_SOUND using platform
+#      dependent command line tools such as aplay, afplay or mediaplayer.
+#    - With ENABLE_SYSTEM_CMD_SOUND disabled falls back to wxSound backend. 
+#      This is known to be broken on at least Linux, and only supports .wav 
+#      files on all platforms.
+#    - ENABLE_PORTAUDIO builds using [lib]portaudio if available.
+#    - ENABLE_SYSTEM_CMD_SOUND builds using platform dependent command line
+#      tools such as aplay, afplay or mediaplayer.
+#    - ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
+#      supports a wide range of audio formats instead of .wav only.
+#
+#  Bundled libraries:
+#    - USE_BUNDLED_LIBS forces use of external/bundled libraries including
+#      wxsvg and liblz4.
+#    - If found, the system tinyxml library is used unconditionally.
+
+#  Documentation:
+#    - BUNDLE_DOCS governs inclusion of docs in the package.
+#    - Note that documentation is available in a separate download from
+#      opencpn website.
+#
+#  Tidal/current and GSHHS wallpaper
+#    - BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
+#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the 
+#      wallpaper map used as last resort and world overview.
+
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -55,10 +86,10 @@ IF(NOT MSVC)
    SET(OBJ_VISIBILITY "-fvisibility=hidden" )
 ENDIF()
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if (CMAKE_VERSION VERSION_LESS "3.1")
-  include(CheckCXXCompilerFlag)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
   if(COMPILER_SUPPORTS_CXX11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     message(STATUS "Setting C++11 standard via CXX flags")
@@ -66,7 +97,7 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
     message(STATUS "Setting C++0x standard via CXX FLAGS")
   else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
   endif()
 else ()
   set (CMAKE_CXX_STANDARD 11)
@@ -632,22 +663,6 @@ IF (NOT WIN32 AND NOT APPLE)
 
   ENDIF(QT_ANDROID)
 
-  IF(UNIX AND NOT QT_ANDROID)
-    INCLUDE("FindPortaudio.cmake")
-    IF (PORTAUDIO_FOUND)
-      MESSAGE (STATUS "Portaudio Found")
-      INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
-      ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
-      ADD_DEFINITIONS(-DOCPN_USE_PORTAUDIO)
-    ELSE (PORTAUDIO_FOUND)
-      MESSAGE (STATUS "Portaudio Not Found...")
-    ENDIF (PORTAUDIO_FOUND)
-
-    #SET(EXTRA_LIBS ${EXTRA_LIBS} "/usr/lib/i386-linux-gnu/libportaudio.so.2.0.0")
-    #ADD_DEFINITIONS(-DOCPN_USE_PORTAUDIO)
-  ENDIF(UNIX AND NOT QT_ANDROID)
-
 ENDIF (NOT WIN32 AND NOT APPLE)
 
 OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
@@ -692,7 +707,6 @@ IF(OCPN_NEW_SERIAL)
 
   set(EXTRA_LIBS ${EXTRA_LIBS} SERIAL)
   add_definitions(-DocpnUSE_NEWSERIAL)
-
   message(STATUS "Using new serial library...")
 ENDIF(OCPN_NEW_SERIAL)
 
@@ -1033,7 +1047,6 @@ set_property(TARGET SQLiteCpp PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
 SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
 
-
 IF(UNIX AND NOT APPLE)
   SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
   FIND_PATH( SQLITE3_INCLUDE_DIR sqlite3.h
@@ -1099,6 +1112,65 @@ IF(OCPN_USE_LZMA)
     message (STATUS "lzma library not found")
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
+
+#
+# Sound setup
+#
+FIND_PROGRAM(APLAY aplay)
+FIND_PROGRAM(AFPLAY afplay)
+SET(SYSTEM_SOUND_CMD "\"\"")
+IF (APLAY)
+  SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
+ELSEIF (AFPLAY)
+  SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
+ELSEIF (WIN32)
+  SET(SYSTEM_SOUND_CMD
+      "\"PowerShell -Command (New-Object Media.SoundPlayer \\\"%s\\\").PlaySync();\"")
+ENDIF ()
+
+OPTION(ENABLE_SYSTEM_CMD_SOUND
+       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
+SET (USE_SYSTEM_CMD_SOUND "")
+IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
+  IF (APLAY OR AFPLAY OR WIN32)
+    SET(USE_SYSTEM_CMD_SOUND 1)
+  ELSEIF (ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
+    MESSAGE(WARNING
+      "ENABLE_SYSTEM_CMD_SOUND is set but I cannot find aplay(1) or afplay(1)")
+    SET(USE_SYSTEM_CMD_SOUND "")
+  ENDIF()
+ENDIF()
+
+OPTION(ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available" ON)
+SET (USE_PORTAUDIO "")
+IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
+  INCLUDE("FindPortaudio.cmake")
+  IF (PORTAUDIO_FOUND)
+      MESSAGE (STATUS "Portaudio Found")
+      INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
+      SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
+      ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
+      SET(USE_PORTAUDIO 1)
+  ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
+      MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
+      SET(USE_PORTAUDIO "")
+  ENDIF()
+ENDIF ()
+
+OPTION(ENABLE_SNDFILE "Use libsndfile if available for sound files." ON)
+SET(USE_SNDFILE "")
+IF (NOT ENABLE_SNDFILE MATCHES OFF)
+  INCLUDE(FindLibSndfile.cmake)
+  IF(LIBSNDFILE_FOUND)
+    MESSAGE (STATUS "libsndfile Found")
+    INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LIBSNDFILE_LIBRARIES})
+    SET(USE_SNDFILE 1)
+  ELSEIF (ENABLE_SNDFILE MATCHES ON)
+    MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
+  ENDIF()
+ENDIF ()
+
 
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
@@ -1219,8 +1291,11 @@ SET(HDRS
                 include/FontMgr.h
                 include/FontDesc.h
                 include/vector2D.h
-                include/OCPNSoundData.h
                 include/OCPN_Sound.h
+                include/OcpnWxSound.h
+                include/SoundFactory.h
+                include/SoundLoaderFactory.h
+                include/SystemCmdSound.h
                 include/NMEALogWindow.h
                 include/WindowDestroyListener.h
                 include/TTYWindow.h
@@ -1270,6 +1345,7 @@ SET(HDRS
                 include/multiplexer.h
                 include/OCPNRegion.h
                 include/LLRegion.h
+                include/SoundFileLoader.h
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
                 include/viewport.h
@@ -1279,7 +1355,7 @@ SET(HDRS
                 include/FlexHash.h
                 include/iENCToolbar.h
                 include/mbtiles.h
-
+                ${CMAKE_BINARY_DIR}/include/config.h
 )
 
 SET(SRCS
@@ -1316,8 +1392,12 @@ SET(SRCS
         src/Select.cpp
         src/FontMgr.cpp
         src/FontDesc.cpp
-        src/OCPNSoundData.cpp
         src/OCPN_Sound.cpp
+        src/OcpnWxSound.cpp
+        src/SoundFactory.cpp
+        src/SoundFileLoader.cpp
+        src/SoundLoaderFactory.cpp
+        src/SystemCmdSound.cpp
         src/NMEALogWindow.cpp
         src/TTYWindow.cpp
         src/TTYScroll.cpp
@@ -1395,7 +1475,21 @@ ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
+  SET(SRCS ${SRCS} src/AndroidSound.cpp)
+  SET(HDRS ${HDRS} include/AndroidSound.h)
 ENDIF(QT_ANDROID)
+
+IF (PORTAUDIO_FOUND)
+    SET(HDRS ${HDRS} include/PortAudioSound.h)
+    SET(SRCS ${SRCS} src/PortAudioSound.cpp)
+ENDIF ()
+
+IF (LIBSNDFILE_FOUND)
+    SET(HDRS ${HDRS} include/SndfileSoundLoader.h)
+    SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
+ENDIF ()
+
+SET(SRCS ${SRCS} src/SystemCmdSound.cpp)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
@@ -1739,8 +1833,9 @@ ENDIF (OPENGL_FOUND)
 #        AC_SUBST(GL_CFLAGS)
 #fi
 
+CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
+INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
 
-# If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
 IF(MSVC)
   SET(SRCS ${SRCS} src/opencpn.rc)
@@ -2574,22 +2669,9 @@ IF(WIN32 AND NOT UNIX)
   ENDIF(NOT SKIP_VERSION_CONFIG)
 ENDIF(WIN32 AND NOT UNIX)
 
-#IF(NOT SKIP_VERSION_CONFIG)
-#   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
-#ENDIF(NOT SKIP_VERSION_CONFIG)
-
-#  Do the version.h configuration into the build output directory,
-#  thereby allowing building from a read-only source tree.
-IF(NOT SKIP_VERSION_CONFIG)
-  configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
-  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
-ENDIF(NOT SKIP_VERSION_CONFIG)
-
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
 ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/version.h)
 
 INCLUDE(CPack)
 
