@@ -18,8 +18,8 @@
    stroke-linejoin="round"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="GRIB.svg">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="GRIB_rollover.svg">
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -35,7 +35,6 @@
   <defs
      id="defs12">
     <linearGradient
-       inkscape:collect="always"
        id="linearGradient3754"
        osb:paint="gradient">
       <stop
@@ -62,12 +61,19 @@
      id="namedview10"
      showgrid="false"
      inkscape:zoom="13.906433"
-     inkscape:cx="16.101843"
+     inkscape:cx="5.8188323"
      inkscape:cy="8.2811651"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
+  <rect
+     style="fill:#282828;fill-opacity:1;stroke:#898989;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect4139"
+     width="24.017662"
+     height="24.16148"
+     x="0.071909167"
+     y="-0.017661467" />
   <path
      style="fill:none;stroke:#b4b4b4;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      d="m 2.9482757,13.64508 12.2964673,6.759462 5.537005,-5.105551"

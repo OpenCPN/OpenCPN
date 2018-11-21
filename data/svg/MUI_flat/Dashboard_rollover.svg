@@ -19,7 +19,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="Dashboard.svg">
+   sodipodi:docname="Dashboard_rollover.svg">
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -56,17 +56,24 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1063"
+     inkscape:window-width="1616"
      inkscape:window-height="797"
      id="namedview10"
      showgrid="false"
-     inkscape:zoom="6.9532167"
-     inkscape:cx="-28.481839"
+     inkscape:zoom="13.906433"
+     inkscape:cx="10.499371"
      inkscape:cy="14.033898"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
+  <rect
+     style="fill:#282828;fill-opacity:1;stroke:#898989;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect4145"
+     width="24.233389"
+     height="24.233389"
+     x="0"
+     y="-0.017660789" />
   <path
      sodipodi:type="arc"
      style="opacity:1;fill:none;fill-opacity:0.92941176000000003;stroke:#b4b4b4;stroke-width:2.00022964000000014;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
