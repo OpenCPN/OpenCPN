@@ -5842,15 +5842,15 @@ int MyFrame::DoOptionsDialog()
     // Here check for the case wherein the relative sizes of a multicanvas layout have been changed.
     // We do not need to reqbuild the canvases, we just need to resize whichever one is docked.
     
-    if( (g_canvasConfig > 0)  && ccRightSizeChanged ){
-        canvasConfig *cc = g_canvasConfigArray.Item(1);
-        if(cc ){
-            wxAuiPaneInfo& p = g_pauimgr->GetPane(g_canvasArray.Item(1));
-            wxAuiDockInfo *dockRight = g_pauimgr->FindDock(p);
-            if(dockRight)
-                g_pauimgr->SetDockSize(dockRight, cc->canvasSize.x);
-        }
-    }
+//     if( (g_canvasConfig > 0)  && ccRightSizeChanged ){
+//         canvasConfig *cc = g_canvasConfigArray.Item(1);
+//         if(cc ){
+//             wxAuiPaneInfo& p = g_pauimgr->GetPane(g_canvasArray.Item(1));
+//             wxAuiDockInfo *dockRight = g_pauimgr->FindDock(p);
+//             if(dockRight)
+//                 g_pauimgr->SetDockSize(dockRight, cc->canvasSize.x);
+//         }
+//     }
     
     if( rr & CONFIG_CHANGED){
         // Apply the changed canvas configs to each canvas
