@@ -204,8 +204,11 @@ void GribRequestSetting::SetRequestDialogSize()
 #ifdef __WXGTK__
     SetMinSize( wxSize( 0, 0 ) );
 #endif
-    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
-    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    
+     wxWindow *frame = wxTheApp->GetTopWindow();  
+
+    int w = frame->GetClientSize().x;           // the display size
+    int h = frame->GetClientSize().y;
     int dMargin = 80;                                      //set a margin
     h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
     w -= dMargin;                                           //width available for the scrolled window

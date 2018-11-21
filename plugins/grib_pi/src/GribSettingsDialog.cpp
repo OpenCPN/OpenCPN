@@ -595,8 +595,11 @@ void GribSettingsDialog::SetSettingsDialogSize()
 	wxSize scroll(0, 0);
 #else        
     /*Sizing do not work with wxScolledWindow so we need to compute it*/
-    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
-    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    
+    wxWindow *frame = wxTheApp->GetTopWindow();  
+
+    int w = frame->GetClientSize().x;           // the display size
+    int h = frame->GetClientSize().y;
     int dMargin = 80;                          //set a margin
 	w -= dMargin;								//width available for the scrolled window
     h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window
