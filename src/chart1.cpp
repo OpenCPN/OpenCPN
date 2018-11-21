@@ -12123,8 +12123,10 @@ void ApplyLocale()
     
     g_pauimgr->Update();
     
-    if(gFrame)
+    if(gFrame){
         gFrame->RequestNewToolbars( true );
+        gFrame->RequestNewMasterToolbar( true );
+    }
 }
 
 
