@@ -3905,7 +3905,7 @@ void glChartCanvas::Render()
             wxColour colour = GetGlobalColor(_T("BLUE4"));
             glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
                 
-            float rect_pix = std::round(2 * gFrame->GetSize().x / m_pParentCanvas->GetDisplaySizeMM());
+            float rect_pix = std::round(2 * m_pParentCanvas->GetPixPerMM());
 
             int xw = m_pParentCanvas->GetClientSize().x;
             glBegin(GL_QUADS);
