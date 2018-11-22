@@ -644,6 +644,9 @@ int MyConfig::LoadMyConfig()
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
     
+    g_nAWDefault = 50;
+    g_nAWMax = 1852;
+
     // Load the raw value, with no defaults, and no processing
     int ret_Val = LoadMyConfigRaw();
     
