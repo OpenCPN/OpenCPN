@@ -861,12 +861,12 @@ void BuildiENCToolbar( bool bnew )
                 posn.y = 100;
                 
                 if(g_MainToolbar)
-                    posn = wxPoint(g_maintoolbar_x, g_maintoolbar_y + g_MainToolbar->GetSize().y + 2);
+                    posn = wxPoint(g_maintoolbar_x + g_MainToolbar->GetSize().x + 2, g_maintoolbar_y );
             }
             
             double tool_scale_factor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
             
-            g_iENCToolbar = new iENCToolbar( gFrame->GetPrimaryCanvas(),  posn, g_maintoolbar_orient, tool_scale_factor );
+            g_iENCToolbar = new iENCToolbar( gFrame,  posn, wxTB_HORIZONTAL, tool_scale_factor );
             g_iENCToolbar->SetColorScheme(global_color_scheme);
             g_iENCToolbar->EnableSubmerge( false );
         }
@@ -5037,19 +5037,21 @@ void MyFrame::ToggleENCText( ChartCanvas *cc )
     ReloadAllVP();
 }
 
-void MyFrame::SetENCDisplayCategory( enum _DisCat nset )
+void MyFrame::SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset )
 {
 #ifdef USE_S57
     if( ps52plib ) {
          
-       ps52plib->SetDisplayCategory(nset);
+       if(cc){
+            cc->SetENCDisplayCategory(nset);
        
-       UpdateGlobalMenuItems();
+            UpdateGlobalMenuItems();
        
-       if(g_pi_manager)
-            g_pi_manager->SendConfigToAllPlugIns();
+            if(g_pi_manager)
+                g_pi_manager->SendConfigToAllPlugIns();
         
        ReloadAllVP();
+       }
     }
     
 #endif
@@ -6631,6 +6633,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
             // needed to ensure that the chart window starts with keyboard focus
             SurfaceAllCanvasToolbars();
+            
+            BuildiENCToolbar( true );
+
             break;
         }
 

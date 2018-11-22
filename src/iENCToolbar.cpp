@@ -87,7 +87,7 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     m_state_timer.SetOwner( this, STATE_TIMER );
     m_state_timer.Start( 500, wxTIMER_CONTINUOUS );
     
-    
+    SetCanToggleOrientation( false );
     
 }
 
@@ -179,7 +179,7 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                     break;
             }
             
-            gFrame->SetENCDisplayCategory( nset );
+            gFrame->SetENCDisplayCategory( cc, nset );
             
             break;
 
@@ -255,11 +255,15 @@ void iENCToolbar::SetDensityToolBitmap( int nDensity)
 
 void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
 {
+    ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+    if(!cc)
+        return;
+    
     //  Keep the Density tool in sync
     if(ps52plib){
         int nset = 1;
 
-        switch (ps52plib->GetDisplayCategory()) {
+        switch (gFrame->GetPrimaryCanvas()->GetENCDisplayCategory()) {
             case (DISPLAYBASE):
                 nset = 0;
                 break;
@@ -288,8 +292,7 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
     }
     
     // Keep the Range annunciator updated
-    ChartCanvas *cc = gFrame->GetPrimaryCanvas();
-    
+        
     if(cc){
         double range = cc->GetCanvasRangeMeters();
      

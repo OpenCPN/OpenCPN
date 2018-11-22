@@ -413,7 +413,7 @@ class MyFrame: public wxFrame
     void ToggleAnchor( ChartCanvas *cc );
     void ToggleTestPause(void);
     void TrackOn(void);
-    void SetENCDisplayCategory( enum _DisCat nset );
+    void SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset );
     void ToggleNavobjects( ChartCanvas *cc );
         
     Track *TrackOff(bool do_add_point = false);

@@ -2787,7 +2787,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             
         case 'N':
             if( g_bInlandEcdis && ps52plib){
-                gFrame->SetENCDisplayCategory( (_DisCat)STANDARD );
+                SetENCDisplayCategory( (_DisCat)STANDARD );
             }
             break;
 

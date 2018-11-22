@@ -152,7 +152,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 #endif
 
 
-    if( event.RightDown() ){
+    if( event.RightDown() && m_ptoolbar->GetCanToggleOrientation()){
         if(m_ptoolbar){
             if(!m_ptoolbar->isSubmergedToGrabber()){
                 m_dragging = true;
@@ -354,6 +354,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_backcolorString = _T("GREY2") ;
     m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
     n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
+    b_canToggleOrientation = true;
     
     m_ptoolbar = CreateNewToolbar();
     

@@ -410,6 +410,9 @@ public:
       int GetDockX() { return m_dock_x; }
       int GetDockY() { return m_dock_y; }
       
+      void SetCanToggleOrientation(bool enable){ b_canToggleOrientation = enable; }
+      bool GetCanToggleOrientation(){ return b_canToggleOrientation; }
+      
       bool toolbarConfigChanged;
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
@@ -465,6 +468,7 @@ private:
       int m_cornerRadius;
       wxString m_toolShowMask;
       int n_toolbarHideMethod;
+      bool b_canToggleOrientation;
       
 };
 
