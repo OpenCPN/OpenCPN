@@ -43,8 +43,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="7.375"
-     inkscape:cx="16"
+     inkscape:zoom="14.75"
+     inkscape:cx="13.725305"
      inkscape:cy="16.001"
      inkscape:window-x="171"
      inkscape:window-y="80"
@@ -1409,4 +1409,11 @@
      id="path46784"
      inkscape:connector-curvature="0"
      style="fill:url(#at)" />
+  <ellipse
+     style="fill:none;fill-opacity:1;stroke:#c8c8c8;stroke-width:2;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4444"
+     cx="16.067797"
+     cy="16.068296"
+     rx="13.109754"
+     ry="12.974161" />
 </svg>
