@@ -3125,7 +3125,8 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
 //            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             cc->ConfigureChartBar();
             cc->SetColorScheme( global_color_scheme );
-            
+            cc->SetShowGPS( true );
+
             g_pauimgr->AddPane( cc );
             g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
             g_pauimgr->GetPane( cc ).Fixed();
@@ -3149,7 +3150,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->SetDisplaySizeMM(g_display_size_mm);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
-           cc->SetShowGPS( false);
+           cc->SetShowGPS( false );
            
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
@@ -3180,7 +3181,8 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
-           
+           cc->SetShowGPS( true );
+
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas2") );
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
