@@ -3003,6 +3003,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_choiceWaypointRangeRingsNumber->Enable( false );
             m_textWaypointRangeRingsStep->SetEditable( false );
             m_chColor->Enable( false );
+            m_notebookProperties->SetSelection(1);
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
@@ -3022,6 +3023,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_choiceWaypointRangeRingsNumber->Enable( true );
             m_textWaypointRangeRingsStep->SetEditable( true );
             m_chColor->Enable( true );
+            m_notebookProperties->SetSelection(0);
         }
         m_textName->SetValue( m_pRoutePoint->GetName() );
 
