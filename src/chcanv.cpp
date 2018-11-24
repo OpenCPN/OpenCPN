@@ -325,6 +325,8 @@ static int mouse_x;
 static int mouse_y;
 static bool mouse_leftisdown;
 
+bool g_brouteCreating;
+
 int r_gamma_mult;
 int g_gamma_mult;
 int b_gamma_mult;
@@ -948,6 +950,9 @@ ChartCanvas::~ChartCanvas()
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
     RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
+    
+    if(m_routeState)
+        FinishRoute();
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
@@ -7369,8 +7374,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
                 
                 m_routeState++;
-                InvalidateGL();
-                Refresh( false );
+                gFrame->RefreshAllCanvas();
                 ret = true;
             }
             
@@ -8887,6 +8891,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
 void ChartCanvas::StartRoute( void )
 {
+    // Do not allow more than one canvas to create a route at one time.
+    if(g_brouteCreating)
+        return;
+    
+    g_brouteCreating = true;
     m_routeState = 1;
     m_bDrawingRoute = false;
     SetCursor( *pCursorPencil );
@@ -8942,6 +8951,8 @@ void ChartCanvas::FinishRoute( void )
 
     undo->InvalidateUndo();
     gFrame->RefreshAllCanvas( true );
+    
+    g_brouteCreating = false;
 }
 
 void ChartCanvas::ShowAISTargetList( void )
