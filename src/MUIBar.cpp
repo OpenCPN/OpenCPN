@@ -888,7 +888,13 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
                 delete m_canvasOptions;
                 m_canvasOptions = NULL;
             }
+#ifdef __WXOSX__
+            if(m_pushPull == CO_PUSH)
+                pcc->TriggerDeferredFocus();
+#else
             pcc->TriggerDeferredFocus();
+#endif
+
             pcc->Refresh();
         }
         

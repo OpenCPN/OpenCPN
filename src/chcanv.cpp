@@ -2380,7 +2380,8 @@ void ChartCanvas::SetVP(ViewPort &vp)
 
 void ChartCanvas::TriggerDeferredFocus()
 {
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXOSX__)
+
     m_deferredFocusTimer.Start(200, true);
     gFrame->Raise();
 #else
