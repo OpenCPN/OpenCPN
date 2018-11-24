@@ -1085,6 +1085,9 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
     wxPaintDC dc( this );
 
+    if(!m_pcontext)
+        return;
+    
     Show( g_bopengl );
     if( !g_bopengl ) {
         event.Skip();
