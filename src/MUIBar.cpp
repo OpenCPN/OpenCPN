@@ -57,6 +57,7 @@
 
 extern OCPNPlatform              *g_Platform;
 extern bool                      g_bEffects;
+extern ChartCanvas               *g_focusCanvas;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -579,7 +580,8 @@ void MUIBar::SetFollowButton( bool bFollow )
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
 {
     //  Handle the MUIButton clicks here
-    
+    ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+
     switch( event.GetId() ){
         
         case ID_ZOOMIN:
@@ -587,6 +589,9 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         {
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
             GetParent()->GetEventHandler()->AddPendingEvent( evt );
+            
+             if(g_focusCanvas)
+                 g_focusCanvas->TriggerDeferredFocus();
             break;
         }
 
@@ -594,6 +599,9 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         {
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
             GetParent()->GetEventHandler()->AddPendingEvent( evt );
+
+            if(g_focusCanvas)
+                g_focusCanvas->TriggerDeferredFocus();
             break;
         }
         
@@ -648,7 +656,8 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         
         default:
             break;
-    }        
+    }
+    event.Skip();
 }
 
 void MUIBar::CaptureCanvasOptionsBitmap()

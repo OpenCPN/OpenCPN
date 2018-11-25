@@ -2385,20 +2385,27 @@ void ChartCanvas::SetVP(ViewPort &vp)
 
 void ChartCanvas::TriggerDeferredFocus()
 {
-#if defined(__WXGTK__) || defined(__WXOSX__)
+//#if defined(__WXGTK__) || defined(__WXOSX__)
 
     m_deferredFocusTimer.Start(200, true);
+    
+#if defined(__WXGTK__) || defined(__WXOSX__)
     gFrame->Raise();
-#else
-    SetFocus();
-    Refresh(true);
 #endif    
+
+//    gFrame->Raise();
+//#else
+//    SetFocus();
+//    Refresh(true);
+//#endif    
 }
 
 void ChartCanvas::OnDeferredFocusTimerEvent( wxTimerEvent &event)
 {
     SetFocus();
     Refresh(true);
+    
+
 }
 
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
@@ -3164,10 +3171,12 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
+#if 0    
 #if !defined(__WXGTK__) && !defined(__WXQT__)
     SetFocus();
     gFrame->Raise();
 #endif    
+#endif
 }
 
 /* instead of integrating in timer callbacks
