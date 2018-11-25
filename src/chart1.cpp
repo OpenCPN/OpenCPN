@@ -4622,7 +4622,7 @@ ChartCanvas *MyFrame::GetFocusCanvas()
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
 {
     if(g_bmasterToolbarFull){
-        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount()){
+        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount() + 1){   //Experimental fix for sometimes failure to show last tool
             m_nMasterToolCountShown++;
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
@@ -9742,7 +9742,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
         tb->AddTool( ID_ABOUT, _T("MUI_help"), style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     //      Add any PlugIn toolbar tools that request default positioning
-    if(g_bmasterToolbarFull)
+    //if(g_bmasterToolbarFull)
         AddDefaultPositionPlugInTools( tb );
 
     //  And finally add the MOB tool
