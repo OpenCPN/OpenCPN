@@ -2387,7 +2387,7 @@ void ChartCanvas::TriggerDeferredFocus()
 {
 //#if defined(__WXGTK__) || defined(__WXOSX__)
 
-    m_deferredFocusTimer.Start(200, true);
+    m_deferredFocusTimer.Start(20, true);
     
 #if defined(__WXGTK__) || defined(__WXOSX__)
     gFrame->Raise();

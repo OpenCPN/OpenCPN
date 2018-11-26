@@ -1629,7 +1629,7 @@ END_EVENT_TABLE()
 // Define a constructor
 ToolTipWin::ToolTipWin( wxWindow *parent ) :
         wxDialog( parent, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 1, 1 ),
-                wxNO_BORDER | wxSTAY_ON_TOP )
+                wxNO_BORDER | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR )
 {
     m_pbm = NULL;
 
@@ -1985,6 +1985,9 @@ void ocpnToolBarSimple::KillTooltip()
             }
         }
     }
+    gFrame->Raise();
+    gFrame->GetFocusCanvas()->TriggerDeferredFocus();
+
 }
 
 void ocpnToolBarSimple::HideTooltip()
@@ -2192,8 +2195,9 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
 {
     if( !gFrame ) //In case gFrame was already destroyed, but the toolbar still exists (Which should not happen, ever.)
         return;
-    if( !gFrame->IsActive() )
-        return;
+    
+    //if( !gFrame->IsActive() )
+    //    return;
 
     if( m_btooltip_show && IsShown() && m_pToolTipWin && ( !m_pToolTipWin->IsShown() ) ) {
         if( m_last_ro_tool ) {
@@ -2218,7 +2222,9 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                 m_pToolTipWin->SetPosition( screenPosition );
                 m_pToolTipWin->SetBitmap();
                 m_pToolTipWin->Show();
+#ifndef __WXOSX__
                 gFrame->Raise();
+#endif                
                 if( g_btouch )
                     m_tooltipoff_timer.Start(m_tooltip_off, wxTIMER_ONE_SHOT);
             }
@@ -2261,16 +2267,20 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
         //    ToolTips
         if( NULL == m_pToolTipWin ) {
-            m_pToolTipWin = new ToolTipWin( GetParent() );
+            m_pToolTipWin = new ToolTipWin( gFrame/*GetParent()*/ );
             m_pToolTipWin->SetColorScheme( m_currentColorScheme );
             m_pToolTipWin->Hide();
         }
 
-        if( tool != m_last_ro_tool ) m_pToolTipWin->Hide();
+        if( tool != m_last_ro_tool ){
+            m_pToolTipWin->Hide();
+        }
 
 #ifndef __OCPN__ANDROID__
         if( !m_pToolTipWin->IsShown() ) {
-            m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
+            if(!m_tooltip_timer.IsRunning()){
+                m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
+            }
         }
 #endif
 
@@ -2293,7 +2303,12 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         }
     } else {
         //    Tooltips
-        if( m_pToolTipWin && m_pToolTipWin->IsShown() ) m_pToolTipWin->Hide();
+        if( m_pToolTipWin && m_pToolTipWin->IsShown() ){
+            m_pToolTipWin->Hide();
+            KillTooltip();
+            m_btooltip_show = true;
+
+        }
 
         //    Remove Highlighting
         if( m_last_ro_tool ) {

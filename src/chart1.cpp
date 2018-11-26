@@ -2845,9 +2845,10 @@ void MyFrame::OnActivate( wxActivateEvent& event )
 //    It is called in some unexpected places,
 //    such as on closure of dialogs, closure of context menu, etc.
 
-     if( GetFocusCanvas() )
-         GetFocusCanvas()->SetFocus();       // This seems to be needed for MSW, to get key and wheel events
+//      if( GetFocusCanvas() )
+//          GetFocusCanvas()->SetFocus();       // This seems to be needed for MSW, to get key and wheel events
                                                 // after minimize/maximize.
+                                                // But was removed for O5MUI
 
 #ifdef __WXOSX__
     if(event.GetActive()){
@@ -2862,6 +2863,9 @@ void MyFrame::OnActivate( wxActivateEvent& event )
             if(cc && cc->GetMUIBar())
                 cc->GetMUIBar()->Show();  
         }
+        
+        if( GetFocusCanvas() )
+            GetFocusCanvas()->TriggerDeferredFocus();
 
     }
 #endif
@@ -4622,7 +4626,7 @@ ChartCanvas *MyFrame::GetFocusCanvas()
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
 {
     if(g_bmasterToolbarFull){
-        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount() + 1){   //Experimental fix for sometimes failure to show last tool
+        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount() /*+ 1*/){   //Experimental fix for sometimes failure to show last tool
             m_nMasterToolCountShown++;
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
@@ -9548,6 +9552,8 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
+        g_MainToolbar->CreateConfigMenu();
+
         g_bmasterToolbarFull = true;
         
     }
