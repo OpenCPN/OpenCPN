@@ -131,15 +131,15 @@ opencpn (2.2.918-0) unstable; urgency=low
 
 opencpn (2.1.624a-0) unstable; urgency=low
 
-  * Packaged for new upstream release 2.1.624a 
+  * Packaged for new upstream release 2.1.624a
 
  -- Anton Martchukov <anton@martchukov.com>  Sat, 26 Jun 2010 22:03:15 +0400
 
 opencpn (2.1.624-0) unstable; urgency=low
 
   * Packaged for new upstream release 2.1.624
-  * fix-gsocket.patch has been applied upstream 
-  * makefile-data-fhs.patch has been applied upstream 
+  * fix-gsocket.patch has been applied upstream
+  * makefile-data-fhs.patch has been applied upstream
 
  -- Anton Martchukov <anton@martchukov.com>  Sat, 26 Jun 2010 02:17:46 +0400
 
