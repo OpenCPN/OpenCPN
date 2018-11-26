@@ -282,7 +282,7 @@ bool Quilt::IsChartS57Overlay( int db_index )
 
 bool Quilt::IsChartQuiltableRef( int db_index )
 {
-    if( db_index < 0 ) return false;
+    if( db_index < 0 || db_index > ChartData->GetChartTableEntries() - 1 ) return false;
 
     //    Is the chart targeted by db_index useable as a quilt reference chart?
     const ChartTableEntry &ctei = ChartData->GetChartTableEntry( db_index );
