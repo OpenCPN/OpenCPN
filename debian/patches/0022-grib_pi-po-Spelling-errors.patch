@@ -1,0 +1,456 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 26 Nov 2018 15:14:05 -0500
+Subject: grib_pi/po: Spelling errors.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1141
+---
+ plugins/grib_pi/po/ar_SA.po    | 2 +-
+ plugins/grib_pi/po/ca_ES.po    | 2 +-
+ plugins/grib_pi/po/cs_CZ.po    | 2 +-
+ plugins/grib_pi/po/da_DK.po    | 2 +-
+ plugins/grib_pi/po/de_DE.po    | 2 +-
+ plugins/grib_pi/po/el_GR.po    | 2 +-
+ plugins/grib_pi/po/es_ES.po    | 2 +-
+ plugins/grib_pi/po/et_EE.po    | 2 +-
+ plugins/grib_pi/po/fi_FI.po    | 2 +-
+ plugins/grib_pi/po/fil_PH.po   | 2 +-
+ plugins/grib_pi/po/fr_FR.po    | 2 +-
+ plugins/grib_pi/po/gl_ES.po    | 2 +-
+ plugins/grib_pi/po/grib_pi.pot | 2 +-
+ plugins/grib_pi/po/hi_IN.po    | 2 +-
+ plugins/grib_pi/po/hu_HU.po    | 2 +-
+ plugins/grib_pi/po/id_ID.po    | 2 +-
+ plugins/grib_pi/po/it_IT.po    | 2 +-
+ plugins/grib_pi/po/ja_JP.po    | 2 +-
+ plugins/grib_pi/po/ko_KR.po    | 2 +-
+ plugins/grib_pi/po/mr_IN.po    | 2 +-
+ plugins/grib_pi/po/nb_NO.po    | 2 +-
+ plugins/grib_pi/po/nl_NL.po    | 2 +-
+ plugins/grib_pi/po/pl_PL.po    | 2 +-
+ plugins/grib_pi/po/pt_BR.po    | 2 +-
+ plugins/grib_pi/po/pt_PT.po    | 2 +-
+ plugins/grib_pi/po/ro_RO.po    | 2 +-
+ plugins/grib_pi/po/ru_RU.po    | 2 +-
+ plugins/grib_pi/po/sv_SE.po    | 2 +-
+ plugins/grib_pi/po/th_TH.po    | 2 +-
+ plugins/grib_pi/po/tr_TR.po    | 2 +-
+ plugins/grib_pi/po/vi_VN.po    | 2 +-
+ plugins/grib_pi/po/zh_TW.po    | 2 +-
+ 32 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/plugins/grib_pi/po/ar_SA.po b/plugins/grib_pi/po/ar_SA.po
+index 2fee3f1..12fede1 100644
+--- a/plugins/grib_pi/po/ar_SA.po
++++ b/plugins/grib_pi/po/ar_SA.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/ca_ES.po b/plugins/grib_pi/po/ca_ES.po
+index a55a2af..a2494cd 100644
+--- a/plugins/grib_pi/po/ca_ES.po
++++ b/plugins/grib_pi/po/ca_ES.po
+@@ -383,7 +383,7 @@ msgid "Default Colour"
+ msgstr "Color per defecte"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Colors adaptats"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/cs_CZ.po b/plugins/grib_pi/po/cs_CZ.po
+index 029f2cf..3902ef8 100644
+--- a/plugins/grib_pi/po/cs_CZ.po
++++ b/plugins/grib_pi/po/cs_CZ.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Výchozí barva"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kontrolované barvy"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/da_DK.po b/plugins/grib_pi/po/da_DK.po
+index 92c3ee9..54f5ce6 100644
+--- a/plugins/grib_pi/po/da_DK.po
++++ b/plugins/grib_pi/po/da_DK.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr "Standardfarve"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/de_DE.po b/plugins/grib_pi/po/de_DE.po
+index d27c363..99bb28b 100644
+--- a/plugins/grib_pi/po/de_DE.po
++++ b/plugins/grib_pi/po/de_DE.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Normal-Farbe"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Berechn. Farben"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/el_GR.po b/plugins/grib_pi/po/el_GR.po
+index 0c8e9e8..fff943f 100644
+--- a/plugins/grib_pi/po/el_GR.po
++++ b/plugins/grib_pi/po/el_GR.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Προεπιλεγμένο χρώμα"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Ελεγχόμενα χρώματα"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/es_ES.po b/plugins/grib_pi/po/es_ES.po
+index 8f8e2bd..4866386 100644
+--- a/plugins/grib_pi/po/es_ES.po
++++ b/plugins/grib_pi/po/es_ES.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Color por defecto"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Colores controlados"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/et_EE.po b/plugins/grib_pi/po/et_EE.po
+index bfeea17..5253c69 100644
+--- a/plugins/grib_pi/po/et_EE.po
++++ b/plugins/grib_pi/po/et_EE.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Vaikimisi värv"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kontrollitud värvid"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/fi_FI.po b/plugins/grib_pi/po/fi_FI.po
+index 9fc17e3..695f335 100644
+--- a/plugins/grib_pi/po/fi_FI.po
++++ b/plugins/grib_pi/po/fi_FI.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Oletusväri"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Ohjatut värit"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/fil_PH.po b/plugins/grib_pi/po/fil_PH.po
+index 13360d5..02384d9 100644
+--- a/plugins/grib_pi/po/fil_PH.po
++++ b/plugins/grib_pi/po/fil_PH.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Naka-default na Kulay"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kontroladong mga Kulay"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/fr_FR.po b/plugins/grib_pi/po/fr_FR.po
+index 0fa023d..c6e7322 100644
+--- a/plugins/grib_pi/po/fr_FR.po
++++ b/plugins/grib_pi/po/fr_FR.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Couleur par défaut"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Couleurs adaptées"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/gl_ES.po b/plugins/grib_pi/po/gl_ES.po
+index 078040b..28bdfb2 100644
+--- a/plugins/grib_pi/po/gl_ES.po
++++ b/plugins/grib_pi/po/gl_ES.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/grib_pi.pot b/plugins/grib_pi/po/grib_pi.pot
+index 0a55fc2..bd4896e 100644
+--- a/plugins/grib_pi/po/grib_pi.pot
++++ b/plugins/grib_pi/po/grib_pi.pot
+@@ -386,7 +386,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/hi_IN.po b/plugins/grib_pi/po/hi_IN.po
+index fca8047..7cd25c8 100644
+--- a/plugins/grib_pi/po/hi_IN.po
++++ b/plugins/grib_pi/po/hi_IN.po
+@@ -385,7 +385,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/hu_HU.po b/plugins/grib_pi/po/hu_HU.po
+index 8f6d04c..18fc835 100644
+--- a/plugins/grib_pi/po/hu_HU.po
++++ b/plugins/grib_pi/po/hu_HU.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/id_ID.po b/plugins/grib_pi/po/id_ID.po
+index 6891d58..122b1ab 100644
+--- a/plugins/grib_pi/po/id_ID.po
++++ b/plugins/grib_pi/po/id_ID.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Warna Default"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Warna Terkendali"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/it_IT.po b/plugins/grib_pi/po/it_IT.po
+index 7b01311..13365fb 100644
+--- a/plugins/grib_pi/po/it_IT.po
++++ b/plugins/grib_pi/po/it_IT.po
+@@ -385,7 +385,7 @@ msgid "Default Colour"
+ msgstr "Colore di deafult"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Colori controllati"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/ja_JP.po b/plugins/grib_pi/po/ja_JP.po
+index 5686f84..ef37367 100644
+--- a/plugins/grib_pi/po/ja_JP.po
++++ b/plugins/grib_pi/po/ja_JP.po
+@@ -387,7 +387,7 @@ msgid "Default Colour"
+ msgstr "デフォルトの色"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/ko_KR.po b/plugins/grib_pi/po/ko_KR.po
+index ec5d75a..fed24a9 100644
+--- a/plugins/grib_pi/po/ko_KR.po
++++ b/plugins/grib_pi/po/ko_KR.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/mr_IN.po b/plugins/grib_pi/po/mr_IN.po
+index bfd5d6e..29d0db7 100644
+--- a/plugins/grib_pi/po/mr_IN.po
++++ b/plugins/grib_pi/po/mr_IN.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/nb_NO.po b/plugins/grib_pi/po/nb_NO.po
+index 219d665..8d9dc95 100644
+--- a/plugins/grib_pi/po/nb_NO.po
++++ b/plugins/grib_pi/po/nb_NO.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Standard farge"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kontrollerte farger"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/nl_NL.po b/plugins/grib_pi/po/nl_NL.po
+index 144db89..4ed9f11 100644
+--- a/plugins/grib_pi/po/nl_NL.po
++++ b/plugins/grib_pi/po/nl_NL.po
+@@ -386,7 +386,7 @@ msgid "Default Colour"
+ msgstr "Standaard kleur"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kleuren"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/pl_PL.po b/plugins/grib_pi/po/pl_PL.po
+index 1accbe0..7ce7827 100644
+--- a/plugins/grib_pi/po/pl_PL.po
++++ b/plugins/grib_pi/po/pl_PL.po
+@@ -387,7 +387,7 @@ msgid "Default Colour"
+ msgstr "Domyślny kolor"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Kolory zdefiniowane"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/pt_BR.po b/plugins/grib_pi/po/pt_BR.po
+index 943bfc4..1aec298 100644
+--- a/plugins/grib_pi/po/pt_BR.po
++++ b/plugins/grib_pi/po/pt_BR.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Cor padrão"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Cores controladas"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/pt_PT.po b/plugins/grib_pi/po/pt_PT.po
+index e5c0627..7d936b5 100644
+--- a/plugins/grib_pi/po/pt_PT.po
++++ b/plugins/grib_pi/po/pt_PT.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Cor por defeito"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Cores controladas"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/ro_RO.po b/plugins/grib_pi/po/ro_RO.po
+index c9e9ea9..a6d567a 100644
+--- a/plugins/grib_pi/po/ro_RO.po
++++ b/plugins/grib_pi/po/ro_RO.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/ru_RU.po b/plugins/grib_pi/po/ru_RU.po
+index d976803..f6a18da 100644
+--- a/plugins/grib_pi/po/ru_RU.po
++++ b/plugins/grib_pi/po/ru_RU.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Стандартный цвет"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Переменный цвет"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/sv_SE.po b/plugins/grib_pi/po/sv_SE.po
+index 8e9219d..fb24bbd 100644
+--- a/plugins/grib_pi/po/sv_SE.po
++++ b/plugins/grib_pi/po/sv_SE.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Standardfärg"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Reglerade färger"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/th_TH.po b/plugins/grib_pi/po/th_TH.po
+index 00b9bde..6fef7d2 100644
+--- a/plugins/grib_pi/po/th_TH.po
++++ b/plugins/grib_pi/po/th_TH.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/tr_TR.po b/plugins/grib_pi/po/tr_TR.po
+index 959ea04..42bc8ec 100644
+--- a/plugins/grib_pi/po/tr_TR.po
++++ b/plugins/grib_pi/po/tr_TR.po
+@@ -388,7 +388,7 @@ msgid "Default Colour"
+ msgstr "Varsayılan Renk"
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr "Denetlenebilen Renkler"
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/vi_VN.po b/plugins/grib_pi/po/vi_VN.po
+index 8f6bbca..4a82e7a 100644
+--- a/plugins/grib_pi/po/vi_VN.po
++++ b/plugins/grib_pi/po/vi_VN.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+diff --git a/plugins/grib_pi/po/zh_TW.po b/plugins/grib_pi/po/zh_TW.po
+index 81eb069..18dcfce 100644
+--- a/plugins/grib_pi/po/zh_TW.po
++++ b/plugins/grib_pi/po/zh_TW.po
+@@ -382,7 +382,7 @@ msgid "Default Colour"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:767
+-msgid "Controled Colours"
++msgid "Controlled Colours"
+ msgstr ""
+ 
+ #: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857

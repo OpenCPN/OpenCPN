@@ -1,0 +1,457 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 26 Nov 2018 15:07:07 -0500
+Subject: po: Fix spelling errors.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1141
+
+---
+ po/opencpn.pot       | 2 +-
+ po/opencpn_ar_SA.po  | 2 +-
+ po/opencpn_ca_ES.po  | 2 +-
+ po/opencpn_cs_CZ.po  | 2 +-
+ po/opencpn_da_DK.po  | 2 +-
+ po/opencpn_de_DE.po  | 2 +-
+ po/opencpn_el_GR.po  | 2 +-
+ po/opencpn_es_ES.po  | 2 +-
+ po/opencpn_et_EE.po  | 2 +-
+ po/opencpn_fi_FI.po  | 2 +-
+ po/opencpn_fil_PH.po | 2 +-
+ po/opencpn_fr_FR.po  | 2 +-
+ po/opencpn_gl_ES.po  | 2 +-
+ po/opencpn_hi_IN.po  | 2 +-
+ po/opencpn_hu_HU.po  | 2 +-
+ po/opencpn_id_ID.po  | 2 +-
+ po/opencpn_it_IT.po  | 2 +-
+ po/opencpn_ja_JP.po  | 2 +-
+ po/opencpn_ko_KR.po  | 2 +-
+ po/opencpn_mr_IN.po  | 2 +-
+ po/opencpn_nb_NO.po  | 2 +-
+ po/opencpn_nl_NL.po  | 2 +-
+ po/opencpn_pl_PL.po  | 2 +-
+ po/opencpn_pt_BR.po  | 2 +-
+ po/opencpn_pt_PT.po  | 2 +-
+ po/opencpn_ro_RO.po  | 2 +-
+ po/opencpn_ru_RU.po  | 2 +-
+ po/opencpn_sv_SE.po  | 2 +-
+ po/opencpn_th_TH.po  | 2 +-
+ po/opencpn_tr_TR.po  | 2 +-
+ po/opencpn_vi_VN.po  | 2 +-
+ po/opencpn_zh_TW.po  | 2 +-
+ 32 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/po/opencpn.pot b/po/opencpn.pot
+index f89978e..6ae1ac3 100644
+--- a/po/opencpn.pot
++++ b/po/opencpn.pot
+@@ -1232,7 +1232,7 @@ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+ msgid ""
+-"Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
++"Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, "
+ "dredge"
+ msgstr ""
+ 
+diff --git a/po/opencpn_ar_SA.po b/po/opencpn_ar_SA.po
+index 484495a..5620e60 100644
+--- a/po/opencpn_ar_SA.po
++++ b/po/opencpn_ar_SA.po
+@@ -1233,7 +1233,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "السفينة، العمل الحرفية الصيانة، العائمة ديريك، كابل السفينة، العوامة السفينة، نعرات"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_ca_ES.po b/po/opencpn_ca_ES.po
+index f2f1ed6..6d58096 100644
+--- a/po/opencpn_ca_ES.po
++++ b/po/opencpn_ca_ES.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Vaixell de passatgers sense allotjament"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Vaixell, barcassa de treballs de manteniment, grua flotant, vaixell de cablejar, vaixell de boies, draga"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_cs_CZ.po b/po/opencpn_cs_CZ.po
+index 28252ca..0553fc0 100644
+--- a/po/opencpn_cs_CZ.po
++++ b/po/opencpn_cs_CZ.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Osobní loď bez ubytování"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Plavidlo, zařízení údržby, plovoucí jeřáb, kabelová loď, loď-bóje, bagr"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_da_DK.po b/po/opencpn_da_DK.po
+index 496fdf0..9777fab 100644
+--- a/po/opencpn_da_DK.po
++++ b/po/opencpn_da_DK.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Passagerskib uden indkvartering"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_de_DE.po b/po/opencpn_de_DE.po
+index 5b22126..5858d51 100644
+--- a/po/opencpn_de_DE.po
++++ b/po/opencpn_de_DE.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Personen-Ausflugsschiff"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Arbeitsfahrzeug"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_el_GR.po b/po/opencpn_el_GR.po
+index 02936b2..3624010 100644
+--- a/po/opencpn_el_GR.po
++++ b/po/opencpn_el_GR.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Επιβατηγό πλοίο χωρίς καμπίνες"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Σκάφος, πλοίο εργασιών συντήρησης, επιπλέον γερανός, πλοίο καλωδίων, πλοίο σημαντήρας, βυθοκόρος"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_es_ES.po b/po/opencpn_es_ES.po
+index 8349610..a6d4efc 100644
+--- a/po/opencpn_es_ES.po
++++ b/po/opencpn_es_ES.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Nave de pasajeros sin alojamiento"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Buque, embarcación de trabajos de mantenimiento, grúas, buque de tendido de cables, buque boya, draga"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_et_EE.po b/po/opencpn_et_EE.po
+index 922b882..32871a4 100644
+--- a/po/opencpn_et_EE.po
++++ b/po/opencpn_et_EE.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Reisilaev ilma majutuseta"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Alus, hoolduslaev, ujuvkraana, kaablilaev, poilaev, süvendaja"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_fi_FI.po b/po/opencpn_fi_FI.po
+index 2c959f4..a2dc166 100644
+--- a/po/opencpn_fi_FI.po
++++ b/po/opencpn_fi_FI.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Matkustaja-alus ilman majoitusta"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Alus, huoltotyö alus, kelluva nusturi, kaapeli-laiva, poiju-alus, ruopaaja"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_fil_PH.po b/po/opencpn_fil_PH.po
+index 489aede..092cb86 100644
+--- a/po/opencpn_fil_PH.po
++++ b/po/opencpn_fil_PH.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Barkong pampasahero ng walang akomodasyon"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Sissidlan, pagpapanatili ng gawaing bapor, lumulutang na derrick, barkong cable, barkong buoy, draga"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_fr_FR.po b/po/opencpn_fr_FR.po
+index 07412c7..16d4ddf 100644
+--- a/po/opencpn_fr_FR.po
++++ b/po/opencpn_fr_FR.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Navire à passagers sans hébergement"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Navire, navire de maintenance de navire, derrick flottant, navire phares et balises, drague"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_gl_ES.po b/po/opencpn_gl_ES.po
+index 291a98d..82a06a9 100644
+--- a/po/opencpn_gl_ES.po
++++ b/po/opencpn_gl_ES.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Buque de pasaxe sen acomodación"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Buque, barco de traballos de mantemento, grúa flotante, cableiro, buque boia, draga"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_hi_IN.po b/po/opencpn_hi_IN.po
+index f8af834..f26c048 100644
+--- a/po/opencpn_hi_IN.po
++++ b/po/opencpn_hi_IN.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "आवास के बिना यात्री जहाज"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "पोत, काम अनुपालन शिल्प, फ्लोटिंग डेरिक, केबल-जहाज, बोया-जहाज, ड्रेज"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_hu_HU.po b/po/opencpn_hu_HU.po
+index be2f9d2..f76ef05 100644
+--- a/po/opencpn_hu_HU.po
++++ b/po/opencpn_hu_HU.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_id_ID.po b/po/opencpn_id_ID.po
+index 0bb401e..5ab8ad7 100644
+--- a/po/opencpn_id_ID.po
++++ b/po/opencpn_id_ID.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Kapal penumpang tanpa akomodasi"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Kapal, pekerjaan pemeliharaan kerajinan, derek mengambang, kapal-kabel, kapal-pelampung, mengeruk"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_it_IT.po b/po/opencpn_it_IT.po
+index d17cfe6..a69c3d9 100644
+--- a/po/opencpn_it_IT.po
++++ b/po/opencpn_it_IT.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Nave passeggeri senza alloggio"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Nave, unità di manutenzione, picco da carico, porta cavi, porta boe, draga galleggiante"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_ja_JP.po b/po/opencpn_ja_JP.po
+index 84ca71c..9f6801e 100644
+--- a/po/opencpn_ja_JP.po
++++ b/po/opencpn_ja_JP.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "宿泊施設なしの旅客船"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "作業メンテナンス クラフト、浮動デリック、ケーブル船、ブイ船、浚渫船"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_ko_KR.po b/po/opencpn_ko_KR.po
+index ed4f1d8..70826a8 100644
+--- a/po/opencpn_ko_KR.po
++++ b/po/opencpn_ko_KR.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_mr_IN.po b/po/opencpn_mr_IN.po
+index 61345b7..26660f0 100644
+--- a/po/opencpn_mr_IN.po
++++ b/po/opencpn_mr_IN.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_nb_NO.po b/po/opencpn_nb_NO.po
+index 07d45fd..8af5394 100644
+--- a/po/opencpn_nb_NO.po
++++ b/po/opencpn_nb_NO.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Passasjerskip uten overnatting"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Fartøy, arbeidsflåte, flytende rigg, kabelskip, bøyeskip, mudrings fartøy"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_nl_NL.po b/po/opencpn_nl_NL.po
+index de4a765..17373a4 100644
+--- a/po/opencpn_nl_NL.po
++++ b/po/opencpn_nl_NL.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "passagiersschip zonder accommodatie"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "werkvaartuig, drijvende kraan, kabelschip, betonningsvaartuig, baggermachine"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_pl_PL.po b/po/opencpn_pl_PL.po
+index 696d7c7..fe84db8 100644
+--- a/po/opencpn_pl_PL.po
++++ b/po/opencpn_pl_PL.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Statek pasażerski bez kajut"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Statek, jednostka konserwacyjna, żuraw pływający, kabelowiec, statek boja, pogłębiarka"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_pt_BR.po b/po/opencpn_pt_BR.po
+index e87ea1b..c51b3cc 100644
+--- a/po/opencpn_pt_BR.po
++++ b/po/opencpn_pt_BR.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Navio de passageiros sem alojamento"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Navio, trabalho manutenção, derrick, navio-cabo, navio-bóia, draga de flutuação"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_pt_PT.po b/po/opencpn_pt_PT.po
+index b7ae182..cb0baab 100644
+--- a/po/opencpn_pt_PT.po
++++ b/po/opencpn_pt_PT.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Navio de passageiros sem alojamento"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Navio, navio de trabalhos de manutenção, grua flutuante, navio-cabo, navio-bóia, draga de flutuação"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_ro_RO.po b/po/opencpn_ro_RO.po
+index d589a8a..46ebf90 100644
+--- a/po/opencpn_ro_RO.po
++++ b/po/opencpn_ro_RO.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_ru_RU.po b/po/opencpn_ru_RU.po
+index 46b0946..4847524 100644
+--- a/po/opencpn_ru_RU.po
++++ b/po/opencpn_ru_RU.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Пассажирское судно без кают"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Служебное судно (ремонтное, подъёмное, черпательное, кабеле- или буеукладочное)"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_sv_SE.po b/po/opencpn_sv_SE.po
+index 9a12785..b09c1f6 100644
+--- a/po/opencpn_sv_SE.po
++++ b/po/opencpn_sv_SE.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Passagerarfartyg utan boende"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Arbetsfartyg, service, lyftkran, kabelutläggning, bojunderhåll, mudderverk"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_th_TH.po b/po/opencpn_th_TH.po
+index e7f620b..0505860 100644
+--- a/po/opencpn_th_TH.po
++++ b/po/opencpn_th_TH.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_tr_TR.po b/po/opencpn_tr_TR.po
+index d271461..38ec69b 100644
+--- a/po/opencpn_tr_TR.po
++++ b/po/opencpn_tr_TR.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Konaklama dışı yolcu gemisi"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Gemi, iş bakım işi, yüzen vinç, kablo gemisi, şamandıra gemisi, vinç"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_vi_VN.po b/po/opencpn_vi_VN.po
+index f2cf669..a60a8c7 100644
+--- a/po/opencpn_vi_VN.po
++++ b/po/opencpn_vi_VN.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr "Tàu chở khách không có chỗ ở"
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr "Tàu thuyền làm công việc duy trì , phao nổi, cáp treo, buoy-ship, nạo vét"
+ 
+ #: src/AIS_Decoder.cpp:251
+diff --git a/po/opencpn_zh_TW.po b/po/opencpn_zh_TW.po
+index 567a2c3..716e520 100644
+--- a/po/opencpn_zh_TW.po
++++ b/po/opencpn_zh_TW.po
+@@ -1229,7 +1229,7 @@ msgid "Passenger ship without accomodation"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:250
+-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
++msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
+ msgstr ""
+ 
+ #: src/AIS_Decoder.cpp:251
