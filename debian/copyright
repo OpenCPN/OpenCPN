@@ -16,53 +16,53 @@ Files-Excluded: .*
  src/wxsvg* 
 
 Files: *
-Copyright: 2000-2018 The OpenCPN Authors
-  2010, David S. Register
-  2012, David S. Register
-  2013, David S. Register
-  2014, David S. Register
-  2015, David S. Register
-  2016, David S. Register
-  2017, David S. Register
-  2018, David S. Register
-  2011, Sean D'Epagnier
-  2013, Sean D'Epagnier
-  2014, Sean D'Epagnier
-  2015, Sean D'Epagnier
-  2016, Sean D'Epagnier
-  2004, 2006, Robert Lipe, robertlipe@usa.net
-  2004-2006, Robert Lipe, robertlipe@usa.net
-  2005-2006, Robert Lipe, robertlipe@usa.net
-  2006, Robert Lipe, robertlipe@usa.net
-  2007 Transmitterdan
-  2016 Transmitterdan
-  2008, - Jacques Zaninetti - http:www.zygrib.org
-  2010, Anders Lund <anders@alweb.dk>
-  2006-2013, Brainspark B.V.
-  2006-2014, Brainspark B.V.
-  2000-2001, Sylvain Duclos
-  2000-2004, Sylvain Duclos
-  2010, Samuel R. Blackburn, David S Register 
-  2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
-  2006, dsr
-  1995-1998, Brian Paul
-  2011, Pavel Kalian
-  2014 Pavel Kalian
+Copyright: 2000-2018   The OpenCPN Authors
+           2010,       David S. Register
+           2012,       David S. Register
+           2013,       David S. Register
+           2014,       David S. Register
+           2015,       David S. Register
+           2016,       David S. Register
+           2017,       David S. Register
+           2018,       David S. Register
+           2011,       Sean D'Epagnier
+           2013,       Sean D'Epagnier
+           2014,       Sean D'Epagnier
+           2015,       Sean D'Epagnier
+           2016,       Sean D'Epagnier
+           2004,2006,  Robert Lipe, robertlipe@usa.net
+           2004-2006,  Robert Lipe, robertlipe@usa.net
+           2005-2006, .Robert Lipe, robertlipe@usa.net
+           2006,       Robert Lipe, robertlipe@usa.net
+           2007        Transmitterdan
+           2016        Transmitterdan
+           2008,       Jacques Zaninetti - http:www.zygrib.org
+           2010,       Anders Lund <anders@alweb.dk>
+           2006-2013,  Brainspark B.V.
+           2006-2014,  Brainspark B.V.
+           2000-2001,  Sylvain Duclos
+           2000-2004,  Sylvain Duclos
+           2010,       Samuel R. Blackburn, David S Register 
+           2000-2004,  Sylvain Duclos sduclos@users.sourceforgue.net
+           2006, dsr
+           1995-1998,  Brian Paul
+           2011,       Pavel Kalian
+           2014        Pavel Kalian
 License: GPL-2+
 
-Files:  src/glshim/*
-Copyright: 2013 Ryan Hileman
-  1999-2001, Brian Paul
-  1999-2006, Brian Paul
-  1999-2007, Brian Paul
-  2012-2013, Wladimir J. van der Laan
-  1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-  2007-2008, Red Hat, Inc.
-  IBM Corporation 2004
-  2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-  2009, VMware, Inc.
-License: Expat
+Files: src/glshim/*
+Copyright: 2013       Ryan Hileman
+           1999-2001, Brian Paul
+           1999-2006, Brian Paul
+           1999-2007, Brian Paul
+           2012-2013, Wladimir J. van der Laan
+           1998-1999, Precision Insight, Inc., Cedar Park, Texas.
+           2007-2008, Red Hat, Inc.
+           2004       IBM Corporation
+           2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
+           2009,      VMware, Inc.
 Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
+License: Expat
 
 Files: src/glshim/include/GL/glu.h src/glu/*
 Copyright: 1991-2000, Silicon Graphics, Inc.
@@ -74,11 +74,11 @@ License: SGI-B-1.1
 
 Files: include/GL/gl.h include/GL/gl_private.h
 Copyright: 1999-2001, Brian Paul
-  1999-2006, Brian Paul
-  1999-2007, Brian Paul
+           1999-2006, Brian Paul
+           1999-2007, Brian Paul
 License: Expat
 
-Files:plugins/wmm_pi/src/WMMHeader.h
+Files: plugins/wmm_pi/src/WMMHeader.h
  plugins/wmm_pi/src/WmmUIDialog.cpp
  plugins/wmm_pi/src/WmmUIDialog.h
  plugins/wmm_pi/src/wmm.svg
@@ -99,25 +99,25 @@ License: GPL-3+
 
 Files: plugins/grib_pi/src/jasper/*
 Copyright: 1999-2000, Image Power, Inc. and the University of 
-  2001-2002, Michael David Adams.
-  2001-2003, Michael David Adams.
-  2001-2004, Michael David Adams.
+           2001-2002, Michael David Adams.
+           2001-2003, Michael David Adams.
+           2001-2004, Michael David Adams.
 License: Jasper
 
 Files: src/mygdal/*
  src/myiso8211/*
 Copyright: 1998, 2002, Frank Warmerdam
-  1998, Frank Warmerdam
-  1999, 2001, 2003, Frank Warmerdam
-  1999, 2001, Frank Warmerdam
-  1999, Frank Warmerdam
-  2000, Frank Warmerdam
-  2001, Frank Warmerdam
-  2002, Frank Warmerdam
-  2003, Frank Warmerdam
-  1999, Les Technologies SoftMap Inc.
-  1998, Daniel Morissette
-  2003, Andrey Kiselev <dron@remotesensing.org>
+           1998,       Frank Warmerdam
+           1999, 2001, 2003, Frank Warmerdam
+           1999, 2001, Frank Warmerdam
+           1999,       Frank Warmerdam
+           2000,       Frank Warmerdam
+           2001,       Frank Warmerdam
+           2002,       Frank Warmerdam
+           2003,       Frank Warmerdam
+           1999,       Les Technologies SoftMap Inc.
+           1998,       Daniel Morissette
+           2003,       Andrey Kiselev <dron@remotesensing.org>
 License: Expat
 
 Files: include/wx/json_defs.h
@@ -153,10 +153,10 @@ License: wxWidgets
 
 Files: src/texcmp/*
 Copyright: 2006, Simon Brown si@sjbrown.co.uk
-  2015, Sean D'EPagnier
-  2006, Simon Brown si@sjbrown.co.uk
-  2007, Ignacio Castano icastano@nvidia.com
-  2013, Bartosz Taudul <wolf.pld@gmail.com>
+           2015, Sean D'EPagnier
+           2006, Simon Brown si@sjbrown.co.uk
+           2007, Ignacio Castano icastano@nvidia.com
+           2013, Bartosz Taudul <wolf.pld@gmail.com>
 License: Expat
 
 Files: Curl.cmake
@@ -174,15 +174,15 @@ Copyright: Pavel Xalian
 License: GPL-3+
 
 Files: src/garmin/jeeps/*
-Copyright: 1999, Alan Bleasby
-  1999, Alan Bleasby
-  1999-2000, Alan Bleasby
-  1999-2000, Alan Bleasby
-  2004-2006, Robert Lipe
-  2005-2006, Robert Lipe
-  2006, Robert Lipe
-  2007, Achim Schumacher
-  2010, Martin Buck
+Copyright: 1999,      Alan Bleasby
+           1999,      Alan Bleasby
+           1999-2000, Alan Bleasby
+           1999-2000, Alan Bleasby
+           2004-2006, Robert Lipe
+           2005-2006, Robert Lipe
+           2006,      Robert Lipe
+           2007,      Achim Schumacher
+           2010,      Martin Buck
 License: LGPL-2+
 
 Files: src/glshim/include/GLES/*
@@ -197,12 +197,12 @@ Files: include/GL/glext.h
  src/glshim/include/GL/glxext.h
  src/glshim/include/KHR/khrplatform.h
  src/glshim/spec/xml/egl.xml
-Copyright: 2007, The Khronos Group Inc.
-  2007-2009, The Khronos Group Inc.
-  2007-2010, The Khronos Group Inc.
-  2007-2012, The Khronos Group Inc.
-  2008-2009, The Khronos Group Inc.
-  2013, The Khronos Group Inc.
+Copyright: 2007,      The Khronos Group Inc.
+           2007-2009, The Khronos Group Inc.
+           2007-2010, The Khronos Group Inc.
+           2007-2012, The Khronos Group Inc.
+           2008-2009, The Khronos Group Inc.
+           2013,      The Khronos Group Inc.
 License: MIT-KHRONOS
 
 Files: include/crashprint.h src/crashprint.cpp
@@ -244,9 +244,9 @@ License: BSD-2-clause
 
 Files: Findgps.cmake
 Copyright: 2000-2009, Kitware, Inc., Insight Software Consortium
-  2006, Alexander Neundorf <neundorf@kde.org>
-  2006-2009, Kitware, Inc.
-  2010, David Register
+           2006,      Alexander Neundorf <neundorf@kde.org>
+           2006-2009, Kitware, Inc.
+           2010,      David Register
 License: BSD-3-clause
 
 Files: FindPortaudio.cmake
@@ -259,10 +259,9 @@ License: GPL-3+
 
 Files: FindFFmpeg.cmake
 Copyright: 2006, Matthias Kretz, <kretz@kde.org>
-  2008, Alexander Neundorf, <neundorf@kde.org>
-  2011, Michael Jansen, <kde@michael-jansen.biz>
+           2008, Alexander Neundorf, <neundorf@kde.org>
+           2011, Michael Jansen, <kde@michael-jansen.biz>
 License: BSD-CMAKE
-
 
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify  
@@ -274,7 +273,6 @@ License: GPL-2+
  License version 2 can be found in the file
  `/usr/share/common-licenses/GPL-2'.
 
-
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -285,7 +283,6 @@ License: GPL-3+
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
 
-
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -295,7 +292,6 @@ License: LGPL-2+
  On Debian systems, the full text of the Lesser GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/LGPL-2'.
-
 
 License: wxWidgets
  wxWindows Library License, Version 3.1
@@ -345,7 +341,6 @@ License: wxWidgets
  you must delete the exception notice from such code and/or adjust the licensing '
  conditions notice accordingly.
 
-
 License: Expat
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
@@ -364,7 +359,6 @@ License: Expat
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
-
 
 License: SGI-B-1.1
  License Applicability. Except to the extent portions of this file are
@@ -394,7 +388,6 @@ License: SGI-B-1.1
  not been independently verified as being compliant with the OpenGL(R)
  version 1.2.1 Specification.
 
-
 License: SGI-B-2.0
  SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved
@@ -423,7 +416,6 @@ License: SGI-B-2.0
  shall not be used in advertising or otherwise to promote the sale, use or
  other dealings in this Software without prior written authorization from
  Silicon Graphics, Inc.
-
 
 License: Jasper
  Jasper License Version 2.0
@@ -472,7 +464,6 @@ License: Jasper
  RISK ACTIVITIES").  THE COPYRIGHT HOLDERS SPECIFICALLY DISCLAIM ANY
  EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
 
-
 License: BSD-2-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -494,7 +485,6 @@ License: BSD-2-clause
  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 License: BSD-3-clause
  Redistribution and use in source and binary forms are permitted
  provided that the above copyright notice and this paragraph are
@@ -508,7 +498,6 @@ License: BSD-3-clause
  THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-
 
 License: BSD-CMAKE
  Redistribution and use in source and binary forms, with or without
@@ -533,7 +522,6 @@ License: BSD-CMAKE
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-
 
 License: MIT-KHRONOS
  Permission is hereby granted, free of charge, to any person obtaining a
