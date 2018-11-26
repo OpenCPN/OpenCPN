@@ -2,6 +2,10 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 23 Nov 2018 05:06:28 -0500
 Subject: Build: Add hooks to define wx-config options on build
 
+Forwarded: not-needed
+
+This is a last-minute build fix which needs some time to stabilize before
+upstreaming.
 ---
  CMakeLists.txt | 7 ++++++-
  1 file changed, 6 insertions(+), 1 deletion(-)
