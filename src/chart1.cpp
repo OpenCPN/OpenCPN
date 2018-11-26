@@ -4626,16 +4626,14 @@ ChartCanvas *MyFrame::GetFocusCanvas()
 void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
 {
     if(g_bmasterToolbarFull){
-        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount() /*+ 1*/){   //Experimental fix for sometimes failure to show last tool
+        if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount()){
             m_nMasterToolCountShown++;
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
             
             //  Add a slight "easing" function by adjusting the timer trigger value
-            float t = m_nMasterToolCountShown / (float)g_MainToolbar->GetToolCount();
-            float nt = t*t*t*50;
-            int next_time = (int) wxRound(nt);
-            ToolbarAnimateTimer.Start( next_time, wxTIMER_ONE_SHOT );
+            if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount())
+                ToolbarAnimateTimer.Start( 5, wxTIMER_ONE_SHOT );
         }
     }
     else{
@@ -4643,7 +4641,7 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             m_nMasterToolCountShown--;
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
-            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+            ToolbarAnimateTimer.Start( 5, wxTIMER_ONE_SHOT );
         }
     }
 }
