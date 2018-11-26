@@ -5,7 +5,6 @@ hardening-no-fortify-functions usr/lib/opencpn/libdashboard_pi.so
 # Other spelling errors: needs to be handled upstream, see 
 # https://github.com/OpenCPN/OpenCPN/issues/1141
 spelling-error-in-binary usr/bin/opencpn *
-spelling-error-in-binary usr/lib/opencpn/libgrib_pi.so *
 
 # exit calls: Needs to be fixed upstream: 
 # https://github.com/OpenCPN/OpenCPN/issues/1140
