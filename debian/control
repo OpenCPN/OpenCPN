@@ -23,7 +23,7 @@ Build-Depends: debhelper (>= 9),
  libwxsvg-dev,
  portaudio19-dev
 Standards-Version: 4.3.0
-Homepage: http://opencpn.org
+Homepage: https://opencpn.org
 Vcs-Browser: https://salsa.debian.org/debian-gis-team/opencpn
 Vcs-Git: https://salsa.debian.org/debian-gis-team/opencpn.git
 
@@ -64,6 +64,6 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
 
 Package: opencpn-plugins
 Architecture: all
-Depends: ${misc:Depends}, opencpn (>= 4.8.6~20180801.8d20a06+dfsg.1)
+Depends: opencpn (>= 4.8.6~20180801.8d20a06+dfsg.1), ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (transition)
  This package is a transitional, empty package.
