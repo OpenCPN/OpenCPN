@@ -1,7 +1,3 @@
-# None of these packages makes sense without the other, and there are no 
-# postinst scripts. Together, this makes the circular dependency motivated.
-opencpn source: intra-source-package-circular-dependency opencpn opencpn-data
-
 # Package does not define a testsuit.
 opencpn source: testsuite-autopkgtest-missing
 
