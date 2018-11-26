@@ -1,13 +1,12 @@
 # False positives: -DFORTIFY_SOURCE=2 is actually applied compiling these.
-opencpn binary : hardening-no-fortify-functions usr/lib/opencpn/libchartdldr_pi.so
-opencpn binary : hardening-no-fortify-functions usr/lib/opencpn/libdashboard_pi.so
+hardening-no-fortify-functions usr/lib/opencpn/libchartdldr_pi.so
+hardening-no-fortify-functions usr/lib/opencpn/libdashboard_pi.so
 
 # Other spelling errors: needs to be handled upstream, see 
 # https://github.com/OpenCPN/OpenCPN/issues/1141
-opencpn binary: spelling-error-in-binary usr/bin/opencpn *
-opencpn binary: spelling-error-in-binary usr/lib/opencpn/libgrib_pi.so *
+spelling-error-in-binary usr/bin/opencpn *
+spelling-error-in-binary usr/lib/opencpn/libgrib_pi.so *
 
 # exit calls: Needs to be fixed upstream: 
 # https://github.com/OpenCPN/OpenCPN/issues/1140
-opencpn binary: shlib-calls-exit usr/lib/opencpn/libgrib_pi.so
-
+shlib-calls-exit usr/lib/opencpn/libgrib_pi.so
