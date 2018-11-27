@@ -2,14 +2,11 @@
 
 include  /usr/share/dpkg/pkg-info.mk
 
-# Enable hardening build flags
-export DEB_BUILD_MAINT_OPTIONS=hardening=+all
-
-LDFLAGS += -Wl,--as-needed
-export LDFLAGS
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@
+	dh $@ --parallel
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
@@ -23,7 +20,7 @@ override_dh_auto_configure:
             -DWX_CONFIG_OPTIONS=--toolkit=gtk2
 
 override_dh_auto_install:
-	dh_auto_install --destdir=debian/tmp
+	dh_auto_install
 	# Remove generated files without source.
 	rm -rf debian/tmp/usr/share/opencpn/doc/opencpn
 	rm debian/tmp/usr/share/opencpn/plugins/chartdldr_pi/data/doc/highlight.min.js
@@ -45,8 +42,8 @@ override_dh_auto_install:
 	    ./debian/tmp/usr/share/applications/opencpn.desktop
 
 
-override_dh_missing:
-	dh_missing --fail-missing
+override_dh_install:
+	dh_install --fail-missing
 
 # Work around what's seemingly a tar bug, see
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=831870
