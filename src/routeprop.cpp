@@ -2589,6 +2589,15 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerArrivalRadius->Add( m_textArrivalRadius, 0, wxALL, 5 );
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
+    wxBoxSizer* bSizerScaMin;
+    bSizerScaMin = new wxBoxSizer( wxHORIZONTAL );
+    m_staticTextScaMin = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Min. Scale"));
+    bSizerScaMin->Add( m_staticTextScaMin, 0, wxALL, 0 );
+
+    m_textScaMin = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
+    bSizerScaMin->Add( m_textScaMin, 0, wxALL, 5 );
+    bSizerTextProperties->Add( bSizerScaMin, 0, wxEXPAND, 5 );
+
     //  Waypoints
     m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show range rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
@@ -2997,6 +3006,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxShowName->Enable( false );
             m_checkBoxVisible->Enable( false );
             m_textArrivalRadius->SetEditable ( false );
+            m_textScaMin->SetEditable ( false );
             m_checkBoxShowWaypointRangeRings->Enable( false );
             m_choiceWaypointRangeRingsUnits->Enable( false );
             m_choiceWaypointRangeRingsNumber->Enable( false );
@@ -3016,6 +3026,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxShowName->Enable( true );
             m_checkBoxVisible->Enable( true );
             m_textArrivalRadius->SetEditable ( true );
+            m_textScaMin->SetEditable ( true );
             m_checkBoxShowWaypointRangeRings->Enable( true );
             m_choiceWaypointRangeRingsUnits->Enable( true );
             m_choiceWaypointRangeRingsNumber->Enable( true );
@@ -3024,9 +3035,10 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         }
         m_textName->SetValue( m_pRoutePoint->GetName() );
 
-        wxString s_ArrivalRadius;
-        s_ArrivalRadius.Printf( _T("%.3f"), m_pRoutePoint->GetWaypointArrivalRadius() );
-        m_textArrivalRadius->SetValue( s_ArrivalRadius );        
+        wxString s_textArrivalRadius;
+        s_textArrivalRadius.Printf( _T("%.3f"), m_pRoutePoint->GetWaypointArrivalRadius() );
+        m_textArrivalRadius->SetValue( s_textArrivalRadius );
+        m_textScaMin->SetValue( wxString::Format(wxT("%i"),m_pRoutePoint->GetScaMin() ) );
         
         m_textDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_textCtrlExtDescription->SetValue( m_pRoutePoint->m_MarkDescription );
@@ -3346,6 +3358,7 @@ bool MarkInfoImpl::SaveChanges()
         // Get User input Text Fields
         m_pRoutePoint->SetName( m_textName->GetValue() );
         m_pRoutePoint->SetWaypointArrivalRadius( m_textArrivalRadius->GetValue() );
+        m_pRoutePoint->SetScaMin( m_textScaMin->GetValue() );
         m_pRoutePoint->SetShowWaypointRangeRings( m_checkBoxShowWaypointRangeRings->GetValue() );
         m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
         m_pRoutePoint->SetVisible( m_checkBoxVisible->GetValue() );

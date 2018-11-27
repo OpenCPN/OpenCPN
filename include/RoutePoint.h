@@ -31,6 +31,8 @@
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
 
+#define MAX_INT_VAL 2147483647
+
 class ocpnDC;
 class wxDC;
 class ChartCanvas;
@@ -95,7 +97,13 @@ public:
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
       void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
-
+      void SetScaMin(wxString str);
+      void SetScaMin(long val);
+      long GetScaMin(){return m_ScaMin; };
+      void SetScaMax(wxString str);
+      void SetScaMax(long val);
+      long GetScaMax(){return m_ScaMax; };
+      bool IsScaVisible(ChartCanvas *cc);
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
@@ -187,6 +195,10 @@ private:
       int               m_drag_line_length_man, m_drag_icon_offset;
       double            m_dragHandleLat, m_dragHandleLon;
       int               m_draggingOffsetx, m_draggingOffsety;
+      long              m_ScaMin;
+      long              m_ScaMax;
+      bool              IsInSelectList;
+      int               SelBitArray;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

@@ -620,6 +620,12 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
         if( pFindSel->m_seltype == fseltype ) {
             switch( fseltype ){
                 case SELTYPE_ROUTEPOINT:
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
+                        if((cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive()) && !((RoutePoint *)pFindSel->m_pData1 )->IsScaVisible(cc) )
+                            ret_list.Append( pFindSel );
+                    }
+                    break;
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:

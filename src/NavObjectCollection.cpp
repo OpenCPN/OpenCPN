@@ -89,6 +89,8 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     float   l_fWaypointRangeRingsStep = -1;
     int     l_pWaypointRangeRingsStepUnits = -1;
     bool    l_bWaypointRangeRingsVisible = false;
+    long    l_iWaypointScaleMin = 2147483646;
+    long    l_iWaypoinScaleMax = 0;
     wxColour    l_wxcWaypointRangeRingsColour;
     l_wxcWaypointRangeRingsColour.Set( _T( "#FFFFFF" ) );
 
@@ -197,6 +199,14 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                             l_wxcWaypointRangeRingsColour.Set( wxString::FromUTF8( attr.as_string() ) );
                     }
                 }
+                if ( ext_name == _T("opencpn:scale_min_max") ) {
+                    for ( pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute() ) {
+                        if ( wxString::FromUTF8(attr.name()) == _T("ScaleMin") )
+                            l_iWaypointScaleMin = attr.as_int();
+                        else if ( wxString::FromUTF8(attr.name()) == _T("ScaleMax") )
+                            l_iWaypoinScaleMax = attr.as_float();
+                    }
+                }
              }// for 
         } //extensions
     }   // for
@@ -217,6 +227,8 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRangeRingsStepUnits );
     pWP->SetShowWaypointRangeRings( l_bWaypointRangeRingsVisible );
     pWP->SetWaypointRangeRingsColour( l_wxcWaypointRangeRingsColour );
+    pWP->SetScaMin( l_iWaypointScaleMin );
+    pWP->SetScaMax( l_iWaypoinScaleMax );
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -721,6 +733,13 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             units.set_value( pr->m_iWaypointRangeRingsStepUnits );
             pugi::xml_attribute colour = child.append_attribute( "colour" );
             colour.set_value( pr->m_wxcWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ).utf8_str() ) ;
+        }
+        if(flags & OUT_WAYPOINT_SCALE) {
+            child = child_ext.append_child("opencpn:scale_min_max");
+            pugi::xml_attribute viz = child.append_attribute( "ScaleMin" );
+            viz.set_value( pr->GetScaMin() );
+            pugi::xml_attribute number = child.append_attribute( "ScaleMax" );
+            number.set_value( pr->GetScaMax() );
         }
     }
     

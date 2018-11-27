@@ -117,7 +117,6 @@ class   OCPNIconCombo;
 #define ID_LONCTRL 8005
 #define ID_SHOWNAMECHECKBOX1 8006
 
-
 ////@end control identifiers
 
 /*!
@@ -328,7 +327,9 @@ class MarkInfoDef : public wxDialog
         wxStaticBoxSizer*       sbSizerLinks;
         wxSize                  m_defaultClientSize;
         wxStaticText*           m_staticTextArrivalRadius;
+        wxStaticText*           m_staticTextScaMin;
         wxTextCtrl*             m_textArrivalRadius;
+        wxTextCtrl*             m_textScaMin;
         wxBoxSizer*             bSizerBasicProperties;
         wxCheckBox*             m_checkBoxShowWaypointRangeRings;
     
