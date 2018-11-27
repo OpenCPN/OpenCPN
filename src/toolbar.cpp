@@ -1690,7 +1690,7 @@ wxSize ToolTipWin::GetRenderedSize( void )
     int h, w;
     wxSize sz;
 
-    wxClientDC cdc( GetParent() );
+    wxScreenDC cdc;
 
     wxFont *plabelFont = FontMgr::Get().GetFont( _("ToolTips") );
     cdc.GetTextExtent( m_string, &w, &h, NULL, NULL, plabelFont );
@@ -1706,7 +1706,7 @@ void ToolTipWin::SetBitmap()
 {
     int h, w;
 
-    wxClientDC cdc( GetParent() );
+    wxScreenDC cdc;
 
     wxFont *plabelFont = FontMgr::Get().GetFont( _("ToolTips") );
     cdc.GetTextExtent( m_string, &w, &h, NULL, NULL, plabelFont );
@@ -2209,7 +2209,7 @@ void ocpnToolBarSimple::OnPaint( wxPaintEvent& WXUNUSED(event) )
 
 void ocpnToolBarSimple::OnSize( wxSizeEvent& WXUNUSED(event) )
 {
-    if( GetAutoLayout() ) Layout();
+    /*if( GetAutoLayout() )*/ Layout();
 }
 
 void ocpnToolBarSimple::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
@@ -2293,7 +2293,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
         //    ToolTips
         if( NULL == m_pToolTipWin ) {
-            m_pToolTipWin = new ToolTipWin( gFrame/*GetParent()*/ );
+            m_pToolTipWin = new ToolTipWin( NULL/*GetParent()*/ );
             m_pToolTipWin->SetColorScheme( m_currentColorScheme );
             m_pToolTipWin->Hide();
         }

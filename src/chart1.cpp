@@ -4631,17 +4631,19 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
             
-            //  Add a slight "easing" function by adjusting the timer trigger value
-            if(m_nMasterToolCountShown < (int)g_MainToolbar->GetToolCount())
-                ToolbarAnimateTimer.Start( 5, wxTIMER_ONE_SHOT );
+            ToolbarAnimateTimer.Start( 20, wxTIMER_ONE_SHOT );
         }
+        else{
+            //  One last "Realize()" to establish the final toolbar shape
+            g_MainToolbar->Realize();
+        }            
     }
     else{
         if(m_nMasterToolCountShown > 1){
             m_nMasterToolCountShown--;
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
-            ToolbarAnimateTimer.Start( 5, wxTIMER_ONE_SHOT );
+            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
         }
     }
 }
@@ -9625,11 +9627,6 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
    
     g_MainToolbar->AddToolItem(tic);
 
-    tic= new ToolbarItemContainer( ID_PRINT,
-                                   style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("Print Chart"), _("MUI_print"));
-    g_MainToolbar->AddToolItem(tic);
-
     tic= new ToolbarItemContainer( ID_ROUTEMANAGER,
                                    style->GetToolIcon( _T("MUI_RMD"), TOOLICON_NORMAL),
                                    wxITEM_NORMAL, _("Route & Mark Manager"), _("MUI_RMD"));
@@ -9651,6 +9648,11 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
         //tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to always be visible, whatever
                                                         //  the colorscheme
     //}
+
+    tic= new ToolbarItemContainer( ID_PRINT,
+                                   style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("Print Chart"), _("MUI_print"));
+    g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_ABOUT,
                                    style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL),
