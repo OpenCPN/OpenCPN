@@ -3,7 +3,6 @@ Date: Mon, 26 Nov 2018 15:07:07 -0500
 Subject: po: Fix spelling errors.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1141
-
 ---
  po/opencpn.pot       | 2 +-
  po/opencpn_ar_SA.po  | 2 +-
