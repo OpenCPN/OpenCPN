@@ -61,6 +61,7 @@ extern bool                       g_bsmoothpanzoom;
 extern OCPNPlatform               *g_Platform;
 extern bool                       g_bmasterToolbarFull;
 extern bool                       g_useMUI;
+extern wxString                   g_toolbarConfig;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -408,6 +409,49 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
     DestroyToolBar();
 }
 
+void ocpnFloatingToolbarDialog::AddToolItem(ToolbarItemContainer *item)
+{
+    m_Items.push_back(item);
+}
+
+int ocpnFloatingToolbarDialog::RebuildToolbar()
+{
+    ocpnToolBarSimple *tb = GetToolbar();
+    if( !tb )
+        return 0;
+
+    // Iterate over the array of items added,
+    // Creating the toolbar from enabled items.
+    int i_count = 0;
+    for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++){
+
+        ToolbarItemContainer *tic = *it;
+        if(!tic)
+            continue;
+
+        bool bEnabled = _toolbarConfigMenuUtil( tic );
+        
+        if(bEnabled){
+            wxToolBarToolBase *tool = tb->AddTool(tic->m_ID, tic->m_label, tic->m_bmpNormal, tic->m_bmpDisabled, tic->m_toolKind, tic->m_tipString);
+            tic->m_tool = tool;
+        
+            //  Plugin tools may have prescribed their own SVG toolbars as file locations.
+            if(!tic->m_NormalIconSVG.IsEmpty()){
+                tb->SetToolBitmapsSVG( tic->m_ID, tic->m_NormalIconSVG,
+                                    tic->m_RolloverIconSVG,
+                                    tic->m_ToggledIconSVG );
+            }
+        }
+
+        i_count++;
+    }
+    
+    return i_count;
+
+
+}
+
+
 void ocpnFloatingToolbarDialog::SetULDockPosition(wxPoint position)
 {
     if(position.x >= 0)
@@ -465,48 +509,24 @@ void ocpnFloatingToolbarDialog::CreateConfigMenu()
     m_FloatingToolbarConfigMenu = new wxMenu();
 }
 
-bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( int toolid, wxString tipString )
+bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( ToolbarItemContainer *tic )
 {
     if(m_FloatingToolbarConfigMenu){
         wxMenuItem* menuitem;
         
-        if( toolid == ID_MOB && g_bPermanentMOBIcon )
+        if( tic->m_ID == ID_MOB && g_bPermanentMOBIcon )
+            return true;
+        
+        if( tic->m_bRequired )
+            return true;
+        if( tic->m_bPlugin )
             return true;
             
-        ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
-
-        if(parentCanvas){
-            // If using MUI mode, and this toolbar is on a ChartCanvas,
-            // then some global action icons are dis-allowed on per-canvas toolbar
-            if(g_useMUI){
-                switch(toolid){
-                    case ID_SETTINGS:
-                    case ID_PRINT:
-                    case ID_ROUTEMANAGER:
-                    case ID_TRACK:
-                    case ID_ROUTE:
-                    case ID_COLSCHEME:
-                    case ID_ABOUT:
-                    case ID_MOB:
-                        return false;
-                         
-                    default:
-                        break;
-                }
-            }
-        }
-            
-        
-        wxString configString;
-        
-        if(parentCanvas)
-            configString = parentCanvas->GetToolbarConfigString();
-        
         // Item ID trickery is needed because the wxCommandEvents for menu item clicked and toolbar button
         // clicked are 100% identical, so if we use same id's we can't tell the events apart.
         
-        int idOffset = ID_PLUGIN_BASE - ID_ZOOMIN + 100;  // Hopefully no more than 100 plugins loaded...
-        int menuItemId = toolid + idOffset;
+        int idOffset = 100;  // Hopefully no more than 100 total icons...
+        int menuItemId = tic->m_ID + idOffset;
         
         menuitem = m_FloatingToolbarConfigMenu->FindItem( menuItemId );
         
@@ -514,9 +534,9 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( int toolid, wxString tip
             return menuitem->IsChecked();
         }
         
-        menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-        int n = toolid - ID_ZOOMIN;
-        menuitem->Check( configString.GetChar( toolid - ID_ZOOMIN ) == _T('X') );
+        menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tic->m_tipString );
+        int n = m_FloatingToolbarConfigMenu->GetMenuItemCount(); 
+        menuitem->Check( m_configString.GetChar( n-1 ) == _T('X') );
         return menuitem->IsChecked();
     }
     else
@@ -1200,6 +1220,8 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateNewToolbar()
 
 void ocpnFloatingToolbarDialog::DestroyToolBar()
 {
+    g_toolbarConfig = GetToolConfigString();
+    
     if( m_ptoolbar ) {
         m_ptoolbar->ClearTools();
         delete m_ptoolbar;                  //->Destroy();
@@ -1226,6 +1248,9 @@ extern s52plib *ps52plib;
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 {
+    return NULL;
+#if 0    
+    
     ocpnToolBarSimple *tb = GetToolbar();
     if( !tb )
         return 0;
@@ -1432,6 +1457,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
     // TODO SetStatusBarPane( -1 );                   // don't show help on status bar
 
     return tb;
+#endif    
 }
 
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
@@ -3233,7 +3259,12 @@ END_EVENT_TABLE()
             int l = label.Len();
             max_width = wxMax(max_width, l);
             
-            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label);
+            wxString windowName = _T("");
+            if(item->GetId() == ID_MOB + 100)
+                windowName = _T("MOBCheck");
+            
+            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, windowName);
+//            wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label);
             itemStaticBoxSizer3->Add(cb, 0, wxALL | wxEXPAND, 2);
             cb->SetValue(item->IsChecked());
             
@@ -3287,16 +3318,14 @@ END_EVENT_TABLE()
  void ToolbarChoicesDialog::OnOkClick( wxCommandEvent& event )
  {
      unsigned int ncheck = 0;
-     ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( m_ToolbarDialogAncestor->GetParent() );
-     if(!parentCanvas)
-         EndModal(wxID_OK);
-     
-     wxString toolbarConfigSave = parentCanvas->GetToolbarConfigString();
+    
+     wxString toolbarConfigSave = m_ToolbarDialogAncestor->GetToolConfigString();
      wxString new_toolbarConfig = toolbarConfigSave;
      
      for(unsigned int i=0 ; i < cboxes.size() ; i++){
          wxCheckBox *cb = cboxes[i];
-         if ( i + ID_ZOOMIN == ID_MOB && !cb->IsChecked( ) ) {
+         wxString cbName = cb->GetName();               // Special flag passed into checkbox ctor to find the "MOB" item
+         if ( cbName.IsSameAs(_T("MOBCheck")) && !cb->IsChecked( ) ) {
              // Ask if really want to disable MOB button
              ToolbarMOBDialog mdlg( this );
              int dialog_ret = mdlg.ShowModal( );
@@ -3324,7 +3353,8 @@ END_EVENT_TABLE()
                  ncheck++;
          }
      }
-     
+ 
+#if 0 
      //  We always must have one Tool enabled.  Make it the Options tool....
      if( 0 == ncheck){
          new_toolbarConfig.SetChar( ID_SETTINGS -ID_ZOOMIN , _T('X') );
@@ -3337,8 +3367,8 @@ END_EVENT_TABLE()
                 item->Check( true );
          }
      }
-     
-     parentCanvas->SetToolbarConfigString( new_toolbarConfig );
+#endif     
+     m_ToolbarDialogAncestor->SetToolConfigString( new_toolbarConfig );
      
      EndModal(wxID_OK);
  }

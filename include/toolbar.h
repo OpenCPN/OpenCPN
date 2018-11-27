@@ -28,10 +28,62 @@
 #define _TOOLBAR_H__
 
 #include "wx/tbarbase.h"
+#include <wx/dynarray.h>
 #include "styles.h"
 #include <vector>
 
 class ocpnFloatingToolbarDialog;
+
+class ToolbarItemContainer{
+public:
+    ToolbarItemContainer();
+    ~ToolbarItemContainer(){}
+    
+    ToolbarItemContainer( int toolid, wxBitmap bmpNormal, wxBitmap bmpDisabled,
+                            wxItemKind kind, wxString tooltip, wxString label)
+    {   m_ID = toolid;
+        m_tipString = tooltip;
+        m_label = label;
+        m_toolKind = kind;
+        m_bmpNormal = bmpNormal;
+        m_bmpDisabled = bmpDisabled;
+        m_bRequired = false;
+        m_bPlugin = false;
+    }
+
+    ToolbarItemContainer( int toolid, wxBitmap bmpNormal, 
+                            wxItemKind kind, wxString tooltip, wxString label)
+    {   m_ID = toolid;
+        m_tipString = tooltip;
+        m_label = label;
+        m_toolKind = kind;
+        m_bmpNormal = bmpNormal;
+        m_bmpDisabled = wxNullBitmap;
+        m_bRequired = false;
+        m_bPlugin = false;
+    }
+
+    
+    int m_ID;
+    wxString m_tipString;
+    wxString m_label;
+    wxItemKind m_toolKind;
+    bool m_bRequired;
+    bool m_bPlugin;
+
+    
+    wxBitmap m_bmpNormal;
+    wxBitmap m_bmpDisabled;
+    wxToolBarToolBase *m_tool;
+    
+    //  Supplemental SVG icons for plugin tools
+    wxString m_NormalIconSVG;
+    wxString m_RolloverIconSVG;
+    wxString m_ToggledIconSVG;
+};
+
+//WX_DECLARE_OBJARRAY(ToolbarItemContainer, ArrayOfToolbarItemContainer);
+typedef std::vector<ToolbarItemContainer *> ArrayOfToolbarItemContainer;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Definition
@@ -360,8 +412,11 @@ public:
       ocpnToolBarSimple *CreateNewToolbar();
       void SetToolbarHideMethod(int n_method ){ n_toolbarHideMethod = n_method; }
       
+      void SetToolConfigString(wxString string){ m_configString = string; }
+      wxString GetToolConfigString(){ return m_configString; }
+
       void CreateConfigMenu();
-      bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
+      bool _toolbarConfigMenuUtil( ToolbarItemContainer *tic );
 
       void SetCornerRadius( int radius){ m_cornerRadius = radius; }
       
@@ -425,6 +480,11 @@ public:
       void SetBackGroundColorString( wxString colorRef );
       void SetULDockPosition(wxPoint position);
       
+      ArrayOfToolbarItemContainer m_Items;
+      
+      void AddToolItem(ToolbarItemContainer *item);
+      int RebuildToolbar();
+
 protected:
     ocpnToolBarSimple *m_ptoolbar;
     
@@ -469,7 +529,7 @@ private:
       wxString m_toolShowMask;
       int n_toolbarHideMethod;
       bool b_canToggleOrientation;
-      
+      wxString m_configString;
 };
 
 //---------------------------------------------------------------------------

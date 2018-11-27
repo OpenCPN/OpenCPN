@@ -485,7 +485,7 @@ class MyFrame: public wxFrame
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
-    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbars(); }
+    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewMasterToolbar(); }
     void RequestNewToolbars( bool bforcenew = false);
 
     void ActivateMOB(void);
@@ -510,8 +510,8 @@ class MyFrame: public wxFrame
 
     ocpnToolBarSimple *CreateMasterToolbar();
     void RequestNewMasterToolbar( bool bforcenew = true );
-    bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
-    bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
+    bool CheckAndAddPlugInTool( );
+    bool AddDefaultPositionPlugInTools( );
 
     void NotifyChildrenResize( void );
     void UpdateCanvasConfigDescriptors();

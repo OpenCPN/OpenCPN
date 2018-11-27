@@ -9550,6 +9550,8 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
+        g_MainToolbar->SetToolConfigString(g_toolbarConfig);
+        
         g_MainToolbar->CreateConfigMenu();
 
         g_bmasterToolbarFull = true;
@@ -9596,194 +9598,83 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 {
     ocpnToolBarSimple *tb = NULL;
 
-    if( g_MainToolbar ){
+    if( g_MainToolbar )
         tb = g_MainToolbar->GetToolbar();
-//         if(tb){
-//             if(g_Compass)
-//                 g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-//             else
-//                 g_MainToolbar->SetGeometry(false, wxRect(0,0,1,1));
-//         }
             
-    }
     if( !tb )
         return 0;
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-    wxString tipString;
+    ToolbarItemContainer *tic= new ToolbarItemContainer( ID_MASTERTOGGLE,
+                                                         style->GetToolIcon( _T("MUI_menu"), TOOLICON_NORMAL),
+                                                         wxITEM_NORMAL, _("Hide Toolbar"), _("MUI_menu"));
+    tic->m_bRequired = true;
 
-#if 0    
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Zoom In") ) << _T(" (+)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMIN, tipString ) )
-        tb->AddTool( ID_ZOOMIN, _T("zoomin"),
-            style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    g_MainToolbar->AddToolItem(tic);
 
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Zoom Out") ) << _T(" (-)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMOUT, tipString ) )
-        tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
-            style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    tic= new ToolbarItemContainer( ID_SETTINGS,
+                                   style->GetToolIcon( _T("MUI_settings"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("Options"), _("MUI_settings"));
+    g_MainToolbar->AddToolItem(tic);
+    
+    tic= new ToolbarItemContainer( ID_MENU_ROUTE_NEW,
+                                   style->GetToolIcon( _T("MUI_route"), TOOLICON_NORMAL),
+                                   style->GetToolIcon( _T("MUI_route"), TOOLICON_TOGGLED),
+                                   wxITEM_CHECK, wxString( _("Create Route") ) << _T(" (Ctrl-R)"), _("MUI_route") );
+   
+    g_MainToolbar->AddToolItem(tic);
 
-    m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
-            && ( pCurrentStack->nEntry > 1 );
+    tic= new ToolbarItemContainer( ID_PRINT,
+                                   style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("Print Chart"), _("MUI_print"));
+    g_MainToolbar->AddToolItem(tic);
 
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {
-        newtool = tb->AddTool( ID_STKDN, _T("scin"),
-                style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-        newtool->Enable( m_toolbar_scale_tools_shown );
-    }
+    tic= new ToolbarItemContainer( ID_ROUTEMANAGER,
+                                   style->GetToolIcon( _T("MUI_RMD"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("Route & Mark Manager"), _("MUI_RMD"));
+    g_MainToolbar->AddToolItem(tic);
 
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Shift to Smaller Scale Chart") ) << _T(" (F8)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKUP, tipString ) ) {
-        newtool = tb->AddTool( ID_STKUP, _T("scout"),
-                style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-        newtool->Enable( m_toolbar_scale_tools_shown );
-    }
+    tic= new ToolbarItemContainer( ID_TRACK,
+                                   style->GetToolIcon( _T("MUI_track"), TOOLICON_NORMAL),
+                                   style->GetToolIcon( _T("MUI_track"), TOOLICON_TOGGLED),
+                                   wxITEM_CHECK, _("Enable Tracking"), _("MUI_track"));
+    g_MainToolbar->AddToolItem(tic);
 
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
-        tb->AddTool( ID_ROUTE, _T("route"),
-            style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Auto Follow") ) << _T(" (F2)");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_FOLLOW, tipString ) )
-        tb->AddTool( ID_FOLLOW, _T("follow"),
-            style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
-#endif
-
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Hide Toolbar") ) ;
-    tb->AddTool( ID_MASTERTOGGLE, _T("menu"), style->GetToolIcon( _T("MUI_menu"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Options");
-    if( GetMasterToolItemShow(ID_SETTINGS) )
-        tb->AddTool( ID_SETTINGS, _T("MUI_settings"), style->GetToolIcon( _T("MUI_settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
-    if( GetMasterToolItemShow( ID_MENU_ROUTE_NEW ) )
-        tb->AddTool( ID_MENU_ROUTE_NEW, _T("MUI_route"), style->GetToolIcon( _T("MUI_route"), TOOLICON_NORMAL ),
-                     style->GetToolIcon( _T("MUI_route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
-                     
-                     
-#if 0        
-    bool gs = false;
-#ifdef USE_S57
-    if (ps52plib)
-        gs = ps52plib->GetShowS57Text();
-#endif
-
-    if (gs)
-        tipString = wxString( _("Hide ENC text") ) << _T(" (T)");
-    else
-        tipString = wxString( _("Show ENC text") ) << _T(" (T)");
-
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
-        tb->AddTool( ID_ENC_TEXT, _T("text"),
-            style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
-
-    m_pAISTool = NULL;
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Hide AIS Targets");          // inital state is on
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_AIS, tipString ) )
-        m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
-                                  style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ),
-                                  wxITEM_NORMAL, tipString );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Show Currents");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_CURRENT, tipString ) )
-        tb->AddTool( ID_CURRENT, _T("current"),
-            style->GetToolIcon( _T("current"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Show Tides");
-    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TIDE, tipString ) )
-        tb->AddTool( ID_TIDE, _T("tide"),
-            style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
-#endif
-
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Print Chart");
-    if( GetMasterToolItemShow(ID_PRINT) )
-        tb->AddTool( ID_PRINT, _T("MUI_print"), style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = _("Route & Mark Manager");
-    if( GetMasterToolItemShow(ID_ROUTEMANAGER) )
-        tb->AddTool( ID_ROUTEMANAGER,_T("MUI_RMD"), style->GetToolIcon( _T("MUI_RMD"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-     CheckAndAddPlugInTool( tb );
-     tipString = _("Enable Tracking");
-     if( GetMasterToolItemShow( ID_TRACK ) )
-         tb->AddTool( ID_TRACK, _T("MUI_track"),
-                      style->GetToolIcon( _T("MUI_track"), TOOLICON_NORMAL ),
-                      style->GetToolIcon( _T("MUI_track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Change Color Scheme") ) << _T(" (F5)");
-    if( GetMasterToolItemShow(ID_COLSCHEME) ){
-        tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL ),
-            tipString, wxITEM_NORMAL );
-        tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to always be visible, whatever
+    tic= new ToolbarItemContainer( ID_COLSCHEME,
+                                   style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("Change Color Scheme"), _("MUI_colorscheme"));
+    g_MainToolbar->AddToolItem(tic);
+    //if( GetMasterToolItemShow(ID_COLSCHEME) ){
+      //  tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL ),
+        //    tipString, wxITEM_NORMAL );
+        //tb->SetToolTooltipHiViz( ID_COLSCHEME, true );  // cause the Tooltip to always be visible, whatever
                                                         //  the colorscheme
-    }
+    //}
 
-    CheckAndAddPlugInTool( tb );
-    tipString = _("About OpenCPN");
-    if( GetMasterToolItemShow(ID_ABOUT) )
-        tb->AddTool( ID_ABOUT, _T("MUI_help"), style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    tic= new ToolbarItemContainer( ID_ABOUT,
+                                   style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, _("About OpenCPN"), _("MUI_help"));
+    g_MainToolbar->AddToolItem(tic);
 
     //      Add any PlugIn toolbar tools that request default positioning
-    //if(g_bmasterToolbarFull)
-        AddDefaultPositionPlugInTools( tb );
+    AddDefaultPositionPlugInTools();
 
     //  And finally add the MOB tool
-    tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
-    if( GetMasterToolItemShow(ID_MOB))
-        tb->AddTool( ID_MOB, _T("mob_btn"),
-                     style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+    tic= new ToolbarItemContainer( ID_MOB,
+                                   style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL),
+                                   wxITEM_NORMAL, wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)"), _("mob_btn"));
+    g_MainToolbar->AddToolItem(tic);
 
+    // Build the toolbar
+    g_MainToolbar->RebuildToolbar();
 
-// Realize() the toolbar
+    // Realize() the toolbar for current geometry
     style->Unload();
     g_MainToolbar->Realize();
 
 
 
-#if 0    
-    wxString initiconName;
-    if( g_bShowAIS ) {
-        if (g_bAllowShowScaled){
-            if(!g_bShowScaled)
-                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS targets") );
-            else
-                tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-        }
-        else
-            tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-        initiconName = _T("AIS");
-    }
-    else {
-        tb->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
-        initiconName = _T("AIS_Disabled");
-    }
-    tb->SetToolNormalBitmapEx( m_pAISTool, initiconName );
-    m_lastAISiconName = initiconName;
-
-    tb->ToggleTool( ID_TRACK, g_bTrackActive );
-#endif
 
     //  Set PlugIn tool toggle states
     ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
@@ -9797,16 +9688,22 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
     }
 
 
-    //SetStatusBarPane( -1 );                   // don't show help on status bar
-
     return tb;
 }
 
-bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
+bool MyFrame::CheckAndAddPlugInTool()
 {
     if( !g_pi_manager ) return false;
     
     bool bret = false;
+    ocpnToolBarSimple *tb = NULL;
+
+    if( g_MainToolbar )
+        tb = g_MainToolbar->GetToolbar();
+    
+    if(!tb)
+        return false;
+
     int n_tools = tb->GetToolsCount();
     
     //    Walk the PlugIn tool spec array, checking the requested position
@@ -9831,29 +9728,28 @@ bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
                     break;
                 default:
                     ptool_bmp = pttc->bitmap_day;
-                    ;
                     break;
             }
             
-            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                                                    wxString( pttc->shortHelp ), pttc->kind );
+            ToolbarItemContainer *tic= new ToolbarItemContainer( pttc->id, *( ptool_bmp ), pttc->kind, pttc->shortHelp, _T(""));
             
-            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
-                                   pttc->pluginRolloverIconSVG,
-                                   pttc->pluginToggledIconSVG );
-            
+            tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
+            tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
+            tic->m_ToggledIconSVG = pttc->pluginToggledIconSVG;
+            tic->m_bPlugin = true;
+
             bret = true;
         }
     }
     
     //    If we added a tool, call again (recursively) to allow for adding adjacent tools
-    if( bret ) while( CheckAndAddPlugInTool( tb ) ) { /* nothing to do */
+    if( bret ) while( CheckAndAddPlugInTool() ) { /* nothing to do */
     }
     
     return bret;
 }
 
-bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
+bool MyFrame::AddDefaultPositionPlugInTools()
 {
     if( !g_pi_manager ) return false;
 
@@ -9895,13 +9791,16 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
                     break;
             }
 
-            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                                                    wxString( pttc->shortHelp ), pttc->kind );
+
+            ToolbarItemContainer *tic= new ToolbarItemContainer( pttc->id, *( ptool_bmp ), pttc->kind, pttc->shortHelp, _T(""));
             
-            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
-                                   pttc->pluginRolloverIconSVG,
-                                   pttc->pluginToggledIconSVG );
-            
+            tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
+            tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
+            tic->m_ToggledIconSVG = pttc->pluginToggledIconSVG;
+            tic->m_bPlugin = true;
+
+            g_MainToolbar->AddToolItem(tic);
+
             bret = true;
         }
     }
