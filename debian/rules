@@ -36,10 +36,6 @@ override_dh_auto_install:
 	# Don't install duplicate gplv2 license:
 	# https://github.com/OpenCPN/OpenCPN/pull/1143
 	rm -f debian/tmp/usr/share/opencpn/license.txt
-	# Fix desktop file missing keywords and validate:
-	desktop-file-edit \
-	    --set-key=Keywords --set-value="gps;navigation;chart" \
-	    ./debian/tmp/usr/share/applications/opencpn.desktop
 
 
 override_dh_install:
