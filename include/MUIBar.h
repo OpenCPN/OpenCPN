@@ -62,7 +62,7 @@ class MUIBar : public wxDialog
 {
 public:
     MUIBar();
-    MUIBar(ChartCanvas* parent, int orientation = wxHORIZONTAL, wxWindowID id = wxID_ANY, 
+    MUIBar(ChartCanvas* parent, int orientation = wxHORIZONTAL,  float size_factor =1.0, wxWindowID id = wxID_ANY, 
            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
            long style = 0, const wxString& name = wxPanelNameStr);
     
@@ -92,6 +92,7 @@ private:
     
     ChartCanvas *m_parentCanvas;
     int         m_orientation;
+    float       m_scaleFactor;
     
     MUIButton   *m_zinButton;
     MUIButton   *m_zoutButton;

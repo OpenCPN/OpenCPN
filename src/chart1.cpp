@@ -5912,6 +5912,17 @@ int MyFrame::DoOptionsDialog()
 
     if((rr & TOOLBAR_CHANGED) || b_masterScaleChange )
         RequestNewMasterToolbar( true );
+
+    // Inform the canvases
+    if( b_masterScaleChange ){
+            // ..For each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc ){
+                cc->ProcessNewGUIScale();
+            }
+        }
+    }
     
     if( g_MainToolbar ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )

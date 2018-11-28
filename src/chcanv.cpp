@@ -358,6 +358,7 @@ extern unsigned int     g_canvasConfig;
 extern wxString         g_lastPluginMessage;
 
 extern ChartCanvas      *g_focusCanvas;
+extern float            g_toolbar_scalefactor;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -6235,10 +6236,20 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     ReloadVP();
 }
 
+void ChartCanvas::ProcessNewGUIScale()
+{
+    m_muiBar->Hide();
+    delete m_muiBar;
+    m_muiBar = 0;
+    
+    CreateMUIBar();
+}
+
+
 void ChartCanvas::CreateMUIBar()
 {
     if(g_useMUI && !m_muiBar){                          // rebuild if necessary
-        m_muiBar = new MUIBar(this, wxHORIZONTAL);
+        m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
         m_muiBarHOSize = m_muiBar->GetSize();
     }
     
@@ -6265,14 +6276,14 @@ void ChartCanvas::SetMUIBarPosition()
         if((m_muiBar->GetOrientation() == wxHORIZONTAL)){
             if(m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)){
                 delete m_muiBar;
-                m_muiBar = new MUIBar(this, wxVERTICAL);
+                m_muiBar = new MUIBar(this, wxVERTICAL, g_toolbar_scalefactor);
             }
         }
         
         if((m_muiBar->GetOrientation() == wxVERTICAL)){
             if(m_muiBarHOSize.x < (GetClientSize().x - pianoWidth)){
                 delete m_muiBar;
-                m_muiBar = new MUIBar(this, wxHORIZONTAL);
+                m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
             }
         }
         

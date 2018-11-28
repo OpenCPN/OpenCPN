@@ -40,6 +40,7 @@
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
 #include "CanvasOptions.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_SVG
 #include "wxsvg/include/wxSVG/svg.h"
@@ -58,6 +59,7 @@
 extern OCPNPlatform              *g_Platform;
 extern bool                      g_bEffects;
 extern ChartCanvas               *g_focusCanvas;
+extern ocpnStyle::StyleManager*   g_StyleManager;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -91,10 +93,10 @@ class MUIButton: public wxWindow
     wxSize DoGetBestSize() const;
 public:
     MUIButton();
-    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
+    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
               const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
-    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
+    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
     ~MUIButton();
@@ -125,6 +127,8 @@ private:
     wxBitmap m_bitmapToggle;
 
     bool mToggle;
+    float m_scaleFactor;
+    wxSize m_styleToolSize;
 };
 
 
@@ -147,19 +151,25 @@ MUIButton::MUIButton()
     Init();
 }
 
-MUIButton::MUIButton(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
+MUIButton::MUIButton(wxWindow* parent, wxWindowID id, float scale_factor, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
 {
     Init();
-    Create(parent, id, bitmap, bitmapToggle, pos, size, style);
+    Create(parent, id, scale_factor, bitmap, bitmapToggle, pos, size, style);
 }
 
 
-bool MUIButton::Create(wxWindow* parent, wxWindowID id, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
+bool MUIButton::Create(wxWindow* parent, wxWindowID id, float scale_factor, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
 {
     wxWindow::Create(parent, id, pos, size, style);
     m_bitmapFile = bitmap;
     m_bitmapFileToggle = bitmapToggle;
+    m_scaleFactor = scale_factor;
     
+    m_styleToolSize = g_StyleManager->GetCurrentStyle()->GetToolSize();
+
+    //  Arbitrarily boost the MUIButton default size above the style defined size.  No good reason.....
+    m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
+
     CreateControls();
     return true;
 }
@@ -246,7 +256,7 @@ wxSize MUIButton::DoGetBestSize() const
 //     wxSize labelSize = wxDefaultSize;
 //     GetTextExtent(m_Label, &labelSize.x, &labelSize.y);
 //     return wxSize(wxMax(40, labelSize.x + 20), wxMax(20, labelSize.y + 10));
-    return wxSize(40, 40);
+    return wxSize(m_styleToolSize.x * m_scaleFactor, m_styleToolSize.y * m_scaleFactor);
 }
 
 
@@ -346,7 +356,7 @@ MUIBar::MUIBar()
 {
 }
 
-MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor, wxWindowID id, const wxPoint& pos, const wxSize& size, long style,  const wxString& name)
 {
     m_parentCanvas = parent;
     m_orientation = orientation;
@@ -359,6 +369,8 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoin
 #ifdef __WXOSX__
     mstyle |= wxSTAY_ON_TOP;
 #endif
+   
+    m_scaleFactor = size_factor;
     
     wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
     Init();
@@ -413,10 +425,10 @@ void MUIBar::CreateControls()
         
         // Buttons
         
-        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("MUI_zoom-in.svg"));
+        m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 0, wxSHAPED);
     
-        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("MUI_zoom-out.svg"));
+        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
         barSizer->Add(m_zoutButton, 0, wxSHAPED);
     
         barSizer->AddSpacer(2);
@@ -431,12 +443,12 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
         barSizer->Add(m_followButton, 0, wxSHAPED);
         
         barSizer->AddSpacer(2);
         
-        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("MUI_menu.svg"));
+        m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 0,  wxSHAPED);
     }
     else{
@@ -448,10 +460,10 @@ void MUIBar::CreateControls()
         
         // Buttons
         
-        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("MUI_zoom-in.svg"));
+        m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 1, wxSHAPED);
         
-        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("MUI_zoom-out.svg"));
+        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
         barSizer->Add(m_zoutButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
@@ -466,12 +478,12 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
         
-        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("MUI_menu.svg"));
+        m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
         
         

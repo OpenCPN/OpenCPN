@@ -48,7 +48,6 @@
 #include "emboss_data.h"
 #include "S57Sector.h"
 #include "gshhs.h"
-#include "MUIBar.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -96,6 +95,7 @@ int SetScreenBrightness(int brightness);
       class ChartStack;
       class Piano;
       class canvasConfig;
+      class MUIBar;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -433,6 +433,8 @@ public:
       
       void DoCanvasStackDelta( int direction );
 
+      void ProcessNewGUIScale();
+      
       bool GetShowDepthUnits(){ return m_bShowDepthUnits; }
       void SetShowDepthUnits( bool show ){ m_bShowDepthUnits = show; }
       bool GetShowGrid(){ return m_bDisplayGrid; }
