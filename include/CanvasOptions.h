@@ -51,6 +51,7 @@ enum {
     ID_ENCDEPTH_CHECKBOX1,
     ID_ENCBUOY_CHECKBOX1,
     ID_ENCBUOYLABEL_CHECKBOX1,
+    ID_ENCANCHOR_CHECKBOX1,
     ID_SHOW_AIS_CHECKBOX,
     ID_ATTEN_AIS_CHECKBOX,
 };
@@ -98,7 +99,7 @@ private:
     wxCheckBox *pCDOTides, *pCDOCurrents;
     wxCheckBox *pCDOENCText, *pCBToolbar;
     wxChoice *m_pDispCat;
-    wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights;
+    wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights, *pCBENCAnchorDetails;
     wxCheckBox *pCBShowAIS, *pCBAttenAIS;
 };
 

@@ -227,6 +227,13 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     boxENC->Add(pCBENCLightDesc, verticleInputFlags);
     pCBENCLightDesc->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
+    pCBENCAnchorDetails = new wxCheckBox(pDisplayPanel, ID_ENCANCHOR_CHECKBOX1, _("Anchoring Info"));
+    boxENC->Add(pCBENCAnchorDetails, verticleInputFlags);
+    pCBENCAnchorDetails->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+        // spacer
+    boxENC->Add(0, interGroupSpace);
+
     // display category
     boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
     wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
@@ -294,8 +301,10 @@ void CanvasOptions::RefreshControlValues( void )
     pCBENCLightDesc->SetValue(parentCanvas->GetShowENCLightDesc());
     pCBENCBuoyLabels->SetValue(parentCanvas->GetShowENCBuoyLabels());
     pCBENCLights->SetValue(parentCanvas->GetShowENCLights());
+    pCBENCAnchorDetails->SetValue(parentCanvas->GetShowENCAnchor());
 
     pCBENCLightDesc->Enable(parentCanvas->GetShowENCLights());
+    
     
     //  Display category
     int nset = 2;  // default OTHER
@@ -317,6 +326,10 @@ void CanvasOptions::RefreshControlValues( void )
             break;
     }
     m_pDispCat->SetSelection(nset);
+    
+    //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
+    pCBENCAnchorDetails->Enable(nset > 1);
+
     
 }
 
@@ -397,6 +410,11 @@ void CanvasOptions::UpdateCanvasOptions( void )
         b_needReLoad = true;
     }
     
+    if(pCBENCAnchorDetails->GetValue() != parentCanvas->GetShowENCAnchor()){
+        parentCanvas->SetShowENCAnchor(pCBENCAnchorDetails->GetValue());
+        b_needReLoad = true;
+    }
+    
     bool setcourseUp = pCBCourseUp->GetValue();
     if(setcourseUp != parentCanvas->GetCourseUP()){
         parentCanvas->ToggleCourseUp();
@@ -419,8 +437,9 @@ void CanvasOptions::UpdateCanvasOptions( void )
     
     
     if(m_pDispCat->GetSelection() != nset){
-        int valSet = 2;
-        switch(m_pDispCat->GetSelection()){
+        int valSet = STANDARD;
+        int newSet = m_pDispCat->GetSelection();
+        switch(newSet){
             case 0: valSet = DISPLAYBASE; break;
             case 1: valSet = STANDARD; break;
             case 2: valSet = OTHER; break;
@@ -429,6 +448,10 @@ void CanvasOptions::UpdateCanvasOptions( void )
         }
         parentCanvas->SetENCDisplayCategory( valSet);
         b_needReLoad = true;
+        
+        //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
+        pCBENCAnchorDetails->Enable(newSet > 1);
+
     }
     
     if(b_needReLoad){
