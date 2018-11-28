@@ -202,6 +202,8 @@ public:
 
       void SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconname);
       void SetToolNormalBitmapSVG(wxToolBarToolBase *tool, wxString fileSVG);
+
+      void EnableRolloverBitmaps( bool enable ){ m_tbenableRolloverBitmaps = enable; }
       
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
@@ -375,6 +377,7 @@ protected:
       int m_last_plugin_down_id;
       bool m_leftDown;
       int m_nShowTools;
+      bool m_tbenableRolloverBitmaps;
 
 private:
 DECLARE_EVENT_TABLE()
@@ -415,6 +418,8 @@ public:
       void SetToolConfigString(wxString string){ m_configString = string; }
       wxString GetToolConfigString(){ return m_configString; }
 
+      float GetSizeFactor(){ return m_sizefactor; }
+      
       void CreateConfigMenu();
       bool _toolbarConfigMenuUtil( ToolbarItemContainer *tic );
 
@@ -484,7 +489,9 @@ public:
       
       void AddToolItem(ToolbarItemContainer *item);
       int RebuildToolbar();
-
+      void EnableRolloverBitmaps( bool bEnable );
+      bool GetEnableRolloverBitmaps(){ return m_enableRolloverBitmaps; }
+      
 protected:
     ocpnToolBarSimple *m_ptoolbar;
     
@@ -530,6 +537,7 @@ private:
       int n_toolbarHideMethod;
       bool b_canToggleOrientation;
       wxString m_configString;
+      bool m_enableRolloverBitmaps;
 };
 
 //---------------------------------------------------------------------------

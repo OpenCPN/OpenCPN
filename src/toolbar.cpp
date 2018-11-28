@@ -400,6 +400,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_destroyTimer.SetOwner( this, DESTROY_TIMER );
     
     m_benableSubmerge = true;
+    m_enableRolloverBitmaps = true;
 }
 
 ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
@@ -1214,6 +1215,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateNewToolbar()
     m_ptoolbar->ClearBackground();
     m_ptoolbar->SetToggledBackgroundColour( GetGlobalColor( _T("GREY1") ) );
     m_ptoolbar->SetColorScheme( m_cs );
+    m_ptoolbar->EnableRolloverBitmaps(GetEnableRolloverBitmaps());
         
     return m_ptoolbar;
 }
@@ -1595,6 +1597,12 @@ bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple
 
 
 
+void ocpnFloatingToolbarDialog::EnableRolloverBitmaps( bool bEnable )
+{
+    m_enableRolloverBitmaps = bEnable;
+    if(m_ptoolbar)
+        m_ptoolbar->EnableRolloverBitmaps( bEnable );
+}
 
 
 
@@ -1832,7 +1840,9 @@ void ocpnToolBarSimple::Init()
     m_nShowTools = 0;
     
     EnableTooltips();
-}
+    m_tbenableRolloverBitmaps = false;
+    
+ }
 
 wxToolBarToolBase *ocpnToolBarSimple::DoAddTool( int id, const wxString& label,
         const wxBitmap& bitmap, const wxBitmap& bmpDisabled, wxItemKind kind,
@@ -1978,6 +1988,8 @@ bool ocpnToolBarSimple::Create( wxWindow *parent, wxWindowID id, const wxPoint& 
     m_tooltipoff_timer.SetOwner( this, TOOLTIPOFF_TIMER );
     m_tooltip_off = 3000;
 
+    m_tbenableRolloverBitmaps = false;
+    
     return true;
 }
 
@@ -2037,20 +2049,23 @@ void ocpnToolBarSimple::SetColorScheme( ColorScheme cs )
 
 bool ocpnToolBarSimple::Realize()
 {
-    m_currentRowsOrColumns = 0;
-    m_LineCount = 1;
-    m_lastX = m_style->GetLeftMargin();
-    m_lastY = m_style->GetTopMargin();
-    m_maxWidth = 0;
-    m_maxHeight = 0;
-
-    if( IsVertical() ) m_style->SetOrientation( wxTB_VERTICAL );
+    if( IsVertical() )
+        m_style->SetOrientation( wxTB_VERTICAL );
     else
         m_style->SetOrientation( wxTB_HORIZONTAL );
 
     wxSize toolSize = wxSize(-1, -1);
-    int separatorSize = m_style->GetToolSeparation();
-
+    int separatorSize = m_style->GetToolSeparation() * m_sizefactor;
+    int topMargin = m_style->GetTopMargin() * m_sizefactor;
+    int leftMargin = m_style->GetLeftMargin() * m_sizefactor;
+    
+    m_currentRowsOrColumns = 0;
+    m_LineCount = 1;
+    m_lastX = leftMargin;
+    m_lastY = topMargin;
+    m_maxWidth = 0;
+    m_maxHeight = 0;
+    
     ocpnToolBarTool *lastTool = NULL;
     bool firstNode = true;
     wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
@@ -2098,45 +2113,45 @@ bool ocpnToolBarSimple::Realize()
                         if( lastTool && m_LineCount > 1 ) lastTool->lastInLine = true;
                         m_LineCount++;
                         m_currentRowsOrColumns = 0;
-                        m_lastX = m_style->GetLeftMargin();
-                        m_lastY += toolSize.y + m_style->GetTopMargin();
+                        m_lastX = leftMargin;
+                        m_lastY += toolSize.y + topMargin;
                     }
                     tool->m_x = (wxCoord) m_lastX;
                     tool->m_y = (wxCoord) m_lastY;
 
                     tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2, m_style->GetTopMargin() );
+                    tool->trect.Inflate( separatorSize / 2, topMargin );
 
-                    m_lastX += toolSize.x + m_style->GetToolSeparation();
+                    m_lastX += toolSize.x + separatorSize;
                 } else {
                     if( m_currentRowsOrColumns >= m_maxRows ) {
                         tool->firstInLine = true;
                         if( lastTool ) lastTool->lastInLine = true;
                         m_LineCount++;
                         m_currentRowsOrColumns = 0;
-                        m_lastX += toolSize.x + m_style->GetTopMargin();
-                        m_lastY = m_style->GetTopMargin();
+                        m_lastX += toolSize.x ;//+ topMargin;
+                        m_lastY = topMargin;
                     }
                     tool->m_x = (wxCoord) m_lastX;
                     tool->m_y = (wxCoord) m_lastY;
 
                     tool->trect = wxRect( tool->m_x, tool->m_y, toolSize.x, toolSize.y );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2,  m_style->GetTopMargin() );
+                    tool->trect.Inflate( (separatorSize / 2),  topMargin );
 
-                    m_lastY += toolSize.y + m_style->GetToolSeparation();
+                    m_lastY += toolSize.y + separatorSize;
                 }
                 m_currentRowsOrColumns++;
             } else
                 if( tool->IsControl() ) {
                     tool->m_x = (wxCoord) ( m_lastX );
-                    tool->m_y = (wxCoord) ( m_lastY - ( m_style->GetTopMargin() / 2 ) );
+                    tool->m_y = (wxCoord) ( m_lastY - ( topMargin / 2 ) );
 
                     tool->trect = wxRect( tool->m_x, tool->m_y, tool->GetWidth(), tool->GetHeight() );
-                    tool->trect.Inflate( m_style->GetToolSeparation() / 2, m_style->GetTopMargin() );
+                    tool->trect.Inflate( separatorSize / 2, topMargin );
                     
 
                     wxSize s = tool->GetControl()->GetSize();
-                    m_lastX += s.x + m_style->GetToolSeparation();
+                    m_lastX += s.x + separatorSize;
 
                 }
 
@@ -2158,7 +2173,7 @@ bool ocpnToolBarSimple::Realize()
     }
     else{
         m_maxWidth += toolSize.x;
-        m_maxWidth += m_style->GetRightMargin();
+        m_maxWidth += m_style->GetRightMargin() * m_sizefactor;
     }
 
     SetSize( m_maxWidth, m_maxHeight );
@@ -2311,19 +2326,19 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 #endif
 
         //    Tool Rollover highlighting
-        if(!g_btouch){
+        if(!g_btouch && m_tbenableRolloverBitmaps){
             if( tool != m_last_ro_tool ) {
                 if( tool->IsEnabled() ) {
                     tool->rollover = true;
-                    tool->bitmapOK = false;
                 }
                 if( m_last_ro_tool ) {
                     if( m_last_ro_tool->IsEnabled() ) {
                         m_last_ro_tool->rollover = false;
-                        m_last_ro_tool->bitmapOK = false;
                     }
                 }
+                tool->bitmapOK = false;
                 m_last_ro_tool = tool;
+
                 Refresh( false );
             }
         }

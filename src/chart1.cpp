@@ -117,6 +117,7 @@
 #include "OCPN_AUIManager.h"
 #include "CanvasConfig.h"
 #include "ConfigMgr.h"
+#include "MUIBar.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -4635,6 +4636,7 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
         }
         else{
             //  One last "Realize()" to establish the final toolbar shape
+            g_MainToolbar->GetToolbar()->InvalidateBitmaps();
             g_MainToolbar->Realize();
         }            
     }
@@ -4644,6 +4646,10 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
             g_MainToolbar->Realize();
             ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+        }
+        else{
+            g_MainToolbar->GetToolbar()->InvalidateBitmaps();
+            g_MainToolbar->Realize();
         }
     }
 }
@@ -9564,6 +9570,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
         g_MainToolbar->SetToolConfigString(g_toolbarConfig);
+        g_MainToolbar->EnableRolloverBitmaps( false );
         
         g_MainToolbar->CreateConfigMenu();
 
