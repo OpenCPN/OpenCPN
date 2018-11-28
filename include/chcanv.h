@@ -849,6 +849,7 @@ private:
       bool         m_encShowDataQual;
       
       wxTimer      m_deferredFocusTimer;
+      float        m_focus_indicator_pix;
       
 DECLARE_EVENT_TABLE()
 };

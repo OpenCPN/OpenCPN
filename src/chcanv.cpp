@@ -496,7 +496,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_toolBar = NULL;
     m_toolbar_scalefactor = 1.0;
     m_toolbarOrientation = wxTB_HORIZONTAL;
-    
+    m_focus_indicator_pix = 1;
+   
     m_pCurrentStack = NULL;
     m_bpersistent_quilt = false;
     m_piano_ctx_menu = NULL;
@@ -949,7 +950,7 @@ ChartCanvas::~ChartCanvas()
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
     
     if(m_routeState)
         FinishRoute();
@@ -960,7 +961,7 @@ void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
     // Try to keep the global top-line menubar selections up to date with the current "focus" canvas
     gFrame->UpdateGlobalMenuItems( this );
 
-    RefreshRect( wxRect(0, 0, GetClientSize().x, 4) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
 }
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
@@ -2118,6 +2119,8 @@ void ChartCanvas::SetDisplaySizeMM( double size )
      msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
      wxLogMessage(msg);
     
+     m_focus_indicator_pix = std::round(1.5 * GetPixPerMM());
+
 }
 #if 0
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
@@ -10015,9 +10018,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             dc.SetPen(wxPen(colour));
             dc.SetBrush(wxBrush(colour));
             
-            float rect_pix = std::round(2 * gFrame->GetSize().x / GetDisplaySizeMM());
-
-            wxRect activeRect(0, 0, GetClientSize().x, rect_pix);
+            wxRect activeRect(0, 0, GetClientSize().x, m_focus_indicator_pix);
             dc.DrawRectangle(activeRect);
         }
     }
