@@ -523,7 +523,13 @@ void RouteProp::RecalculateSize( void )
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 44;
     
-    wxSize dsize = GetParent()->GetClientSize();
+    wxApp *app = wxTheApp;
+    wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
+    if(!frame)
+        return;
+
+    
+    wxSize dsize = frame->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetClientSize(esize);
