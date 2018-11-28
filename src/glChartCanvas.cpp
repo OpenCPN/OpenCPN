@@ -3804,7 +3804,29 @@ void glChartCanvas::Render()
             }
         }
     }
+
+    // If multi-canvas, indicate which canvas has keyboard focus
+    // by drawing a simple blue bar at the top.
+    if(g_canvasConfig != 0){             // multi-canvas?
+        if( m_pParentCanvas == wxWindow::FindFocus()){
+            g_focusCanvas = m_pParentCanvas;
+            
+            wxColour colour = GetGlobalColor(_T("BLUE4"));
+            glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
+                
+            float rect_pix = m_pParentCanvas->m_focus_indicator_pix;
+
+            int xw = m_pParentCanvas->GetClientSize().x;
+            glBegin(GL_QUADS);
+            glVertex2i(0, 0);
+            glVertex2i(xw, 0);
+            glVertex2i(xw, rect_pix);
+            glVertex2i(0, rect_pix);
+            glEnd();
+        }
+    }
     
+
     DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not
@@ -3898,27 +3920,6 @@ void glChartCanvas::Render()
     if( g_bcompression_wait)
         DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
 
-    
-    // If multi-canvas, indicate which canvas has keyboard focus
-    // by drawing a simple blue bar at the top.
-    if(g_canvasConfig != 0){             // multi-canvas?
-        if( m_pParentCanvas == wxWindow::FindFocus()){
-            g_focusCanvas = m_pParentCanvas;
-            
-            wxColour colour = GetGlobalColor(_T("BLUE4"));
-            glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
-                
-            float rect_pix = m_pParentCanvas->m_focus_indicator_pix;
-
-            int xw = m_pParentCanvas->GetClientSize().x;
-            glBegin(GL_QUADS);
-            glVertex2i(0, 0);
-            glVertex2i(xw, 0);
-            glVertex2i(xw, rect_pix);
-            glVertex2i(0, rect_pix);
-            glEnd();
-        }
-    }
     
     
 #ifdef __WXMSW__    

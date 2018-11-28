@@ -9847,6 +9847,21 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         upd++;
     }
 
+    // If multi-canvas, indicate which canvas has keyboard focus
+    // by drawing a simple blue bar at the top.
+    if(g_canvasConfig != 0){             // multi-canvas?
+        if( this == wxWindow::FindFocus()){
+            g_focusCanvas = this;
+
+            wxColour colour = GetGlobalColor(_T("BLUE4"));
+            mscratch_dc.SetPen(wxPen(colour));
+            mscratch_dc.SetBrush(wxBrush(colour));
+            
+            wxRect activeRect(0, 0, GetClientSize().x, m_focus_indicator_pix);
+            mscratch_dc.DrawRectangle(activeRect);
+        }
+    }
+
     
 //    Draw the rest of the overlay objects directly on the scratch dc
     ocpnDC scratch_dc( mscratch_dc );
@@ -10007,22 +10022,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
      }
 */
 
-
-    // If multi-canvas, indicate which canvas has keyboard focus
-    // by drawing a simple blue bar at the top.
-    if(g_canvasConfig != 0){             // multi-canvas?
-        if( this == wxWindow::FindFocus()){
-            g_focusCanvas = this;
-
-            wxColour colour = GetGlobalColor(_T("BLUE4"));
-            dc.SetPen(wxPen(colour));
-            dc.SetBrush(wxBrush(colour));
-            
-            wxRect activeRect(0, 0, GetClientSize().x, m_focus_indicator_pix);
-            dc.DrawRectangle(activeRect);
-        }
-    }
-    
     
 //    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
     temp_dc.SelectObject( wxNullBitmap );
