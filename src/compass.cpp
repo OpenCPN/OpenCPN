@@ -203,6 +203,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     static wxSize toolsize;
     static int topmargin, leftmargin, radius;
 
+
     if( ! compassBg.IsOk() || newColorScheme ) {
         int orient = style->GetOrientation();
         style->SetOrientation( wxTB_HORIZONTAL );
@@ -229,7 +230,8 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         topmargin = style->GetCompassTopMargin();
         radius = style->GetCompassCornerRadius();
 
-        if( orient ) style->SetOrientation( wxTB_VERTICAL );
+        if( orient == wxTB_VERTICAL )
+            style->SetOrientation( wxTB_VERTICAL );
     }
 
     bool b_need_refresh = false;
