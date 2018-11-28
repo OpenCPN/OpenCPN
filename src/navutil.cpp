@@ -858,7 +858,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "ToolbarX"), &g_maintoolbar_x );
     Read( _T ( "ToolbarY" ), &g_maintoolbar_y );
     Read( _T ( "ToolbarOrient" ), &g_maintoolbar_orient );
-    Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
+    Read( _T ( "GlobalToolbarConfig" ), &g_toolbarConfig );
 
     Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX );
     Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY );
@@ -2338,7 +2338,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "iENCToolbarY" ), g_iENCToolbarPosY );
     
     if ( !g_bInlandEcdis ){  
-        Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
+        Write( _T ( "GlobalToolbarConfig" ), g_toolbarConfig );
         Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
         Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
@@ -3020,7 +3020,7 @@ void SwitchInlandEcdisMode( bool Switch )
         wxLogMessage( _T("Switch InlandEcdis mode On") );
         LoadS57();
         //Overule some sewttings to comply with InlandEcdis
-        g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
+        //g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
         g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
@@ -3032,7 +3032,7 @@ void SwitchInlandEcdisMode( bool Switch )
         //reread the settings overruled by inlandEcdis
         if (pConfig){
             pConfig->SetPath( _T ( "/Settings" ) );
-            pConfig->Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
+            pConfig->Read( _T ( "GlobalToolbarConfig" ), &g_toolbarConfig );
             pConfig->Read( _T ( "DistanceFormat" ), &g_iDistanceFormat );
             pConfig->Read( _T ( "SpeedFormat" ), &g_iSpeedFormat );
             pConfig->Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );

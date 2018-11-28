@@ -1095,7 +1095,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "iENCToolbarY" ), g_iENCToolbarPosY );
     
     if ( !g_bInlandEcdis ){  
-        conf->Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
+        conf->Write( _T ( "GlobalToolbarConfig" ), g_toolbarConfig );
         conf->Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         conf->Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
         conf->Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
@@ -1478,7 +1478,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ToolbarX"), &g_maintoolbar_x );
     CHECK_INT( _T ( "ToolbarY" ), &g_maintoolbar_y );
     CHECK_INT( _T ( "ToolbarOrient" ), &g_maintoolbar_orient );
-    CHECK_STR( _T ( "ToolbarConfig" ), g_toolbarConfig );
+    CHECK_STR( _T ( "GlobalToolbarConfig" ), g_toolbarConfig );
 
     CHECK_INT( _T ( "iENCToolbarX"), &g_iENCToolbarPosX );
     CHECK_INT( _T ( "iENCToolbarY"), &g_iENCToolbarPosY );
