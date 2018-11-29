@@ -681,6 +681,40 @@ bool ChartDB::IsChartInGroup(const int db_index, const int group)
       return b_in_group;
 }
 
+bool ChartDB::IsENCInGroup(const int groupIndex)
+{
+    // Walk the database, looking in specified group for any vector chart
+      bool retVal = false;
+      
+      for(int db_index=0 ; db_index<GetChartTableEntries() ; db_index++){
+            const ChartTableEntry &cte = GetChartTableEntry(db_index);
+            
+            //    Check to see if the candidate chart is in the currently active group
+            bool b_group_add = false;
+            if(groupIndex > 0)
+            {
+                  const int ng = cte.GetGroupArray().size();
+                  for(int ig=0 ; ig < ng; ig++){
+                      if(groupIndex == cte.GetGroupArray()[ig]){
+                              b_group_add = true;
+                              break;
+                      }
+                  }
+            }
+            else
+                  b_group_add = true;
+
+    
+            if(b_group_add){
+                if(cte.GetChartFamily() == CHART_FAMILY_VECTOR){
+                    retVal = true;
+                    break;   // the outer for loop
+                }
+            }
+      }
+      
+      return retVal;
+}
 
 //-------------------------------------------------------------------
 //    Check to see it lat/lon is within a database chart at index

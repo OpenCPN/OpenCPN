@@ -460,6 +460,13 @@ void MUIBar::SetColorScheme( ColorScheme cs )
     }
 }
 
+void MUIBar::SetCanvasENCAvailable(bool avail)
+{
+    m_CanvasENCAvail = avail;
+    if(m_canvasOptions)
+        m_canvasOptions->SetENCAvailable( avail );
+}
+
 
 void MUIBar::CreateControls()
 {
@@ -699,7 +706,8 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
                 m_canvasOptions->Hide();
             }
 
-           
+            m_canvasOptions->SetENCAvailable(m_CanvasENCAvail);
+            
             if(m_canvasOptions->IsShown())
                 PushCanvasOptions();            // hide it
             else{

@@ -126,6 +126,7 @@ public:
       bool IsChartInCache(int dbindex);
       bool IsChartInCache(wxString path);
       bool IsChartInGroup(const int db_index, const int group);
+      bool IsENCInGroup(const int group);
 
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);

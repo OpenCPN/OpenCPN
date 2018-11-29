@@ -1161,6 +1161,14 @@ void ChartCanvas::SetGroupIndex( int index )
     ViewPort vp = GetVP();
     
     m_groupIndex = new_index;
+
+    // Are there  ENCs in this group
+    if(ChartData)
+        m_bENCGroup = ChartData->IsENCInGroup( m_groupIndex );
+    
+    //  Update the MUIBar for ENC availability
+    if(m_muiBar)
+        m_muiBar->SetCanvasENCAvailable(m_bENCGroup);
     
     //  Invalidate the "sticky" chart on group change, since it might not be in the new group
     g_sticky_chart = -1;
@@ -1179,10 +1187,10 @@ void ChartCanvas::SetGroupIndex( int index )
     
     //    Refresh the canvas, selecting the "best" chart,
         //    applying the prior ViewPort exactly
-        canvasChartsRefresh( dbi_hint );
+    canvasChartsRefresh( dbi_hint );
         
         //    Message box is deferred so that canvas refresh occurs properly before dialog
-        if( bgroup_override ) {
+    if( bgroup_override ) {
             wxString msg( _("Group \"") );
 
             ChartGroup *pGroup = g_pGroupArray->Item( old_group_index - 1 );
@@ -1191,7 +1199,7 @@ void ChartCanvas::SetGroupIndex( int index )
             msg += _("\" is empty, switching to \"All Active Charts\" group.");
             
             OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
-        }
+    }
 }
 
 bool ChartCanvas::CheckGroup( int igroup )
@@ -6252,6 +6260,11 @@ void ChartCanvas::ProcessNewGUIScale()
 void ChartCanvas::CreateMUIBar()
 {
     if(g_useMUI && !m_muiBar){                          // rebuild if necessary
+        
+        // We need to update the m_bENCGroup flag, at least for the initial creation of a MUIBar
+        if(ChartData)
+            m_bENCGroup = ChartData->IsENCInGroup( m_groupIndex );
+
         m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
         m_muiBar->SetColorScheme( m_cs );
         m_muiBarHOSize = m_muiBar->GetSize();
@@ -6261,7 +6274,7 @@ void ChartCanvas::CreateMUIBar()
     if(m_muiBar){
         SetMUIBarPosition();
         m_muiBar->SetFollowButton( m_bFollow );
-
+        m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
     

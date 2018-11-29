@@ -75,11 +75,11 @@ public:
     void RefreshControlValues( void );
     void UpdateCanvasOptions( void );
     void OnEraseBackground( wxEraseEvent& event );
+    void SetENCAvailable( bool avail );
     
 private:
     int m_style;
-    DECLARE_EVENT_TABLE()
-    
+    bool m_ENCAvail;
     wxScrolledWindow *m_sWindow;
     
     wxCheckBox *pShowStatusBar, *pShowMenuBar, *pShowChartBar, *pShowCompassWin;
@@ -101,6 +101,9 @@ private:
     wxChoice *m_pDispCat;
     wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights, *pCBENCAnchorDetails;
     wxCheckBox *pCBShowAIS, *pCBAttenAIS;
+    
+        DECLARE_EVENT_TABLE()
+
 };
 
 #endif //guard

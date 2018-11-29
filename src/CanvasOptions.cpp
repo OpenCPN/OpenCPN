@@ -80,6 +80,8 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
  :wxDialog()
 
 {
+    m_ENCAvail = true;
+    
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
@@ -330,7 +332,22 @@ void CanvasOptions::RefreshControlValues( void )
     //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
     pCBENCAnchorDetails->Enable(nset > 1);
 
+    // If no ENCs are available in the current canvas group, then disable the ENC related options.
+    pCDOENCText->Enable(m_ENCAvail);
+    pCBENCDepth->Enable(m_ENCAvail);
+    pCBENCLightDesc->Enable(m_ENCAvail);
+    pCBENCBuoyLabels->Enable(m_ENCAvail);
+    pCBENCLights->Enable(m_ENCAvail);
+    pCBENCAnchorDetails->Enable(m_ENCAvail);
+    pCBENCLightDesc->Enable(m_ENCAvail);
+    m_pDispCat->Enable(m_ENCAvail);
     
+}
+
+void CanvasOptions::SetENCAvailable( bool avail )
+{ 
+    m_ENCAvail = avail;
+    RefreshControlValues();
 }
 
 void CanvasOptions::UpdateCanvasOptions( void )
