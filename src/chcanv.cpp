@@ -460,6 +460,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_prev_pMousePoint            = NULL;
     m_pEditRouteArray             = NULL;
     m_pFoundRoutePoint            = NULL;
+    m_FinishRouteOnKillFocus = true;
+
 
     m_pRolloverRouteSeg           = NULL;
     m_pRolloverTrackSeg           = NULL;
@@ -518,7 +520,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encShowLights = true;
     m_encShowAnchor = true;
     m_encShowDataQual = false;
-    
     m_bShowGPS = true;
     SetQuiltMode(true);
     
@@ -953,7 +954,7 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
     RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
     
-    if(m_routeState)
+    if(m_routeState && m_FinishRouteOnKillFocus)
         FinishRoute();
 }
 
@@ -7306,9 +7307,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     if( brp_viz ){
                         int dlg_return;
 #ifndef __WXOSX__
+                        m_FinishRouteOnKillFocus = false;              // Avoid route finish on focus change for message dialog
                         dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                  _("OpenCPN Route Create"),
                                                    (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                        m_FinishRouteOnKillFocus = true;
 #else
                         dlg_return = wxID_YES;
 #endif

@@ -392,6 +392,7 @@ public:
       bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
 
       Route       *m_pMouseRoute;
+      bool        m_FinishRouteOnKillFocus;
       bool        m_bMeasure_Active;
       bool        m_bMeasure_DistCircle;
       wxString    m_active_upload_port;
