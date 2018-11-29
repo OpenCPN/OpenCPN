@@ -66,6 +66,8 @@ ocpnCompass::ocpnCompass( ChartCanvas *parent, bool bShowGPS)
 #endif
 
     m_scale = 1.0;
+    m_cs = GLOBAL_COLOR_SCHEME_RGB;
+    
 }
 
 ocpnCompass::~ocpnCompass()
@@ -123,6 +125,7 @@ bool ocpnCompass::MouseEvent( wxMouseEvent& event )
 void ocpnCompass::SetColorScheme( ColorScheme cs )
 {
     UpdateStatus( true );
+    m_cs = cs;
 }
 
 void ocpnCompass::UpdateStatus( bool bnew )
@@ -161,10 +164,10 @@ void ocpnCompass::SetScaleFactor( float factor)
     if( style->HasBackground() ) {
         compassBg = style->GetNormalBG();
         style->DrawToolbarLineStart( compassBg );
-        compassBg = style->SetBitmapBrightness( compassBg );
+        compassBg = style->SetBitmapBrightness( compassBg, m_cs );
         gpsBg = style->GetNormalBG();
         style->DrawToolbarLineEnd( gpsBg );
-        gpsBg = style->SetBitmapBrightness( gpsBg );
+        gpsBg = style->SetBitmapBrightness( gpsBg, m_cs );
     }
 
     if(fabs(m_scale-1.0) > 0.1){
@@ -210,10 +213,10 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         if( style->HasBackground() ) {
             compassBg = style->GetNormalBG();
             style->DrawToolbarLineStart( compassBg );
-            compassBg = style->SetBitmapBrightness( compassBg );
+            compassBg = style->SetBitmapBrightness( compassBg, m_cs );
             gpsBg = style->GetNormalBG();
             style->DrawToolbarLineEnd( gpsBg );
-            gpsBg = style->SetBitmapBrightness( gpsBg );
+            gpsBg = style->SetBitmapBrightness( gpsBg, m_cs );
         }
 
         if(fabs(m_scale-1.0) > 0.1){

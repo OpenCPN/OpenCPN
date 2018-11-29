@@ -3029,6 +3029,17 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     UpdateAllToolbars( cs );
 
+    if(g_MainToolbar){
+        if(g_MainToolbar->GetColorScheme() != cs){
+            g_MainToolbar->SetColorScheme( cs );
+            //g_MainToolbar->DestroyToolBar();
+            //CreateMasterToolbar();
+            RequestNewMasterToolbar();
+            g_MainToolbar->SetColorScheme( cs );
+
+        }
+    }
+    
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
 #ifdef __WXOSX__
     if( g_bDarkDecorations ) {
@@ -10782,7 +10793,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASH2;  48; 52; 72;",              // Dashboard Illustrations
         "COMP1; 107;107;107;",              // Compass Window Background
 
-        "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        "GREY3;  20; 20; 20;",              // MUIBar/TB background
         "BLUE4; 107;153;177;",              // Canvas Focus Bar
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
@@ -10831,7 +10842,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASH2;  36; 36; 53;",              // Dashboard Illustrations
         "COMP1;  24; 24; 24;",              // Compass Window Background
         
-        "GREY3;  40; 40; 40;",              // MUIBar/TB background
+        "GREY3;  10; 10; 10;",              // MUIBar/TB background
         "BLUE4; 107;153;177;",              // Canvas Focus Bar
         
         "*****" };

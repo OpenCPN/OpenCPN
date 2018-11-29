@@ -68,6 +68,7 @@ private:
       wxRect m_rect;
       bool m_shown;
       bool m_bshowGPS;
+      ColorScheme m_cs;
       
 #ifdef ocpnUSE_GL
       unsigned int texobj;

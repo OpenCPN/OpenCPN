@@ -3395,6 +3395,9 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     
     m_Compass->SetColorScheme( cs );
 
+    if(m_muiBar)
+        m_muiBar->SetColorScheme( cs );
+    
     if(pWorldBackgroundChart)
         pWorldBackgroundChart->SetColorScheme( cs );
 #ifdef ocpnUSE_GL
@@ -6250,6 +6253,7 @@ void ChartCanvas::CreateMUIBar()
 {
     if(g_useMUI && !m_muiBar){                          // rebuild if necessary
         m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
+        m_muiBar->SetColorScheme( m_cs );
         m_muiBarHOSize = m_muiBar->GetSize();
     }
     

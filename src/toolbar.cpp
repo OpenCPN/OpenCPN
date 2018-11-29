@@ -1236,6 +1236,8 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     }
     
+    m_Items.clear();
+    
 }
 
 #include "s52plib.h"

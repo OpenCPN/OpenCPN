@@ -80,7 +80,8 @@ public:
     void ResetCanvasOptions();
     void SetFollowButton( bool bFollow );
     CanvasOptions *GetCanvasOptions(){ return m_canvasOptions; }
-    
+    void SetColorScheme( ColorScheme cs );
+
 private:
     void Init( void );
     void CreateControls();
@@ -124,6 +125,7 @@ private:
     wxPoint     m_capturePoint;
     wxPoint     m_backingPoint;
     bool        m_coAnimateByBitmaps;
+    ColorScheme m_cs;
     
 DECLARE_EVENT_TABLE()
 };

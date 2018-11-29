@@ -106,6 +106,7 @@ public:
     
     void ToggleBitmap( bool bt );
     
+    void SetColorScheme( ColorScheme cs );
     void OnSize( wxSizeEvent& event );
     void OnPaint( wxPaintEvent& event );
     void OnLeftDown( wxMouseEvent& event );
@@ -129,6 +130,7 @@ private:
     bool mToggle;
     float m_scaleFactor;
     wxSize m_styleToolSize;
+    ColorScheme m_cs;
 };
 
 
@@ -183,6 +185,7 @@ MUIButton::~MUIButton()
 void MUIButton::Init()
 {
     mToggle = false;
+    m_cs = (ColorScheme)-1; //GLOBAL_COLOR_SCHEME_RGB;
 }
 
 
@@ -190,10 +193,39 @@ void MUIButton::CreateControls()
 {    
     this->SetForegroundColour(wxColour(255, 255, 255));
     
-    wxColour backColor = GetGlobalColor( _("GREY3"));
+    wxColour backColor = GetGlobalColor( _T("GREY3"));
     SetBackgroundColour(backColor);
     
     this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxT("Tahoma")));
+}
+
+
+void MUIButton::SetColorScheme(ColorScheme cs)
+{
+    if(m_cs != cs){
+    
+        wxColour backColor = GetGlobalColor( _T("GREY3"));
+        SetBackgroundColour(backColor);
+
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+        wxBitmap bmp = LoadSVG( m_bitmapFile, GetSize().x, GetSize().y );
+        m_bitmapNormal = style->SetBitmapBrightness(bmp, cs);
+        
+        bmp = LoadSVG( m_bitmapFileToggle, GetSize().x, GetSize().y );
+        if(bmp.IsOk())
+            m_bitmapToggle = style->SetBitmapBrightness(bmp, cs);
+        else
+            m_bitmapToggle = m_bitmapNormal;
+
+        if(mToggle)
+            m_bitmap = m_bitmapToggle;
+        else
+            m_bitmap = m_bitmapNormal;
+        
+        m_cs = cs;
+    }
+
 }
 
 
@@ -234,7 +266,6 @@ void MUIButton::OnSize( wxSizeEvent& event )
     else
         m_bitmap = m_bitmapNormal;
         
-    Refresh();
 }
 
 wxBitmap MUIButton::GetBitmapResource( const wxString& name )
@@ -371,6 +402,7 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor, wxWindow
 #endif
    
     m_scaleFactor = size_factor;
+    m_cs = (ColorScheme)-1;
     
     wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
     Init();
@@ -406,6 +438,29 @@ void MUIBar::Init()
     
 }
 
+void MUIBar::SetColorScheme( ColorScheme cs )
+{
+    if( m_cs != cs ){
+        wxColour backColor = GetGlobalColor( m_backcolorString );
+        SetBackgroundColour(backColor);
+ 
+        if(m_zinButton)
+            m_zinButton->SetColorScheme(cs);
+        if(m_zoutButton)
+            m_zoutButton->SetColorScheme(cs);
+        if(m_followButton)
+            m_followButton->SetColorScheme(cs);
+        if(m_menuButton)
+            m_menuButton->SetColorScheme(cs);
+        
+        wxColour textbackColor = GetGlobalColor( _T("GREY1") );
+        m_scaleTextBox->SetForegroundColour(textbackColor);
+
+        m_cs = cs;
+    }
+}
+
+
 void MUIBar::CreateControls()
 {
     //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
@@ -435,7 +490,8 @@ void MUIBar::CreateControls()
         
         //  Scale 
         m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
-        m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
+        wxColour textbackColor = GetGlobalColor( _T("GREY1") );
+        m_scaleTextBox->SetForegroundColour(textbackColor);
         barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL );
         barSizer->AddSpacer(5);
         

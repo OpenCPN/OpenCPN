@@ -139,8 +139,8 @@ public:
       void DrawToolbarLineStart( wxBitmap& bmp, double scale = 1.0 );
       void DrawToolbarLineEnd( wxBitmap& bmp, double scale = 1.0 );
 
-      wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
-      wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
+      static wxBitmap SetBitmapBrightness( wxBitmap& bitmap, ColorScheme cs );
+      static wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
       
       void SetOrientation( long orient );
       int GetOrientation();
@@ -148,7 +148,7 @@ public:
       void Unload();
 
       wxString name;
-    wxString sysname;
+      wxString sysname;
       wxString description;
       wxString graphicsFile;
       int toolMarginTop[2];

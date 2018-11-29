@@ -272,7 +272,7 @@ wxBitmap Style::GetIcon(const wxString & name, int width, int height, bool bforc
 #ifdef ocpnUSE_SVG
     }
 #endif // ocpnUSE_SVG
-    icon->icon = SetBitmapBrightness( bm );
+    icon->icon = SetBitmapBrightness( bm, colorscheme );
     icon->loaded = true;
     return icon->icon;
 }
@@ -357,7 +357,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
 #endif // ocpnUSE_SVG
 
             if( rollover ) {
-                tool->rollover = SetBitmapBrightness( bm );
+                tool->rollover = SetBitmapBrightness( bm, colorscheme );
                 tool->rolloverLoaded = true;
                 return tool->rollover;
             } else {
@@ -370,7 +370,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                     tool->icon = SetBitmapBrightnessAbs( bm, dimLevel );
                 }
                 else {
-                    tool->icon = SetBitmapBrightness( bm );
+                    tool->icon = SetBitmapBrightness( bm, colorscheme );
                 }
                 
                 tool->iconLoaded = true;
@@ -433,11 +433,11 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             }
                 
             if( rollover ) {
-                tool->rolloverToggled = SetBitmapBrightness( bm );
+                tool->rolloverToggled = SetBitmapBrightness( bm, colorscheme );
                 tool->rolloverToggledLoaded = true;
                 return tool->rolloverToggled;
             } else {
-                tool->toggled = SetBitmapBrightness( bm );
+                tool->toggled = SetBitmapBrightness( bm, colorscheme );
                 tool->toggledLoaded = true;
                 return tool->toggled;
             }
@@ -472,7 +472,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 location.x -= verticalIconOffset.x;
                 location.y -= verticalIconOffset.y;
             }
-            tool->disabled = SetBitmapBrightness( bm );
+            tool->disabled = SetBitmapBrightness( bm, colorscheme );
             tool->disabledLoaded = true;
             return tool->disabled;
         }
@@ -541,13 +541,13 @@ wxBitmap Style::BuildPluginIcon( wxBitmap &bm, int iconType, double factor )
             return wxNullBitmap;
             break;
     }
-    return SetBitmapBrightness( iconbm );
+    return SetBitmapBrightness( iconbm, colorscheme );
 }
 
-wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap )
+wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap, ColorScheme cs )
 {
     double dimLevel;
-    switch( colorscheme ){
+    switch( cs ){
         case GLOBAL_COLOR_SCHEME_DUSK: {
             dimLevel = 0.5;
             break;
@@ -699,7 +699,7 @@ void Style::SetColorScheme( ColorScheme cs )
         wxImage image = bm.ConvertToImage();
         image.Rescale( consoleTextBackgroundSize.GetX() * 2, consoleTextBackgroundSize.GetY() * 2 , wxIMAGE_QUALITY_NORMAL );
         wxBitmap bn( image );
-        consoleTextBackground = SetBitmapBrightness( bn );
+        consoleTextBackground = SetBitmapBrightness( bn, cs );
     }
 }
 
