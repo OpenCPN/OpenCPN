@@ -1204,8 +1204,8 @@ bool ChartCanvas::CheckGroup( int igroup )
 
     ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
     
-    if( !pGroup->m_element_array.GetCount() )   //  truly empty group is OK
-        return true;
+    if( !pGroup->m_element_array.GetCount() )   //  truly empty group prompts a warning, and auto-shift to group 0
+        return false; 
     
     bool b_chart_in_group = false;
     
