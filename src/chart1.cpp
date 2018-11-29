@@ -9909,7 +9909,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
     // Get the Size of the Chart Canvas
     int sx, sy;
-    gFrame->GetPrimaryCanvas()->GetClientSize( &sx, &sy );                       // of the canvas
+    gFrame->GetFocusCanvas()->GetClientSize( &sx, &sy );                       // of the canvas
 
     float maxX = sx;
     float maxY = sy;
@@ -9960,9 +9960,9 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
 //  And Blit/scale it onto the Printer DC
         wxMemoryDC mdc;
-        mdc.SelectObject( *( gFrame->GetPrimaryCanvas()->pscratch_bm ) );
+        mdc.SelectObject( *( gFrame->GetFocusCanvas()->pscratch_bm ) );
 
-        dc->Blit( 0, 0, gFrame->GetPrimaryCanvas()->pscratch_bm->GetWidth(), gFrame->GetPrimaryCanvas()->pscratch_bm->GetHeight(), &mdc, 0, 0 );
+        dc->Blit( 0, 0, gFrame->GetFocusCanvas()->pscratch_bm->GetWidth(), gFrame->GetFocusCanvas()->pscratch_bm->GetHeight(), &mdc, 0, 0 );
 
         mdc.SelectObject( wxNullBitmap );
     }
@@ -9973,8 +9973,8 @@ void MyPrintout::GenerateGLbmp( )
 {
     if(g_bopengl) {
 #ifdef ocpnUSE_GL
-        int gsx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetSize().x;
-        int gsy = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetSize().y;
+        int gsx = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().x;
+        int gsy = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().y;
 
         unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
         glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
