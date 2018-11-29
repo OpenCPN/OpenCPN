@@ -453,8 +453,10 @@ void MUIBar::SetColorScheme( ColorScheme cs )
         if(m_menuButton)
             m_menuButton->SetColorScheme(cs);
         
-        wxColour textbackColor = GetGlobalColor( _T("GREY1") );
-        m_scaleTextBox->SetForegroundColour(textbackColor);
+        if(m_scaleTextBox){
+            wxColour textbackColor = GetGlobalColor( _T("GREY1") );
+            m_scaleTextBox->SetForegroundColour(textbackColor);
+        }
 
         m_cs = cs;
     }
