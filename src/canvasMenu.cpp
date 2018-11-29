@@ -441,7 +441,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             
         
         if(!full_toggle_added){
-            if(gFrame->IsFullScreen())
+            //if(gFrame->IsFullScreen())
                 MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
         }
 #endif            
