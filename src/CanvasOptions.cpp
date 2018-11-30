@@ -305,7 +305,7 @@ void CanvasOptions::RefreshControlValues( void )
     pCBENCLights->SetValue(parentCanvas->GetShowENCLights());
     pCBENCAnchorDetails->SetValue(parentCanvas->GetShowENCAnchor());
 
-    pCBENCLightDesc->Enable(parentCanvas->GetShowENCLights());
+    //pCBENCLightDesc->Enable(parentCanvas->GetShowENCLights());
     
     
     //  Display category
@@ -329,17 +329,16 @@ void CanvasOptions::RefreshControlValues( void )
     }
     m_pDispCat->SetSelection(nset);
     
-    //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
-    pCBENCAnchorDetails->Enable(nset > 1);
-
     // If no ENCs are available in the current canvas group, then disable the ENC related options.
     pCDOENCText->Enable(m_ENCAvail);
     pCBENCDepth->Enable(m_ENCAvail);
-    pCBENCLightDesc->Enable(m_ENCAvail);
+    pCBENCLightDesc->Enable(m_ENCAvail && parentCanvas->GetShowENCLights());
     pCBENCBuoyLabels->Enable(m_ENCAvail);
     pCBENCLights->Enable(m_ENCAvail);
-    pCBENCAnchorDetails->Enable(m_ENCAvail);
-    pCBENCLightDesc->Enable(m_ENCAvail);
+    
+    //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
+    pCBENCAnchorDetails->Enable(m_ENCAvail && (nset > 1));  
+
     m_pDispCat->Enable(m_ENCAvail);
     
 }
