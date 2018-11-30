@@ -9434,6 +9434,9 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB ShowLights")] = GetShowENCLights();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = m_encShowAnchor; //ps52plib->GetAnchorOn();
         v[_T("OpenCPN S52PLIB ShowQualityOfData")] = GetShowENCDataQual(); //ps52plib->GetQualityOfDataOn();
+        v[_T("OpenCPN S52PLIB ShowATONLabel")] = GetShowENCBuoyLabels();
+        v[_T("OpenCPN S52PLIB ShowLightDescription")] = GetShowENCLightDesc();
+
         v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
         
         wxJSONWriter w;
