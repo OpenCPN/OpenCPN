@@ -1456,7 +1456,7 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
     if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
         return;
 
-    ::wxBeginBusyCursor();
+    //::wxBeginBusyCursor();
 
     //calculate overlay size
     double width = lonmax - lonmin;
