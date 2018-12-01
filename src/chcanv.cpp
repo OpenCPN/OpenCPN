@@ -382,6 +382,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
     EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
     EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
+    EVT_TIMER ( ROUTEFINISH_TIMER, ChartCanvas::OnRouteFinishTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
@@ -710,6 +711,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     m_rollover_popup_timer_msec = 20;
 
+    m_routeFinishTimer.SetOwner( this, ROUTEFINISH_TIMER );
+    
     m_b_rot_hidef = true;
     
     proute_bm = NULL;
@@ -954,17 +957,36 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
     RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
     
+    // Special logic:
+    //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
+    //  So, we provide for this case by starting a timer if required to actually Finish() a route on a legitimate
+    //  focus change, but not if the focus is quickly regained ( <20 msec.) on this canvas.
+    
+#ifdef __WXOSX__
     if(m_routeState && m_FinishRouteOnKillFocus)
-        FinishRoute();
+        m_routeFinishTimer.Start(20, wxTIMER_ONE_SHOT);
+#else
+     FinishRoute();
+#endif     
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
 {
+    m_routeFinishTimer.Stop();
+    
     // Try to keep the global top-line menubar selections up to date with the current "focus" canvas
     gFrame->UpdateGlobalMenuItems( this );
 
     RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
 }
+
+
+void ChartCanvas::OnRouteFinishTimerEvent( wxTimerEvent& event )
+{
+    if(m_routeState && m_FinishRouteOnKillFocus)
+        FinishRoute();
+}
+
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 {
@@ -2129,7 +2151,7 @@ void ChartCanvas::SetDisplaySizeMM( double size )
      msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
      wxLogMessage(msg);
     
-     m_focus_indicator_pix = std::round(1.5 * GetPixPerMM());
+     m_focus_indicator_pix = std::round(2 * GetPixPerMM());
 
 }
 #if 0
@@ -3503,6 +3525,7 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
     m_b_rot_hidef = true;
     ReloadVP();
 }
+
 
 void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {

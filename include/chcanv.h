@@ -195,7 +195,8 @@ public:
       
       void TriggerDeferredFocus();
       void OnDeferredFocusTimerEvent( wxTimerEvent &event);
-      
+      void OnRouteFinishTimerEvent( wxTimerEvent& event );
+
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);
       
@@ -668,7 +669,8 @@ private:
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
       wxTimer     *m_DoubleClickTimer;
-
+      wxTimer      m_routeFinishTimer;
+      
       wxTimer     m_RolloverPopupTimer;
 
       int         m_wheelzoom_stop_oneshot;
