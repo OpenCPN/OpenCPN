@@ -2868,7 +2868,7 @@ void DimeWindow(wxWindow *win)
 
 void JumpToPosition(double lat, double lon, double scale)
 {
-    gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), lat, lon, scale);
+    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), lat, lon, scale);
 }
 
 /* API 1.9 */
