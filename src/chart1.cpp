@@ -3505,10 +3505,12 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #ifdef ocpnUSE_GL
     // cancel compression jobs
     if(g_bopengl){
-        g_glTextureManager->PurgeJobList();
+        if(g_glTextureManager){
+            g_glTextureManager->PurgeJobList();
 
-        if(g_glTextureManager->GetRunningJobCount())
-            g_bcompression_wait = true;
+            if(g_glTextureManager->GetRunningJobCount())
+                g_bcompression_wait = true;
+        }
     }
 #endif
 
@@ -3759,7 +3761,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     // This way the main window is already invisible and to the user
     // it appears to have finished rather than hanging for several seconds
     // while the compression threads exit
-    if(g_bopengl && g_glTextureManager->GetRunningJobCount()){
+    if(g_bopengl && g_glTextureManager && g_glTextureManager->GetRunningJobCount()){
         g_glTextureManager->ClearAllRasterTextures();
 
         wxLogMessage(_T("Starting compressor pool drain"));
