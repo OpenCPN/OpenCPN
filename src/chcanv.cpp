@@ -966,7 +966,8 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
     if(m_routeState && m_FinishRouteOnKillFocus)
         m_routeFinishTimer.Start(20, wxTIMER_ONE_SHOT);
 #else
-     FinishRoute();
+    if(m_routeState && m_FinishRouteOnKillFocus)
+        FinishRoute();
 #endif     
 }
 
