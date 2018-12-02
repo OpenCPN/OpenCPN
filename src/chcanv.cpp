@@ -997,7 +997,10 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
     
-    m_groupIndex = pcc->GroupID;
+    if( pcc->GroupID > (int) g_pGroupArray->GetCount() )
+        m_groupIndex = 0;
+    else
+        m_groupIndex = pcc->GroupID;
     
     if( pcc->bQuilt != GetQuiltMode() )
         ToggleCanvasQuiltMode();
@@ -1190,7 +1193,7 @@ void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
         bgroup_override = true;
     }
     
-    if(!autoSwitch)
+    if(!autoSwitch && ( index <= (int) g_pGroupArray->GetCount()))
         new_index = index;
     
     //    Get the currently displayed chart native scale, and the current ViewPort
