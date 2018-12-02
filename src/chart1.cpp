@@ -6682,8 +6682,10 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
                 ChartCanvas *cc = g_canvasArray.Item(i);
-                if(cc)
-                    cc-> CreateMUIBar();
+                if(cc){
+                    cc->CreateMUIBar();
+                    cc->CheckGroupValid();
+                }
             }
             
             GetPrimaryCanvas()->SetFocus();

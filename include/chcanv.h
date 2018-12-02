@@ -186,11 +186,13 @@ public:
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
       ChartStack *GetpCurrentStack(){ return m_pCurrentStack; }
-      void SetGroupIndex( int index );
+      void SetGroupIndex( int index, bool autoswitch = false );
       bool CheckGroup( int igroup );
       void canvasRefreshGroupIndex( void );
       void canvasChartsRefresh( int dbi_hint );
       
+      void CheckGroupValid( bool showMessage = true, bool switchGroup0 = true);
+
       void UpdateCanvasS52PLIBConfig();
       
       void TriggerDeferredFocus();

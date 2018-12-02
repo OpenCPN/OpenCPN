@@ -996,6 +996,7 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
+    
     m_groupIndex = pcc->GroupID;
     
     if( pcc->bQuilt != GetQuiltMode() )
@@ -1029,6 +1030,16 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     
     m_bCourseUp = pcc->bCourseUp;
     m_bLookAhead = pcc->bLookahead;
+}
+
+void ChartCanvas::CheckGroupValid( bool showMessage, bool switchGroup0)
+{
+    bool groupOK = CheckGroup( m_groupIndex );
+    
+    if(!groupOK){
+        SetGroupIndex( m_groupIndex, true );
+    }
+
 }
 
 void ChartCanvas::SetShowGPS( bool bshow )
@@ -1165,7 +1176,7 @@ void ChartCanvas::canvasRefreshGroupIndex( void )
     SetGroupIndex(m_groupIndex);
 }
 
-void ChartCanvas::SetGroupIndex( int index )
+void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
 {
     int new_index = index;
     if( index > (int) g_pGroupArray->GetCount() )
@@ -1178,6 +1189,9 @@ void ChartCanvas::SetGroupIndex( int index )
         new_index = 0;
         bgroup_override = true;
     }
+    
+    if(!autoSwitch)
+        new_index = index;
     
     //    Get the currently displayed chart native scale, and the current ViewPort
     int current_chart_native_scale = GetCanvasChartNativeScale();
@@ -1196,7 +1210,7 @@ void ChartCanvas::SetGroupIndex( int index )
     //  Invalidate the "sticky" chart on group change, since it might not be in the new group
     g_sticky_chart = -1;
     
-    //    We need a aartstack and quilt to figure out which chart to open in the new group
+    //    We need a chartstack and quilt to figure out which chart to open in the new group
     UpdateCanvasOnGroupChange();
     
     int dbi_hint = FindClosestCanvasChartdbIndex( current_chart_native_scale );
@@ -1212,6 +1226,21 @@ void ChartCanvas::SetGroupIndex( int index )
         //    applying the prior ViewPort exactly
     canvasChartsRefresh( dbi_hint );
         
+    if(!autoSwitch && bgroup_override){
+        // show a short timed message box
+        wxString msg( _("Group \"") );
+
+        ChartGroup *pGroup = g_pGroupArray->Item( new_index - 1 );
+        msg += pGroup->m_group_name;
+            
+        msg += _("\" is empty.");
+            
+        OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxICON_INFORMATION, 2 );
+        
+        return;
+    }
+    
+    
         //    Message box is deferred so that canvas refresh occurs properly before dialog
     if( bgroup_override ) {
             wxString msg( _("Group \"") );
@@ -1221,7 +1250,7 @@ void ChartCanvas::SetGroupIndex( int index )
             
             msg += _("\" is empty, switching to \"All Active Charts\" group.");
             
-            OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
+            OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK, 5 );
     }
 }
 
@@ -4548,10 +4577,10 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
     if( m_pQuilt ) m_pQuilt->Invalidate();
 
     //  Make sure that the Selected Group is sensible...
-    if( m_groupIndex > (int) g_pGroupArray->GetCount() )
-        m_groupIndex = 0;
-    if( !CheckGroup( m_groupIndex ) )
-        m_groupIndex = 0;
+//    if( m_groupIndex > (int) g_pGroupArray->GetCount() )
+//        m_groupIndex = 0;
+//    if( !CheckGroup( m_groupIndex ) )
+//        m_groupIndex = 0;
     
     SetViewPoint( vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation, vp.m_projection_type, b_adjust );
 
