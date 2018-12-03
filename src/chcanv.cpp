@@ -523,7 +523,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encShowDataQual = false;
     m_bShowGPS = true;
     SetQuiltMode(true);
-    
+ 
+    SetupGlCanvas( );
+/*
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
@@ -543,7 +545,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
         }
     }
 #endif
-
+*/
     singleClickEventIsValid = false;
 
 //    Build the cursors
@@ -951,6 +953,29 @@ ChartCanvas::~ChartCanvas()
     }
 #endif
 
+}
+
+void ChartCanvas::SetupGlCanvas( )
+{
+#ifdef ocpnUSE_GL
+    if ( !g_bdisable_opengl )
+    {
+        if(g_bopengl){
+            wxLogMessage( _T("Creating glChartCanvas") );
+            m_glcc = new glChartCanvas(this);
+
+        // We use one context for all GL windows, so that textures etc will be automatically shared
+            if(IsPrimaryCanvas()){
+                wxGLContext *pctx = new wxGLContext(m_glcc);
+                m_glcc->SetContext(pctx);
+                g_pGLcontext = pctx;                // Save a copy of the common context
+            }
+            else{
+                m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+            }
+        }
+    }
+#endif
 }
 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
@@ -6401,8 +6426,8 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 
             wxPoint p;
             p.x = x;
-            if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
-                p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
+             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
+                 p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
 
             p.y = m_canvas_height - m_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
@@ -9192,13 +9217,18 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
                 //    calculate projected distance between these two points in meters
                 double dist = sqrt( pow( (double) (pixx1 - pixx), 2 ) +
                                     pow( (double) (pixy1 - pixy), 2 ) ) / vp.view_scale_ppm;
-                //    calculate GC distance between these two points in meters
-                double distgc = DistGreatCircle( plylat, plylon, plylat1, plylon1 ) * 1852.;
+                                    
+                if(dist > 0.0){
+                    //    calculate GC distance between these two points in meters
+                    double distgc = DistGreatCircle( plylat, plylon, plylat1, plylon1 ) * 1852.;
 
-                //    If the distances are nonsense, it means that the scale is very small and the segment wrapped the world
-                //    So skip it....
-                //    TODO improve this to draw two segments
-                if( fabs( dist - distgc ) > 10000. * 1852. )          //lotsa miles
+                    //    If the distances are nonsense, it means that the scale is very small and the segment wrapped the world
+                    //    So skip it....
+                    //    TODO improve this to draw two segments
+                    if( fabs( dist - distgc ) > 10000. * 1852. )          //lotsa miles
+                        b_skip = true;
+                }
+                else
                     b_skip = true;
             }
 

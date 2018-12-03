@@ -139,6 +139,8 @@ public:
       ChartCanvas(wxFrame *frame, int canvasIndex);
       ~ChartCanvas();
 
+      void SetupGlCanvas( );
+
       //    Methods
       void OnKeyDown(wxKeyEvent &event);
       void OnKeyUp(wxKeyEvent &event);
