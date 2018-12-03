@@ -11308,7 +11308,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     d[3].x = r.x - dd;
                     d[3].y = r.y;
 
-                    if( ptcmgr->GetTideOrCurrent15( 0 /* not used*/, i, tcvalue, dir, bnew_val ) ) {
+                    
+                    if( 1 ) {
 		        pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
@@ -11319,7 +11320,14 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                             dc.DrawCircle( r.x, r.y, (int)(2*current_draw_scaler) ); 
                         }
 
-                        else if( ( type == 'c' ) && ( GetVP().chart_scale < 1000000 ) )
+                        if( GetVP().chart_scale < 1000000 ){
+                            if(!ptcmgr->GetTideOrCurrent15( 0 , i, tcvalue, dir, bnew_val ))
+                                continue;
+                        }
+                        else
+                            continue;
+                        
+                        if( ( type == 'c' ) )
                         {
                             {
 
