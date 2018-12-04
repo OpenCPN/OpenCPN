@@ -4281,7 +4281,12 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
     
     //  The standard screen configs...
-    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+    wxString iconDir = g_Platform->GetSharedDataDir();
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("uidata"));
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("MUI_flat"));
+    appendOSDirSlash(&iconDir);
     int bmpSize = GetCharHeight() * 3;
     
     wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
