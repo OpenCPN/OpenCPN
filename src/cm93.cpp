@@ -1278,8 +1278,8 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
       int ilonroot = ( ilon / 60 ) * 60;
 
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep(&fileroot);
 
       wxString sdir ( fileprefix );
       sdir += fileroot;
@@ -4489,11 +4489,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       
       
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-      fileroot += m_scalechar;
-      fileroot += _T ( "/" );
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep( &fileroot );
+      fileroot.append( m_scalechar );
+      appendOSDirSep( &fileroot );
       wxString key = fileroot;
-      key += file;
+      key.append( file );
       fileroot.Prepend ( m_prefix );
 
       file.Prepend ( fileroot );
@@ -4548,11 +4549,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             file1 += new_scalechar;
             file1[0] = sub_char;
 
-            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-            fileroot += new_scalechar;
-            fileroot += _T ( "/" );
+            fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+            appendOSDirSep( &fileroot );
+            fileroot.append( new_scalechar );
+            appendOSDirSep( &fileroot );
             key = fileroot;
-            key += file1;
+            key.append( file1 );
 
             fileroot.Prepend ( m_prefix );
 
@@ -4836,16 +4838,16 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
       wxString target;
       wxString path;
 
-      wxString sep(wxFileName::GetPathSeparator());
-
       //    Verify that the passed file name exists
       if ( !fn.FileExists() )
       {
             // It may be a directory
             if( wxDir::Exists(name) )
             {
-                  target = name + sep;
-                  path = name + sep;
+                target = name;
+                appendOSDirSep(&target);
+                path = name;
+                appendOSDirSep(&path);
             }
             else {
                   wxString msg ( _T ( "   CM93Composite Chart Init cannot find " ) );
