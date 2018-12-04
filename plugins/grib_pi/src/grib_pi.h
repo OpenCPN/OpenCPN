@@ -38,7 +38,7 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    15
+#define     MY_API_VERSION_MINOR    16
 
 #include "../../../include/ocpn_plugin.h"
 
@@ -62,7 +62,7 @@
 #define SEPARATED_HORIZONTAL   2          // dialog separated shown honrizontaly
 #define SEPARATED_VERTICAL     3          // dialog separated shown vaerticaly
 
-class grib_pi : public opencpn_plugin_115
+class grib_pi : public opencpn_plugin_116
 {
 public:
       grib_pi(void *ppimgr);

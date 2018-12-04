@@ -1198,7 +1198,7 @@ void GRIBUICtrlBar::TimelineChanged()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 void GRIBUICtrlBar::RestaureSelectionString()
@@ -1398,6 +1398,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         m_grib_dir = dialog->GetDirectory();
         dialog->GetPaths(m_file_names);
         OpenFile();
+        DoZoomToCenter();
         SetDialogsStyleSizePosition( true );
     }
     delete dialog;
@@ -1450,6 +1451,8 @@ void GRIBUICtrlBar::PopulateComboDataList()
 
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 {
+    DoZoomToCenter();
+#if 0    
     if(!m_pTimelineSet) return;
 
     double latmin,latmax,lonmin,lonmax;
@@ -1495,6 +1498,55 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
     JumpToPosition(clat, clon, ppm);
 
     RequestRefresh( pParent );
+#endif
+
+}
+
+void GRIBUICtrlBar::DoZoomToCenter( )
+{
+    if(!m_pTimelineSet) return;
+
+    double latmin,latmax,lonmin,lonmax;
+    if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
+        return;
+
+    //::wxBeginBusyCursor();
+
+    //calculate overlay size
+    double width = lonmax - lonmin;
+    double height = latmax - latmin;
+
+    // Calculate overlay center
+    double clat = latmin + height / 2;
+    double clon = lonmin + width / 2;
+
+    //try to limit the ppm at a reasonable value
+    if(width  > 120.){
+        lonmin = clon - 60.;
+        lonmax = clon + 60.;
+    }
+    if(height > 120.){
+        latmin = clat - 60.;
+        latmax = clat + 60.;
+    }
+
+
+    //Calculate overlay width & height in nm (around the center)
+    double ow, oh;
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+
+    //calculate screen size
+    int w = PluginGetOverlayRenderCanvas()->GetSize().x;
+    int h = PluginGetOverlayRenderCanvas()->GetSize().y;
+
+    //calculate final ppm scale to use
+    double ppm;
+    ppm = wxMin(w/(ow*1852), h/(oh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    CanvasJumpToPosition(PluginGetOverlayRenderCanvas(), clat, clon, ppm);
 
 }
 
@@ -1582,7 +1634,7 @@ void GRIBUICtrlBar::ComputeBestForecastForNow()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(now);
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 
 }
 
@@ -1627,7 +1679,7 @@ void GRIBUICtrlBar::SetFactoryOptions()
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
     UpdateTrackingControl();
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 //----------------------------------------------------------------------------------------------------------

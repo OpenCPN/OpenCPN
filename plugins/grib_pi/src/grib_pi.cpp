@@ -73,7 +73,7 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_115(ppimgr)
+    :opencpn_plugin_116(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
@@ -444,6 +444,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+        
+        // Do an automatic "zoom-to-center" on the overlay canvas
+        if( m_pGribCtrlBar ){
+           m_pGribCtrlBar->DoZoomToCenter();
+        }
+ 
         RequestRefresh(m_parent_window); // refresh main window
     } else
        m_pGribCtrlBar->Close();
