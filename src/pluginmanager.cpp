@@ -144,6 +144,8 @@ static const char* const DEFAULT_PLUGIN_DIRS =
 
 unsigned int      gs_plib_flags;
 wxString          g_lastPluginMessage;
+extern ChartCanvas      *g_focusCanvas;
+extern ChartCanvas      *g_overlayCanvas;
 
 enum
 {
@@ -614,6 +616,7 @@ bool PlugInManager::CallLateInit(void)
             case 113:
             case 114:
             case 115:
+            case 116:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;
@@ -648,6 +651,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 case 113:
                 case 114:
 		case 115:
+                case 116:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -1415,6 +1419,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_115*>(plug_in);
         break;
         
+    case 116:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
+        break;
+        
     default:
         break;
     }
@@ -1480,6 +1488,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 113:
                     case 114:
 		    case 115:
+                    case 116:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -1533,6 +1542,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 113:
                     case 114:
                     case 115:
+                    case 116:    
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -1596,6 +1606,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 113:
                 case 114:
                 case 115:
+                case 116:    
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1628,6 +1639,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     case 113:
                     case 114:
                     case 115:
+                    case 116:    
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                         if(ppi)
@@ -1660,6 +1672,7 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                         case 113:
                         case 114:
                         case 115:
+                        case 116:    
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
                             if(ppi && ppi->KeyboardEventHook( event ))
@@ -1722,6 +1735,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 113:
             case 114:
             case 115:
+            case 116:    
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1901,6 +1915,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 113:
                 case 114:
                 case 115:
+                case 116:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1981,6 +1996,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 113:
                 case 114:
                 case 115:
+                case 116:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2524,9 +2540,8 @@ wxWindow *GetOCPNCanvasWindow()
 
 void RequestRefresh(wxWindow *win)
 {
-    //TODO This will be wrong if canvas config is changed...
-    //if(win)
-    //    win->Refresh();
+    if(win)
+      win->Refresh();
 }
 
 void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon)
@@ -3886,6 +3901,16 @@ opencpn_plugin_115::opencpn_plugin_115(void *pmgr)
 }
 
 opencpn_plugin_115::~opencpn_plugin_115(void)
+{
+}
+
+//    Opencpn_Plugin_116 Implementation
+opencpn_plugin_116::opencpn_plugin_116(void *pmgr)
+: opencpn_plugin_115(pmgr)
+{
+}
+
+opencpn_plugin_116::~opencpn_plugin_116(void)
 {
 }
 
@@ -6577,6 +6602,30 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
 int PluginGetMinAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMinAvailableGshhgQuality(); }
 int PluginGetMaxAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMaxAvailableGshhgQuality(); }
 
-/* API 1.16 */
 // disable builtin console canvas, and autopilot nmea sentences
 void PlugInHandleAutopilotRoute(bool enable) { g_bPluginHandleAutopilotRoute = enable; }
+
+
+/* API 1.16 */
+
+wxWindow* PluginGetFocusCanvas()
+{
+    return g_focusCanvas;
+}
+
+wxWindow* PluginGetOverlayRenderCanvas()
+{
+    //if(g_overlayCanvas)
+        return g_overlayCanvas;
+    //else
+        
+}
+
+void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scale)
+{
+    ChartCanvas *oCanvas = wxDynamicCast( canvas, ChartCanvas );
+    if(oCanvas)
+        gFrame->JumpToPosition( oCanvas, lat, lon, scale);
+
+}
+

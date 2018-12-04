@@ -358,6 +358,8 @@ extern unsigned int     g_canvasConfig;
 extern wxString         g_lastPluginMessage;
 
 extern ChartCanvas      *g_focusCanvas;
+extern ChartCanvas      *g_overlayCanvas;
+
 extern float            g_toolbar_scalefactor;
 
 // "Curtain" mode parameters
@@ -10478,6 +10480,8 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     }
     
     if(pluginOverlayRender){
+        g_overlayCanvas = this;
+
         if( g_pi_manager ) {
             g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
             g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );

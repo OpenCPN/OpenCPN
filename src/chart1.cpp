@@ -758,6 +758,7 @@ arrayofCanvasConfigPtr g_canvasConfigArray;
 wxString         g_lastAppliedTemplateGUID;
 
 ChartCanvas      *g_focusCanvas;
+ChartCanvas      *g_overlayCanvas;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

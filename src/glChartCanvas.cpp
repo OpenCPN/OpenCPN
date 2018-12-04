@@ -176,6 +176,7 @@ extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
 extern unsigned int     g_canvasConfig;
 extern ChartCanvas      *g_focusCanvas;
+extern ChartCanvas      *g_overlayCanvas;
 
 ocpnGLOptions g_GLOptions;
 
@@ -2175,6 +2176,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     }
     
     if(pluginOverlayRender){
+        g_overlayCanvas = m_pParentCanvas;
         if( g_pi_manager ) {
             g_pi_manager->SendViewPortToRequestingPlugIns( vp );
             g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, vp );
