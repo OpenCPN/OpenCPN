@@ -444,6 +444,9 @@ void OCPNCheckedListCtrl::Clear() {
   Scroll(0,0);
 }
 
+//Helper for conditional file name separator
+void appendOSDirSlash(wxString* pString);
+
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9281,24 +9284,26 @@ void OpenGLOptionsDlg::OnButtonRebuild(wxCommandEvent& event) {
 void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
   ::wxBeginBusyCursor();
   if (g_bopengl) g_glTextureManager->ClearAllRasterTextures();
+  wxString path = g_Platform->GetPrivateDataDir();
+  appendOSDirSlash(&path);
+  path.append(_T("raster_texture_cache"));
 
-  wxString path = g_Platform->GetPrivateDataDir() +
-                  wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
   if (::wxDirExists(path)) {
     wxArrayString files;
     size_t nfiles = wxDir::GetAllFiles(path, &files);
     for (unsigned int i = 0; i < files.GetCount(); i++)
       ::wxRemoveFile(files[i]);
   }
-
   m_cacheSize->SetLabel(_("Size: ") + GetTextureCacheSize());
   ::wxEndBusyCursor();
 }
 
 const wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
-  wxString path = g_Platform->GetPrivateDataDir() +
-                  wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
+  wxString path = g_Platform->GetPrivateDataDir();
+  appendOSDirSlash(&path);
+  path.append(_T("raster_texture_cache"));
   long long total = 0;
+
   if (::wxDirExists(path)) {
     wxArrayString files;
     size_t nfiles = wxDir::GetAllFiles(path, &files);
