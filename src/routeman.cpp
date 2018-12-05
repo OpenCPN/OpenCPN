@@ -122,6 +122,8 @@ WX_DEFINE_LIST(markicon_bitmap_list_type);
 WX_DEFINE_LIST(markicon_key_list_type);
 WX_DEFINE_LIST(markicon_description_list_type);
 
+//Helper conditional file name dir slash
+void appendOSDirSlash(wxString* pString);
 
 wxImage LoadSVGIcon( wxString filename, int width, int height )
 {
@@ -1289,7 +1291,13 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 
 void WayPointman::ProcessDefaultIcons()
 {
-    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/markicons/");
+    wxString iconDir = g_Platform->GetSharedDataDir();
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("uidata"));
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("markicons"));
+    appendOSDirSlash(&iconDir);
+
     MarkIcon *pmi = 0;
     
     // Add the legacy icons to their own sorted array

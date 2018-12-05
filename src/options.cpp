@@ -444,6 +444,9 @@ void OCPNCheckedListCtrl::Clear() {
   Scroll(0,0);
 }
 
+//Helper for conditional file name separator
+void appendOSDirSlash(wxString* pString);
+
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4278,7 +4281,12 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
     
     //  The standard screen configs...
-    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
+    wxString iconDir = g_Platform->GetSharedDataDir();
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("uidata"));
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("MUI_flat"));
+    appendOSDirSlash(&iconDir);
     int bmpSize = GetCharHeight() * 3;
     
     wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
@@ -9281,24 +9289,26 @@ void OpenGLOptionsDlg::OnButtonRebuild(wxCommandEvent& event) {
 void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
   ::wxBeginBusyCursor();
   if (g_bopengl) g_glTextureManager->ClearAllRasterTextures();
+  wxString path = g_Platform->GetPrivateDataDir();
+  appendOSDirSlash(&path);
+  path.append(_T("raster_texture_cache"));
 
-  wxString path = g_Platform->GetPrivateDataDir() +
-                  wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
   if (::wxDirExists(path)) {
     wxArrayString files;
     size_t nfiles = wxDir::GetAllFiles(path, &files);
     for (unsigned int i = 0; i < files.GetCount(); i++)
       ::wxRemoveFile(files[i]);
   }
-
   m_cacheSize->SetLabel(_("Size: ") + GetTextureCacheSize());
   ::wxEndBusyCursor();
 }
 
 const wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
-  wxString path = g_Platform->GetPrivateDataDir() +
-                  wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
+  wxString path = g_Platform->GetPrivateDataDir();
+  appendOSDirSlash(&path);
+  path.append(_T("raster_texture_cache"));
   long long total = 0;
+
   if (::wxDirExists(path)) {
     wxArrayString files;
     size_t nfiles = wxDir::GetAllFiles(path, &files);

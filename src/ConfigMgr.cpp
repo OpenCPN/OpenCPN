@@ -448,7 +448,8 @@ int GetRandomNumber(int range_min, int range_max)
     return (int)u;
 }
 
-
+//Helper conditional file name dir slash
+void appendOSDirSlash(wxString* pString);
 
 
 class OCPNConfigObject
@@ -689,13 +690,20 @@ ConfigMgr::~ConfigMgr()
 
 void ConfigMgr::Init()
 {
-    m_configDir = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("Configs") + wxFileName::GetPathSeparator();
+    m_configDir = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&m_configDir);
+    m_configDir.append(_T("Configs"));
+    appendOSDirSlash(&m_configDir);
     if(!wxFileName::DirExists( m_configDir )){
         wxFileName::Mkdir( m_configDir );
     }
     
-    m_configCatalogName = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("Configs") + wxFileName::GetPathSeparator() +_T("configs.xml");
-    
+    m_configCatalogName = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&m_configCatalogName);
+    m_configCatalogName.append(_T("Configs"));
+    appendOSDirSlash(&m_configCatalogName);
+    m_configCatalogName.append(_T("configs.xml"));
+
     //Create the catalog, if necessary
     if(!wxFileExists(m_configCatalogName)){
         
