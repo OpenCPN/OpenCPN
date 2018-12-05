@@ -1243,18 +1243,24 @@ void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
     
     //    We need a chartstack and quilt to figure out which chart to open in the new group
     UpdateCanvasOnGroupChange();
+
+    int dbi_now = -1;
+    if(GetQuiltMode())
+        dbi_now = GetQuiltReferenceChartIndex();
     
     int dbi_hint = FindClosestCanvasChartdbIndex( current_chart_native_scale );
     
-    double best_scale = GetBestStartScale(dbi_hint, vp);
-    
-    SetVPScale( best_scale );
+    // If a new reference chart is indicated, set a good scale for it.
+    if((dbi_now != dbi_hint) || !GetQuiltMode()){
+        double best_scale = GetBestStartScale(dbi_hint, vp);
+        SetVPScale( best_scale );
+    }
     
     if(GetQuiltMode())
         dbi_hint = GetQuiltReferenceChartIndex();
     
     //    Refresh the canvas, selecting the "best" chart,
-        //    applying the prior ViewPort exactly
+    //    applying the prior ViewPort exactly
     canvasChartsRefresh( dbi_hint );
         
     if(!autoSwitch && bgroup_override){
