@@ -339,6 +339,15 @@ void CanvasOptions::RefreshControlValues( void )
     //  Anchor conditions are only available if display category is "All" or "User Standard"
     pCBENCAnchorDetails->Enable(m_ENCAvail && (nset > 1));  
 
+    //  Many options are not valid if display category is "Base"
+    if(nset == 0){
+        pCDOENCText->Disable();
+        pCBENCDepth->Disable();
+        pCBENCLightDesc->Disable();
+        pCBENCBuoyLabels->Disable();
+        pCBENCLights->Disable();
+    }
+        
     m_pDispCat->Enable(m_ENCAvail);
     
 }
@@ -477,6 +486,8 @@ void CanvasOptions::UpdateCanvasOptions( void )
         parentCanvas->Refresh(true);
         parentCanvas->InvalidateGL();
     }
+    
+    RefreshControlValues();
         
 }
 
