@@ -12069,6 +12069,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox( bool b_force_new )
     
     if( m_Compass && m_Compass->IsShown())
         m_Compass->UpdateStatus( b_force_new | b_update );
+    
+    if( b_force_new | b_update )
+        Refresh();
+        
 }
 
 
