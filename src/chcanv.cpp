@@ -409,6 +409,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     SetBackgroundColour ( GetGlobalColor ( _T ( "NODTA" ) ) );
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing on color scheme change
 
+    m_groupIndex = 0;
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
@@ -1024,7 +1025,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
-    
+    if ( pcc->GroupID < 0 )
+        pcc->GroupID = 0;
+
     if( pcc->GroupID > (int) g_pGroupArray->GetCount() )
         m_groupIndex = 0;
     else
@@ -1298,6 +1301,9 @@ bool ChartCanvas::CheckGroup( int igroup )
         
     if( igroup == 0 )
         return true;              // "all charts" is always OK
+
+    if ( igroup < 0 )               // negative group is an error
+        return false;
 
     ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
     
