@@ -33,6 +33,7 @@ canvasConfig::canvasConfig( int index )
 {
     configIndex = index;
     canvas = NULL;
+    GroupID = 0;
 }
 
 canvasConfig::~canvasConfig(){}
