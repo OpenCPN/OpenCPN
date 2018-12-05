@@ -238,7 +238,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
 
     // display category
     boxENC->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Category")), verticleInputFlags);
-    wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("Mariner's Standard")};
+    wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"), _("User Standard")};
     m_pDispCat = new wxChoice(pDisplayPanel, ID_CODISPCAT, wxDefaultPosition,  wxDefaultSize, 4, pDispCatStrings);
     boxENC->Add(m_pDispCat, 0, wxLEFT, 4*GetCharWidth());
     m_pDispCat->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
@@ -336,7 +336,7 @@ void CanvasOptions::RefreshControlValues( void )
     pCBENCBuoyLabels->Enable(m_ENCAvail);
     pCBENCLights->Enable(m_ENCAvail);
     
-    //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
+    //  Anchor conditions are only available if display category is "All" or "User Standard"
     pCBENCAnchorDetails->Enable(m_ENCAvail && (nset > 1));  
 
     m_pDispCat->Enable(m_ENCAvail);
@@ -465,7 +465,7 @@ void CanvasOptions::UpdateCanvasOptions( void )
         parentCanvas->SetENCDisplayCategory( valSet);
         b_needReLoad = true;
         
-        //  Anchor conditions are only available if display category is "All" or "Mariners Standard"
+        //  Anchor conditions are only available if display category is "All" or "User Standard"
         pCBENCAnchorDetails->Enable(newSet > 1);
 
     }

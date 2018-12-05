@@ -1222,7 +1222,7 @@ void LoadS57()
         m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
 
 
-            //    Preset some object class visibilites for "Mariner's Standard" disply category
+            //    Preset some object class visibilites for "User Standard" disply category
             //  They may be overridden in LoadS57Config
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -5517,7 +5517,7 @@ void MyFrame::UpdateGlobalMenuItems()
         }
         m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( (!ps52plib->IsObjNoshow("LIGHTS")) && light_state );
 
-        // Menu "Anchor Info" entry is only accessible in "All" or "MarinersStandard" categories
+        // Menu "Anchor Info" entry is only accessible in "All" or "User Standard" categories
         DisCat nset = ps52plib->GetDisplayCategory();
         if((nset == MARINERS_STANDARD) || (nset == OTHER) ){
             m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
@@ -5574,7 +5574,7 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
         }
         m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( cc->GetShowENCLights() );
 
-        // Menu "Anchor Info" entry is only accessible in "All" or "MarinersStandard" categories
+        // Menu "Anchor Info" entry is only accessible in "All" or "UserStandard" categories
         DisCat nset = (DisCat)cc->GetENCDisplayCategory();
         if((nset == MARINERS_STANDARD) || (nset == OTHER) ){
             m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( cc->GetShowENCAnchor());
