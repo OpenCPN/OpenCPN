@@ -3666,8 +3666,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
             cc->DestroyToolbar();
     }
         
+    if(g_MainToolbar)
+        g_MainToolbar->Destroy();
     g_MainToolbar = NULL;
 
+   
     if(g_iENCToolbar){
         wxPoint locn = g_iENCToolbar->GetPosition();
         g_iENCToolbarPosY = locn.y;
