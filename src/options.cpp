@@ -6091,10 +6091,12 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
   OpenGLOptionsDlg dlg(this);
 
   if (dlg.ShowModal() == wxID_OK) {
-    g_GLOptions.m_bUseAcceleratedPanning =
+    if(gFrame->GetPrimaryCanvas()->GetglCanvas()){
+        g_GLOptions.m_bUseAcceleratedPanning =
         g_bGLexpert ? dlg.GetAcceleratedPanning()
                   : gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning();
-
+    }
+    
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
@@ -6111,14 +6113,16 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
       g_GLOptions.m_bTextureCompressionCaching = dlg.GetTextureCompression();
     }
 
-    if (g_bopengl &&
-        g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression()) {
+    if (g_bopengl && g_glTextureManager && g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression()) {
       // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
-      ::wxBeginBusyCursor();
-      gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
-      g_glTextureManager->ClearAllRasterTextures();
-      ::wxEndBusyCursor();
+    
+      if(gFrame->GetPrimaryCanvas()->GetglCanvas()){
+        ::wxBeginBusyCursor();
+        gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
+        g_glTextureManager->ClearAllRasterTextures();
+        ::wxEndBusyCursor();
+      }
     }
     else
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
@@ -9254,9 +9258,9 @@ void OpenGLOptionsDlg::Populate(void) {
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-  if (gFrame->GetPrimaryCanvas()->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=
-      wxNOT_FOUND) {
-    m_cbSoftwareGL->SetValue(g_bSoftwareGL);
+  if (gFrame->GetPrimaryCanvas()->GetglCanvas()){
+      if(gFrame->GetPrimaryCanvas()->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=  wxNOT_FOUND)
+        m_cbSoftwareGL->SetValue(g_bSoftwareGL);
   }
 #else
   m_cbSoftwareGL->Hide();
@@ -9266,13 +9270,17 @@ void OpenGLOptionsDlg::Populate(void) {
   SetFont(*dialogFont);
 
   if (g_bGLexpert) {
-      if (gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning()) {
+      if (gFrame->GetPrimaryCanvas()->GetglCanvas()){
+          if(gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning()) {
             m_cbUseAcceleratedPanning->Enable();
             m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
-        } else {
+          } else {
             m_cbUseAcceleratedPanning->SetValue(FALSE);
             m_cbUseAcceleratedPanning->Disable();
-        }
+          }
+      } else {
+          m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+      }          
   } else {
     m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
     m_cbUseAcceleratedPanning->Disable();
@@ -9287,20 +9295,25 @@ void OpenGLOptionsDlg::OnButtonRebuild(wxCommandEvent& event) {
 }
 
 void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
-  ::wxBeginBusyCursor();
-  if (g_bopengl) g_glTextureManager->ClearAllRasterTextures();
-  wxString path = g_Platform->GetPrivateDataDir();
-  appendOSDirSlash(&path);
-  path.append(_T("raster_texture_cache"));
+    
+  if (g_bopengl && g_glTextureManager){
+      ::wxBeginBusyCursor();
+      g_glTextureManager->ClearAllRasterTextures();
+      
+      wxString path = g_Platform->GetPrivateDataDir();
+      appendOSDirSlash(&path);
+      path.append(_T("raster_texture_cache"));
 
-  if (::wxDirExists(path)) {
-    wxArrayString files;
-    size_t nfiles = wxDir::GetAllFiles(path, &files);
-    for (unsigned int i = 0; i < files.GetCount(); i++)
-      ::wxRemoveFile(files[i]);
+      if (::wxDirExists(path)) {
+          wxArrayString files;
+          size_t nfiles = wxDir::GetAllFiles(path, &files);
+          for (unsigned int i = 0; i < files.GetCount(); i++)
+            ::wxRemoveFile(files[i]);
+      }
+  
+      m_cacheSize->SetLabel(_("Size: ") + GetTextureCacheSize());
+      ::wxEndBusyCursor();
   }
-  m_cacheSize->SetLabel(_("Size: ") + GetTextureCacheSize());
-  ::wxEndBusyCursor();
 }
 
 const wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
