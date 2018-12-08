@@ -81,7 +81,7 @@ private:
     
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
-    void OnTimerAISAudio(wxTimerEvent& event);
+    void OnSoundFinishedAISAudio(wxCommandEvent& event);
     void OnTimerDSC( wxTimerEvent& event );
     
     bool NMEACheckSumOK(const wxString& str);
