@@ -274,6 +274,7 @@ extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
 extern float            g_ChartScaleFactorExp;
+extern bool             g_config_display_size_manual;
 
 extern Multiplexer      *g_pMUX;
 extern bool             b_inCloseWindow;
@@ -2285,13 +2286,14 @@ double getAndroidDPmm()
     }
     
     // User override?
-    if(g_config_display_size_mm > 0){
+    if(g_config_display_size_manual && (g_config_display_size_mm > 0) ){
         double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
         double size_mm = g_config_display_size_mm;
         size_mm = wxMax(size_mm, 50);
         size_mm = wxMin(size_mm, 400);
         double ret = maxDim / size_mm;
-//        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        //qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        
         return ret;
     }
         
