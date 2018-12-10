@@ -151,7 +151,7 @@ public:
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
-      virtual void UpdateNavObj();
+      virtual void UpdateNavObj(bool bRecreate = false);
 
       bool LoadLayers(wxString &path);
 

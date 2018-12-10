@@ -1098,7 +1098,8 @@ extern "C"{
         
         //  There may be unsaved objects at this point, and a navobj.xml.changes restore file
         //  We commit the navobj deltas, and flush the restore file 
-            pConfig->UpdateNavObj();
+        //  Pass flag "true" to also recreate a new empty "changes" file    
+            pConfig->UpdateNavObj( true );
 
         }
         

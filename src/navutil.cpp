@@ -2343,7 +2343,7 @@ void MyConfig::UpdateSettings()
     Flush();
 }
 
-void MyConfig::UpdateNavObj( void )
+void MyConfig::UpdateNavObj( bool bRecreate )
 {
 
 //   Create the NavObjectCollection, and save to specified file
@@ -2359,8 +2359,10 @@ void MyConfig::UpdateNavObj( void )
         wxRemoveFile( m_sNavObjSetChangesFile );
     }
 
-    //delete m_pNavObjectChangesSet;
-    //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    if(bRecreate){
+        delete m_pNavObjectChangesSet;
+        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    }
 
 }
 
