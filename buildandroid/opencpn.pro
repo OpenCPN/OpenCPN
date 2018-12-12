@@ -197,50 +197,7 @@ INSTALLS += svg_deployment
 
 #  SVG Mark Icons
 
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-Empty.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Airplane.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/1st-Anchorage.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-Anchor2.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Boarding-Location.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Boundary.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Buoy-TypeA.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Buoy-TypeB.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Campfire.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Camping.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Sea-Floor-Coral.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Fishing.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Fishing.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Fishing.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Mooring-Buoy.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Service-Food.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Service-Fuel-Pump-Diesel+Petrol.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-Green.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Sea-Floor-Sea-Weed.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-TypeA.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-TypeB.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-Vessel.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/1st-Man-Overboard.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Mooring-Buoy.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Mooring-Buoy-Super.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Oil-Platform.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-Red-Green.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Marks-Light-Red.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Rock-Exposed.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Rock-Awash.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Sandbar.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Activity-Diving-Scuba-Flag.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Sandbar.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Snag.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-Square.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-Triangle.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/1st-Diamond.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-Circle.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Wreck1.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Hazard-Wreck2.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-X-Small-Blue.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-X-Small-Green.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/Symbol-X-Small-Red.svg
-markicons_svg_deployment.files += $$PWD/../data/svg/markicons/1st-Active-Waypoint.svg
+markicons_svg_deployment.files += $$files($$PWD/../data/svg/markicons/*.svg)
 
 
 markicons_svg_deployment.path = /assets/files/uidata/markicons
@@ -467,6 +424,10 @@ ANDROID_EXTRA_LIBS = \
 
 DISTFILES += \
     android/src/org/opencpn/PortContainer.java
+
+contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_EXTRA_LIBS = /home/dsr/Projects/opencpn_android/opencpn/buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+}
 
 
 
