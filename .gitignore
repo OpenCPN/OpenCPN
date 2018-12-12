@@ -23,4 +23,5 @@ src/opencpn.rc
 android_release*
 buildandroid/notes
 wxWidgets/*
-
+build_android*
+.*
