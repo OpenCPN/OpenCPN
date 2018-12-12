@@ -109,7 +109,6 @@
         </activity>
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC_Xl0ZmeX0GSvD7PDGiclzYpUml9GUkX0"/>
-
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
         <service android:name="org.opencpn.DownloadService"/>
@@ -119,7 +118,7 @@
 
 
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="26"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET"/>
