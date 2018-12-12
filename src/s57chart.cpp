@@ -3448,9 +3448,9 @@ bool s57chart::DCRenderText( wxMemoryDC& dcinput, const ViewPort& vp )
 
 
 
-bool s57chart::IsCellOverlayType( char *pFullPath )
+bool s57chart::IsCellOverlayType( const wxString &FullPath )
 {
-    wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
+    wxFileName fn( FullPath );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
     if(cname.Length() >= 3)

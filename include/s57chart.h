@@ -226,7 +226,7 @@ public:
       wxString GetISDT(void);
 
       char GetUsageChar(void){ return m_usage_char; }
-      static bool IsCellOverlayType(char *pFullPath);
+      static bool IsCellOverlayType(const wxString &pFullPath);
       
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
