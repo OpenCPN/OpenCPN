@@ -81,7 +81,11 @@ public class OCPNPluginInstallerActivity extends Activity {
         }
 
         void handleSendText(Intent intent) {
-            Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+            Uri uri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+            if(null == uri){
+                finish();
+            }
+
             String sharedFile = uri.toString();
 
             if (sharedFile != null) {
