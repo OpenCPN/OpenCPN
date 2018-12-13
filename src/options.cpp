@@ -3940,7 +3940,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
                                     _("Preserve scale when switching charts"));
-    boxCharts->Add(pPreserveScale, verticleInputFlags);
+    pPreserveScale->Hide();
+    //boxCharts->Add(pPreserveScale, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
@@ -4030,7 +4031,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
                                     _("Preserve scale when switching charts"));
-    boxCharts->Add(pPreserveScale, inputFlags);
+    pPreserveScale->Hide();
+    //boxCharts->Add(pPreserveScale, inputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
