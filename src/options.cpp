@@ -6701,8 +6701,9 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
     pActiveChartsList->Delete(pListBoxSelections.Item((nSelections - i) - 1));
   }
 #else
-  int n = pActiveChartsList->GetSelection();
-  pActiveChartsList->Delete(n);
+  unsigned int n = pActiveChartsList->GetSelection();
+  if( n < pActiveChartsList->GetCount())        // Protect against invalid index
+    pActiveChartsList->Delete(n);
 #endif
 
   UpdateWorkArrayFromTextCtl();
