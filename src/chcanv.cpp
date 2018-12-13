@@ -7405,11 +7405,11 @@ void ChartCanvas::FinishRoute( void )
         }
             
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        if( RouteProp::getInstanceFlag() && pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
-        if(RouteManagerDialog::getInstanceFlag()){
+        if(RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog){
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateRouteListCtrl();
         }
