@@ -228,8 +228,8 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     catalogPanel->SetSizer(catalogPanelBoxSizer);
     
     wxStaticText *catalogLabel = new wxStaticText( catalogPanel, wxID_ANY, _("Chart Catalogs Available") );
-    catalogLabel->Wrap( -1 );
-    catalogPanelBoxSizer->Add( catalogLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    //catalogLabel->Wrap( -1 );
+    catalogPanelBoxSizer->Add( catalogLabel, 0, wxTOP | wxRIGHT | wxLEFT | wxEXPAND, border_size );
     
     //   Sources list box
     wxBoxSizer* activeListSizer = new wxBoxSizer( wxVERTICAL );
@@ -243,7 +243,7 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     
     //  Buttons
 #ifdef __OCPN__ANDROID__
-    catalogPanelBoxSizer->AddSpacer(2 * GetCharHeight());
+    catalogPanelBoxSizer->AddSpacer(1 * GetCharHeight());
 #endif
     
     wxBoxSizer* bSizerCatalogBtns = new wxBoxSizer( wxHORIZONTAL );
@@ -303,9 +303,8 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     chartsPanelBoxSizer->Add( m_bDnldCharts, 0, wxALIGN_LEFT|wxALL, 5 );
     
     m_stCatalogInfo = new wxStaticText( chartsPanel, wxID_ANY, _("%u charts total, %u updated, %u new"), wxDefaultPosition, wxDefaultSize, 0 );
-    chartsPanelBoxSizer->Add( m_stCatalogInfo, 1, wxEXPAND| wxALL, 5 );
-    /// mainSizer->Add( m_stCatalogInfo, 0, wxEXPAND| wxALL, 5 );
-    
+    chartsPanelBoxSizer->Add( m_stCatalogInfo, 0, wxEXPAND| wxALL, 5 );
+
     this->Layout();
     
     //     m_lbChartSources->GetHandle()->setStyleSheet( qtStyleSheet);
@@ -366,8 +365,11 @@ void ChartDldrPanel::OnSize( wxSizeEvent& event )
     qDebug() << "CanvasSize: " << sz.x << sz.y;    
     
     int yAvail = sz.y - (8 * GetCharHeight());          // Roughly 8 chars of decoration on-screen for this dialog.
-    m_lbChartSources->SetMinSize( wxSize( -1, yAvail * 8 / 10 ));
-    m_scrollWinChartList->SetMinSize( wxSize( -1, yAvail * 8 / 10 ));
+    double ratio = 0.7;
+    if(sz.y > sz.x)
+        ratio = 0.8;
+    m_lbChartSources->SetMinSize( wxSize( -1, yAvail * ratio ));
+    m_scrollWinChartList->SetMinSize( wxSize( -1, yAvail * ratio ));
 
     Layout();
     
