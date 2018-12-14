@@ -68,18 +68,7 @@ import java.security.NoSuchAlgorithmException;
 import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
-
-/*
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-*/
+import android.os.CountDownTimer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.OutputStreamWriter;
@@ -889,6 +878,52 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public String launchBrowser( String url){
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse( url)));
         return "OK";
+    }
+
+    private Toast mTimedToast;
+    private CountDownTimer mtoastCountDown;
+
+    public String showTimedToast( final String text, final int toastDurationInMilliSeconds) {
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    // Set the toast
+                    mTimedToast = Toast.makeText(m_activity, text, Toast.LENGTH_LONG);
+
+                    // Set the countdown to display the toast
+                    mtoastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
+                       public void onTick(long millisUntilFinished) {
+                          mTimedToast.show();
+                       }
+                       public void onFinish() {
+                          mTimedToast.cancel();
+                          }
+                    };
+
+                    // Show the toast and starts the countdown
+                    mTimedToast.show();
+                    mtoastCountDown.start();
+
+                 }});
+
+
+       return "OK";
+    }
+
+    public String cancelTimedToast() {
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if(mTimedToast.getView().isShown()){
+                        mtoastCountDown.cancel();
+                        mTimedToast.cancel();
+                    }
+                 }});
+
+
+       return "OK";
     }
 
     public String startActivityWithIntent( String target_package, String activity, String extra_name_in, String extra_data_in, String extra_data_out_name){
