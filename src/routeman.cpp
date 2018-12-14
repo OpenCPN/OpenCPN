@@ -1420,6 +1420,10 @@ void WayPointman::ProcessDefaultIcons()
     if(!bcacheLoaded)
     {
         g_Platform->ShowBusySpinner();
+#ifdef __OCPN__ANDROID__
+        androidDisplayTimedToast( _("Processing icons"), 25000);
+#endif        
+
 
         for( int ifile = 0; ifile < n_files; ifile++ ) {
             wxString name = FileList[ifile];
@@ -1440,6 +1444,9 @@ void WayPointman::ProcessDefaultIcons()
             }
         }
         g_Platform->HideBusySpinner();
+#ifdef __OCPN__ANDROID__
+        androidCancelTimedToast();
+#endif        
 
     }
 #endif
