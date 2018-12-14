@@ -1293,12 +1293,12 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
     // Apply zoom scale modifier according to chart family.
     switch(family){
         case CHART_FAMILY_RASTER:{
-            type_mod = 1;
+            type_mod = 5;
             break;
         }
         
         case CHART_FAMILY_VECTOR:{
-            type_mod = 4;
+            type_mod = 5;
             break;
         }
         
