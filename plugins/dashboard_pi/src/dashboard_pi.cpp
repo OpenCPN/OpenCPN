@@ -669,9 +669,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
-            if( m_NMEA0183.Parse() ) {
-                if( mPriVar >= 2 ) {
-                    if( !std::isnan( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
+            if( m_NMEA0183.Parse() )
+            {
+                if( mPriVar >= 2 ) 
+                {
+                    // Any device sending VAR=0.0 can be assumed to not really know
+                    // what the actual variation is, so in this case we use WMM if available
+                    if( (!std::isnan( m_NMEA0183.Hdg.MagneticVariationDegrees )) &&
+                               0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees)
+                    {
                         mPriVar = 2;
                         if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
                             mVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
@@ -931,16 +937,21 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                     }
 
-                    if( mPriVar >= 3 ) {
-                        if( !std::isnan( m_NMEA0183.Rmc.MagneticVariation ) ){
+                    if( mPriVar >= 3 )
+                    {
+                        // Any device sending VAR=0.0 can be assumed to not really know
+                        // what the actual variation is, so in this case we use WMM if available
+                        if( (!std::isnan( m_NMEA0183.Rmc.MagneticVariation)) &&
+                                   0.0 != m_NMEA0183.Rmc.MagneticVariation )
+                        {
                             mPriVar = 3;
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
                                 mVar = m_NMEA0183.Rmc.MagneticVariation;
-                            else if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                            else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
                                 mVar = -m_NMEA0183.Rmc.MagneticVariation;
                             mVar_Watchdog = gps_watchdog_timeout_ticks;
 
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, _T("\u00B0"));
                         }
                     }
 

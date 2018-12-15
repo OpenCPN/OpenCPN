@@ -8472,14 +8472,17 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         cog_sog_valid = true;
                     }
                     
-                    if( !std::isnan(m_NMEA0183.Rmc.MagneticVariation) )
+                    // Any device sending VAR=0.0 can be assumed to not really know 
+                    // what the actual variation is, so in this case we use WMM if available
+                    if( (!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) && 
+                              0.0 != m_NMEA0183.Rmc.MagneticVariation )
                     {
-                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                        if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
                             gVar = m_NMEA0183.Rmc.MagneticVariation;
                         else
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
                                 gVar = -m_NMEA0183.Rmc.MagneticVariation;
-                        
+
                         g_bVAR_Rx = true;
                         gVAR_Watchdog = gps_watchdog_timeout_ticks;
                     }
@@ -8502,13 +8505,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
 
-                if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
-                    gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
-                else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
-                    gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                if( !std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees) )
+                // Any device sending VAR=0.0 can be assumed to not really know 
+                // what the actual variation is, so in this case we use WMM if available
+                if( (!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
+                     0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees )
                 {
+                    if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
+                        gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+                    else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
+                        gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+                    
                     g_bVAR_Rx = true;
                     gVAR_Watchdog = gps_watchdog_timeout_ticks;
                 }
