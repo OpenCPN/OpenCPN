@@ -1169,14 +1169,14 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             if( !m_NoErrDialog ){
                 OCPNMessageBox(NULL, 
                     _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                    _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                    _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 5 );
             }
         }
         else{            // no updates applied.
                 if( !m_NoErrDialog )
                     OCPNMessageBox(NULL, 
                                _("S57 Cell Update failed.\nNo updates could be applied.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                               _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                               _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 5 );
         }
     }
     
