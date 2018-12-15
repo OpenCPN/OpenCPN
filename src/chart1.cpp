@@ -7714,8 +7714,9 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
                     int type_mod = 1;
                     // Apply zoom scale modifier according to chart family.
                     switch(family){
-                        case CHART_FAMILY_RASTER:{
-                            type_mod = 5;
+                        case CHART_FAMILY_RASTER:{      // Allow pretty high underzoom for raster.
+                                                        // Improves behavior with sparse KAP sets, such as GE2KAP images.
+                            type_mod = 10;
                             break;
                         }
                         
