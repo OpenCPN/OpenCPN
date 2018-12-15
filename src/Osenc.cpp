@@ -1109,7 +1109,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //  updates may be corrected, and the chart SENC is built correctly.
     //  Or, the update files following the last good update may be manually deleted.
     
-    if(m_last_applied_update != available_updates){
+    if( (available_updates > 0) && (m_last_applied_update != available_updates) ){
         
         if(last_successful_update_file.Length()){
             //  Get the update date from the last good update module
