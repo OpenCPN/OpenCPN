@@ -245,7 +245,9 @@ import java.util.TimeZone;
 import android.text.format.Time;
 
 import org.opencpn.opencpn.ColorPickerDialog;
-
+import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
+import android.Manifest;
 public class QtActivity extends FragmentActivity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -277,6 +279,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private final static int OCPN_ACTION_ENCSOUNDINGS_TOGGLE = 0x100c;
     private final static int OCPN_ACTION_ENCLIGHTS_TOGGLE = 0x100d;
 
+    private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
@@ -457,6 +460,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private boolean g_postActive = false;
     PostTask g_postTask;
     private boolean m_inExit = false;
+    private boolean m_GPSPermissionRequested = false;
 
     //BroadcastReceiver which receives broadcasted Intents
     private final BroadcastReceiver mLocaleChangeReceiver = new BroadcastReceiver() {
@@ -1719,24 +1723,81 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
     public String queryGPSServer( final int parm ){
+        Log.i("OpenCPN", "queryGPSServer");
 
         if( GPSServer.GPS_PROVIDER_AVAILABLE == parm){
             String ret_string = "NO";
             if( m_hasGPS )
                 ret_string = "YES";
+
+            Log.i("OpenCPN", "Available: " + ret_string);
+
             return ret_string;
         }
 
+        if(parm == GPSServer.GPS_ON){
+            if (android.os.Build.VERSION.SDK_INT >= 23){
+                Log.i("OpenCPN", "Checking GPS permissions");
 
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        if(!m_GPSServiceStarted){
-            //Log.i("DEBUGGER_TAG", "Start GPS Server");
-            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
-            m_GPSServiceStarted = true;
+                // Permission is not already granted
+                // No explanation needed, we can request the permission.
+                    if(!m_GPSPermissionRequested){
+                        requestPermissions( new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                        m_GPSPermissionRequested = true;
+                    }
+
+                    return "PENDING";
+
+                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+
+                } else {
+                // Permission has already been granted
+                }
+            }
+
+            if(!m_GPSServiceStarted){
+                Log.i("OpenCPN", "Starting GPS Server");
+                m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
+                m_GPSServiceStarted = true;
+            }
+
         }
 
-        return m_GPSServer.doService( parm );
+
+        if(m_GPSServiceStarted)
+            return m_GPSServer.doService( parm );
+        else
+            return "PENDING";
     }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(!m_GPSServiceStarted){
+                        Log.i("OpenCPN", "Starting GPS Server");
+                        m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
+                        m_GPSServiceStarted = true;
+                    }
+                    m_GPSServer.doService( GPSServer.GPS_ON );
+
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            return;
+            }
+                // other 'case' lines to check for other
+                // permissions this app might request
+        }
+    }
+
 
     public String hasBluetooth( final int parm ){
         String ret = "Yes";
@@ -1747,6 +1808,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         return ret;
     }
+
 
     public String startBlueToothScan( final int parm ){
         Log.i("DEBUGGER_TAG", "startBlueToothScan");
