@@ -440,12 +440,12 @@ wxString ais8_001_22_notice_names[] = { // 128] = {
 
 static bool GetCanvasPointPix( ViewPort& vp, ChartCanvas *cp, double rlat, double rlon, wxPoint *r )
 {
-  if( cp != NULL )
-  {
-    return cp->GetCanvasPointPix(rlat, rlon, r);
-  }
-  *r = vp.GetPixFromLL(rlat, rlon);
-  return true;
+     if (cp != NULL)
+     {
+          return cp->GetCanvasPointPix(rlat, rlon, r);
+     }
+     *r = vp.GetPixFromLL(rlat, rlon);
+     return true;
 }
 
 
@@ -484,6 +484,7 @@ static void transrot_pts( int n, wxPoint *pt, float sin_theta, float cos_theta, 
 
 void AISDrawAreaNotices( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
+    if (cp == NULL) return;
     if( !g_pAIS || !cp->GetShowAIS() || !g_bShowAreaNotices )
         return;
 
@@ -1033,19 +1034,23 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     dash_long[1] = (int) ( 0.5 * gFrame->GetPrimaryCanvas()->GetPixPerMM() );  // Short gap            |
 
     int targetscale = 100;
-    int idxCC = cp->m_canvasIndex;
-    if (idxCC > AIS_TARGETDATA_MAX_CANVAS-1) return; //If more then n canvasses do not draw AIS anymore as we are running out of array index
-    if ( cp->GetAttenAIS() ){
-        if (td->NavStatus <= 15){ // NavStatus > 15 is AtoN, and we don want AtoN being counted for attenuation           
-            //with one tick per second targets can slink from 100 to 50 in abt 25 seconds
-            if ( td->importance  < AISImportanceSwitchPoint ) targetscale = td->last_scale[idxCC] -2;
-            //growing from 50 till 100% goes faster in 10 seconds
-            if ( td->importance  > AISImportanceSwitchPoint ) targetscale = td->last_scale[idxCC] +5; 
-            if ( targetscale > 100) targetscale = 100;
-            if (  targetscale < 50) targetscale = 50;
-            td->last_scale[idxCC] = targetscale; 
-            }
-        }
+    int idxCC = 0;
+    if (cp !=NULL){
+         idxCC = cp->m_canvasIndex;
+
+         if (idxCC > AIS_TARGETDATA_MAX_CANVAS - 1) return; //If more then n canvasses do not draw AIS anymore as we are running out of array index
+         if (cp->GetAttenAIS()) {
+              if (td->NavStatus <= 15) { // NavStatus > 15 is AtoN, and we don want AtoN being counted for attenuation           
+                  //with one tick per second targets can slink from 100 to 50 in abt 25 seconds
+                   if (td->importance < AISImportanceSwitchPoint) targetscale = td->last_scale[idxCC] - 2;
+                   //growing from 50 till 100% goes faster in 10 seconds
+                   if (td->importance > AISImportanceSwitchPoint) targetscale = td->last_scale[idxCC] + 5;
+                   if (targetscale > 100) targetscale = 100;
+                   if (targetscale < 50) targetscale = 50;
+                   td->last_scale[idxCC] = targetscale;
+              }
+         }
+    }
     
     //  Draw the icon rotated to the COG
     wxPoint ais_real_size[6];
@@ -1275,9 +1280,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     }
 
     //  Highlight the AIS target symbol if an alert dialog is currently open for it
-    if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() && cp ) {
-        if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
-            cp->JaggyCircle( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 100 );
+    if (cp != NULL) {
+         if (g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() && cp) {
+              if (g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI)
+                   cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
+         }
     }
 
     //  Highlight the AIS target symbol if a query dialog is currently open for it
@@ -1752,37 +1759,49 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     if( !g_pAIS ) return;
 
     // Toggling AIS display on and off
-    if( !cp->GetShowAIS() )
-        return;
-    
+    if (cp != NULL) {
+         if (!cp->GetShowAIS())
+              return;
+    }
     AIS_Target_Hash::iterator it;
     AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
     //      Iterate over the AIS Target Hashmap but only for the main chartcanvas. For secundairy canvasses we use the same value for the AIS importance
-    if ( cp->m_canvasIndex == 0 ){
-        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )  {
-            //calculate the importancefactor for each target
-            AIS_Target_Data *td = it->second;
-            double  So, Cpa, Rang, Siz = 0.0; 
-            So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
-            if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
-                    
-            if (td->bCPA_Valid){
-                Cpa=g_ScaledNumWeightCPA - g_ScaledNumWeightCPA/4 * td->CPA;
-                //if TCPA is positief (target is coming closer), make weight of CPA bigger
-                if (td->TCPA > .0) Cpa = Cpa + Cpa * g_ScaledNumWeightTCPA/100;
-                if ( Cpa < .0 ) Cpa = .0; //if CPA is > 4
-            }
-            else Cpa = .0;
-            
-            Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
-            if ( Rang > g_ScaledNumWeightRange ) Rang = g_ScaledNumWeightRange;
-            Rang = g_ScaledNumWeightRange - Rang;
-                                                
-            Siz = g_ScaledNumWeightSizeOfT/30*( td->DimA + td->DimB);
-            if ( Siz > g_ScaledNumWeightSizeOfT ) Siz = g_ScaledNumWeightSizeOfT;
-            td->importance = (float) So + Cpa + Rang + Siz;
-        }
+    bool go = false;
+
+    if (cp == NULL) { 
+         go = true;
     }
+    else if (cp->m_canvasIndex == 0) {
+         go = true;
+    }
+
+    if (go) {
+         for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
+              //calculate the importancefactor for each target
+              AIS_Target_Data *td = it->second;
+              double  So, Cpa, Rang, Siz = 0.0;
+              So = g_ScaledNumWeightSOG / 12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
+              if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG;
+
+              if (td->bCPA_Valid) {
+                   Cpa = g_ScaledNumWeightCPA - g_ScaledNumWeightCPA / 4 * td->CPA;
+                   //if TCPA is positief (target is coming closer), make weight of CPA bigger
+                   if (td->TCPA > .0) Cpa = Cpa + Cpa * g_ScaledNumWeightTCPA / 100;
+                   if (Cpa < .0) Cpa = .0; //if CPA is > 4
+              }
+              else Cpa = .0;
+
+              Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
+              if (Rang > g_ScaledNumWeightRange) Rang = g_ScaledNumWeightRange;
+              Rang = g_ScaledNumWeightRange - Rang;
+
+              Siz = g_ScaledNumWeightSizeOfT / 30 * (td->DimA + td->DimB);
+              if (Siz > g_ScaledNumWeightSizeOfT) Siz = g_ScaledNumWeightSizeOfT;
+              td->importance = (float)So + Cpa + Rang + Siz;
+         }
+    }
+
+    
     // If needed iterate over all targets, check if they fit in the viewport and if yes add the importancefactor to a sorted list 
     AISImportanceSwitchPoint = 0.0;    
     
@@ -1791,25 +1810,27 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
         Array[i] = 0.0;     
     
     int LowestInd = 0;
-    if ( cp->GetAttenAIS() ){
-        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it )  {
-            AIS_Target_Data *td = it->second;
-            if( vp.GetBBox().Contains( td->Lat,  td->Lon ))
-            {
-                if (td->importance > AISImportanceSwitchPoint ){
-                    Array[LowestInd]=td->importance;
-                    
-                    AISImportanceSwitchPoint = Array[0];
-                    LowestInd = 0;
-                    for ( int i=1; i < g_ShowScaled_Num; i++){
-                        if ( Array[i] < AISImportanceSwitchPoint ){
-                            AISImportanceSwitchPoint = Array[i];
-                            LowestInd = i;                            
+    if (cp != NULL) {
+         if (cp->GetAttenAIS()) {
+              for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
+                   AIS_Target_Data *td = it->second;
+                   if (vp.GetBBox().Contains(td->Lat, td->Lon))
+                   {
+                        if (td->importance > AISImportanceSwitchPoint) {
+                             Array[LowestInd] = td->importance;
+
+                             AISImportanceSwitchPoint = Array[0];
+                             LowestInd = 0;
+                             for (int i = 1; i < g_ShowScaled_Num; i++) {
+                                  if (Array[i] < AISImportanceSwitchPoint) {
+                                       AISImportanceSwitchPoint = Array[i];
+                                       LowestInd = i;
+                                  }
+                             }
                         }
-                    }
-                }
-            }
-        }        
+                   }
+              }
+         }
     }
     delete[] Array;
 
