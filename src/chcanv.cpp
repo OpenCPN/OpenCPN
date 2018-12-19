@@ -9034,6 +9034,9 @@ void ChartCanvas::StartRoute( void )
     if(g_brouteCreating)
         return;
     
+    if(g_MainToolbar)
+        g_MainToolbar->DisableTooltips();
+    
     g_brouteCreating = true;
     m_routeState = 1;
     m_bDrawingRoute = false;
@@ -9091,6 +9094,9 @@ void ChartCanvas::FinishRoute( void )
     undo->InvalidateUndo();
     gFrame->RefreshAllCanvas( true );
     
+    if(g_MainToolbar)
+        g_MainToolbar->EnableTooltips();
+
     g_brouteCreating = false;
 }
 
