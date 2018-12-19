@@ -2308,25 +2308,26 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
     if( tool && tool->IsButton() && IsShown() ) {
 
-        //    ToolTips
-        if( NULL == m_pToolTipWin ) {
-            m_pToolTipWin = new ToolTipWin( NULL/*GetParent()*/ );
-            m_pToolTipWin->SetColorScheme( m_currentColorScheme );
-            m_pToolTipWin->Hide();
-        }
+        if(m_btooltip_show){
+            //    ToolTips
+            if( NULL == m_pToolTipWin ) {
+                m_pToolTipWin = new ToolTipWin( NULL/*GetParent()*/ );
+                m_pToolTipWin->SetColorScheme( m_currentColorScheme );
+                m_pToolTipWin->Hide();
+            }
 
-        if( tool != m_last_ro_tool ){
-            m_pToolTipWin->Hide();
-        }
+            if( tool != m_last_ro_tool ){
+                m_pToolTipWin->Hide();
+            }
 
 #ifndef __OCPN__ANDROID__
-        if( !m_pToolTipWin->IsShown() ) {
-            if(!m_tooltip_timer.IsRunning()){
-                m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
+            if( !m_pToolTipWin->IsShown() ) {
+                if(!m_tooltip_timer.IsRunning()){
+                    m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
+                }
             }
-        }
 #endif
-
+        }
         //    Tool Rollover highlighting
         if(!g_btouch && m_tbenableRolloverBitmaps){
             if( tool != m_last_ro_tool ) {
