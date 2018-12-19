@@ -7952,7 +7952,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                 break; // AC
 
             case RUL_ARE_PA:
-                //RenderToGLAP( rzRules, rules, vp );
+                RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
             case RUL_CND_SY: {
@@ -7970,7 +7970,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                                 RenderToGLAC( rzRules, rules, vp );
                                 break;
                             case RUL_ARE_PA:
-                                //RenderToGLAP( rzRules, rules, vp );
+                                RenderToGLAP( rzRules, rules, vp );
                                 break;
                             case RUL_NONE:
                             default:
