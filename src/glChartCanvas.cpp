@@ -2764,7 +2764,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
 
     // Hilite rollover patch
     LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
-//    hiregion.Intersect(region);
 
     if( !hiregion.Empty() ) {
         glEnable( GL_BLEND );
@@ -2858,108 +2857,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0);
                 glDisable(GL_TEXTURE_2D);
             }
-#if 0                    
-            else if(scale_factor > 25)  { 
-                // must use POT textures
-                // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
-                // This method of fogging is very slow, so only activate it if the scale_factor is
-                // very large.
-
-                int tex_size = 512;  // reasonable assumption
-                int ntx = (width / tex_size) + 1;
-                int nty = (height / tex_size) + 1;
-
-                GLuint *screen_capture = new GLuint[ntx * nty];
-                glGenTextures( ntx * nty, screen_capture );
-    
-                // Render at reduced LOD (i.e. higher mipmap number)
-                double bias = fog/70;
-                glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                        
-                glClear(GL_DEPTH_BUFFER_BIT);
-                int max_mipmap = 3;
-                        
-                for(int i=0 ; i < ntx ; i++){
-                    for(int j=0 ; j < nty ; j++){
-                                
-                        int screen_x = i * tex_size;
-                        int screen_y = j * tex_size;
-                                
-                        glEnable(GL_TEXTURE_2D);
-                        glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
- 
-                        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
-                        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max_mipmap );
-                                
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, max_mipmap);
-                                
-                        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-                                
-    
-                        unsigned char *ps = (unsigned char *)malloc( tex_size * tex_size * 3 );
-                        glReadPixels(screen_x, screen_y, tex_size, tex_size, GL_RGB, GL_UNSIGNED_BYTE, ps );
-                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, tex_size, tex_size, 0, GL_RGB, GL_UNSIGNED_BYTE, ps );
-
-                        unsigned char *pd;
-                        int dim = tex_size / 2;
-                        for( int level = 1 ; level <= max_mipmap ; level++){
-                            pd = (unsigned char *) malloc( dim * dim * 3 );
-                            HalfScaleChartBits( 2*dim, 2*dim, ps, pd );
-
-<<<<<<< HEAD
-                                    MipMap_24( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
-=======
-                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
->>>>>>> 90e80c0... Initial projections support commit
-                                    
-                            free(ps);
-                            ps = pd;
-                                    
-                            dim /= 2;
-                        }
-                                
-                        free(pd);
-                    }
-                }
-                        
-                for(int i=0 ; i < ntx ; i++){
-                    int ybase =  height - tex_size; 
-                    for(int j=0 ; j < nty ; j++){
-                                
-                        int screen_x = i * tex_size;
-                        int screen_y = j * tex_size;
-                                
-                        glEnable(GL_TEXTURE_2D);
-                        glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
-                                
-                        double bias = fog/70;
-                        glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
-                        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                                
-                        glBegin(GL_QUADS);
-                        glTexCoord2f(0 , 1 ); glVertex2i(screen_x,            ybase);
-                        glTexCoord2f(0 , 0 ); glVertex2i(screen_x,            ybase + tex_size);
-                        glTexCoord2f(1 , 0 ); glVertex2i(screen_x + tex_size, ybase + tex_size);
-                        glTexCoord2f(1 , 1 ); glVertex2i(screen_x + tex_size, ybase);
-                        glEnd ();
-                        
-                        ybase -= tex_size;
-                    }
-                }
-                        
-                glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, 0);
-                glDeleteTextures(ntx * nty, screen_capture);
-                glDisable(GL_TEXTURE_2D);
-                delete [] screen_capture;
-            }
-#endif
                     
-#if 1
             else if(scale_factor > 20){ 
                 // Fogging by alpha blending                
                 fog = ((scale_factor - 20) * 255.) / 20.;
@@ -2974,7 +2872,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 DrawRegion(vp, rendered_region);
                 glDisable( GL_BLEND );
             }
-#endif                
         }
     }
 }
