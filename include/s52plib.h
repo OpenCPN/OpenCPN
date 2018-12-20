@@ -194,7 +194,12 @@ public:
 
     void SetDisplayCategory( enum _DisCat cat );
     DisCat GetDisplayCategory(){ return m_nDisplayCategory; }
-    
+
+    void SetGLPolygonSmoothing( bool bset ){ m_GLPolygonSmoothing = bset;}
+    bool GetGLPolygonSmoothing( ){ return m_GLPolygonSmoothing; }
+    void SetGLLineSmoothing( bool bset ){ m_GLLineSmoothing = bset;}
+    bool GetGLLineSmoothing( ){ return m_GLLineSmoothing; }
+
     wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
     LUPArrayContainer *SelectLUPArrayContainer( LUPname TNAM );
         
@@ -425,7 +430,8 @@ private:
     bool m_useFBO;
     bool m_useVBO;
     int  m_TextureFormat;
-    
+    bool m_GLLineSmoothing;
+    bool m_GLPolygonSmoothing;
 };
 
 

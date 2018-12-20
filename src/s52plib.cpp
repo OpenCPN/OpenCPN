@@ -59,11 +59,6 @@ extern bool    g_oz_vector_scale;
 extern float g_ChartScaleFactorExp;
 extern int g_chart_zoom_modifier_vector;
 
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-extern ocpnGLOptions g_GLOptions;
-#endif
-
 float g_scaminScale;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
@@ -421,6 +416,8 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_useFBO = false;
     m_useVBO = false;
     m_TextureFormat = -1;
+    SetGLPolygonSmoothing( true );
+    SetGLLineSmoothing( true );
     
 }
 
@@ -1977,23 +1974,22 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                         break;
                 }
                 
+                int xp = x;
+                int yp = y;
+
                 if(fabs(vp->rotation) > 0.01){
                     float c = cosf(-vp->rotation );
                     float s = sinf(-vp->rotation );
                     float x = xadjust;
                     float y = yadjust;
-                    xadjust =  x*c - y*s;
-                    yadjust =  x*s + y*c;
+                    xp += x*c - y*s;
+                    yp += x*s + y*c;
                     
                 }
-                
-                int xp = x;
-                int yp = y;
-                
-                xp+= xadjust;
-                yp+= yadjust;
-                
-                
+                else{
+                    xp+= xadjust;
+                    yp+= yadjust;
+                }
                 
                 
                 pRectDrawn->SetX( xp );
@@ -2127,6 +2123,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 default:
                     break;
             }
+
+            int xp = x;
+            int yp = y;
+            
             
             if(fabs(vp->rotation) > 0.01){
                 float c = cosf(-vp->rotation );
@@ -2137,9 +2137,6 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 yadjust =  x*s + y*c;
                 
             }
-            
-            int xp = x;
-            int yp = y;
             
             xp+= xadjust;
             yp+= yadjust;
@@ -3374,7 +3371,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 #else    
     glLineWidth(lineWidth);
-    if(lineWidth > 4.0 && g_GLOptions.m_GLLineSmoothing){
+    if(lineWidth > 4.0 && m_GLLineSmoothing){
         glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
     }
@@ -3587,7 +3584,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             else
                 glDisable( GL_LINE_STIPPLE );
 #endif
-            if(w >= 2 && g_GLOptions.m_GLLineSmoothing){    
+            if(w >= 2 && m_GLLineSmoothing){    
                 glEnable( GL_LINE_SMOOTH );
                 glEnable( GL_BLEND );
             }
@@ -3792,7 +3789,7 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         else
             glDisable( GL_LINE_STIPPLE );
 #endif
-        if(w >= 2 && g_GLOptions.m_GLLineSmoothing){
+        if(w >= 2 && m_GLLineSmoothing){
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
         }
@@ -4831,7 +4828,7 @@ next_seg_dc:
                     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glEnable (GL_BLEND);
                     
-                    if( g_GLOptions.m_GLLineSmoothing )
+                    if( m_GLLineSmoothing )
                     {
                         glEnable (GL_LINE_SMOOTH);
                         glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -4871,7 +4868,7 @@ next_seg_dc:
                     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glEnable (GL_BLEND);
 
-                    if( g_GLOptions.m_GLLineSmoothing ) {
+                    if( m_GLLineSmoothing ) {
                         glEnable (GL_LINE_SMOOTH);
                         glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
                     }
@@ -5406,7 +5403,7 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 #ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
-        if( g_GLOptions.m_GLLineSmoothing )
+        if( m_GLLineSmoothing )
             glEnable( GL_LINE_SMOOTH );
 #endif        
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
@@ -9219,7 +9216,7 @@ void RenderFromHPGL::SetPen()
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
-        if( g_GLOptions.m_GLPolygonSmoothing )
+        if( plib->GetGLPolygonSmoothing() )
             glEnable( GL_POLYGON_SMOOTH );
         
         glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
@@ -9235,7 +9232,7 @@ void RenderFromHPGL::SetPen()
 #endif
         
 #ifndef __OCPN__ANDROID__
-        if( line_width >= 2 && g_GLOptions.m_GLLineSmoothing )
+        if( line_width >= 2 && plib->GetGLLineSmoothing() )
             glEnable( GL_LINE_SMOOTH );
         else
             glDisable( GL_LINE_SMOOTH );
