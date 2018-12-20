@@ -243,6 +243,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
                      &pIDX->IDX_type,&pIDX->IDX_zone[0],&pIDX->IDX_lon,&pIDX->IDX_lat,&TZHr,&TZMin,
                      &pIDX->IDX_station_name[0])) return(TC_INDEX_ENTRY_BAD);
 
+    if(TZHr < 0 && TZMin > 0 ) TZMin=-TZMin;  //correct for negative timezones with fractional hours (NewFoundland)
     pIDX->IDX_time_zone = TZHr*60 + TZMin;
 
     if (strchr("tcUu",index_line_buffer[0])) { // Substation so get second line of info
