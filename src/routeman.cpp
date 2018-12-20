@@ -605,8 +605,12 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
-    //Send all known Autopilot messages upstream
-    
+   //Send all known Autopilot messages upstream
+
+   //Avoid a possible not initiated SOG/COG. APs can be confused if in NAV mode wo valid GPS
+   double r_Sog(0.0), r_Cog(0.0);
+   if (!wxIsNaN(gSog)) r_Sog = gSog;
+   if (!wxIsNaN(gCog)) r_Cog = gCog;
     //RMB
         {
 
@@ -635,12 +639,13 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
             m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
-            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = gSog;
+            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog;
 
             if( m_bArrival ) m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
             else
                 m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
+            m_NMEA0183.Rmb.FAAModeIndicator = "A";
             m_NMEA0183.Rmb.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );
@@ -662,8 +667,8 @@ bool Routeman::UpdateAutopilot()
             else
                 m_NMEA0183.Rmc.Position.Longitude.Set( gLon, _T("E") );
 
-            m_NMEA0183.Rmc.SpeedOverGroundKnots = gSog;
-            m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = gCog;
+            m_NMEA0183.Rmc.SpeedOverGroundKnots = r_Sog;
+            m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = r_Cog;
 
             if( !wxIsNaN(gVar) ) {
                 if( gVar < 0. ) {
@@ -683,7 +688,7 @@ bool Routeman::UpdateAutopilot()
 
             wxString date = utc.Format( _T("%d%m%y") );
             m_NMEA0183.Rmc.Date = date;
-
+            m_NMEA0183.Rmc.FAAModeIndicator = "A";
             m_NMEA0183.Rmc.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );

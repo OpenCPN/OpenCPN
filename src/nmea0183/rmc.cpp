@@ -172,7 +172,7 @@ bool RMC::Write( SENTENCE& sentence )
          sentence += MagneticVariation;
          sentence += MagneticVariationDirection;
    }
-
+   sentence += FAAModeIndicator;
    sentence.Finish();
 
    return( TRUE );
@@ -190,6 +190,7 @@ const RMC& RMC::operator = ( const RMC& source )
    Date                       = source.Date;
    MagneticVariation          = source.MagneticVariation;
    MagneticVariationDirection = source.MagneticVariationDirection;
+   FAAModeIndicator           = source.FAAModeIndicator;
 
   return( *this );
 }
