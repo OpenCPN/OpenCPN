@@ -513,6 +513,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
 #endif
     
     RecalculateSize();
+    Centre();
 }
 
 void RouteProp::RecalculateSize( void )
@@ -550,7 +551,6 @@ void RouteProp::RecalculateSize( void )
             Layout();
     }
     
-    Centre();
 }
 
 
