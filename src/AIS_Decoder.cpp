@@ -967,7 +967,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                         AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
                         if(  it != AISTargetNames->end()  ) {
                         // If we don't have a name yet but have one in the MMSI->ShipName hash, use the one in the hash
-                            wxString ship_name = ( *AISTargetNames )[mmsi];
+                            // Prevent writing more then 20 char, this will give a crash
+                            wxString ship_name = ( *AISTargetNames )[mmsi].Left(20); 
                             strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
                             pTargetData->b_nameValid = true;
                             pTargetData->b_nameFromCache = true;
