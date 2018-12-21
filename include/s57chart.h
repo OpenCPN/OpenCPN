@@ -236,7 +236,9 @@ public:
       InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
 protected:
-    void AssembleLineGeometry( void );
+      void AssembleLineGeometry( void );
+
+      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
     
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
@@ -288,7 +290,6 @@ private:
       char        *mybuf_ptr;
       int         hdr_len;
       wxString    m_SENCFileName;
-      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
 
 
       wxArrayString *m_tmpup_array;

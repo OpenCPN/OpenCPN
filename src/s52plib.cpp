@@ -39,6 +39,7 @@
 
 #include "s52plib.h"
 #include "s57chart.h"                   // for back function references
+#include "chartbase.h"
 #include "mygeom.h"
 #include "cutil.h"
 #include "s52utils.h"
@@ -3299,6 +3300,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         b_useVBO = true;
 
     if( !b_useVBO ){
+#if 0        
         if( rzRules->obj->m_chart_context->chart ){
             vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer(); 
         }
@@ -3309,6 +3311,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         if(!vertex_buffer)
             return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
+#else
+        vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer; 
+            
+#endif            
     }
 
     
@@ -3611,7 +3617,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     {
         float *ppt;
 
-        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();;
+        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
         line_segment_element *ls = rzRules->obj->m_ls_list;
 
 #ifdef ocpnUSE_GL
@@ -3809,8 +3815,8 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( rzRules->obj->m_n_lsindex ) {
         VE_Hash *ve_hash; 
         VC_Hash *vc_hash; 
-        ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash();             // This is cm93 
-        vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash(); 
+        ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash;             // This is cm93 
+        vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
 
 
         //  Get the current display priority
@@ -4203,7 +4209,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
         double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
         
-        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();;
+        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
         line_segment_element *ls = rzRules->obj->m_ls_list;
         
         unsigned int index = 0;
@@ -4413,8 +4419,8 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     if( rzRules->obj->m_n_lsindex ) {
         
-        VE_Hash *ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash(); 
-        VC_Hash *vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash(); 
+        VE_Hash *ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash; 
+        VC_Hash *vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
         
         unsigned int nls_max;
         if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load

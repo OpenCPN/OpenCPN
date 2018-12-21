@@ -2243,6 +2243,30 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                         loadcell_key++;
                   }
+                  
+                  AssembleLineGeometry();
+
+                      //  Set up the chart context
+                    m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
+                    m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
+                    
+                    m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+                    m_this_chart_context->pRigidATONArray = pRigidATONArray;
+                    m_this_chart_context->chart = this;
+                    m_this_chart_context->safety_contour = 1e6;    // to be evaluated later
+                    m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+                    
+                    //  Loop and populate all the objects
+                    for( int i = 0; i < PI_PRIO_NUM; ++i ) {
+                        for( int j = 0; j < PI_LUPNAME_NUM; j++ ) {
+                            ObjRazRules *top = razRules[i][j];
+                            while(top){
+                                if(top->obj)
+                                    top->obj->m_chart_context = m_this_chart_context;
+                                top = top->next;
+                            }
+                        }
+                    }
                 OCPNPlatform::HideBusySpinner();
             }
       }
