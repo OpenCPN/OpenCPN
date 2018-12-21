@@ -182,6 +182,7 @@ ocpnGLOptions g_GLOptions;
 
 //    For VBO(s)
 bool         g_b_EnableVBO;
+bool         g_b_needFinish;  //Need glFinish() call on each frame?
 
 
 PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
@@ -708,6 +709,14 @@ void glChartCanvas::SetupOpenGL()
     wxLogMessage( _T("OpenGL extensions available: ") );
     wxLogMessage(m_extensions );
 #endif    
+
+    bool b_oldIntel = false;
+    if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND ){
+        if( GetRendererString().Upper().Find( _T("965") ) != wxNOT_FOUND ){
+            wxLogMessage( _T("OpenGL-> Detected early Intel renderer, disabling some GL features") );
+            b_oldIntel = true;
+        }
+    }
     
     //  Set the minimum line width
     GLint parms[2];
@@ -792,13 +801,9 @@ void glChartCanvas::SetupOpenGL()
 #endif
  
 #ifdef __OCPN__ANDROID__
-            g_texture_rectangle_format = GL_TEXTURE_2D;
-//        m_b_DisableFBO = false;
+         g_texture_rectangle_format = GL_TEXTURE_2D;
 #endif
         
-//    if(b_timeGL)
-//        m_b_DisableFBO = true;
-    
     GetglEntryPoints();
     
     //  ATI cards do not do glGenerateMipmap very well, or at all.
@@ -825,24 +830,22 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
+    
+    // VBO??
+    
     g_b_EnableVBO = true;
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
 
 #if defined( __WXMSW__ ) || defined(__WXOSX__)
-        
-    if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> Detected Windows Intel renderer, disabling Vertexbuffer Objects") );
+    if(b_oldIntel)    
         g_b_EnableVBO = false;
-    }
 #endif
 
 #ifdef __OCPN__ANDROID__
     g_b_EnableVBO = false;
 #endif
 
-   //g_b_EnableVBO = false;
-    
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
@@ -975,6 +978,10 @@ void glChartCanvas::SetupOpenGL()
     } 
     
     s_b_useFBO = m_b_BuiltFBO;
+
+    // Some older Intel GL drivers need a glFinish() call after each full frame render
+    if(b_oldIntel)
+        g_b_needFinish = true;
     
     //  Inform the S52 PLIB of options determined
     if(ps52plib)
@@ -1003,7 +1010,7 @@ void glChartCanvas::SetupCompression()
 
 #ifdef __WXMSW__    
     if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )) {
-        wxLogMessage( _("OpenGL-> SSE2 Instruction set not available") );
+        wxLogMessage( _T("OpenGL-> SSE2 Instruction set not available") );
         goto no_compression;
     }
 #endif
@@ -1019,7 +1026,7 @@ void glChartCanvas::SetupCompression()
     if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") && s_glCompressedTexImage2D) {
         g_raster_format = GL_ETC1_RGB8_OES;
     
-        wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
+        wxLogMessage( _T("OpenGL-> Using oes etc1 compression") );
     }
 #endif
     
@@ -1040,14 +1047,14 @@ void glChartCanvas::SetupCompression()
             else
                 g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
             
-            wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
+            wxLogMessage( _T("OpenGL-> Using s3tc dxt1 compression") );
         } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
                   s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
             g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
             
-            wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
+            wxLogMessage( _T("OpenGL-> Using 3dfx fxt1 compression") );
         } else {
-            wxLogMessage( _("OpenGL-> No Useable compression format found") );
+            wxLogMessage( _T("OpenGL-> No Useable compression format found") );
             goto no_compression;
         }
     }
@@ -3338,7 +3345,7 @@ void glChartCanvas::Render()
 
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
-            //glFinish();   
+            glFinish();   
             g_glstopwatch.Start();
         }
     }
@@ -3821,11 +3828,10 @@ void glChartCanvas::Render()
 
     
     
-#ifdef __WXMSW__    
-     //  MSW OpenGL drivers are generally very unstable.
+     //  Some older MSW OpenGL drivers are generally very unstable.
      //  This helps...   
-     //glFinish();
-#endif    
+    if(g_b_needFinish)
+        glFinish();
     
     SwapBuffers();
     if(b_timeGL && g_bShowFPS){
