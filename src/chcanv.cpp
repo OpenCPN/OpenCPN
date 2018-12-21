@@ -1065,6 +1065,9 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     
     m_bCourseUp = pcc->bCourseUp;
     m_bLookAhead = pcc->bLookahead;
+    
+    m_singleChart = NULL;
+
 }
 
 void ChartCanvas::CheckGroupValid( bool showMessage, bool switchGroup0)
@@ -9304,13 +9307,17 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
                     double dist = sqrt(
                                       (double) ( ( pixx1 - pixx ) * ( pixx1 - pixx ) )
                                       + ( ( pixy1 - pixy ) * ( pixy1 - pixy ) ) ) / vp.view_scale_ppm;
-                    //    calculate GC distance between these two points in meters
-                    double distgc = DistGreatCircle( plylat, plylon, plylat1, plylon1 ) * 1852.;
+                   if(dist > 0.0){
+                   //    calculate GC distance between these two points in meters
+                        double distgc = DistGreatCircle( plylat, plylon, plylat1, plylon1 ) * 1852.;
 
                     //    If the distances are nonsense, it means that the scale is very small and the segment wrapped the world
                     //    So skip it....
                     //    TODO improve this to draw two segments
-                    if( fabs( dist - distgc ) > 10000. * 1852. )          //lotsa miles
+                        if( fabs( dist - distgc ) > 10000. * 1852. )          //lotsa miles
+                            b_skip = true;
+                    }
+                    else
                         b_skip = true;
                 }
 
