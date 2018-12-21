@@ -1358,6 +1358,9 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
             * sindlamm * sindlamm;
         d = acos(cosd = 1 - L - L);
+        if(d < 1e-3)
+            return 0.0;
+        
         wxASSERT( d != 0.0 );
         if (ellipse) {
               E = cosd + cosd;
