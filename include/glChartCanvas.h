@@ -71,7 +71,7 @@ public:
     static ViewPort ClippedViewport(const ViewPort &vp, const LLRegion &region);
 
     static bool HasNormalizedViewPort(const ViewPort &vp);
-    void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
+    static void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
     static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);

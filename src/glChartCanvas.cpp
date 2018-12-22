@@ -1147,8 +1147,6 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 //   These routines allow reusable coordinates
 bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp)
 {
-    return false;
-    
     return vp.m_projection_type == PROJECTION_MERCATOR ||
         vp.m_projection_type == PROJECTION_POLAR ||
         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
@@ -1170,13 +1168,15 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
     case PROJECTION_MERCATOR:
     case PROJECTION_EQUIRECTANGULAR:
     case PROJECTION_WEB_MERCATOR:
-        m_pParentCanvas->GetDoubleCanvasPointPixVP(vp, lat, lon, &point);
+        //m_pParentCanvas->GetDoubleCanvasPointPixVP(vp, lat, lon, &point);
+        point = vp.GetDoublePixFromLL(lat, lon);
         glTranslated(point.m_x, point.m_y, 0);
         glScaled(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
         break;
 
     case PROJECTION_POLAR:
-        m_pParentCanvas->GetDoubleCanvasPointPixVP(vp, vp.clat > 0 ? 90 : -90, vp.clon, &point);
+        //m_pParentCanvas->GetDoubleCanvasPointPixVP(vp, vp.clat > 0 ? 90 : -90, vp.clon, &point);
+        point = vp.GetDoublePixFromLL(vp.clat > 0 ? 90 : -90, vp.clon);
         glTranslated(point.m_x, point.m_y, 0);
         glRotatef(vp.clon - lon, 0, 0, vp.clat);
         glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);

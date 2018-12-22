@@ -104,13 +104,13 @@ void GSHHSChart::Reset() {
 
 int GSHHSChart::GetMinAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMinAvailableQuality();
 }
 
 int GSHHSChart::GetMaxAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMaxAvailableQuality();
 }
 
@@ -824,11 +824,11 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         
         // use a viewport that allows the vertexes to be reused over many frames
         // TODO fix for multicanvas
-//         if(glChartCanvas::HasNormalizedViewPort(vp)) {
-//             glPushMatrix();
-//             glChartCanvas::MultMatrixViewPort(vp);
-//             nvp = glChartCanvas::NormalizedViewPort(vp);
-//         }
+         if(glChartCanvas::HasNormalizedViewPort(vp)) {
+             glPushMatrix();
+             glChartCanvas::MultMatrixViewPort(vp);
+             nvp = glChartCanvas::NormalizedViewPort(vp);
+         }
     }
 #endif
     for( clon = clonmin; clon < clonmax; clon++ ) {
