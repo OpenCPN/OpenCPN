@@ -38,8 +38,8 @@
 #include "viewport.h"
 
 #include "s52plib.h"
-#include "s57chart.h"                   // for back function references
-#include "chartbase.h"
+//#include "s57chart.h"                   // for back function references
+//#include "chartbase.h"
 #include "mygeom.h"
 #include "cutil.h"
 #include "s52utils.h"
@@ -52,6 +52,10 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
+
+#ifndef PROJECTION_MERCATOR
+    #define PROJECTION_MERCATOR 1
+#endif
 
 extern float g_GLMinCartographicLineWidth;
 extern float g_GLMinSymbolLineWidth;
@@ -2355,19 +2359,17 @@ bool s52plib::TextRenderCheck( ObjRazRules *rzRules )
     
     //    An optimization for CM93 charts.
     //    Don't show the text associated with some objects, since CM93 database includes _texto objects aplenty
-    if( rzRules->obj->m_chart_context->chart ) {
-        if( ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93 )
-            || ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93COMP ) ) {
-            if( !strncmp( rzRules->obj->FeatureName, "BUAARE", 6 ) )
-                return false;
-            else if( !strncmp( rzRules->obj->FeatureName, "SEAARE", 6 ) )
-                return false;
-            else if( !strncmp( rzRules->obj->FeatureName, "LNDRGN", 6 ) )
-                return false;
-            else if( !strncmp( rzRules->obj->FeatureName, "LNDARE", 6 ) )
-                return false;
+    if( ( (int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93 )
+        || ( (int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93COMP ) ) {
+        if( !strncmp( rzRules->obj->FeatureName, "BUAARE", 6 ) )
+            return false;
+        else if( !strncmp( rzRules->obj->FeatureName, "SEAARE", 6 ) )
+            return false;
+        else if( !strncmp( rzRules->obj->FeatureName, "LNDRGN", 6 ) )
+            return false;
+        else if( !strncmp( rzRules->obj->FeatureName, "LNDARE", 6 ) )
+            return false;
         }
-    }
 
     return true;
 }
@@ -3292,7 +3294,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     if( !rzRules->obj->m_chart_context->chart )
         return RenderLS(rzRules, rules, vp);    // this is where S63 PlugIn gets caught
-        
+    
+    if(( vp->GetBBox().GetMaxLon() >= 180.) || (vp->GetBBox().GetMinLon() <= -180.))
+        return RenderLS(rzRules, rules, vp);    // cm03 has trouble at IDL        
+    
     bool b_useVBO = false;
     float *vertex_buffer = 0;
     
@@ -5971,7 +5976,7 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
             ls = ls->next;
         }
     }
-    
+#if 0    
     else if( rzRules->obj->m_n_lsindex && rzRules->obj->m_lsindex_array) {
         VE_Hash *edge_hash; 
         
@@ -6004,7 +6009,7 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
 
         }
     }
-
+#endif
         
     return 1;
 }
@@ -7207,8 +7212,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             float x_origin = rzRules->obj->x_origin;
             
             if(rzRules->obj->m_chart_context->chart) {          // not a PlugIn Chart
-                if( ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93 )
-                    || ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93COMP ) )
+                if( ( (int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93 )
+                    || ( (int)rzRules->obj->auxParm3 == (int)PI_CHART_TYPE_CM93COMP ) )
                 {
                     //      We may need to translate object coordinates by 360 degrees to conform.
                     if( BBView.GetMaxLon() >= 180. ) {
@@ -9041,32 +9046,36 @@ void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 
 bool s52plib::GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoint *pp, int nv, ViewPort *vp )
 {
-    if(rzRules->obj->m_chart_context->chart) {
-        rzRules->obj->m_chart_context->chart->GetPointPix(rzRules, pd, pp, nv);
-    }
-    else {
         for( int i = 0; i < nv; i++ ) {
-#if 1
             GetPointPixSingle(rzRules, pd[i].m_y, pd[i].m_x, pp + i, vp);
-#else
-            pp[i].x = roundint(((pd[i].m_x - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
-            pp[i].y = roundint((vp->pix_height/2) - ((pd[i].m_y - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
-#endif
         }
-    }
     
     return true;
 }
 
 bool s52plib::GetPointPixSingle( ObjRazRules *rzRules, float north, float east, wxPoint *r, ViewPort *vp )
 {
-    if(rzRules->obj->m_chart_context->chart) {
-        rzRules->obj->m_chart_context->chart->GetPointPix(rzRules, north, east, r);
-    }
-    else {
         if(vp->m_projection_type == PROJECTION_MERCATOR) {
-            r->x = roundint(((east - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
-            r->y = roundint((vp->pix_height/2) - ((north - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
+            
+            double xr =  rzRules->obj->x_rate;
+            double xo =  rzRules->obj->x_origin;
+            double yr =  rzRules->obj->y_rate;
+            double yo =  rzRules->obj->y_origin;
+            
+            if(fabs(xo) > 1){                           // cm93 hits this
+                if ( vp->GetBBox().GetMaxLon() >= 180. && rzRules->obj->BBObj.GetMaxLon() < vp->GetBBox().GetMinLon() )
+                    xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                else if( (vp->GetBBox().GetMinLon() <= -180. &&
+                    rzRules->obj->BBObj.GetMinLon() > vp->GetBBox().GetMaxLon()) ||
+                (rzRules->obj->BBObj.GetMaxLon() >= 180 && vp->GetBBox().GetMinLon() <= 0.))
+                    xo -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+            }
+
+            double valx = ( east * xr ) + xo;
+            double valy = ( north * yr ) + yo;
+
+            r->x = roundint(((valx - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
+            r->y = roundint((vp->pix_height/2) - ((valy - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
         } else {
               double lat, lon;
               fromSM(east - rzRules->sm_transform_parms->easting_vp_center,
@@ -9075,7 +9084,6 @@ bool s52plib::GetPointPixSingle( ObjRazRules *rzRules, float north, float east, 
 
               *r = vp->GetPixFromLL(north, east);
         }
-    }
     
     return true;
 }

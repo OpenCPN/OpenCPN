@@ -4092,6 +4092,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->x_origin -= trans_WGS84_offset_x;
       pobj->y_origin -= trans_WGS84_offset_y;
 
+      // Mark the object chart type, for the convenience of S52PLIB
+      pobj->auxParm3 = CHART_TYPE_CM93;
+      
       return pobj;
 }
 
