@@ -135,6 +135,7 @@ extern double           g_display_size_mm;
 extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
+extern unsigned int     g_canvasConfig;
 
 static const char* const DEFAULT_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -1577,7 +1578,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
     return true;
 }
 
-bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp)
+bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, bool render)
 {
     for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
@@ -1593,7 +1594,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 107:
                 {
                     opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
-                    if(ppi)
+                    if(ppi && render)
                         ppi->RenderGLOverlay(pcontext, &pivp);
                     break;
                 }
@@ -1608,10 +1609,14 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 115:
                 case 116:    
                 {
-                    opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                    if(ppi)
-                        ppi->RenderGLOverlay(pcontext, &pivp);
-                    break;
+                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                     if (ppi && render)
+                          ppi->RenderGLOverlay(pcontext, &pivp);
+                     opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
+                     if (ppi116) {
+                          ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, g_canvasConfig);
+                     }
+                     break;
                 }
                 default:
                     break;
@@ -3921,6 +3926,11 @@ opencpn_plugin_116::opencpn_plugin_116(void *pmgr)
 
 opencpn_plugin_116::~opencpn_plugin_116(void)
 {
+}
+
+bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas)
+{
+     return false;
 }
 
 //          Helper and interface classes
