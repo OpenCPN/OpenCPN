@@ -97,7 +97,8 @@ private:
     
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
-    AIS_Target_Name_Hash *AISTargetNames;
+    AIS_Target_Name_Hash *AISTargetNamesC;
+    AIS_Target_Name_Hash *AISTargetNamesNC;
 
     bool              m_busy;
     wxTimer           TimerAIS;
