@@ -1946,7 +1946,20 @@ void AIS_Decoder::UpdateAllTracks( void )
 
 void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
 {
-    if( !ptarget->b_positionOnceValid ) return;
+   if( !ptarget->b_positionOnceValid ) return;
+    // Reject for unbelievable jumps (corrupted/bad data)
+    if ( ptarget->m_ptrack->GetCount() > 0 )
+    {
+        AISTargetTrackPoint *LastTrackpoint =  ptarget->m_ptrack->GetLast()->GetData();
+        if ( fabs( LastTrackpoint->m_lat - ptarget->Lat ) > .1  || fabs( LastTrackpoint->m_lon - ptarget->Lon ) > .1 )
+        {
+            // after an unlikely jump in pos, the last trackpoint might also be wrong
+            // just to be sure we do delete this one as well.
+            ptarget->m_ptrack->pop_back();
+            ptarget->b_positionDoubtful = true;            
+            return;
+        }        
+    }
 
     //    Add the newest point
     AISTargetTrackPoint *ptrackpoint = new AISTargetTrackPoint;
