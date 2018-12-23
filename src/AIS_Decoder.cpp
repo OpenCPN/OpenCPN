@@ -34,6 +34,7 @@
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "Track.h"
+#include <multiplexer.h>
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -95,6 +96,7 @@ extern MyConfig *pConfig;
 extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
 extern PlugInManager             *g_pi_manager;
+extern Multiplexer      *g_pMUX;
 
 bool g_benableAISNameCache;
 bool g_bUseOnlyConfirmedAISName;
@@ -117,6 +119,7 @@ static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
+extern int              gps_watchdog_timeout_ticks;
 
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
@@ -980,7 +983,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
                 pTargetData->b_OwnShip = true;
-
             // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array[i];
@@ -991,7 +993,29 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER) ? true : false;                    
                     break;
                 }
-            }              
+            }
+            if ( pTargetData->b_OwnShip )
+            {
+                //Rename nmea sentence to AIVDO and calc a new checksum
+                wxString aivdostr = str;
+                aivdostr.replace(1, 5, "AIVDO");
+                unsigned char calculated_checksum = 0;
+                wxString::iterator i;
+                for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
+                    calculated_checksum ^= static_cast<unsigned char> (*i);
+                // if i is not at least 3 positons befoere end, there is no checksum added
+                // so also no need to add one now.
+                if ( i <= aivdostr.end()-3 )
+                    aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
+
+                gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
+                //replace the changed sentence in nemea stream
+                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                std::string s = std::string( aivdostr.mb_str() );
+                event.SetNMEAString( s );
+                event.SetStream( NULL );
+                g_pMUX->AddPendingEvent( event );                   
+            }    
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
@@ -1094,6 +1118,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
                         pSel->SetUserData( pTargetData->MMSI );
                     }
+                    
 
                     //    Calculate CPA info for this target immediately
                     UpdateOneCPA( pTargetData );
