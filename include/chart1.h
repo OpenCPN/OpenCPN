@@ -377,7 +377,8 @@ class MyFrame: public wxFrame
     void OnResizeTimer(wxTimerEvent &event);
     
     void TriggerRecaptureTimer();
-    
+    bool SetGlobalToolbarViz( bool viz );
+
     void MouseEvent(wxMouseEvent& event);
 //     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
 //     void SelectdbChart(int dbindex);

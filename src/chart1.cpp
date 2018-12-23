@@ -4640,6 +4640,40 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
 }
 
+bool MyFrame::SetGlobalToolbarViz( bool viz )
+{
+    bool viz_now = g_bmasterToolbarFull;
+    
+    g_MainToolbar->HideTooltip();
+    wxString tip = _("Show Toolbar");
+    if(viz){
+        tip = _("Hide Toolbar");
+        if( g_MainToolbar->GetToolbar() )
+            g_MainToolbar->GetToolbar()->SetToolShortHelp( ID_MASTERTOGGLE, tip );
+    }
+    
+    bool toggle = false;
+    if(viz && !g_bmasterToolbarFull)
+        toggle = true;
+    
+    else if(!viz && g_bmasterToolbarFull)
+        toggle = true;
+    
+    if(toggle){
+            g_bmasterToolbarFull = !g_bmasterToolbarFull;
+
+#ifdef __WXOSX__            
+            m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+#else                
+            m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
+#endif            
+            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+    }
+    
+    return viz_now;
+}
+
+
 void MyFrame::ScheduleSettingsDialog()
 {
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);

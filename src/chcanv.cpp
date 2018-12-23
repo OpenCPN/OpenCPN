@@ -9046,7 +9046,10 @@ void ChartCanvas::StartRoute( void )
     SetCursor( *pCursorPencil );
     SetCanvasToolbarItemState( ID_ROUTE, true );
     gFrame->SetMasterToolbarItemState( ID_MENU_ROUTE_NEW, true );
-    
+   
+    m_last_TBviz = gFrame->SetGlobalToolbarViz( false );
+
+
 #ifdef __OCPN__ANDROID__
     androidSetRouteAnnunciator(true);
 #endif        
@@ -9099,6 +9102,9 @@ void ChartCanvas::FinishRoute( void )
     
     if(g_MainToolbar)
         g_MainToolbar->EnableTooltips();
+
+    if(m_last_TBviz)
+        gFrame->SetGlobalToolbarViz( true );
 
     g_brouteCreating = false;
 }

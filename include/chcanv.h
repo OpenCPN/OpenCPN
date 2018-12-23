@@ -860,6 +860,7 @@ private:
       wxTimer      m_deferredFocusTimer;
       float        m_focus_indicator_pix;
       bool         m_bENCGroup;
+      bool         m_last_TBviz;
       
 DECLARE_EVENT_TABLE()
 };
