@@ -153,6 +153,7 @@ public:
     void RestoreColorScheme( void ) {}
 
 //    Rendering stuff
+    void PrepareForRender( ViewPort *vp );
     void PrepareForRender( void );
     void AdjustTextList( int dx, int dy, int screenw, int screenh );
     void ClearTextList( void );

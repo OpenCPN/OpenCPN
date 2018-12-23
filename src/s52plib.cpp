@@ -38,8 +38,6 @@
 #include "viewport.h"
 
 #include "s52plib.h"
-//#include "s57chart.h"                   // for back function references
-//#include "chartbase.h"
 #include "mygeom.h"
 #include "cutil.h"
 #include "s52utils.h"
@@ -586,6 +584,9 @@ bool s52plib::GetAnchorOn()
 
 bool s52plib::GetQualityOfData()
 {
+    return m_qualityOfDataOn;
+    
+    
     //  Investigate and report the logical condition that "Quality of Data Condition" is shown
     
     int old_vis =  0;
@@ -2338,13 +2339,6 @@ bool s52plib::TextRenderCheck( ObjRazRules *rzRules )
     }
         
         
-//     //    This logic:  if Aton text is off, but "light description" is on, then show light description anyway
-//     if( ( rzRules->obj->bIsAton ) && ( !m_bShowAtonText ) ) {
-//         if( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) {
-//             if( !m_bShowLdisText ) return false;
-//         } else
-//             return false;
-//     }
 
     // Declutter LIGHTS descriptions
     if( ( rzRules->obj->bIsAton ) && ( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) ){
@@ -3047,7 +3041,6 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     {
 #ifdef ocpnUSE_GL
         glEnable( GL_BLEND );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         
         if(texture) {
             extern GLenum       g_texture_rectangle_format;
@@ -3060,6 +3053,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             float tx1 = texrect.x, ty1 = texrect.y;
             float tx2 = tx1 + w, ty2 = ty1 + h;
 
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
             if(g_texture_rectangle_format == GL_TEXTURE_2D) {
                 wxSize size = ChartSymbols::GLTextureSize();
                 tx1 /= size.x, tx2 /= size.x;
@@ -3265,13 +3259,13 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
          //  Render a raster or vector symbol, as specified by LUP rules
-        if( rules->razRule->definition.SYDF == 'V' )
+        if( rules->razRule->definition.SYDF == 'V' ){
             RenderHPGL( rzRules, rules->razRule, r, vp, angle );
-
-        else
-            if( rules->razRule->definition.SYDF == 'R' ) RenderRasterSymbol( rzRules,
-                    rules->razRule, r, vp, angle );
-
+        }
+        else{
+            if( rules->razRule->definition.SYDF == 'R' )
+                RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+        }
     }
 
     return 0;
@@ -3325,6 +3319,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 #ifdef ocpnUSE_GL
 
+    char *str = (char*) rules->INSTstr;
     LLBBox BBView = vp->GetBBox();
 
     //  Allow a little slop in calculating whether a segment
@@ -3344,7 +3339,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     line_segment_element *ls_list = rzRules->obj->m_ls_list;
     
-    char *str = (char*) rules->INSTstr;
     S52color *c = getColor( str + 7 ); // Colour
     int w = atoi( str + 5 ); // Width
     
@@ -3416,14 +3410,15 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
         glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
     }
-    
+
+    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+
     //   Has line segment PBO been allocated for this chart?
     if(b_useVBO){
         (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
     }
 
     
-    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
   
     // from above ls_list is the first drawable segment
@@ -8543,6 +8538,12 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
                     return false;
         }
     }
+    else{
+    // We want to filter out M_NSYS objects everywhere except "OTHER" category
+        if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) )
+            if( !m_bShowMeta )
+                return false;
+    }
 
 
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
@@ -8849,33 +8850,39 @@ void s52plib::PLIB_LoadS57Config()
     }
 }
 
-
-
-
-
 //    Do all those things necessary to prepare for a new rendering
-void s52plib::PrepareForRender()
+void s52plib::PrepareForRender( void )
+{
+    PrepareForRender(NULL);
+}
+
+void s52plib::PrepareForRender(ViewPort *vp)
 {
     m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
 
-    g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
+#ifdef USE_ANDROID_GLES2
+void PrepareS52ShaderUniforms(ViewPort *vp);
+    if(vp)
+        PrepareS52ShaderUniforms( vp );
+#endif
 
-#if 0    // This is not required for Multicanvas model.  All config items are directly set elsewhere, per-canvas.
-    
+#ifdef BUILDING_PLUGIN    
     // Has the core S52PLIB configuration changed?
     //  If it has, reload from global preferences file, and other dynamic status information.
     //  This additional step is only necessary for Plugin chart rendering, as core directly sets
     //  options and updates State Hash as needed.
 
     int core_config = PI_GetPLIBStateHash();
-    //TODO  Think this through. I think s63_pi hits this, since oesenc_pi has its own PLIB.....
     if(core_config != m_myConfig){
         
+        g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
         
         //  If a modern (> OCPN 4.4) version of the core is active,
         //  we may rely upon having been updated on S52PLIB state by means of PlugIn messaging scheme.
-        if( (m_coreVersionMajor >= 4) && (m_coreVersionMinor >= 5) ){
+        if( ((m_coreVersionMajor == 4) && (m_coreVersionMinor >= 5)) || m_coreVersionMajor > 4 ){
             
+            // Retain compatibility with O4.8.x
+            if( (m_coreVersionMajor == 4) && (m_coreVersionMinor < 9)){
              // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
              bool bTextOn = m_bShowS57Text;
              bool bSoundingsOn = m_bShowSoundg;
@@ -8887,8 +8894,14 @@ void s52plib::PrepareForRender()
              m_bShowS57Text = bTextOn;
              m_bShowSoundg = bSoundingsOn;
              m_nDisplayCategory = old;
+            }
+            else
+                PLIB_LoadS57GlobalConfig();
             
             
+            // Pick up any changes in Mariner's Standard object list
+            PLIB_LoadS57ObjectConfig();
+
             // Detect and manage "LIGHTS" toggle
              bool bshow_lights = !m_lightsOff;
              if(!bshow_lights)                     // On, going off
@@ -8897,10 +8910,6 @@ void s52plib::PrepareForRender()
                  RemoveObjNoshow("LIGHTS");
              }
 
-
-            OBJLElement *pOLE = NULL;
-
-            
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
             unsigned int num = sizeof(categories) / sizeof(categories[0]);
             
@@ -8910,44 +8919,34 @@ void s52plib::PrepareForRender()
                 
                 
                 if(!bAnchor){
-                    for( unsigned int c = 0; c < num; c++ ) {
+                    for( unsigned int c = 0; c < num; c++ )
                         AddObjNoshow(categories[c]);
                     }
-                }
                 else{
-                    for( unsigned int c = 0; c < num; c++ ) {
-                        RemoveObjNoshow(categories[c]);
-                    }
-                }
-            }
-            else{                               // if not category OTHER, then anchor-related features are always shown.
-                for( unsigned int c = 0; c < num; c++ ) {
+                    for( unsigned int c = 0; c < num; c++ )
                     RemoveObjNoshow(categories[c]);
-                }
-            }
 
-
-            // Handle Quality of data toggle
-            bool bQuality = m_qualityOfDataOn;
-            if(!bQuality){
-                AddObjNoshow("M_QUAL");
-            }
-            else{
-                RemoveObjNoshow("M_QUAL");
+                    //  Force the USER STANDARD object list anchor detail items ON
+                    unsigned int cnt = 0;
                 for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
                     OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
-                        pOLE->nViz = 1;         // force on
-                        break;
+                        for( unsigned int c = 0; c < num; c++ ) {
+                            if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                                pOLE->nViz = 1;         // force on
+                                cnt++;
+                                break;
+                            }
+                        }
+                        if( cnt == num ) break;
                     }
                 }
             }
         }
-        
         m_myConfig = PI_GetPLIBStateHash();
     }
-#endif    
-    
+
+#endif          //BUILDING_PLUGIN
+
     // Reset the LIGHTS declutter machine
     lastLightLat = 0;
     lastLightLon = 0;
