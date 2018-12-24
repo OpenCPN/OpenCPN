@@ -4080,7 +4080,7 @@ int s52plib::RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
                 
                 #ifdef ocpnUSE_GL
-                if(!b_wide_line)
+                if(!b_wide_line && !m_pdc)
                     glBegin( GL_LINES );
                 #endif
                     
@@ -4144,7 +4144,7 @@ int s52plib::RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                         ls = ls->next;
                     }
                     #ifdef ocpnUSE_GL
-                    if(!b_wide_line)
+                    if(!b_wide_line && !m_pdc)
                         glEnd();
                     #endif              
     }
