@@ -3497,9 +3497,13 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-    // catch cm93 and legacy PlugIns (e.g.s63_pi)
+    // catch legacy PlugIns (e.g.s63_pi)
     if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
         return RenderLSLegacy(rzRules, rules, vp);
+
+    // catch improperly coded edge arrays, usually seen on cm93
+    if( !rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
+        return 0;
     
     S52color *c;
     int w;

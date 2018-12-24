@@ -1021,8 +1021,6 @@ void s57chart::AssembleLineGeometry( void )
     std::vector<segment_pair> connector_segment_vector;
     size_t seg_pair_index = 0;
 
-
-
     //  Get the end node connected segments.  To do this, we
     //  walk the Feature array and process each feature that potentially has a LINE type element
     for( int i = 0; i < PRIO_NUM; ++i ) {
@@ -1262,6 +1260,12 @@ void s57chart::AssembleLineGeometry( void )
 
                     //  All done, so assign the list to the object
                     obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
+
+                    //  Rarely, some objects are improperly coded, e.g. cm93
+                    //  If found, signal this downstream for NIL processing
+                    if(obj->m_ls_list == NULL){
+                        obj->m_n_lsindex = 0;
+                   }
 
                     // we are all finished with the line segment index array, per object
                     free(obj->m_lsindex_array);
