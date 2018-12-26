@@ -1,14 +1,15 @@
 version=4
+
 #
-# Using git tag:
+# Using git tag (see #1132, upstream does not always tag...)
 #
-opts=\
-dversionmangle=s/\+(debian|dfsg.[0-9]*|dfsg|ds|deb)\d*$//,\
-repacksuffix=+dfsg.1,\
-uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|pre|dev|beta|alpha)\d*)$/$1~$2/;s/RC/rc/;s/\-/\./g,\
-filenamemangle=s/(?:.*?)?(?:rel|v|opencpn)?[\-\_]?(\d\S+)\.(tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))/opencpn-$1.$2/\
-  https://github.com/OpenCPN/OpenCPN/tags \
-  (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+
+opts="repacksuffix=+dfsg.1,dversionmangle=s/\+dfsg.[0-9]$//,\
+  filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%opencpn-$1.tar.gz%" \
+    https://github.com/OpenCPN/OpenCPN/tags \
+    (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+
+
 
 # Pre/post-release git snapshots
 #

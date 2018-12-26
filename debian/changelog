@@ -1,4 +1,4 @@
-opencpn (4.8.6~20180801.8d20a06+dfsg.1-1) unstable; urgency=medium
+opencpn (4.8.8+dfsg.1-1) unstable; urgency=medium
 
   * New upstream version
   * Fix ITP bugs. (closes: #907065, closes: #538067).

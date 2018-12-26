@@ -17,6 +17,7 @@ override_dh_auto_configure:
             -DBUNDLE_GSHHS=CRUDE \
             -DBUILD_SHARED_LIBS=OFF \
             -DUSE_BUNDLED_LIBS=OFF \
+            -DOCPN_NEW_SERIAL=OFF \
             -DWX_CONFIG_OPTIONS=--toolkit=gtk2
 
 override_dh_auto_install:
