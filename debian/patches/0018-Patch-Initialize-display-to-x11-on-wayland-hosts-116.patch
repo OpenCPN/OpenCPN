@@ -21,7 +21,7 @@ index b8236b4..56e846d 100644
      int OnExit();
      void OnInitCmdLine(wxCmdLineParser& parser);
 diff --git a/src/chart1.cpp b/src/chart1.cpp
-index cb5d18d..0302e13 100755
+index fcd2561..0556059 100755
 --- a/src/chart1.cpp
 +++ b/src/chart1.cpp
 @@ -31,6 +31,11 @@
@@ -36,7 +36,7 @@ index cb5d18d..0302e13 100755
  
  #include "wx/print.h"
  #include "wx/printdlg.h"
-@@ -1529,6 +1534,19 @@ void ParseAllENC()
+@@ -1533,6 +1538,19 @@ void ParseAllENC()
          delete prog;
  }
  

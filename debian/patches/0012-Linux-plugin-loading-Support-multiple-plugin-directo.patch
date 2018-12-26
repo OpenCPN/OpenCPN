@@ -58,7 +58,7 @@ index 20459dd..ab7ba9a 100644
          
          
 diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
-index 389b4ba..2a14eb4 100644
+index c68544d..d21ee86 100644
 --- a/src/pluginmanager.cpp
 +++ b/src/pluginmanager.cpp
 @@ -131,6 +131,9 @@ extern bool             g_bopengl;

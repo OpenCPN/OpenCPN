@@ -9,7 +9,7 @@ Applied-Upstream: 5.0.0
  1 file changed, 18 insertions(+), 7 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ba81181..e7fbf65 100644
+index 70a24e5..8a30753 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -207,6 +207,7 @@ ELSE(UNIX)
@@ -20,7 +20,7 @@ index ba81181..e7fbf65 100644
  IF(APPLE OR WIN32)
    IF(NOT BUNDLE_DOCS)
      SET (BUNDLE_DOCS "ON")
-@@ -871,13 +872,23 @@ IF(OCPN_USE_SVG)
+@@ -921,13 +922,23 @@ IF(OCPN_USE_SVG)
          )
          ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
      endif()

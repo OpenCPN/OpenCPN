@@ -15,7 +15,7 @@ consistently.
  2 files changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c26fe24..1117a72 100644
+index 7b990ab..7f4d13f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -40,6 +40,7 @@ ENDIF (COMMAND cmake_policy)
@@ -26,7 +26,7 @@ index c26fe24..1117a72 100644
  
  IF(APPLE)
    SET(PACKAGE_NAME OpenCPN)
-@@ -624,8 +625,8 @@ IF(NOT QT_ANDROID)
+@@ -674,8 +675,8 @@ IF(NOT QT_ANDROID)
          FIND_PACKAGE(CURL REQUIRED)
          INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
      ELSE(OCPN_USE_EXTERN_CURL)
@@ -37,7 +37,7 @@ index c26fe24..1117a72 100644
      ENDIF(OCPN_USE_EXTERN_CURL)
      SET(SRC_WXCURL
          src/wxcurl/base.cpp
-@@ -1263,13 +1264,13 @@ ENDIF(OPENGL_FOUND)
+@@ -1313,13 +1314,13 @@ ENDIF(OPENGL_FOUND)
  
  
  IF(TINYXML_FOUND)

@@ -8,10 +8,10 @@ Bug: https://github.com/OpenCPN/OpenCPN/pull/1155
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0b9b5cd..fe7df11 100644
+index 141d5e8..3069207 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -877,11 +877,11 @@ IF(OCPN_USE_SVG)
+@@ -927,11 +927,11 @@ IF(OCPN_USE_SVG)
      endif()
  
      PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
@@ -25,7 +25,7 @@ index 0b9b5cd..fe7df11 100644
        message (STATUS "Building with bundled wxsvg includes")
        ADD_LIBRARY(WXSVG ${SRC_WXSVG})
        TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
-@@ -891,7 +891,7 @@ IF(OCPN_USE_SVG)
+@@ -941,7 +941,7 @@ IF(OCPN_USE_SVG)
        INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
        set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
        SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)

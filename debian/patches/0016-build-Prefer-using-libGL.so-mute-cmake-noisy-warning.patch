@@ -16,7 +16,7 @@ other issues has been dealt with.
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fe7df11..2ac7a55 100644
+index 3069207..c24996b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -34,6 +34,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)

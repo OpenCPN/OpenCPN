@@ -17,7 +17,7 @@
 0017-build-handle-missing-doc-files.patch
 0018-Patch-Initialize-display-to-x11-on-wayland-hosts-116.patch
 0019-Build-Add-hooks-to-define-wx-config-options-on-build.patch
-0020-po-Fix-spelling-errors.patch
-0021-src-Spelling-errors.patch
-0022-grib_pi-po-Spelling-errors.patch
+0020-src-Spelling-errors.patch
+0021-AIS_Decoder-Fix-spelling-error.patch
+0022-grib_pi-Spelling-error.patch
 0023-opencpn.desktop-Add-Keywords-stanza.patch

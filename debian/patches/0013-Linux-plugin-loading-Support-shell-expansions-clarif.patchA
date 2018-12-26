@@ -14,7 +14,7 @@ used verbatim.
  1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
-index 2a14eb4..45e07df 100644
+index d21ee86..772e665 100644
 --- a/src/pluginmanager.cpp
 +++ b/src/pluginmanager.cpp
 @@ -24,6 +24,9 @@

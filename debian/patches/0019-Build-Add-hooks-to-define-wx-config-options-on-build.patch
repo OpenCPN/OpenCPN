@@ -11,7 +11,7 @@ upstreaming.
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2ac7a55..1048018 100644
+index c24996b..ed2dfa4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -437,9 +437,14 @@ SET( wxWidgets_USE_UNICODE ON)

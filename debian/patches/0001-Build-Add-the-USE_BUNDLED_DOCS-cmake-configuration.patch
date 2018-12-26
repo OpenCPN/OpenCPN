@@ -14,7 +14,7 @@ cmake will use the system libraries if available.
  1 file changed, 6 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a100068..ba81181 100644
+index 0412340..70a24e5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -201,6 +201,12 @@ ELSE(APPLE OR WIN32)

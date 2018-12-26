@@ -9,10 +9,10 @@ Applied-Upstream: 5.0.0
  1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e7fbf65..c26fe24 100644
+index 8a30753..7b990ab 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1449,10 +1449,7 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
+@@ -1499,10 +1499,7 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
  
  # Compile texcompression support library
  IF (OPENGL_FOUND)
@@ -23,7 +23,7 @@ index e7fbf65..c26fe24 100644
      src/texcmp/squish/alpha.cpp
      src/texcmp/squish/clusterfit.cpp
      src/texcmp/squish/colourblock.cpp
-@@ -1464,10 +1461,22 @@ IF (OPENGL_FOUND)
+@@ -1514,10 +1511,22 @@ IF (OPENGL_FOUND)
      src/texcmp/squish/singlecolourfitfast.cpp
      src/texcmp/squish/twocolourfitfast.cpp
      src/texcmp/squish/squish.cpp

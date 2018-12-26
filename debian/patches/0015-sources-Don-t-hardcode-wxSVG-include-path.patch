@@ -37,7 +37,7 @@ index 50602a9..f9078a2 100644
  
  
 diff --git a/src/styles.cpp b/src/styles.cpp
-index 9412da8..bcee714 100644
+index 348e04d..630d025 100644
 --- a/src/styles.cpp
 +++ b/src/styles.cpp
 @@ -39,7 +39,7 @@

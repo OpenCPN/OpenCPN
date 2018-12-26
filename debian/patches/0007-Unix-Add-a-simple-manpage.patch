@@ -17,10 +17,10 @@ Also, Debian requires a manpage.
  create mode 100644 opencpn.1
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cfebf6a..6e896a4 100644
+index 46effb1..ca76ccd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2040,6 +2040,8 @@ IF(UNIX)
+@@ -2090,6 +2090,8 @@ IF(UNIX)
    INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
    INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
    INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )

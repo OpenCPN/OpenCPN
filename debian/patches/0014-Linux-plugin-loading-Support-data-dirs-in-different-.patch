@@ -63,7 +63,7 @@ index 715569e..9dfea60 100644
 +
 + #endif //_PLUGIN_H_
 diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
-index 45e07df..a846eda 100644
+index 772e665..7ddf81b 100644
 --- a/src/pluginmanager.cpp
 +++ b/src/pluginmanager.cpp
 @@ -134,6 +134,9 @@ extern bool             g_bopengl;
