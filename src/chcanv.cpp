@@ -956,7 +956,12 @@ ChartCanvas::~ChartCanvas()
 #endif        
     }
 #endif
-
+    
+    // Delete the MUI bar, but make sure there is no pointer to it during destroy.
+    // wx tries to deliver events to this canvas during destroy.
+    MUIBar *muiBar = m_muiBar;
+    m_muiBar = 0;
+    delete muiBar;
 }
 
 void ChartCanvas::SetupGlCanvas( )
