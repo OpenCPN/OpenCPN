@@ -449,7 +449,8 @@ class ChartPlugInWrapper : public ChartBaseBSB
             PlugInChartBase *m_ppicb;
             wxObject          *m_ppo;
             wxCriticalSection m_critSect;
-            
+            bool              m_overlayENC;
+            wxMask           *m_pMask;
 };
 
 #endif
