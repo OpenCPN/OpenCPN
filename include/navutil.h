@@ -128,7 +128,7 @@ Track *TrackExists( const wxString& guid );
 const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
 void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
-void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
+void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true, bool isPersistent = false);
  
 bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
 bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));

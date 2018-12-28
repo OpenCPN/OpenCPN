@@ -88,6 +88,7 @@ class RouteManagerDialog : public wxDialog {
             void ToggleLayerContentsOnChart(Layer *layer);
             void ToggleLayerContentsOnListing(Layer *layer);
             void ToggleLayerContentsNames(Layer *layer);
+            void AddNewLayer(bool isPersistent);
 
             // event handlers
             void OnRteDeleteClick(wxCommandEvent &event);
@@ -129,6 +130,7 @@ class RouteManagerDialog : public wxDialog {
             void OnWptColumnClicked(wxListEvent &event);
             void OnLayDefaultAction(wxListEvent &event);
             void OnLayNewClick(wxCommandEvent &event);
+            void OnPerLayNewClick(wxCommandEvent &event);
             void OnLayPropertiesClick(wxCommandEvent &event);
             void OnLayToggleChartClick(wxCommandEvent &event);
             void OnLayToggleListingClick(wxCommandEvent &event);
@@ -184,6 +186,7 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnWptSendToGPS;
             wxButton *btnWptDeleteAll;
             wxButton *btnLayNew;
+            wxButton *btnPerLayNew;
             //wxButton *btnLayProperties;
             wxButton *btnLayToggleChart;
             wxButton *btnLayToggleListing;

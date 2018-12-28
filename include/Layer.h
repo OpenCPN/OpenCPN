@@ -51,6 +51,7 @@ public:
       wxString          m_LayerName;
       wxString          m_LayerFileName;
       wxString          m_LayerDescription;
+      wxString          m_LayerType;
       wxDateTime        m_CreateTime;
 };
 
