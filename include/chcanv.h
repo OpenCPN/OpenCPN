@@ -297,6 +297,8 @@ public:
       void ShowAISTargetList(void);
 
       void ShowGoToPosition(void);
+      void HideGlobalToolbar();
+      void ShowGlobalToolbar();
 
       ChartBase *GetLargestScaleQuiltChart();
       ChartBase *GetFirstQuiltChart();

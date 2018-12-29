@@ -9052,8 +9052,7 @@ void ChartCanvas::StartRoute( void )
     SetCanvasToolbarItemState( ID_ROUTE, true );
     gFrame->SetMasterToolbarItemState( ID_MENU_ROUTE_NEW, true );
    
-    m_last_TBviz = gFrame->SetGlobalToolbarViz( false );
-
+    HideGlobalToolbar();
 
 #ifdef __OCPN__ANDROID__
     androidSetRouteAnnunciator(true);
@@ -9108,12 +9107,29 @@ void ChartCanvas::FinishRoute( void )
     if(g_MainToolbar)
         g_MainToolbar->EnableTooltips();
 
-    if(m_last_TBviz)
-        gFrame->SetGlobalToolbarViz( true );
+    ShowGlobalToolbar();
 
     g_brouteCreating = false;
 }
 
+void ChartCanvas::HideGlobalToolbar()
+{
+    if(m_canvasIndex == 0){
+        m_last_TBviz = gFrame->SetGlobalToolbarViz( false );
+    }
+}
+
+void ChartCanvas::ShowGlobalToolbar()
+{
+    if(m_canvasIndex == 0){
+        if(m_last_TBviz)
+            gFrame->SetGlobalToolbarViz( true );
+    }
+}
+
+
+        
+        
 void ChartCanvas::ShowAISTargetList( void )
 {
     if( NULL == g_pAISTargetList ) {         // There is one global instance of the Dialog
