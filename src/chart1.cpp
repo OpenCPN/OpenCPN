@@ -449,7 +449,6 @@ wxArrayString             *pMessageOnceArray;
 
 FILE                      *s_fpdebug;
 bool                      bAutoOpen;
-bool                      bFirstAuto;
 
 bool                      g_bUseGLL = true;
 
@@ -2768,7 +2767,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //  Create/connect a dynamic event handler slot
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
 
-    bFirstAuto = true;
     b_autofind = false;
     
     //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
@@ -6678,7 +6676,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             //  to select the correct chart as saved from the last run of the app.
             //  This will be triggered at the next DoChartUpdate()
             if( g_pi_manager->IsAnyPlugInChartEnabled() ){
-                bFirstAuto = true;
+                
+                for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                    ChartCanvas *cc = g_canvasArray.Item(i);
+                    if(cc)
+                        cc->SetFirstAuto(true);
+                }
+
                 b_reloadForPlugins = true;
             }
 
@@ -6746,8 +6750,10 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             
             gFrame->Raise();
                 
-            if(b_reloadForPlugins)
+            if(b_reloadForPlugins){
+                DoChartUpdate();
                 ChartsRefresh();
+            }
 
             break;
         }

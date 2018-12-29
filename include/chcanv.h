@@ -212,6 +212,7 @@ public:
       void SetbFollow(void);
       void TogglebFollow( void );
       void JumpToPosition( double lat, double lon, double scale );
+      void SetFirstAuto( bool b_auto ){m_bFirstAuto = b_auto; }
       
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
