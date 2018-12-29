@@ -3743,7 +3743,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     vectorPanel->Add(dispSizer, 2, wxALL | wxEXPAND, border_size);
 
     wxStaticBox* marinersBox =
-        new wxStaticBox(ps57Ctl, wxID_ANY, _("User Standard Onjects"));
+        new wxStaticBox(ps57Ctl, wxID_ANY, _("User Standard Objects"));
     wxStaticBoxSizer* marinersSizer =
         new wxStaticBoxSizer(marinersBox, wxVERTICAL);
     dispSizer->Add(marinersSizer, 1, wxALL | wxEXPAND, border_size);
