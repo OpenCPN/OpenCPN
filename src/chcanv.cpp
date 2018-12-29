@@ -6304,6 +6304,8 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     if(m_muiBar){
         SetMUIBarPosition();
+        m_muiBar->SetFollowButton( m_bFollow );
+        m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
     
