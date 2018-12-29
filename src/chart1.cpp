@@ -3703,6 +3703,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pthumbwin = NULL;
     
     // Finally ready to destroy the canvases
+    g_focusCanvas = NULL;
+
     // ..For each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -3711,7 +3713,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
         
     g_canvasArray.Clear();
-    g_focusCanvas = NULL;
+
     
     g_pauimgr->UnInit();
     delete g_pauimgr;
