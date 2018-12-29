@@ -1374,7 +1374,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->SetCursor( *parent->pCursorPencil );
         #ifdef __OCPN__ANDROID__
         androidSetRouteAnnunciator( true );
-        #endif        
+        #endif 
+        
+        parent->HideGlobalToolbar();
         
         break;
 
