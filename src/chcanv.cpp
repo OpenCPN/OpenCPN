@@ -1042,14 +1042,6 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     if( pcc->bQuilt != GetQuiltMode() )
         ToggleCanvasQuiltMode();
         
-    m_toolbarConfig = pcc->toolbarConfig;
-    if(m_toolbarConfig.IsEmpty() && (pcc->configIndex != 0)){
-        m_toolbarConfig = g_toolbarConfigSecondary;
-    }
-    
-    SetToolbarOrientation( pcc->toolbarOrientation );
-    SetToolbarEnable(pcc->bShowToolbar);
-    
     ShowTides(pcc->bShowTides);
     ShowCurrents(pcc->bShowCurrents);
     

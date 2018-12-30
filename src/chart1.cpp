@@ -3193,7 +3193,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            if(g_canvasConfigArray.GetCount() < 2){
                canvasConfig *pcc = new canvasConfig(*g_canvasConfigArray.Item(0));
                pcc->configIndex = 1;
-               pcc->toolbarConfig.Clear();
                
                // Arbitrarily establish the initial size of the new canvas to be
                // half the screen width.

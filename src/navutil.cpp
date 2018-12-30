@@ -1917,22 +1917,7 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
     if(!HasEntry( _T ( "CanvasConfig" ))){
     
         pcc = new canvasConfig(0);
-        pcc->iLat = vLat;
-        pcc->iLon = vLon;
-        pcc->iRotation = initial_rotation;
-        pcc->iScale = initial_scale_ppm;
-        pcc->DBindex = g_restore_dbindex;
-        pcc->bFollow = false;
-        pcc->bShowTides = false;
-        pcc->bShowCurrents = false;
-        pcc->toolbarConfig = _T("");
-        pcc->bShowToolbar = false;
-        pcc->toolbarOrientation = wxTB_HORIZONTAL;
-        pcc->bShowAIS = true;
-        pcc->bAttenAIS = false;
-        pcc->bQuilt = true;
-        pcc->nENCDisplayCategory = (int)(enum _DisCat) STANDARD;
-
+        pcc->LoadFromLegacyConfig( this );
         g_canvasConfigArray.Add(pcc);
         
         return;
@@ -2041,19 +2026,6 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
     Read( _T ( "canvasShowTides" ), &cConfig->bShowTides, 0 );
     Read( _T ( "canvasShowCurrents" ), &cConfig->bShowCurrents, 0 );
     
-    // per-canvas toolbar
-    wxString st_toolbar_config;
-    if(Read( _T ( "canvasToolbarConfig" ), &st_toolbar_config )){
-        cConfig->toolbarConfig = st_toolbar_config;
-    }
-    else{
-        if(cConfig->configIndex == 0)
-            cConfig->toolbarConfig = g_toolbarConfig;
-        else
-            cConfig->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
-    }
-//    Read( _T ( "canvasShowToolbar" ), &cConfig->bShowToolbar, 0 );
-    Read( _T ( "canvasToolbarOrientation" ), &cConfig->toolbarOrientation, wxTB_HORIZONTAL );
 
     Read( _T ( "canvasQuilt" ), &cConfig->bQuilt, 1 );
     Read( _T ( "canvasShowGrid" ), &cConfig->bShowGrid, 0 );

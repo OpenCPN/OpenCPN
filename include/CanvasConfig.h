@@ -45,6 +45,9 @@ public:
     canvasConfig(int index);
     ~canvasConfig();
     
+    void Reset();
+    void LoadFromLegacyConfig( wxFileConfig *conf );
+    
     int configIndex;
     ChartCanvas *canvas;
     double iLat, iLon, iScale, iRotation;
@@ -52,12 +55,9 @@ public:
     int GroupID;
     bool bFollow;
     bool bQuilt;
-    wxString toolbarConfig;
     bool bShowTides;
     bool bShowCurrents;
     wxSize canvasSize;
-    bool bShowToolbar;
-    int toolbarOrientation;
     bool bShowGrid;
     bool bShowOutlines;
     bool bShowDepthUnits;
@@ -74,22 +74,7 @@ public:
     bool bShowENCLights;
     
     
-    void Reset( void){
-        bFollow = false;
-        bShowTides = false;
-        bShowCurrents = false;
-        bShowToolbar = false;
-        toolbarOrientation = wxTB_HORIZONTAL;
-        toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        bCourseUp = false;
-        bLookahead = false;
-        bShowAIS = true;
-        bAttenAIS = false;
-        bQuilt = true;
-        nENCDisplayCategory = (int)(enum _DisCat) STANDARD;
-
-    }
-    
+     
 };
 
 WX_DEFINE_ARRAY_PTR(canvasConfig*, arrayofCanvasConfigPtr);
