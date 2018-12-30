@@ -36,6 +36,7 @@
 #include "georef.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "Select.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -53,7 +54,7 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-
+extern Select *pSelect;
 extern float g_ChartScaleFactorExp;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
@@ -111,6 +112,9 @@ RoutePoint::RoutePoint()
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_ScaMin = MAX_INT_VAL;
+    m_ScaMax = 0;
+
 #ifdef ocpnUSE_GL
     m_pos_on_screen = false;
 #endif
@@ -147,7 +151,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_pMarkFont = orig->m_pMarkFont;
     m_MarkDescription = orig->m_MarkDescription;
     m_btemp = orig->m_btemp;
-
+    m_ScaMin = orig->m_ScaMin;
+    m_ScaMax = orig->m_ScaMax;
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
     ReLoadIcon();
@@ -212,7 +217,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     m_IconScaleFactor = 1.0;
-    
+    m_ScaMin = MAX_INT_VAL;
+    m_ScaMax = 0;
     m_HyperlinkList = new HyperlinkList;
 
     if( !pGUID.IsEmpty() )
@@ -499,6 +505,9 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 
     if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
+    if( !m_bIsActive)  //  An active route point must always be visible
+        if( IsScaVisible( canvas) )          
+            return;           
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -644,7 +653,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
 {
     if( !m_bIsVisible )
         return;
-
+    if( !m_bIsVisible ) 
+        return;
+    if( !m_bIsActive)  //  An active route point must always be visible
+        if( IsScaVisible( canvas) )          
+            return;  ;
+    
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
 
@@ -1072,4 +1086,28 @@ wxColour RoutePoint::GetWaypointRangeRingsColour(void) {
         return g_colourWaypointRangeRingsColour;
     else
         return m_wxcWaypointRangeRingsColour; 
+}
+
+void RoutePoint::SetScaMin(long val) {
+    if(val < SCAMIN_MIN) val = SCAMIN_MIN; //prevent from waypoints hiding always with a nonlogic value
+    if(val < (long)m_ScaMax*5) val = (long)m_ScaMax*5; 
+    m_ScaMin = val;
+}
+void RoutePoint::SetScaMin(wxString str) {
+    long val;
+    if(!str.ToLong(&val)) val = MAX_INT_VAL;
+    SetScaMin(val);
+}
+
+void RoutePoint::SetScaMax(long val){
+    if( val > (int) m_ScaMin/5 ) m_ScaMax = (int) m_ScaMin/5; //prevent from waypoints hiding always with a nonlogic value
+}
+void RoutePoint::SetScaMax(wxString str) {
+    long val;
+    if(!str.ToLong(&val)) val = 0;
+    SetScaMax(val);
+}
+
+bool RoutePoint::IsScaVisible( ChartCanvas *cc){
+    return ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax));
 }
