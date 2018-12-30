@@ -1329,6 +1329,17 @@ bool ChartCanvas::CheckGroup( int igroup )
         if( b_chart_in_group ) break;
     }
     
+    //  If necessary, check for GSHHS
+    if(!b_chart_in_group){
+        for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
+            wxString element_root = pGroup->m_element_array.Item( j )->m_element_name;
+            wxString test_string = _T("GSHH");
+            if(element_root.Upper().Contains(test_string))
+                b_chart_in_group = true;
+         }
+    }
+    
+    
     return b_chart_in_group;                           // this group is empty
     
 }

@@ -6289,6 +6289,13 @@ bool MyFrame::ScrubGroupArray()
                     break;
                 }
             }
+            
+            // Explicit check to avoid removing a group containing only GSHHS
+            if(!b_chart_in_element){
+                wxString test_string = _T("GSHH");
+                if(element_root.Upper().Contains(test_string))
+                    b_chart_in_element = true;
+            }
 
             if( !b_chart_in_element )             // delete the element
             {
