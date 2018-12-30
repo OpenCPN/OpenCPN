@@ -584,9 +584,6 @@ bool s52plib::GetAnchorOn()
 
 bool s52plib::GetQualityOfData()
 {
-    return m_qualityOfDataOn;
-    
-    
     //  Investigate and report the logical condition that "Quality of Data Condition" is shown
     
     int old_vis =  0;
