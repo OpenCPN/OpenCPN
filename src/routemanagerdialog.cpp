@@ -59,7 +59,7 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
-enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
+enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
 enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
@@ -83,6 +83,9 @@ extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
 extern OCPNPlatform     *g_Platform;
+
+//Helper for conditional file name separator
+void appendOSDirSlash(wxString* pString);
 
 static int SortRouteTrack(int column, int order, wxListCtrl *lc, wxListItem &it1, wxListItem &it2)
 {
@@ -756,9 +759,10 @@ void RouteManagerDialog::Create()
     sbsLayers->Add( bSizerLayContents, 1, wxEXPAND, 5 );
     
     m_pLayListCtrl->InsertColumn( colLAYVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 4 * char_width );
-    m_pLayListCtrl->InsertColumn( colLAYNAME, _("Layer Name"), wxLIST_FORMAT_LEFT, 10 * char_width );
+    m_pLayListCtrl->InsertColumn( colLAYNAME, _("Layer Name"), wxLIST_FORMAT_LEFT, 14 * char_width );
     m_pLayListCtrl->InsertColumn( colLAYITEMS, _("No. of items"), wxLIST_FORMAT_LEFT, 10 * char_width );
-    
+    m_pLayListCtrl->InsertColumn( colLAYPERSIST, _("Layer type"), wxLIST_FORMAT_LEFT, 10 * char_width);
+
     wxBoxSizer *bsLayButtons = new wxBoxSizer( wxVERTICAL );
     sbsLayers->Add( bsLayButtons, 0, wxEXPAND);
     
@@ -771,11 +775,16 @@ void RouteManagerDialog::Create()
     wxBoxSizer *bsLayButtonsInner = new wxBoxSizer( wxVERTICAL );
     winl->SetSizer(bsLayButtonsInner);
     
-    btnLayNew = new wxButton( winl, -1, _("Temporary layer") );
+    btnLayNew = new wxButton( winl, -1, _("Create Temporary layer") );
     bsLayButtonsInner->Add( btnLayNew, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnLayNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(RouteManagerDialog::OnLayNewClick), NULL, this );
-    
+
+    btnPerLayNew = new wxButton(winl, -1, _("Create Persistent layer"));
+    bsLayButtonsInner->Add(btnPerLayNew, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+    btnPerLayNew->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(RouteManagerDialog::OnPerLayNewClick), NULL, this);
+
     btnLayDelete = new wxButton( winl, -1, _("&Delete") );
     bsLayButtonsInner->Add( btnLayDelete, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnLayDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
@@ -2475,11 +2484,21 @@ void RouteManagerDialog::UpdateLists()
 
 void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
 {
+    AddNewLayer( false ); //Temporary layer
+}
+
+void RouteManagerDialog::OnPerLayNewClick( wxCommandEvent &event )
+{
+    AddNewLayer( true );  //Persistent layer
+}
+
+void RouteManagerDialog::AddNewLayer( bool isPersistent )
+{
     bool show_flag = g_bShowLayers;
     g_bShowLayers = true;
-    
-    UI_ImportGPX( this, true, _T("") );
-    
+
+    UI_ImportGPX(this, true, _T(""), true, isPersistent);
+
     g_bShowLayers = show_flag;
     UpdateLists();
     gFrame->RefreshAllCanvas();
@@ -2502,11 +2521,41 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
     Layer *layer = pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData();
 
     if( !layer ) return;
-
+    // Check if this file is a persistent layer.
+    // If added in this session the listctrl file path is origin dir and not yet /layers
+    bool ispers;
+    wxString destf, f, name, ext;
+    f = layer->m_LayerFileName;
+    wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
+    destf = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&destf);
+    destf.Append( _T("layers") );
+    appendOSDirSlash(&destf);
+    destf << name << _T(".") << ext;
+    
     wxString prompt = _("Are you sure you want to delete this layer and <ALL> of its contents?");
+    if (wxFileExists(destf))
+    {
+        prompt.Append( _T("\n") );
+        prompt.Append( _("The file will also be deleted from OpenCPN's layer directory.") );
+        prompt.Append( _T("\n (") +  destf + _T(")" ) );
+        ispers = true;
+    }
     int answer = OCPNMessageBox( this, prompt, wxString( _("OpenCPN Alert") ), wxYES_NO );
     if ( answer == wxID_NO )
         return;
+    
+    // Delete a persistent layer file if present
+    if (ispers)
+    {
+        wxString remMSG;
+        if (wxRemoveFile(destf) )
+            remMSG.sprintf(_T("Layer file: %s is deleted"), destf);
+        else 
+            remMSG.sprintf(_T("Error deleting Layer file: %s"), destf);
+
+        wxLogMessage(remMSG);        
+    }
     
     // Process Tracks and Routes in this layer
     wxRouteListNode *node1 = pRouteList->GetFirst();
@@ -2779,6 +2828,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
         wxString len;
         len.Printf( wxT("%d"), (int) lay->m_NoOfItems );
         m_pLayListCtrl->SetItem( idx, colLAYITEMS, len );
+        m_pLayListCtrl->SetItem(idx, colLAYPERSIST, lay->m_LayerType);
         
         wxListItem lic;
         lic.SetId( index );
