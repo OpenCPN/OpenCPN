@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "s52s57.h"
+
 class ChartCanvas;
 
 
@@ -84,6 +86,8 @@ public:
         bShowAIS = true;
         bAttenAIS = false;
         bQuilt = true;
+        nENCDisplayCategory = (int)(enum _DisCat) STANDARD;
+
     }
     
 };

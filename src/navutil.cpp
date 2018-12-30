@@ -1926,7 +1926,8 @@ void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
         pcc->bShowAIS = true;
         pcc->bAttenAIS = false;
         pcc->bQuilt = true;
-        
+        pcc->nENCDisplayCategory = (int)(enum _DisCat) STANDARD;
+
         g_canvasConfigArray.Add(pcc);
         
         return;
