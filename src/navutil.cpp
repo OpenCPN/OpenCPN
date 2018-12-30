@@ -462,6 +462,10 @@ wxString GetLayerName( int id )
     return ( name );
 }
 
+//Helper conditional file name dir slash
+void appendOSDirSlash(wxString* pString);
+
+
 //-----------------------------------------------------------------------------
 //          MyConfig Implementation
 //-----------------------------------------------------------------------------
@@ -1618,7 +1622,7 @@ bool MyConfig::LoadLayers(wxString &path)
                     bLayerViz = false;
 
                 l->m_bIsVisibleOnChart = bLayerViz;
-
+                
                 wxString laymsg;
                 laymsg.Printf( wxT("New layer %d: %s"), l->m_LayerID, l->m_LayerName.c_str() );
                 wxLogMessage( laymsg );
@@ -1635,7 +1639,8 @@ bool MyConfig::LoadLayers(wxString &path)
                         pSet->load_file(file_path.fn_str());
                         long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
                         l->m_NoOfItems += nItems;
-
+                        l->m_LayerType = _("Persistent");
+                        
                         wxString objmsg;
                         objmsg.Printf( wxT("Loaded GPX file %s with %ld items."), file_path.c_str(), nItems );
                         wxLogMessage( objmsg );
@@ -2892,7 +2897,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
     }
 }
 
-void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdirectory )
+void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdirectory, bool isPersistent )
 {
     int response = wxID_CANCEL;
     wxArrayString file_array;
@@ -2998,6 +3003,32 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
 
                 if(islayer){
                     l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
+                    l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary") ;
+                    
+                    if(isPersistent)
+                    {
+                        // If this is a persistent layer also copy the file to config file dir /layers
+                        wxString destf, f, name, ext;
+                        f = l->m_LayerFileName;
+                        wxFileName::SplitPath(f, NULL , NULL, &name, &ext);
+                        destf = g_Platform->GetPrivateDataDir();
+                        appendOSDirSlash(&destf);
+                        destf.Append(_T("layers"));
+                        appendOSDirSlash(&destf);
+                        if (!wxDirExists(destf))
+                        {
+                            if( !wxMkdir(destf, wxS_DIR_DEFAULT) )
+                                wxLogMessage( _T("Error creating layer directory") );
+                        }
+
+                        destf << name << _T(".") << ext;
+                        wxString msg;
+                        if( wxCopyFile(f, destf, true) )
+                            msg.Printf(_T("File: %s.%s also added to persistent layers"), name, ext);
+                        else
+                            msg.Printf(_T("Failed adding %s.%s to persistent layers"), name, ext);
+                        wxLogMessage(msg);
+                    }
                 }
                 else {
                     int wpt_dups;
