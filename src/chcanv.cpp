@@ -11942,11 +11942,15 @@ extern bool    g_bAllowShowScaled;
 void ChartCanvas::SetShowAIS( bool show )
 {
     m_bShowAIS = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
 }
 
 void ChartCanvas::SetAttenAIS( bool show )
 {
     m_bShowAISScaled = show;
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
 }
 
 

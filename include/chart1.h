@@ -412,6 +412,9 @@ class MyFrame: public wxFrame
     void ToggleRocks(void);
     bool ToggleLights( ChartCanvas *cc );
     void ToggleAnchor( ChartCanvas *cc );
+    void ToggleAISDisplay( ChartCanvas *cc );
+    void ToggleAISMinimizeTargets( ChartCanvas *cc );
+
     void ToggleTestPause(void);
     void TrackOn(void);
     void SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset );

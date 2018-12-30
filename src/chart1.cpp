@@ -4352,10 +4352,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_AIS_TARGETS: {
-            if ( g_bShowAIS )
-                SetAISDisplayStyle(GetPrimaryCanvas(), 2);
-            else
-                SetAISDisplayStyle(GetPrimaryCanvas(),0);
+            ToggleAISDisplay( GetFocusCanvas() );
             break;
         }
          case ID_MENU_AIS_MOORED_TARGETS: {
@@ -4363,11 +4360,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
          case ID_MENU_AIS_SCALED_TARGETS: {
-             if(g_bShowScaled)
-                 SetAISDisplayStyle(GetPrimaryCanvas(),0);
-            else
-                SetAISDisplayStyle(GetPrimaryCanvas(),1);
-            
+            ToggleAISMinimizeTargets( GetFocusCanvas() );
             break;
         }
 
@@ -5227,6 +5220,22 @@ void MyFrame::ToggleNavobjects( ChartCanvas *cc )
     cc->Refresh();
 }
 
+void MyFrame::ToggleAISDisplay( ChartCanvas *cc )
+{
+    cc->SetShowAIS(!cc->GetShowAIS());
+    SetMenubarItemState( ID_MENU_AIS_TARGETS, cc->GetShowAIS() );
+    cc->Refresh();
+
+}
+
+void MyFrame::ToggleAISMinimizeTargets( ChartCanvas *cc )
+{
+    cc->SetAttenAIS(!cc->GetAttenAIS());
+    SetMenubarItemState( ID_MENU_AIS_SCALED_TARGETS, cc->GetAttenAIS() );
+    cc->Refresh();
+}
+
+
 void MyFrame::SetbFollow( ChartCanvas *cc )
 {
     JumpToPosition(cc, gLat, gLon, cc->GetVPScale());
@@ -5473,8 +5482,9 @@ void MyFrame::RegisterGlobalMenuItems()
 
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate less critical AIS targets") );
+    ais_menu->AppendSeparator();
+    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
@@ -5585,7 +5595,7 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
     m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( cc->GetShowChartbar() );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( cc->GetShowAIS() );
     m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Check( g_bHideMoored );
-    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( g_bShowScaled );
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( cc->GetAttenAIS() );
     m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Enable(g_bAllowShowScaled);
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
