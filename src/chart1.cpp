@@ -4535,7 +4535,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             g_bmasterToolbarFull = !g_bmasterToolbarFull;
 
 #ifdef __WXOSX__            
-            m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+            if(g_bmasterToolbarFull)
+                m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+            else
+                m_nMasterToolCountShown = 2;
 #else                
             m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
 #endif            
@@ -4655,7 +4658,10 @@ bool MyFrame::SetGlobalToolbarViz( bool viz )
             g_bmasterToolbarFull = !g_bmasterToolbarFull;
 
 #ifdef __WXOSX__            
-            m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+            if(g_bmasterToolbarFull)
+                m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+            else
+                m_nMasterToolCountShown = 2;
 #else                
             m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
 #endif            
