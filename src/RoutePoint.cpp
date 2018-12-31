@@ -38,24 +38,26 @@
 #include "OCPNPlatform.h"
 #include "Select.h"
 
-extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
-extern Routeman *g_pRouteMan;
-extern wxRect g_blink_rect;
-extern Multiplexer *g_pMUX;
-extern MyFrame *gFrame;
-extern bool g_btouch;
-extern bool g_bresponsive;
+extern WayPointman  *pWayPointMan;
+extern bool         g_bIsNewLayer;
+extern int          g_LayerIdx;
+extern Routeman     *g_pRouteMan;
+extern wxRect       g_blink_rect;
+extern Multiplexer  *g_pMUX;
+extern MyFrame      *gFrame;
+extern bool         g_btouch;
+extern bool         g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern double g_n_arrival_circle_radius;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
+extern double       g_n_arrival_circle_radius;
+extern int          g_iWaypointRangeRingsNumber;
+extern float        g_fWaypointRangeRingsStep;
+extern int          g_iWaypointRangeRingsStepUnits;
+extern wxColour     g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-extern Select *pSelect;
-extern float g_ChartScaleFactorExp;
+extern Select       *pSelect;
+extern float        g_ChartScaleFactorExp;
+extern int          g_iWpt_ScaMin;
+extern bool         g_bUseWptScaMin;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -106,14 +108,16 @@ RoutePoint::RoutePoint()
     
     m_WaypointArrivalRadius = g_n_arrival_circle_radius;
 
-    m_bShowWaypointRangeRings = false;
+    m_bShowWaypointRangeRings = (bool)g_iWaypointRangeRingsNumber;
    
     m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
-    m_ScaMin = MAX_INT_VAL;
+    m_ScaMin = g_iWpt_ScaMin;
     m_ScaMax = 0;
+    b_UseScamin = g_bUseWptScaMin;
+    
 
 #ifdef ocpnUSE_GL
     m_pos_on_screen = false;
@@ -164,13 +168,14 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_ManagerNode = NULL;
     
     m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
-
-    m_bShowWaypointRangeRings = false;
-   
-    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
-    m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
-    m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
-    m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_bShowWaypointRangeRings = orig->m_bShowWaypointRangeRings;   
+    m_iWaypointRangeRingsNumber = orig->m_iWaypointRangeRingsNumber;
+    m_fWaypointRangeRingsStep = orig->m_fWaypointRangeRingsStep;
+    m_iWaypointRangeRingsStepUnits = orig->m_iWaypointRangeRingsStepUnits;
+    m_wxcWaypointRangeRingsColour = orig->m_wxcWaypointRangeRingsColour;
+    m_ScaMin = orig->m_ScaMin;
+    m_ScaMax = orig->m_ScaMax;
+    b_UseScamin = orig->b_UseScamin;
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
@@ -246,11 +251,16 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     
     SetWaypointArrivalRadius( g_n_arrival_circle_radius );
 
-    m_bShowWaypointRangeRings = false;
+    m_bShowWaypointRangeRings = (bool)g_iWaypointRangeRingsNumber;
+   
     m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_ScaMin = g_iWpt_ScaMin;
+    m_ScaMax = 0;
+    b_UseScamin = g_bUseWptScaMin;
+    
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
@@ -1109,5 +1119,5 @@ void RoutePoint::SetScaMax(wxString str) {
 }
 
 bool RoutePoint::IsScaVisible( ChartCanvas *cc){
-    return ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax));
+    return ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) );
 }

@@ -179,10 +179,9 @@ extern TCMgr            *ptcmgr;
 extern Select           *pSelectTC;
 extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
-extern MarkInfoImpl     *pMarkPropDialog;
+extern MarkInfoDlg      *g_pMarkInfoDialog;
 extern RouteProp        *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
-extern MarkInfoImpl     *pMarkInfoDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 
@@ -7628,9 +7627,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             
             bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
             
-            if( NULL == pMarkPropDialog ) {
+            if( NULL == g_pMarkInfoDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
-            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+            } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                 DraggingAllowed = false;
             
             if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) )
@@ -7688,8 +7687,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
    
                                                    
                                                     //    Update the MarkProperties Dialog, if currently shown
-                                                    if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
+                                                    if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
+                                                        if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties( true );
                                                     }
                                                     
                                                     if(g_bopengl) {
@@ -7724,10 +7723,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             
             bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
             
-            if( NULL == pMarkPropDialog ) {
+            if( NULL == g_pMarkInfoDialog ) {
                 if( g_bWayPointPreventDragging )
                     DraggingAllowed = false;
-            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+            } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                 DraggingAllowed = false;
             
             if( m_pRoutePointEditTarget
@@ -7784,9 +7783,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                             
                         //    Update the MarkProperties Dialog, if currently shown
-                        if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                            if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
-                                pMarkPropDialog->UpdateProperties( true );
+                        if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
+                            if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() )
+                                g_pMarkInfoDialog->UpdateProperties( true );
                         }
                         
                         //    Invalidate the union region
@@ -8017,9 +8016,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             else {
                 
                 bool bSelectAllowed = true;
-                if( NULL == pMarkPropDialog ) {
+                if( NULL == g_pMarkInfoDialog ) {
                     if( g_bWayPointPreventDragging ) bSelectAllowed = false;
-                } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                     bSelectAllowed = false;
 
 				/*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the 
@@ -8714,13 +8713,14 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
-    pMarkPropDialog = MarkInfoImpl::getInstance( this );     // There is one global instance of the MarkProp Dialog
+    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(this);
 
     if( 1/*g_bresponsive*/ ) {
 
         wxSize canvas_size = GetSize();
         wxPoint canvas_pos = GetPosition();
-        wxSize fitted_size = pMarkPropDialog->GetSize();;
+        wxSize fitted_size = g_pMarkInfoDialog->GetSize();;
 
         bool newFit = false;
         if(canvas_size.x < fitted_size.x){
@@ -8735,21 +8735,21 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         }
 
         if(newFit){
-            pMarkPropDialog->SetSize( fitted_size );
-            pMarkPropDialog->Centre();
+            g_pMarkInfoDialog->SetSize( fitted_size );
+            g_pMarkInfoDialog->Centre();
         }
     }
 
-    pMarkPropDialog->SetRoutePoint( markPoint );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( markPoint );
+    g_pMarkInfoDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
         wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( markPoint->m_LayerID ) ) );
-        pMarkPropDialog->SetDialogTitle( caption );
+        g_pMarkInfoDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
+        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
 
-    pMarkPropDialog->Show();
-    pMarkPropDialog->InitialFocus();
+    g_pMarkInfoDialog->Show();
+    g_pMarkInfoDialog->InitialFocus();
 }
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)

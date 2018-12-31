@@ -39,7 +39,13 @@
 #include <wx/filesys.h>
 #include <wx/clrpicker.h>
 #include <wx/odcombo.h>
+#include <wx/gbsizer.h>
+#include <wx/spinctrl.h>
 #include "LinkPropDlg.h"
+#include "Hyperlink.h"
+#include <wx/htmllbox.h>
+#include <wx/datectrl.h>
+#include <wx/timectrl.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -86,7 +92,7 @@ class   OCPNIconCombo;
 #define ID_ROUTEPROP_EXTEND    7207
 #define ID_ROUTEPROP_COPYTXT   7307
 #define ID_ROUTEPROP_PRINT     7407
-#define ID_WAYPOINTRANGERINGS  7507 
+#define ID_WPT_RANGERINGS_NO   7507 
 #define ID_SHOWWAYPOINTRANGERINGS  7607 
 #define ID_PLANSPEEDCTL        7008
 #define ID_TEXTCTRL4           7009
@@ -103,6 +109,9 @@ class   OCPNIconCombo;
 #define ID_TIMEZONESEL_UTC     7020
 #define ID_TIMEZONESEL_LOCAL   7021
 #define ID_TIMEZONESEL_LMT     7022
+#define ID_RCLK_MENU_DELETE_LINK 7023
+#define ID_RCLK_MENU_EDIT_LINK 7024
+#define ID_RCLK_MENU_ADD_LINK   7025
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -115,8 +124,24 @@ class   OCPNIconCombo;
 #define ID_ICONCTRL 8003
 #define ID_LATCTRL 8004
 #define ID_LONCTRL 8005
-#define ID_SHOWNAMECHECKBOX1 8006
-
+#define ID_SHOWNAMECHECKBOXBASIC 8006
+#define ID_BITMAPCOMBOCTRL 8007
+#define ID_NAMECTRL 8008
+#define wxID_HTMLLIST 8009
+#define ID_DESCR_CTR_DESC 8010
+#define ID_DESCR_CTR_BASIC 8011
+#define ID_BTN_DESC_BASIC 8012
+#define ID_ETA_DATEPICKERCTRL 8013
+#define ID_ETA_TIMEPICKERCTRL 8014
+#define ID_SHOWNAMECHECKBOX_EXT 8015
+#define ID_CHECKBOX_VIS_EXT 8016
+#define ID_CHECKBOX_SCAMIN_VIS 8017
+#define ID_SET_DEFAULT_ICON 8018
+#define ID_SET_DEFAULT_RANGERINGS 8019
+#define ID_SET_DEFAULT_ARRIVALRADIUS 8020
+#define ID_SET_DEFAULT_SCAMIN 8021
+#define ID_SET_DEFAULT_NAMEVIS 8022
+#define ID_SET_DEFAULT_ALL 8023
 
 ////@end control identifiers
 
@@ -283,40 +308,92 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
-class MarkInfoDef : public wxDialog
+class MarkInfoDlg : public wxDialog
 {
     DECLARE_EVENT_TABLE()
     
 	private:
-
+        RoutePoint  *m_pRoutePoint;
+        static bool instanceFlag;
+        int           i_htmlList_item;
+        LinkPropImpl* m_pLinkProp;
+        
+        bool            m_bShowName_save;
+        wxString        m_Name_save;
+        wxString        m_IconName_save;
+        int             m_current_icon_Index;
+        double          m_lat_save;
+        double          m_lon_save;
+        wxString        m_Description_save;
+        HyperlinkList*  m_pMyLinkList;
+        bool            m_bIsVisible_save;
+        bool            b_UseScamin_save;
+        int             m_ScaMin_save;
+        bool            m_bShowWaypointRangeRings_save;
+        int             m_iWaypointRangeRingsNumber_save;
+        float           m_fWaypointRangeRingsStep_save;
+        wxColour        m_wxcWaypointRangeRingsColour_save;
+        double          m_WaypointArrivalRadius_save;
+        float           m_PlannedSpeed_save;
+        wxDateTime      m_ArrETA_save;
+        
+        
+        
 	protected:
+        OCPNIconCombo*          m_bcomboBoxIcon;
+        wxBoxSizer*             bSizerBasicProperties;
         wxBoxSizer*             bSizerLinks;
-        OCPNIconCombo*       m_bcomboBoxIcon;
-        wxStaticBitmap*         m_bitmapIcon;
-        wxButton*               m_buttonAddLink;
         wxButton*               m_buttonExtDescription;
+        wxCheckBox*             m_checkBoxScaMin;
         wxCheckBox*             m_checkBoxShowName;
+        wxCheckBox*             m_checkBoxShowNameExt;
         wxCheckBox*             m_checkBoxVisible;
-        wxHyperlinkCtrl*        m_hyperlink17;
-        wxObject*               m_contextObject;
-        wxMenu*                 m_menuLink;
+        wxChoice*               m_choiceWaypointRangeRingsUnits;
+        wxColourPickerCtrl*     m_PickColor;
+        wxDatePickerCtrl*       m_EtaDatePickerCtrl;
+        wxFlexGridSizer*        fg_MainSizer;
+        wxFlexGridSizer*        fSizerBasicProperties;
+        wxFlexGridSizer*        waypointradarGrid;
+        wxFlexGridSizer*        waypointrrSelect;
+        wxGridBagSizer*         bGB_SizerProperties;
+        wxGridBagSizer*         gbSizerInnerProperties;
         wxNotebook*             m_notebookProperties;
-        wxScrolledWindow*       m_panelBasicProperties;
-        wxPanel*                m_panelDescription;
-        wxPanel*                m_panelExtendedProperties;
-        wxScrolledWindow*       m_scrolledWindowLinks;
-        wxStdDialogButtonSizer* m_sdbSizerButtons;
-        wxButton*               m_sdbSizerButtonsCancel;
-        wxButton*               m_sdbSizerButtonsOK;
-        wxStaticText*           m_staticTextDescription;
-        wxStaticText*           m_staticTextEditEnabled;
-        wxStaticText*           m_staticTextGpx;
+        wxObject*               m_contextObject;
+        wxPanel*                m_PanelBasicProperties;
+        wxPanel*                m_PanelDescription;
+        wxPanel*                m_PanelExtendedProperties;
+        wxSimpleHtmlListBox*    m_htmlList;
+        wxSize                  m_defaultClientSize;
+        wxSpinCtrl*             m_SpinWaypointRangeRingsNumber;
+        wxStaticBitmap*         m_bitmapIcon;
+        wxStaticBoxSizer*       sbS_Description;
+        wxStaticBoxSizer*       sbSizerExtProperties;
+        wxStaticBoxSizer*       sbSizerLinks;
+        wxStaticBoxSizer*       sbSizerBasicProperties; 
+        wxStaticBoxSizer*       sbRangeRingsExtProperties;
+        wxStaticBoxSizer*       sbSizerDescription;
+        wxStaticText*           m_staticTextArrivalRadius;                                   
+        wxStaticText*           m_staticTextDescription;                                     
+        wxStaticText*           m_staticTextEditEnabled;                                     
+        wxStaticText*           m_staticTextGpx;                                             
         wxStaticText*           m_staticTextGuid;
         wxStaticText*           m_staticTextIcon;
         wxStaticText*           m_staticTextLatitude;
         wxStaticText*           m_staticTextLayer;
         wxStaticText*           m_staticTextLongitude;
         wxStaticText*           m_staticTextName;
+        wxStaticText*           m_staticTextScaMin;
+        wxStaticText*           m_staticTextShowNameExt;
+        wxStaticText*           m_staticTextRR1;
+        wxStaticText*           m_staticTextRR2;
+        wxStaticText*           m_staticTextRR3;
+        wxStaticText*           m_staticTextRR4;
+        wxStaticText*           m_staticTextArrivalUnits;
+        wxStaticText*           m_staticTextPlSpeed;
+        wxStaticText*           m_staticTextEta;
+        wxStaticText*           m_staticTextPlSpeedUnits;
+        wxStdDialogButtonSizer* m_sdbSizerButtons;
+        wxTextCtrl*             m_textArrivalRadius;
         wxTextCtrl*             m_textCtrlExtDescription;
         wxTextCtrl*             m_textCtrlGpx;
         wxTextCtrl*             m_textCtrlGuid;
@@ -324,110 +401,47 @@ class MarkInfoDef : public wxDialog
         wxTextCtrl*             m_textLatitude;
         wxTextCtrl*             m_textLongitude;
         wxTextCtrl*             m_textName;
-        wxToggleButton*         m_toggleBtnEdit;
-        wxStaticBoxSizer*       sbSizerLinks;
-        wxSize                  m_defaultClientSize;
-        wxStaticText*           m_staticTextArrivalRadius;
-        wxTextCtrl*             m_textArrivalRadius;
-        wxBoxSizer*             bSizerBasicProperties;
-        wxCheckBox*             m_checkBoxShowWaypointRangeRings;
-    
-        wxChoice*               m_choiceWaypointRangeRingsNumber;
-        wxFlexGridSizer*        waypointradarGrid;
+        wxTextCtrl*             m_textScaMin;
         wxTextCtrl*             m_textWaypointRangeRingsStep;
-        wxChoice*               m_choiceWaypointRangeRingsUnits;
-        wxFlexGridSizer*        waypointrrSelect;
-        wxChoice*               m_chColor;
+        wxTextCtrl*             m_textCtrlPlSpeed;
+        wxTimePickerCtrl*       m_EtaTimePickerCtrl;
         
-    // Virtual event handlers, overide them in your derived class
-        virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnExtDescriptionClick( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnDeleteLink( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnEditLink( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnAddLink( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnEditLinkToggle( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnDescChangedExt( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnArrivalRadiusChange( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnWaypointRangeRingsStepChange( wxCommandEvent& event ) { event.Skip(); }
+        
+        void OnBitmapCombClick(wxCommandEvent& event);
+        void OnPositionCtlUpdated( wxCommandEvent& event );
+        void OnExtDescriptionClick( wxCommandEvent& event );
+        void OnDescChangedExt( wxCommandEvent& event );
+        void OnDescChangedBasic( wxCommandEvent& event );
+        void OnMarkInfoCancelClick( wxCommandEvent& event );
+        void OnMarkInfoOKClick( wxCommandEvent& event );
+        void OnShowWaypointNameSelectBasic( wxCommandEvent& event );
+        void OnShowWaypointNameSelectExt( wxCommandEvent& event );
+        void OnSelectScaMinExt( wxCommandEvent& event );
+        void OnSelectShowOnChartExt( wxCommandEvent& event );
+        void OnWptRangeRingsNoChange( wxSpinEvent& event );
         void OnCopyPasteLatLon( wxCommandEvent& event );
         void OnWaypointRangeRingSelect( wxCommandEvent& event );
-        void OnShowWaypointRangeRingSelect( wxCommandEvent& event );
-
-    public:
-        MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
-        ~MarkInfoDef();
-
-        void RecalculateSize( void );
+        void OnRightClickExt( wxCommandEvent& event );
+        void OnRightClickExt2( wxCommandEvent& event );
         
-        void m_hyperlink17OnContextMenu( wxMouseEvent &event )
-        {
-            m_hyperlink17->PopupMenu( m_menuLink, event.GetPosition() );
-        }
-
-};
-
-class MarkInfoImpl : public MarkInfoDef
-{
-public :
-      void SetColorScheme( ColorScheme cs );
-      void OnMarkInfoOKClick( wxCommandEvent& event );
-      void OnMarkInfoCancelClick( wxCommandEvent& event );
-      void SetRoutePoint( RoutePoint *pRP );
-      void SetDialogTitle(const wxString & title) { SetTitle(title); }
-      RoutePoint *GetRoutePoint(void) { return m_pRoutePoint; }
-      bool UpdateProperties( bool positionOnly = false );
-      void ValidateMark(void);
-      void InitialFocus(void);
-      void OnRightClick( wxCommandEvent& event );
-
-      static MarkInfoImpl *getInstance( wxWindow* parent,
-                          wxWindowID id = wxID_ANY,
-                          const wxString& title = _("Waypoint Information"),
-                          const wxPoint& pos = wxDefaultPosition,
-                          const wxSize& size = wxSize( -1, -1 ),
-                          long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
-      static bool getInstanceFlag(){ return instanceFlag; } 
-      ~MarkInfoImpl();
-
-      void m_hyperlinkContextMenu( wxMouseEvent &event );
-
-protected :
-      virtual void OnPositionCtlUpdated( wxCommandEvent& event );
-      void OnDeleteLink( wxCommandEvent& event );
-      void OnEditLink( wxCommandEvent& event );
-      void OnAddLink( wxCommandEvent& event );
-      void OnEditLinkToggle( wxCommandEvent& event );
-      void OnDescChangedBasic( wxCommandEvent& event );
-      void OnDescChangedExt( wxCommandEvent& event );
-      void OnExtDescriptionClick( wxCommandEvent& event );
-
-private :
-    MarkInfoImpl( wxWindow* parent,
-                  wxWindowID id = wxID_ANY,
-                  const wxString& title = _("Waypoint Information"),
-                  const wxPoint& pos = wxDefaultPosition,
-                  const wxSize& size = wxSize( -1, -1 ),
-                  long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
-    
-    static bool instanceFlag;
-    static MarkInfoImpl *single;
-    
-      RoutePoint  *m_pRoutePoint;
-      HyperlinkList *m_pMyLinkList;
-      void OnHyperLinkClick(wxHyperlinkEvent &event);
-      LinkPropImpl* m_pLinkProp;
-      bool SaveChanges();
-      wxHyperlinkCtrl* m_pEditedLink;
-
-      int           m_current_icon_Index;
-      double        m_lat_save;
-      double        m_lon_save;
-      wxString      m_IconName_save;
-      bool          m_bShowName_save;
-      bool          m_bIsVisible_save;
+    public:
+        MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+        ~MarkInfoDlg();
+        void Create();
+        void InitialFocus(void);
+        void RecalculateSize( void );
+        RoutePoint *GetRoutePoint(void) { return m_pRoutePoint; }
+        void SetColorScheme( ColorScheme cs );
+        void SetRoutePoint( RoutePoint *pRP );
+        void UpdateHtmlList();
+        void SetDialogTitle(const wxString & title) { SetTitle(title); }
+        bool UpdateProperties( bool positionOnly = false );
+        void ValidateMark(void);
+        bool SaveChanges();
+        void m_htmlListContextMenu( wxMouseEvent &event );
+        void OnRightClickLatLon( wxCommandEvent& event );
+        void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
+        void OnPopupLinkClick( wxCommandEvent& event );
 };
 
 #endif // _ROUTEPROP_H_

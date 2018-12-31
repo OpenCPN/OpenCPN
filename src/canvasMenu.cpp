@@ -108,7 +108,7 @@ extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_click_stop;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern MarkInfoImpl     *pMarkPropDialog;
+extern MarkInfoDlg     *g_pMarkInfoDialog;
 extern RouteProp        *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
@@ -1097,9 +1097,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 parent->undo->AfterUndoableAction( NULL );
             }
 
-            if( pMarkPropDialog ) {
-                pMarkPropDialog->SetRoutePoint( NULL );
-                pMarkPropDialog->UpdateProperties();
+            if( g_pMarkInfoDialog ) {
+                g_pMarkInfoDialog->SetRoutePoint( NULL );
+                g_pMarkInfoDialog->UpdateProperties();
             }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
@@ -1281,9 +1281,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateRouteListCtrl();
 
-            if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
-                pMarkPropDialog->ValidateMark();
-                pMarkPropDialog->UpdateProperties();
+            if( g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown() ) {
+                g_pMarkInfoDialog->ValidateMark();
+                g_pMarkInfoDialog->UpdateProperties();
             }
 
             parent->undo->InvalidateUndo();
