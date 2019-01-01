@@ -62,7 +62,7 @@ class RouteManagerDialog : public wxDialog {
             void RecalculateSize();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
-            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
+            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = true);
             void UpdateLayListCtrl();
             void UpdateWptListCtrlViz();
 
