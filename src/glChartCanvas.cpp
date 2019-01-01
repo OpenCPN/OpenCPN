@@ -3439,7 +3439,7 @@ void glChartCanvas::Render()
 
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
-            //glFinish();   
+            glFinish();   
             g_glstopwatch.Start();
         }
     }
@@ -3925,7 +3925,7 @@ void glChartCanvas::Render()
 #ifdef __WXMSW__    
      //  MSW OpenGL drivers are generally very unstable.
      //  This helps...   
-     //glFinish();
+     glFinish();
 #endif    
     
     SwapBuffers();
