@@ -2182,14 +2182,12 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
             pluginOverlayRender = false;
     }
     
-    if(pluginOverlayRender){
-        g_overlayCanvas = m_pParentCanvas;
-        if( g_pi_manager ) {
-            g_pi_manager->SendViewPortToRequestingPlugIns( vp );
-            g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, vp );
-        }
+    g_overlayCanvas = m_pParentCanvas;
+    if (g_pi_manager) {
+         g_pi_manager->SendViewPortToRequestingPlugIns(vp);
+         g_pi_manager->RenderAllGLCanvasOverlayPlugIns(m_pcontext, vp, pluginOverlayRender);
     }
-
+   
     // all functions called with m_pParentCanvas-> are still slow because they go through ocpndc
     AISDrawAreaNotices( dc, m_pParentCanvas->GetVP(), m_pParentCanvas );
 
@@ -3830,6 +3828,7 @@ void glChartCanvas::Render()
     
      //  Some older MSW OpenGL drivers are generally very unstable.
      //  This helps...   
+
     if(g_b_needFinish)
         glFinish();
     
