@@ -109,7 +109,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tbD->SetMaxLength( 0 ); 
-	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer3->Add( m_tbD, 1, wxEXPAND, 5 );
 	
@@ -205,7 +205,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tcD->SetMaxLength( 0 ); 
-	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer4->Add( m_tcD, 0, wxEXPAND, 5 );
 	
@@ -326,7 +326,7 @@ WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindow
 	wxGridSizer* gSizer2;
 	gSizer2 = new wxGridSizer( 0, 3, 0, 0 );
 	
-	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Declination"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Variation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbDeclination->SetValue(true); 
 	gSizer2->Add( m_cbDeclination, 0, wxALL, 5 );
 	

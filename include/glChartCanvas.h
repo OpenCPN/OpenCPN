@@ -39,6 +39,7 @@
 #endif
 
 class glTexFactory;
+class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
 
@@ -53,6 +54,9 @@ public:
 
     int m_iTextureDimension;
     int m_iTextureMemorySize;
+    
+    bool m_GLPolygonSmoothing;
+    bool m_GLLineSmoothing;
 };
 
 class ocpnDC;
@@ -71,8 +75,8 @@ public:
     static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);
-    static void DrawRegion( ViewPort &vp, const LLRegion &region);
-    static void SetClipRegion( ViewPort &vp, const LLRegion &region);
+    void DrawRegion( ViewPort &vp, const LLRegion &region);
+    void SetClipRegion( ViewPort &vp, const LLRegion &region);
     static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);
@@ -80,6 +84,9 @@ public:
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
+    static bool         s_b_useFBO;
+    
+    void SendJSONConfigMessage();
     
     glChartCanvas(wxWindow *parent);
     ~glChartCanvas();
@@ -94,7 +101,7 @@ public:
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
     void FastZoom(float factor);
-    void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
+    void RenderCanvasBackingChart( ocpnDC &dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
@@ -106,8 +113,9 @@ public:
     wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
-    static void Invalidate();
+    void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
+    
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
@@ -132,6 +140,8 @@ public:
 
 protected:
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
+    void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
+    
     void BuildFBO();
     void SetupOpenGL();
     
@@ -163,7 +173,7 @@ protected:
     
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
-
+    
     bool        m_b_paint_enable;
     int         m_in_glpaint;
 
@@ -210,6 +220,8 @@ protected:
     int          m_tideTexHeight;
     int          m_currentTexWidth;
     int          m_currentTexHeight;
+    
+    ChartCanvas *m_pParentCanvas;
     
     DECLARE_EVENT_TABLE()
 };

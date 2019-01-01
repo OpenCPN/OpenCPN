@@ -108,7 +108,7 @@ public:
         int         nVert;
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
-        LLBBox      box;
+        LLBBox      tri_box;
 //        double      minxt, minyt, maxxt, maxyt;
         
         TriPrim     *p_next;                // chain link
@@ -232,6 +232,7 @@ class PolyTessGeo
         
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
 
+        
     private:
         int BuildTessGL(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
@@ -244,7 +245,7 @@ class PolyTessGeo
         bool            m_bOK;
 
         Extended_Geometry     *m_pxgeom;
-
+        
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain
         int             m_nvertex_max;                 // and computed max vertex count

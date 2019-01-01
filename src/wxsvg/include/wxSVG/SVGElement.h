@@ -18,6 +18,8 @@ class wxSVGDocument;
 #include "SVGAnimatedType.h"
 #include "SVGDTD.h"
 
+typedef wxSVGElement* wxSVGElementP;
+
 class wxSVGElement:
   public wxSvgXmlElement
 {

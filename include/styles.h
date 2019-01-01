@@ -73,6 +73,7 @@ public:
             disabledLoaded = false;
             activeLoaded =false;
             toggledLoaded =false;
+            customSize = wxSize( 32, 32 );
       }
 
       Tool(void) {
@@ -112,8 +113,9 @@ public:
       wxBitmap GetToolIcon(const wxString & toolname,
                            int iconType = TOOLICON_NORMAL, bool rollover = false,
                            int width = -1, int height = -1);
-      wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType, double scale = 1.0 );
-
+      wxBitmap BuildPluginIcon( wxBitmap &bm, int iconType, double scale = 1.0 );
+      bool NativeToolIconExists(const wxString & name);
+      
       int GetTopMargin() const { return toolMarginTop[currentOrientation]; }
       int GetRightMargin() const { return toolMarginRight[currentOrientation]; }
       int GetBottomMargin() const { return toolMarginBottom[currentOrientation]; }
@@ -137,8 +139,8 @@ public:
       void DrawToolbarLineStart( wxBitmap& bmp, double scale = 1.0 );
       void DrawToolbarLineEnd( wxBitmap& bmp, double scale = 1.0 );
 
-      wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
-      wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
+      static wxBitmap SetBitmapBrightness( wxBitmap& bitmap, ColorScheme cs );
+      static wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
       
       void SetOrientation( long orient );
       int GetOrientation();
@@ -146,7 +148,7 @@ public:
       void Unload();
 
       wxString name;
-    wxString sysname;
+      wxString sysname;
       wxString description;
       wxString graphicsFile;
       int toolMarginTop[2];

@@ -1390,7 +1390,7 @@ DDFRecord::SetFieldRaw( DDFField *poField, int iIndexWithinField,
 
         bool b_new_16 = false;    
         // is the new data UTF-16?    
-        if( (pachRawData[nRawDataSize-1] == 0) && (pachRawData[nRawDataSize-2] == DDF_UNIT_TERMINATOR)){
+        if( pachRawData && (pachRawData[nRawDataSize-1] == 0) && (pachRawData[nRawDataSize-2] == DDF_UNIT_TERMINATOR)){
             b_new_16 = true;
         }
 

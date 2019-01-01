@@ -27,7 +27,7 @@
 #define SQUISH_SINGLECOLOURFITFAST_H
 
 #include <limits.h>
-#include <squish.h>
+#include "squish.h"
 #include "colourfit.h"
 
 namespace squish {

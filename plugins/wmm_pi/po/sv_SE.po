@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-08 08:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:58-0500\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-29 21:29-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -18,9 +18,9 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
-"Declination is the angle between true and magnetic north.\n"
-"Inclination is the vertical angle of the magnetic field.\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+"Variation is the angle between true and magnetic north.\n"
+"Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
 "\t20000 to 66000\n\n"
@@ -32,23 +32,23 @@ msgstr "\n"
 "Missvisning är avvikelsen mellan sann och magnetisk nord. \n"
 "Inklination är den vertikala vinkeln av den magnetiska fältstyrkan. (+-90 på de magnetiska polerna) \n"
 "Fältstyrka är värdet på magnetfältet uttryckt i nanoTesla från 20000 till 66000\n\n"
-"De ritade linjerna liknar en topografisk karta.  Avståndet mellan dem kan ändras. Mer avstånd tar mindre tid att beräkna och de ritas fortare på skärmen.\n"
+"De ritade linjerna liknar en topografisk karta.  Avståndet mellan dem kan ändras. Mer avstånd tar mindre tid att beräkna och plottningen går fortare.\n"
 "Med reglagen för linjeavstånd och noggrannheten vid polerna går det att ställa in en lämplig balans mellan linjernas täthet och tiden det tar rita.\n\n"
-"Modulen \"World Magnetic Model\", WMM, har utvecklats av Pavel Kalian och den grafiska hanteringen av Sean D'Epagnier."
+"Modulen \"World Magnetic Model\", WMM, har utvecklats av Pavel Kalian och den grafiska plotten av Sean D'Epagnier."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
 msgstr "WMM Modul"
 
-#: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr "WMM"
 
-#: src/wmm_pi.cpp:273
+#: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Modul till OpenCPN för att modellera jordens magnetfält"
 
-#: src/wmm_pi.cpp:278
+#: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -64,15 +64,15 @@ msgstr "Modulen \"World Magnetic Model\" för OpenCPN\n"
 "går det att hämta en ny fil, WMM.COF, från NOAA och spara på den\n"
 "plats som anges i OpenCPN loggfil."
 
-#: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
 msgstr "Fel, se logg."
 
-#: src/wmm_pi.cpp:744 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr "WMM inställningar"
 
-#: src/wmm_pi.h:78 src/WmmUIDialog.h:152
+#: src/wmm_pi.h:79 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
 msgstr "Inställningar för plottning"
 
@@ -185,7 +185,7 @@ msgid "Window transparency"
 msgstr "Datarutans transparens"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
-msgid "Declination"
+msgid "Variation"
 msgstr "Missvisning"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346

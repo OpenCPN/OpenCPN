@@ -222,7 +222,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetElapsedTime() const
 wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedTime() const
 {
     double nBytesPerSec = GetSpeed();
-    if (nBytesPerSec == 0 || wxIsNaN(nBytesPerSec))
+    if (nBytesPerSec == 0 || std::isnan(nBytesPerSec))
         return wxTimeSpan(0);       // avoid division by zero
 
     // compute remaining seconds; here we assume that the current
@@ -248,7 +248,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedRemainingTime() const
 std::string wxCurlProgressBaseEvent::GetHumanReadableSpeed(const std::string &invalid, int precision) const
 {
     double speed = GetSpeed();
-    if (speed == 0 || wxIsNaN(speed))
+    if (speed == 0 || std::isnan(speed))
         return invalid;
 
     wxULongLong ull((wxULongLong_t)speed);
@@ -404,7 +404,6 @@ wxCurlBase::wxCurlBase(const wxString& szURL /*= wxEmptyString*/,
                     long flags /*=wxCURL_DEFAULT_FLAGS*/)
  : m_pCURL(NULL),
 m_bAbortHungTransfer(false),
-m_szBaseURL(wxCURL_STRING2BUF(szURL)),
 m_szCurrFullURL(wxCURL_STRING2BUF(szURL)),
 m_szUsername(wxCURL_STRING2BUF(szUserName)),
 m_szPassword(wxCURL_STRING2BUF(szPassword)),
@@ -632,7 +631,7 @@ std::string wxCurlBase::GetBaseURL() const
 
 void wxCurlBase::SetURL(const wxString& szRelativeURL)
 {
-    wxString str = wxCURL_BUF2STRING(m_szCurrFullURL) + szRelativeURL;
+    wxString str = wxCURL_BUF2STRING(m_szBaseURL) + szRelativeURL;
     m_szCurrFullURL = wxCURL_STRING2BUF(str);
 }
 

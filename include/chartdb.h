@@ -107,8 +107,8 @@ public:
       bool LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check);
       bool SaveBinary(const wxString & filename) { return ChartDatabase::Write(filename); }
 
-      int  BuildChartStack(ChartStack * cstk, float lat, float lon);
-      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add );
+      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int groupIndex);
+      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add, int groupIndex );
       bool EqualStacks(ChartStack *, ChartStack *);
       bool CopyStack(ChartStack *pa, ChartStack *pb);
       wxString GetFullPath(ChartStack *ps, int stackindex);
@@ -120,12 +120,13 @@ public:
       ChartBase *OpenStackChartConditional(ChartStack *ps, int start_index, bool bLargest, ChartTypeEnum New_Type, ChartFamilyEnum New_Family_Fallback);
 
       wxArrayPtrVoid *GetChartCache(void) { return pChartCache; }
-      ArrayOfInts GetCSArray(ChartStack *ps);
+      std::vector<int> GetCSArray(ChartStack *ps);
 
       int GetStackEntry(ChartStack *ps, wxString fp);
       bool IsChartInCache(int dbindex);
       bool IsChartInCache(wxString path);
       bool IsChartInGroup(const int db_index, const int group);
+      bool IsENCInGroup(const int group);
 
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);

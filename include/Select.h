@@ -25,8 +25,6 @@
 #define __SELECT_H__
 
 #include "SelectItem.h"
-#include "Route.h"
-#include "Track.h"
 
 #define SELTYPE_UNKNOWN              0x0001
 #define SELTYPE_ROUTEPOINT           0x0002
@@ -37,6 +35,13 @@
 #define SELTYPE_AISTARGET            0x0040
 #define SELTYPE_MARKPOINT            0x0080
 #define SELTYPE_TRACKSEGMENT         0x0100
+#define SELTYPE_DRAGHANDLE           0x0200
+
+class TrackPoint;
+class Track;
+class Route;
+class RoutePoint;
+class ChartCanvas;
 
 class Select
 {
@@ -54,8 +59,8 @@ public:
     bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
                                     TrackPoint *pTrackPointAdd1, TrackPoint *pTrackPointAdd2, Track *pTrack );
 
-    SelectItem *FindSelection( float slat, float slon, int fseltype );
-    SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
+    SelectItem *FindSelection( ChartCanvas *cc, float slat, float slon, int fseltype );
+    SelectableItemList FindSelectionList( ChartCanvas *cc, float slat, float slon, int fseltype );
 
     bool DeleteAllSelectableRouteSegments( Route * );
     bool DeleteAllSelectableTrackSegments( Track * );
@@ -66,7 +71,7 @@ public:
     bool UpdateSelectableRouteSegments( RoutePoint *prp );
     bool DeletePointSelectableTrackSegments( TrackPoint *pt );
     bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
-    bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );
+    bool IsSelectableSegmentSelected( ChartCanvas *cc, float slat, float slon, SelectItem *pFindSel );
 
     //    Generic Point Support
     //      e.g. Tides/Currents and AIS Targets
@@ -88,7 +93,7 @@ public:
     }
 
 private:
-    void CalcSelectRadius();
+    void CalcSelectRadius(ChartCanvas *cc);
 
     SelectableItemList *pSelectList;
     int pixelRadius;

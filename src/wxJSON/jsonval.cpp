@@ -12,6 +12,9 @@
 //    #pragma implementation "jsonval.cpp"
 //#endif
 
+// make wxLogTrace a noop, it's really slow
+// must be defined before including debug.h
+#define wxDEBUG_LEVEL 0
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -20,8 +23,8 @@
 #pragma hdrstop
 #endif
 
+
 #include <wx/log.h>
-#include <wx/debug.h>
 #include <wx/arrimpl.cpp>
 
 #include <wx/jsonval.h>
@@ -35,12 +38,13 @@ WX_DEFINE_OBJARRAY( wxJSONInternalArray );
 #define compatibleLongLongFmtSpec wxLongLongFmtSpec
 #endif
 
+#if wxDEBUG_LEVEL > 0
 // the trace mask used in wxLogTrace() function
 // static const wxChar* traceMask = _T("jsonval");
 static const wxChar* traceMask = _T("jsonval");
 static const wxChar* compareTraceMask = _T("sameas");
 static const wxChar* cowTraceMask = _T("traceCOW" );
-
+#endif
 
 
 /*******************************************************************

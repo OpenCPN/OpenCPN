@@ -8,6 +8,11 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifdef NDEBUG
+// make wxLogTrace a noop if no debug set, it's really slow
+// must be defined before including debug.h
+#define wxDEBUG_LEVEL 0
+#endif
 
 #include <wx/jsonwriter.h>
 
@@ -16,7 +21,9 @@
 #include <wx/debug.h>
 #include <wx/log.h>
 
+#if wxDEBUG_LEVEL > 0
 static const wxChar* writerTraceMask = _T("traceWriter");
+#endif
 
 /*! \class wxJSONWriter
  \brief The JSON document writer

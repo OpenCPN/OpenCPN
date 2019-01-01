@@ -24,6 +24,7 @@
 
 #include <wx/textctrl.h>
 #include <wx/dcclient.h>
+#include <wx/clipbrd.h>
 
 #include "TTYScroll.h"
 
@@ -119,4 +120,16 @@ void TTYScroll::OnDraw( wxDC& dc )
     }
 }
 
-
+void TTYScroll::Copy()
+{
+    wxString theText;
+    for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
+        theText.append(m_plineArray->Item(i));
+        theText.append("\n");
+    }
+    // Write scrolled text to the clipboard
+    if (wxTheClipboard->Open()) {
+        wxTheClipboard->SetData(new wxTextDataObject(theText));
+        wxTheClipboard->Close();
+    }
+}

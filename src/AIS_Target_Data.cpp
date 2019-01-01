@@ -25,11 +25,11 @@
 #include "AIS_Target_Data.h"
 
 extern bool bGPSValid;
-extern ChartCanvas *cc1;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 extern bool g_bShowMag;
+extern bool g_bShowTrue;
 extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
 
@@ -165,8 +165,9 @@ AIS_Target_Data::AIS_Target_Data()
     b_SarAircraftPosnReport = false;
     altitude = 0;
     b_nameFromCache = false;
-    importance = 0.;
-    last_scale = 0.50; //new target starts at 50% scale
+    importance = 0.0;
+    for(unsigned int i=0 ; i < AIS_TARGETDATA_MAX_CANVAS ; i++)
+        last_scale[i] = 50;
 }
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
@@ -353,9 +354,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             << rowStartH << _T("<b>") << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
             << ClassStr << rowEnd << _T("</table></td></tr>");
 
-    if((Class != AIS_SART ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) 
+    if ((Class != AIS_SART) && (Class != AIS_DSC))
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
-             << rowStart << _("Flag") << rowEnd << _T("</font></td></tr>")
+             << rowStart << ((Class == AIS_BASE || Class == AIS_ATON) ? _("Nation") : _("Flag")) 
+             << rowEnd << _T("</font></td></tr>")
              << rowStartH << _T("<b>")<< GetCountryCode(true) << rowEnd << _T("</table></td></tr>");
     
     html << vertSpacer;
@@ -546,10 +548,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS ) {
             int crs = wxRound( COG );
             if( crs < 360 ) {
+                wxString magString, trueString;
                 if( g_bShowMag )
-                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
-                else
-                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)crs );
+                    magString << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
+                if( g_bShowTrue )
+                    trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) crs );
+                
+                courseStr << trueString << magString;
             }   
             else if( COG == 360.0 )
                 courseStr = _T("---");
@@ -591,7 +596,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     }
 
     if( b_positionOnceValid && bGPSValid && ( Range_NM >= 0. ) )
-        rngStr = cc1->FormatDistanceAdaptive( Range_NM );
+        rngStr = FormatDistanceAdaptive( Range_NM );
     else
         rngStr = _("---");
 
@@ -599,10 +604,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     if( Brg > 359.5 )
         brg = 0;
     if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) ){
+        wxString magString, trueString;
         if( g_bShowMag )
-            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( Brg ) );
-        else
-            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) Brg );
+            magString << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), (int)gFrame->GetMag( Brg ) );
+        if( g_bShowTrue )
+            trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) Brg );
+        
+        brgStr << trueString << magString;
     }   
     else
         brgStr = _("---");
@@ -624,7 +632,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             << vertSpacer;
             
             if( !b_SarAircraftPosnReport )
-            turnRateHdr = _("Turn Rate");
+                turnRateHdr = _("Turn Rate");
     }
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
         << rowStart <<_("Range") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
@@ -632,6 +640,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         << turnRateHdr << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << rngStr << _T("</b></td><td>&nbsp;</td><td><b>")
         << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>");
+        
         if(!b_SarAircraftPosnReport)
             html << rotStr;
         html << rowEnd << _T("</table></td></tr>")
@@ -642,7 +651,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         tcpaStr << _T("</b> ") << _("in ") << _T("</td><td align=right><b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
                                                                   
         html<< /*vertSpacer << */rowStart << _T("<font size=-2>") <<_("CPA") << _T("</font>") << rowEnd
-            << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
+            << rowStartH << _T("<b>") << FormatDistanceAdaptive( CPA )
             << tcpaStr << rowEnd;
     }
 
@@ -763,10 +772,13 @@ wxString AIS_Target_Data::GetRolloverString( void )
         int crs = wxRound( COG );
         if( b_positionOnceValid ) {
             if( crs < 360 ) {
+                wxString magString, trueString;
                 if( g_bShowMag )
-                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
-                else
-                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)crs );
+                    magString << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
+                if( g_bShowTrue )
+                    trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) crs );
+                
+                result << trueString << magString;    
             }
                 
             else if( COG == 360.0 )
@@ -779,7 +791,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
 
     if( g_bAISRolloverShowCPA && bCPA_Valid ) {
         if( result.Len() ) result << _T("\n");
-        result << _("CPA") << _T(" ") << cc1->FormatDistanceAdaptive( CPA )
+        result << _("CPA") << _T(" ") << FormatDistanceAdaptive( CPA )
         << _T(" ") << _("in") << _T(" ")
         << wxString::Format( _T("%.0f"), TCPA ) << _T(" ") << _("min");
     }
@@ -907,16 +919,22 @@ void AIS_Target_Data::ToggleShowTrack(void)
 }
 
 
-//Get country name and code according to ISO 3166-2 2014-01 (www.itu.int/online/mms/glad/cga_mids.sh?lng=E)
-
+//Get country name and code according to ITU 2017-01 (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
 wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short country code, true = Full country name
 {
-  int mmsi_start = MMSI / 1000000;
-  if (mmsi_start == 111) mmsi_start = (MMSI - 111000000)/1000 ; //SAR Aircraft start with 111 and has a MID.
+  int nMID = MMSI / 1000000;
+  //SAR Aircraft start with 111 and has a MID at pos 4,5,6
+  if (111 == nMID) nMID = (MMSI - 111000000) / 1000;
+  //Base station start with 00 and has a MID at pos 4,5,6
+  if (Class == AIS_BASE) nMID = MMSI / 10000;
+  //AtoN start with 99 and has a MID at pos 3,4,5
+  if (99 == MMSI / 10000000) nMID = (MMSI - 990000000) / 10000;
+  //Check if a proper MID
+  if (nMID < 201 || nMID > 775) return wxEmptyString;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-
-  switch(mmsi_start) {
+  
+  switch (nMID) {
     case 201: return b_CntryLongStr ? _("Albania") : _T("AL") ;
     case 202: return b_CntryLongStr ? _("Andorra") : _T("AD") ;
     case 203: return b_CntryLongStr ? _("Austria") : _T("AT") ;
@@ -1085,7 +1103,8 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 463: return b_CntryLongStr ? _("Pakistan") : _T("PK") ;
     case 466: return b_CntryLongStr ? _("Qatar") : _T("QA") ;
     case 468: return b_CntryLongStr ? _("Syrian Arab Republic") : _T("SY") ;
-    case 470: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
+    case 470:
+    case 471: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
     case 472: return b_CntryLongStr ? _("Tajikistan") : _T("TJ") ;
     case 473: return b_CntryLongStr ? _("Yemen") : _T("YE") ;
     case 475: return b_CntryLongStr ? _("Yemen") : _T("YE") ;

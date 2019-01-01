@@ -13,6 +13,7 @@
 
 #include "wx/dialog.h"
 #include "wx/propdlg.h"
+#include <vector>
 
 /*!
  * Base class for layout adapters - code that, for example, turns a dialog into a
@@ -110,7 +111,7 @@ public:
 
     /// Add an id to the list of custom button identifiers that should be in the button sizer
     void AddButtonId(wxWindowID id) { m_buttonIds.Add((int) id); }
-    wxArrayInt& GetButtonIds() { return m_buttonIds; }
+    std::vector<int>& GetButtonIds() { return m_buttonIds; }
 
     /// Is this id in the custom button id array?
     bool IsUserButtonId(wxWindowID id) { return (m_buttonIds.Index((int) id) != wxNOT_FOUND); }
@@ -142,7 +143,7 @@ protected:
 
     wxDialog*                           m_dialog;
     bool                                m_layoutLayoutAdaptationDone;
-    wxArrayInt                          m_buttonIds;
+    std::vector<int>                          m_buttonIds;
     int                                 m_layoutAdaptationLevel;
     static wxDialogLayoutAdapter*       sm_layoutAdapter;
     static bool                         sm_layoutAdaptation;

@@ -101,7 +101,6 @@
 #include <setjmp.h>
 
 
-extern ChartCanvas *cc1;
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
@@ -139,9 +138,9 @@ ViewPort::ViewPort()
 wxPoint ViewPort::GetPixFromLL( double lat, double lon )
 {
     wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
-    if(wxIsNaN(p.m_x) || wxIsNaN(p.m_y))
-        return wxPoint(INVALID_COORD, INVALID_COORD);
-    return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+    if(wxFinite(p.m_x) && wxFinite(p.m_y))
+        return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+    return wxPoint(INVALID_COORD, INVALID_COORD);
 }
 
 wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
@@ -168,6 +167,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         lat0_cache = clat;
         switch( m_projection_type ) {
         case PROJECTION_MERCATOR:
+        case PROJECTION_WEB_MERCATOR:
             cache0 = toSMcache_y30(clat);
             break;
         case PROJECTION_POLAR:
@@ -183,11 +183,8 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
+    case PROJECTION_WEB_MERCATOR:
         toSMcache( lat, xlon, cache0, clon, &easting, &northing );
-#endif
         break;
 
     case PROJECTION_TRANSVERSE_MERCATOR:
@@ -281,6 +278,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double slat = 0.0, slon = 0.0;
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
+    case PROJECTION_WEB_MERCATOR:
         //TODO  This could be fromSM_ECC to better match some Raster charts
         //      However, it seems that cm93 (and S57) prefer no eccentricity correction
         //      Think about it....
@@ -470,7 +468,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLReg
     return r;
 }
 
-OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, int nPoints, float *llpoints,
                                            int chart_native_scale, wxPoint *ppoints )
 {
     //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
@@ -488,7 +486,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         float lat_max = -10000.;
         float lat_min = 10000.;
 
-        for( unsigned int ip = 0; ip < nPoints; ip++ ) {
+        for( int ip = 0; ip < nPoints; ip++ ) {
             lon_max = wxMax(lon_max, pfp[1]);
             lon_min = wxMin(lon_min, pfp[1]);
             lat_max = wxMax(lat_max, pfp[0]);
@@ -565,7 +563,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
 
     if(!valid)
     {
-        delete[] pp;
+        if ( ppoints == NULL ) delete[] pp;
         return OCPNRegion(); //empty;
     }
  
@@ -597,7 +595,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         p3.y = lat; p3.x = lon;
         
         
-        for(size_t i=0 ; i < npPoints-1 ; i++){            
+        for(int i=0 ; i < npPoints-1 ; i++){            
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
 
@@ -654,7 +652,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         while( screen_region_it2.HaveRects() ) {
             wxRect rect = screen_region_it2.GetRect();
  
-            for(size_t i=0 ; i < npPoints-1 ; i++){
+            for(int i=0 ; i < npPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
 
                 if((x0 < rect.x) || (x0 > rect.x+rect.width) ||
@@ -846,6 +844,7 @@ void ViewPort::SetBoxes( void )
     case PROJECTION_STEREOGRAPHIC:
     case PROJECTION_GNOMONIC:
         hourglass = true;
+        // fall through
     case PROJECTION_POLYCONIC:
     case PROJECTION_POLAR:
     case PROJECTION_ORTHOGRAPHIC:
@@ -864,7 +863,7 @@ void ViewPort::SetBoxes( void )
                 dlat_max = 90;
                 dlon_min = -180;
                 dlon_max = 180;
-            } else if(wxIsNaN(dlat_max))
+            } else if(std::isnan(dlat_max))
                 dlat_max = 90;
 
             if(hourglass) {
@@ -875,7 +874,7 @@ void ViewPort::SetBoxes( void )
                 dlat_min = wxMin(dlat_min, dlat_min2);
             }
 
-            if(wxIsNaN(dlat_min)) //  world is off-screen
+            if(std::isnan(dlat_min)) //  world is off-screen
                 dlat_min = clat - 90;
         } else { // south polar
             wxPoint l( rv_rect.x + rv_rect.width/2, rv_rect.y + rv_rect.height );
@@ -889,7 +888,7 @@ void ViewPort::SetBoxes( void )
                 dlat_min = -90;
                 dlon_min = -180;
                 dlon_max = 180;
-            } else if(wxIsNaN(dlat_min))
+            } else if(std::isnan(dlat_min))
                 dlat_min = -90;
 
             if(hourglass) {
@@ -900,11 +899,11 @@ void ViewPort::SetBoxes( void )
                 dlat_max = wxMax(dlat_max, dlat_max2);
             }
 
-            if(wxIsNaN(dlat_max)) //  world is off-screen
+            if(std::isnan(dlat_max)) //  world is off-screen
                 dlat_max = clat + 90;
         }
 
-        if(wxIsNaN(dlon_min)) {
+        if(std::isnan(dlon_min)) {
             // if neither pole is visible, but left and right of the screen are in space
             // we can avoid drawing the far side of the earth
             if(dlat_max < 90 && dlat_min > -90) {

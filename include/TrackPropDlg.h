@@ -59,10 +59,9 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "Track.h"
 #include "LinkPropDlg.h"
 
-#define ID_RCLK_MENU_COPY_TEXT 7014
+#define ID_RCLK_MENU_COPY_TEXT 7013
 
 /*!
  * Forward declarations

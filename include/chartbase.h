@@ -112,7 +112,8 @@ typedef enum OcpnProjType
       PROJECTION_POLAR,
       PROJECTION_STEREOGRAPHIC,
       PROJECTION_GNOMONIC,
-      PROJECTION_EQUIRECTANGULAR
+      PROJECTION_EQUIRECTANGULAR,
+      PROJECTION_WEB_MERCATOR
 }_OcpnProjType;
 
 
@@ -158,6 +159,7 @@ public:
       virtual wxString GetPubDate(){ return m_PubYear;}
       virtual int GetNativeScale(){ return m_Chart_Scale;}
       wxString GetFullPath() const { return m_FullPath;}
+      wxString GetHashKey() const;
       wxString GetName(){ return m_Name;}
       wxString GetDescription() { return m_Description;}
       wxString GetID(){ return m_ID;}

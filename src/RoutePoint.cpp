@@ -40,7 +40,6 @@
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
-extern ChartCanvas *cc1;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
 extern Multiplexer *g_pMUX;
@@ -56,6 +55,8 @@ extern wxColour g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
 
 extern float g_ChartScaleFactorExp;
+
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -88,6 +89,8 @@ RoutePoint::RoutePoint()
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     
+    m_iTextTexture = 0;
+    
     m_HyperlinkList = new HyperlinkList;
 
     m_GUID = pWayPointMan->CreateGUID( this );
@@ -111,7 +114,10 @@ RoutePoint::RoutePoint()
 #ifdef ocpnUSE_GL
     m_pos_on_screen = false;
 #endif
-    
+    m_bDrawDragHandle = false;
+    m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
+
 }
 
 // Copy Constructor
@@ -161,6 +167,11 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
     
+    m_bDrawDragHandle = false;
+    m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
+
+    
 }
 
 RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, const wxString& name,
@@ -196,7 +207,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
-
+    m_bPreScaled = false;
+    
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     m_IconScaleFactor = 1.0;
@@ -233,6 +245,11 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    
+    m_bDrawDragHandle = false;
+    m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
+
 }
 
 RoutePoint::~RoutePoint( void )
@@ -244,6 +261,141 @@ RoutePoint::~RoutePoint( void )
     if( m_HyperlinkList ) {
         m_HyperlinkList->DeleteContents( true );
         delete m_HyperlinkList;
+    }
+#ifdef ocpnUSE_GL
+    if(m_dragIconTexture > 0)
+        glDeleteTextures(1, &m_dragIconTexture);
+#endif    
+}
+
+wxPoint2DDouble RoutePoint::GetDragHandlePoint(ChartCanvas *canvas)
+{
+    if(!m_bDrawDragHandle)
+       return wxPoint2DDouble(m_lon, m_lat);
+    else{
+       return computeDragHandlePoint(canvas); 
+    }
+}    
+
+wxPoint2DDouble RoutePoint::computeDragHandlePoint(ChartCanvas *canvas)
+{
+    wxPoint r;
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
+    double lat, lon;
+    canvas->GetCanvasPixPoint(r.x + m_drag_icon_offset, r.y + m_drag_icon_offset, lat, lon);
+    
+    // Keep the members updated
+    m_dragHandleLat = lat;
+    m_dragHandleLon = lon;
+
+    return wxPoint2DDouble(lon, lat);
+}
+
+void RoutePoint::SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon)
+{
+    wxPoint r;
+    canvas->GetCanvasPointPix( lat, lon, &r );
+    double tlat, tlon;
+    canvas->GetCanvasPixPoint(r.x - m_drag_icon_offset, r.y - m_drag_icon_offset, tlat, tlon);
+    m_lat = tlat;
+    m_lon = tlon;
+}
+
+void RoutePoint::SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y)
+{
+    double tlat, tlon;
+    canvas->GetCanvasPixPoint(x - m_drag_icon_offset - m_draggingOffsetx, y - m_drag_icon_offset - m_draggingOffsety, tlat, tlon);
+    m_lat = tlat;
+    m_lon = tlon;
+}
+
+void RoutePoint::PresetDragOffset( ChartCanvas *canvas, int x, int y)
+{
+    wxPoint r;
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
+    
+    m_draggingOffsetx = x - (r.x + m_drag_icon_offset);
+    m_draggingOffsety = y - (r.y + m_drag_icon_offset);
+}
+
+void RoutePoint::EnableDragHandle(bool bEnable)
+{
+    m_bDrawDragHandle = bEnable;
+    if(bEnable){
+        if(!m_dragIcon.IsOk()){    
+            // Get the icon
+            // What size?
+            int bm_size = g_Platform->GetDisplayDPmm() * 9;     //9 mm nominal
+        
+            // What icon?
+            wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
+            
+            wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("DragHandle.svg"), bm_size, bm_size );
+            if(iconSVG.IsOk())
+                m_dragIcon = wxBitmap(iconSVG);
+            else
+                m_dragIcon = *m_pbmIcon;                // Drag handle icon not found
+                
+            // build a texture
+#ifdef ocpnUSE_GL
+        /* make rgba texture */
+            if(m_dragIconTexture == 0){
+                glGenTextures(1, &m_dragIconTexture);
+                glBindTexture(GL_TEXTURE_2D, m_dragIconTexture);
+                    
+                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+            
+            
+                wxImage image = iconSVG;
+                int w = image.GetWidth(), h = image.GetHeight();
+            
+                m_dragIconTextureWidth = NextPow2(w);
+                m_dragIconTextureHeight = NextPow2(h);
+            
+                unsigned char *d = image.GetData();
+                unsigned char *a = image.GetAlpha();
+                
+                unsigned char mr, mg, mb;
+                image.GetOrFindMaskColour( &mr, &mg, &mb );
+        
+                unsigned char *e = new unsigned char[4 * w * h];
+                if(d && e){
+                    for( int y = 0; y < h; y++ )
+                        for( int x = 0; x < w; x++ ) {
+                            unsigned char r, g, b;
+                            int off = ( y * image.GetWidth() + x );
+                            r = d[off * 3 + 0];
+                            g = d[off * 3 + 1];
+                            b = d[off * 3 + 2];
+                            e[off * 4 + 0] = r;
+                            e[off * 4 + 1] = g;
+                            e[off * 4 + 2] = b;
+                        
+                            e[off * 4 + 3] =  a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                        }
+                }
+        
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_dragIconTextureWidth, m_dragIconTextureHeight,
+                        0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h,
+                            GL_RGBA, GL_UNSIGNED_BYTE, e);
+
+                delete [] e;
+            }
+#endif
+
+            // set the drawing metrics
+            if(iconSVG.IsOk()){
+                m_drag_line_length_man = bm_size;
+                m_drag_icon_offset = bm_size;
+            }
+            else{
+                m_drag_line_length_man = 64;
+                m_drag_icon_offset = 64;
+            }
+        }
     }
 }
 
@@ -263,6 +415,12 @@ void RoutePoint::SetCreateTime( wxDateTime dt )
 
 void RoutePoint::SetName(const wxString & name)
 {
+#ifdef ocpnUSE_GL
+    if(m_iTextTexture){
+        glDeleteTextures(1,&m_iTextTexture);
+        m_iTextTexture = 0;
+    }
+#endif    
     m_MarkName = name;
     CalculateNameExtents();
 }
@@ -287,7 +445,11 @@ void RoutePoint::CalculateNameExtents( void )
 
 void RoutePoint::ReLoadIcon( void )
 {
+    if(!pWayPointMan)
+        return;
     bool icon_exists = pWayPointMan->DoesIconExist(m_IconName);
+    
+    wxString iconUse = m_IconName;
     if( !icon_exists ){
         
         //  Try all lower case as a favor in the case where imported waypoints use mixed case names
@@ -295,18 +457,26 @@ void RoutePoint::ReLoadIcon( void )
         if(pWayPointMan->DoesIconExist(tentative_icon)){
             // if found, convert point's icon name permanently.
             m_IconName = tentative_icon;
+            iconUse = m_IconName;
         }
         //      Icon name is not in the standard or user lists, so add to the list a generic placeholder
         else{
-            ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-            if(style){
-                wxBitmap bmp = style->GetIcon( _T("circle") );
-                pWayPointMan->ProcessIcon( bmp, m_IconName, m_IconName );
+            if(!pWayPointMan->DoesIconExist(_T("tempsub"))){
+            
+                ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+                if(style){
+                    wxBitmap bmp = style->GetIcon( _T("circle") );
+                    if(bmp.IsOk())
+                        pWayPointMan->ProcessIcon( bmp, _T("tempsub"), _T("tempsub") );
+                }
             }
+            iconUse = _T("tempsub");
+            
         }
     }
         
-    m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
+    m_pbmIcon = pWayPointMan->GetIconBitmap( iconUse );
+    m_bPreScaled = pWayPointMan->GetIconPrescaled( iconUse );
 
 #ifdef ocpnUSE_GL
     m_wpBBox_view_scale_ppm = -1;
@@ -317,12 +487,12 @@ void RoutePoint::ReLoadIcon( void )
     m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
-void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
+void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 {
     wxPoint r;
     wxRect hilitebox;
 
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
 
     //  return the home point in this dc to allow "connect the dots"
     if( NULL != rpn ) *rpn = r;
@@ -347,7 +517,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         pbm = m_pbmIcon;
 
     wxBitmap *pbms = NULL;
-    if( g_ChartScaleFactorExp > 1.0){
+    if( (g_ChartScaleFactorExp > 1.0) && !m_bPreScaled ){
         if(m_IconScaleFactor != g_ChartScaleFactorExp){
             wxImage scaled_image = pbm->ConvertToImage();
             int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
@@ -439,7 +609,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         double tlat, tlon;
         wxPoint r1;
         ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
-        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        canvas->GetCanvasPointPix( tlat, tlon, &r1 );
 
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
                            pow( (double) (r.y - r1.y), 2 ) );
@@ -470,7 +640,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
         return;
@@ -483,30 +653,50 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
        vp.rotation == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
-        if( vpBBox.IntersectOut( m_wpBBox ) )
-            return;
+        if( vpBBox.IntersectOut( m_wpBBox ) ){
+            
+            // Are Range Rings enabled?
+            if(m_bShowWaypointRangeRings && (m_iWaypointRangeRingsNumber > 0)){
+                double factor = 1.00;
+                if( m_iWaypointRangeRingsStepUnits == 1 )          // convert kilometers to NMi
+                    factor = 1 / 1.852;
+            
+                double radius = factor * m_iWaypointRangeRingsNumber * m_fWaypointRangeRingsStep  / 60.;
+
+                LLBBox radar_box = m_wpBBox;
+                radar_box.EnLarge(radius * 2 );
+                if( vpBBox.IntersectOut( radar_box ) ){
+                    return;
+                }
+            }
+            else
+                return;
+        }
     }
 
     wxPoint r;
     wxRect hilitebox;
     unsigned char transparency = 150;
-    double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
     
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
-        cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+        canvas->GetCanvasPointPix( m_lat, m_lon, &r );
 
     if(r.x == INVALID_COORD)
         return;
 
-//    Substitue icon?
+//    Substitute icon?
     wxBitmap *pbm;
     if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
         pbm = pWayPointMan->GetIconBitmap(  _T ( "activepoint" ) );
     else
         pbm = m_pbmIcon;
 
+    //  If icon is corrupt, there is really nothing else to do...
+    if(!pbm->IsOk())
+        return;
+    
     int sx2 = pbm->GetWidth() / 2;
     int sy2 = pbm->GetHeight() / 2;
 
@@ -532,10 +722,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     hilitebox.x -= r.x;
     hilitebox.y -= r.y;
     
-    hilitebox.x *= g_ChartScaleFactorExp;
-    hilitebox.y *= g_ChartScaleFactorExp;
-    hilitebox.width  *= g_ChartScaleFactorExp;
-    hilitebox.height *= g_ChartScaleFactorExp;
+    if(!m_bPreScaled){
+        hilitebox.x *= g_ChartScaleFactorExp;
+        hilitebox.y *= g_ChartScaleFactorExp;
+        hilitebox.width  *= g_ChartScaleFactorExp;
+        hilitebox.height *= g_ChartScaleFactorExp;
+    }
     
     float radius;
     if( g_btouch ){
@@ -550,8 +742,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     /* update bounding box */
     if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.rotation != m_wpBBox_rotation) {
         double lat1, lon1, lat2, lon2;
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
         if(lon1 > lon2)
             m_wpBBox.Set(lat1, lon1, lat2, lon2+360);
@@ -605,9 +797,9 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
         float scale = 1.0;
- //       if(g_bresponsive){
+        if(!m_bPreScaled){
             scale =  g_ChartScaleFactorExp;
-//        }
+        }
             
         float ws = r1.width * scale;
         float hs = r1.height * scale;
@@ -705,17 +897,21 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         double tlat, tlon;
         wxPoint r1;
         ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
-        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        canvas->GetCanvasPointPix( tlat, tlon, &r1 );
         
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
         pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
+
+        extern wxColor GetDimColor(wxColor c);
+        wxColor ring_dim_color = GetDimColor(m_wxcWaypointRangeRingsColour);
         
-        wxPen ppPen1( m_wxcWaypointRangeRingsColour, platform_pen_width );
+        double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
+        wxPen ppPen1( ring_dim_color, platform_pen_width );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( m_wxcWaypointRangeRingsColour, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.SetBrush( wxBrush( ring_dim_color, wxBRUSHSTYLE_TRANSPARENT ) );
         
         for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
             dc.StrokeCircle( r.x, r.y, i * pix_radius );
@@ -723,6 +919,57 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         dc.SetBrush( saveBrush );
     }
     
+    // Render Drag handle if enabled
+    if(m_bDrawDragHandle){
+        
+        //  A line, southeast, scaled to the size of the icon
+        double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
+        
+        wxColor dh_color = wxColor(0,0,0);
+        wxPen ppPen1( dh_color, 3 * platform_pen_width );
+        dc.SetPen( ppPen1 );
+        dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
+ 
+        dh_color = GetGlobalColor( _T ( "YELO1" ) );
+        wxPen ppPen2( dh_color, platform_pen_width );
+        dc.SetPen( ppPen2 );
+        dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
+        
+        // The drag handle
+        glBindTexture(GL_TEXTURE_2D, m_dragIconTexture);
+        
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glColor3f(1, 1, 1);
+        
+        int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
+        
+        float scale =  1.0;
+            
+        float ws = w * scale;
+        float hs = h * scale;
+        float xs = x - ws/2.;
+        float ys = y - hs/2.;
+        float u = (float)w/m_dragIconTextureWidth, v = (float)h/m_dragIconTextureWidth;
+        
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex2f(xs, ys);
+        glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
+        glTexCoord2f(u, v); glVertex2f(xs+ws, ys+hs);
+        glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
+        glEnd();
+        
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+
+    }
+ 
+ 
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
     
     //    This will be useful for fast icon redraws
@@ -741,14 +988,14 @@ void RoutePoint::SetPosition( double lat, double lon )
     m_lon = lon;
 }
 
-void RoutePoint::CalculateDCRect( wxDC& dc, wxRect *prect )
+void RoutePoint::CalculateDCRect( wxDC& dc, ChartCanvas *canvas, wxRect *prect )
 {
     dc.ResetBoundingBox();
     dc.DestroyClippingRegion();
 
     // Draw the mark on the dc
     ocpnDC odc( dc );
-    Draw( odc, NULL );
+    Draw( odc, canvas, NULL );
 
     //  Retrieve the drawing extents
     prect->x = dc.MinX() - 1;

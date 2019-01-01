@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-08 08:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:59-0500\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-24 19:42-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -18,9 +18,9 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
-"Declination is the angle between true and magnetic north.\n"
-"Inclination is the vertical angle of the magnetic field.\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+"Variation is the angle between true and magnetic north.\n"
+"Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
 "\t20000 to 66000\n\n"
@@ -28,29 +28,29 @@ msgid "\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr "\n"
-"O Modelo Mundo magnético Plotting permite  aos usuários cruzar  os valores de desvio magnético impressos em muitos cartas.\n\n"
+"O Modelo Mundo magnético Plotting permite  aos usuários cruzar  os valores de desvio magnético impressos em muitos cartas raster.\n\n"
 "Declinação é o ângulo entre o norte verdadeiro e o norte magnético. \n"
 "Inclinação é o ângulo vertical do campo magnético.\n"
 "\t(+-90 nos pólos magnéticos)\n"
 "Campo de Força é o campo magnético em nano tesla de\n"
 "\t20000 até 66000\n\n"
-"As linhas plotadoas são semelhantes a um mapa topográfico.  O espaço entre elas pode ser ajustado; mais espaço leva menos tempo para calcular.\n\n"
+"As linhas plotadas são semelhantes a um mapa topográfico.  O espaço entre elas pode ser ajustado; mais espaço leva menos tempo para calcular.\n\n"
 "O tamanho de passo e controles deslizantes de precisão do pólo permitem uma troca de velocidade vs tempo de computação.\n\n"
-"O Plugin Modelo Mundo Magnético foi escrito por Pavel Kalian e estendido por Sean D'Epagnier para apoiar a plotagem."
+"O Plugin World Magnetic Model foi escrito por Pavel Kalian e estendido por Sean D'Epagnier para apoiar a plotagem."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
 msgstr "WMM Plugin"
 
-#: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr "WMM"
 
-#: src/wmm_pi.cpp:273
+#: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Plugin para OpenCPN  Modelo Magnético Mundial"
 
-#: src/wmm_pi.cpp:278
+#: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -66,15 +66,15 @@ msgstr "Plugin Modelo Magnético Mundial\n"
 "em tempo, pegue uma nova WMM.COF da NOAA e coloque-a no\n"
 "lugar onde encontra-se o logfile do OpenCPN."
 
-#: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
 msgstr "Erro, consulte o log."
 
-#: src/wmm_pi.cpp:744 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr "Preferências WMM"
 
-#: src/wmm_pi.h:78 src/WmmUIDialog.h:152
+#: src/wmm_pi.h:79 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
 msgstr "Configurações de plotagem magnética"
 
@@ -187,8 +187,8 @@ msgid "Window transparency"
 msgstr "Transparência de janelas"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
-msgid "Declination"
-msgstr "Declinação"
+msgid "Variation"
+msgstr "Variação"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"

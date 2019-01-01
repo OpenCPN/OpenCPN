@@ -53,6 +53,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "garmin/jeeps/garmin_wrapper.h"
+#include "nmea0183.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -66,6 +67,8 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
+
+extern bool g_benableUDPNullHeader;
 
 #define N_DOG_TIMEOUT   5
 
@@ -284,7 +287,7 @@ void DataStream::Open(void)
                 m_sock->Notify(TRUE);
                 m_sock->SetTimeout(1);              // Short timeout
 
-                wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                wxSocketClient* tcp_socket = static_cast<wxSocketClient*>(m_sock);
                 tcp_socket->Connect(m_addr, FALSE);
                 m_brx_connect_event = false;
             
@@ -492,7 +495,6 @@ void DataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
             if(tcp_socket) {
                 tcp_socket->Close();
             }
-
             m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
             m_socketread_watchdog_timer.Stop();
         }
@@ -532,9 +534,6 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             //    Disable input event notifications to preclude re-entrancy on non-blocking socket
             //           m_sock->SetNotify(wxSOCKET_LOST_FLAG);
 
-            //          Read the reply, one character at a time, looking for 0x0a (lf)
-            //          If the reply contains no lf, break on the buffer full
-
             std::vector<char> data(RD_BUF_SIZE+1);
             event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
             if(!event.GetSocket()->Error())
@@ -542,9 +541,16 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 size_t count = event.GetSocket()->LastCount();
                 if(count)
                 {
-                    data[count]=0;
-//                    m_sock_buffer.Append(data);
-                    m_sock_buffer += (&data.front());
+                    if(!g_benableUDPNullHeader){
+                        data[count]=0;
+                        m_sock_buffer += (&data.front());
+                    }
+                    else{
+                        // XXX FIXME: is it reliable?
+                        // copy all received bytes
+                        // there's 0 in furuno UDP tags before NMEA sentences.
+                        m_sock_buffer.append(&data.front(), count);
+                    }
                 }
             }
 
@@ -718,7 +724,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     wxString fs;
     for (size_t i = 0; i < filter.Count(); i++)
     {
-        fs = filter.Item(i);
+        fs = filter[i];
         switch (fs.Length())
         {
             case 2:
@@ -790,8 +796,10 @@ bool DataStream::SendSentence( const wxString &sentence )
                                     m_sock= 0;
                                 } else {
                                     wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                                    tcp_socket->Close();
-                                    m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+                                    if (tcp_socket)
+                                        tcp_socket->Close();
+                                    if(!m_socket_timer.IsRunning())
+                                        m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
                                     m_socketread_watchdog_timer.Stop();
                                 }
                                 ret = false;
@@ -803,7 +811,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                         break;
                     case UDP:
                         udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
-                        if( udp_socket->IsOk() ) {
+                        if(udp_socket && udp_socket->IsOk() ) {
                             udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
                             if( udp_socket->Error())
                                 ret = false;

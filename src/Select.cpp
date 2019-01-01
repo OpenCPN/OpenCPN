@@ -27,8 +27,11 @@
 #include "vector2D.h"
 #include "navutil.h"
 #include "chcanv.h"
+#include "Track.h"
+#include "routeman.h"
+#include "Route.h"
 
-extern ChartCanvas *cc1;
+extern Routeman    *g_pRouteMan;
 
 Select::Select()
 {
@@ -467,6 +470,15 @@ bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, 
 {
     double adder = 0.;
 
+    // Track segments for some reason can have longitude values > 180.
+    // Therefore, we normalize all the lat/lon values here.
+    if (a > 90.0) a -= 180.0;
+    if (b > 90.0) b -= 180.0;
+    if (c > 180.0) c -= 360.0;
+    if (d > 180.0) d -= 360.0;
+    if (slat > 90.0) slat -= 180.0;
+    if (slon > 180.0) slon -= 360.0;
+
     if( ( c * d ) < 0. ) {
         //    Arrange for points to be increasing longitude, c to d
         double dist, brg;
@@ -514,17 +526,17 @@ bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, 
     return false;
 }
 
-void Select::CalcSelectRadius()
+void Select::CalcSelectRadius(ChartCanvas *cc)
 {
-    selectRadius = pixelRadius / ( cc1->GetCanvasTrueScale() * 1852 * 60 );
+    selectRadius = pixelRadius / ( cc->GetCanvasTrueScale() * 1852 * 60 );
 }
 
-SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
+SelectItem *Select::FindSelection( ChartCanvas *cc, float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
 
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -565,7 +577,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
     find_ok: return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel )
+bool Select::IsSelectableSegmentSelected( ChartCanvas *cc, float slat, float slon, SelectItem *pFindSel )
 {
     bool valid = false;
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -582,7 +594,7 @@ bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pF
         // not in the list anymore
         return false;
     }
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
     float a = pFindSel->m_slat;
     float b = pFindSel->m_slat2;
@@ -592,13 +604,13 @@ bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pF
     return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
-SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype )
+SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
     SelectableItemList ret_list;
 
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -611,9 +623,11 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
+                case SELTYPE_DRAGHANDLE:    
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
-                        ret_list.Append( pFindSel );
+                        if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                            ret_list.Append( pFindSel );
                     }
                     break;
                 case SELTYPE_ROUTESEGMENT:
@@ -623,7 +637,9 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) ret_list.Append( pFindSel );
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) )
+                        if(cc->m_bShowNavobjects || ((Route *)pFindSel->m_pData3)->m_bRtIsActive)
+                            ret_list.Append( pFindSel );
 
                     break;
                 }

@@ -42,13 +42,12 @@
 #endif
 
 #include "bbox.h"
-#include "chcanv.h"
-#include "tinyxml.h"
+//#include "chcanv.h"
 #include "chartdbs.h"
-#include "RoutePoint.h"
+//nclude "RoutePoint.h"
 #include "vector2D.h"
-#include "Route.h"
 #include "SelectItem.h"
+#include "ocpndc.h"
 
 enum
 {
@@ -78,8 +77,14 @@ extern double fromUsrSpeed( double usr_speed, int unit = -1 );
 extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
+extern wxString FormatDistanceAdaptive( double distance );
+
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
-                                      wxColour color, unsigned char transparency );
+                                       wxColour color, unsigned char transparency );
+
+    //Central dimmer...
+void DimeControl(wxWindow* ctrl);
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 extern double fromDMM(wxString sdms);
 extern double parseLatLon(wxString latlon);
@@ -90,8 +95,13 @@ class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
 class NavObjectChanges;
-
-#include "Track.h"
+class TrackPoint;
+class TrackList;
+class RouteList;
+class canvasConfig;
+class RoutePointList;
+class RoutePoint;
+class Track;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers
@@ -105,9 +115,9 @@ class NavObjectChanges;
 //void InsertRoute(Route *pTentRoute, int routenum);
 //void UpdateRoute(Route *pTentRoute);
 
-GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false, bool b_props_minimal = false );
-GpxRteElement *CreateGPXRte ( Route *pRoute );
-GpxTrkElement *CreateGPXTrk ( Route *pRoute );
+//GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false, bool b_props_minimal = false );
+//GpxRteElement *CreateGPXRte ( Route *pRoute );
+//GpxTrkElement *CreateGPXTrk ( Route *pRoute );
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists( const wxString& name, double lat, double lon);
@@ -117,6 +127,13 @@ Route *RouteExists( Route * pTentRoute );
 Track *TrackExists( const wxString& guid );
 const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
+void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
+void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true, bool isPersistent = false);
+ 
+bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
+bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));
+bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
+
 //----------------------------------------------------------------------------
 //    Config
 //----------------------------------------------------------------------------
@@ -124,8 +141,7 @@ class MyConfig:public wxFileConfig
 {
 public:
 
-      MyConfig(const wxString &appName, const wxString &vendorName,
-                              const wxString &LocalFileName);
+      MyConfig(const wxString &LocalFileName);
 
       int LoadMyConfig();
       void LoadS57Config();
@@ -147,28 +163,22 @@ public:
       virtual void DestroyConfigGroups ( void );
       virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
 
-
+      virtual void LoadCanvasConfigs( bool bApplyAsTemplate = false );
+      virtual void LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate );
+      
+      virtual void SaveCanvasConfigs( );
+      virtual void SaveConfigCanvas( canvasConfig *cc );
+      
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
-      virtual void UpdateNavObj();
 
       bool LoadLayers(wxString &path);
-
-      void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
-      void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
-
-      bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
-      bool ExportGPXTracks(wxWindow* parent, TrackList *pRoutes, const wxString suggestedName = _T("tracks"));
-      bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
-
+      int LoadMyConfigRaw( bool bAsTemplate = false );
+      
       void CreateRotatingNavObjBackup();
-
-      double st_lat, st_lon, st_view_scale, st_rotation;      // startup values
-      bool  st_bFollow;
-
-      wxString                m_gpx_path;
-
+      virtual void UpdateNavObj();
+      
       wxString                m_sNavObjSetFile;
       wxString                m_sNavObjSetChangesFile;
 
@@ -176,28 +186,9 @@ public:
       NavObjectCollection1    *m_pNavObjectInputSet;
       bool                    m_bSkipChangeSetUpdate;
       
-//    These members are set/reset in Options dialog
-      bool  m_bShowMenuBar, m_bShowCompassWin;
-
-
-
 };
 
-
-/*
-#include <wx/fontdlg.h>
-
-class WXDLLEXPORT X11FontPicker : public wxGenericFontDialog
-{
-public:
-      X11FontPicker(wxFrame *parent);
-      ~X11FontPicker();
-
-      virtual void CreateWidgets();
-
-
-};
-*/
+void SwitchInlandEcdisMode( bool Switch );
 
 /*
  * X11FontPicker DIALOG
@@ -275,6 +266,13 @@ class WXDLLEXPORT X11FontPicker : public wxFontDialogBase
 };
 
 
-
+class GpxDocument
+{
+public:
+    static wxString GetUUID(void);
+    static void SeedRandom();
+private:
+    static int GetRandomNumber(int min, int max);
+};
 
 #endif

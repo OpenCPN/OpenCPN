@@ -3,7 +3,7 @@
 // Purpose:     wxSVGDocument - SVG render & data holder class
 // Author:      Alex Thuering
 // Created:     2005/01/17
-// RCS-ID:      $Id: SVGDocument.cpp,v 1.51 2016/02/29 11:09:17 ntalex Exp $
+// RCS-ID:      $Id: SVGDocument.cpp,v 1.52 2016/05/16 21:08:52 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -38,6 +38,7 @@ bool wxSVGDocument::Load(const wxString& filename, const wxString& encoding) {
 	if (result) {
 		m_path =  wxPathOnly(filename);
 	}
+	SetCurrentTime(0);
 	return result;
 }
 
@@ -142,31 +143,39 @@ double wxSVGDocument::GetDuration() {
 	return GetDuration(GetRootElement());
 }
 
-void wxSVGDocument::ApplyAnimation(wxSVGElement* parent) {
+void wxSVGDocument::ApplyAnimation(wxSVGElement* parent, wxSVGSVGElement* ownerSVGElement) {
 	wxSVGElement* elem = (wxSVGElement*) parent->GetChildren();
 	while (elem) {
 		if (elem->GetType() == wxSVGXML_ELEMENT_NODE) {
 			if (elem->GetDtd() == wxSVG_IMAGE_ELEMENT) {
 				wxSVGCanvasImage* canvasItem = (wxSVGCanvasImage*) ((wxSVGImageElement*) elem)->GetCanvasItem();
 				if (canvasItem != NULL && canvasItem->GetSvgImage() != NULL) {
-					ApplyAnimation(canvasItem->GetSvgImage((wxSVGDocument*) elem->GetOwnerDocument()));
+					wxSVGSVGElement* svgImage = canvasItem->GetSvgImage((wxSVGDocument*) elem->GetOwnerDocument());
+					ApplyAnimation(svgImage, svgImage);
 				}
 			}
 			switch (elem->GetDtd()) {
 				case wxSVG_ANIMATE_ELEMENT:
+					((wxSVGAnimateElement*) elem)->SetOwnerSVGElement(ownerSVGElement);
 					((wxSVGAnimateElement*) elem)->ApplyAnimation();
 					break;
 				case wxSVG_ANIMATECOLOR_ELEMENT:
+					((wxSVGAnimateMotionElement*) elem)->SetOwnerSVGElement(ownerSVGElement);
 					((wxSVGAnimateMotionElement*) elem)->ApplyAnimation();
 					break;
 				case wxSVG_ANIMATEMOTION_ELEMENT:
+					((wxSVGAnimateMotionElement*) elem)->SetOwnerSVGElement(ownerSVGElement);
 					((wxSVGAnimateMotionElement*) elem)->ApplyAnimation();
 					break;
 				case wxSVG_ANIMATETRANSFORM_ELEMENT:
+					((wxSVGAnimateTransformElement*) elem)->SetOwnerSVGElement(ownerSVGElement);
 					((wxSVGAnimateTransformElement*) elem)->ApplyAnimation();
 					break;
+				case wxSVG_SVG_ELEMENT:
+					ApplyAnimation(elem, (wxSVGSVGElement*) elem);
+					break;
 				default:
-					ApplyAnimation(elem);
+					ApplyAnimation(elem, ownerSVGElement);
 					break;
 			}
 		}
@@ -178,7 +187,7 @@ void wxSVGDocument::SetCurrentTime(double seconds) {
 	m_time = seconds;
 	// animation
 	if (GetRootElement())
-		ApplyAnimation(GetRootElement());
+		ApplyAnimation(GetRootElement(), GetRootElement());
 }
 
 /** Renders SVG to bitmap image */

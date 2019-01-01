@@ -1,0 +1,21 @@
+Files developed in this project are copyright (c) The OpenCPN
+developers and distributed using a GPPLv2+ license; you can
+find the terms in the file COPYING.gplv2
+
+OpenCPN also uses code from other sources with other licenses
+including:
+
+  - GPL (v3 or later)  - see COPYING.gplv3
+  - LGPL (v3 or later) - see COPYING.lgplv3
+  - LGPL (v2 or later) - see COPYING.lgplv2
+  - BSD (2 clause)
+  - BSD (3 clause)
+  - MIT/X11 (BSD like)
+  - zlib/libpng
+  - CC0
+  - SGI Free Software License B (v1.1)
+  - SGI Free Software License B (v2.0)
+  - SGI Free Software License B
+  - Apache (v2.0)
+
+The complete file-by-file list is available in the file data/copyright.

@@ -30,26 +30,27 @@
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
-#include "gpxdocument.h"
 
 class ocpnDC;
 class wxDC;
+class ChartCanvas;
 
 class RoutePoint
 {
 public:
-      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = GPX_EMPTY_STRING, bool bAddToList = true);
+      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = wxEmptyString, bool bAddToList = true);
       RoutePoint( RoutePoint* orig );
       RoutePoint();
-      ~RoutePoint(void);
-      void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
+      virtual ~RoutePoint(void);
+      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
       
       void SetPosition(double lat, double lon);
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
-      void CalculateDCRect(wxDC& dc, wxRect *prect);
-
+      void CalculateDCRect(wxDC& dc, ChartCanvas *canvas, wxRect *prect);
+      LLBBox &GetBBox(){ return m_wpBBox; }
+      
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
@@ -57,7 +58,7 @@ public:
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
-      wxString GetName(void){ return m_MarkName; }
+      virtual wxString GetName(void){ return m_MarkName; }
       wxString GetDescription(void) { return m_MarkDescription; }
 
       wxDateTime GetCreateTime(void);
@@ -96,8 +97,13 @@ public:
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
-
-
+      void EnableDragHandle(bool bEnable);
+      bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
+      wxPoint2DDouble GetDragHandlePoint( ChartCanvas *canvas );
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
+      void PresetDragOffset( ChartCanvas *canvas, int x, int y);
+      
       double            m_lat, m_lon;
       double             m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
@@ -146,7 +152,7 @@ public:
       wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, bool use_cached_screen_coords=false );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 
@@ -162,8 +168,9 @@ public:
 
       wxString          m_timestring;
 
-private:
       wxDateTime        m_CreateTimeX;
+private:
+    wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
@@ -174,6 +181,18 @@ private:
 
       float             m_IconScaleFactor;
       wxBitmap          m_ScaledBMP;
+      bool              m_bPreScaled;
+      bool              m_bDrawDragHandle;
+      wxBitmap          m_dragIcon;
+      int               m_drag_line_length_man, m_drag_icon_offset;
+      double            m_dragHandleLat, m_dragHandleLon;
+      int               m_draggingOffsetx, m_draggingOffsety;
+ 
+#ifdef ocpnUSE_GL
+      unsigned int      m_dragIconTexture;
+      int               m_dragIconTextureWidth, m_dragIconTextureHeight;
+#endif
+      
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member

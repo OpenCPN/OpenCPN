@@ -27,6 +27,8 @@
 #include <wx/panel.h>
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 
 enum {
       SORT_ON_DISTANCE  = 1,
@@ -63,7 +65,9 @@ class RouteManagerDialog : public wxDialog {
             void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
             void UpdateLayListCtrl();
             void UpdateWptListCtrlViz();
-            
+
+            void UpdateLists();
+
             void OnTabSwitch(wxNotebookEvent& event);
             static void WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent );
             void TrackToRoute( Track *track );
@@ -84,6 +88,7 @@ class RouteManagerDialog : public wxDialog {
             void ToggleLayerContentsOnChart(Layer *layer);
             void ToggleLayerContentsOnListing(Layer *layer);
             void ToggleLayerContentsNames(Layer *layer);
+            void AddNewLayer(bool isPersistent);
 
             // event handlers
             void OnRteDeleteClick(wxCommandEvent &event);
@@ -125,6 +130,7 @@ class RouteManagerDialog : public wxDialog {
             void OnWptColumnClicked(wxListEvent &event);
             void OnLayDefaultAction(wxListEvent &event);
             void OnLayNewClick(wxCommandEvent &event);
+            void OnPerLayNewClick(wxCommandEvent &event);
             void OnLayPropertiesClick(wxCommandEvent &event);
             void OnLayToggleChartClick(wxCommandEvent &event);
             void OnLayToggleListingClick(wxCommandEvent &event);
@@ -136,7 +142,8 @@ class RouteManagerDialog : public wxDialog {
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
             void OnExportVizClick(wxCommandEvent &event);
-            
+            void OnFilterChanged( wxCommandEvent& event );
+
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
@@ -147,6 +154,14 @@ class RouteManagerDialog : public wxDialog {
             wxListCtrl *m_pTrkListCtrl;
             wxListCtrl *m_pWptListCtrl;
             wxListCtrl  *m_pLayListCtrl;
+            wxStaticText *m_stFilterWpt;
+            wxTextCtrl *m_tFilterWpt;
+            wxStaticText *m_stFilterRte;
+            wxTextCtrl *m_tFilterRte;
+            wxStaticText *m_stFilterTrk;
+            wxTextCtrl *m_tFilterTrk;
+            wxStaticText *m_stFilterLay;
+            wxTextCtrl *m_tFilterLay;
 
             wxButton *btnRteProperties;
             wxButton *btnRteActivate;
@@ -171,6 +186,7 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnWptSendToGPS;
             wxButton *btnWptDeleteAll;
             wxButton *btnLayNew;
+            wxButton *btnPerLayNew;
             //wxButton *btnLayProperties;
             wxButton *btnLayToggleChart;
             wxButton *btnLayToggleListing;
@@ -189,6 +205,7 @@ class RouteManagerDialog : public wxDialog {
             int m_lastRteItem;
             
             int m_charWidth;
+            int m_listIconSize;
 };
 
 #endif // _RouteManagerDialog_h_

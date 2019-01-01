@@ -149,15 +149,6 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
 {
       wxSize size = GetClientSize();
       wxColour cl;
-      GetGlobalColor(_T("DASHF"), &cl);
-      dc->SetTextForeground( cl );
-      dc->SetFont(*g_pFontData);
-      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
-
-      dc->SetFont(*g_pFontLabel);
-      int width, height;
-      dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
-      dc->DrawText(m_Temp, 0, size.y-height);
 
       GetGlobalColor(_T("DASHL"), &cl);
       wxBrush brush;
@@ -182,5 +173,15 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       points[DEPTH_RECORD_COUNT+1].x = 3;
       points[DEPTH_RECORD_COUNT+1].y = 140;
       dc->DrawPolygon(DEPTH_RECORD_COUNT+2, points);
+      
+      GetGlobalColor(_T("DASHF"), &cl);
+      dc->SetTextForeground( cl );
+      dc->SetFont(*g_pFontData);
+      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
+
+      dc->SetFont(*g_pFontLabel);
+      int width, height;
+      dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
+      dc->DrawText(m_Temp, 0, size.y-height);
 }
 

@@ -47,7 +47,7 @@
 #include "version.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
-
+#include "navutil.h"
 
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
@@ -65,7 +65,7 @@ wxString OpenCPNVersion =
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2015 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2018 The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
@@ -99,6 +99,10 @@ const wxString AuthorText =
     wxT("      Documentation and Wiki support\n\n")
     wxT("    Didier Gautheron\n")
     wxT("      App debugging and optimization\n\n")
+    wxT("    Wiets Wilken\n")
+    wxT("      Extended vector Icon implementation\n\n")
+    wxT("    Gene Seybold\n")
+    wxT("      Extended vector Icon design\n\n")
     wxT("    Caesar Schinas\n")
     wxT("      User Interface and OS X improvements\n\n")
     wxT("    Jesper Weissglas\n")
@@ -347,22 +351,6 @@ void about::Populate( void )
         
     pLicenseHTMLCtl->SetPage( licenseText );
         
-        
-#if 0    
-    wxTextFile license_file( m_DataLocn + _T("license.txt") );
-    if ( license_file.Open() ) {
-        for ( wxString str = license_file.GetFirstLine(); !license_file.Eof() ; str = license_file.GetNextLine() )
-            pLicenseTextCtl->AppendText( str + '\n' );
-        license_file.Close();
-    } else {
-        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
-    }
-    
-    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
-    pLicenseTextCtl->AppendText( suppLicense );
-    
-    pLicenseTextCtl->SetInsertionPoint( 0 );
-#endif
 
     SetColorScheme();
 }
@@ -419,7 +407,7 @@ void about::CreateControls( void )
 
     buttonSizer->Add( new wxButton( this, ID_COPYLOG, _("Copy Log File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( new wxButton( this, ID_COPYINI, _("Copy Settings File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
-    buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? wxALIGN_RIGHT : 0), 3 );
+    buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? 0 : wxALIGN_RIGHT), 3 );
 #endif
     
     //  Main Notebook
@@ -438,7 +426,7 @@ void about::CreateControls( void )
                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAboutHTMLCtl->SetBorders( 5 );
     wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
-    aboutSizer->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    aboutSizer->Add( pAboutHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAbout->SetSizer( aboutSizer );
 
     //  Authors Panel
@@ -452,7 +440,7 @@ void about::CreateControls( void )
                                     wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAuthorHTMLCtl->SetBorders( 5 );
     wxBoxSizer* authorSizer = new wxBoxSizer( wxVERTICAL );
-    authorSizer->Add( pAuthorHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    authorSizer->Add( pAuthorHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAuthors->SetSizer( authorSizer );
     
 
@@ -466,7 +454,7 @@ void about::CreateControls( void )
                                       wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pLicenseHTMLCtl->SetBorders( 5 );
     wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
-    licenseSizer->Add( pLicenseHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    licenseSizer->Add( pLicenseHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelLicense->SetSizer( licenseSizer );
     
 
@@ -504,7 +492,7 @@ void about::OnClose( wxCloseEvent& event )
 
 void about::OnDonateClick( wxCommandEvent& event )
 {
-      wxLaunchDefaultBrowser(_T("https://sourceforge.net/donate/index.php?group_id=180842"));
+      wxLaunchDefaultBrowser(_T("https://sourceforge.net/p/opencpn/donate/"));
 }
 
 void about::OnCopyClick( wxCommandEvent& event )

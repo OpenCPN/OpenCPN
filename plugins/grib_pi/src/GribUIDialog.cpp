@@ -78,8 +78,6 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
-
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {
@@ -294,8 +292,8 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
            wxString key;
            long dummy;
            for( int i = 0; i < iFileMax; i++ ) {
-               pConf->GetFirstEntry( key, dummy );
-               pConf->DeleteEntry( key, false );
+               if (pConf->GetFirstEntry( key, dummy ))
+                   pConf->DeleteEntry( key, false );
            }
         }
 
@@ -422,7 +420,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     if( m_bGRIBActiveFile->IsOK() ) {
         wxFileName fn( m_bGRIBActiveFile->GetFileNames()[0] );
-        title = ( _T("File: ") );
+        title = ( _("File: ") );
         title.Append( fn.GetFullName() );
         if( rsa->GetCount() == 0 ) {                        //valid but empty file
             delete m_bGRIBActiveFile;
@@ -452,7 +450,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     } else {
         delete m_bGRIBActiveFile;
         m_bGRIBActiveFile = NULL;
-        title = _T("No valid GRIB file");
+        title = _("No valid GRIB file");
     }
     pPlugIn->GetGRIBOverlayFactory()->SetMessage( title );
     SetTitle( title );
@@ -696,9 +694,12 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     }
     Layout();
     Fit();
-    SetMinSize( GetBestSize() );
-    SetSize( GetBestSize() );
-    Update();
+    wxSize sd = GetSize();
+#ifdef __WXGTK__
+    if( m_HasCaption && sd.y == GetClientSize().y ) sd.y += 30;
+#endif
+    SetSize( wxSize( sd.x, sd.y ) );
+    SetMinSize( wxSize( sd.x, sd.y ) );
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
@@ -877,52 +878,17 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     //
     wxFileConfig *pConf = GetOCPNConfigObject();
 
-    int x = -1;
-    int y = -1;
-    int w = m_vp->pix_width - 30;
-    int h = m_vp->pix_height - 30;
-
-    if(pConf) {
-        pConf->SetPath ( _T ( "/Settings/GRIB" ) );
-
-        pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
-        pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
-        pConf->Read( _T ( "GribDataTableWidth" ), &w );
-        pConf->Read( _T ( "GribDataTableHeight" ), &h );
-    }
-    //Correct an eventuelly oversized dialog
-    w = ( w > m_vp->pix_width - 30 )? m_vp->pix_width - 30: w;
-    h = ( h > m_vp->pix_height - 30)? m_vp->pix_height - 30: h;
-    //init centered position and default size if not set yet
-    if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
-
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     GRIBTable *table = new GRIBTable(*this);
 
-    table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
-    table->m_pButtonTableOK->SetLabel(_("Close"));
-
-    //set dialog size and position
-    table->SetSize(w, h);
-    table->SetPosition(wxPoint(x, y));
-
-    //try to show and highlight current dateTime step column
-    int i = 0,vcol = GetNearestIndex( GetNow(), 0);
-    wxColour colour;
-    GetGlobalColor(_T("GREEN1"), &colour);
-    table->m_pGribTable->SetCellBackgroundColour( colour, 0, vcol ); //mark current column
-    table->m_pGribTable->SetCellBackgroundColour( colour, 1, vcol );
-    while( table->m_pGribTable->IsVisible( 0, i, true) ) {           //ensure it's visible
-        i++;
-    }
-    vcol += i - 2;
-    table->m_pGribTable->GoToCell( 0, vcol );
-    //
+    table->InitGribTable(pPlugIn->GetTimeZone(), rsa,  GetNearestIndex( GetNow(), 0));
+    table->SetTableSizePosition(m_vp->pix_width, m_vp->pix_height);
 
     table->ShowModal();
 
     //re-activate cursor data
     m_CDataIsShown = dataisshown;
+    delete table;
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
@@ -946,6 +912,8 @@ void GRIBUICtrlBar::OnClose( wxCloseEvent& event )
             m_ZoneSelMode = START_SELECTION;
             //SetRequestBitmap( m_ZoneSelMode );
         }
+    pPlugIn->SendTimelineMessage(wxInvalidDateTime );
+
     pPlugIn->OnGribCtrlBarClose();
 }
 
@@ -979,12 +947,11 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     if( m_tPlayStop.IsRunning() ) return;                            // do nothing when play back is running !
 
     /*if there is one instance of the dialog already visible, do nothing*/
-    if(pReq_Dialog){
-        if( pReq_Dialog->IsShown() ) return;
-    }
+    if(pReq_Dialog && pReq_Dialog->IsShown() ) return;
 
     /*a second click without selection cancel the process*/
     if( m_ZoneSelMode == DRAW_SELECTION ) {
+        assert(pReq_Dialog);
         m_ZoneSelMode = START_SELECTION;
         pReq_Dialog->StopGraphicalZoneSelection();
         SetRequestBitmap( m_ZoneSelMode );
@@ -1064,6 +1031,7 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     SetFactoryOptions();
 
     SetDialogsStyleSizePosition(true);
+    delete dialog;
 
     event.Skip();
 }
@@ -1230,7 +1198,7 @@ void GRIBUICtrlBar::TimelineChanged()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 void GRIBUICtrlBar::RestaureSelectionString()
@@ -1318,6 +1286,8 @@ wxDateTime GRIBUICtrlBar::MinTime()
 
 GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
 {
+    if (m_bGRIBActiveFile == NULL)
+        return NULL;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
     if(rsa->GetCount() == 0)
@@ -1428,8 +1398,10 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         m_grib_dir = dialog->GetDirectory();
         dialog->GetPaths(m_file_names);
         OpenFile();
+        DoZoomToCenter();
         SetDialogsStyleSizePosition( true );
     }
+    delete dialog;
 #else
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
@@ -1479,13 +1451,15 @@ void GRIBUICtrlBar::PopulateComboDataList()
 
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 {
+    DoZoomToCenter();
+#if 0    
     if(!m_pTimelineSet) return;
 
     double latmin,latmax,lonmin,lonmax;
     if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
         return;
 
-    ::wxBeginBusyCursor();
+    //::wxBeginBusyCursor();
 
     //calculate overlay size
     double width = lonmax - lonmin;
@@ -1524,6 +1498,55 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
     JumpToPosition(clat, clon, ppm);
 
     RequestRefresh( pParent );
+#endif
+
+}
+
+void GRIBUICtrlBar::DoZoomToCenter( )
+{
+    if(!m_pTimelineSet) return;
+
+    double latmin,latmax,lonmin,lonmax;
+    if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
+        return;
+
+    //::wxBeginBusyCursor();
+
+    //calculate overlay size
+    double width = lonmax - lonmin;
+    double height = latmax - latmin;
+
+    // Calculate overlay center
+    double clat = latmin + height / 2;
+    double clon = lonmin + width / 2;
+
+    //try to limit the ppm at a reasonable value
+    if(width  > 120.){
+        lonmin = clon - 60.;
+        lonmax = clon + 60.;
+    }
+    if(height > 120.){
+        latmin = clat - 60.;
+        latmax = clat + 60.;
+    }
+
+
+    //Calculate overlay width & height in nm (around the center)
+    double ow, oh;
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+
+    //calculate screen size
+    int w = PluginGetOverlayRenderCanvas()->GetSize().x;
+    int h = PluginGetOverlayRenderCanvas()->GetSize().y;
+
+    //calculate final ppm scale to use
+    double ppm;
+    ppm = wxMin(w/(ow*1852), h/(oh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    CanvasJumpToPosition(PluginGetOverlayRenderCanvas(), clat, clon, ppm);
 
 }
 
@@ -1611,7 +1634,7 @@ void GRIBUICtrlBar::ComputeBestForecastForNow()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(now);
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 
 }
 
@@ -1656,7 +1679,7 @@ void GRIBUICtrlBar::SetFactoryOptions()
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
     UpdateTrackingControl();
-    RequestRefresh( pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1733,6 +1756,8 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
 
     GribRecord *pRec;
     bool isOK(false);
+    bool polarWind(false);
+
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1750,6 +1775,9 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                 if( m_GribRecordSetArray.Item( j ).m_Reference_Time == thistime ) {
                     int idx = -1, mdx = -1;
                     switch(pRec->getDataType()) {
+                    case GRB_WIND_DIR:
+                        polarWind = true;
+                        // fall through
                     case GRB_WIND_VX:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
@@ -1761,6 +1789,9 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         } else
                             idx = Idx_WIND_VX;
                         break;
+                    case GRB_WIND_SPEED:
+                        polarWind = true;
+                        // fall through
                     case GRB_WIND_VY:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
@@ -1822,15 +1853,73 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         break;
 
                     }
+                    if(idx == -1) {
+                        // XXX bug ?
+                        break;
+                    }
 
+                    bool skip = false;
 
-                    if(idx != -1) {
+                    if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
+                        // already one
+                        GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                        if (polarWind) {
+                            // we favor UV over DIR/SPEED
+                            if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                                skip = true;
+                        }
+                        // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
+                        if (!skip && (oRec->getTimeRange() == 3)) {
+                            skip = true;
+                        }
+                    }
+                    if (!skip) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
                         if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
                         if(mdx != -1 && m_GribIdxArray.Index(mdx) == wxNOT_FOUND ) m_GribIdxArray.Add(mdx, 1);
                     }
                     break;
                 }
+            }
+        }
+    }
+
+    if (polarWind) {
+        for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
+            for(unsigned int i=0; i<Idx_COUNT; i++) {
+                GribRecord *GR1 = NULL, *GR2 = NULL;
+                int idx = -1;
+                GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
+
+                if ( pRec == 0 || pRec->getDataType() != GRB_WIND_DIR) {
+                    continue;
+                }
+                switch( i ) {
+                case Idx_WIND_VX300:
+                    idx = Idx_WIND_VY300;
+                    break;
+                case Idx_WIND_VX500:
+                    idx = Idx_WIND_VY500;
+                    break;
+                case Idx_WIND_VX700:
+                    idx = Idx_WIND_VY700;
+                    break;
+                case Idx_WIND_VX850:
+                    idx = Idx_WIND_VY850;
+                    break;
+                case Idx_WIND_VX:
+                    idx = Idx_WIND_VY;
+                    break;
+                default:
+                    break;
+                }
+                if (idx == -1)
+                    continue;
+                GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                if (pRec1 == 0 || pRec1->getDataType() != GRB_WIND_SPEED) {
+                    continue;
+                }
+                GribRecord::Polar2UV(pRec, pRec1);
             }
         }
     }
@@ -1846,13 +1935,18 @@ GRIBFile::~GRIBFile()
 //               GRIB Cursor Data Ctrl & Display implementation
 //---------------------------------------------------------------------------------------
 GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
-		: GRIBUICDataBase( &parent), m_gpparent(parent)
+#ifdef __WXOSX__
+    : GRIBUICDataBase( parent.pParent, CURSOR_DATA, _("GRIB Display Control"), wxDefaultPosition, wxDefaultSize, wxSYSTEM_MENU|wxNO_BORDER|wxSTAY_ON_TOP)
+#else
+    : GRIBUICDataBase( &parent, CURSOR_DATA, _("GRIB Display Control"), wxDefaultPosition, wxDefaultSize, wxSYSTEM_MENU|wxNO_BORDER)
+#endif
+    , m_gpparent(parent)
 {
    // m_gGrabber = new GribGrabberWin( this );
   //  fgSizer58->Add( m_gGrabber, 0, wxALL, 0 );
 
     m_gCursorData = new CursorData( this, m_gpparent );
-        m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
+    m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
 
     Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUICData::OnMove ) );
 }

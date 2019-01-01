@@ -41,21 +41,21 @@
 #include "routeman.h"
 #include "routeprop.h"
 #include "routemanagerdialog.h"
-#include "tinyxml.h"
 #include "undo.h"
 #include "chcanv.h"
+#include "Route.h"
 
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern WayPointman *pWayPointMan;
-extern ChartCanvas *cc1;
 extern MyFrame *gFrame;
 extern MarkInfoImpl *pMarkPropDialog;
 
-Undo::Undo()
+Undo::Undo( ChartCanvas *parent)
 {
+    m_parent = parent;
     depthSetting = 10;
     stackpointer = 0;
     isInsideUndoableAction = false;
@@ -96,7 +96,7 @@ wxString UndoAction::Description()
     return descr;
 }
 
-void doUndoMoveWaypoint( UndoAction* action ) {
+void doUndoMoveWaypoint( UndoAction* action, ChartCanvas *cc ) {
     double lat, lon;
     RoutePoint* currentPoint = (RoutePoint*) action->after[0];
     wxRealPoint* lastPoint = (wxRealPoint*) action->before[0];
@@ -126,7 +126,7 @@ void doUndoMoveWaypoint( UndoAction* action ) {
     }
 }
 
-void doUndoDeleteWaypoint( UndoAction* action )
+void doUndoDeleteWaypoint( UndoAction* action, ChartCanvas *cc )
 {
     RoutePoint* point = (RoutePoint*) action->before[0];
     pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
@@ -135,7 +135,7 @@ void doUndoDeleteWaypoint( UndoAction* action )
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doRedoDeleteWaypoint( UndoAction* action )
+void doRedoDeleteWaypoint( UndoAction* action, ChartCanvas *cc )
 {
     RoutePoint* point = (RoutePoint*) action->before[0];
     pConfig->DeleteWayPoint( point );
@@ -144,16 +144,17 @@ void doRedoDeleteWaypoint( UndoAction* action )
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doUndoAppendWaypoint( UndoAction* action )
+
+void doUndoAppendWaypoint( UndoAction* action, ChartCanvas *cc )
 {
     RoutePoint* point = (RoutePoint*) action->before[0];
     Route* route = (Route*) action->after[0];
 
     bool noRouteLeftToRedo = false;
-    if( (route->GetnPoints() == 2) && (gFrame->nRoute_State == 0) )
+    if( (route->GetnPoints() == 2) && (cc->m_routeState == 0) )
         noRouteLeftToRedo = true;
 
-    cc1->RemovePointFromRoute( point, route );
+    g_pRouteMan->RemovePointFromRoute( point, route, cc );
 
     if( action->beforeType[0] == Undo_IsOrphanded ) {
         pConfig->DeleteWayPoint( point );
@@ -162,21 +163,22 @@ void doUndoAppendWaypoint( UndoAction* action )
     }
 
     if( noRouteLeftToRedo ) {
-        cc1->undo->InvalidateRedo();
+        cc->undo->InvalidateRedo();
     }
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 
-    if( gFrame->nRoute_State > 1 ) {
-        gFrame->nRoute_State--;
-        cc1->m_prev_pMousePoint = route->GetLastPoint();
-        cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
-        cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;
+    if( cc->m_routeState > 1 ) {
+        cc->m_routeState--;
+        cc->m_prev_pMousePoint = route->GetLastPoint();
+        cc->m_prev_rlat = cc->m_prev_pMousePoint->m_lat;
+        cc->m_prev_rlon = cc->m_prev_pMousePoint->m_lon;
         route->m_lastMousePointIndex = route->GetnPoints();
     }
 }
 
-void doRedoAppendWaypoint( UndoAction* action )
+
+void doRedoAppendWaypoint( UndoAction* action, ChartCanvas *cc )
 {
     RoutePoint* point = (RoutePoint*) action->before[0];
     Route* route = (Route*) action->after[0];
@@ -194,11 +196,11 @@ void doRedoAppendWaypoint( UndoAction* action )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 
-    if( gFrame->nRoute_State > 1 ) {
-        gFrame->nRoute_State++;
-        cc1->m_prev_pMousePoint = route->GetLastPoint();
-        cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
-        cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;
+    if( cc->m_routeState > 1 ) {
+        cc->m_routeState++;
+        cc->m_prev_pMousePoint = route->GetLastPoint();
+        cc->m_prev_rlat = cc->m_prev_pMousePoint->m_lat;
+        cc->m_prev_rlon = cc->m_prev_pMousePoint->m_lon;
         route->m_lastMousePointIndex = route->GetnPoints();
     }
 }
@@ -261,23 +263,23 @@ bool Undo::UndoLastAction()
     switch( action->type ){
 
         case Undo_CreateWaypoint:
-            doRedoDeleteWaypoint( action ); // Same as delete but reversed.
+            doRedoDeleteWaypoint( action, GetParent() ); // Same as delete but reversed.
             stackpointer++;
             break;
 
         case Undo_MoveWaypoint:
-            doUndoMoveWaypoint( action );
+            doUndoMoveWaypoint( action, GetParent() );
             stackpointer++;
             break;
 
         case Undo_DeleteWaypoint:
-            doUndoDeleteWaypoint( action );
+            doUndoDeleteWaypoint( action, GetParent() );
             stackpointer++;
             break;
 
         case Undo_AppendWaypoint:
             stackpointer++;
-            doUndoAppendWaypoint( action );
+            doUndoAppendWaypoint( action, GetParent() );
             break;
     }
     return true;
@@ -291,22 +293,22 @@ bool Undo::RedoNextAction()
     switch( action->type ){
 
         case Undo_CreateWaypoint:
-            doUndoDeleteWaypoint( action ); // Same as delete but reversed.
+            doUndoDeleteWaypoint( action, GetParent() ); // Same as delete but reversed.
             stackpointer--;
             break;
 
         case Undo_MoveWaypoint:
-            doUndoMoveWaypoint( action ); // For Wpt move, redo is same as undo (swap lat/long);
+            doUndoMoveWaypoint( action, GetParent() ); // For Wpt move, redo is same as undo (swap lat/long);
             stackpointer--;
             break;
 
         case Undo_DeleteWaypoint:
-            doRedoDeleteWaypoint( action );
+            doRedoDeleteWaypoint( action, GetParent() );
             stackpointer--;
             break;
 
         case Undo_AppendWaypoint:
-            doRedoAppendWaypoint( action );
+            doRedoAppendWaypoint( action, GetParent() );
             stackpointer--;
             break;
     }

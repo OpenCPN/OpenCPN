@@ -37,9 +37,11 @@
 #include "GribUIDialogBase.h"
 #include "grib_pi.h"
 #include "ocpn_plugin.h"
+#include "CustomGrid.h"
 
 class GRIBUICtrlBar;
 
+enum NumericalRows {R_WIND, R_WAVES, R_CURRENT};
 //----------------------------------------------------------------------------------------------------------
 //    GRIB table dialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -49,37 +51,39 @@ public:
 
     GRIBTable( GRIBUICtrlBar &parent);
     
-    ~GRIBTable(){}
+     ~GRIBTable(){ delete m_pGribTable; }
 
     void InitGribTable( int zone, ArrayOfGribRecordSets *rsa);
+    void InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowIndex );
+    void SetTableSizePosition(int vpWidth, int vpHeight);
+    wxBitmap GetScaledBitmap( wxBitmap bmp, wxString svgfile, double scfactor ) { return m_pGDialog->GetScaledBitmap(bmp, svgfile, scfactor); }
     void CloseDialog();
 
 private:
 
     void AddDataRow( int num_rows, int num_cols, wxString label, wxGridCellAttr *row_attr );
     void AutoSizeDataRows();
+    int  GetVisibleRow( int col );
+    void OnScrollToNowTimer( wxTimerEvent& event );
 
-    wxString GetWind(GribRecord **recordarray);
-    wxString GetWindBf(GribRecord **recordarray);
+    wxString GetWind(GribRecord **recordarray, int datatype, double& wdir);
+    wxString GetWindGust(GribRecord **recordarray, int datatype );
     wxString GetPressure(GribRecord **recordarray);
-    wxString GetWindGust(GribRecord **recordarray);
-    wxString GetWaves(GribRecord **recordarray);
+     wxString GetWaves(GribRecord **recordarray, int datatype, double& wdir);
     wxString GetRainfall(GribRecord **recordarray);
     wxString GetCloudCover(GribRecord **recordarray);
     wxString GetAirTemp(GribRecord **recordarray);
     wxString GetSeaTemp(GribRecord **recordarray);
     wxString GetCAPE(GribRecord **recordarray);
-    wxString GetCurrent(GribRecord **recordarray);
+    wxString GetCurrent(GribRecord **recordarray, int datatype, double& wdir);
     wxString GetTimeRowsStrings( wxDateTime date_time, int time_zone, int type );
 
     void OnClose( wxCloseEvent& event );
     void OnOKButton( wxCommandEvent& event );
-    void OnClick( wxGridEvent& event );
-    void OnRangeClick( wxGridRangeSelectEvent& event );
 
     GRIBUICtrlBar *m_pGDialog;
-    GribTimelineRecordSet * m_pTimeset;
     wxColour m_pDataCellsColour;
+    wxTimer m_tScrollToNowTimer;
 };
 
 #endif //__GRIBTABLE_H__

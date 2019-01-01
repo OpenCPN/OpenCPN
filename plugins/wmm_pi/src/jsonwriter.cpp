@@ -12,6 +12,11 @@
     #pragma implementation "jsonwriter.cpp"
 #endif
 
+#ifdef NDEBUG
+// make wxLogTrace a noop if no debug set, it's really slow
+// must be defined before including wx/debug.h (also included by wx/wxprec.h)
+#define wxDEBUG_LEVEL 0
+#endif
 
 #include "jsonwriter.h"
 
@@ -20,7 +25,9 @@
 #include <wx/debug.h>
 #include <wx/log.h>
 
+#if wxDEBUG_LEVEL > 0
 static const wxChar* writerTraceMask = _T("traceWriter");
+#endif
 
 /*! \class wxJSONWriter
  \brief The JSON document writer

@@ -234,7 +234,7 @@ void TexFont::RenderGlyph( wchar_t c )
 
         char *data = new char[gw*gh*2];
         
-        if(data && imgdata ){
+        if (imgdata ){
             for(int i=0; i<gw*gh; i++) {
                 data[2*i+0] = imgdata[3*i];
                 data[2*i+1] = imgdata[3*i];

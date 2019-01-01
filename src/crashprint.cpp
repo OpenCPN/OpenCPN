@@ -97,7 +97,7 @@ void wxCrashPrint::Report () {
     wxString cur, addr, func, addrs;
     wxArrayString lines;
     size_t pos1, pos2;
-    for (int i = 0; i < btCount; ++i) {
+    if (m_btStrings) for (int i = 0; i < btCount; ++i) {
         cur = wxString::FromAscii  (m_btStrings[i]);
         pos1 = cur.rfind ('[');
         pos2 = cur.rfind (']');

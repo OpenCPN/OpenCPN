@@ -452,7 +452,7 @@ static int jpc_dec_process_sot(jpc_dec_t *dec, jpc_ms_t *ms)
 
 	if (dec->state == JPC_MH) {
 
-		compinfos = jas_malloc(dec->numcomps * sizeof(jas_image_cmptparm_t));
+		compinfos = jas_alloc2(dec->numcomps, sizeof(jas_image_cmptparm_t));
 		assert(compinfos);
 		for (cmptno = 0, cmpt = dec->cmpts, compinfo = compinfos;
 		  cmptno < dec->numcomps; ++cmptno, ++cmpt, ++compinfo) {
@@ -492,7 +492,7 @@ static int jpc_dec_process_sot(jpc_dec_t *dec, jpc_ms_t *ms)
 		dec->curtileendoff = 0;
 	}
 
-	if (JAS_CAST(int, sot->tileno) > dec->numtiles) {
+	if (JAS_CAST(int, sot->tileno) >= dec->numtiles) {
 		jas_eprintf("invalid tile number in SOT marker segment\n");
 		return -1;
 	}
@@ -677,7 +677,7 @@ static int jpc_dec_tileinit(jpc_dec_t *dec, jpc_dec_tile_t *tile)
 	uint_fast32_t tmpxend;
 	uint_fast32_t tmpyend;
 	jpc_dec_cp_t *cp;
-	jpc_tsfb_band_t bnds[64];
+	jpc_tsfb_band_t bnds[JPC_MAXBANDS];
 	jpc_pchg_t *pchg;
 	int pchgno;
 	jpc_dec_cmpt_t *cmpt;
@@ -695,7 +695,7 @@ static int jpc_dec_tileinit(jpc_dec_t *dec, jpc_dec_tile_t *tile)
 			tile->realmode = 1;
 		}
 		tcomp->numrlvls = ccp->numrlvls;
-		if (!(tcomp->rlvls = jas_malloc(tcomp->numrlvls *
+		if (!(tcomp->rlvls = jas_alloc2(tcomp->numrlvls,
 		  sizeof(jpc_dec_rlvl_t)))) {
 			return -1;
 		}
@@ -767,7 +767,7 @@ rlvl->bands = 0;
 			  rlvl->cbgheightexpn);
 
 			rlvl->numbands = (!rlvlno) ? 1 : 3;
-			if (!(rlvl->bands = jas_malloc(rlvl->numbands *
+			if (!(rlvl->bands = jas_alloc2(rlvl->numbands,
 			  sizeof(jpc_dec_band_t)))) {
 				return -1;
 			}
@@ -800,7 +800,7 @@ rlvl->bands = 0;
 
 				assert(rlvl->numprcs);
 
-				if (!(band->prcs = jas_malloc(rlvl->numprcs * sizeof(jpc_dec_prc_t)))) {
+				if (!(band->prcs = jas_alloc2(rlvl->numprcs, sizeof(jpc_dec_prc_t)))) {
 					return -1;
 				}
 
@@ -837,7 +837,7 @@ rlvl->bands = 0;
 			if (!(prc->numimsbstagtree = jpc_tagtree_create(prc->numhcblks, prc->numvcblks))) {
 				return -1;
 			}
-			if (!(prc->cblks = jas_malloc(prc->numcblks * sizeof(jpc_dec_cblk_t)))) {
+			if (!(prc->cblks = jas_alloc2(prc->numcblks, sizeof(jpc_dec_cblk_t)))) {
 				return -1;
 			}
 
@@ -992,23 +992,23 @@ if (!prc->cblks) {
 }
 	if (tile->cp) {
 		jpc_dec_cp_destroy(tile->cp);
-		tile->cp = 0;
+		//tile->cp = 0;
 	}
 	if (tile->tcomps) {
 		jas_free(tile->tcomps);
-		tile->tcomps = 0;
+		//tile->tcomps = 0;
 	}
 	if (tile->pi) {
 		jpc_pi_destroy(tile->pi);
-		tile->pi = 0;
+		//tile->pi = 0;
 	}
 	if (tile->pkthdrstream) {
 		jas_stream_close(tile->pkthdrstream);
-		tile->pkthdrstream = 0;
+		//tile->pkthdrstream = 0;
 	}
 	if (tile->pptstab) {
 		jpc_ppxstab_destroy(tile->pptstab);
-		tile->pptstab = 0;
+		//tile->pptstab = 0;
 	}
 
 	tile->state = JPC_TILE_DONE;
@@ -1072,12 +1072,12 @@ static int jpc_dec_tiledecode(jpc_dec_t *dec, jpc_dec_tile_t *tile)
 	/* Apply an inverse intercomponent transform if necessary. */
 	switch (tile->cp->mctid) {
 	case JPC_MCT_RCT:
-		assert(dec->numcomps >= 3);
+		assert(dec->numcomps == 3 || dec->numcomps == 4);
 		jpc_irct(tile->tcomps[0].data, tile->tcomps[1].data,
 		  tile->tcomps[2].data);
 		break;
 	case JPC_MCT_ICT:
-		assert(dec->numcomps >= 3);
+		assert(dec->numcomps == 3 || dec->numcomps == 4);
 		jpc_iict(tile->tcomps[0].data, tile->tcomps[1].data,
 		  tile->tcomps[2].data);
 		break;
@@ -1151,7 +1151,11 @@ static int jpc_dec_process_eoc(jpc_dec_t *dec, jpc_ms_t *ms)
 				return -1;
 			}
 		}
-		jpc_dec_tilefini(dec, tile);
+		/* If the tile has not yet been finalized, finalize it. */
+		// OLD CODE: jpc_dec_tilefini(dec, tile);
+		if (tile->state != JPC_TILE_DONE) {
+			jpc_dec_tilefini(dec, tile);
+		}
 	}
 
 	/* We are done processing the code stream. */
@@ -1184,7 +1188,7 @@ static int jpc_dec_process_siz(jpc_dec_t *dec, jpc_ms_t *ms)
 		return -1;
 	}
 
-	if (!(dec->cmpts = jas_malloc(dec->numcomps * sizeof(jpc_dec_cmpt_t)))) {
+	if (!(dec->cmpts = jas_alloc2(dec->numcomps, sizeof(jpc_dec_cmpt_t)))) {
 		return -1;
 	}
 
@@ -1207,7 +1211,9 @@ static int jpc_dec_process_siz(jpc_dec_t *dec, jpc_ms_t *ms)
 	dec->numhtiles = JPC_CEILDIV(dec->xend - dec->tilexoff, dec->tilewidth);
 	dec->numvtiles = JPC_CEILDIV(dec->yend - dec->tileyoff, dec->tileheight);
 	dec->numtiles = dec->numhtiles * dec->numvtiles;
-	if (!(dec->tiles = jas_malloc(dec->numtiles * sizeof(jpc_dec_tile_t)))) {
+	JAS_DBGLOG(10, ("numtiles = %d; numhtiles = %d; numvtiles = %d;\n",
+	  dec->numtiles, dec->numhtiles, dec->numvtiles));
+	if (!(dec->tiles = jas_alloc2(dec->numtiles, sizeof(jpc_dec_tile_t)))) {
 		return -1;
 	}
 
@@ -1231,7 +1237,8 @@ static int jpc_dec_process_siz(jpc_dec_t *dec, jpc_ms_t *ms)
 		tile->pkthdrstreampos = 0;
 		tile->pptstab = 0;
 		tile->cp = 0;
-		if (!(tile->tcomps = jas_malloc(dec->numcomps *
+		tile->pi = 0;
+		if (!(tile->tcomps = jas_alloc2(dec->numcomps,
 		  sizeof(jpc_dec_tcomp_t)))) {
 			return -1;
 		}
@@ -1283,7 +1290,7 @@ static int jpc_dec_process_coc(jpc_dec_t *dec, jpc_ms_t *ms)
 	jpc_coc_t *coc = &ms->parms.coc;
 	jpc_dec_tile_t *tile;
 
-	if (JAS_CAST(int, coc->compno) > dec->numcomps) {
+	if (JAS_CAST(int, coc->compno) >= dec->numcomps) {
 		jas_eprintf("invalid component number in COC marker segment\n");
 		return -1;
 	}
@@ -1309,7 +1316,7 @@ static int jpc_dec_process_rgn(jpc_dec_t *dec, jpc_ms_t *ms)
 	jpc_rgn_t *rgn = &ms->parms.rgn;
 	jpc_dec_tile_t *tile;
 
-	if (JAS_CAST(int, rgn->compno) > dec->numcomps) {
+	if (JAS_CAST(int, rgn->compno) >= dec->numcomps) {
 		jas_eprintf("invalid component number in RGN marker segment\n");
 		return -1;
 	}
@@ -1358,7 +1365,7 @@ static int jpc_dec_process_qcc(jpc_dec_t *dec, jpc_ms_t *ms)
 	jpc_qcc_t *qcc = &ms->parms.qcc;
 	jpc_dec_tile_t *tile;
 
-	if (JAS_CAST(int, qcc->compno) > dec->numcomps) {
+	if (JAS_CAST(int, qcc->compno) >= dec->numcomps) {
 		jas_eprintf("invalid component number in QCC marker segment\n");
 		return -1;
 	}
@@ -1492,7 +1499,7 @@ static jpc_dec_cp_t *jpc_dec_cp_create(uint_fast16_t numcomps)
 	cp->numlyrs = 0;
 	cp->mctid = 0;
 	cp->csty = 0;
-	if (!(cp->ccps = jas_malloc(cp->numcomps * sizeof(jpc_dec_ccp_t)))) {
+	if (!(cp->ccps = jas_alloc2(cp->numcomps, sizeof(jpc_dec_ccp_t)))) {
 		return 0;
 	}
 	if (!(cp->pchglist = jpc_pchglist_create())) {
@@ -2051,7 +2058,7 @@ jpc_streamlist_t *jpc_streamlist_create()
 	}
 	streamlist->numstreams = 0;
 	streamlist->maxstreams = 100;
-	if (!(streamlist->streams = jas_malloc(streamlist->maxstreams *
+	if (!(streamlist->streams = jas_alloc2(streamlist->maxstreams,
 	  sizeof(jas_stream_t *)))) {
 		jas_free(streamlist);
 		return 0;
@@ -2071,8 +2078,8 @@ int jpc_streamlist_insert(jpc_streamlist_t *streamlist, int streamno,
 	/* Grow the array of streams if necessary. */
 	if (streamlist->numstreams >= streamlist->maxstreams) {
 		newmaxstreams = streamlist->maxstreams + 1024;
-		if (!(newstreams = jas_realloc(streamlist->streams,
-		  (newmaxstreams + 1024) * sizeof(jas_stream_t *)))) {
+		if (!(newstreams = jas_realloc2(streamlist->streams,
+		  (newmaxstreams + 1024), sizeof(jas_stream_t *)))) {
 			return -1;
 		}
 		for (i = streamlist->numstreams; i < streamlist->maxstreams; ++i) {
@@ -2158,8 +2165,7 @@ int jpc_ppxstab_grow(jpc_ppxstab_t *tab, int maxents)
 {
 	jpc_ppxstabent_t **newents;
 	if ((size_t)tab->maxents < (size_t)maxents) {
-		newents = (tab->ents) ? jas_realloc(tab->ents, maxents *
-		  sizeof(jpc_ppxstabent_t *)) : jas_malloc(maxents * sizeof(jpc_ppxstabent_t *));
+		newents = jas_realloc2(tab->ents, maxents, sizeof(jpc_ppxstabent_t *));
 		if (!newents) {
 			return -1;
 		}

@@ -53,7 +53,7 @@
 // When we stop building against 10.7 we will probably want to link agains CoreGraphics directly:
 //#include <CoreGraphics/CoreGraphics.h>
 
-
+#ifndef ocpnUSE_NEWSERIAL
 // Returns an iterator across all known serial ports. Caller is responsible for
 // releasing the iterator when iteration is complete.
 static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)
@@ -226,7 +226,7 @@ bool ValidateSerialPortName(char* pPortName, int iMaxNamestoSearch)
 	}
 	return bPortFound ;
 }
-
+#endif
 
 /**
  * Returns the width of the monitor in millimetres

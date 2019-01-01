@@ -184,7 +184,7 @@ class  ChartBaseBSB     :public ChartBase
       virtual int GetSize_Y(){ return Size_Y;}
 
       virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-      void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+      virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
 
       double GetPPM(){ return m_ppm_avg;}
 
@@ -429,12 +429,28 @@ class ChartPlugInWrapper : public ChartBaseBSB
             virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
             virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
             
-
+            
+            //  Added for API V 1.14, with PlugInChartBaseExtended
+            virtual bool RenderRegionViewOnDCNoText(wxMemoryDC &dc, const ViewPort& VPoint,
+                                                                const OCPNRegion &Region);
+            
+            virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC &dc, const ViewPort& VPoint,
+                                                    const OCPNRegion &Region);
+            
+            virtual bool RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPort& VPoint,
+                                                       const OCPNRegion &RectRegion, const LLRegion &Region );
+            
+            virtual bool RenderRegionViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint,
+                                                         const OCPNRegion &RectRegion );
+            
+            virtual void ClearPLIBTextList();
+            
       private:
             PlugInChartBase *m_ppicb;
             wxObject          *m_ppo;
             wxCriticalSection m_critSect;
-            
+            bool              m_overlayENC;
+            wxMask           *m_pMask;
 };
 
 #endif

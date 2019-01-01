@@ -370,15 +370,6 @@ void wxBoundingBox::MapBbox( const wxTransformMatrix& matrix)
 
 void LLBBox::Set(double minlat, double minlon, double maxlat, double maxlon)
 {
-#if 0
-    // ensure average is from -180 to 180
-    if(minlon + maxlon >= 360)
-        minlon -= 360, maxlon -= 360;
-    else
-    if(minlon + maxlon <= -360)
-        minlon += 360, maxlon += 360;
-#endif
-    
     m_minlat = minlat;
     m_minlon = minlon;
     m_maxlat = maxlat;

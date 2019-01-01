@@ -81,11 +81,11 @@ void LONGITUDE::Set( double position, const wxString& east_or_west )
    Longitude = position;
    wxString ts = east_or_west;
 
-   if ( ts.Trim(false)[ 0 ] == 'E' )
+   if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'E' )
    {
       Easting = East;
    }
-   else if ( ts.Trim(false)[ 0 ] == 'W' )
+   else if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'W' )
    {
       Easting = West;
    }

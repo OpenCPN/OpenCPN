@@ -47,10 +47,11 @@ public:
       bool m_bHasVisibleNames;
       long m_NoOfItems;
       int m_LayerID;
-
+    
       wxString          m_LayerName;
       wxString          m_LayerFileName;
       wxString          m_LayerDescription;
+      wxString          m_LayerType;
       wxDateTime        m_CreateTime;
 };
 

@@ -76,7 +76,7 @@ public:
     static void Initialize_1( void );
     
     //  Called from MyApp() immediately before creation of MyFrame()
-    static void Initialize_2( void );
+    void Initialize_2( void );
     
     //  Called from MyApp() just before end of MyApp::OnInit()
     static void Initialize_3( void );
@@ -97,6 +97,7 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
+    void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
@@ -111,6 +112,8 @@ public:
     bool GetFullscreen();
     bool SetFullscreen( bool bFull );
     double GetDisplayDensityFactor();
+    
+    double m_pt_per_pixel;
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
@@ -129,6 +132,7 @@ public:
     wxString &GetLogFileName(){ return mlog_file; }
     MyConfig *GetConfigObject();
     wxString GetSupplementalLicenseString();
+    wxString NormalizePath(const wxString &full_path); //Adapt for portable use
     
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
@@ -159,6 +163,8 @@ public:
 #endif
     
 private:
+    bool        GetWindowsMonitorSize( int *width, int *height);
+    
     wxString    m_homeDir;
     wxString    m_exePath;
     wxString    m_SData_Dir;
@@ -170,9 +176,12 @@ private:
     FILE        *flog;
     wxLog       *m_Oldlogger;
     wxString    large_log_message;
+    wxSize      m_displaySize;
+    wxSize      m_displaySizeMM;
+    int         m_displaySizeMMOverride;
     
-    
-
+    int         m_monitorWidth, m_monitorHeight;
+    bool        m_bdisableWindowsDisplayEnum;
 };
 
 

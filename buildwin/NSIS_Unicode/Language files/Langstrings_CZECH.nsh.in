@@ -350,4 +350,4 @@ LangString ^NameDA ${LANG_CZECH} "@CPACK_PACKAGE_NAME@ Verze @CPACK_PACKAGE_VERS
 LangString License_Message ${LANG_CZECH} "OpenCPN je svobodný software. Můžete a budeme rádi, když ho budete kopírovat, instalovat, modifikovat a šířit ať už pro sebe nebo své přátele, pokud dodržíte podmínky licence GPL. $\r$\nŠťastnou plavbu!"
 
 #LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_XP_SP_Version ${LANG_CZECH} "Verze instalovaného service packu Windows XP není podporována (je prříliš stará)!$\r$\nPotřebuješ alespoŇ Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_CZECH} "Verze instalovaného service packu Windows XP není podporována (je příliš stará)!$\r$\nPotřebuješ alespoŇ Windows XP SP3."

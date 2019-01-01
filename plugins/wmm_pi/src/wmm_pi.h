@@ -38,6 +38,7 @@
 #include <wx/fileconf.h>
 
 #include "version.h"
+#include "wxWTranslateCatalog.h"
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    8

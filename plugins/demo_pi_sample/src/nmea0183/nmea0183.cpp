@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -86,7 +86,10 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Vtg );
    response_table.Append( (RESPONSE *) &Gsv );
    response_table.Append( (RESPONSE *) &Gga );
-
+   response_table.Append( (RESPONSE *) &GPwpl );
+   response_table.Append( (RESPONSE *) &Apb );
+   response_table.Append( (RESPONSE *) &Xte );
+   
 
 /*
    response_table.Add( (RESPONSE *) &Rot );
@@ -208,15 +211,23 @@ bool NMEA0183::IsGood( void ) const
    ** Next to last character must be a CR
    */
 
-   if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != CARRIAGE_RETURN )
+   /*  This seems too harsh for cross platform work
+
+   Relax requirement to line ending of either CR or LF
+
+   if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != wxString(_T("\r")) )
    {
       return( FALSE );
    }
 
-   if ( sentence.Sentence.Right( 1 ) != LINE_FEED )
+   if ( sentence.Sentence.Right( 1 ) != _T("\n") )
    {
       return( FALSE );
    }
+   */
+
+//TODO: GPSD messages are not terminated with CR/LF   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
+//      return false;
 
    return( TRUE );
 }
@@ -224,6 +235,10 @@ bool NMEA0183::IsGood( void ) const
 
 bool NMEA0183::PreParse( void )
 {
+      wxCharBuffer buf = sentence.Sentence.ToUTF8();
+      if( !buf.data() )                            // badly formed sentence?
+        return false;
+    
       if ( IsGood() )
       {
             wxString mnemonic = sentence.Field( 0 );
@@ -330,6 +345,25 @@ bool NMEA0183::Parse( void )
    return( return_value );
 }
 
+wxArrayString NMEA0183::GetRecognizedArray(void)
+{
+    wxArrayString ret;
+    
+    wxMRLNode *node = response_table.GetFirst();
+    
+    while(node)
+    {
+        RESPONSE *resp = node->GetData();
+        ret.Add( resp->Mnemonic );
+        node = node->GetNext();
+    }
+
+    return ret;
+}
+
+    
+    
+    
 NMEA0183& NMEA0183::operator << ( wxString & source )
 {
 //   ASSERT_VALID( this );

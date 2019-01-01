@@ -61,6 +61,7 @@ class NMEALogWindow : public WindowDestroyListener
         void SetPos(int x, int y);
         void SetPos(const wxPoint & pos);
         void CheckPos(int display_width, int display_height);
+        void Move();
         virtual void DestroyWindow();
         static void Shutdown();
         wxWindow *GetTTYWindow( void ){ return (wxWindow *)window; }

@@ -30,6 +30,7 @@
 #include "NMEALogWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
+#include "Route.h"
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -39,6 +40,7 @@ extern wxArrayOfConnPrm  *g_pConnectionParams;
 extern bool             g_bserial_access_checked;
 extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
+extern wxString         g_TalkerIdText;
 
 extern "C" bool CheckSerialAccess( void );
 
@@ -48,6 +50,8 @@ Multiplexer::Multiplexer()
     m_gpsconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     m_pdatastreams = new wxArrayOfDataStreams();
+    if(g_GPS_Ident.IsEmpty())
+        g_GPS_Ident = wxT("Generic");
 }
 
 Multiplexer::~Multiplexer()
@@ -264,7 +268,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
-                message.Mid(1,2).IsSameAs(_T("CD")) ||
+                message.Mid(1,4).IsSameAs(_T("CDDS")) ||
                 message.Mid(3,3).IsSameAs(_T("TLL")) ||
                 message.Mid(3,3).IsSameAs(_T("TTM")) ||
                 message.Mid(3,3).IsSameAs(_T("OSD")) ||
@@ -616,6 +620,10 @@ ret_point:
                     }
                     else if(g_GPS_Ident == _T("FurunoGP3X"))
                     {
+                        //  Furuno has its own talker ID, so do not allow the global override
+                        wxString talker_save = g_TalkerIdText;
+                        g_TalkerIdText.Clear();
+                        
                         oNMEA0183.TalkerID = _T ( "PFEC," );
 
                         if ( prp->m_lat < 0. )
@@ -634,6 +642,8 @@ ret_point:
                         oNMEA0183.GPwpl.To = name;
 
                         oNMEA0183.GPwpl.Write ( snt );
+                        
+                        g_TalkerIdText = talker_save;
                     }
 
                     wxString payload = snt.Sentence;
@@ -644,10 +654,12 @@ ret_point:
                     // a delay is needed and a new string of waypoints may be sent.
                     // To ensure all waypoints will arrive, we can simply send each one twice.
                     // This ensures that the gps  will get the waypoint and also allows us to send as many as we like
-                    //payload += _T("\r\n") + payload;
+                    //
+                    //  We need only send once for FurunoGP3X models
                     
                     if( dstr->SendSentence( payload ) ) {
-                        dstr->SendSentence( payload );
+                        if(g_GPS_Ident != _T("FurunoGP3X"))
+                            dstr->SendSentence( payload );
                         LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
                     }
 
@@ -684,6 +696,11 @@ ret_point:
                 max_wp = 6;
             }
 
+            //  Furuno has its own talker ID, so do not allow the global override
+            wxString talker_save = g_TalkerIdText;
+            if(g_GPS_Ident == _T("FurunoGP3X"))
+                g_TalkerIdText.Clear();
+            
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
@@ -871,7 +888,7 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    wxString sentence = sentence_array.Item(ii);
+                    wxString sentence = sentence_array[ii];
                     
                     if(dstr->SendSentence( sentence ) )
                         LogOutputMessage( sentence, dstr->GetPort(), false );
@@ -929,6 +946,10 @@ ret_point:
 
             //  All finished with the temp port
             dstr->Close();
+            
+            if(g_GPS_Ident == _T("FurunoGP3X"))
+                g_TalkerIdText = talker_save;
+            
         }
     }
 

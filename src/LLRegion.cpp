@@ -308,7 +308,8 @@ static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
     const GLubyte *estring;
     estring = gluErrorString(errorCode);
     fprintf (stderr, "Tessellation Error: %s\n", estring);
-    exit (0);
+    wxLogMessage( _T("Tessellation Error: %s"), (char *)estring );
+    //exit (0);
 }
 
 void LLRegion::Intersect(const LLRegion& region)
@@ -589,23 +590,45 @@ void LLRegion::Optimize()
             continue;
         }
 
+        // Round coordinates to avoid numerical errors in region computations
+        const double eps = 6e-6;  // about 1cm on earth's surface at equator
+        for(poly_contour::iterator j = i->begin(); j != i->end(); j++) {
+            //j->x -= fmod(j->x, 1e-8);
+            j->x = round(j->x/eps)*eps;
+            j->y = round(j->y/eps)*eps;
+        }
+
+#if 0
         // round toward 180 and -180 as this is where adjusted longitudes
         // are split, and so zero contours can get eliminated by the next step
         for(poly_contour::iterator j = i->begin(); j != i->end(); j++)
             if(fabs(j->x - 180) < 2e-4) j->x = 180;
             else if(fabs(j->x + 180) < 2e-4) j->x = -180;
+#endif
 
         // eliminiate parallel segments
-        contour_pt l = *i->rbegin();
-        poly_contour::iterator j = i->begin(), k = j;
-        k++;
-        while(k != i->end()) {
-            if(fabs(cross(vector(*j, l), vector(*j, *k))) < 1e-12)
-                i->erase(j);
-            else
-                l = *j;
-            j = k;
+        bool end = false;
+        poly_contour::iterator j = i->begin();
+        int s = i->size();
+        for(int c=0; c<s; c++) {
+            poly_contour::iterator l = j, k = j;
+            
+            if (l == i->begin())
+                l = i->end();
+            l--;
+            
             k++;
+            if(k == i->end())
+                k = i->begin();
+            
+            if(l == k)
+                break;
+            if(fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
+                i->erase(j);
+                j = l;
+                c--;
+            } else
+                j = k;
         }
 
         // erase zero contours

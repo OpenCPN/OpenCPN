@@ -37,7 +37,8 @@
 #include <wx/notebook.h>
 #include <wx/radiobox.h>
 #include <wx/statline.h>
-#include <wx/grid.h>
+//#include <wx/grid.h>
+#include "CustomGrid.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -125,8 +126,8 @@ class GRIBUICtrlBarBase : public wxDialog
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
-        virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
@@ -249,6 +250,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxSpinCtrl* m_sIsoBarSpacing;
 		wxFlexGridSizer* m_fIsoBarVisibility;
 		wxCheckBox* m_sIsoBarVisibility;
+		wxCheckBox* m_cbAbbrIsoBarsNumbers;
 		wxCheckBox* m_cbDirectionArrows;
 		wxFlexGridSizer* m_fgDirArrData1;
 		wxChoice* m_cDirectionArrowForm;
@@ -334,6 +336,7 @@ class GribPreferencesDialogBase : public wxDialog
 		wxCheckBox* m_cbUseGradualColors;
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
+		wxCheckBox* m_cbDrawBarbedArrowHead;
 		wxRadioBox* m_rbLoadOptions;
 		wxRadioBox* m_rbStartOptions;
 		wxRadioBox* m_rbTimeFormat;
@@ -448,9 +451,9 @@ class GRIBTableBase : public wxDialog
 
 
 	public:
-		wxGrid* m_pGribTable;
-		wxStdDialogButtonSizer* m_pButtonTable;
-		wxButton* m_pButtonTableOK;
+		CustomGrid* m_pGribTable;
+        wxButton* m_pButtonTableOK;
+        int m_pIndex;
 
 		GRIBTableBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Data Table"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
 		~GRIBTableBase();

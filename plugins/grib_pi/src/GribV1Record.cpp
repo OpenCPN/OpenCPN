@@ -53,6 +53,16 @@ void  GribV1Record::translateDataType()
         }
                                                                                 
 	}
+	//------------------------
+	// EMCF masquaraded as NOAA ?
+	//------------------------
+	else if ( idCenter==7 && idModel==64 && idGrid==4)
+	{
+        dataCenterModel = NOAA_GFS;
+        if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+            multiplyAllData( 3600.0 );
+        }
+    }
     //------------------------
 	//DNMI-NEurope.grb
 	//------------------------
@@ -75,8 +85,6 @@ void  GribV1Record::translateDataType()
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
             multiplyAllData( 3600.0 );
 		}
-
-
 	}
     else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
 		dataCenterModel = NOAA_NCEP_WW3;
@@ -128,6 +136,25 @@ void  GribV1Record::translateDataType()
 		{
 			levelType  = LV_GND_SURF;
 			levelValue = 0;
+		}
+	}
+	//------------------------
+	// EMCWF grib1...
+	//------------------------
+	else if (idCenter==98 /*&& idModel==148*/ && idGrid==255)
+	{
+        dataCenterModel = OTHER_DATA_CENTER;
+		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+            //dataType=71 levelType=1 levelValue=0
+            multiplyAllData( 3600.0 );
+		}
+		else if (getDataType()==GRB_CLOUD_TOT && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
+		    // dataType=59 levelType=1 levelValue=0
+		    levelType = LV_ATMOS_ALL;
+		}
+		else if (getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0) {
+		    // dataType=2 levelType=1 levelValue=0
+		    levelType = LV_MSL;
 		}
 	}
 	//------------------------
@@ -268,6 +295,13 @@ GribV1Record::~GribV1Record()
 //----------------------------------------------
 static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 {
+#if 0
+    // should test when loading nbBitsInPack?
+    if (nbBits == 0 || nbBits > 31) {
+        // x >> 32 is undefined behavior, on x86 it returns x
+        return 0;
+    }
+#endif    
     zuint oct = first / 8;
     zuint bit = first % 8;
 
@@ -489,12 +523,13 @@ bool GribV1Record::readGribSection3_BMS(ZUFILE* file) {
     if (bitMapFollows != 0) {
         return ok;
     }
+    if (sectionSize3 <= 6) {
+        ok = false;
+        return ok;
+    }
     BMSsize = sectionSize3-6;
     BMSbits = new zuchar[BMSsize];
-    if (!BMSbits) {
-        erreur("Record %d: out of memory",id);
-        ok = false;
-    }
+
     for (zuint i=0; i< BMSsize; i++) {
         BMSbits[i] = readChar(file);
     }
@@ -537,28 +572,26 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         return ok;
     }
 
-    // Allocate memory for the data
-    data = new double[Ni*Nj];
-    if (!data) {
-        erreur("Record %d: out of memory",id);
+    if (sectionSize4 <= 11 || sectionSize4 > INT_MAX -4) {
         ok = false;
+        return ok;
     }
-
     zuint  startbit  = 0;
     int  datasize = sectionSize4-11;
     zuchar *buf = new zuchar[datasize+4]();  // +4 pour simplifier les décalages ds readPackedBits
-    if (!buf) {
-        erreur("Record %d: out of memory",id);
-        ok = false;
-    }
+
     if (zu_read(file, buf, datasize) != datasize) {
         erreur("Record %d: data read error",id);
         ok = false;
         eof = true;
     }
     if (!ok) {
+        delete [] buf;
         return ok;
     }
+
+    // Allocate memory for the data
+    data = new double[Ni*Nj];
 
     // Read data in the order given by isAdjacentI
     zuint i, j, x;
@@ -566,12 +599,19 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     if (isAdjacentI) {
         for (j=0; j<Nj; j++) {
             for (i=0; i<Ni; i++) {
+#if 0
+                // XXX
+                // not need because we do it in XY after recomputing Di and Dj?
                 if (!hasDiDj && !isScanJpositive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
                     ind = j*Ni+i;
                 }
+#else
+                ind = j*Ni+i;
+#endif
+
                 if (hasValue(i,j)) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
@@ -587,12 +627,17 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     else {
         for (i=0; i<Ni; i++) {
             for (j=0; j<Nj; j++) {
+#if 0
                 if (!hasDiDj && !isScanJpositive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
                     ind = j*Ni+i;
                 }
+#else
+                ind = j*Ni+i;
+#endif
+
                 if (hasValue(i,j)) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     startbit += nbBitsInPack;
@@ -606,10 +651,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         }
     }
 
-    if (buf) {
-        delete [] buf;
-        buf = NULL;
-    }
+    delete [] buf;
     return ok;
 }
 

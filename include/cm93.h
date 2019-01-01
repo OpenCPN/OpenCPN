@@ -43,6 +43,7 @@ void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
 //    Fwd definitions
 class covr_set;
 class wxSpinCtrl;
+class ChartCanvas;
 
 class M_COVR_Desc
 {
@@ -336,7 +337,7 @@ class cm93chart : public s57chart
 
             const wxString & GetLastFileName(void) const { return m_LastFileName; }
 
-            ArrayOfInts GetVPCellArray(const ViewPort &vpt);
+            std::vector<int> GetVPCellArray(const ViewPort &vpt);
 
             Array_Of_M_COVR_Desc_Ptr    m_pcovr_array_loaded;
 
@@ -385,7 +386,7 @@ class cm93chart : public s57chart
             double            m_sfactor;
 
             wxString          m_scalechar;
-            ArrayOfInts       m_cells_loaded_array;
+            std::vector<int>       m_cells_loaded_array;
 
             int               m_current_cell_vearray_offset;
             int               *m_pcontour_array;
@@ -402,6 +403,7 @@ class cm93chart : public s57chart
             wxString          m_LastFileName;
 
             LLRegion            m_region;
+            wxArrayString       m_noFindArray;
 };
 
 //----------------------------------------------------------------------------
@@ -442,7 +444,7 @@ class cm93compchart : public s57chart
                                               const OCPNRegion &RectRegion, const LLRegion &Region);
             void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
-            bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
+            bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp, ChartCanvas *cc);
 
             void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
             void GetPixPoint(int pixx, int pixy, double *plat, double *plon, ViewPort *vpt);

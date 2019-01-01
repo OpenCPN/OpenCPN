@@ -194,6 +194,9 @@ wxFileOffset ChartDataInputStream::OnSysTell() const {
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
 {
+    if (!wxFileExists(input_path)) {
+        return false;
+    }
     wxCompressedFFileInputStream in(input_path);
     wxFFileOutputStream out(output_path);
     

@@ -2,6 +2,17 @@
 <ChartCatalog>
   <sections>
     <section>
+      <name>GSHHG basemap</name>
+      <catalogs>
+        <catalog>
+          <name>All GSHHG basemaps</name>
+          <type>GSHHG</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/GSHHG_Catalog.xml</location>
+          <dir>{USERDATA}/GSHHG</dir>
+        </catalog>
+      </catalogs>
+    </section>
+    <section>
       <name>USA - NOAA &amp; Inland charts</name>
       <sections>
         <section>
@@ -836,8 +847,18 @@
           <catalogs>
             <catalog>
               <name>US ACE Inland ENC charts</name>
-              <location>http://www.ienccloud.us/ienc/products/catalog/IENCU37ProductsCatalog.xml</location>
+              <location>http://ienccloud.us/ienc/products/catalog/IENCU37ProductsCatalog.xml</location>
               <dir>{USERDATA}/ENC/US_INLAND</dir>
+            </catalog>
+            <catalog>
+              <name>US ACE Inland ENC Buoy Overlay</name>
+              <location>http://ienccloud.us/ienc/products/catalog/IENCBuoyProductsCatalog.xml</location>
+              <dir>{USERDATA}/ENC/US_INLAND_BUOYS</dir>
+            </catalog>
+            <catalog>
+              <name>US ACE Inland ENC SW Pass Overlay</name>
+              <location>http://ienccloud.us/ienc/products/catalog/IENCSWPassProductsCatalog.xml</location>
+              <dir>{USERDATA}/ENC/US_INLAND_OVERLAYS</dir>
             </catalog>
           </catalogs>
         </section>
@@ -846,14 +867,12 @@
     <section>
       <name>ChartCatalogs</name>
       <catalogs>
-<!-- Currently not avaialable
         <catalog>
           <name>Argentina RNC Nautical Charts</name>
           <type>RNC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/AR_RNC_Catalog.xml</location>
           <dir>{USERDATA}/RNC/ARGENTINA</dir>
         </catalog>
--->
         <catalog>
           <name>Austria Inland ENC Charts</name>
           <type>ENC</type>
@@ -865,6 +884,12 @@
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/BE_IENC_Catalog.xml</location>
           <dir>{USERDATA}/ENC/BE_INLAND</dir>
+        </catalog>
+        <catalog>                                                                                             
+          <name>Belgium OSM Raster Charts</name>
+          <type>RNC</type>
+          <location>http://www.openwaterkaart.nl/charts/OSM-raster-be/OSM-raster-be-catalog.xml</location>
+          <dir>{USERDATA}/ENC/BE_OSMRASTER</dir>
         </catalog>
         <catalog>
           <name>Brasil RNC Nautical Charts</name>
@@ -970,5 +995,27 @@
         </catalog>
       </catalogs>
     </section>
+    <section>
+      <name>US Pilot Charts</name>
+      <catalogs>
+        <catalog>
+          <name>All Pilot Charts</name>
+          <type>RNC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/PILOT_Catalog.xml</location>
+          <dir>{USERDATA}/PILOT_CHARTS</dir>
+        </catalog>
+      </catalogs>
+    </section>
+    <section>                                                                                                 
+      <name>MBTiles</name>
+      <catalogs>
+        <catalog>
+          <name>NOAA (~500MB each, prefer the RNC charts)</name>
+          <type>MBTiles</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/NOAA_MBTiles_Catalog.xml</location>
+          <dir>{USERDATA}/MBTiles/NOAA</dir>
+        </catalog>
+      </catalogs>
+    </section> 
   </sections>
 </ChartCatalog>

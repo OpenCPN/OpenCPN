@@ -78,7 +78,7 @@ public:
     double                    Euro_Length;            // Extensions for European Inland AIS
     double                    Euro_Beam;
     double                    Euro_Draft;
-    char                      Euro_VIN[8];
+    char                      Euro_VIN[9];	      // includes terminator
     int                       UN_shiptype;
     bool                      b_isEuroInland;
     bool                      b_blue_paddle;
@@ -139,7 +139,7 @@ public:
     int                      altitude;                  // Metres, from special position report(9)
     bool                     b_nameFromCache;
     float                    importance;
-    float                    last_scale;
+    short                    last_scale[AIS_TARGETDATA_MAX_CANVAS]; // where AIS_TARGETDATA_MAX_CANVAS is the max number of chartcanvas
     
 };
 

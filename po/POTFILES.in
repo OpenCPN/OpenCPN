@@ -10,7 +10,6 @@ include/androidUTIL.h
 include/bbox.h
 include/canvasMenu.h
 include/chart1.h
-include/chartbarwin.h
 include/chartbase.h
 include/chartdb.h
 include/chartdbs.h
@@ -18,7 +17,6 @@ include/chartimg.h
 include/chartsymbols.h
 include/chcanv.h
 include/ChInfoWin.h
-include/CM93DSlide.h
 include/cm93.h
 include/compass.h
 include/concanv.h
@@ -37,7 +35,6 @@ include/glChartCanvas.h
 include/glTexCache.h
 include/glTextureDescriptor.h
 include/GoToPositionDialog.h
-include/gpxdocument.h
 include/gshhs.h
 include/Hyperlink.h
 include/IDX_entry.h
@@ -109,7 +106,6 @@ include/timers.h
 include/tinyxml.h
 include/toolbar.h
 include/TrackPropDlg.h
-include/triangulate.h
 include/TTYScroll.h
 include/TTYWindow.h
 include/tzdata.h
@@ -131,7 +127,6 @@ src/androidUTIL.cpp
 src/bbox.cpp
 src/canvasMenu.cpp
 src/chart1.cpp
-src/chartbarwin.cpp
 src/chartdb.cpp
 src/chartdbs.cpp
 src/chartimg.cpp
@@ -139,7 +134,6 @@ src/chartsymbols.cpp
 src/chcanv.cpp
 src/ChInfoWin.cpp
 src/cm93.cpp
-src/CM93DSlide.cpp
 src/compass.cpp
 src/compasswin.cpp
 src/concanv.cpp
@@ -147,6 +141,7 @@ src/ConnectionParams.cpp
 src/crashprint.cpp
 src/cutil.cpp
 src/datastream.cpp
+src/DetailSlider.cpp
 src/FontDesc.cpp
 src/FontMgr.cpp
 src/geodesic.cpp
@@ -155,7 +150,6 @@ src/glChartCanvas.cpp
 src/glTexCache.cpp
 src/glTextureDescriptor.cpp
 src/GoToPositionDialog.cpp
-src/gpxdocument.cpp
 src/gshhs.cpp
 src/Hyperlink.cpp
 src/IDX_entry.cpp
@@ -224,3 +218,5 @@ src/TTYWindow.cpp
 src/undo.cpp
 src/viewport.cpp
 src/wificlient.cpp
+src/wxcurl/dialog.cpp
+src/wxcurl/panel.cpp

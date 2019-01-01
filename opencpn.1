@@ -1,0 +1,78 @@
+.\"
+.\" (C) Copyright 2018 Alec Leamas <leamas.alec@gmail.com>,
+.\"
+.TH Opencpn 1 "July 2018"
+
+.SH NAME
+opencpn \- Chartplotter and GPS Navigation Software
+.SH SYNOPSIS
+.B opencpn
+.RI [ options ]
+.SH DESCRIPTION
+OpenCPN is a chartplotter and navigation GUI program supporting navigation
+under way as well as planning. It supports a wide range of chart formats
+using a plugin system. Other plugins provides support for e. g. radar, AIS
+and weather maps. Program is localized in 20+ languages and ported to
+several OS including MacOS, Windows and Linux.
+
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help info.
+.TP
+.B \-p
+Run in portable mode.
+.TP
+.B  \-fullscreen
+Switch to full screen mode on start.
+.TP
+.B  \-no_opengl
+Disable OpenGL video acceleration. This setting will be remembered.
+.TP
+.B  \-rebuild_gl_raster_cache
+Rebuild OpenGL raster cache on start.
+.TP
+.B  \-parse_all_enc
+Convert all S-57 charts to OpenCPN's internal format on start.
+.TP
+.B  \-unit_test_1:<num>
+Display a slideshow of <num> charts and then exit. Zero or negative <num>
+specifies no limit.
+
+.SH PLUGIN LOADING
+
+Plugin loading depends on that the opencpn main program can locate the
+plugin object file and that the plugin can locate it's own data.
+.P
+On Linux, the main program searches for plugin .so-files in a library
+named \fIopencpn/plugins\fR.
+By default, this path is searched in ~/.local/lib:/usr/local/lib:/usr/lib.
+The default search path can be overridden by the OPENCPN_PLUGIN_DIRS
+environment variable.
+.P
+On other platforms, all plugin object files lives in a single directory
+defined at installation.
+.P
+A plugin's data directory is a path ending with
+\fIopencpn/plugins/<plugin_name>\fR.
+On Linux, this is by default searched in
+~/local/share:/usr/local/share:/usr/share.
+This search path is overridden by XDG_DATA_DIRS as defined by the freedesktop
+spec.
+Only plugins adapted for this (i. e., using GetPluginDataDir()) handles this
+properly.
+.P
+On other platforms, the plugin data directories always lives in a common
+parent defined at installation time.
+
+.SH NOTES
+
+The support for OPENCPN_PLUGIN_DIRS and XDG_DATA_DIRS was introduced in
+version TBD. Prior to this, all plugins was loaded from a single directory
+and all plugin data directories had a common parent.
+
+.SH SEE ALSO
+.br
+http://www.opencpn.org
+.br
+http://www.freedesktop.org

@@ -29,6 +29,12 @@
 
 #include "ocpn_types.h"
 
+#ifdef __WXOSX__
+#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE|wxSTAY_ON_TOP
+#else
+#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE
+#endif
+
 class wxHtmlWindow;
 class AIS_Target_Data;
 
@@ -46,7 +52,7 @@ public:
             const wxString& caption = _("Object Query"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize,
-            long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            long style = AIS_TARGET_QUERY_STYLE );
 
       ~AISTargetQueryDialog( );
       /// Initialise our variables
@@ -58,7 +64,7 @@ public:
             const wxString& caption = _("Object Query"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize,
-            long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            long style = AIS_TARGET_QUERY_STYLE );
 
       void OnClose(wxCloseEvent& event);
       void OnIdOKClick( wxCommandEvent& event );

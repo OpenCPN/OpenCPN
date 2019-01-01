@@ -94,6 +94,13 @@ public:
     time_t      epoch;
     int         epoch_year;
 
+    // Cached values
+    time_t      recent_highlow_calc_time;
+    float       recent_high_level;
+    time_t      recent_high_time;
+    float       recent_low_level;
+    time_t      recent_low_time;
+
 };
 
 WX_DECLARE_OBJARRAY(IDX_entry, ArrayOfIDXEntry);

@@ -6,9 +6,6 @@
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
-IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0002 OLD)
-ENDIF (COMMAND cmake_policy)
 
 SET(CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
 SET(CPACK_PACKAGE_VENDOR "opencpn.org")

@@ -109,50 +109,33 @@ Where:
    /*
    ** First we check the checksum...
    */
+    int nNumberOfDataFields = sentence.GetNumberOfDataFields();
+    int satInfoCnt = (nNumberOfDataFields-3) / 4;
+    if (satInfoCnt < 1)
+    {
+        SetErrorMessage(_T("Invalid Field count"));
+        return(FALSE);
+    }
 
-   int cksumFieldNr = 0;
-   int satInfoCnt = 0;
-   switch (sentence.GetNumberOfDataFields())
-   {
-   case 19:
-         cksumFieldNr = 20;
-         satInfoCnt = 4;
-         break;
-   case 15:
-         cksumFieldNr = 16;
-         satInfoCnt = 3;
-         break;
-   case 11:
-         cksumFieldNr = 12;
-         satInfoCnt = 2;
-         break;
-   case 7:
-         cksumFieldNr = 8;
-         satInfoCnt = 1;
-         break;
-   default:
-      SetErrorMessage( _T("Invalid Field count" ));
-      return( FALSE );
-   }
-   if ( sentence.IsChecksumBad( cksumFieldNr ) == NTrue )
-   {
-      SetErrorMessage( _T("Invalid Checksum" ));
-      return( FALSE );
-   }
+    if (sentence.IsChecksumBad(nNumberOfDataFields + 1) == NTrue)
+    {
+        SetErrorMessage( _T("Invalid Checksum" ));
+        return( FALSE );
+    }
 
-   NumberOfMessages = sentence.Integer( 1 );
-   MessageNumber = sentence.Integer( 2 );
-   SatsInView = sentence.Integer( 3 );
+    NumberOfMessages = sentence.Integer( 1 );
+    MessageNumber = sentence.Integer( 2 );
+    SatsInView = sentence.Integer( 3 );
 
-   for (int idx = 0; idx < satInfoCnt; idx++)
-   {
-         SatInfo[idx].SatNumber = sentence.Integer( idx*4+4 );
-         SatInfo[idx].ElevationDegrees = sentence.Integer( idx*4+5 );
-         SatInfo[idx].AzimuthDegreesTrue = sentence.Integer( idx*4+6 );
-         SatInfo[idx].SignalToNoiseRatio = sentence.Integer( idx*4+7 );
-   }
+    for (int idx = 0; idx < satInfoCnt; idx++)
+    {
+        SatInfo[idx].SatNumber = sentence.Integer( idx*4+4 );
+        SatInfo[idx].ElevationDegrees = sentence.Integer( idx*4+5 );
+        SatInfo[idx].AzimuthDegreesTrue = sentence.Integer( idx*4+6 );
+        SatInfo[idx].SignalToNoiseRatio = sentence.Integer( idx*4+7 );
+    }
 
-   return( TRUE );
+    return( TRUE );
 }
 
 bool GSV::Write( SENTENCE& sentence )

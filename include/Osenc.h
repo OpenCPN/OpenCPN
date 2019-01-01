@@ -41,7 +41,7 @@
 #include <stdint.h>
 #include <vector>
 
-WX_DECLARE_OBJARRAY(float *,   SENCFloatPtrArray);
+WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
 
 //      Various error return enums
 #define         SENC_NO_ERROR                           0
@@ -476,9 +476,9 @@ public:
     Extent &getReadExtent(){ return m_extent; }
     
     SENCFloatPtrArray &getSENCReadAuxPointArray(){ return m_AuxPtrArray;}
-    wxArrayInt &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
+    std::vector<int> &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
     SENCFloatPtrArray &getSENCReadNOCOVRPointArray(){ return m_NoCovrPtrArray;}
-    wxArrayInt &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
+    std::vector<int> &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
     
     int createSenc200(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg = true);
     
@@ -523,7 +523,6 @@ private:
     std::string GetAttributeAcronymFromTypecode( int typeCode );
     
     PolyTessGeo *BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record, unsigned char **bytes_consumed );
-    LineGeometryDescriptor *BuildLineGeometry( _OSENC_LineGeometry_Record_Payload *pPayload );
     bool CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar );
     
     wxString            errorMessage;
@@ -545,6 +544,8 @@ private:
     wxString            m_sdate000;
     
     wxString            m_edtn000;
+    int                 m_UPDN;
+    
     int                 m_nGeoRecords;
     int                 m_last_applied_update;
     wxString            m_LastUpdateDate;
@@ -579,9 +580,9 @@ private:
     
     //  Arrays used to accumulate coverage regions on oSENC load
     SENCFloatPtrArray     m_AuxPtrArray;
-    wxArrayInt            m_AuxCntArray;
+    std::vector<int>            m_AuxCntArray;
     SENCFloatPtrArray     m_NoCovrPtrArray;
-    wxArrayInt            m_NoCovrCntArray;
+    std::vector<int>            m_NoCovrCntArray;
     
     
     Osenc_outstream       *m_pauxOutstream;
@@ -591,6 +592,7 @@ private:
     Osenc_instream        *m_pInstream;
 
     bool                  m_bVerbose;
+    wxArrayString         *m_UpFiles;
     
 };
 

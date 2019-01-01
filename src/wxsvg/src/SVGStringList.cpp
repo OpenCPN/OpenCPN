@@ -11,14 +11,19 @@
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(wxSVGStringListBase);
 
-wxString wxSVGStringList::GetValueAsString() const {
+wxString wxSVGStringList::GetValueAsString(wxChar delimiter) const {
 	wxString value;
-	for (int i = 0; i < (int) GetCount(); i++)
-		value += (i == 0 ? wxT("") : wxT(",")) + Item(i);
+	for (unsigned int i = 0; i < GetCount(); i++) {
+		if (i > 0) {
+			value += delimiter;
+		}
+		value += Item(i);
+	}
 	return value;
 }
 
 void wxSVGStringList::SetValueAsString(const wxString& value, wxChar delimiter) {
+	Clear();
 	wxStringTokenizer tkz(value, delimiter);
 	while (tkz.HasMoreTokens()) {
 		Add(tkz.GetNextToken().Strip(wxString::both));

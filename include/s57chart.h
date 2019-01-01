@@ -49,6 +49,7 @@
 #include "ocpndc.h"
 #include "viewport.h"
 
+class ChartCanvas;
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
@@ -60,7 +61,7 @@
 extern "C" bool s57_GetChartExtent(const wxString& FullPath, Extent *pext);
 
 void s57_DrawExtendedLightSectors( ocpnDC& temp_dc, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
-bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
+bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
 
 //----------------------------------------------------------------------------
 // Constants
@@ -94,7 +95,6 @@ class connector_segment;
 
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
-WX_DECLARE_OBJARRAY(S57Obj *, ArrayOfS57ObjPtr);
 
 // And also a list
 WX_DECLARE_LIST(S57Obj, ListOfS57Obj);
@@ -130,6 +130,9 @@ public:
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
       virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
+      virtual bool RenderRegionViewOnDCNoText(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
       virtual LLRegion GetValidRegion();
 
@@ -158,7 +161,7 @@ public:
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
       static wxString GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName );
-      static int CompareLights( const void** l1, const void** l2 );
+      static bool CompareLights( const S57Light* l1, const S57Light* l2 );
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
       static wxString GetAttributeDecode(wxString& att, int ival);
 
@@ -182,12 +185,13 @@ public:
       
       double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
 
-//#ifdef ocpnUSE_GL
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                         const OCPNRegion &RectRegion, const LLRegion &Region);
       virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                                const OCPNRegion &RectRegion, const LLRegion &Region);
-//#endif
+      virtual bool RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
+      virtual bool RenderViewOnGLTextOnly(const wxGLContext &glc, const ViewPort& VPoint);
       
 // Public data
 //Todo Accessors here
@@ -232,7 +236,9 @@ public:
       InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
 protected:
-    void AssembleLineGeometry( void );
+      void AssembleLineGeometry( void );
+
+      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
     
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
@@ -244,7 +250,8 @@ private:
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
-
+      bool DCRenderText(wxMemoryDC& dcinput, const ViewPort& vp);
+      
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
@@ -269,17 +276,20 @@ private:
       const char *getName(OGRFeature *feature);
 
       bool DoRenderOnGL(const wxGLContext &glc, const ViewPort& VPoint);
+      bool DoRenderOnGLText(const wxGLContext &glc, const ViewPort& VPoint);
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                   const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 
       void BuildLineVBO( void );
+      
+      void ChangeThumbColor(ColorScheme cs);
+      void LoadThumb();
       
  // Private Data
       char        *hdr_buf;
       char        *mybuf_ptr;
       int         hdr_len;
       wxString    m_SENCFileName;
-      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
 
 
       wxArrayString *m_tmpup_array;

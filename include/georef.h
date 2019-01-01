@@ -144,6 +144,7 @@ extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double l
 extern "C" void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
                                                 double *dlat, double *dlon);
 extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
+extern "C" double DistLoxodrome(double slat, double slon, double dlat, double dlon);
 
 extern "C" int GetDatumIndex(const char *str);
 extern "C" void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index);

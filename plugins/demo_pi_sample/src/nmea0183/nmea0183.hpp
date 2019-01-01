@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -99,7 +99,9 @@
 #include "vtg.hpp"
 #include "gsv.hpp"
 #include "gga.hpp"
-
+#include "GPwpl.hpp"
+#include "apb.hpp"
+#include "xte.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -118,7 +120,6 @@
 #include "WCV.hpp"
 #include "WNC.hpp"
 #include "XDR.hpp"
-#include "XTE.hpp"
 #include "XTR.hpp"
 #include "ZDA.hpp"
 #include "ZFO.hpp"
@@ -148,6 +149,8 @@ class NMEA0183
       NMEA0183();
       virtual ~NMEA0183();
 
+      wxArrayString GetRecognizedArray(void);
+      
       /*
       ** NMEA 0183 Sentences we understand
       */
@@ -190,6 +193,9 @@ class NMEA0183
        VTG Vtg;
        GSV Gsv;
        GGA Gga;
+       GPWPL GPwpl;
+       APB Apb;
+       XTE Xte;
  /*
       ROT Rot;
       RPM Rpm;

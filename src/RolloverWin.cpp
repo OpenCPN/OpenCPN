@@ -68,7 +68,11 @@ RolloverWin::~RolloverWin()
 }
 void RolloverWin::OnTimer( wxTimerEvent& event )
 {
-    if( IsShown() ) Hide();
+    if( IsActive() ){
+        Hide();
+        GetParent()->Refresh( true );
+        IsActive(false);
+    }
 }
 
 void RolloverWin::OnMouseEvent( wxMouseEvent& event )
@@ -91,8 +95,11 @@ void RolloverWin::SetBitmap( int rollover )
     
     mdc.SetBackground( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
     mdc.Clear();
-    
-    int usegl = g_bopengl && g_texture_rectangle_format;
+#ifdef ocpnUSE_GL
+    bool usegl = g_bopengl && g_texture_rectangle_format;
+#else
+    bool usegl = false;
+#endif
     if(!usegl) {
         if(m_bmaincanvas){
             wxDC* cdc = new wxScreenDC();
@@ -159,7 +166,9 @@ void RolloverWin::SetBitmap( int rollover )
     #endif
     
     // Retrigger the auto timeout
-    if( m_timeout_sec > 0 ) m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
+    if( m_timeout_sec > 0 ){
+        m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
+    }
 }
 
 

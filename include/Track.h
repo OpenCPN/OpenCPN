@@ -35,6 +35,10 @@
 #include <list>
 #include <deque>
 
+class HyperlinkList;
+class ChartCanvas;
+class ViewPort;
+
 struct SubTrack
 {
     SubTrack() {}
@@ -46,18 +50,21 @@ struct SubTrack
 class TrackPoint
 {
 public:
-      TrackPoint(double lat, double lon) : m_lat(lat), m_lon(lon) {}
+      TrackPoint(double lat, double lon, wxString ts="");
+      TrackPoint(double lat, double lon, wxDateTime dt);
       TrackPoint( TrackPoint* orig );
+      ~TrackPoint();
 
       wxDateTime GetCreateTime(void);
       void SetCreateTime( wxDateTime dt );
-
+      void Draw(ChartCanvas *cc, ocpnDC& dc );
+      const char *GetTimeString() { return m_timestring; }
+      
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
-      wxString          m_timestring;
-
 private:
-      wxDateTime        m_CreateTimeX;
+      void SetCreateTime( wxString ts );
+      char             *m_timestring;
 };
 
 //----------------------------------------------------------------------------
@@ -70,15 +77,17 @@ public:
     Track();
     virtual ~Track();
 
-    void Draw(ocpnDC& dc, ViewPort &VP, const LLBBox &box);
-    TrackPoint *GetPoint( int nWhichPoint );
+    void Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box);
     int GetnPoints(void){ return TrackPoints.size(); }
+    
+    
+    void SetVisible(bool visible = true) { m_bVisible = visible; }
+    TrackPoint *GetPoint( int nWhichPoint );
     TrackPoint *GetLastPoint();
     void AddPoint( TrackPoint *pNewPoint );
     void AddPointFinalized( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
-
-    void SetVisible(bool visible = true) { m_bVisible = visible; }
+    
     void SetListed(bool listed = true) { m_bListed = listed; }
     virtual bool IsRunning() { return false; }
 
@@ -92,11 +101,29 @@ public:
     int Simplify( double maxDelta );
     Route *RouteFromTrack(wxGenericProgressDialog *pprog);
 
+    void ClearHighlights();
+    
+    wxString GetName( bool auto_if_empty = false ) const {
+        if( !auto_if_empty || !m_TrackNameString.IsEmpty() ) {
+            return m_TrackNameString;
+        } else {
+            wxString name;
+            TrackPoint *rp = NULL;
+            if((int) TrackPoints.size() > 0)
+                rp = TrackPoints[0];
+            if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
+                + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
+            else
+                name = _("(Unnamed Track)");
+            return name;
+        }
+    }
+    void SetName( const wxString name ) { m_TrackNameString = name; }
+    
     wxString    m_GUID;
     bool        m_bIsInLayer;
     int         m_LayerID;
 
-    wxString    m_TrackNameString;
     wxString    m_TrackDescription;
 
     wxString    m_TrackStartString;
@@ -113,11 +140,12 @@ public:
     int               m_CurrentTrackSeg;
 
     HyperlinkList     *m_HyperlinkList;
+    int m_HighlightedTrackPoint;
 
     void Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const wxString & suffix);
 
 protected:
-    void Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale);
+    void Segments( ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale);
     void DouglasPeuckerReducer( std::vector<TrackPoint*>& list,
                                 std::vector<bool> & keeplist,
                                 int from, int to, double delta );
@@ -128,16 +156,18 @@ protected:
     std::vector<std::vector <SubTrack> > SubTracks;
 
 private:
-    void GetPointLists(std::list< std::list<wxPoint> > &pointlists,
+    void GetPointLists(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists,
                        ViewPort &VP, const LLBBox &box );
     void Finalize();
     double ComputeScale(int left, int right);
     void InsertSubTracks(LLBBox &box, int level, int pos);
 
-    void AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n);
-    void AddPointToLists(std::list< std::list<wxPoint> > &pointlists, int &last, int n);
+    void AddPointToList(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, int n);
+    void AddPointToLists(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, int &last, int n);
 
-    void Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
+    void Assemble( ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
+    
+    wxString    m_TrackNameString;
 };
 
 WX_DECLARE_LIST(Track, TrackList); // establish class Route as list member

@@ -39,12 +39,6 @@ Vendor:         @CPACK_RPM_PACKAGE_VENDOR@
 # and then restore it in build.
 %prep
 mv $RPM_BUILD_ROOT "@CPACK_TOPLEVEL_DIRECTORY@/tmpBBroot"
-# Remove third party embedded source to ensure we never ever build these.
-rm -f src/tinyxml*.cpp include/tinyxml.h
-rm -rf plugins/grib_pi/src/zlib-1.2.3
-rm -rf plugins/grib_pi/src/bzip2
-
-#p build
 
 %install
 if [ -e $RPM_BUILD_ROOT ];
@@ -104,70 +98,58 @@ desktop-file-install \
 %doc %{_datadir}/%{name}/license.txt
 
 %dir %{_datadir}/%{name}/uidata
-%{_datadir}/%{name}/uidata/toolicons_traditional.png
-%{_datadir}/%{name}/uidata/toolicons_journeyman_flat.png
-%{_datadir}/%{name}/uidata/toolicons_journeyman.png
-%config %{_datadir}/%{name}/uidata/styles.xml
+%config %{_datadir}/%{name}/uidata/*
 
 %dir %{_datadir}/%{name}/s57data
-%config %{_datadir}/%{name}/s57data/s57objectclasses.csv
-%config %{_datadir}/%{name}/s57data/s57attributes.csv
-%config %{_datadir}/%{name}/s57data/s57expectedinput.csv
-%config %{_datadir}/%{name}/s57data/attdecode.csv
-%config %{_datadir}/%{name}/s57data/S52RAZDS.RLE
-%config %{_datadir}/%{name}/s57data/chartsymbols.xml
-%{_datadir}/%{name}/s57data/rastersymbols-day.png
-%{_datadir}/%{name}/s57data/rastersymbols-dusk.png
-%{_datadir}/%{name}/s57data/rastersymbols-dark.png
+%config %{_datadir}/%{name}/s57data/*.csv
+%config %{_datadir}/%{name}/s57data/*.RLE
+%config %{_datadir}/%{name}/s57data/*.xml
+%{_datadir}/%{name}/s57data/*.png
 
 %if %{_include_gshhs_min} == "ON"
   %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/poly-c-1.dat
 %endif
 %if %{_include_gshhs_crude} == "ON"
-  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_c.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_c.b
 %endif
 %if %{_include_gshhs_low} == "ON"
-  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_l.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_l.b
   %{_datadir}/%{name}/gshhs/poly-l-1.dat
 %endif
 %if %{_include_gshhs_intermediate} == "ON"
-  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_i.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_i.b
   %{_datadir}/%{name}/gshhs/poly-i-1.dat
 %endif
 %if %{_include_gshhs_high} == "ON"
-  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_h.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_h.b
   %{_datadir}/%{name}/gshhs/poly-h-1.dat
 %endif
 %if %{_include_gshhs_full} == "ON"
-  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_f.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_f.b
   %{_datadir}/%{name}/gshhs/poly-f-1.dat
 %endif
+
 %if %{_include_tcdata} == "ON"
   %dir %{_datadir}/%{name}/tcdata
   %{_datadir}/%{name}/tcdata/HARMONIC
   %{_datadir}/%{name}/tcdata/HARMONIC.IDX
-  %doc %{_datadir}/%{name}/tcdata/README.harmonics
+  %doc %{_datadir}/%{name}/tcdata/README*
 %endif
 
 %dir %{_datadir}/%{name}/sounds
-%{_datadir}/%{name}/sounds/1bells.wav
-%{_datadir}/%{name}/sounds/2bells.wav
-%doc %{_datadir}/%{name}/sounds/README.bells
+%{_datadir}/%{name}/sounds/*.wav
+%doc %{_datadir}/%{name}/sounds/README*
 
 %docdir %{_datadir}/%{name}/doc
 %doc %{_datadir}/%{name}/doc/help_web.html
 %if %{_include_docs} == "ON"
+  %exclude %{_datadir}/%{name}/doc/readme*
   %doc %{_datadir}/%{name}/doc/help_en_US.html
   %doc %{_datadir}/%{name}/doc/images/*
 %endif
@@ -177,12 +159,13 @@ desktop-file-install \
 %doc %{_datadir}/doc/%{name}/changelog
 
 %dir %{_datadir}/%{name}/plugins/chartdldr_pi/data
-%config %{_datadir}/%{name}/plugins/chartdldr_pi/data/chart_sources.xml
-%{_datadir}/%{name}/plugins/chartdldr_pi/data/folder215.png
-%{_datadir}/%{name}/plugins/chartdldr_pi/data/open182.png
+%config %{_datadir}/%{name}/plugins/chartdldr_pi/data/*.xml
+%{_datadir}/%{name}/plugins/chartdldr_pi/data/*.png
 %if %{_include_docs} == "ON"
   %docdir %{_datadir}/%{name}/plugins/chartdldr_pi/data/doc
   %doc %{_datadir}/%{name}/plugins/chartdldr_pi/data/doc/*
+%else
+  %exclude %{_datadir}/%{name}/plugins/chartdldr_pi/data/doc
 %endif
 
 %dir %{_datadir}/%{name}/plugins/dashboard_pi/data
@@ -192,9 +175,8 @@ desktop-file-install \
 %{_datadir}/%{name}/plugins/grib_pi/data/*.svg
 
 %dir %{_datadir}/%{name}/plugins/wmm_pi/data
-%config %{_datadir}/%{name}/plugins/wmm_pi/data/WMM.COF
-%{_datadir}/%{name}/plugins/wmm_pi/data/wmm_live.svg
-%{_datadir}/%{name}/plugins/wmm_pi/data/wmm_pi.svg
+%config %{_datadir}/%{name}/plugins/wmm_pi/data/*.COF
+%{_datadir}/%{name}/plugins/wmm_pi/data/*.svg
 
 
 

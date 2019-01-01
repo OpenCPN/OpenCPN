@@ -51,6 +51,11 @@
 #include "wx28compat.h"
 #include "cutil.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
+#endif
+
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
@@ -192,8 +197,10 @@ void ocpnDC::SetGLAttrs( bool highQuality )
 
  // Enable anti-aliased polys, at best quality
     if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLPolygonSmoothing )
+            glEnable( GL_POLYGON_SMOOTH );
         glEnable( GL_BLEND );
     } else {
         glDisable(GL_LINE_SMOOTH);
@@ -278,9 +285,14 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         float lrun = 0.;
         float xa = x1;
         float ya = y1;
-        float ldraw = t1 * dashes[0];
-        float lspace = t1 * dashes[1];
+        float ldraw = t1 * (unsigned char)dashes[0];
+        float lspace = t1 * (unsigned char)dashes[1];
 
+        if((ldraw < 0) || (lspace < 0)){
+            glEnd();
+            return;
+        }
+        
         while( lrun < lpix ) {
             //    Dash
             float xb = xa + ldraw * cosf( angle );
@@ -350,7 +362,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
 #ifndef __WXQT__
             glEnable( GL_BLEND );
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
 #endif            
 
             if( pen_width > 1.0 ) {
@@ -526,8 +539,6 @@ void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
 
     glEnd();
 
-    glPopAttrib();
-
     delete [] cpoints;
 
  #endif    
@@ -573,8 +584,9 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         } else {
 
             if( b_hiqual ) {
-                glEnable( GL_LINE_SMOOTH );
-                ;//                SetGLStipple(m_pen.GetStyle());
+                if( g_GLOptions.m_GLLineSmoothing )
+                    glEnable( GL_LINE_SMOOTH );
+                //                SetGLStipple(m_pen.GetStyle());
             }
 
             glBegin( GL_LINE_STRIP );
@@ -779,7 +791,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
 #endif        
 
         if( ConfigureBrush() ) {
-            glEnable( GL_POLYGON_SMOOTH );
+            if( g_GLOptions.m_GLPolygonSmoothing )
+                glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
@@ -788,7 +801,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         }
 
         if( ConfigurePen() ) {
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
@@ -906,7 +920,7 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
         }
 
         for( unsigned int i=0; i<gTesselatorVertices.Count(); i++ )
-            delete (GLvertex*)gTesselatorVertices.Item(i);
+            delete (GLvertex*)gTesselatorVertices[i];
         gTesselatorVertices.Clear();
     }
 #endif    
@@ -917,17 +931,17 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 #if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) {
         wxGraphicsPath gpath = pgc->CreatePath();
-        gpath.MoveToPoint( points[0].x + xoffset, points[0].y + yoffset );
+        gpath.MoveToPoint( points[0].x * scale + xoffset, points[0].y  * scale + yoffset );
         for( int i = 1; i < n; i++ )
-            gpath.AddLineToPoint( points[i].x + xoffset, points[i].y + yoffset );
-        gpath.AddLineToPoint( points[0].x + xoffset, points[0].y + yoffset );
+            gpath.AddLineToPoint( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
+        gpath.AddLineToPoint( points[0].x * scale + xoffset, points[0].y * scale + yoffset );
 
         pgc->SetPen( GetPen() );
         pgc->SetBrush( GetBrush() );
         pgc->DrawPath( gpath );
 
         for( int i = 0; i < n; i++ )
-            dc->CalcBoundingBox( points[i].x + xoffset, points[i].y + yoffset );
+            dc->CalcBoundingBox( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
     } else
 #endif
         DrawPolygon( n, points, xoffset, yoffset, scale );
@@ -964,22 +978,22 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
             unsigned char *d = image.GetData();
             unsigned char *a = image.GetAlpha();
 
-            unsigned char mr, mg, mb;
-            if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ){
-                printf("trying to use mask to draw a bitmap without alpha or mask\n" );
-            }
-
 #ifdef __WXOSX__            
             if(image.HasMask())
                 a=0;
 #endif
+            unsigned char mr, mg, mb;
+            if( !a && !image.GetOrFindMaskColour( &mr, &mg, &mb ) ){
+                printf("trying to use mask to draw a bitmap without alpha or mask\n" );
+            }
+
             
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
                         unsigned char r, g, b;
-                        int off = ( y * image.GetWidth() + x );
+                        int off = ( y * w + x );
                         r = d[off * 3 + 0];
                         g = d[off * 3 + 1];
                         b = d[off * 3 + 2];

@@ -143,7 +143,7 @@ void ChartSymbols::ProcessColorTables( pugi::xml_node &node )
                     
                 }
             
-next:           colorNode = colorNode.next_sibling();
+	            colorNode = colorNode.next_sibling();
             }
             
             colorTables->Add( (void *) colortable );
@@ -658,8 +658,8 @@ void ChartSymbols::BuildLookup( Lookup &lookup )
     while( index < pLUPARRAYtyped->GetCount() ) {
         LUPrec *pLUPCandidate = pLUPARRAYtyped->Item( index );
         if( LUP->RCID == pLUPCandidate->RCID ) {
-            plib->DestroyLUP( pLUPCandidate ); // empties the LUP
-            pLUPARRAYtyped->Remove( pLUPCandidate );
+            pLUPARRAYtyped->RemoveAt(index);
+            plib->DestroyLUP(pLUPCandidate); // empties the LUP
             break;
         }
         index++;
@@ -1272,6 +1272,8 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
 
             rasterSymbolsTextureSize = wxSize(w, h);
 
+            glDisable( GL_TEXTURE_2D );
+            
             free(e);
         } 
 #endif

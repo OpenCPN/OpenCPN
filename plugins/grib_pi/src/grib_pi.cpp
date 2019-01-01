@@ -73,12 +73,13 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_112(ppimgr)
+    :opencpn_plugin_116(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
+      m_GUIScaleFactor = -1.;
 }
 
 grib_pi::~grib_pi(void)
@@ -251,6 +252,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
+    Pref->m_cbDrawBarbedArrowHead->SetValue(m_bDrawBarbedArrowHead);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
@@ -261,8 +263,10 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
+         m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
+
           if( m_pGRIBOverlayFactory )
-              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
 
          int updatelevel = 0;
 
@@ -346,22 +350,29 @@ bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 
 void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
-	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient(position);
+    //  Use the application frame to bound the control bar position.
+    wxApp *app = wxTheApp;
+    
+    wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
+    if(!frame)
+        return;
+    
+    wxPoint p = frame->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
-		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
-	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
-		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
+    if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
+        p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
+    if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
+	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
-	dialog->Move(GetOCPNCanvasWindow()->ClientToScreen(p));
+    dialog->Move(frame->ClientToScreen(p));
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    if( !::wxIsBusy() ) ::wxBeginBusyCursor();
+    //if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
     bool starting = false;
 
@@ -372,6 +383,9 @@ void grib_pi::OnToolbarToolCallback(int id)
     {
         starting = true;
         long style = m_DialogStyle == ATTACHED_HAS_CAPTION ? wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU : wxBORDER_NONE|wxSYSTEM_MENU;
+#ifdef __WXOSX__
+        style |= wxSTAY_ON_TOP;
+#endif
         m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString, wxDefaultPosition,
                 wxDefaultSize, style, this);
 		m_pGribCtrlBar->SetScaledBitmap(scale_factor);
@@ -389,7 +403,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribCtrlBar );
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
         m_pGRIBOverlayFactory->SetParentSize( m_display_width, m_display_height);
-        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
 
         m_pGribCtrlBar->OpenFile( m_bLoadLastOpenFile == 0 );
 
@@ -404,27 +418,38 @@ void grib_pi::OnToolbarToolCallback(int id)
     if(m_bShowGrib) {
         if( starting ) {
             SetDialogFont( m_pGribCtrlBar );
-			m_GUIScaleFactor = scale_factor;
-			m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
+            m_GUIScaleFactor = scale_factor;
+            m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             m_pGribCtrlBar->Refresh();
         } else {
-			MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
+            MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
             if( m_DialogStyle >> 1 == SEPARATED ) {
-				MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
+                MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
-                }
+            }
         }
         m_pGribCtrlBar->Show();
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {
             if( m_pGribCtrlBar->m_bGRIBActiveFile->IsOK() ) {
                 ArrayOfGribRecordSets *rsa = m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
-                if(rsa->GetCount() > 1) SetCanvasContextMenuItemViz( m_MenuItem, true);
+                if(rsa->GetCount() > 1) {
+                    SetCanvasContextMenuItemViz( m_MenuItem, true);
+                }
+                if(rsa->GetCount() >= 1) { // XXX Should be only on Show
+                    SendTimelineMessage(m_pGribCtrlBar->TimelineTime());
+                }
             }
         }
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+        
+        // Do an automatic "zoom-to-center" on the overlay canvas
+        if( m_pGribCtrlBar ){
+           m_pGribCtrlBar->DoZoomToCenter();
+        }
+ 
         RequestRefresh(m_parent_window); // refresh main window
     } else
        m_pGribCtrlBar->Close();
@@ -532,6 +557,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     }
     if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
+        // local time
         SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime() : wxDateTime::Now());
     }
     if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
@@ -592,7 +618,8 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0 );
     pConf->Read ( _T("OpenFileOption" ), &m_bStartOptions, 1 );
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
-    pConf->Read ( _T( "GRIBUseGradualColors" ),     &m_bGRIBUseGradualColors, 0 );
+    pConf->Read ( _T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0 );
+    pConf->Read ( _T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1 );
 
     pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
@@ -629,6 +656,7 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
+    pConf->Write ( _T( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
 
     pConf->Write ( _T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x );
     pConf->Write ( _T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y );
@@ -657,13 +685,22 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
         return;
 
     wxJSONValue v;
-    v[_T("Day")] = time.GetDay();
-    v[_T("Month")] = time.GetMonth();
-    v[_T("Year")] = time.GetYear();
-    v[_T("Hour")] = time.GetHour();
-    v[_T("Minute")] = time.GetMinute();
-    v[_T("Second")] = time.GetSecond();
-
+    if (time.IsValid()) {
+        v[_T("Day")] = time.GetDay();
+        v[_T("Month")] = time.GetMonth();
+        v[_T("Year")] = time.GetYear();
+        v[_T("Hour")] = time.GetHour();
+        v[_T("Minute")] = time.GetMinute();
+        v[_T("Second")] = time.GetSecond();
+    }
+    else {
+        v[_T("Day")] = -1;
+        v[_T("Month")] = -1;
+        v[_T("Year")] = -1;
+        v[_T("Hour")] = -1;
+        v[_T("Minute")] = -1;
+        v[_T("Second")] = -1;
+    }
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);

@@ -350,4 +350,4 @@ LangString ^NameDA ${LANG_NORWEGIAN} "@CPACK_PACKAGE_NAME@ Versjon @CPACK_PACKAG
 LangString License_Message ${LANG_NORWEGIAN} "OpenCPN er en gratis programvare. Du er oppfordret og lovlig berettiget til å kopiere, reinstallere, modifisere og redistribuere dette programmet for deg selv og dine venner i henhold til reglene gitt i GPL. Seil trygt!"
 
 #LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_XP_SP_Version ${LANG_CZECH} "Din Windows XP service pakke er ikke støttet (den er for gammel)!$\r$\nDu må ha minst Windows XP SP3"
+LangString Installer_Unsupported_XP_SP_Version ${LANG_NORWEGIAN} "Din Windows XP service pakke er ikke støttet (den er for gammel)!$\r$\nDu må ha minst Windows XP SP3"

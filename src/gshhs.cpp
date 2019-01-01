@@ -58,12 +58,15 @@
 
 //typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
-extern wxString *pWorldMapLocation;
+extern wxString gWorldMapLocation;
 
 //-------------------------------------------------------------------------
 
 GSHHSChart::GSHHSChart() {
     reader = NULL;
+    land = wxColor( 250, 250, 250 );
+    water = wxColor( 0, 0, 0 );
+    
 }
 
 GSHHSChart::~GSHHSChart() {
@@ -92,18 +95,36 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
 
+void GSHHSChart::Reset() {
+    if( reader )
+        delete reader;
+    reader = NULL;
+    gshhsCrossesLandReset();
+}
+
+int GSHHSChart::GetMinAvailableQuality() {
+    if( !reader )
+        reader = new GshhsReader();
+    return reader->GetMinAvailableQuality();
+}
+
+int GSHHSChart::GetMaxAvailableQuality() {
+    if( !reader )
+        reader = new GshhsReader();
+    return reader->GetMaxAvailableQuality();
+}
 
 void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp )
 {
     if( ! reader ) {
         reader = new GshhsReader( );
-        if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 220 ) {
+        if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 240 ) {
             wxLogMessage( _T("GSHHS World chart files have wrong version. Found %d, expected 210-220."),
                     reader->GetPolyVersion() );
         } else {
             wxLogMessage(
                     _T("Background world map loaded from GSHHS datafiles found in: ") +
-                    *pWorldMapLocation );
+                    gWorldMapLocation );
         }
     }
 
@@ -242,7 +263,7 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
         for( v = 0; v < p->at( c ).size(); v++ ) {
             wxRealPoint &ccp = cp.at( v );
             wxPoint2DDouble q = GetDoublePixFromLL(vp, ccp.y, ccp.x + dx );
-            if(wxIsNaN(q.m_x)) {
+            if(std::isnan(q.m_x)) {
                 pointCount = 0;
                 break;
             }
@@ -555,6 +576,7 @@ GshhsPolyReader::GshhsPolyReader( int quality )
         }
     }
     currentQuality = -1;
+    polyHeader.version = -1;
     InitializeLoadQuality( quality );
 }
 
@@ -568,6 +590,10 @@ GshhsPolyReader::~GshhsPolyReader()
                 allCells[i][j] = NULL;
             }
         }
+    }
+
+    if (fpoly) {
+        fclose(fpoly);
     }
 }
 
@@ -610,7 +636,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
+static inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
 {
     double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
     double x3 = line2.m_p1.x, y3 = line2.m_p1.y, x4 = line2.m_p2.x, y4 = line2.m_p2.y;
@@ -620,15 +646,16 @@ inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
     double bx = x3 - x4, by = y3 - y4;
     double cx = x1 - x3, cy = y1 - y3;
 
+#  define INTER_LIMIT 1e-7
     double denominator = ay * bx - ax * by;
     if( denominator < 1e-10 ) {
-        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > 1e-5)
+        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > INTER_LIMIT)
+            return false; /* different intercepts, no intersection */
+        if(fabs((x1*ay - ax*y1)*by - (x3*by - bx*y3)*ay) > INTER_LIMIT)
             return false; /* different intercepts, no intersection */
 
         return true;
     }
-
-#  define INTER_LIMIT 1e-7
 
     const double reciprocal = 1 / denominator;
     const double na = ( by * cx - bx * cy ) * reciprocal;
@@ -796,11 +823,12 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         glEnableClientState(GL_VERTEX_ARRAY);
         
         // use a viewport that allows the vertexes to be reused over many frames
-        if(glChartCanvas::HasNormalizedViewPort(vp)) {
-            glPushMatrix();
-            glChartCanvas::MultMatrixViewPort(vp);
-            nvp = glChartCanvas::NormalizedViewPort(vp);
-        }
+        // TODO fix for multicanvas
+         if(glChartCanvas::HasNormalizedViewPort(vp)) {
+             glPushMatrix();
+             glChartCanvas::MultMatrixViewPort(vp);
+             nvp = glChartCanvas::NormalizedViewPort(vp);
+         }
     }
 #endif
     for( clon = clonmin; clon < clonmax; clon++ ) {
@@ -996,21 +1024,22 @@ GshhsPolygon::~GshhsPolygon()
 
 GshhsReader::GshhsReader( )
 {
-    int maxQualityAvailable = -1;
-    int minQualityAvailable = -1;
+    maxQualityAvailable = -1;
+    minQualityAvailable = -1;
 
     for( int i=0; i<5; i++ ) {
         qualityAvailable[i] = false;
         if( GshhsReader::gshhsFilesExists( i ) ) {
             qualityAvailable[i] = true;
-            if( minQualityAvailable < 0 ) minQualityAvailable = i;
+            if( minQualityAvailable < 0 )
+                minQualityAvailable = i;
             maxQualityAvailable = i;
         }
     }
 
     if( maxQualityAvailable < 0 ) {
         wxString msg( _T("Unable to initialize background world map. No GSHHS datafiles found in ") );
-        msg += *pWorldMapLocation;
+        msg += gWorldMapLocation;
         wxLogMessage( msg );
     }
 
@@ -1097,21 +1126,21 @@ wxString GshhsReader::getNameExtension( int quality )
 wxString GshhsReader::getFileName_Land( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("poly-%c-1.dat"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("poly-%c-1.dat"), ext.GetChar(0) );
     return fname;
 }
 
 wxString GshhsReader::getFileName_boundaries( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("wdb_borders_%c.b"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("wdb_borders_%c.b"), ext.GetChar(0) );
     return fname;
 }
 
 wxString GshhsReader::getFileName_rivers( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("wdb_rivers_%c.b"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("wdb_rivers_%c.b"), ext.GetChar(0) );
     return fname;
 }
 
@@ -1119,8 +1148,8 @@ wxString GshhsReader::getFileName_rivers( int quality )
 bool GshhsReader::gshhsFilesExists( int quality )
 {
     if( ! wxFile::Access( GshhsReader::getFileName_Land( quality ), wxFile::read ) ) return false;
-    if( ! wxFile::Access( GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return false;
-    if( ! wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read ) ) return false;
+    //Borders disabled anyway since the perf optimizations if( ! wxFile::Access( GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return false;
+    //Rivers disabled anyway since the perf optimizations if( ! wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read ) ) return false;
 
     return true;
 }
@@ -1325,11 +1354,13 @@ int GshhsReader::selectBestQuality( ViewPort &vp )
 {
     int bestQuality = 0;
 
-         if(vp.chart_scale <   500000) bestQuality = 4;
-    else if(vp.chart_scale <  2000000) bestQuality = 3;
-    else if(vp.chart_scale <  8000000) bestQuality = 2;
-    else if(vp.chart_scale < 20000000) bestQuality = 1;
-    else bestQuality = 0;
+         if(vp.chart_scale <   500000 && qualityAvailable[4]) bestQuality = 4;
+    else if(vp.chart_scale <  2000000 && qualityAvailable[3]) bestQuality = 3;
+    else if(vp.chart_scale <  8000000 && qualityAvailable[2]) bestQuality = 2;
+    else if(vp.chart_scale < 20000000 && qualityAvailable[1]) bestQuality = 1;
+    else if(qualityAvailable[0]) bestQuality = 0;
+    else while( !qualityAvailable[bestQuality] && bestQuality <= 4 ) //Find the worst quality actually available and use that (normally we would use crude, but it is missing)
+             bestQuality++;
 
     while( !qualityAvailable[bestQuality] ) {
         bestQuality--;
@@ -1348,17 +1379,28 @@ int GshhsReader::selectBestQuality( ViewPort &vp )
 static GshhsReader *reader = NULL;
 void gshhsCrossesLandInit()
 {
-    reader = new GshhsReader();
-
+    if( ! reader ) {
+        reader = new GshhsReader();
+    }
     /* load best possible quality for crossing tests */
     int bestQuality = 4;
     while( !reader->qualityAvailable[bestQuality] && bestQuality > 0)
         bestQuality--;
     reader->LoadQuality(bestQuality);
+    wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.", bestQuality);
+}
+
+void gshhsCrossesLandReset() {
+    if( reader )
+        delete reader;
+    reader = NULL;
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
 {
+    if( ! reader ) {
+        gshhsCrossesLandInit();
+    }
     if(lon1 < 0)
         lon1 += 360;
     if(lon2 < 0)

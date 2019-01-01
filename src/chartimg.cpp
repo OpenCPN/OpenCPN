@@ -206,6 +206,16 @@ ChartBase::~ChartBase()
       free( m_pNoCOVRTablePoints );
 
 }
+
+wxString ChartBase::GetHashKey() const
+{
+    wxString key = GetFullPath();
+    wxChar separator = wxFileName::GetPathSeparator();
+    for(unsigned int pos = 0; pos < key.size(); pos = key.find(separator, pos))
+        key.replace(pos, 1, _T("!"));
+    return key;
+}
+
 /*
 int ChartBase::Continue_BackgroundHiDefRender(void)
 {
@@ -573,15 +583,10 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
       pBitmapFilePath->Prepend(Path);
 
       wxFileName NOS_filename(*pBitmapFilePath);
-      if(NOS_filename.FileExists())
+      if(! NOS_filename.FileExists())
       {
-            ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
-            ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
-      }
 //    File as fetched verbatim from the .geo file doesn't exist.
 //    Try all possible upper/lower cases
-      else
-      {
 //    Extract the filename and extension
             wxString fname(NOS_filename.GetName());
             wxString fext(NOS_filename.GetExt());
@@ -628,7 +633,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 
             for(ifile = 0 ; ifile < nfiles ; ifile++)
             {
-                wxString file_up = file_array.Item(ifile);
+                wxString file_up = file_array[ifile];
                 file_up.MakeUpper();
 
                 wxString target_up = *pBitmapFilePath;
@@ -637,7 +642,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
                 if(file_up.IsSameAs( target_up))
                 {
                     NOS_filename.Clear();
-                    NOS_filename.Assign(file_array.Item(ifile));
+                    NOS_filename.Assign(file_array[ifile]);
                     goto found_uclc_file;
                 }
 
@@ -650,17 +655,10 @@ found_uclc_file:
 
             delete pBitmapFilePath;                   // fix up the member element
             pBitmapFilePath = new wxString(NOS_filename.GetFullPath());
-            ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
-            ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
 
-      }           //else
-
-
-      if(ifs_bitmap == NULL)
-      {
-          free(pPlyTable);
-          return INIT_FAIL_REMOVE;
       }
+      ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
+      ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
 
       if(!ifss_bitmap->IsOk())
       {
@@ -728,7 +726,7 @@ found_uclc_file:
 
 
 //    Validate some of the header data
-      if((Size_X == 0) || (Size_Y == 0))
+      if( Size_X <= 0 || Size_Y <= 0 )
       {
           free(pPlyTable);
           return INIT_FAIL_REMOVE;
@@ -804,6 +802,12 @@ found_uclc_file:
 
 //    Read the Color table bit size
       nColorSize = ifs_bitmap->GetC();
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+            wxString msg(_("   Invalid nColorSize data, corrupt on chart "));
+            msg.Append(m_FullPath);
+            wxLogMessage(msg);
+            return INIT_FAIL_REMOVE;
+      }
 
 
 //    Perform common post-init actions in ChartBaseBSB
@@ -1064,7 +1068,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                     bp_set = true;
                               }
 
-                              if(stru.Matches(_T("*POLYCONIC*")))
+                              if(stru.Matches(_T("*CONIC*")))
                               {
                                     m_projection = PROJECTION_POLYCONIC;
                                     bp_set = true;
@@ -1090,7 +1094,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                   msg += _T(" which is unsupported.  Disabling chart ");
                                   msg += m_FullPath;
                                   wxLogMessage(msg);
-
+                                  free(pPlyTable);
                                   return INIT_FAIL_REMOVE;
                               }
                         }
@@ -1110,11 +1114,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               sscanf(&buffer[i], "%f,", &x);
                               m_dy = x;
                         }
-
-
                  }
             }
-
 
             else if (!strncmp(buffer, "RGB", 3))
                   CreatePaletteEntry(buffer, COLOR_RGB_DEFAULT);
@@ -1139,7 +1140,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
             else if (!strncmp(buffer, "PRG", 3))
                   CreatePaletteEntry(buffer, PRG);
-
 
             else if (!strncmp(buffer, "REF", 3))
             {
@@ -1288,7 +1288,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             {
                   int i;
                   float ltp,lnp;
-                  sscanf(&buffer[4], "%d,%f,%f", &i, &ltp, &lnp);
+                  if (sscanf(&buffer[4], "%d,%f,%f", &i, &ltp, &lnp) != 3) {
+                      free(pPlyTable);
+                      return INIT_FAIL_REMOVE;
+                  }
                   Plypoint *tmp = pPlyTable;
                   pPlyTable = (Plypoint *)realloc(pPlyTable, sizeof(Plypoint) * (nPlypoint+1));
                   if (NULL == pPlyTable)
@@ -1300,6 +1303,11 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                       pPlyTable[nPlypoint].ltp = ltp;
                       pPlyTable[nPlypoint].lnp = lnp;
                       nPlypoint++;
+                  }
+                  if (NULL == pPlyTable || nPlypoint > 1000000) {
+                      // arbitrary 8MB for pPlyTable 
+                      nPlypoint = 0;
+                      break;
                   }
             }
 
@@ -1317,6 +1325,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                               char date_string[40];
                               char date_buf[10];
+                              date_string[0] = 0;
+                              date_buf[0] = 0;
                               sscanf(&buffer[i], "%s\r\n", date_string);
                               wxString date_wxstr(date_string,  wxConvUTF8);
 
@@ -1359,8 +1369,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                   }
             }
-
-      }
+      } // while
 
       //    Some charts improperly encode the DTM parameters.
       //    Identify them as necessary, for further processing
@@ -1389,7 +1398,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             
 
 //    Validate some of the header data
-      if((Size_X == 0) || (Size_Y == 0))
+      if( Size_X <= 0 || Size_Y <= 0 )
       {
           free(pPlyTable);
           return INIT_FAIL_REMOVE;
@@ -1397,7 +1406,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       if(nPlypoint < 3)
       {
-            wxString msg(_("   Chart File contains less than 3 PLY points: "));
+            wxString msg(_("   Chart File contains less than 3 or too many PLY points: "));
             msg.Append(m_FullPath);
             wxLogMessage(msg);
             free(pPlyTable);
@@ -1492,14 +1501,84 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       }
 
 //    Convert captured plypoint information into chart COVR structures
-      m_nCOVREntries = 1;
-      m_pCOVRTablePoints = (int *)malloc(sizeof(int));
-      *m_pCOVRTablePoints = nPlypoint;
-      m_pCOVRTable = (float **)malloc(sizeof(float *));
-      *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
-      memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
-      free(pPlyTable);
+ 
+     // A special-case test for poorly formatted charts
+     //  We look for cases where the declared PlyPoints are far outside of the chart raster bitmap
+     //  If found, we change the COVR region to the valid bitmap region, instead of the default PlyPoints region
+      // Set a tentative lat/lon range.
+      m_LonMax = -360.;
+      m_LonMin = 360.;
+      for(int i=0; i < nPlypoint; i++){
+          m_LonMin  = wxMin(m_LonMin, pPlyTable[i].lnp);
+          m_LonMax  = wxMax(m_LonMax, pPlyTable[i].lnp);
+      }
+      // This test does not really work for charts that cross IDL
+      bool b_test = true;
+      bool b_adjusted = false;
+      if(m_LonMax * m_LonMin < 0){
+          if((m_LonMax - m_LonMin) > 180.)
+            b_test = false;
+      }
 
+      if(b_test){
+        if(!bHaveEmbeddedGeoref){
+            //   Analyze Refpoints early because we might need georef coefficient here.
+            AnalyzeRefpoints( false );              // no post test needed
+        }
+
+        
+        bool bAdjustPly = false;
+        wxRect bitRect(0, 0, Size_X, Size_Y);
+        bitRect.Inflate(5);               // allow for a little roundoff error
+        for(int i=0; i < nPlypoint; i++){
+            double pix_x, pix_y;
+            latlong_to_chartpix(pPlyTable[i].ltp, pPlyTable[i].lnp, pix_x, pix_y);
+            if(!bitRect.Contains(pix_x, pix_y)){
+                bAdjustPly = true;
+                if(m_b_cdebug)printf("Adjusting COVR region on: %s\n", name.ToUTF8().data());
+                break;
+            }
+        }
+
+        if(bAdjustPly){
+            float *points = new float[2*nPlypoint];
+            for(int i=0; i<nPlypoint; i++)
+                points[2*i+0] = pPlyTable[i].ltp, points[2*i+1] = pPlyTable[i].lnp;
+            LLRegion covrRegion(nPlypoint, points);
+            delete [] points;
+            covrRegion.Intersect(GetValidRegion());
+
+            if(covrRegion.contours.size()){   // Check for no intersection caused by bogus georef....
+                m_nCOVREntries = covrRegion.contours.size();
+                m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
+                m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
+                std::list<poly_contour>::iterator it = covrRegion.contours.begin();
+                for(int i=0; i<m_nCOVREntries; i++) {
+                    m_pCOVRTablePoints[i] = it->size();
+                    m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
+                    std::list<contour_pt>::iterator jt = it->begin();
+                    for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
+                        m_pCOVRTable[i][2*j+0] = jt->y;
+                        m_pCOVRTable[i][2*j+1] = jt->x;
+                        jt++;
+                    }
+                    it++;
+                }
+                b_adjusted = true;
+            }
+        }
+      }
+      
+      if(!b_adjusted){
+        m_nCOVREntries = 1;
+        m_pCOVRTablePoints = (int *)malloc(sizeof(int));
+        *m_pCOVRTablePoints = nPlypoint;
+        m_pCOVRTable = (float **)malloc(sizeof(float *));
+        *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
+        memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
+      }
+       
+      free(pPlyTable);
 
       //    Setup the datum transform parameters
       char d_str[100];
@@ -1583,9 +1662,14 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             return INIT_FAIL_REMOVE;
       }
 
-
 //    Read the Color table bit size
       nColorSize = ifs_hdr->GetC();
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+            wxString msg(_("   Invalid nColorSize data, corrupt on chart "));
+            msg.Append(m_FullPath);
+            wxLogMessage(msg);
+            return INIT_FAIL_REMOVE;
+      }
 
       nFileOffsetDataStart = ifs_hdr->TellI();
       delete ifs_hdr;
@@ -1607,8 +1691,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       InitReturn pi_ret = PostInit();
       if( pi_ret  != INIT_OK)
             return pi_ret;
-      else
-            return INIT_OK;
+      return INIT_OK;
 }
 
 
@@ -1885,6 +1968,21 @@ void ChartBaseBSB::CreatePaletteEntry(char *buffer, int palette_index)
 
 InitReturn ChartBaseBSB::PostInit(void)
 {
+      // catch undefined shift if not already done in derived classes
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+         wxString msg(_("   Invalid nColorSize data, corrupt in PostInit() on chart "));
+         msg.Append(m_FullPath);
+         wxLogMessage(msg);
+         return INIT_FAIL_REMOVE;
+      }
+
+      if (Size_X <= 0 || Size_X > INT_MAX / 4 ||  Size_Y <= 0 || Size_Y -1 > INT_MAX / 4) {
+         wxString msg(_("   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart "));
+         msg.Append(m_FullPath);
+         wxLogMessage(msg);
+         return INIT_FAIL_REMOVE;
+      }
+
      //    Validate the palette array, substituting DEFAULT for missing entries
      int nfwd_def = 1;
      int nrev_def = 1;
@@ -2364,7 +2462,7 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
       int divx = wxMax(1, Size_X / (4 * tnx) );
       int divy = wxMax(1, Size_Y / (4 * tny) );
 
-      int div_factor = __min(divx, divy);
+      int div_factor = std::min(divx, divy);
 
       int des_width = Size_X / div_factor;
       int des_height = Size_Y / div_factor;
@@ -2475,7 +2573,7 @@ ThumbData *ChartBaseBSB::GetThumbData(int tnx, int tny, float lat, float lon)
       int divx = Size_X / tnx;
       int divy = Size_Y / tny;
 
-      int div_factor = __min(divx, divy);
+      int div_factor = std::min(divx, divy);
 
       double pixx, pixy;
 
@@ -2507,7 +2605,7 @@ bool ChartBaseBSB::UpdateThumbData(double lat, double lon)
     int divx = Size_X / pThumbData->Thumb_Size_X;
     int divy = Size_Y / pThumbData->Thumb_Size_Y;
 
-    int div_factor = __min(divx, divy);
+    int div_factor = std::min(divx, divy);
 
     double pixx_test, pixy_test;
 
@@ -3654,6 +3752,7 @@ wxImage *ChartBaseBSB::GetImage()
 
 bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type )
 {
+      assert(pPixCache != 0);
 //      PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
 //    Get and Rescale the data directly into the temporary PixelCache data buffer
@@ -4435,57 +4534,6 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
           pt->bValid = true;
       }
 
-#if 0
-      //    Here is some test code, using full RGB line buffers in LineCache
-      //    instead of pallete dereferencing for every access....
-      //    Uses lots of memory, needs ColorScheme considerations
-      if(pt->pRGB == NULL)
-      {
-            pt->pRGB = (unsigned char *)malloc(Size_X * BPP/8);
-
-            ix = 0;
-            unsigned char *prgb = pt->pRGB;           // destination
-            unsigned char *pCL = xtemp_line;          // line of pallet pointers
-
-            while(ix < Size_X-1)
-            {
-                  unsigned char cur_by = *pCL;
-                  rgbval = (int)(pPalette[cur_by]);
-                  while((ix < Size_X-1))
-                  {
-                        if(cur_by != *pCL)
-                              break;
-                        *((int *)prgb) = rgbval;
-                        prgb += BPP/8 ;
-                        pCL ++;
-                        ix  ++;
-                  }
-
-                  // Get the last pixel explicitely
-
-                  unsigned char *pCLast = xtemp_line + (Size_X - 1);
-                  unsigned char *prgb_last = pt->pRGB + ((Size_X - 1)) * BPP/8;
-
-                  rgbval = (int)(pPalette[*pCLast]);        // last pixel
-                  unsigned char a = rgbval & 0xff;
-                  *prgb_last++ = a;
-                  a = (rgbval >> 8) & 0xff;
-                  *prgb_last++ = a;
-                  a = (rgbval >> 16) & 0xff;
-                  *prgb_last = a;
-
-            }
-      }
-
-      if(pt->pRGB)
-      {
-            unsigned char *ps = pt->pRGB + (xs * BPP/8);
-            int len = wxMin((xl - xs), (Size_X - xs));
-            memmove(pLineBuf, ps, len * BPP/8);
-            return 1;
-      }
-#endif
-
 //          Line is valid, de-reference thru proper pallete directly to target
 
       if(xl > Size_X)
@@ -4668,16 +4716,6 @@ nocachestart:
                   }
               }
           }
-#if 0
-          else {
-              int dest_inc_val_bytes = (BPP/8) * sub_samp;
-              for(;i<nRunCount; i+=sub_samp) {
-                  *(uint32_t*)prgb = rgbval;
-                  prgb+=dest_inc_val_bytes ;
-              }
-              i -= nRunCount;
-          }
-#endif
 
           ix += nRunCount;
       }

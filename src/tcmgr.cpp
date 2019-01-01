@@ -729,10 +729,10 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 
     for(unsigned int i=0 ; i < sources.GetCount() ; i++) {
         TCDataSource *s = new TCDataSource;
-        TC_Error_Code r = s->LoadData(sources.Item(i));
+        TC_Error_Code r = s->LoadData(sources[i]);
         if(r != TC_NO_ERROR) {
             wxString msg;
-            msg.Printf(_T("   Error loading Tide/Currect data source %s "), sources.Item(i).c_str());
+            msg.Printf(_T("   Error loading Tide/Currect data source %s "), sources[i].c_str());
             if( r == TC_FILE_NOT_FOUND)
                 msg += _T("Error Code: TC_FILE_NOT_FOUND");
             else {
@@ -767,7 +767,7 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 const IDX_entry *TCMgr::GetIDX_entry(int index) const
 {
     if((unsigned int)index < m_Combined_IDX_array.GetCount())
-        return &m_Combined_IDX_array.Item(index);
+        return &m_Combined_IDX_array[index];
     else
         return NULL;
 }
@@ -780,7 +780,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
     tcvalue = 0;
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );    // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];    // point to the index entry
 
     if( !pIDX ) {
         dir = 0;
@@ -817,10 +817,12 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
     return(true); // Got it!
 }
 
-bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bool &bnew_val)
+extern wxDateTime gTimeSource;
+
+bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float& dir, bool &bnew_val)
 {
     int ret;
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX ) {
         dir = 0;
@@ -829,7 +831,9 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
     }
 
     //    Figure out this computer timezone minute offset
-    wxDateTime this_now = wxDateTime::Now();
+    wxDateTime this_now = gTimeSource; // wxDateTime::Now();
+    if (this_now.IsValid() == false)
+        this_now = wxDateTime::Now();
     wxDateTime this_gmt = this_now.ToGMT();
     wxTimeSpan diff = this_gmt.Subtract(this_now);
     int diff_mins = diff.GetMinutes();
@@ -839,7 +843,8 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
         station_offset += 60;
     int corr_mins = station_offset - diff_mins;
 
-    wxDateTime today_00 = wxDateTime::Today();
+    wxDateTime today_00 = this_now;
+    today_00.ResetTime();
     int t_today_00 = today_00.GetTicks();
     int t_today_00_at_station = t_today_00 - (corr_mins * 60);
 
@@ -898,7 +903,7 @@ bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
 
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX )
         return false;
@@ -932,7 +937,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     tctime = t;
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX )
         return;
@@ -944,6 +949,19 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
         if(pIDX->pDataSource->LoadHarmonicData(pIDX) != TC_NO_ERROR)
             return;
     }
+
+    // Is the cache data reasonably fresh?
+    if( abs(t - pIDX->recent_highlow_calc_time) < 60){
+        if(w_t){
+            tcvalue = pIDX->recent_high_level;
+            tctime = pIDX->recent_high_time;
+        }else{
+            tcvalue = pIDX->recent_low_level;
+            tctime = pIDX->recent_low_time;
+        }
+        return;
+    }
+
 
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
     int yott = yearoftimet( t );
@@ -972,6 +990,18 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     }
     tcvalue = newval;
     tctime = ttt + sch_step_2 ;
+    
+    // Cache the data
+    pIDX->recent_highlow_calc_time = t;
+    if(w_t){
+        pIDX->recent_high_level = newval;
+        pIDX->recent_high_time = tctime;
+    }
+    else{
+        pIDX->recent_low_level = newval;
+        pIDX->recent_low_time = tctime;
+    }
+        
 
 }
 
@@ -1457,16 +1487,6 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
   require_expr = (int)(expr); \
   assert (require_expr);      \
 }
-#endif
-
-#if 0
-#ifdef NDEBUG
-#ifdef USE_PRAGMA_MESSAGE
-#pragma message("WARNING:  NDEBUG is defined.  This configuration is unsupported and discouraged.")
-#else
-#warning NDEBUG is defined.  This configuration is unsupported and discouraged.
-#endif
-#endif
 #endif
 
 #include <stdio.h>
