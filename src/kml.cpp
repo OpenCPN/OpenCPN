@@ -43,6 +43,8 @@
 #include "tinyxml.h"
 #include "kml.h"
 #include "Track.h"
+#include "Route.h"
+#include "chart1.h"
 
 extern MyFrame *gFrame;
 extern double gLat;

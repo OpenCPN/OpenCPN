@@ -1374,6 +1374,11 @@ SET(SRCS
         src/FlexHash.cpp
         src/iENCToolbar.cpp
         src/mbtiles.cpp
+        src/ConfigMgr.cpp
+        src/CanvasOptions.cpp
+        src/MUIBar.cpp
+        src/OCPN_AUIManager.cpp
+        src/CanvasConfig.cpp
 )
 IF(APPLE)
   SET(SRCS ${SRCS}
@@ -1922,6 +1927,12 @@ IF(APPLE)
              ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
   ENDFOREACH (_currentSoundFile )
 
+  FILE(GLOB CONFIG_FILES ${CMAKE_SOURCE_DIR}/data/configs/*)
+  FOREACH (_currentConfigFile ${CONFIG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+           ${_currentConfigFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/configs )
+  ENDFOREACH (_currentConfigFile )
+
   IF(OCPN_USE_SVG)
     #Traditional theme SVG icons
     FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/traditional/*")
@@ -1944,6 +1955,13 @@ IF(APPLE)
               ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
     ENDFOREACH ()
 
+    #MUI_flat theme SVG icons
+    FILE(GLOB MUI_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/MUI_flat/*")
+    FOREACH (_currentSvgFile ${MUI_FLAT_SVG_FILES})
+      SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/MUI_flat )
+    ENDFOREACH (_currentSvgFile )
+
     #Default SVG Icons
     FILE(GLOB DEFAULT_ICON_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/markicons/*")
     FOREACH (_currentSvgFile ${DEFAULT_ICON_SVG_FILES})
@@ -1953,6 +1971,8 @@ IF(APPLE)
   ENDIF(OCPN_USE_SVG)
 
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
+  
+  INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
 
   SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
@@ -2013,7 +2033,9 @@ IF(APPLE)
         ${JOURNEYMAN_SVG_FILES}
         ${JOURNEYMAN_FLAT_SVG_FILES}
         ${DEFAULT_ICON_SVG_FILES}
+        ${MUI_FLAT_SVG_FILES}
         ${DOC_FILES}
+        ${CONFIG_FILES}
         )
 
     INSTALL(TARGETS
@@ -2039,7 +2061,6 @@ IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
           ${SRC_NMEA0183}
           ${SRC_S57ENC}
-          # ${SRC_GARMINHOST}
           ${SRC_TEXCMP}
           ${SRC_MIPMAP}
           ${SRC_SYMBOLS}
@@ -2164,6 +2185,7 @@ IF(NOT APPLE)
     INSTALL(DIRECTORY data/svg/traditional/ DESTINATION ${PREFIX_PKGDATA}/uidata/traditional)
     INSTALL(DIRECTORY data/svg/journeyman/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman)
     INSTALL(DIRECTORY data/svg/journeyman_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman_flat)
+    INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
   ENDIF(OCPN_USE_SVG)
 
   IF (USE_S57)

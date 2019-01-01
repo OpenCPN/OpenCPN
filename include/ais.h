@@ -61,6 +61,8 @@
 #define TIMER_AIS_MSEC      998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
+#define AIS_TARGETDATA_MAX_CANVAS 6
+
 enum {
     tlTRK = 0,
     tlNAME,
@@ -230,7 +232,7 @@ wxString ais_get_short_type(int index);
 
 void AISDrawAreaNotices (ocpnDC& dc, ViewPort &vp, ChartCanvas *cp );
 void AISDraw(ocpnDC& dc, ViewPort &vp, ChartCanvas *cp );
-bool AnyAISTargetsOnscreen( ViewPort &vp );
+bool AnyAISTargetsOnscreen( ChartCanvas *cc, ViewPort &vp );
 
 
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );

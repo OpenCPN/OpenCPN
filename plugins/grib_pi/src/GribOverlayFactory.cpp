@@ -2155,7 +2155,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         int w, h;
         dc.GetMultiLineTextExtent( msg, &w, &h );
         h += 2;
-        int yp = y - ( GetChartbarHeight() + h );
+        int yp = y - ( 2 * GetChartbarHeight() + h );
 
         int label_offset = 10;
         int wdraw = w + ( label_offset * 2 );
@@ -2167,7 +2167,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         int w, h;
         m_TexFontMessage.GetTextExtent( msg, &w, &h);
         h += 2;
-        int yp = y - ( GetChartbarHeight() + h );
+        int yp = y - ( 2 * GetChartbarHeight() + h );
 
         glColor3ub( 243, 229, 47 );
 

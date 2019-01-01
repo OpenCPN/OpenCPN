@@ -82,7 +82,8 @@ public:
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
-
+      void RemovePointFromRoute( RoutePoint* point, Route* route, ChartCanvas *cc );
+          
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);

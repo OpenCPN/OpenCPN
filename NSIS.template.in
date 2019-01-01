@@ -707,9 +707,9 @@ CMake variables
 Section "-Topmost Section" SecTopmost ;# this needs to be always the first section to be executed!
 	SetShellVarContext all
 	SetOutPath $INSTDIR
-!ifndef NSIS_PACKEDVERSION
-    LogSet on
-!endif
+;!ifndef NSIS_PACKEDVERSION
+;    LogSet on
+;!endif
 	${If} $INSTALL_TYPE == 1
 	${OrIf} $INSTALL_TYPE == 2
 	${OrIf} $INSTALL_TYPE == 3

@@ -36,7 +36,7 @@ Layer::Layer( void )
     m_bIsVisibleOnListing = false;
     m_bHasVisibleNames = true;
     m_NoOfItems = 0;
-
+    m_LayerType = _T("");
     m_LayerName = _T("");
     m_LayerFileName = _T("");
     m_LayerDescription = _T("");

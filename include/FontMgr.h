@@ -61,7 +61,8 @@ class FontMgr
         void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
         bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
         void ScrubList( );
-
+        MyFontDesc *FindFontByConfigString( wxString pConfigString );
+        
         wxFont* FindOrCreateFont( int point_size, wxFontFamily family, 
                     wxFontStyle style, wxFontWeight weight, bool underline = false,
                     const wxString &facename = wxEmptyString,

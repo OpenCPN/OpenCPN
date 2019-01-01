@@ -60,6 +60,7 @@
 #include "pluginmanager.h"                      // for S57 lights overlay
 
 #include "Osenc.h"
+#include "chcanv.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -104,8 +105,6 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
-extern ChartCanvas       *cc1;
-extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
@@ -264,6 +263,7 @@ s57chart::s57chart()
     m_line_vertex_buffer = 0;
     m_this_chart_context =  0;
     m_Chart_Skew = 0;
+    m_vbo_byte_length = 0;
 
 }
 
@@ -1021,8 +1021,6 @@ void s57chart::AssembleLineGeometry( void )
     std::vector<segment_pair> connector_segment_vector;
     size_t seg_pair_index = 0;
 
-
-
     //  Get the end node connected segments.  To do this, we
     //  walk the Feature array and process each feature that potentially has a LINE type element
     for( int i = 0; i < PRIO_NUM; ++i ) {
@@ -1030,204 +1028,81 @@ void s57chart::AssembleLineGeometry( void )
             ObjRazRules *top = razRules[i][j];
             while( top != NULL ) {
                 S57Obj *obj = top->obj;
-                if(obj->Index == 5601)
-                    int yyp = 3;
 
-                line_segment_element list_top;
-                list_top.next = 0;
+                if( (!obj->m_ls_list) && (obj->m_n_lsindex) )     // object has not been processed yet
+                {
+                    line_segment_element list_top;
+                    list_top.next = 0;
 
-                line_segment_element *le_current = &list_top;
+                    line_segment_element *le_current = &list_top;
 
-                for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
+                    for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
 
-                    if(!obj->m_lsindex_array)
-                        continue;
+                        if(!obj->m_lsindex_array)
+                            continue;
+                        
+                        int seg_index = iseg * 3;
+                        int *index_run = &obj->m_lsindex_array[seg_index];
 
-                    int seg_index = iseg * 3;
-                    int *index_run = &obj->m_lsindex_array[seg_index];
+                        //  Get first connected node
+                        unsigned int inode = *index_run++;
 
-                    //  Get first connected node
-                    unsigned int inode = *index_run++;
-
-                    //  Get the edge
-                    bool edge_dir = true;
-                    int venode = *index_run++;
-                    if(venode < 0){
-                        venode = -venode;
-                        edge_dir = false;
-                    }
-
-                    VE_Element *pedge = 0;
-                    if(venode){
-                        if(m_ve_hash.find(venode) != m_ve_hash.end())
-                            pedge = m_ve_hash[venode];
-                    }
-
-                    //  Get end connected node
-                    unsigned int enode = *index_run++;
-
-                    //  Get first connected node
-                    VC_Element *ipnode = 0;
-                    ipnode = m_vc_hash[inode];
-
-                    //  Get end connected node
-                    VC_Element *epnode = 0;
-                    epnode = m_vc_hash[enode];
-
-
-                    if( ipnode ) {
-                        if(pedge && pedge->nCount)
-                        {
-
-                            //      The initial node exists and connects to the start of an edge
-
-                            long long key = ((unsigned long long)inode << 32) + venode;
-                            
-                            connector_segment *pcs = NULL;
-                            csit = ce_connector_hash.find( key );
-                            if( csit == ce_connector_hash.end() ){
-                                ndelta += 2;
-                                pcs = new connector_segment;
-                                ce_connector_hash[key] = pcs;
-
-                                // capture and store geometry
-                                segment_pair pair;
-                                float *ppt = ipnode->pPoint;
-                                pair.e0 = *ppt++;
-                                pair.n0 = *ppt;
-
-                                if(edge_dir){
-                                    pair.e1 = pedge->pPoints[ 0 ];
-                                    pair.n1 = pedge->pPoints[ 1 ];
-                                }
-                                else{
-                                    int last_point_index = (pedge->nCount -1) * 2;
-                                    pair.e1 = pedge->pPoints[ last_point_index ];
-                                    pair.n1 = pedge->pPoints[ last_point_index + 1 ];
-                                }
-
-                                connector_segment_vector.push_back(pair);
-                                pcs->vbo_offset = seg_pair_index;               // use temporarily
-                                seg_pair_index ++;
-
-                                // calculate the centroid of this connector segment, used for viz testing
-                                double lat, lon;
-                                fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
-                                pcs->cs_lat_avg = lat;
-                                pcs->cs_lon_avg = lon;
-
-                            }
-                            else
-                                pcs = csit->second;
-
-
-                            line_segment_element *pls = new line_segment_element;
-                            pls->next = 0;
-                            //                            pls->n_points = 2;
-                            pls->priority = 0;
-                            pls->pcs = pcs;
-                            pls->ls_type = TYPE_CE;
-
-                            le_current->next = pls;             // hook it up
-                            le_current = pls;
-
+                        //  Get the edge
+                        bool edge_dir = true;
+                        int venode = *index_run++;
+                        if(venode < 0){
+                            venode = -venode;
+                            edge_dir = false;
                         }
-                    }
 
-                    if(pedge && pedge->nCount){
-                        line_segment_element *pls = new line_segment_element;
-                        pls->next = 0;
-                        //                        pls->n_points = pedge->nCount;
-                        pls->priority = 0;
-                        pls->pedge = pedge;
-                        pls->ls_type = TYPE_EE;
-                        if( !edge_dir )
-                              pls->ls_type = TYPE_EE_REV;
-                              
+                        VE_Element *pedge = 0;
+                        if(venode){
+                            if(m_ve_hash.find(venode) != m_ve_hash.end())
+                                pedge = m_ve_hash[venode];
+                        }
 
-                        le_current->next = pls;             // hook it up
-                        le_current = pls;
+                        //  Get end connected node
+                        unsigned int enode = *index_run++;
 
-                    }   //pedge
+                        //  Get first connected node
+                        VC_Element *ipnode = 0;
+                        ipnode = m_vc_hash[inode];
 
-                    // end node
-                    if( epnode ) {
+                        //  Get end connected node
+                        VC_Element *epnode = 0;
+                        epnode = m_vc_hash[enode];
 
-                        if(ipnode){
-                            if(pedge && pedge->nCount){
 
-                                long long key = ((unsigned long long)venode << 32) + enode;
+                        if( ipnode ) {
+                            if(pedge && pedge->nCount)
+                            {
+
+                                //      The initial node exists and connects to the start of an edge
+
+                                long long key = ((unsigned long long)inode << 32) + venode;
                                 
                                 connector_segment *pcs = NULL;
-                                csit = ec_connector_hash.find( key );
-                                if( csit == ec_connector_hash.end() ){
+                                csit = ce_connector_hash.find( key );
+                                if( csit == ce_connector_hash.end() ){
                                     ndelta += 2;
                                     pcs = new connector_segment;
-                                    ec_connector_hash[key] = pcs;
+                                    ce_connector_hash[key] = pcs;
 
                                     // capture and store geometry
                                     segment_pair pair;
-
-                                    if(!edge_dir){
-                                        pair.e0 = pedge->pPoints[ 0 ];
-                                        pair.n0 = pedge->pPoints[ 1 ];
-                                    }
-                                    else{
-                                        int last_point_index = (pedge->nCount -1) * 2;
-                                        pair.e0 = pedge->pPoints[ last_point_index ];
-                                        pair.n0 = pedge->pPoints[ last_point_index + 1 ];
-                                    }
-
-
-                                    float *ppt = epnode->pPoint;
-                                    pair.e1 = *ppt++;
-                                    pair.n1 = *ppt;
-
-                                    connector_segment_vector.push_back(pair);
-                                    pcs->vbo_offset = seg_pair_index;               // use temporarily
-                                    seg_pair_index ++;
-
-                                    // calculate the centroid of this connector segment, used for viz testing
-                                    double lat, lon;
-                                    fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
-                                    pcs->cs_lat_avg = lat;
-                                    pcs->cs_lon_avg = lon;
-
-                                }
-                                else
-                                    pcs = csit->second;
-
-                                line_segment_element *pls = new line_segment_element;
-                                pls->next = 0;
-                                pls->priority = 0;
-                                pls->pcs = pcs;
-                                pls->ls_type = TYPE_EC;
-
-                                le_current->next = pls;             // hook it up
-                                le_current = pls;
-
-
-                            }
-                            else {
-                                long long key = ((unsigned long long)inode << 32) + enode;
-                                
-                                connector_segment *pcs = NULL;
-                                csit = cc_connector_hash.find( key );
-                                if( csit == cc_connector_hash.end() ){
-                                    ndelta += 2;
-                                    pcs = new connector_segment;
-                                    cc_connector_hash[key] = pcs;
-
-                                    // capture and store geometry
-                                    segment_pair pair;
-
                                     float *ppt = ipnode->pPoint;
                                     pair.e0 = *ppt++;
                                     pair.n0 = *ppt;
 
-                                    ppt = epnode->pPoint;
-                                    pair.e1 = *ppt++;
-                                    pair.n1 = *ppt;
+                                    if(edge_dir){
+                                        pair.e1 = pedge->pPoints[ 0 ];
+                                        pair.n1 = pedge->pPoints[ 1 ];
+                                    }
+                                    else{
+                                        int last_point_index = (pedge->nCount -1) * 2;
+                                        pair.e1 = pedge->pPoints[ last_point_index ];
+                                        pair.n1 = pedge->pPoints[ last_point_index + 1 ];
+                                    }
 
                                     connector_segment_vector.push_back(pair);
                                     pcs->vbo_offset = seg_pair_index;               // use temporarily
@@ -1243,30 +1118,160 @@ void s57chart::AssembleLineGeometry( void )
                                 else
                                     pcs = csit->second;
 
+
                                 line_segment_element *pls = new line_segment_element;
                                 pls->next = 0;
+                                //                            pls->n_points = 2;
                                 pls->priority = 0;
                                 pls->pcs = pcs;
-                                pls->ls_type = TYPE_CC;
+                                pls->ls_type = TYPE_CE;
 
                                 le_current->next = pls;             // hook it up
                                 le_current = pls;
 
-
                             }
                         }
-                    }
+
+                        if(pedge && pedge->nCount){
+                            line_segment_element *pls = new line_segment_element;
+                            pls->next = 0;
+                            //                        pls->n_points = pedge->nCount;
+                            pls->priority = 0;
+                            pls->pedge = pedge;
+                            pls->ls_type = TYPE_EE;
+                            if( !edge_dir )
+                                pls->ls_type = TYPE_EE_REV;
+                                
+
+                            le_current->next = pls;             // hook it up
+                            le_current = pls;
+
+                        }   //pedge
+
+                        // end node
+                        if( epnode ) {
+
+                            if(ipnode){
+                                if(pedge && pedge->nCount){
+
+                                    long long key = ((unsigned long long)venode << 32) + enode;
+                                    
+                                    connector_segment *pcs = NULL;
+                                    csit = ec_connector_hash.find( key );
+                                    if( csit == ec_connector_hash.end() ){
+                                        ndelta += 2;
+                                        pcs = new connector_segment;
+                                        ec_connector_hash[key] = pcs;
+
+                                        // capture and store geometry
+                                        segment_pair pair;
+
+                                        if(!edge_dir){
+                                            pair.e0 = pedge->pPoints[ 0 ];
+                                            pair.n0 = pedge->pPoints[ 1 ];
+                                        }
+                                        else{
+                                            int last_point_index = (pedge->nCount -1) * 2;
+                                            pair.e0 = pedge->pPoints[ last_point_index ];
+                                            pair.n0 = pedge->pPoints[ last_point_index + 1 ];
+                                        }
 
 
-                }  // for
+                                        float *ppt = epnode->pPoint;
+                                        pair.e1 = *ppt++;
+                                        pair.n1 = *ppt;
 
-                //  All done, so assign the list to the object
-                obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
+                                        connector_segment_vector.push_back(pair);
+                                        pcs->vbo_offset = seg_pair_index;               // use temporarily
+                                        seg_pair_index ++;
 
-                // we are all finished with the line segment index array, per object
-                free(obj->m_lsindex_array);
-                obj->m_lsindex_array = NULL;
+                                        // calculate the centroid of this connector segment, used for viz testing
+                                        double lat, lon;
+                                        fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
+                                        pcs->cs_lat_avg = lat;
+                                        pcs->cs_lon_avg = lon;
 
+                                    }
+                                    else
+                                        pcs = csit->second;
+
+                                    line_segment_element *pls = new line_segment_element;
+                                    pls->next = 0;
+                                    pls->priority = 0;
+                                    pls->pcs = pcs;
+                                    pls->ls_type = TYPE_EC;
+
+                                    le_current->next = pls;             // hook it up
+                                    le_current = pls;
+
+
+                                }
+                                else {
+                                    long long key = ((unsigned long long)inode << 32) + enode;
+                                    
+                                    connector_segment *pcs = NULL;
+                                    csit = cc_connector_hash.find( key );
+                                    if( csit == cc_connector_hash.end() ){
+                                        ndelta += 2;
+                                        pcs = new connector_segment;
+                                        cc_connector_hash[key] = pcs;
+
+                                        // capture and store geometry
+                                        segment_pair pair;
+
+                                        float *ppt = ipnode->pPoint;
+                                        pair.e0 = *ppt++;
+                                        pair.n0 = *ppt;
+
+                                        ppt = epnode->pPoint;
+                                        pair.e1 = *ppt++;
+                                        pair.n1 = *ppt;
+
+                                        connector_segment_vector.push_back(pair);
+                                        pcs->vbo_offset = seg_pair_index;               // use temporarily
+                                        seg_pair_index ++;
+
+                                        // calculate the centroid of this connector segment, used for viz testing
+                                        double lat, lon;
+                                        fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
+                                        pcs->cs_lat_avg = lat;
+                                        pcs->cs_lon_avg = lon;
+
+                                    }
+                                    else
+                                        pcs = csit->second;
+
+                                    line_segment_element *pls = new line_segment_element;
+                                    pls->next = 0;
+                                    pls->priority = 0;
+                                    pls->pcs = pcs;
+                                    pls->ls_type = TYPE_CC;
+
+                                    le_current->next = pls;             // hook it up
+                                    le_current = pls;
+
+
+                                }
+                            }
+                        }
+
+
+                    }  // for
+
+                    //  All done, so assign the list to the object
+                    obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
+
+                    //  Rarely, some objects are improperly coded, e.g. cm93
+                    //  If found, signal this downstream for NIL processing
+                    if(obj->m_ls_list == NULL){
+                        obj->m_n_lsindex = 0;
+                   }
+
+                    // we are all finished with the line segment index array, per object
+                    free(obj->m_lsindex_array);
+                    obj->m_lsindex_array = NULL;
+                }
+                
                 top = top->next;
             }
         }
@@ -1277,12 +1282,25 @@ void s57chart::AssembleLineGeometry( void )
     nPoints += ndelta;          // allow for the connector segments
 
     size_t vbo_byte_length = 2 * nPoints * sizeof(float);
-    m_vbo_byte_length = vbo_byte_length;
+    
+    unsigned char *buffer_offset;
+    size_t offset;
+    
+    if(0 == m_vbo_byte_length){
+        m_line_vertex_buffer = (float *)malloc( vbo_byte_length);
+        m_vbo_byte_length = vbo_byte_length;
+        buffer_offset = (unsigned char *)m_line_vertex_buffer;
+        offset = 0;
+    }
+    else{
+        m_line_vertex_buffer = (float *)realloc( m_line_vertex_buffer, m_vbo_byte_length + vbo_byte_length );
+        buffer_offset = (unsigned char *)m_line_vertex_buffer + m_vbo_byte_length;
+        offset = m_vbo_byte_length;
+        m_vbo_byte_length = m_vbo_byte_length + vbo_byte_length;
+    }
 
-    m_line_vertex_buffer = (float *)malloc( vbo_byte_length);
-    float *lvr = m_line_vertex_buffer;
-    size_t offset = 0;
-
+    float *lvr = (float *)buffer_offset;
+    
     //      Copy and edge points as floats,
     //      and recording each segment's offset in the array
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
@@ -1352,7 +1370,7 @@ void s57chart::AssembleLineGeometry( void )
     // And so we can empty the temp buffer
     connector_segment_vector.clear();
 
-    // Wwe can convert the edge hashmap to a vector, to allow  us to destroy the hashmap
+    // We can convert the edge hashmap to a vector, to allow  us to destroy the hashmap
     // and at the same time free up the point storage in the VE_Elements, since all the points
     // are now in the VBO buffer
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
@@ -3438,7 +3456,6 @@ static int ExtensionCompare( const wxString& first, const wxString& second )
 }
 
 
-
 int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFiles,
                                   wxDateTime date000, wxString edtn000)
 {
@@ -4078,9 +4095,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
     ObjRazRules *top;
 
+    AssembleLineGeometry();
+
     //  Set up the chart context
     m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
     m_this_chart_context->chart = this;
+    m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
     //  Loop and populate all the objects
     for( int i = 0; i < PRIO_NUM; ++i ) {
@@ -4094,7 +4114,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
     }
 
-    AssembleLineGeometry();
 
     return ret_val;
 }
@@ -5820,7 +5839,11 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
     }
 }
 
-bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
+bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs )
+{
+    if( !cc )
+        return false;
+    
     double cursor_lat, cursor_lon;
     static float lastLat, lastLon;
 
@@ -5830,7 +5853,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
 
-    ChartBase *target_chart = cc1->GetChartAtCursor();
+    ChartBase *target_chart = cc->GetChartAtCursor();
     if( target_chart ){
         if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
             target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
@@ -5839,7 +5862,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     }
 
 
-    cc1->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
+    cc->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
 
     if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
 
@@ -5851,8 +5874,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     bool bleading_attribute = false;
 
     int opacity = 100;
-    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
-    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
+    if( cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
+    if( cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
 
     int yOpacity = (float)opacity*1.3; // Matched perception of white/yellow with red/green
 

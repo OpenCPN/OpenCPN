@@ -49,6 +49,7 @@
 #include "ocpndc.h"
 #include "viewport.h"
 
+class ChartCanvas;
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
@@ -60,7 +61,7 @@
 extern "C" bool s57_GetChartExtent(const wxString& FullPath, Extent *pext);
 
 void s57_DrawExtendedLightSectors( ocpnDC& temp_dc, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
-bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
+bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
 
 //----------------------------------------------------------------------------
 // Constants
@@ -235,7 +236,9 @@ public:
       InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
 protected:
-    void AssembleLineGeometry( void );
+      void AssembleLineGeometry( void );
+
+      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
     
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
@@ -287,7 +290,6 @@ private:
       char        *mybuf_ptr;
       int         hdr_len;
       wxString    m_SENCFileName;
-      ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
 
 
       wxArrayString *m_tmpup_array;

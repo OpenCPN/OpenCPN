@@ -139,7 +139,7 @@ public:
     int                      altitude;                  // Metres, from special position report(9)
     bool                     b_nameFromCache;
     float                    importance;
-    float                    last_scale;
+    short                    last_scale[AIS_TARGETDATA_MAX_CANVAS]; // where AIS_TARGETDATA_MAX_CANVAS is the max number of chartcanvas
     
 };
 

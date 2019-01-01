@@ -132,6 +132,7 @@ extern bool                      g_bShowLayers;
 extern bool                      g_bTransparentToolbar;
 extern bool                      g_bPermanentMOBIcon;
 extern bool                      g_bTempShowMenuBar;
+extern float                     g_toolbar_scalefactor;
 
 extern int                       g_iSDMMFormat;
 extern int                       g_iDistanceFormat;
@@ -148,7 +149,6 @@ extern bool                      g_bWayPointPreventDragging;
 extern bool                      g_bConfirmObjectDelete;
 
 // AIS Global configuration
-extern bool                      g_bShowAIS;
 extern bool                      g_bCPAMax;
 extern double                    g_CPAMax_NM;
 extern bool                      g_bCPAWarn;
@@ -392,19 +392,18 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
+    
     if(1/*g_bEmailCrashReport*/){
-        info.pszEmailTo = _T("opencpn@bigdumboat.com");
-        info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
-        info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
-        info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
+        info.pszUrl = _T("https://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+        info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
     }
     else{
         info.dwFlags |= CR_INST_DONT_SEND_REPORT;
         info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY;       // don't send at all
     }
-    
+
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY;  // Third try send report over Simple MAPI
     
     wxStandardPaths& crash_std_path = g_Platform->GetStdPaths();
     
@@ -570,6 +569,10 @@ void OCPNPlatform::Initialize_2( void )
 #ifdef __OCPN__ANDROID__
     wxLogMessage(androidGetDeviceInfo());
 #endif    
+    
+    //  Set a global toolbar scale factor
+    g_toolbar_scalefactor = GetToolbarScaleFactor( g_GUIScaleFactor );
+    
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -828,6 +831,10 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
+    g_nAWDefault = 50;
+    g_nAWMax = 1852;
+    gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
+    
     
     // Initial S52/S57 options
     if(pConfig){
@@ -926,6 +933,9 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_GUIScaleFactor = 0;               // nominal
+    g_uiStyle = wxT("Traditional"
+    g_useMUI = true;
+    g_b_overzoom_x = true;
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
@@ -1441,7 +1451,7 @@ MyConfig *OCPNPlatform::GetConfigObject()
 {
     MyConfig *result = NULL;
 
-    result = new MyConfig( wxString( _T("") ), wxString( _T("") ), GetConfigFileName() );
+    result = new MyConfig( GetConfigFileName() );
 
     return result;
 }

@@ -79,6 +79,9 @@
 #include "version.h"
 #include "toolbar.h"
 #include "Track.h"
+#include "Route.h"
+#include "OCPN_AUIManager.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -90,7 +93,7 @@
 
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
-extern wxAuiManager    *g_pauimgr;
+extern OCPN_AUIManager  *g_pauimgr;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
@@ -119,7 +122,6 @@ extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
-extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
@@ -147,6 +149,9 @@ static const char* const DEFAULT_PLUGIN_DIRS =
     "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
 
 unsigned int      gs_plib_flags;
+wxString          g_lastPluginMessage;
+extern ChartCanvas      *g_focusCanvas;
+extern ChartCanvas      *g_overlayCanvas;
 
 enum
 {
@@ -258,8 +263,8 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.b_quilt =                pivp.b_quilt;
     vp.m_projection_type =      pivp.m_projection_type;
  
-    if(cc1)
-        vp.ref_scale = cc1->GetVP().ref_scale;
+    if(gFrame->GetPrimaryCanvas())
+        vp.ref_scale = gFrame->GetPrimaryCanvas()->GetVP().ref_scale;
     else
         vp.ref_scale = vp.chart_scale;
     
@@ -347,7 +352,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
     MyFrame *pFrame = GetParentFrame();
     if(pFrame)
     {
-        m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
+        m_plugin_menu_item_id_next = pFrame->GetPrimaryCanvas()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
     #ifdef __OCPN_USE_CURL__
@@ -458,18 +463,27 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
         for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
         {
             PlugInContainer *pic = plugin_array[i];
+            
+            // Checking for dynamically updated plugins
             if(pic->m_plugin_filename == plugin_file) {
-                if(pic->m_plugin_modification != plugin_modification) {
-                    // modification times don't match, reload plugin
-                    plugin_array.Remove(pic);
-                    i--;
+                
+                // Do not re-load same-name plugins from different directories.  Certain to crash...
+                if(pic->m_plugin_file == file_name){ 
+                    if(pic->m_plugin_modification != plugin_modification) {
+                        // modification times don't match, reload plugin
+                        plugin_array.Remove(pic);
+                        i--;
 
-                    DeactivatePlugIn(pic);
-                    pic->m_destroy_fn(pic->m_pplugin);
-                    
-                    delete pic->m_plibrary;            // This will unload the PlugIn
-                    delete pic;
-                    ret = true;
+                        DeactivatePlugIn(pic);
+                        pic->m_destroy_fn(pic->m_pplugin);
+                        
+                        delete pic->m_plibrary;            // This will unload the PlugIn
+                        delete pic;
+                        ret = true;
+                    } else {
+                        loaded = true;
+                        break;
+                    }
                 } else {
                     loaded = true;
                     break;
@@ -582,8 +596,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
     
     // Inform Plugins of OpenGL configuration, if enabled
     if(g_bopengl){
-        if(cc1->GetglCanvas())
-            cc1->GetglCanvas()->SendJSONConfigMessage();
+        if(gFrame->GetPrimaryCanvas()->GetglCanvas())
+            gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
     }
     
     //  And then reload all catalogs.
@@ -608,6 +622,7 @@ bool PlugInManager::CallLateInit(void)
             case 113:
             case 114:
             case 115:
+            case 116:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;
@@ -642,6 +657,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 case 113:
                 case 114:
 		case 115:
+                case 116:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -1409,6 +1425,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_115*>(plug_in);
         break;
         
+    case 116:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
+        break;
+        
     default:
         break;
     }
@@ -1474,6 +1494,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 113:
                     case 114:
 		    case 115:
+                    case 116:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -1527,6 +1548,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 113:
                     case 114:
                     case 115:
+                    case 116:    
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -1590,6 +1612,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 113:
                 case 114:
                 case 115:
+                case 116:    
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1622,6 +1645,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     case 113:
                     case 114:
                     case 115:
+                    case 116:    
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                         if(ppi)
@@ -1654,6 +1678,7 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                         case 113:
                         case 114:
                         case 115:
+                        case 116:    
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
                             if(ppi && ppi->KeyboardEventHook( event ))
@@ -1716,6 +1741,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 113:
             case 114:
             case 115:
+            case 116:    
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1860,6 +1886,8 @@ void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJS
 
 void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body)
 {
+    g_lastPluginMessage = message_body;
+    
     wxString decouple_message_id(message_id); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     wxString decouple_message_body(message_body); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
@@ -1893,6 +1921,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 113:
                 case 114:
                 case 115:
+                case 116:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1973,6 +2002,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 113:
                 case 114:
                 case 115:
+                case 116:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2022,10 +2052,19 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
-        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
+        v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
+        v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
+        v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+        v[_T("OpenCPN S52PLIB ShowImpartantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
+        v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+        v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
+        v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+        v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
     }
-
+    
+    
     // Some useful display metrics
     if(g_MainToolbar){
         v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
@@ -2163,7 +2202,7 @@ void PlugInManager::RemoveToolbarTool(int tool_id)
         }
     }
 
-    pParent->RequestNewToolbar();
+    pParent->RequestNewToolbars();
 }
 
 void PlugInManager::SetToolbarToolViz(int item, bool viz)
@@ -2177,7 +2216,7 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz)
                 pttc->b_viz = viz;
                 
                 //      Apply the change      
-                pParent->RequestNewToolbar();
+                pParent->RequestNewToolbars();
                 
                 break;
             }
@@ -2194,7 +2233,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle)
             if(pttc->id == item)
             {
                 pttc->b_toggle = toggle;
-                pParent->SetToolbarItemState(item, toggle);
+                pParent->SetMasterToolbarItemState( item, toggle);
                 break;
             }
         }
@@ -2509,7 +2548,7 @@ wxWindow *GetOCPNCanvasWindow()
     if(s_ppim)
     {
         MyFrame *pFrame = s_ppim->GetParentFrame();
-        pret = (wxWindow *)pFrame->GetCanvasWindow();
+        pret = (wxWindow *)pFrame->GetPrimaryCanvas();
     }
     return pret;
 }
@@ -2517,7 +2556,7 @@ wxWindow *GetOCPNCanvasWindow()
 void RequestRefresh(wxWindow *win)
 {
     if(win)
-        win->Refresh();
+      win->Refresh();
 }
 
 void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon)
@@ -2745,8 +2784,7 @@ bool UpdateChartDBInplace(wxArrayString dir_array,
                 b_force_update, b_ProgressDialog,
                 ChartData->GetDBFileName());
 
-    ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp);
+    gFrame->ChartsRefresh();
 
     return b_ret;
 }
@@ -2790,9 +2828,8 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             }
             
             
-            if(b_RefreshCanvas || !cc1->GetQuiltMode()) {
-                ViewPort vp;
-                gFrame->ChartsRefresh(-1, vp);
+            if(b_RefreshCanvas || !gFrame->GetPrimaryCanvas()->GetQuiltMode()) {
+                gFrame->ChartsRefresh();
             }
         }
     }
@@ -2826,8 +2863,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
         }
         
-        ViewPort vp;
-        gFrame->ChartsRefresh(-1, vp);
+        gFrame->ChartsRefresh();
     }
     
     return bret;
@@ -2862,7 +2898,7 @@ void DimeWindow(wxWindow *win)
 
 void JumpToPosition(double lat, double lon, double scale)
 {
-    gFrame->JumpToPosition(lat, lon, scale);
+    gFrame->JumpToPosition(gFrame->GetFocusCanvas(), lat, lon, scale);
 }
 
 /* API 1.9 */
@@ -2935,9 +2971,14 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 
 int GetChartbarHeight( void )
 {
-    if(g_bShowChartBar)
-        return g_Piano->GetHeight();
-    return 0;
+    int val = 0;
+    if(g_bShowChartBar){
+        ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+        if(cc && cc->GetPiano()){
+            val = cc->GetPiano()->GetHeight();
+        }
+    }
+    return val;
 }
 
 
@@ -3268,7 +3309,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
             }
         }
 
-        SelectItem *pFind = pSelect->FindSelection( lat_save, lon_save, SELTYPE_ROUTEPOINT );
+        SelectItem *pFind = pSelect->FindSelection( gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT );
         if( pFind ) {
             pFind->m_slat = pwaypoint->m_lat;             // update the SelectList entry
             pFind->m_slon = pwaypoint->m_lon;
@@ -3567,7 +3608,7 @@ void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
-    glChartCanvas::MultMatrixViewPort(ocpn_vp, lat, lon);
+//TODO fix for multicanvas    glChartCanvas::MultMatrixViewPort(ocpn_vp, lat, lon);
 #endif
 }
 
@@ -3875,6 +3916,16 @@ opencpn_plugin_115::opencpn_plugin_115(void *pmgr)
 }
 
 opencpn_plugin_115::~opencpn_plugin_115(void)
+{
+}
+
+//    Opencpn_Plugin_116 Implementation
+opencpn_plugin_116::opencpn_plugin_116(void *pmgr)
+: opencpn_plugin_115(pmgr)
+{
+}
+
+opencpn_plugin_116::~opencpn_plugin_116(void)
 {
 }
 
@@ -4464,6 +4515,8 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 {
     if(m_ppicb)
     {
+        wxWindow *pa = wxWindow::FindFocus();
+        
         InitReturn ret_val = (InitReturn)m_ppicb->Init(name, (int)init_flags);
 
         //    Here we transcribe all the required wrapped member elements up into the chartbase object which is the parent of this class
@@ -4501,6 +4554,12 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
                 }
             }
             
+            m_overlayENC = false;
+            if(m_ChartFamily == (ChartFamilyEnum)PI_CHART_FAMILY_VECTOR){
+                wxCharBuffer buf = m_FullPath.ToUTF8();
+                m_overlayENC = s57chart::IsCellOverlayType( buf.data() );
+            }
+                
             bReadyToRender = m_ppicb->IsReadyToRender();
 
         }
@@ -4508,8 +4567,9 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 
         //  PlugIn may invoke wxExecute(), which steals the keyboard focus
         //  So take it back
-        if(cc1)
-            cc1->SetFocus();
+        ChartCanvas *pc = wxDynamicCast(pa, ChartCanvas);
+        if(pc)
+            pc->SetFocus();
         
         return ret_val;
     }
@@ -4879,7 +4939,24 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
         if(Region.IsOk())
         {
             wxRegion *r = Region.GetNew_wxRegion();
-            dc.SelectObject(m_ppicb->RenderRegionView( pivp, *r));
+            if(!m_overlayENC)
+                dc.SelectObject(m_ppicb->RenderRegionView( pivp, *r));
+            else{
+                wxBitmap &obmp = m_ppicb->RenderRegionView( pivp, *r);
+                
+                //    Create a mask to remove the NODTA areas from overlay cells.
+                wxColour nodat = GetGlobalColor( _T ( "NODTA" ) );
+                wxColour nodat_sub = nodat;
+            
+#ifdef ocpnUSE_ocpnBitmap
+                nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
+#endif
+                m_pMask = new wxMask( obmp, nodat_sub );
+                obmp.SetMask( m_pMask );
+                
+                dc.SelectObject(obmp);
+            }
+            
             delete r;
             return true;
         }
@@ -5828,22 +5905,22 @@ double fromDMM_Plugin( wxString sdms )
 
 void SetCanvasRotation(double rotation)
 {
-    cc1->DoRotateCanvas( rotation );
+    gFrame->GetPrimaryCanvas()->DoRotateCanvas( rotation );
 }
 
 double GetCanvasTilt()
 {
-    return cc1->GetVPTilt();
+    return gFrame->GetPrimaryCanvas()->GetVPTilt();
 }
 
 void SetCanvasTilt(double tilt)
 {
-    cc1->DoTiltCanvas( tilt );
+    gFrame->GetPrimaryCanvas()->DoTiltCanvas( tilt );
 }
 
 void SetCanvasProjection(int projection)
 {
-    cc1->SetVPProjection(projection);
+    gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
 // Play a sound to a given device
@@ -5864,7 +5941,7 @@ bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 
 bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta )
 {
-    return cc1->CheckEdgePan( x, y, dragging, margin, delta );
+    return gFrame->GetPrimaryCanvas()->CheckEdgePan( x, y, dragging, margin, delta );
 }
 
 wxBitmap GetIcon_PlugIn(const wxString & name)
@@ -5875,7 +5952,7 @@ wxBitmap GetIcon_PlugIn(const wxString & name)
 
 void SetCursor_PlugIn( wxCursor *pCursor )
 {
-    cc1->pPlugIn_Cursor = pCursor;
+    gFrame->GetPrimaryCanvas()->pPlugIn_Cursor = pCursor;
 }
 
 void AddChartDirectory( wxString &path )
@@ -5919,7 +5996,6 @@ int PlatformFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString 
 
 //      OCPN_downloadEvent Implementation
 
-//DEFINE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT)
 
 OCPN_downloadEvent::OCPN_downloadEvent(wxEventType commandType, int id)
 :wxEvent(id, commandType)
@@ -6537,9 +6613,33 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
-int PluginGetMinAvailableGshhgQuality() { return cc1->GetMinAvailableGshhgQuality(); }
-int PluginGetMaxAvailableGshhgQuality() { return cc1->GetMaxAvailableGshhgQuality(); }
+int PluginGetMinAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMinAvailableGshhgQuality(); }
+int PluginGetMaxAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMaxAvailableGshhgQuality(); }
 
-/* API 1.16 */
 // disable builtin console canvas, and autopilot nmea sentences
 void PlugInHandleAutopilotRoute(bool enable) { g_bPluginHandleAutopilotRoute = enable; }
+
+
+/* API 1.16 */
+
+wxWindow* PluginGetFocusCanvas()
+{
+    return g_focusCanvas;
+}
+
+wxWindow* PluginGetOverlayRenderCanvas()
+{
+    //if(g_overlayCanvas)
+        return g_overlayCanvas;
+    //else
+        
+}
+
+void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scale)
+{
+    ChartCanvas *oCanvas = wxDynamicCast( canvas, ChartCanvas );
+    if(oCanvas)
+        gFrame->JumpToPosition( oCanvas, lat, lon, scale);
+
+}
+

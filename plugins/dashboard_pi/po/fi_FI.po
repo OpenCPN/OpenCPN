@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:27-0500\n"
+"PO-Revision-Date: 2018-10-27 01:01\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -63,19 +63,19 @@ msgstr "Magneettinen HDG"
 
 #: src/dashboard_pi.cpp:126
 msgid "App. Wind Angle & Speed"
-msgstr "Suht. Tuulen kulma & nopeus"
+msgstr "Suht. tuulikulma ja tuulen nopeus"
 
 #: src/dashboard_pi.cpp:128
 msgid "App & True Wind Angle"
-msgstr "Suhteellinen & todellinen tuulikulma"
+msgstr "Suht. ja tosituulikulma"
 
 #: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
 msgid "App. Wind Speed"
-msgstr "Suhteellinen tuulennopeus"
+msgstr "Suht. tuulen nopeus"
 
 #: src/dashboard_pi.cpp:134
 msgid "True Wind Angle & Speed"
-msgstr "Tosi tuulen kulma & nopeus"
+msgstr "Tosituulikulma ja -tuulen nopeus"
 
 #: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
 msgid "Depth"
@@ -87,11 +87,11 @@ msgstr "Ilmanpaine"
 
 #: src/dashboard_pi.cpp:144
 msgid "Water Temp."
-msgstr "Veden lämpötila."
+msgstr "Veden lämpötila"
 
 #: src/dashboard_pi.cpp:146
 msgid "Air Temp."
-msgstr "Ilman lämpötila."
+msgstr "Ilman lämpötila"
 
 #: src/dashboard_pi.cpp:148
 msgid "App. Wind Angle"
@@ -99,19 +99,19 @@ msgstr "Suht. tuulikulma"
 
 #: src/dashboard_pi.cpp:150
 msgid "True Wind Angle"
-msgstr "Tosi tuulikulma"
+msgstr "Tosituulikulma"
 
 #: src/dashboard_pi.cpp:152
 msgid "True Wind Direction"
-msgstr "Tosi tuulensuunta"
+msgstr "Tosituulen suunta"
 
 #: src/dashboard_pi.cpp:154
 msgid "True Wind Speed"
-msgstr "Tosi tuulennopeus"
+msgstr "Tosituulen nopeus"
 
 #: src/dashboard_pi.cpp:156
 msgid "True Wind Dir. & Speed"
-msgstr "Tosi tuulen suunta & nopeus"
+msgstr "Tosituulen suunta ja nopeus"
 
 #: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
 msgid "VMG"
@@ -131,7 +131,7 @@ msgstr "GPS tilanne"
 
 #: src/dashboard_pi.cpp:170
 msgid "Cursor"
-msgstr "Kohdistin"
+msgstr "Kursori"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
@@ -139,7 +139,7 @@ msgstr "GPS kello"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
-msgstr "Auringon nousu/lasku"
+msgstr "Auringon nousu- ja laskuaika, UTC"
 
 #: src/dashboard_pi.cpp:176
 msgid "Moon phase"
@@ -147,7 +147,7 @@ msgstr "Kuun vaihe"
 
 #: src/dashboard_pi.cpp:178
 msgid "Wind history"
-msgstr "Tuuli historia"
+msgstr "Tuulihistoria"
 
 #: src/dashboard_pi.cpp:180
 msgid "Barometric history"
@@ -155,15 +155,15 @@ msgstr "Ilmanpaineen historia"
 
 #: src/dashboard_pi.cpp:182
 msgid "Trip Log"
-msgstr "Matka loki"
+msgstr "Osamatka"
 
 #: src/dashboard_pi.cpp:184
 msgid "Sum Log"
-msgstr "Summa loki"
+msgstr "Kokonaismatka"
 
 #: src/dashboard_pi.cpp:186
 msgid "From Ownship"
-msgstr "Alkaen oma-alus"
+msgstr "Omasta aluksesta"
 
 #: src/dashboard_pi.cpp:188
 msgid "Pitch"
@@ -183,7 +183,7 @@ msgstr "Paikallinen CPU kello"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr "Paikallinen auringonnousu-ja lasku"
+msgstr "Auringon nousu- ja laskuaika"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -276,7 +276,7 @@ msgstr "Yksiköt, alueet, formaatit"
 
 #: src/dashboard_pi.cpp:1821
 msgid "Speedometer max value:"
-msgstr "Nopeusmittari max arvo:"
+msgstr "Nopeusmittarin maksimiarvo:"
 
 #: src/dashboard_pi.cpp:1827
 msgid "Speed Over Ground Damping Factor:"
@@ -288,11 +288,11 @@ msgstr "COG vaimennuskerroin:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr "Paikallisen ajan UTC-ajan poikkeaman:"
+msgstr "Paikallisen ajan ja UTC-ajan ero:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"
-msgstr "Veneen nopeus yksiköt:"
+msgstr "Veneen nopeuden yksiköt:"
 
 #: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
 msgid "Honor OpenCPN settings"
@@ -300,7 +300,7 @@ msgstr "OpenCPN pääasetukset"
 
 #: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "Kts"
-msgstr "Kts"
+msgstr "kn"
 
 #: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "mph"
@@ -316,7 +316,7 @@ msgstr "m/s"
 
 #: src/dashboard_pi.cpp:1867
 msgid "Depth units:"
-msgstr "Syvyys yksiköt:"
+msgstr "Syvyyden yksiköt:"
 
 #: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
 msgid "Meters"
@@ -356,7 +356,7 @@ msgstr "&kilometriä"
 
 #: src/dashboard_pi.cpp:1885
 msgid "Wind speed units:"
-msgstr "Tuulen nopeus yksiköt:"
+msgstr "Tuulen nopeuden yksiköt:"
 
 #: src/dashboard_pi.cpp:2099
 msgid "Add instrument"

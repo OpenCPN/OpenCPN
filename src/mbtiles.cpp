@@ -382,7 +382,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
         // Traversing the entire tile table can be expensive....
         //  Use declared bounds if present.
         
-        if(!wxIsNaN(m_LatMin) && !wxIsNaN(m_LatMax) && !wxIsNaN(m_LonMin) && !wxIsNaN(m_LonMax) )
+        if(!std::isnan(m_LatMin) && !std::isnan(m_LatMax) && !std::isnan(m_LonMin) && !std::isnan(m_LonMax) )
             return;
             
         // Try to guess the coverage extents from the tiles. This will be hard to get right - the finest resolution likely does not cover the whole area, while the lowest resolution tiles probably contain a lot of theoretical space which actually is not covered. And some resolutions may be actually missing... What do we use?
@@ -416,13 +416,13 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
         }
         // ... and use what we found only in case we miss some of the values from metadata...
-        if(wxIsNaN(m_LatMin))
+        if(std::isnan(m_LatMin))
             m_LatMin = minLat;
-        if(wxIsNaN(m_LatMax))
+        if(std::isnan(m_LatMax))
             m_LatMax = maxLat;
-        if(wxIsNaN(m_LonMin))
+        if(std::isnan(m_LonMin))
             m_LonMin = minLon;
-        if(wxIsNaN(m_LonMax))
+        if(std::isnan(m_LonMax))
             m_LonMax = maxLon;
     }
     catch (std::exception& e)

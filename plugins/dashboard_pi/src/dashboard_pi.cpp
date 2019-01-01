@@ -307,6 +307,11 @@ wxString GetUUID(void)
       return str;
 }
 
+wxString MakeName()
+{
+    return _T("DASH_") + GetUUID();
+}
+
 //---------------------------------------------------------------------------------------------------------
 //
 //          PlugIn initialization and de-init
@@ -664,9 +669,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
-            if( m_NMEA0183.Parse() ) {
-                if( mPriVar >= 2 ) {
-                    if( !wxIsNaN( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
+            if( m_NMEA0183.Parse() )
+            {
+                if( mPriVar >= 2 ) 
+                {
+                    // Any device sending VAR=0.0 can be assumed to not really know
+                    // what the actual variation is, so in this case we use WMM if available
+                    if( (!std::isnan( m_NMEA0183.Hdg.MagneticVariationDegrees )) &&
+                               0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees)
+                    {
                         mPriVar = 2;
                         if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
                             mVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
@@ -681,13 +692,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 3) ){
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 3) ){
                         mPriHeadingT = 4;
                         double heading = mHdm + mVar;
                         if (heading < 0)
@@ -708,13 +719,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 2) ){
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 2) ){
                         mPriHeadingT = 3;
                         double heading = mHdm + mVar;
                         if (heading < 0)
@@ -738,7 +749,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 _T("\u00B0T") );
                     }
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Hdt.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -926,16 +937,21 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                     }
 
-                    if( mPriVar >= 3 ) {
-                        if( !wxIsNaN( m_NMEA0183.Rmc.MagneticVariation ) ){
+                    if( mPriVar >= 3 )
+                    {
+                        // Any device sending VAR=0.0 can be assumed to not really know
+                        // what the actual variation is, so in this case we use WMM if available
+                        if( (!std::isnan( m_NMEA0183.Rmc.MagneticVariation)) &&
+                                   0.0 != m_NMEA0183.Rmc.MagneticVariation )
+                        {
                             mPriVar = 3;
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
                                 mVar = m_NMEA0183.Rmc.MagneticVariation;
-                            else if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                            else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
                                 mVar = -m_NMEA0183.Rmc.MagneticVariation;
                             mVar_Watchdog = gps_watchdog_timeout_ticks;
 
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, _T("\u00B0"));
                         }
                     }
 
@@ -979,9 +995,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                 }
 
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -1150,15 +1166,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         PlugIn_Position_Fix_Ex gpd;
         if( DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator) ) {
 
-            if( !wxIsNaN(gpd.Lat) )
+            if( !std::isnan(gpd.Lat) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM") );
 
-            if( !wxIsNaN(gpd.Lon) )
+            if( !std::isnan(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
             SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
             SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0") );
-            if( !wxIsNaN(gpd.Hdt) ) {
+            if( !std::isnan(gpd.Hdt) ) {
                 SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
                 mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -1184,7 +1200,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
     }
     if( mPriVar >= 1 ) {
-        if( !wxIsNaN( pfix.Var ) ){
+        if( !std::isnan( pfix.Var ) ){
             mPriVar = 1;
             mVar = pfix.Var;
             mVar_Watchdog = gps_watchdog_timeout_ticks;
@@ -1409,8 +1425,10 @@ void dashboard_pi::UpdateAuiStatus( void )
         wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
+        
     }
-
+    m_pauimgr->Update();
+    
     //    We use this callback here to keep the context menu selection in sync with the window state
 
     SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
@@ -1472,7 +1490,7 @@ bool dashboard_pi::LoadConfig( void )
                 ar.Add( ID_DBP_D_GPS );
             }
 
-            DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+            DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
             cont->m_bPersVisible = true;
             m_ArrayOfDashboardWindow.Add(cont);
             
@@ -1483,7 +1501,7 @@ bool dashboard_pi::LoadConfig( void )
             for( int i = 0; i < d_cnt; i++ ) {
                 pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
                 wxString name;
-                pConf->Read( _T("Name"), &name, GetUUID() );
+                pConf->Read( _T("Name"), &name, MakeName() );
                 wxString caption;
                 pConf->Read( _T("Caption"), &caption, _("Dashboard") );
                 wxString orient;
@@ -1598,7 +1616,7 @@ void dashboard_pi::ApplyConfig( void )
                 wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                     !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                         sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
-                        
+            
             m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
                 //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
@@ -2049,7 +2067,7 @@ void DashboardPreferencesDialog::OnDashboardAdd( wxCommandEvent& event )
     // Data is index in m_Config
     m_pListCtrlDashboards->SetItemData( idx, m_Config.GetCount() );
     wxArrayInt ar;
-    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
     dwc->m_bIsVisible = true;
     m_Config.Add( dwc );
 }
@@ -2310,7 +2328,7 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
     //wxSize sz = GetSize( orient, wxDefaultSize );
     wxSize sz = GetMinSize();
     // We must change Name to reset AUI perpective
-    m_Container->m_sName = GetUUID();
+    m_Container->m_sName = MakeName();
     m_pauimgr->AddPane( this, wxAuiPaneInfo().Name( m_Container->m_sName ).Caption(
         m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
         !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(

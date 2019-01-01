@@ -1287,17 +1287,26 @@ void PositionBearingDistanceMercator(double lat, double lon, double brg, double 
     ll_gc_ll(lat, lon, brg, dist, dlat, dlon);
 }
 
+double DistLoxodrome(double slat, double slon, double dlat, double dlon)
+{
+    double dist = 60 * sqrt( pow(slat - dlat, 2) + pow( (slon - dlon) * cos( (slat + dlat)/2 * DEGREE), 2 ) );
+    return dist;
+}
+
 /* --------------------------------------------------------------------------------- */
 /*
 // Given the lat/long of starting point and ending point,
-// calculates the distance along a geodesic curve, using sphere earth model.
+// calculates the distance (in Nm) along a geodesic curve, using sphere earth model.
 */
 /* --------------------------------------------------------------------------------- */
 
 double DistGreatCircle(double slat, double slon, double dlat, double dlon)
 {
-//    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
-//    int merid, signS;
+
+    double d5;
+    d5 = DistLoxodrome(slat, slon, dlat, dlon);
+    if ( d5 < 10 )              // Miles
+        return d5;    
     
     /*   Input/Output from geodesic functions   */
     double al12;           /* Forward azimuth */
@@ -1310,7 +1319,6 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
     double geod_a;
     double es, onef, f, f64, f2, f4;
     
-    double d5;
     phi1 = slat * DEGREE;
     lam1 = slon * DEGREE;
     phi2 = dlat * DEGREE;
@@ -1326,7 +1334,7 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
          *      To avoid having to include <geodesic,h>
          */
         
-        ellipse = 1;
+        ellipse = 0;
         f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
         geod_a = WGS84_semimajor_axis_meters;
         
@@ -1358,8 +1366,9 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
             * sindlamm * sindlamm;
         d = acos(cosd = 1 - L - L);
-        wxASSERT( d != 0.0 );
+        
         if (ellipse) {
+        wxASSERT( d != 0.0 );
               E = cosd + cosd;
               sind = sin( d );
               Y = sinthm * cosdthm;
@@ -1380,12 +1389,12 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
                           * X - (B + 4.) * Y)) * tan(dlam)));
         } else {
             geod_S = geod_a * d;
-            tandlammp = tan(dlamm);
+//            tandlammp = tan(dlamm);
         }
-        u = atan2(sindthm , (tandlammp * costhm));
-        v = atan2(cosdthm , (tandlammp * sinthm));
-        al12 = adjlon(TWOPI + v - u);
-        al21 = adjlon(TWOPI - v - u);
+//         u = atan2(sindthm , (tandlammp * costhm));
+//         v = atan2(cosdthm , (tandlammp * sinthm));
+//         al12 = adjlon(TWOPI + v - u);
+//         al21 = adjlon(TWOPI - v - u);
     }
     
     d5 = geod_S / 1852.0;

@@ -43,6 +43,7 @@
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 class MyFrame;
+class ChartCanvas;
 
 //----------------------------------------------------------------------------
 // Piano
@@ -50,7 +51,7 @@ class MyFrame;
 class Piano : public wxEvtHandler
 {
 public:
-      Piano();
+      Piano( ChartCanvas *parent );
       ~Piano();
 
       void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
@@ -81,6 +82,7 @@ public:
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
 
       int GetHeight();
+      int GetWidth();
       
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
@@ -93,6 +95,8 @@ private:
 
       wxString GetStateHash();
       wxString    m_hash;
+      
+      ChartCanvas *m_parentCanvas;
       
       int         m_nRegions;
       int         m_index_last;
@@ -135,7 +139,8 @@ private:
       bool        m_bleaving;
 
       GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
-
+      int         m_width;
+      
 DECLARE_EVENT_TABLE()
 };
 

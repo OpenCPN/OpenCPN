@@ -39,6 +39,7 @@
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
+#include "chart1.h"
 
 class MyRoutePrintout : public MyPrintout {
 public:

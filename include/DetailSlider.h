@@ -26,7 +26,8 @@
 #define __DETAILSLIDE_H__
 
 #include <wx/dialog.h>
-#include "chcanv.h"
+//#include "chcanv.h"
+#include "chart1.h"
 
 class PopUpDSlide: public wxDialog
 {
