@@ -2769,9 +2769,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 m_pMeasureRoute->DeletePoint(m_pMeasureRoute->GetLastPoint());
                 m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
                 m_nMeasureState--;
-                InvalidateGL();
-                Refresh(false);
-
+                gFrame->RefreshAllCanvas();
             }
             else {
                 CancelMeasureRoute();
@@ -3062,8 +3060,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 SetCursor( *pCursorArrow );
 
                 SurfaceToolbar();
-                InvalidateGL();
-                Refresh( false );
+                gFrame->RefreshAllCanvas();
             }
 
             if( m_routeState )         // creating route?
@@ -7557,9 +7554,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
                 
                 m_nMeasureState++;
-                
-                InvalidateGL();
-                Refresh( false );
+                gFrame->RefreshAllCanvas();
                 ret = true;
             }
             
