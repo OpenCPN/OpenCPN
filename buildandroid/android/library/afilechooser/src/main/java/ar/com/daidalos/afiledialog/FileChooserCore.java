@@ -432,8 +432,11 @@ class FileChooserCore {
                 // If multi entry, split this line, and take only the first element
                 if(SECONDARY_STORAGE != null){
                     if((SECONDARY_STORAGE.length() != 0) && SECONDARY_STORAGE.contains(":")){
-                        String[] items = SECONDARY_STORAGE.split(":");
-                        SECONDARY_STORAGE = items[0];
+                        String[] items = SECONDARY_STORAGE.split("\\:");
+                        if(items.length > 0)
+                            SECONDARY_STORAGE = items[0];
+                        else
+                            SECONDARY_STORAGE = "";
                     }
                 }
 
