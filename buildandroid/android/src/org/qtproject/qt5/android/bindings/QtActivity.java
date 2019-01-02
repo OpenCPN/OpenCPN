@@ -175,6 +175,7 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.os.Message;
 import android.os.Handler;
+import android.support.v4.content.FileProvider;
 
 
 import org.opencpn.opencpn.R;
@@ -380,6 +381,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     private static ActivityManager activityManager;
 
+    private Semaphore mutexD = new Semaphore(0);
+
     private Float lastX;
     private Float lastY;
 
@@ -406,6 +409,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private String m_ColorDialogString;
 
     private String m_downloadRet = "";
+    private String m_yesno = "";
 
     public OCPNResultReceiver mReceiver;
 
@@ -453,7 +457,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private boolean m_fullScreen;
     private String m_scannedSerial = "";
 
-    public taskHandler m_taskHandler;
     public MyDocSpinnerDialog myDocSpinnerInstance;
 
     private String g_postResult = "";
@@ -724,6 +727,125 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
           return ret;
       }
 
+      public String showSimpleOKDialog( String title, String message) {
+
+              AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+              // set title
+              alertDialogBuilder.setTitle(title);
+
+              // set dialog message
+              alertDialogBuilder
+                      .setMessage(message)
+                      .setCancelable(false)
+                      .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                              public void onClick(DialogInterface dialog,int id) {
+                                  // if this button is clicked, just close
+                                  // the dialog box and do nothing
+                                  dialog.cancel();
+                              }
+                        });
+
+                      // create alert dialog
+                      AlertDialog alertDialog = alertDialogBuilder.create();
+
+                      // show it
+                      alertDialog.show();
+
+                      return ("OK");
+
+        }
+
+      public String simpleOKDialog( final String title, final String message) {
+
+            final QtActivityDelegate delegate = QtNative.activityDelegate();
+
+            if(null != delegate){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showSimpleOKDialog( title, message );
+
+                    }});
+            }
+
+            String ret = "OK";
+            return ret;
+      }
+
+      public String simpleYesNoDialog( final String title, final String message) {
+
+            final QtActivityDelegate delegate = QtNative.activityDelegate();
+
+            if(null != delegate){
+
+                mutexD = new Semaphore(0);
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(m_activity);
+
+                        // set title
+                        alertDialogBuilder.setTitle(title);
+
+                        // set dialog message
+                        alertDialogBuilder
+                                .setMessage(message)
+                                .setCancelable(false)
+                                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            m_yesno = "YES";
+                                            mutexD.release();
+                                            dialog.cancel();
+                                        }
+                                  })
+                                  .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                                          public void onClick(DialogInterface dialog,int id) {
+                                              m_yesno = "NO";
+                                              mutexD.release();
+                                              dialog.cancel();
+                                          }
+                                      });
+
+                                // create alert dialog
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                                // show it
+                                alertDialog.show();
+
+                    }
+
+                });
+
+                    // One way to wait for the runnable to be done...
+                 try {
+                     Log.i("OpenCPN", "Waiting for MutexD....");
+                     mutexD.acquire();            // Cannot get mutex until runnable above exits.
+                     Log.i("OpenCPN", "Got MutexD");
+
+                 } catch (InterruptedException e) {
+                     e.printStackTrace();
+                 }
+
+            }
+
+            Log.i("OpenCPN", "YesNo returned: " + m_yesno);
+
+            return m_yesno;
+      }
+
+      public String installPlaystoreHelp() {
+
+          final String helpPackageName = "org.opencpn.opencpnusermanual";
+          try {
+              startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + helpPackageName)));
+          } catch (android.content.ActivityNotFoundException anfe) {
+              startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + helpPackageName)));
+          }
+          return "OK";
+      }
 
       public String showHTMLAlertDialog( String title, String htmlString) {
 
@@ -822,48 +944,44 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
 
-    private Context docUnpackContext;
+    public String launchHelpBook(){
+        Log.i("OpenCPN", "launchHelpBook");
+        if(isHelpAvailable().equals("YES")){
+            Log.i("OpenCPN", "Help is available");
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("org.opencpn.opencpnusermanual");
+            startActivity(launchIntent);
 
-    public String launchHelpView(){
-        String dirFiles = m_filesDir;
+            return "OK";
+        }
+        else
+            return "NO";
+    }
 
-        // Docs unpacked yet?
-        File dc = new File(dirFiles + "/doc/doc/help_en_US.html");
-        if(!dc.exists())
+
+
+    public String isHelpAvailable(){
+
+        boolean bVal = false;
+        List<PackageInfo> packList = getPackageManager().getInstalledPackages(0);
+        for (int i=0; i < packList.size(); i++)
         {
-            myDocSpinnerInstance = new MyDocSpinnerDialog();
-            myDocSpinnerInstance.show(fm, "some_tag");
-
-            Log.i("OpenCPN", "Start UnpackUserManual");
-
-            //Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN configures the User Manual", Toast.LENGTH_LONG).show();
-            docUnpackContext = (Context) this;
-
-            Timer T=new Timer();
-                 T.schedule(new TimerTask() {
-                     @Override
-                     public void run() {
-                         Log.i("OpenCPN", "Timed Start UnpackUserManual");
-                         UnpackUserManual task = new UnpackUserManual(m_filesDir, getAssets(), m_taskHandler, docUnpackContext);
-                         task.execute((Void) null);
-
-                     }
-                 }, 200);
-
+            PackageInfo packInfo = packList.get(i);
+            if (  (packInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)
+            {
+                String appName = packInfo.applicationInfo.loadLabel(getPackageManager()).toString();
+                if(appName.equals("OpenCPN User Manual")){
+                    //if(packInfo.versionCode >= 18){
+                        bVal = true;
+                        break;
+                    //}
+                }
+                //Log.i("OpenCPN", appName);
+            }
         }
-        else{
-            Log.i("OpenCPN", "launch Help WebView");
-
-            Intent intent = new Intent(this, WebViewActivity.class);
-            Bundle b = new Bundle();
-            b.putString(WebViewActivity.SELECTED_URL, "file:///" + dirFiles + "/doc/doc/help_en_US.html");
-            intent.putExtras(b);
-
-            startActivity(intent);
-        }
-
-        return "OK";
-
+        if(bVal)
+            return "YES";
+        else
+            return "NO";
     }
 
     public String launchWebView( String url){
@@ -886,6 +1004,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     private Toast mTimedToast;
     private CountDownTimer mtoastCountDown;
+    private boolean ToastTimerRunning = false;
 
     public String showTimedToast( final String text, final int toastDurationInMilliSeconds) {
         runOnUiThread(new Runnable() {
@@ -893,20 +1012,24 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 public void run() {
 
                     // Set the toast
-                    mTimedToast = Toast.makeText(m_activity, text, Toast.LENGTH_LONG);
+                    mTimedToast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
 
                     // Set the countdown to display the toast
+                    ToastTimerRunning = true;
                     mtoastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
                        public void onTick(long millisUntilFinished) {
-                          mTimedToast.show();
+                           if(!isFinishing())
+                              mTimedToast.show();
                        }
                        public void onFinish() {
                           mTimedToast.cancel();
+                          ToastTimerRunning = false;
                           }
                     };
 
                     // Show the toast and starts the countdown
-                    mTimedToast.show();
+                    if(!isFinishing())
+                        mTimedToast.show();
                     mtoastCountDown.start();
 
                  }});
@@ -929,6 +1052,22 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
        return "OK";
     }
+
+    public String showToast( final String text) {
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    // Set the toast
+                    mTimedToast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+                    mTimedToast.show();
+
+                 }});
+
+
+       return "OK";
+    }
+
 
     public String startActivityWithIntent( String target_package, String activity, String extra_name_in, String extra_data_in, String extra_data_out_name){
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -4602,10 +4741,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         Log.i("OpenCPN", "Application filesDir: " + m_filesDir);
 
 
-        //  Set up a handler to catch messages from async tasks
-         m_taskHandler = new taskHandler();
-
-
         try {
             m_activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
             for (Field f : Class.forName("android.R$style").getDeclaredFields()) {
@@ -4759,7 +4894,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
 
-
      if (b_needcopy){
         //Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
 
@@ -4860,8 +4994,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
       Assetbridge.unpackNoDoc(this, dirFiles);
       Log.i("OpenCPN", "asset bridge finish unpack");
     }
-
-
 
 
    /* Turn off multicast filter */
@@ -5340,6 +5472,11 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     {
         Log.i("OpenCPN", "onPause "  + this);
 
+        if(ToastTimerRunning){
+            mtoastCountDown.cancel();
+            Log.i("OpenCPN", "onPause " + "Stopping toast timer");
+        }
+
         if(null != nativeLib)
            nativeLib.onPause();
 
@@ -5553,6 +5690,11 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     protected void onStop()
     {
         Log.i("OpenCPN", "onStop " + this);
+
+        if(ToastTimerRunning){
+            mtoastCountDown.cancel();
+            Log.i("OpenCPN", "onStop " + "Stopping toast timer");
+        }
 
         nativeLib.onStop();
 
@@ -5962,81 +6104,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         System.out.println("Exception raised during sending mail"+e);
         }
     }
-
-
-    /**
-      * Asynchronous task used to unpack the user manual.
-      */
-
-     static final int MESSAGE_DOC_UNPACK_DONE = 1;
-
-     class UnpackUserManual extends AsyncTask<Void, Void, Boolean> {
-         private final String mTarget;
-         private android.os.Handler mHandler = null;
-         private AssetManager mAssetManager;
-         private Context mctx;
-
-
-         UnpackUserManual(String targetDir, AssetManager assetManager, android.os.Handler handler, Context ctx){
-             Log.i("OpenCPN", "ctor UnpackUserManual");
-             mTarget = targetDir;
-             mAssetManager = assetManager;
-             mctx = ctx;
-             mHandler = handler;
-         }
-
-         @Override
-         protected Boolean doInBackground(Void... params) {
-
-             Log.i("OpenCPN", "Start UnpackUserManual unpack");
-
-             Assetbridge.unpackDocOnly(mAssetManager, mTarget);
-
-             return true;
-         }
-
-         @Override
-         protected void onPostExecute(final Boolean success) {
-
-
-             Message message = Message.obtain (mHandler, MESSAGE_DOC_UNPACK_DONE, 0, 0, mctx);
-             if(null != message)
-                message.sendToTarget();
-
-         }
-
-         @Override
-         protected void onCancelled() {
-
-             Message message = Message.obtain (mHandler, MESSAGE_DOC_UNPACK_DONE, 0, 0, mctx);
-             message.sendToTarget();
-         }
-     }
-
-
-     public class taskHandler extends Handler {
-
-         @Override
-         public void handleMessage(Message msg) {
-             Log.i("OpenCPN", "Got Message");
-
-             switch (msg.what) {
-                 case MESSAGE_DOC_UNPACK_DONE:
-                    Log.i("OpenCPN", "launch Help WebView");
-                    if(null != myDocSpinnerInstance)
-                        myDocSpinnerInstance.dismiss();
-
-                    Context ctx = (Context) msg.obj;
-                    Intent intent = new Intent(ctx, WebViewActivity.class);
-                    Bundle b = new Bundle();
-                    b.putString(WebViewActivity.SELECTED_URL, "file:///" + m_filesDir + "/doc/doc/help_en_US.html");
-                    intent.putExtras(b);
-
-                    startActivity(intent);
-                    break;
-             }
-         }
-     }
 
 
 

@@ -24,11 +24,10 @@ public class WebViewActivity extends Activity {
                 if(bundle != null){
                     url = (String)bundle.get(WebViewActivity.SELECTED_URL);
                 }
-
-
-                //webView.loadUrl("file://localhost/storage/sdcard0/doc/help_en_US.html");  // this worked, after manual copy
-                //webView.loadUrl("file:///android_asset/doc/doc/help_en_US.html");
                 webView.loadUrl(url);
+
+
+
         }
 
 }

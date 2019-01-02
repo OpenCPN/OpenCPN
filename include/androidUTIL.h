@@ -138,6 +138,9 @@ int androidGetTZOffsetMins();
 int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
 
 bool androidShowDisclaimer( wxString title, wxString msg );
+bool androidShowSimpleOKDialog( wxString title, wxString msg );
+bool androidShowSimpleYesNoDialog( wxString title, wxString msg );
+bool androidInstallPlaystoreHelp();
 
 void androidLaunchBrowser( wxString URL );
 bool androidCheckOnline();
@@ -157,6 +160,7 @@ QString prepareAndroidSliderStyleSheet(int sliderWidth);
 
 void androidDisplayTimedToast(wxString message, int timeMillisec);
 void androidCancelTimedToast();
+void androidDisplayToast(wxString message);
 
 
 //      SVG Support

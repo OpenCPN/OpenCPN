@@ -2045,11 +2045,21 @@ bool androidSetFullscreen( bool bFull )
 
 void androidLaunchHelpView()
 {
-    callActivityMethod_vs("launchHelpView");
+    qDebug() << "androidLaunchHelpView ";
+    wxString val = callActivityMethod_vs("isHelpAvailable");
+    if(val.IsSameAs(_T("YES"))){
+        callActivityMethod_vs("launchHelpBook");
+    }
+    else{
+        wxString msg = _("OpenCPN Help is not installed.\nWould you like to install from Google PlayStore now?");
+        if(androidShowSimpleYesNoDialog( _T("OpenCPN"), msg ))
+            androidInstallPlaystoreHelp();
+    }
 }
 
 void androidLaunchBrowser( wxString URL )
 {
+    qDebug() << "androidLaunchBrowser";
     callActivityMethod_ss("launchWebView", URL);
 }
 
@@ -2061,6 +2071,11 @@ void androidDisplayTimedToast(wxString message, int timeMillisec)
 void androidCancelTimedToast()
 {
     callActivityMethod_vs("cancelTimedToast");
+}
+
+void androidDisplayToast(wxString message)
+{
+    callActivityMethod_ss("showToast", message);
 }
 
 bool androidShowDisclaimer( wxString title, wxString msg )
@@ -2109,6 +2124,140 @@ bool androidShowDisclaimer( wxString title, wxString msg )
         
     return (return_string == _T("OK"));
 }
+
+bool androidShowSimpleOKDialog( wxString title, wxString msg )
+{
+    if(CheckPendingJNIException())
+        return false;
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return false;
+    
+    if ( !activity.isValid() )
+        return false;
+    
+    JNIEnv* jenv;
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
+        return false;
+    
+    
+    wxCharBuffer p1b = title.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
+    
+    // Convert for wxString-UTF8  to jstring-UTF16
+    wxWCharBuffer b = msg.wc_str();
+    jstring p2 = (jenv)->NewString( (jchar *)b.data(), msg.Len() * 2);
+    
+    QAndroidJniObject data = activity.callObjectMethod( "simpleOKDialog", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+    
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    
+    if(CheckPendingJNIException())
+        return false;
+        
+    jstring s = data.object<jstring>();
+        
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+        
+        
+    return (return_string == _T("OK"));
+}
+
+bool androidShowSimpleYesNoDialog( wxString title, wxString msg )
+{
+    if(CheckPendingJNIException())
+        return false;
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return false;
+    
+    if ( !activity.isValid() )
+        return false;
+    
+    JNIEnv* jenv;
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
+        return false;
+    
+    
+    wxCharBuffer p1b = title.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
+    
+    // Convert for wxString-UTF8  to jstring-UTF16
+    wxWCharBuffer b = msg.wc_str();
+    jstring p2 = (jenv)->NewString( (jchar *)b.data(), msg.Len() * 2);
+    
+    QAndroidJniObject data = activity.callObjectMethod( "simpleYesNoDialog", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+    
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    
+    if(CheckPendingJNIException())
+        return false;
+        
+    jstring s = data.object<jstring>();
+        
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+        
+        
+    return (return_string == _T("YES"));
+}
+
+bool androidInstallPlaystoreHelp()
+{
+   qDebug() << "androidInstallPlaystoreHelp";
+ //  return false;
+   
+   if(CheckPendingJNIException())
+        return false;
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return false;
+    
+    if ( !activity.isValid() )
+        return false;
+    
+    JNIEnv* jenv;
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
+        return false;
+    
+    
+    QAndroidJniObject data = activity.callObjectMethod( "installPlaystoreHelp", "()Ljava/lang/String;");
+    
+    if(CheckPendingJNIException())
+        return false;
+        
+    jstring s = data.object<jstring>();
+        
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+
+    return (return_string == _T("OK"));
+}
+
 
 int androidGetTZOffsetMins()
 {
