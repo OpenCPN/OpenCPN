@@ -2,8 +2,6 @@ language: cpp
 
 matrix:
   include:
-    - dist: precise
-      compiler: gcc
     - dist: trusty
       compiler: gcc
     - os: osx
