@@ -1472,13 +1472,13 @@ void WayPointman::ProcessDefaultIcons()
             }
         }
     }
-    
+
     //  Cache was unusable, so load from original
     if(!bcacheLoaded)
     {
         g_Platform->ShowBusySpinner();
 #ifdef __OCPN__ANDROID__
-        androidDisplayTimedToast( _("Processing icons"), 25000);
+        androidDisplayToast( _("Processing icons"));
 #endif        
 
 
@@ -1501,9 +1501,6 @@ void WayPointman::ProcessDefaultIcons()
             }
         }
         g_Platform->HideBusySpinner();
-#ifdef __OCPN__ANDROID__
-        androidCancelTimedToast();
-#endif        
 
     }
 #endif
