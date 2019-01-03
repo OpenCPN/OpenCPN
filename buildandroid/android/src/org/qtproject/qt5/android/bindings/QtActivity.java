@@ -82,6 +82,7 @@ import org.kde.necessitas.ministro.IMinistroCallback;
 import android.support.v4.app.DialogFragment;
 
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 
 import android.os.SystemClock;
 import android.content.SharedPreferences;
@@ -281,6 +282,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private final static int OCPN_ACTION_ENCLIGHTS_TOGGLE = 0x100d;
 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private final static int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 2;
 
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
@@ -293,7 +295,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
     private final static int CHART_FAMILY_VECTOR = 2;
-
 
     private static final String ERROR_CODE_KEY = "error.code";
     private static final String ERROR_MESSAGE_KEY = "error.message";
@@ -1914,6 +1915,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     }
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Log.i("OpenCPN", "onRequestPermissionsResult");
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -1930,10 +1932,26 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-            return;
+                return;
             }
                 // other 'case' lines to check for other
                 // permissions this app might request
+            case MY_PERMISSIONS_REQUEST_WRITE_STORAGE: {
+                    // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        // permission was granted, yay! Do the
+                        // task you need to do.
+                        Log.i("OpenCPN", "MY_PERMISSIONS_REQUEST_WRITE_STORAGE permission granted");
+
+                } else {
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                        Log.i("OpenCPN", "MY_PERMISSIONS_REQUEST_WRITE_STORAGE permission denied");
+                }
+                return;
+            }
+
         }
     }
 
@@ -5004,13 +5022,34 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
    }
 
 
+   // Validate app permissions
+   // Here, thisActivity is the current activity
+        if (android.os.Build.VERSION.SDK_INT >= 23){
+            Log.i("OpenCPN", "Checking STORAGE permissions");
 
-            startApp(true);
+            if (checkSelfPermission( Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
+                        // Permission is not granted
+                        // No explanation needed; request the permission
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+
+                    // MY_PERMISSIONS_REQUEST_READ_STORAGE is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+
+             } else {
+                // Permission has already been granted
+             }
+         }
+             startApp(true);
 
         }
     }
+
     //---------------------------------------------------------------------------
+
+
+
 
 
     @Override
