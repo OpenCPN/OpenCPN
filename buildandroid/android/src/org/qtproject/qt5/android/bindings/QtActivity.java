@@ -1114,6 +1114,16 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 public void run() {
                     delegate.setFullScreen( bfull );
 
+                    if(bfull){
+                        int flags =  View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+                        getWindow ().getDecorView().setSystemUiVisibility( flags );
+                    }
+
                 }});
         }
     }
