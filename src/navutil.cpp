@@ -247,6 +247,7 @@ extern bool             g_bConfirmObjectDelete;
 extern wxColour         g_colourOwnshipRangeRingsColour;
 extern int              g_iWpt_ScaMin;
 extern bool             g_bUseWptScaMin;
+extern bool             g_bShowWptName;
 
 
 extern bool             g_bEnableZoomToCursor;
@@ -1352,7 +1353,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
     
     if ( !Read( _T("WaypointUseScaMin"), &g_bUseWptScaMin ) ) g_bUseWptScaMin = false;
-    if ( !Read( _T("WaypointScaMinValue"), &g_iWpt_ScaMin ) ) g_iWpt_ScaMin = 2147483647;
+    if ( !Read( _T("WaypointScaMinValue"), &g_iWpt_ScaMin ) ) g_iWpt_ScaMin = 2147483646;
+    if ( !Read( _T("WaypointsShowName"), &g_bShowWptName ) ) g_bShowWptName = true;
+    
 
 
     //  Support Version 3.0 and prior config setting for Radar Rings
@@ -2601,6 +2604,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T( "WaypointUseScaMin" ), g_bUseWptScaMin );
     Write( _T( "WaypointScaMinValue" ), g_iWpt_ScaMin );
+    Write( _T("WaypointsShowName"), g_bShowWptName );
     
     // Waypoint Radar rings
     Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );

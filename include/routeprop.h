@@ -46,6 +46,7 @@
 #include <wx/htmllbox.h>
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>
+#include <wx/list.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -142,6 +143,8 @@ class   OCPNIconCombo;
 #define ID_SET_DEFAULT_SCAMIN 8021
 #define ID_SET_DEFAULT_NAMEVIS 8022
 #define ID_SET_DEFAULT_ALL 8023
+#define ID_BTN_LINK_MENU 8024
+#define ID_DEFAULT 8025
 
 ////@end control identifiers
 
@@ -344,6 +347,8 @@ class MarkInfoDlg : public wxDialog
         wxBoxSizer*             bSizerBasicProperties;
         wxBoxSizer*             bSizerLinks;
         wxButton*               m_buttonExtDescription;
+        wxButton*               m_buttonLinksMenu;
+        wxButton*               DefaultsBtn;
         wxCheckBox*             m_checkBoxScaMin;
         wxCheckBox*             m_checkBoxShowName;
         wxCheckBox*             m_checkBoxShowNameExt;
@@ -417,12 +422,15 @@ class MarkInfoDlg : public wxDialog
         void OnShowWaypointNameSelectBasic( wxCommandEvent& event );
         void OnShowWaypointNameSelectExt( wxCommandEvent& event );
         void OnSelectScaMinExt( wxCommandEvent& event );
-        void OnSelectShowOnChartExt( wxCommandEvent& event );
         void OnWptRangeRingsNoChange( wxSpinEvent& event );
         void OnCopyPasteLatLon( wxCommandEvent& event );
         void OnWaypointRangeRingSelect( wxCommandEvent& event );
-        void OnRightClickExt( wxCommandEvent& event );
-        void OnRightClickExt2( wxCommandEvent& event );
+        void m_htmlListContextMenuBtn( wxCommandEvent &event );
+        void m_htmlListContextMenu( wxMouseEvent &event );
+        void OnRightClickLatLon( wxCommandEvent& event );
+        void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
+        void On_html_link_popupmenu_Click( wxCommandEvent& event );
+        void DefautlBtnClicked( wxCommandEvent& event );
         
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
@@ -438,10 +446,38 @@ class MarkInfoDlg : public wxDialog
         bool UpdateProperties( bool positionOnly = false );
         void ValidateMark(void);
         bool SaveChanges();
-        void m_htmlListContextMenu( wxMouseEvent &event );
-        void OnRightClickLatLon( wxCommandEvent& event );
-        void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
-        void OnPopupLinkClick( wxCommandEvent& event );
+        wxSimpleHtmlListBox *GetSimpleBox()
+            { return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox); }
+            void OnHtmlCellHover(wxHtmlCellEvent &event);
+            void OnHtmlCellClicked(wxHtmlCellEvent &event);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class SaveDefaultsDialog
+///////////////////////////////////////////////////////////////////////////////
+
+class SaveDefaultsDialog: public wxDialog
+{
+    public:
+
+        SaveDefaultsDialog(wxWindow* parent,wxWindowID id = -1);
+        virtual ~SaveDefaultsDialog();
+
+        //(*Handlers(SaveDefaultsDialog)
+        void OnQuit(wxCommandEvent& event);
+
+        //(*Declarations(SaveDefaultsDialog)
+        wxCheckBox* RangRingsCB;
+        wxCheckBox* ArrivalRCB;
+        wxCheckBox* IconCB;
+        wxCheckBox* NameCB;
+        wxStaticText* StaticText1;
+        wxCheckBox* ScaleCB;
+        wxStaticText* StaticText2;
+        //*)
+
+        DECLARE_EVENT_TABLE()
+};
+
 
 #endif // _ROUTEPROP_H_
