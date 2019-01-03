@@ -664,6 +664,7 @@ int                       g_AisTargetList_range;
 int                       g_AisTargetList_sortColumn;
 bool                      g_bAisTargetList_sortReverse;
 wxString                  g_AisTargetList_column_spec;
+wxString                  g_AisTargetList_column_order;
 int                       g_AisTargetList_count;
 bool                      g_bAisTargetList_autosort;
 
