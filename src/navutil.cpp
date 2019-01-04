@@ -2310,8 +2310,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
 
-    //Write( _T ( "ToolbarX" ), g_maintoolbar_x );
-    //Write( _T ( "ToolbarY" ), g_maintoolbar_y );
+    Write( _T ( "ToolbarX" ), g_maintoolbar_x );
+    Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     //Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
 
     Write( _T ( "iENCToolbarX" ), g_iENCToolbarPosX );
