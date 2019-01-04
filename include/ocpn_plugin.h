@@ -467,7 +467,6 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
 
             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-
             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
             virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
@@ -542,7 +541,7 @@ class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
 public:
     opencpn_plugin_116(void *pmgr);
     virtual ~opencpn_plugin_116();
-
+    virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
 };
 
 //------------------------------------------------------------------
