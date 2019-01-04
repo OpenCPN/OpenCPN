@@ -253,6 +253,8 @@ wxString                  g_SENCPrefix;
 wxString                  g_UserPresLibData;
 wxString                  g_VisibleLayers;
 wxString                  g_InvisibleLayers;
+wxString                  g_VisiNameinLayers;
+wxString                  g_InVisiNameinLayers;
 
 bool                      g_bcompression_wait;
 

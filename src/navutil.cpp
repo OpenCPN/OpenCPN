@@ -173,6 +173,8 @@ extern bool             g_bframemax;
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
+extern wxString         g_VisiNameinLayers;
+extern wxString         g_InVisiNameinLayers;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
@@ -957,6 +959,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
+    Read( _T ( "VisNameInLayers" ), &g_VisiNameinLayers );
+    Read( _T ( "InvisNameInLayers" ), &g_InVisiNameinLayers );
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
@@ -1621,6 +1625,11 @@ bool MyConfig::LoadLayers(wxString &path)
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
 
+                if (g_VisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = true;
+                if (g_InVisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = false;
+
                 l->m_bIsVisibleOnChart = bLayerViz;
                 
                 wxString laymsg;
@@ -1637,7 +1646,7 @@ bool MyConfig::LoadLayers(wxString &path)
                     if( ::wxFileExists( file_path ) ) {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(file_path.fn_str());
-                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
+                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz, l->m_bHasVisibleNames);
                         l->m_NoOfItems += nItems;
                         l->m_LayerType = _("Persistent");
                         
@@ -2337,7 +2346,7 @@ void MyConfig::UpdateSettings()
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
 
-    wxString vis, invis;
+    wxString vis, invis, visnames, invisnames;
     LayerList::iterator it;
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
@@ -2345,9 +2354,15 @@ void MyConfig::UpdateSettings()
         if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
         else
             invis += ( lay->m_LayerName ) + _T(";");
+
+        if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
+        else
+            invisnames += ( lay->m_LayerName) + _T(";");
     }
     Write( _T ( "VisibleLayers" ), vis );
     Write( _T ( "InvisibleLayers" ), invis );
+    Write( _T ( "VisNameInLayers" ), visnames);
+    Write( _T ( "InvisNameInLayers" ), invisnames);
 
     Write( _T ( "Locale" ), g_locale );
     Write( _T ( "LocaleOverride" ), g_localeOverride );
@@ -2974,7 +2989,7 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
                 pSet->load_file(path.fn_str());
 
                 if(islayer){
-                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
+                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
                     l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary") ;
                     
                     if(isPersistent)
