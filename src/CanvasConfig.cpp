@@ -50,6 +50,10 @@ canvasConfig::canvasConfig( int index )
     configIndex = index;
     canvas = NULL;
     GroupID = 0;
+    iLat = 0.;
+    iLon = 0.;
+    iScale = .0003;        // decent initial value
+    iRotation = 0.;
 }
 
 canvasConfig::~canvasConfig(){}
