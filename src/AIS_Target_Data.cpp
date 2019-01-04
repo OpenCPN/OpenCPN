@@ -25,7 +25,6 @@
 #include "AIS_Target_Data.h"
 
 extern bool bGPSValid;
-extern ChartCanvas *cc1;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
@@ -166,8 +165,9 @@ AIS_Target_Data::AIS_Target_Data()
     b_SarAircraftPosnReport = false;
     altitude = 0;
     b_nameFromCache = false;
-    importance = 0.;
-    last_scale = 0.50; //new target starts at 50% scale
+    importance = 0.0;
+    for(unsigned int i=0 ; i < AIS_TARGETDATA_MAX_CANVAS ; i++)
+        last_scale[i] = 50;
 }
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
@@ -596,7 +596,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     }
 
     if( b_positionOnceValid && bGPSValid && ( Range_NM >= 0. ) )
-        rngStr = cc1->FormatDistanceAdaptive( Range_NM );
+        rngStr = FormatDistanceAdaptive( Range_NM );
     else
         rngStr = _("---");
 
@@ -651,7 +651,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         tcpaStr << _T("</b> ") << _("in ") << _T("</td><td align=right><b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
                                                                   
         html<< /*vertSpacer << */rowStart << _T("<font size=-2>") <<_("CPA") << _T("</font>") << rowEnd
-            << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
+            << rowStartH << _T("<b>") << FormatDistanceAdaptive( CPA )
             << tcpaStr << rowEnd;
     }
 
@@ -791,7 +791,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
 
     if( g_bAISRolloverShowCPA && bCPA_Valid ) {
         if( result.Len() ) result << _T("\n");
-        result << _("CPA") << _T(" ") << cc1->FormatDistanceAdaptive( CPA )
+        result << _("CPA") << _T(" ") << FormatDistanceAdaptive( CPA )
         << _T(" ") << _("in") << _T(" ")
         << wxString::Format( _T("%.0f"), TCPA ) << _T(" ") << _("min");
     }

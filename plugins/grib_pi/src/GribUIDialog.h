@@ -128,7 +128,9 @@ public:
 	bool            m_CDataIsShown;
     int             m_ZoneSelAllowed;
     int             m_old_DialogStyle;
-	double			m_ScaledFactor;
+    double			m_ScaledFactor;
+    void DoZoomToCenter();
+    
 private:
     void OnClose( wxCloseEvent& event );
     void OnSize( wxSizeEvent& event );
@@ -136,7 +138,7 @@ private:
     void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
-	void OnMove( wxMoveEvent& event );
+    void OnMove( wxMoveEvent& event );
     void OnMenuEvent( wxMenuEvent& event );
     void MenuAppend( wxMenu *menu, int id, wxString label, wxItemKind kind, wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = NULL );
     void OnZoomToCenterClick( wxCommandEvent& event );

@@ -27,6 +27,7 @@
 #include "navutil.h"
 #include "Select.h"
 #include "Track.h"
+#include "Route.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman    *g_pRouteMan;

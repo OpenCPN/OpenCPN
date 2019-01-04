@@ -38,10 +38,10 @@
 #include "s52plib.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
+#include "chcanv.h"
 
 extern s52plib *ps52plib;
 extern MyFrame * gFrame;
-extern ChartCanvas *cc1;
 extern PlugInManager *g_pi_manager;
 extern OCPNPlatform *g_Platform; 
 
@@ -87,7 +87,7 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     m_state_timer.SetOwner( this, STATE_TIMER );
     m_state_timer.Start( 500, wxTIMER_CONTINUOUS );
     
-    
+    SetCanToggleOrientation( false );
     
 }
 
@@ -146,6 +146,8 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
 {
     int itemId = event.GetId();
 
+    ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+    
     enum _DisCat nset = STANDARD;
     double range;
     
@@ -177,53 +179,53 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                     break;
             }
             
-            gFrame->SetENCDisplayCategory( nset );
+            gFrame->SetENCDisplayCategory( cc, nset );
             
             break;
 
         case ID_RMINUS:
-            range = cc1->GetCanvasRangeMeters();
+            range = cc->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
             
             if(range > 8000.)
-                cc1->SetCanvasRangeMeters(8000.);
+                cc->SetCanvasRangeMeters(8000.);
             if(range > 4000.)
-                cc1->SetCanvasRangeMeters(4000.);
+                cc->SetCanvasRangeMeters(4000.);
             else if(range > 2000.)
-                cc1->SetCanvasRangeMeters(2000.);
+                cc->SetCanvasRangeMeters(2000.);
             else if(range > 1600.)
-                cc1->SetCanvasRangeMeters(1600.);
+                cc->SetCanvasRangeMeters(1600.);
             else if(range > 1200.)
-                cc1->SetCanvasRangeMeters(1200.);
+                cc->SetCanvasRangeMeters(1200.);
             else if(range > 800.)
-                cc1->SetCanvasRangeMeters(800.);
+                cc->SetCanvasRangeMeters(800.);
             else if(range > 500.)
-                cc1->SetCanvasRangeMeters(500.);
+                cc->SetCanvasRangeMeters(500.);
             else if(range > 300.)
-                cc1->SetCanvasRangeMeters(300.);
+                cc->SetCanvasRangeMeters(300.);
             
             break;
                     
         case ID_RPLUS:
-            range = cc1->GetCanvasRangeMeters();
+            range = cc->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
             
             if(range < 300.)
-                cc1->SetCanvasRangeMeters(300.);
+                cc->SetCanvasRangeMeters(300.);
             else if(range < 500.)
-                cc1->SetCanvasRangeMeters(500.);
+                cc->SetCanvasRangeMeters(500.);
             else if(range < 800.)
-                cc1->SetCanvasRangeMeters(800.);
+                cc->SetCanvasRangeMeters(800.);
             else if(range < 1200.)
-                cc1->SetCanvasRangeMeters(1200.);
+                cc->SetCanvasRangeMeters(1200.);
             else if(range < 1600.)
-                cc1->SetCanvasRangeMeters(1600.);
+                cc->SetCanvasRangeMeters(1600.);
             else if(range < 2000.)
-                cc1->SetCanvasRangeMeters(2000.);
+                cc->SetCanvasRangeMeters(2000.);
             else if(range < 4000.)
-                cc1->SetCanvasRangeMeters(4000.);
+                cc->SetCanvasRangeMeters(4000.);
             else if(range < 8000.)
-                cc1->SetCanvasRangeMeters(8000.);
+                cc->SetCanvasRangeMeters(8000.);
             
             break;
         
@@ -253,11 +255,15 @@ void iENCToolbar::SetDensityToolBitmap( int nDensity)
 
 void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
 {
+    ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+    if(!cc)
+        return;
+    
     //  Keep the Density tool in sync
     if(ps52plib){
         int nset = 1;
 
-        switch (ps52plib->GetDisplayCategory()) {
+        switch (gFrame->GetPrimaryCanvas()->GetENCDisplayCategory()) {
             case (DISPLAYBASE):
                 nset = 0;
                 break;
@@ -286,8 +292,9 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
     }
     
     // Keep the Range annunciator updated
-    if(cc1){
-        double range = cc1->GetCanvasRangeMeters();
+        
+    if(cc){
+        double range = cc->GetCanvasRangeMeters();
      
         if(range != m_range){
             m_range = range;

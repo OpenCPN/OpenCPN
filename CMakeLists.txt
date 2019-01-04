@@ -458,6 +458,8 @@ ENDIF()
 MESSAGE (STATUS "    Adding local GLU" )
 add_subdirectory(src/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
+MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
+
 
 IF(NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -958,11 +960,11 @@ IF(OCPN_USE_SVG)
     endif()
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
-    IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "ON")
+    IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxsvg includes")
       INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
       SET(EXTRA_LIBS ${EXTRA_LIBS} ${WXSVG_LIBRARIES})
-    ELSE (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "ON")
+    ELSE (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with bundled wxsvg includes")
       ADD_LIBRARY(WXSVG ${SRC_WXSVG})
       TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
@@ -972,7 +974,7 @@ IF(OCPN_USE_SVG)
       INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
       set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
       SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
-    ENDIF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "ON")
+    ENDIF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
@@ -1372,6 +1374,11 @@ SET(SRCS
         src/FlexHash.cpp
         src/iENCToolbar.cpp
         src/mbtiles.cpp
+        src/ConfigMgr.cpp
+        src/CanvasOptions.cpp
+        src/MUIBar.cpp
+        src/OCPN_AUIManager.cpp
+        src/CanvasConfig.cpp
 )
 IF(APPLE)
   SET(SRCS ${SRCS}
@@ -1380,10 +1387,10 @@ IF(APPLE)
   )
 ENDIF(APPLE)
 
-IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
   SET(SRCS ${SRCS} src/crashprint.cpp)
-ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
@@ -1878,14 +1885,14 @@ ENDIF(xAPPLE)
 
 IF(WIN32)
   IF(MSVC)
-    SET(CMAKE_C_FLAGS_DEBUG               "/MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
-    SET(CMAKE_C_FLAGS_MINSIZEREL          "/MD  /O1  /Ob1 /D NDEBUG")
-    SET(CMAKE_C_FLAGS_RELEASE             "/MD  /O2  /Ob2 /D NDEBUG /Zi")
-    SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MD  /O2  /Ob1 /D NDEBUG /Zi")
-    SET(CMAKE_CXX_FLAGS_DEBUG             "/MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
-    SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MD  /O1  /Ob1 /D NDEBUG /EHa")
-    SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
-    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
+    SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
+    SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
+    SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi")
+    SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
+    SET(CMAKE_CXX_FLAGS_DEBUG             "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
+    SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
+    SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
+    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
   ENDIF(MSVC)
   ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
@@ -1920,6 +1927,12 @@ IF(APPLE)
              ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
   ENDFOREACH (_currentSoundFile )
 
+  FILE(GLOB CONFIG_FILES ${CMAKE_SOURCE_DIR}/data/configs/*)
+  FOREACH (_currentConfigFile ${CONFIG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+           ${_currentConfigFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/configs )
+  ENDFOREACH (_currentConfigFile )
+
   IF(OCPN_USE_SVG)
     #Traditional theme SVG icons
     FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/traditional/*")
@@ -1942,6 +1955,13 @@ IF(APPLE)
               ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
     ENDFOREACH ()
 
+    #MUI_flat theme SVG icons
+    FILE(GLOB MUI_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/MUI_flat/*")
+    FOREACH (_currentSvgFile ${MUI_FLAT_SVG_FILES})
+      SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/MUI_flat )
+    ENDFOREACH (_currentSvgFile )
+
     #Default SVG Icons
     FILE(GLOB DEFAULT_ICON_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/markicons/*")
     FOREACH (_currentSvgFile ${DEFAULT_ICON_SVG_FILES})
@@ -1951,6 +1971,8 @@ IF(APPLE)
   ENDIF(OCPN_USE_SVG)
 
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
+  
+  INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
 
   SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
@@ -2011,7 +2033,9 @@ IF(APPLE)
         ${JOURNEYMAN_SVG_FILES}
         ${JOURNEYMAN_FLAT_SVG_FILES}
         ${DEFAULT_ICON_SVG_FILES}
+        ${MUI_FLAT_SVG_FILES}
         ${DOC_FILES}
+        ${CONFIG_FILES}
         )
 
     INSTALL(TARGETS
@@ -2037,7 +2061,6 @@ IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
           ${SRC_NMEA0183}
           ${SRC_S57ENC}
-          # ${SRC_GARMINHOST}
           ${SRC_TEXCMP}
           ${SRC_MIPMAP}
           ${SRC_SYMBOLS}
@@ -2162,6 +2185,7 @@ IF(NOT APPLE)
     INSTALL(DIRECTORY data/svg/traditional/ DESTINATION ${PREFIX_PKGDATA}/uidata/traditional)
     INSTALL(DIRECTORY data/svg/journeyman/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman)
     INSTALL(DIRECTORY data/svg/journeyman_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman_flat)
+    INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
   ENDIF(OCPN_USE_SVG)
 
   IF (USE_S57)

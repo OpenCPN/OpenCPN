@@ -55,6 +55,7 @@
 #include "cutil.h"
 #include "AIS_Decoder.h"
 #include "wx28compat.h"
+#include "Route.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -62,17 +63,13 @@
 #include <wx/apptrait.h>
 #include "OCPNPlatform.h"
 #include "Track.h"
-
-//#include <wx/arrimpl.cpp> // this is a magic incantation which must be done!
-//WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
-//WX_DEFINE_OBJARRAY( ArrayOfMarkIcon); 
-
+#include "chcanv.h"
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
-
+extern MyFrame          *gFrame;
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
 
@@ -125,6 +122,8 @@ WX_DEFINE_LIST(markicon_bitmap_list_type);
 WX_DEFINE_LIST(markicon_key_list_type);
 WX_DEFINE_LIST(markicon_description_list_type);
 
+//Helper conditional file name dir slash
+void appendOSDirSlash(wxString* pString);
 
 wxImage LoadSVGIcon( wxString filename, int width, int height )
 {
@@ -223,6 +222,30 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining( RoutePoint *pWP )
         delete pArray;
         return NULL;
     }
+}
+
+void Routeman::RemovePointFromRoute( RoutePoint* point, Route* route, ChartCanvas *cc )
+{
+    //  Rebuild the route selectables
+    pSelect->DeleteAllSelectableRoutePoints( route );
+    pSelect->DeleteAllSelectableRouteSegments( route );
+    
+    route->RemovePoint( point );
+    
+    //  Check for 1 point routes. If we are creating a route, this is an undo, so keep the 1 point.
+    if( cc && (route->GetnPoints() <= 1) && (cc->m_routeState == 0) ) {
+         pConfig->DeleteConfigRoute( route );
+         g_pRouteMan->DeleteRoute( route );
+         route = NULL;
+     }
+    //  Add this point back into the selectables
+    pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
+    
+    if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        pRoutePropDialog->SetRouteAndUpdate( route, true );
+    }
+    
+    gFrame->InvalidateAllGL();
 }
 
 RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, double cog,
@@ -605,8 +628,12 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
-    //Send all known Autopilot messages upstream
-    
+   //Send all known Autopilot messages upstream
+
+   //Avoid a possible not initiated SOG/COG. APs can be confused if in NAV mode wo valid GPS
+   double r_Sog(0.0), r_Cog(0.0);
+   if (!std::isnan(gSog)) r_Sog = gSog;
+   if (!std::isnan(gCog)) r_Cog = gCog;
     //RMB
         {
 
@@ -635,12 +662,13 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
             m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
-            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = gSog;
+            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog;
 
             if( m_bArrival ) m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
             else
                 m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
+            m_NMEA0183.Rmb.FAAModeIndicator = "A";
             m_NMEA0183.Rmb.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );
@@ -662,10 +690,10 @@ bool Routeman::UpdateAutopilot()
             else
                 m_NMEA0183.Rmc.Position.Longitude.Set( gLon, _T("E") );
 
-            m_NMEA0183.Rmc.SpeedOverGroundKnots = gSog;
-            m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = gCog;
+            m_NMEA0183.Rmc.SpeedOverGroundKnots = r_Sog;
+            m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = r_Cog;
 
-            if( !wxIsNaN(gVar) ) {
+            if( !std::isnan(gVar) ) {
                 if( gVar < 0. ) {
                     m_NMEA0183.Rmc.MagneticVariation = -gVar;
                     m_NMEA0183.Rmc.MagneticVariationDirection = West;
@@ -683,7 +711,7 @@ bool Routeman::UpdateAutopilot()
 
             wxString date = utc.Format( _T("%d%m%y") );
             m_NMEA0183.Rmc.Date = date;
-
+            m_NMEA0183.Rmc.FAAModeIndicator = "A";
             m_NMEA0183.Rmc.Write( snt );
 
             g_pMUX->SendNMEAMessage( snt.Sentence );
@@ -722,7 +750,7 @@ bool Routeman::UpdateAutopilot()
                                      &brg1,
                                      &dist1 );
             
-            if( g_bMagneticAPB && !wxIsNaN(gVar) ) {
+            if( g_bMagneticAPB && !std::isnan(gVar) ) {
                 
                 double brg1m = ((brg1 - gVar) >= 0.) ? (brg1 - gVar) : (brg1 - gVar + 360.);
                 double bapm = ((CurrentBrgToActivePoint - gVar) >= 0.) ? (CurrentBrgToActivePoint - gVar) : (CurrentBrgToActivePoint - gVar + 360.);
@@ -1268,7 +1296,13 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 
 void WayPointman::ProcessDefaultIcons()
 {
-    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/markicons/");
+    wxString iconDir = g_Platform->GetSharedDataDir();
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("uidata"));
+    appendOSDirSlash(&iconDir);
+    iconDir.append(_T("markicons"));
+    appendOSDirSlash(&iconDir);
+
     MarkIcon *pmi = 0;
     
     // Add the legacy icons to their own sorted array

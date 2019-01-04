@@ -28,6 +28,8 @@
 #include <wx/dialog.h>
 #include "ocpn_types.h"
 
+class ChartCanvas;
+
 /*!
  * Control identifiers
  */
@@ -70,6 +72,7 @@ class GoToPositionDialog: public wxDialog
                          const wxPoint& pos = SYMBOL_GOTOPOS_POSITION,
                          const wxSize& size = SYMBOL_GOTOPOS_SIZE, long style = SYMBOL_GOTOPOS_STYLE );
 
+            void SetCanvas( ChartCanvas *canvas ){ m_hostCanvas = canvas; }
             void SetColorScheme(ColorScheme cs);
 
             void CreateControls();
@@ -89,6 +92,7 @@ class GoToPositionDialog: public wxDialog
 
             double        m_lat_save;
             double        m_lon_save;
+            ChartCanvas   *m_hostCanvas;
 };
 
 #endif

@@ -45,6 +45,7 @@ const int StyleValues[] = { -1, wxSOLID, wxDOT, wxLONG_DASH, wxSHORT_DASH, wxDOT
 const int WidthValues[] = { -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 class ocpnDC;
+class ChartCanvas;
 
 class Route : public wxObject
 {
@@ -52,7 +53,7 @@ public:
       Route();
       ~Route();
 
-      virtual void Draw(ocpnDC& dc, ViewPort &pvp, const LLBBox &box);
+      virtual void Draw(ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box);
       virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
       
       void AddPoint(RoutePoint *pNewPoint,
@@ -64,11 +65,14 @@ public:
       int GetIndexOf(RoutePoint *prp);
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
-      void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
-      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow);
-      void DrawGLLines( ViewPort &vp, ocpnDC *dc );
-      void DrawGL( ViewPort &vp );
-      void DrawGLRouteLines( ViewPort &vp );
+      
+      void DrawPointWhich(ocpnDC& dc, ChartCanvas *canvas, int iPoint, wxPoint *rpn);
+      void DrawSegment(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow);
+      
+      void DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas );
+      void DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas );
+      
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -76,7 +80,7 @@ public:
       void FinalizeForRendering();
       void UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double planspeed = -1.0 );
       void UpdateSegmentDistances(double planspeed = -1.0);
-      void CalculateDCRect(wxDC& dc_route, wxRect *prect);
+      void CalculateDCRect(wxDC& dc_route, ChartCanvas *canvas, wxRect *prect);
       LLBBox &GetBBox();
       void SetHiLite( int width ) {m_hiliteWidth = width; }
       void Reverse(bool bRenamePoints = false);

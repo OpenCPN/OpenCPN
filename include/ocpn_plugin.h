@@ -45,7 +45,7 @@
 #include <wx/xml/xml.h>
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
 class wxGLContext;
@@ -55,7 +55,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           15
+#define API_VERSION_MINOR           16
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -467,7 +467,6 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
 
             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-
             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
             virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
@@ -535,6 +534,14 @@ public:
     opencpn_plugin_115(void *pmgr);
     virtual ~opencpn_plugin_115();
 
+};
+
+class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
+{
+public:
+    opencpn_plugin_116(void *pmgr);
+    virtual ~opencpn_plugin_116();
+    virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
 };
 
 //------------------------------------------------------------------
@@ -1219,8 +1226,6 @@ private:
     bool m_b_complete;
 };
 
-//DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
-//extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
 //extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
 
@@ -1250,7 +1255,7 @@ extern DECL_EXP int PlugInGetMaxAvailableGshhgQuality();
 
 extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
 
-// API 1.16?
+// API 1.16
 //
 /**
  * Return the plugin data directory for a given directory name.
@@ -1269,5 +1274,11 @@ extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
  */
 extern DECL_EXP wxString GetPluginDataDir(const char* plugin_name);
 
+//  Support for MUI MultiCanvas model
+
+extern DECL_EXP wxWindow* PluginGetFocusCanvas();
+extern DECL_EXP wxWindow* PluginGetOverlayRenderCanvas();
+
+extern "C"  DECL_EXP void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scale);
 
 #endif //_PLUGIN_H_

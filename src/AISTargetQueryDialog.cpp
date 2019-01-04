@@ -38,6 +38,7 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "RoutePoint.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
@@ -48,10 +49,10 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
+extern MyFrame *gFrame;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
@@ -112,15 +113,16 @@ void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
     if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
+            wxString n =  wxString::Format(wxT("\"%s\"  %i "),td->ShipName,  td->MMSI).append(wxDateTime::Now().Format(wxT("%H:%M")));
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, n, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
-            cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            cc1->undo->AfterUndoableAction( NULL );
+            gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
             Refresh( false );
         }
     }

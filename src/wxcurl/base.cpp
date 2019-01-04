@@ -222,7 +222,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetElapsedTime() const
 wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedTime() const
 {
     double nBytesPerSec = GetSpeed();
-    if (nBytesPerSec == 0 || wxIsNaN(nBytesPerSec))
+    if (nBytesPerSec == 0 || std::isnan(nBytesPerSec))
         return wxTimeSpan(0);       // avoid division by zero
 
     // compute remaining seconds; here we assume that the current
@@ -248,7 +248,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedRemainingTime() const
 std::string wxCurlProgressBaseEvent::GetHumanReadableSpeed(const std::string &invalid, int precision) const
 {
     double speed = GetSpeed();
-    if (speed == 0 || wxIsNaN(speed))
+    if (speed == 0 || std::isnan(speed))
         return invalid;
 
     wxULongLong ull((wxULongLong_t)speed);
@@ -435,7 +435,7 @@ wxCurlBase::~wxCurlBase()
 //////////////////////////////////////////////////////////////////////
 
 typedef int (*func_T)(void);
-bool wxCurlBase::SetOpt(int opt, ...)
+bool wxCurlBase::SetOpt(CURLoption option, ...)
 {
     va_list arg;
 
@@ -444,8 +444,7 @@ bool wxCurlBase::SetOpt(int opt, ...)
     void *param_obj = NULL;
     curl_off_t param_offset = 0;
 
-    va_start(arg, opt);
-    CURLoption option = (CURLoption)opt;
+    va_start(arg, option);
 
     CURLcode res = CURLE_OK;
 
@@ -492,7 +491,7 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
     return SetOpt(option, (const char*)str);
 }
 
-bool wxCurlBase::GetInfo(int info, ...) const
+bool wxCurlBase::GetInfo(CURLINFO info, ...) const
 {
     va_list arg;
     void* pParam;
@@ -501,8 +500,8 @@ bool wxCurlBase::GetInfo(int info, ...) const
     pParam = va_arg(arg, void*);
 
     CURLcode res = CURLE_OK;
-    CURLINFO cInfo = (CURLINFO)info;
-    res = curl_easy_getinfo(m_pCURL, cInfo, pParam);
+
+    res = curl_easy_getinfo(m_pCURL, info, pParam);
 
     DumpErrorIfNeed(res);
     va_end(arg);

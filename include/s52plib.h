@@ -153,6 +153,7 @@ public:
     void RestoreColorScheme( void ) {}
 
 //    Rendering stuff
+    void PrepareForRender( ViewPort *vp );
     void PrepareForRender( void );
     void AdjustTextList( int dx, int dy, int screenw, int screenh );
     void ClearTextList( void );
@@ -177,11 +178,11 @@ public:
     void SetLightsOff(bool val){ m_lightsOff = val; }
     bool GetLightsOff(){ return m_lightsOff; }
     
-    void SetAnchorOn(bool val){ m_anchorOn = val; }
+    void SetAnchorOn(bool val);
     bool GetAnchorOn();
 
-    void SetQualityOfDataOn(bool val){ m_qualityOfDataOn = val; }
-    bool GetQualityOfDataOn();
+    void SetQualityOfData(bool val);
+    bool GetQualityOfData();
     
     int GetMajorVersion( void ) { return m_VersionMajor; }
     int GetMinorVersion( void ) { return m_VersionMinor; }
@@ -194,7 +195,12 @@ public:
 
     void SetDisplayCategory( enum _DisCat cat );
     DisCat GetDisplayCategory(){ return m_nDisplayCategory; }
-    
+
+    void SetGLPolygonSmoothing( bool bset ){ m_GLPolygonSmoothing = bset;}
+    bool GetGLPolygonSmoothing( ){ return m_GLPolygonSmoothing; }
+    void SetGLLineSmoothing( bool bset ){ m_GLLineSmoothing = bset;}
+    bool GetGLLineSmoothing( ){ return m_GLLineSmoothing; }
+
     wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
     LUPArrayContainer *SelectLUPArrayContainer( LUPname TNAM );
         
@@ -425,7 +431,8 @@ private:
     bool m_useFBO;
     bool m_useVBO;
     int  m_TextureFormat;
-    
+    bool m_GLLineSmoothing;
+    bool m_GLPolygonSmoothing;
 };
 
 

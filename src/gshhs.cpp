@@ -64,6 +64,9 @@ extern wxString gWorldMapLocation;
 
 GSHHSChart::GSHHSChart() {
     reader = NULL;
+    land = wxColor( 250, 250, 250 );
+    water = wxColor( 0, 0, 0 );
+    
 }
 
 GSHHSChart::~GSHHSChart() {
@@ -101,13 +104,13 @@ void GSHHSChart::Reset() {
 
 int GSHHSChart::GetMinAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMinAvailableQuality();
 }
 
 int GSHHSChart::GetMaxAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMaxAvailableQuality();
 }
 
@@ -260,7 +263,7 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
         for( v = 0; v < p->at( c ).size(); v++ ) {
             wxRealPoint &ccp = cp.at( v );
             wxPoint2DDouble q = GetDoublePixFromLL(vp, ccp.y, ccp.x + dx );
-            if(wxIsNaN(q.m_x)) {
+            if(std::isnan(q.m_x)) {
                 pointCount = 0;
                 break;
             }
@@ -820,11 +823,12 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         glEnableClientState(GL_VERTEX_ARRAY);
         
         // use a viewport that allows the vertexes to be reused over many frames
-        if(glChartCanvas::HasNormalizedViewPort(vp)) {
-            glPushMatrix();
-            glChartCanvas::MultMatrixViewPort(vp);
-            nvp = glChartCanvas::NormalizedViewPort(vp);
-        }
+        // TODO fix for multicanvas
+         if(glChartCanvas::HasNormalizedViewPort(vp)) {
+             glPushMatrix();
+             glChartCanvas::MultMatrixViewPort(vp);
+             nvp = glChartCanvas::NormalizedViewPort(vp);
+         }
     }
 #endif
     for( clon = clonmin; clon < clonmax; clon++ ) {

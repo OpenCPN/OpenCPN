@@ -39,7 +39,7 @@
 extern bool g_btouch;
 extern OCPNPlatform  *g_Platform;
 
-BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
+BEGIN_EVENT_TABLE(ChInfoWin, wxPanel)
     EVT_PAINT ( ChInfoWin::OnPaint )
     EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
     EVT_MOUSE_EVENTS ( ChInfoWin::MouseEvent )
@@ -54,7 +54,7 @@ ChInfoWin::ChInfoWin( wxWindow *parent )
     style |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
+    wxPanel::Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
     SetFont(*dFont);
@@ -111,7 +111,7 @@ void ChInfoWin::SetBitmap()
     m_pInfoTextCtl->SetSize( 1, 1, m_size.x - 2, m_size.y - 2 );
     m_pInfoTextCtl->SetLabel( m_string );
 
-    wxPoint top_position = GetParent()->ClientToScreen( m_position);
+    wxPoint top_position = m_position; //GetParent()->ClientToScreen( m_position);
     SetSize( top_position.x, top_position.y, m_size.x, m_size.y );
     SetClientSize( m_size.x, m_size.y );
 }

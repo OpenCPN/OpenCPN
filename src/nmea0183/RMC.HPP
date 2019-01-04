@@ -60,6 +60,7 @@ class RMC : public RESPONSE
       wxString          Date;
       double           MagneticVariation;
       EASTWEST         MagneticVariationDirection;
+      wxString         FAAModeIndicator;
 
       /*
       ** Methods

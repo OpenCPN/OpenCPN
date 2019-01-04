@@ -50,6 +50,7 @@
 #include "PositionParser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
+#include "Route.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -66,7 +67,6 @@ extern TCMgr              *ptcmgr;
 extern long               gStart_LMT_Offset;
 extern MyConfig           *pConfig;
 extern WayPointman        *pWayPointMan;
-extern ChartCanvas        *cc1;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -523,7 +523,13 @@ void RouteProp::RecalculateSize( void )
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 44;
     
-    wxSize dsize = GetParent()->GetClientSize();
+    wxApp *app = wxTheApp;
+    wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
+    if(!frame)
+        return;
+
+    
+    wxSize dsize = frame->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetClientSize(esize);
@@ -716,8 +722,7 @@ bool RouteProp::IsThisRouteExtendable()
     else
         if( pEditRouteArray->GetCount() == 0 ) {
 
-            //int nearby_radius_meters = 8./cc1->GetCanvasScaleFactor(); // "nearby" means 8 pixels away
-            int nearby_radius_meters = (int) ( 8. / cc1->GetCanvasTrueScale() );
+            int nearby_radius_meters = (int) ( 8. / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale() );
             double rlat = pLastPoint->m_lat;
             double rlon = pLastPoint->m_lon;
 
@@ -1465,7 +1470,7 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
                 m_SplitButton->Enable( true );
             }
 
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 
 #ifdef __WXMSW__            
             if (m_wpList)
@@ -1496,7 +1501,7 @@ void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
                 RoutePoint *wp;
                 wp = (RoutePoint *) m_wpList->GetItemData( item );
 
-                cc1->RemovePointFromRoute( wp, m_pRoute );
+                g_pRouteMan->RemovePointFromRoute( wp, m_pRoute, NULL );
             }
             break;
         }
@@ -2351,7 +2356,7 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
     gFrame->Raise();
     #endif
     Hide();
-    cc1->Refresh( false );
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 }
@@ -2388,8 +2393,8 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     gFrame->Raise();
     #endif
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 
@@ -3424,7 +3429,7 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
         
         OnPositionCtlUpdated( event );
         SaveChanges(); // write changes to globals and update config
-        cc1->RefreshRect( m_pRoutePoint->CurrentRect_in_DC.Inflate( 1000, 100 ), false );
+        gFrame->RefreshAllCanvas( false );
     }
 
     #ifdef __WXGTK__ 
@@ -3508,7 +3513,7 @@ void MarkInfoImpl::OnPositionCtlUpdated( wxCommandEvent& event )
     }
 
     // Update the mark position dynamically
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void MarkInfoImpl::OnRightClick( wxCommandEvent& event )

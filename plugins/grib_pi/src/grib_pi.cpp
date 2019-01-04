@@ -73,7 +73,7 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_115(ppimgr)
+    :opencpn_plugin_116(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
@@ -350,22 +350,29 @@ bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 
 void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
-	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient(position);
+    //  Use the application frame to bound the control bar position.
+    wxApp *app = wxTheApp;
+    
+    wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
+    if(!frame)
+        return;
+    
+    wxPoint p = frame->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
-		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
-	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
-		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
+    if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
+        p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
+    if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
+	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
-	dialog->Move(GetOCPNCanvasWindow()->ClientToScreen(p));
+    dialog->Move(frame->ClientToScreen(p));
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    if( !::wxIsBusy() ) ::wxBeginBusyCursor();
+    //if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
     bool starting = false;
 
@@ -437,6 +444,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+        
+        // Do an automatic "zoom-to-center" on the overlay canvas
+        if( m_pGribCtrlBar ){
+           m_pGribCtrlBar->DoZoomToCenter();
+        }
+ 
         RequestRefresh(m_parent_window); // refresh main window
     } else
        m_pGribCtrlBar->Close();

@@ -298,6 +298,24 @@ wxString FontMgr::GetFullConfigDesc( int i ) const
     return ret;
 }
 
+MyFontDesc *FontMgr::FindFontByConfigString( wxString pConfigString )
+{
+    //    Search for a match in the list
+    MyFontDesc *pmfd;
+    wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+    
+    while( node ) {
+        pmfd = (MyFontDesc *) node->GetData();
+        if( pmfd->m_configstring == pConfigString ) {
+            return pmfd;
+        }
+        node = node->GetNext();
+    }
+    
+    return NULL;
+}
+    
+
 void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
 {
     //    Parse the descriptor string

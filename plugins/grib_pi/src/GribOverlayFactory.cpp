@@ -833,13 +833,21 @@ static ColorMap CloudMap[] =
  {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
  {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
+static ColorMap CAPEMap[] =
+{ { 0, _T("#0046c8") }, { 5, _T("#0050f0") },{ 10, _T("#005aff") },{ 15, _T("#0069ff") },
+{ 20, _T("#0078ff") },{ 30, _T("#000cff") },{ 45, _T("#00a1ff") },{ 60, _T("#00b6fa") },
+{ 100, _T("#00c9ee") },{ 150, _T("#00e0da") },{ 200, _T("#00e6b4") },{ 300, _T("#82e678") },
+{ 500, _T("#9bff3b") },{ 700, _T("#ffdc00") },{ 1000, _T("#ffb700") }, { 1500, _T("#f37800") },
+{ 2000, _T("#d4440c") },{ 2500, _T("#c8201c") },{ 3000, _T("#ad0430") },
+};
+
 #if 0
 static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 #endif
 
 enum {
     GENERIC_GRAPHIC_INDEX, WIND_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX,
-    PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX
+    PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX, CAPE_GRAPHIC_INDEX
 };
 
 static void InitColor(ColorMap *map, size_t maplen)
@@ -862,6 +870,7 @@ void GRIBOverlayFactory::InitColorsTable( )
     InitColor(SeaTempMap, (sizeof SeaTempMap) / (sizeof *SeaTempMap));
     InitColor(PrecipitationMap, (sizeof PrecipitationMap) / (sizeof *PrecipitationMap));
     InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
+	InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in, unsigned char &r, unsigned char &g, unsigned char &b)
@@ -905,6 +914,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in, unsigned c
         map = CloudMap;
         maplen = (sizeof CloudMap) / (sizeof *CloudMap);
         break;
+	case CAPE_GRAPHIC_INDEX:
+		map = CAPEMap;
+		maplen = (sizeof CAPEMap) / (sizeof *CAPEMap);
+		break;
     default:
         return;
     }
@@ -2142,7 +2155,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         int w, h;
         dc.GetMultiLineTextExtent( msg, &w, &h );
         h += 2;
-        int yp = y - ( GetChartbarHeight() + h );
+        int yp = y - ( 2 * GetChartbarHeight() + h );
 
         int label_offset = 10;
         int wdraw = w + ( label_offset * 2 );
@@ -2154,7 +2167,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         int w, h;
         m_TexFontMessage.GetTextExtent( msg, &w, &h);
         h += 2;
-        int yp = y - ( GetChartbarHeight() + h );
+        int yp = y - ( 2 * GetChartbarHeight() + h );
 
         glColor3ub( 243, 229, 47 );
 

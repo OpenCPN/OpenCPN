@@ -203,7 +203,7 @@ void GribOverlaySettings::Read()
         pConf->Read ( Name + _T ( "DirectionArrowSpacing" ), &Settings[i].m_iDirArrSpacing, 50);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
-        int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 0};
+        int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 7};
         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Settings[i].m_iOverlayMapColors, defcolor[i]);
 
         pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, false);
@@ -487,7 +487,7 @@ double GribOverlaySettings::GetMax(int settings)
     case CLOUD:           max = 100;     break; /* percent */
     case AIR_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     case SEA_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
-    case CAPE:            max = 4000;    break; /* j/kg */
+    case CAPE:            max = 3500;    break; /* j/kg */
     }
     return CalibrateValue(settings, max);
 }
@@ -595,8 +595,11 @@ void GribSettingsDialog::SetSettingsDialogSize()
 	wxSize scroll(0, 0);
 #else        
     /*Sizing do not work with wxScolledWindow so we need to compute it*/
-    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
-    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    
+    wxWindow *frame = wxTheApp->GetTopWindow();  
+
+    int w = frame->GetClientSize().x;           // the display size
+    int h = frame->GetClientSize().y;
     int dMargin = 80;                          //set a margin
 	w -= dMargin;								//width available for the scrolled window
     h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window

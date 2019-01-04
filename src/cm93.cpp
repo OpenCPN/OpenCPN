@@ -54,6 +54,8 @@
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
 #include "ChartDataInputStream.h"
+#include "DetailSlider.h"
+#include "chcanv.h"
 
 #include <stdio.h>
 
@@ -71,7 +73,6 @@ extern ocpnGLOptions g_GLOptions;
 #define new DEBUG_NEW
 #endif
 
-extern ChartCanvas               *cc1;
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
@@ -1277,8 +1278,8 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
       int ilonroot = ( ilon / 60 ) * 60;
 
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep(&fileroot);
 
       wxString sdir ( fileprefix );
       sdir += fileroot;
@@ -2242,6 +2243,30 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                         loadcell_key++;
                   }
+                  
+                  AssembleLineGeometry();
+
+                      //  Set up the chart context
+                    m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
+                    m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
+                    
+                    m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+                    m_this_chart_context->pRigidATONArray = pRigidATONArray;
+                    m_this_chart_context->chart = this;
+                    m_this_chart_context->safety_contour = 1e6;    // to be evaluated later
+                    m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+                    
+                    //  Loop and populate all the objects
+                    for( int i = 0; i < PI_PRIO_NUM; ++i ) {
+                        for( int j = 0; j < PI_LUPNAME_NUM; j++ ) {
+                            ObjRazRules *top = razRules[i][j];
+                            while(top){
+                                if(top->obj)
+                                    top->obj->m_chart_context = m_this_chart_context;
+                                top = top->next;
+                            }
+                        }
+                    }
                 OCPNPlatform::HideBusySpinner();
             }
       }
@@ -4067,6 +4092,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->x_origin -= trans_WGS84_offset_x;
       pobj->y_origin -= trans_WGS84_offset_y;
 
+      // Mark the object chart type, for the convenience of S52PLIB
+      pobj->auxParm3 = CHART_TYPE_CM93;
+      
       return pobj;
 }
 
@@ -4488,11 +4516,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       
       
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-      fileroot += m_scalechar;
-      fileroot += _T ( "/" );
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep( &fileroot );
+      fileroot.append( m_scalechar );
+      appendOSDirSep( &fileroot );
       wxString key = fileroot;
-      key += file;
+      key.append( file );
       fileroot.Prepend ( m_prefix );
 
       file.Prepend ( fileroot );
@@ -4547,11 +4576,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             file1 += new_scalechar;
             file1[0] = sub_char;
 
-            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-            fileroot += new_scalechar;
-            fileroot += _T ( "/" );
+            fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+            appendOSDirSep( &fileroot );
+            fileroot.append( new_scalechar );
+            appendOSDirSep( &fileroot );
             key = fileroot;
-            key += file1;
+            key.append( file1 );
 
             fileroot.Prepend ( m_prefix );
 
@@ -4835,16 +4865,16 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
       wxString target;
       wxString path;
 
-      wxString sep(wxFileName::GetPathSeparator());
-
       //    Verify that the passed file name exists
       if ( !fn.FileExists() )
       {
             // It may be a directory
             if( wxDir::Exists(name) )
             {
-                  target = name + sep;
-                  path = name + sep;
+                target = name;
+                appendOSDirSep(&target);
+                path = name;
+                appendOSDirSep(&path);
             }
             else {
                   wxString msg ( _T ( "   CM93Composite Chart Init cannot find " ) );
@@ -6012,7 +6042,7 @@ void cm93compchart::SetSpecialCellIndexOffset ( int cell_index, int object_id, i
             m_pcm93chart_current->SetUserOffsets ( cell_index, object_id, subcell, xoff, yoff );
 }
 
-bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
+bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, ChartCanvas *cc )
 {
       if ( m_cmscale >= 7 )
           return false;
@@ -6020,6 +6050,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
       bool secondpass = false;
+      glChartCanvas *glcc = cc->GetglCanvas();
+      if(!glcc)
+          return false;
+      
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
@@ -6043,8 +6077,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
 
+          //TODO this needs fixing for multicanvas
           if(glChartCanvas::HasNormalizedViewPort(vp)) {
-              glChartCanvas::MultMatrixViewPort(vp);
+              glcc->MultMatrixViewPort(vp);
               nvp = glChartCanvas::NormalizedViewPort(vp);
           } else
               nvp = vp;
@@ -6238,7 +6273,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             if(fabs(lon - lastlon) > 180) {
                 if(lastvalid) {
                     wxPoint2DDouble r = vp.GetDoublePixFromLL(lastlat, lastlon > 0 ? 180 : -180);
-                    if(!wxIsNaN(r.m_x)) {
+                    if(!std::isnan(r.m_x)) {
                         q->y = l.m_x;
                         q->x = l.m_y;
                         q++;
@@ -6254,7 +6289,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
                 }
 
                 wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lon > 0 ? 180 : -180);
-                if((lastvalid = !wxIsNaN(r.m_x))) {
+                if((lastvalid = !std::isnan(r.m_x))) {
                     r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                     r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
                     l.m_x = r.m_x;
@@ -6265,7 +6300,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             lastlon = lon;
                                               
             wxPoint2DDouble s = vp.GetDoublePixFromLL( lat, lon );
-            if(!wxIsNaN(s.m_x)) {
+            if(!std::isnan(s.m_x)) {
                 //    Outlines stored in MCDs are not adjusted for offsets
                 s.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                 s.m_y -= mcd->user_yoff * vp.view_scale_ppm;
@@ -6430,8 +6465,9 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 #ifdef ocpnUSE_GL
       if(g_bopengl) {
           /* need a full refresh if not in quilted mode, and the cell changed */
-          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
-              glChartCanvas::Invalidate();
+          //TODO re-add this for multicanvas
+          //if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              //glChartCanvas::Invalidate();
 
           m_last_cell_adjustvp = m_pcm93chart_current;
       }
@@ -6880,7 +6916,7 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 
@@ -6925,7 +6961,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 }
@@ -6973,7 +7009,7 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 
       if ( m_pparent ) {
             m_pparent->Refresh ( true );
-            cc1->InvalidateGL();
+            gFrame->InvalidateAllGL();
       }
     }
 }

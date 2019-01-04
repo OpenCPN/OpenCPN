@@ -32,6 +32,8 @@
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
 #include "Track.h"
+#include "Route.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -46,7 +48,6 @@ extern Select              *pSelect;
 extern RouteManagerDialog  *pRouteManagerDialog;
 extern MyConfig            *pConfig;
 extern MyFrame             *gFrame;
-extern ChartCanvas         *cc1;
 extern PlugInManager       *g_pi_manager;
 
 #define    UTCINPUT         0
@@ -221,6 +222,19 @@ void TrackPropDlg::RecalculateSize( void )
 
     Centre();
 
+}
+
+static void addColumns(wxListCtrl *lctrl, int dx) {
+    lctrl->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6);
+    lctrl->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10);
+    lctrl->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8);
+    lctrl->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    lctrl->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    // Width of timestamp is typically 19 characters: 'MM/DD/YYYY HH:MM:SS'.
+    lctrl->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 19);
+    lctrl->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
+
+    lctrl->SetMinSize(wxSize(-1, 50) );
 }
 
 void TrackPropDlg::CreateControlsCompact()
@@ -435,21 +449,9 @@ void TrackPropDlg::CreateControlsCompact()
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( itemlistWin, wxID_ANY, wxDefaultPosition, wxSize( 100, 500 ), flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
      // sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
@@ -707,21 +709,9 @@ void TrackPropDlg::CreateControls( void )
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( m_panel0, wxID_ANY, wxDefaultPosition, wxDefaultSize, flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
       sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
@@ -1276,7 +1266,7 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
                 m_nSelected = selected_no + 1;
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 #ifdef __WXMSW__            
             if(m_lcPoints)
                 m_lcPoints->SetFocus();
@@ -1311,7 +1301,7 @@ void TrackPropDlg::OnExportBtnClick( wxCommandEvent& event )
     list.Append( m_pTrack );
     if( m_pTrack->GetName() != wxEmptyString )
         suggested_name = m_pTrack->GetName();
-    pConfig->ExportGPXTracks( this, &list, suggested_name );
+    ExportGPXTracks( this, &list, suggested_name );
 }
 
 void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )
@@ -1578,8 +1568,8 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateTrkListCtrl();
 
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 }
@@ -1602,9 +1592,9 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
         m_pTrack->ClearHighlights();
         
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
-
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
+    
     event.Skip();
 }
 

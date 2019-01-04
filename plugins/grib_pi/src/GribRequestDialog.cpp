@@ -182,7 +182,7 @@ void GribRequestSetting::InitRequestConfig()
 void GribRequestSetting::OnClose( wxCloseEvent& event )
 {
     m_RenderZoneOverlay = 0;                                    //eventually stop graphical zone display
-    RequestRefresh( m_parent.pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 
     //allow to be back to old value if changes have not been saved
     m_ZoneSelMode = m_SavedZoneSelMode;
@@ -204,8 +204,11 @@ void GribRequestSetting::SetRequestDialogSize()
 #ifdef __WXGTK__
     SetMinSize( wxSize( 0, 0 ) );
 #endif
-    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
-    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    
+     wxWindow *frame = wxTheApp->GetTopWindow();  
+
+    int w = frame->GetClientSize().x;           // the display size
+    int h = frame->GetClientSize().y;
     int dMargin = 80;                                      //set a margin
     h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
     w -= dMargin;                                           //width available for the scrolled window
@@ -250,6 +253,12 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
 
     if( event.Moving()) return false;                           //maintain status bar and tracking dialog updated
 
+    // This does not work, but something like it should
+//     wxObject *obj = event.GetEventObject();
+//     wxWindow *win = wxDynamicCast(obj, wxWindow);
+//     if( win && (win != PluginGetFocusCanvas()))
+//         return false;
+    
     if( event.LeftDown() ) {
         m_parent.pParent->SetFocus();
         m_ZoneSelMode = DRAW_SELECTION;                         //restart a new drawing
@@ -302,7 +311,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
         m_spMinLon->SetValue( (int) floor(lon) );
     }
 
-    RequestRefresh( m_parent.pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 void GribRequestSetting::SetCoordinatesText()
@@ -317,11 +326,14 @@ void GribRequestSetting::StopGraphicalZoneSelection()
 {
     m_RenderZoneOverlay = 0;                                                //eventually stop graphical zone display
 
-    RequestRefresh( m_parent.pParent );
+    RequestRefresh( PluginGetOverlayRenderCanvas() );
 }
 
 void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 {
+    if(!vp)
+        return;
+        
     delete m_Vp;
     m_Vp = new PlugIn_ViewPort(*vp);
 

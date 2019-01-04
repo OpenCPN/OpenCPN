@@ -33,6 +33,7 @@
 
 class ocpnDC;
 class wxDC;
+class ChartCanvas;
 
 class RoutePoint
 {
@@ -41,14 +42,15 @@ public:
       RoutePoint( RoutePoint* orig );
       RoutePoint();
       virtual ~RoutePoint(void);
-      void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
+      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
       
       void SetPosition(double lat, double lon);
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
-      void CalculateDCRect(wxDC& dc, wxRect *prect);
-
+      void CalculateDCRect(wxDC& dc, ChartCanvas *canvas, wxRect *prect);
+      LLBBox &GetBBox(){ return m_wpBBox; }
+      
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
@@ -97,10 +99,10 @@ public:
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
-      wxPoint2DDouble GetDragHandlePoint( ViewPort &vp);
-      void SetPointFromDraghandlePoint(ViewPort &vp, double lat, double lon);
-      void SetPointFromDraghandlePoint(ViewPort &vp, int x, int y);
-      void PresetDragOffset( int x, int y);
+      wxPoint2DDouble GetDragHandlePoint( ChartCanvas *canvas );
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
+      void PresetDragOffset( ChartCanvas *canvas, int x, int y);
       
       double            m_lat, m_lon;
       double             m_seg_len;              // length in NMI to this point
@@ -150,7 +152,7 @@ public:
       wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, bool use_cached_screen_coords=false );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 
@@ -168,7 +170,7 @@ public:
 
       wxDateTime        m_CreateTimeX;
 private:
-      wxPoint2DDouble computeDragHandlePoint(ViewPort &vp);
+    wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
