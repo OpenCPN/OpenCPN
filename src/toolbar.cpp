@@ -2405,6 +2405,36 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         return;
     }
 
+    if (tool->GetId() == ID_MASTERTOGGLE) {
+        static wxPoint s_pos_m_old;
+        static bool s_drag;
+        
+        wxPoint pos_m = ClientToScreen(wxPoint(x, y));
+        if (event.LeftDown()) {
+            s_pos_m_old = pos_m;
+            
+        }
+        
+        if (event.Dragging()) {
+            s_drag = true;
+            wxPoint pos_old = GetScreenPosition();
+            wxPoint pos_new = pos_old;
+            
+            pos_new.x += pos_m.x - s_pos_m_old.x;
+            pos_new.y += pos_m.y - s_pos_m_old.y;
+            
+            ocpnFloatingToolbarDialog * parentFloatingToolBar = dynamic_cast<ocpnFloatingToolbarDialog*>(GetParent());
+            parentFloatingToolBar->MoveDialogInScreenCoords(pos_new, pos_old);
+            s_pos_m_old = pos_m;
+            return;            
+        }
+        
+        if (event.LeftUp() && s_drag) {
+            s_drag = false;
+            return;    
+        }
+    }
+    
     if( !event.IsButton() ) {
         if( tool->GetId() != m_currentTool ) {
             // If the left button is kept down and moved over buttons,

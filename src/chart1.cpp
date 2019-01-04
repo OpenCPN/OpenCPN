@@ -3623,6 +3623,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_maintoolbar_y = tbp_incanvas.y;
         g_maintoolbar_orient = GetPrimaryCanvas()->GetToolbarOrientation();
         //g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
+        if (g_MainToolbar) {
+            g_MainToolbar->GetScreenPosition(&g_maintoolbar_x, &g_maintoolbar_y);
+        }
     }
 
     if(g_iENCToolbar){
@@ -9679,7 +9682,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->EnableRolloverBitmaps( false );
         
         g_MainToolbar->CreateConfigMenu();
-
+        g_MainToolbar->MoveDialogInScreenCoords(wxPoint(g_maintoolbar_x, g_maintoolbar_y), wxPoint(0, 0));
         g_bmasterToolbarFull = true;
         
     }
