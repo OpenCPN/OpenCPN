@@ -244,7 +244,7 @@ public:
     GRIBUICData( GRIBUICtrlBar &parent );
     ~GRIBUICData() {}
 
-    GribGrabberWin      *m_gGrabber;
+    // GribGrabberWin      *m_gGrabber;
     GRIBUICtrlBar       &m_gpparent;
     CursorData          *m_gCursorData;
 private:

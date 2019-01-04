@@ -153,6 +153,7 @@ class GribRecord
 
         void   multiplyAllData(double k);
         void Substract(const GribRecord &rec, bool positive=true);
+        void   Average(const GribRecord &rec);
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
@@ -205,16 +206,13 @@ class GribRecord
         // coordiantes of grid point
         inline double  getX(int i) const   { return Lo1+i*Di;}
         inline double  getY(int j) const   { return La1+j*Dj;}
+        void    getXY(int i, int j, double *x, double *y) const { *x = getX(i); *y = getY(j);};
 
         double  getLatMin() const   { return latMin;}
         double  getLonMin() const   { return lonMin;}
         double  getLatMax() const   { return latMax;}
         double  getLonMax() const   { return lonMax;}
 
-        // Is a point within the extent of the grid?
-        inline bool   isPointInMap(double x, double y) const;
-        inline bool   isXInMap(double x) const;
-        inline bool   isYInMap(double y) const;
         // Is there a value at a particular grid point ?
         inline bool   hasValue(int i, int j) const;
         // Is there a value that is not GRIB_NOTDEF ?
@@ -232,6 +230,12 @@ class GribRecord
         void   print();
         bool isFilled(){ return m_bfilled; }
         void setFilled(bool val=true){ m_bfilled = val;}
+
+    private:
+        // Is a point within the extent of the grid?
+        inline bool   isPointInMap(double x, double y) const;
+        inline bool   isXInMap(double x) const;
+        inline bool   isYInMap(double y) const;
 
     protected:
     //private:
