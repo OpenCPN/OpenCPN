@@ -513,6 +513,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
 #endif
     
     RecalculateSize();
+    Centre();
 }
 
 void RouteProp::RecalculateSize( void )
@@ -549,8 +550,6 @@ void RouteProp::RecalculateSize( void )
         if(m_wpList->GetItemCount())
             Layout();
     }
-    
-    Centre();
 }
 
 
