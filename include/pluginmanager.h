@@ -353,6 +353,9 @@ private:
       
 public:
       wxCurlDownloadThread *m_pCurlThread;
+      // The libcurl handle being re used for the transfer.
+      std::shared_ptr<wxCurlBase> m_pCurl;
+
       // returns true if the error can be ignored
       bool            HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p,
                                const wxString &url = wxEmptyString);

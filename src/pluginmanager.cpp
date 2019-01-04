@@ -345,6 +345,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
 #ifndef __OCPN__ANDROID__
 #ifdef __OCPN_USE_CURL__
     m_pCurlThread = NULL;
+    m_pCurl = 0;
 #endif    
 #endif
     pParent = parent;
@@ -6387,12 +6388,21 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     if( g_pi_manager->m_pCurlThread ) //We allow just one download at a time. Do we want more? Or at least return some other status in this case?
         return OCPN_DL_FAILED;
     g_pi_manager->m_pCurlThread = new wxCurlDownloadThread( g_pi_manager, CurlThreadId );
+    bool http = (url.StartsWith(wxS("http:")) || url.StartsWith(wxS("https:")));
+    bool keep = false;
+    if (http && g_pi_manager->m_pCurl && dynamic_cast<wxCurlHTTP*>(g_pi_manager->m_pCurl.get())) {
+        keep = true;
+    }
+    if (!keep)  {
+        g_pi_manager->m_pCurl = 0;
+    }
 
     bool failed = false;
-    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url ), g_pi_manager->m_pCurlThread, url ) )
+    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url, g_pi_manager->m_pCurl ), g_pi_manager->m_pCurlThread, url ) )
         failed = true;
     if (!failed)
     {
+        g_pi_manager->m_pCurl = g_pi_manager->m_pCurlThread->GetCurlSharedPtr();
         if (!g_pi_manager->HandleCurlThreadError(g_pi_manager->m_pCurlThread->SetOutputStream(new wxFileOutputStream(outputFile)), g_pi_manager->m_pCurlThread))
             failed = true;
     }
@@ -6423,7 +6433,8 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
-#endif
+    g_pi_manager->m_pCurl = 0;
+ #endif
 
     return OCPN_DL_FAILED;
 #else
@@ -6449,7 +6460,8 @@ void OCPN_cancelDownloadFileBackground( long handle )
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
-#endif
+    g_pi_manager->m_pCurl = 0;
+ #endif
 #endif
 }
 
@@ -6511,6 +6523,7 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
         event.setDLEventStatus( OCPN_DL_NO_ERROR );
     }
     else {
+        g_pi_manager->m_pCurl = 0;
         event.setDLEventStatus( OCPN_DL_FAILED );
     }
     event.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
