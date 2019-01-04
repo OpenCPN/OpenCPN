@@ -228,6 +228,7 @@ extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
 extern bool             g_benableAISNameCache;
+extern bool             g_bUseOnlyConfirmedAISName;
 extern int              g_ScaledNumWeightSOG;
 extern int              g_ScaledNumWeightCPA;
 extern int              g_ScaledNumWeightTCPA;
@@ -1012,6 +1013,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
+    
+    g_bUseOnlyConfirmedAISName = false;
+    Read( _T ( "UseOnlyConfirmedAISName" ),  &g_bUseOnlyConfirmedAISName );
 
     Read( _T ( "bNoCPAMax" ), &g_bCPAMax );
 
