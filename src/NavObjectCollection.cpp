@@ -1338,7 +1338,7 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
     return true;
 }
 
-int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz)
+int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, bool b_namesviz)
 {
     if(!pWayPointMan)
         return 0;
@@ -1350,7 +1350,7 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
     {
         if( !strcmp(object.name(), "wpt") ) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), true, true, b_layerviz, layer_id );
-            
+            pWp->SetNameShown( b_namesviz );
             pWp->m_bIsolatedMark = true;      // This is an isolated mark
             pWayPointMan->AddRoutePoint( pWp );
             pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );

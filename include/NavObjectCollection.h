@@ -99,7 +99,7 @@ public:
     
     bool CreateAllGPXObjects();
     bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates );
-    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz);
+    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, bool b_namesviz);
     
     bool SaveFile( const wxString filename );
 
