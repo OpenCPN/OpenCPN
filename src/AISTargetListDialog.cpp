@@ -600,7 +600,8 @@ void AISTargetListDialog::CreateControls()
     item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );
     g_AisTargetList_sortColumn = wxMax(g_AisTargetList_sortColumn, 0);
     m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
-    
+
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
     wxStringTokenizer tkz_order(g_AisTargetList_column_order, _T(";"));
     wxString s_order = tkz_order.GetNextToken();
     int i_columns = m_pListCtrlAISTargets->GetColumnCount();
@@ -615,7 +616,6 @@ void AISTargetListDialog::CreateControls()
         s_order= tkz_order.GetNextToken();
     }
 
-#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
     m_pListCtrlAISTargets->SetColumnsOrder(a_order);
 #endif
 
