@@ -1280,5 +1280,9 @@ extern DECL_EXP wxWindow* PluginGetFocusCanvas();
 extern DECL_EXP wxWindow* PluginGetOverlayRenderCanvas();
 
 extern "C"  DECL_EXP void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scale);
+extern "C"  DECL_EXP  int AddCanvasMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin, const char *name = "");
+extern "C"  DECL_EXP void RemoveCanvasMenuItem(int item, const char *name = "");      // Fully remove this item
+extern "C"  DECL_EXP void SetCanvasMenuItemViz(int item, bool viz, const char *name = ""); // Temporarily change context menu options
+extern "C"  DECL_EXP void SetCanvasMenuItemGrey(int item, bool grey, const char *name = "");
 
 #endif //_PLUGIN_H_
