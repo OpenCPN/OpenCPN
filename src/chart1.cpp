@@ -5109,8 +5109,8 @@ void MyFrame::ToggleENCText( ChartCanvas *cc )
         
     SetMenubarItemState( ID_MENU_ENC_TEXT, cc->GetShowENCText() );
         
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+//     if(g_pi_manager)
+//         g_pi_manager->SendConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5125,9 +5125,9 @@ void MyFrame::SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset )
        
             UpdateGlobalMenuItems();
        
-            if(g_pi_manager)
+/*            if(g_pi_manager)
                 g_pi_manager->SendConfigToAllPlugIns();
-        
+ */       
        ReloadAllVP();
        }
     }
@@ -5141,8 +5141,8 @@ void MyFrame::ToggleSoundings( ChartCanvas *cc )
 
     SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, cc->GetShowENCDepth() );
         
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+//     if(g_pi_manager)
+//         g_pi_manager->SendConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5154,7 +5154,7 @@ bool MyFrame::ToggleLights( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_LIGHTS, cc->GetShowENCLights() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns( true );
         
     ReloadAllVP();
 
@@ -5199,7 +5199,7 @@ void MyFrame::ToggleAnchor( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_ANCHOR, cc->GetShowENCAnchor() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5211,7 +5211,7 @@ void MyFrame::ToggleDataQuality( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, cc->GetShowENCDataQual() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns();
 
     ReloadAllVP();
 }
@@ -6204,8 +6204,12 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
             cc->SetDisplaySizeMM( g_display_size_mm );
     }
 
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+    if(g_pi_manager){
+        g_pi_manager->SendBaseConfigToAllPlugIns();
+        int rrt = rr & S52_CHANGED;
+        g_pi_manager->SendS52ConfigToAllPlugIns( rrt == S52_CHANGED);
+    }
+       
     
     if(g_MainToolbar){
         g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);

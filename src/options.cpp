@@ -6795,6 +6795,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
 #ifdef USE_S57
   //   Handle Vector Charts Tab
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+ 
+  int depthUnit = pDepthUnitSelect->GetSelection();
+  g_nDepthUnitDisplay = depthUnit;
+ 
+  //  Process the UserStandard display list, noting if any changes were made
+  bool bUserStdChange = false;
+
   int nOBJL = ps57CtlListBox->GetCount();
 
   for (int iPtr = 0; iPtr < nOBJL; iPtr++) {
@@ -6807,13 +6814,19 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
     assert(itemIndex >= 0);
     OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
+    if(pOLE->nViz != ps57CtlListBox->IsChecked(iPtr))
+        bUserStdChange = true;
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
 
-  int depthUnit = pDepthUnitSelect->GetSelection();
-  g_nDepthUnitDisplay = depthUnit;
-  
   if (ps52plib) {
+
+    // Take a snapshot of the S52 config right now,
+    // for later comparison
+    ps52plib->GenerateStateHash();
+    long stateHash = ps52plib->GetStateHash();
+
+  
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
@@ -6885,6 +6898,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_nDepthUnitDisplay = depthUnit;
     
     ps52plib->GenerateStateHash();
+    
+    // Detect a change to S52 library config
+    if( (stateHash != ps52plib->GetStateHash()) || bUserStdChange )
+        m_returnChanges |= S52_CHANGED;
+
   }
 #endif
 

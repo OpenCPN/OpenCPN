@@ -594,7 +594,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
         m_benable_blackdialog_done = true;
 
     // Tell all the PlugIns about the current OCPN configuration
-    SendConfigToAllPlugIns();
+    SendBaseConfigToAllPlugIns();
+    SendS52ConfigToAllPlugIns( true );
     
     // Inform Plugins of OpenGL configuration, if enabled
     if(g_bopengl){
@@ -2043,7 +2044,7 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs)
     }
 }
 
-void PlugInManager::SendConfigToAllPlugIns()
+void PlugInManager::SendBaseConfigToAllPlugIns()
 {
     // Send the current run-time configuration to all PlugIns
     wxJSONValue v;
@@ -2051,25 +2052,6 @@ void PlugInManager::SendConfigToAllPlugIns()
     v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
     v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
     v[_T("OpenCPN Version Date")] = VERSION_DATE;
-    
-    //  S52PLIB state
-    if(ps52plib){
-        v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
-        v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
-        v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
-        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
-        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
-        v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
-        v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
-        v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
-        v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
-        v[_T("OpenCPN S52PLIB ShowImpartantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
-        v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
-        v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
-        v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-        v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
-    }
-    
     
     // Some useful display metrics
     if(g_MainToolbar){
@@ -2083,6 +2065,46 @@ void PlugInManager::SendConfigToAllPlugIns()
     v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
     v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier;
     v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
+    
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
+}
+
+void PlugInManager::SendS52ConfigToAllPlugIns( bool bReconfig )
+{
+    // Send the current run-time configuration to all PlugIns
+    wxJSONValue v;
+    v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
+    v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
+    v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
+    v[_T("OpenCPN Version Date")] = VERSION_DATE;
+    
+    //  S52PLIB state
+    if(ps52plib){
+//         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
+//         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
+//         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
+        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
+//         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
+        
+        // Global parameters
+        v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
+        v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
+        v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+        v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
+        v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+        v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
+        v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+        v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+    }
+    
+    // Notify plugins that S52PLIB may have reconfigured global options
+    v[_T("OpenCPN S52PLIB GlobalReconfig")] = bReconfig;
+    
+    
     
     wxJSONWriter w;
     wxString out;

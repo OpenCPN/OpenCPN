@@ -304,7 +304,8 @@ public:
       bool SendMouseEventToPlugins( wxMouseEvent &event);
       bool SendKeyEventToPlugins( wxKeyEvent &event);
 
-      void SendConfigToAllPlugIns();
+      void SendBaseConfigToAllPlugIns();
+      void SendS52ConfigToAllPlugIns( bool bReconfig = false );
       
       wxArrayString GetPlugInChartClassNameArray(void);
 
