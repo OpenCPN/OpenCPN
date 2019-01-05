@@ -614,7 +614,10 @@ void AISTargetListDialog::CreateControls()
         a_order[i] = l_order;
         s_order= tkz_order.GetNextToken();
     }
+
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
     m_pListCtrlAISTargets->SetColumnsOrder(a_order);
+#endif
 
     topSizer->Add( m_pListCtrlAISTargets, 1, wxEXPAND | wxALL, 0 );
     
