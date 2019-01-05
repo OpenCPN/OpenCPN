@@ -362,6 +362,7 @@ extern int              g_route_line_width;
 extern int              g_track_line_width;
 extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
+extern wxString         g_default_routepoint_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
@@ -650,6 +651,7 @@ int MyConfig::LoadMyConfig()
     g_tide_rectangle_scale = 100;
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
+    g_default_routepoint_icon = _T("diamond");
     
     g_nAWDefault = 50;
     g_nAWMax = 1852;
@@ -1401,6 +1403,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
+    Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
 
     SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = GetNumberOfEntries();
@@ -2633,6 +2636,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
+    Write( _T ( "DefaultRPIcon" ), g_default_routepoint_icon );
 
     DeleteGroup(_T ( "/MMSIProperties" ));
     SetPath( _T ( "/MMSIProperties" ) );

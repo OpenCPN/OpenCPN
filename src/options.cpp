@@ -70,6 +70,7 @@ extern GLuint g_raster_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
+#include "routeprop.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -305,7 +306,8 @@ extern bool g_bSpaceDropMark;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
-
+extern wxString g_default_wp_icon;
+extern wxString g_default_routepoint_icon;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -2785,6 +2787,34 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer(routeText, wxVERTICAL);
   Routes->Add(routeSizer, 0, wxGROW | wxALL, border_size);
 
+  routeSizer->AddSpacer(5);
+
+  // Default ICON
+  wxFlexGridSizer* routepointiconSelect =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  routepointiconSelect->AddGrowableCol(1);
+  routeSizer->Add(routepointiconSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+
+  wxStaticText* routepointiconTxt =
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Routepoint default icon"));
+  routepointiconSelect->Add(routepointiconTxt, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  pRoutepointDefaultIconChoice = new OCPNIconCombo( itemPanelRoutes, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+  routepointiconSelect->Add(pRoutepointDefaultIconChoice, 0, wxALIGN_RIGHT | wxALL,
+                        group_item_spacing);
+
+  pRoutepointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
+  //  Accomodate scaling of icon
+   int min_size = GetCharHeight() * 2;
+   min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
+   pRoutepointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, min_size) );
+   
+  routeSizer->AddSpacer(5);
+
+
   wxFlexGridSizer* pRouteGrid =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   pRouteGrid->AddGrowableCol(1);
@@ -2811,10 +2841,34 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
       new wxStaticBoxSizer(waypointText, wxVERTICAL);
   Routes->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
 
-  //wxFlexGridSizer* dispWaypointOptionsGrid =
-  //    new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
-  //dispWaypointOptionsGrid->AddGrowableCol(1);
+  waypointSizer->AddSpacer(5);
 
+  // Default ICON
+  wxFlexGridSizer* waypointiconSelect =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  waypointiconSelect->AddGrowableCol(1);
+  waypointSizer->Add(waypointiconSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+
+  wxStaticText* waypointiconTxt =
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint default icon"));
+  waypointiconSelect->Add(waypointiconTxt, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  pWaypointDefaultIconChoice = new OCPNIconCombo( itemPanelRoutes, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+  waypointiconSelect->Add(pWaypointDefaultIconChoice, 0, wxALIGN_RIGHT | wxALL,
+                        group_item_spacing);
+
+  pWaypointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
+  //  Accomodate scaling of icon
+   int rmin_size = GetCharHeight() * 2;
+   min_size = wxMax( rmin_size, (32 *g_ChartScaleFactorExp) + 4 );
+   pWaypointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, rmin_size) );
+   
+  waypointSizer->AddSpacer(5);
+
+  //Range Rings  
   wxFlexGridSizer* waypointrrSelect =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   waypointrrSelect->AddGrowableCol(1);
@@ -2868,6 +2922,54 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
 
+  // Fill the default waypoint icon selector combo box
+  pWaypointDefaultIconChoice->Clear();
+  //      Iterate on the Icon Descriptions, filling in the combo control
+  bool fillCombo = true;
+        
+  if( fillCombo ){
+      for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+          wxString *ps = pWayPointMan->GetIconDescription( i );
+          wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
+                    
+          pWaypointDefaultIconChoice->Append( *ps, bmp );
+      }
+  }
+                
+  // find the correct item in the combo box
+   int iconToSelect = -1;
+   for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+       if( *pWayPointMan->GetIconKey( i ) == g_default_wp_icon ){
+           iconToSelect = i;
+           pWaypointDefaultIconChoice->Select( iconToSelect );
+           break;
+       }
+   }
+
+   // Fill the default Routepoint icon selector combo box
+  pRoutepointDefaultIconChoice->Clear();
+  //      Iterate on the Icon Descriptions, filling in the combo control
+  fillCombo = true;
+        
+  if( fillCombo ){
+      for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+          wxString *ps = pWayPointMan->GetIconDescription( i );
+          wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
+                    
+          pRoutepointDefaultIconChoice->Append( *ps, bmp );
+      }
+  }
+                
+  // find the correct item in the combo box
+   iconToSelect = -1;
+   for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+       if( *pWayPointMan->GetIconKey( i ) == g_default_routepoint_icon ){
+           iconToSelect = i;
+           pRoutepointDefaultIconChoice->Select( iconToSelect );
+           break;
+       }
+   }
+  
   DimeControl(itemPanelRoutes);
 }
 
@@ -6456,6 +6558,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
   g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6); // Correct abnormally
+
+  wxString *icon_name = pWayPointMan->GetIconKey( pWaypointDefaultIconChoice->GetSelection() );
+  if(icon_name && icon_name->Length())
+    g_default_wp_icon = *icon_name;
+
+  icon_name = pWayPointMan->GetIconKey( pRoutepointDefaultIconChoice->GetSelection() );
+  if(icon_name && icon_name->Length())
+    g_default_routepoint_icon = *icon_name;
 
   //  Any Font changes?
   if(m_bfontChanged)

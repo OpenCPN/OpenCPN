@@ -62,6 +62,7 @@ class MMSI_Props_Panel;
 class MMSIProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
+class OCPNIconCombo;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -524,7 +525,9 @@ class options : private Uncopyable,
   wxScrolledWindow *itemPanelShip, *itemPanelRoutes;
   wxBoxSizer *ownShip, *Routes;
 
-
+  OCPNIconCombo *pWaypointDefaultIconChoice;
+  OCPNIconCombo *pRoutepointDefaultIconChoice;
+  
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
