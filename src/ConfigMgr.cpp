@@ -210,6 +210,7 @@ extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
@@ -1221,6 +1222,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     conf->Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     conf->Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    conf->Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
     conf->Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     conf->Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
     conf->Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
@@ -1650,6 +1652,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     CHECK_INT( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     CHECK_STR( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    CHECK_STR( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
     CHECK_INT( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     CHECK_INT( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     CHECK_INT( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );

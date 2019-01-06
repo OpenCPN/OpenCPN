@@ -26,6 +26,7 @@
 #include "AIS_Target_Data.h"
 
 extern wxString g_AisTargetList_column_spec;
+extern wxString g_AisTargetList_column_order;
 extern bool bGPSValid;
 
 OCPNListCtrl::OCPNListCtrl( AISTargetListDialog* parent, wxWindowID id, const wxPoint& pos,
@@ -45,6 +46,18 @@ OCPNListCtrl::~OCPNListCtrl()
         sitem.Printf( _T("%d;"), item.m_width );
         g_AisTargetList_column_spec += sitem;
     }
+
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
+    int i_columns = GetColumnCount();
+    wxArrayInt a_order(i_columns);
+    a_order = GetColumnsOrder();
+    g_AisTargetList_column_order.Clear();
+    for (int i = 0; i < i_columns; i++) {
+        wxString sitem;
+        sitem.Printf(_T("%d;"), a_order[i]);
+        g_AisTargetList_column_order += sitem;
+    }
+#endif
 }
 
 wxString OCPNListCtrl::OnGetItemText( long item, long column ) const

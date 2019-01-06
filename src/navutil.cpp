@@ -222,6 +222,7 @@ extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
@@ -1099,6 +1100,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     Read( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
+    Read( _T ("AISTargetListColumnOrder"), &g_AisTargetList_column_order);
 
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
@@ -2493,6 +2495,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
 
     Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
