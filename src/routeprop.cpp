@@ -2591,8 +2591,6 @@ void MarkInfoDlg::Create()
             wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
     sbSizerDescription->Add( m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5 );
     
-//     m_PanelDescription->SetSizer(sbSizerDescription);
-//     sbSizerDescription->Fit(m_PanelDescription);
     
 /////////////////////////////////////////////////////// EXTENDED ///////////////////////////////////////////////////////
     
@@ -2607,7 +2605,7 @@ void MarkInfoDlg::Create()
     gbSizerInnerExtProperties->Add(m_staticTextVisible, wxGBPosition(0, 1), wxDefaultSpan, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5); 
     m_checkBoxScaMin = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), ID_CHECKBOX_SCAMIN_VIS, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("wxID_ANY"));
     gbSizerInnerExtProperties->Add(m_checkBoxScaMin, wxGBPosition(1, 0), wxDefaultSpan, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    m_staticTextScaMin = new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show only if chartscale\n  is greater then 1 :"), wxDefaultPosition, wxDefaultSize, 0, _T("wxID_ANY"));
+    m_staticTextScaMin = new wxStaticText(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Show only if chartscale\n  is greater than 1 :"), wxDefaultPosition, wxDefaultSize, 0, _T("wxID_ANY"));
     gbSizerInnerExtProperties->Add(m_staticTextScaMin, wxGBPosition(1, 1), wxDefaultSpan, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);   
     m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
     gbSizerInnerExtProperties->Add(m_textScaMin, wxGBPosition(1, 2), wxGBSpan(1, 2), wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -2676,26 +2674,20 @@ void MarkInfoDlg::Create()
     gbSizerInnerExtProperties->Add(m_EtaDatePickerCtrl, wxGBPosition(7, 1), wxGBSpan(1, 1), wxALL|wxEXPAND| wxALIGN_LEFT|wxALIGN_TOP, 5);
     m_EtaTimePickerCtrl = new wxTimePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
     gbSizerInnerExtProperties->Add(m_EtaTimePickerCtrl, wxGBPosition(7, 2), wxGBSpan(1, 2), wxALL|wxEXPAND| wxALIGN_LEFT|wxALIGN_TOP, 5);
-        //gbSizerInnerExtProperties->AddGrowableCol(0);
         gbSizerInnerExtProperties->AddGrowableCol(1);
         gbSizerInnerExtProperties->AddGrowableCol(2);
-        gbSizerInnerExtProperties->AddGrowableCol(3);
-        //gbSizerInnerExtProperties->AddGrowableCol(4);
-    
+        gbSizerInnerExtProperties->AddGrowableCol(3);   
     sbSizerExtProperties->Add(gbSizerInnerExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
         fSizerExtProperties->Add(sbSizerExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-    
-    
+
     sbSizerExtProperties->Fit(sbSizerExtProperties->GetStaticBox() );
     sbSizerExtProperties->SetSizeHints(sbSizerExtProperties->GetStaticBox());
     
     RecalculateSize();
     
     m_PanelBasicProperties->SetSizer(sbSizerBasicProperties);
- 
     m_PanelDescription->SetSizer(sbSizerDescription);
     m_PanelExtendedProperties->SetSizer(fSizerExtProperties);
-    //
     
     sbSizerDescription->Fit(m_PanelDescription);
     
@@ -2747,7 +2739,6 @@ void MarkInfoDlg::RecalculateSize( void )
     m_PanelExtendedProperties->SetSize(w);
     
     m_defaultClientSize = GetClientSize();
-    //Add save defaults button
 }
 
 
@@ -2755,22 +2746,17 @@ void MarkInfoDlg::RecalculateSize( void )
 MarkInfoDlg::~MarkInfoDlg()
 {
 
-//
 //     delete m_menuLink;
     
 #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
 #endif
-    
 }
 
 void MarkInfoDlg::InitialFocus(void)
 {
     m_textName->SetFocus();
     m_textName->SetInsertionPointEnd();
-#ifndef __OCPN__ANDROID__    
-    //m_PanelBasicProperties->Scroll(0, 0);
-#endif
 }
 
 void MarkInfoDlg::SetColorScheme( ColorScheme cs )
@@ -2790,7 +2776,8 @@ void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
         m_bIsVisible_save = m_pRoutePoint->m_bIsVisible;
         m_Name_save = m_pRoutePoint->GetName();
         m_Description_save = m_pRoutePoint->m_MarkDescription;
-        
+        m_bUseScaMin_save = m_pRoutePoint->GetUseSca();
+        m_iScaminVal_save = m_pRoutePoint->GetScaMin();
         
         if( m_pMyLinkList )
             delete m_pMyLinkList;
@@ -2825,7 +2812,7 @@ void MarkInfoDlg::UpdateHtmlList()
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
             wxString s = wxString::Format(wxT("<a href='%s'>%s</a>"),link->Link, link->DescrText );
-            GetSimpleBox()->AppendString(s); //   >SetString( i, s);
+            GetSimpleBox()->AppendString(s);
             linknode = linknode->GetNext();
         }       
     }
@@ -3123,6 +3110,8 @@ void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
         m_pRoutePoint->ReLoadIcon();
         m_pRoutePoint->SetName(m_Name_save);
         m_pRoutePoint->m_MarkDescription = m_Description_save;
+        m_pRoutePoint->SetUseSca(m_bUseScaMin_save);
+        m_pRoutePoint->SetScaMin(m_iScaminVal_save);
 
         m_pRoutePoint->m_HyperlinkList->Clear();
 

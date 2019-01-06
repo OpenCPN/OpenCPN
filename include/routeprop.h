@@ -363,8 +363,8 @@ class MarkInfoDlg : public wxDialog
         wxString        m_Description_save;
         HyperlinkList*  m_pMyLinkList;
         bool            m_bIsVisible_save;
-        bool            b_UseScamin_save;
-        int             m_ScaMin_save;
+        bool            m_bUseScaMin_save;
+        int             m_iScaminVal_save;
         bool            m_bShowWaypointRangeRings_save;
         int             m_iWaypointRangeRingsNumber_save;
         float           m_fWaypointRangeRingsStep_save;
