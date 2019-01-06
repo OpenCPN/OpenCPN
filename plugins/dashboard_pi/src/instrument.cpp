@@ -30,6 +30,7 @@
 #ifndef  WX_PRECOMP
   #include "wx/wx.h"
 #endif //precompiled headers
+#include <cmath>
 
 #include "instrument.h"
 #include "wx28compat.h"
