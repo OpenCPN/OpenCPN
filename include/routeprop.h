@@ -177,6 +177,7 @@ public:
                                    const wxSize& size = SYMBOL_ROUTEPROP_SIZE,
                                    long style = SYMBOL_ROUTEPROP_STYLE );
     ~RouteProp( );
+
     static bool getInstanceFlag(){ return instanceFlag; } 
     
     void CreateControls();
@@ -410,8 +411,9 @@ class MarkInfoDlg : public wxDialog
         wxTextCtrl*             m_textWaypointRangeRingsStep;
         wxTextCtrl*             m_textCtrlPlSpeed;
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;
+        wxBitmap*               _img_MUI_settings_svg;
         
-        
+        void initialize_images(void);
         void OnBitmapCombClick(wxCommandEvent& event);
         void OnPositionCtlUpdated( wxCommandEvent& event );
         void OnExtDescriptionClick( wxCommandEvent& event );
@@ -448,8 +450,7 @@ class MarkInfoDlg : public wxDialog
         bool SaveChanges();
         wxSimpleHtmlListBox *GetSimpleBox()
             { return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox); }
-            void OnHtmlCellHover(wxHtmlCellEvent &event);
-            void OnHtmlCellClicked(wxHtmlCellEvent &event);
+        void OnHtmlCellClicked(wxHtmlCellEvent &event);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

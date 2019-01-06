@@ -36,6 +36,7 @@
 #include <wx/printdlg.h>
 #include <wx/stattext.h>
 #include <wx/clrpicker.h>
+#include <wx/bmpbuttn.h>
 
 #include "styles.h"
 #include "routeprop.h"
@@ -140,6 +141,22 @@ char tide_status[][8] = {
     " ~~^ "
 
 };
+
+//  Helper utilities
+static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
+{
+    #ifdef ocpnUSE_SVG
+    wxSVGDocument svgDoc;
+    if( svgDoc.Load(filename) )
+        return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
+    else
+        return wxBitmap(width, height);
+    #else
+        return wxBitmap(width, height);
+    #endif // ocpnUSE_SVG
+}
+
+
 
 // Sunrise/twilight calculation for route properties.
 // limitations: latitude below 60, year between 2000 and 2100
@@ -2452,6 +2469,7 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
     up_event.SetEventObject( (wxObject *) this );
     m_pParentEventHandler->AddPendingEvent( up_event );
 }
+
 //-------------------------------------------------------------------------------
 //
 //    Mark Information Dialog Implementation
@@ -2471,10 +2489,8 @@ BEGIN_EVENT_TABLE( MarkInfoDlg, wxDialog )
      EVT_TEXT(ID_LATCTRL, MarkInfoDlg::OnPositionCtlUpdated )
      EVT_TEXT(ID_LONCTRL, MarkInfoDlg::OnPositionCtlUpdated )
      EVT_SPINCTRL(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
-     
      // the HTML listbox's events
-    EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
-    EVT_HTML_CELL_HOVER(wxID_ANY, MarkInfoDlg::OnHtmlCellHover)
+     EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
      
      //EVT_CHOICE( ID_WAYPOINTRANGERINGS, MarkInfoDef::OnWaypointRangeRingSelect )
 END_EVENT_TABLE()
@@ -2507,7 +2523,16 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
     m_pLinkProp = new LinkPropImpl( NULL );
     m_pMyLinkList = NULL;
     SetColorScheme( (ColorScheme) 0 );
+}
 
+
+void MarkInfoDlg::initialize_images(void)
+{  // TODO use svg instead of bitmap
+	{
+		wxMemoryInputStream sm("\211PNG\r\n\032\n\000\000\000\rIHDR\000\000\000\030\000\000\000\030\b\002\000\000\000o\025\252\257\000\000\000\006bKGD\000\377\000\377\000\377\240\275\247\223\000\000\003.IDAT8\215\255\225\313O\352L\030\306\337\266\230\212\244\325\002\006k\214Z\253\201\205\267\270\360F$\321\260\320\304\177\225\235\013bX!1\310\016E\264\255!\210\030n\205\332r\251\205\322\371\026\223\234O\214\3509\211\317\252\351;\363\364\367^:C \204\3407D\376\212\013\000\270\276\211!\204.//\337\336\336\000`vv\366\344\344\344\337\2104M\303\017\345r\271\327\353\035\034\034\354\354\354\350\272\336h4\360{UU\177&\272\271\271\251V\2534M\213\242\370\362\362211\261\270\270\b\000\271\\.\227\313\315\317\317?==\r\006\203\271\271\271\375\375\375\261D\331l\266V\253\205B!\267\333}\177\177\3578\316\306\306\006\016moo\017\207\303|>\3170\314\372\372z\275^\317f\263c\2114M\3438.\030\014\006\203A\3030X\226\375\023\022\004A\020\204n\267\353\361x\000\340\365\365\3250\214\261D\242(6\233\315\347\347g\000\300.\212\242d2\231L&\243(\n\000`\227B\241\240i\232(\212c\211\002\201\000A\020\235N\a\000\336\337\337\223\311\244eY\014\303\000@\255V+\026\213\221H\204\246i\3234\011\202\360\373\375\037\367\022x -\313\222$IU\325v\273}zzJ\323t*\225\352t:{{{\034\307\341\254\323\3514\313\262\341p\330\262\254x<\356\361x|>\037.\350\377\251\335\335\335\225\313\345\311\311\311\315\315M\374MUUWWW\261\013\000p\034\267\266\266\326h4L\323\244izkk\213e\331j\265z{{;R#\313\262\274^\357\341\341\241 \b\000\320j\265\000\200\347\371\217\360<\317#\204phyyyww\327\353\365\332\266=bDQT\273\335\226$\011\3171\313\262\004A|\032<UUI\222\304Mh6\233\371|\3360\014\202 F\214VVV(\212\222e\371\352\352\312q\034\206aX\226\225e\271\337\357\343\005\375~_\226\345\231\231\031\206a\034\307\271\276\276.\024\nn\267;\024\n\215\024\033\253\333\355&\022\211P(\024\014\006u]O\245R\004A\004\002\001\204P\275^\a\200\243\243#\206adY~xx\210F\243x\032\276h\277\3438$IZ\226\005\000\323\323\323\307\307\307\217\217\2178Y\236\347\3774h0\030\220$9\030\014\276h?V:\2356\014#\032\215\222\344\017\307K\"\221p\273\335\341p\370k\"\212\242\206\303\241\256\353\225J\245X,\372\375~Q\024}>\037\256\256\242(\252\252.,,,--Y\226\365\361\a\372Ld\333v2\231\354t:\b!\236\347[\255\226m\333\347\347\347\000pqq\341r\271\374~\177\245R\301\335\210D\".\327\a\0164*\333\266%I\3224\r!T*\225b\261\230i\232\246i\306b\261R\251\204\0202\014CQ\224\341p\370i\343\b\321'\331\266\035\217\307q\355i\232>;;\243(j\334\342\357\214\000\240\327\353\341\003\223\343\270\251\251\251oV\376`\364\367\372\265[\344?Y\017\315\3503.x<\000\000\000\000IEND\256B`\202", 889);
+		_img_MUI_settings_svg = new wxBitmap(wxImage(sm));
+	}
+	return;
 }
 
 void MarkInfoDlg::Create()
@@ -2708,8 +2733,10 @@ void MarkInfoDlg::Create()
     
     wxFlexGridSizer* FlexGridSizer2 = new wxFlexGridSizer(0, 3, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
-    DefaultsBtn = new wxButton( this, ID_DEFAULT, wxString::FromUTF8("≡"), wxDefaultPosition, wxSize( smaller, smaller), 0);
-    DefaultsBtn->SetToolTip(_("Save settings as default"));
+    //Get and convert picture.
+    initialize_images();
+    int BtnH = m_PickColor->GetSize().y;
+    DefaultsBtn = new wxBitmapButton( this, ID_DEFAULT, *_img_MUI_settings_svg, wxDefaultPosition, wxSize(BtnH, BtnH), 0);
     FlexGridSizer2->Add(DefaultsBtn, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
     FlexGridSizer2->Add(0, 0, wxEXPAND);  //spacer
     
@@ -2814,32 +2841,6 @@ void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
     }
 }
 
-void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
-{
-    wxLogMessage(wxT("The url '%s' has been clicked!"), event.GetLinkInfo().GetHref().c_str());
-
-    if (GetSimpleBox())
-    {
-//         GetSimpleBox()->m_linkClicked = true;
-//         GetSimpleBox()->RefreshRow(1);
-    }
-}
-
-void MarkInfoDlg::OnHtmlCellHover(wxHtmlCellEvent &event)
-{
-    wxLogMessage(wxT("Mouse moved over cell %p at %d;%d"),
-                 event.GetCell(), event.GetPoint().x, event.GetPoint().y);
-}
-
-void MarkInfoDlg::OnHtmlCellClicked(wxHtmlCellEvent &event)
-{
-    wxLogMessage(wxT("Click over cell %p at %d;%d"),
-                 event.GetCell(), event.GetPoint().x, event.GetPoint().y);
-
-    // if we don't skip the event, OnHtmlLinkClicked won't be called!
-    event.Skip();
-}
-
 
 void MarkInfoDlg::UpdateHtmlList()
 {
@@ -2857,48 +2858,48 @@ void MarkInfoDlg::UpdateHtmlList()
     }
 }
 
-// void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
-// {
-// //        Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
-// //        The trouble is with the wxLaunchDefaultBrowser with verb "open"
-// //        Workaround is to probe the registry to get the default browser, and open directly
-// //     
-// //        But, we will do this only if the URL contains the anchor point charater '#'
-// //        What a hack......
-// 
-// #ifdef __WXMSW__
-//     wxString cc = event.GetLinkInfo().GetHref().c_str();
-//     if( cc.Find( _T("#") ) != wxNOT_FOUND ) {
-//         wxRegKey RegKey( wxString( _T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command") ) );
-//         if( RegKey.Exists() ) {
-//             wxString command_line;
-//             RegKey.QueryValue( wxString( _T("") ), command_line );
-// 
-//             //  Remove "
-//             command_line.Replace( wxString( _T("\"") ), wxString( _T("") ) );
-// 
-//             //  Strip arguments
-//             int l = command_line.Find( _T(".exe") );
-//             if( wxNOT_FOUND == l ) l = command_line.Find( _T(".EXE") );
-// 
-//             if( wxNOT_FOUND != l ) {
-//                 wxString cl = command_line.Mid( 0, l + 4 );
-//                 cl += _T(" ");
-//                 cc.Prepend( _T("\"") );
-//                 cc.Append( _T("\"") );
-//                 cl += cc;
-//                 wxExecute( cl );        // Async, so Fire and Forget...
-//             }
-//         }
-//     } else
-//         event.Skip();
-// #else
-//     wxString url = event.GetLinkInfo().GetHref().c_str();
-//     url.Replace(_T(" "), _T("%20") );
-//     ::wxLaunchDefaultBrowser(url);
-//     event.Skip();
-// #endif
-// }
+void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
+{
+//        Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
+//        The trouble is with the wxLaunchDefaultBrowser with verb "open"
+//        Workaround is to probe the registry to get the default browser, and open directly
+//     
+//        But, we will do this only if the URL contains the anchor point charater '#'
+//        What a hack......
+
+#ifdef __WXMSW__
+    wxString cc = event.GetLinkInfo().GetHref().c_str();
+    if( cc.Find( _T("#") ) != wxNOT_FOUND ) {
+        wxRegKey RegKey( wxString( _T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command") ) );
+        if( RegKey.Exists() ) {
+            wxString command_line;
+            RegKey.QueryValue( wxString( _T("") ), command_line );
+
+            //  Remove "
+            command_line.Replace( wxString( _T("\"") ), wxString( _T("") ) );
+
+            //  Strip arguments
+            int l = command_line.Find( _T(".exe") );
+            if( wxNOT_FOUND == l ) l = command_line.Find( _T(".EXE") );
+
+            if( wxNOT_FOUND != l ) {
+                wxString cl = command_line.Mid( 0, l + 4 );
+                cl += _T(" ");
+                cc.Prepend( _T("\"") );
+                cc.Append( _T("\"") );
+                cl += cc;
+                wxExecute( cl );        // Async, so Fire and Forget...
+            }
+        }
+    } else
+        event.Skip();
+#else
+    wxString url = event.GetLinkInfo().GetHref().c_str();
+    url.Replace(_T(" "), _T("%20") );
+    ::wxLaunchDefaultBrowser(url);
+    event.Skip();
+#endif
+}
 
 void MarkInfoDlg::OnDescChangedExt( wxCommandEvent& event )
 {

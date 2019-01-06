@@ -1000,6 +1000,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
         pSelect->AddSelectableRoutePoint( zlat, zlon, pWP );
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+        if( pWP->GetScaMin() < parent->GetScaleValue() ) pWP->ShowScaleWarningMessage(parent);
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
         parent->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );

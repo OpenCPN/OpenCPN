@@ -37,6 +37,7 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "Select.h"
+#include "chart1.h"
 
 extern WayPointman  *pWayPointMan;
 extern bool         g_bIsNewLayer;
@@ -1120,4 +1121,13 @@ void RoutePoint::SetScaMax(wxString str) {
 
 bool RoutePoint::IsScaVisible( ChartCanvas *cc){
     return ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) );
+}
+
+void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
+{
+    wxString strA = _("The ScaMin value for new waypoints is set to");
+    wxString strB = _("but current chartscale is");
+    wxString strC = _("Therefore the new waypoint will not be visible at this zoom level.");
+    wxString MessStr = wxString::Format(_T("%s %i,\n %s %i.\n%s"),strA, (int)GetScaMin(), strB, canvas->GetScaleValue(), strC);
+    OCPNMessageBox( canvas, MessStr);
 }

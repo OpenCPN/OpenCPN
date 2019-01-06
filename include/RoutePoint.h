@@ -114,6 +114,7 @@ public:
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
       void PresetDragOffset( ChartCanvas *canvas, int x, int y);
+      void ShowScaleWarningMessage(ChartCanvas *canvas);
       
       double            m_lat, m_lon;
       double             m_seg_len;              // length in NMI to this point
@@ -161,6 +162,7 @@ public:
       float             m_fWaypointRangeRingsStep;
       int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
+      
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
