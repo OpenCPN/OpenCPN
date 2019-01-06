@@ -46,6 +46,7 @@ extern bool g_bAisTargetList_sortReverse;
 extern bool g_bAisTargetList_autosort;
 extern int g_AisTargetList_sortColumn;
 extern wxString g_AisTargetList_column_spec;
+extern wxString g_AisTargetList_column_order;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern int g_AisTargetList_range;
 extern wxString g_AisTargetList_perspective;
@@ -599,7 +600,25 @@ void AISTargetListDialog::CreateControls()
     item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );
     g_AisTargetList_sortColumn = wxMax(g_AisTargetList_sortColumn, 0);
     m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
-    
+
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
+    wxStringTokenizer tkz_order(g_AisTargetList_column_order, _T(";"));
+    wxString s_order = tkz_order.GetNextToken();
+    int i_columns = m_pListCtrlAISTargets->GetColumnCount();
+    wxArrayInt a_order(i_columns);    
+    for (int i = 0; i < i_columns; i++) {
+        long l_order=(long)i;
+        s_order.ToLong(&l_order);
+        if (l_order<0 || l_order>i_columns) {
+            l_order = i;
+        }
+        a_order[i] = l_order;
+        s_order= tkz_order.GetNextToken();
+    }
+
+    m_pListCtrlAISTargets->SetColumnsOrder(a_order);
+#endif
+
     topSizer->Add( m_pListCtrlAISTargets, 1, wxEXPAND | wxALL, 0 );
     
     wxBoxSizer* boxSizer02 = new wxBoxSizer( wxVERTICAL );
