@@ -350,22 +350,30 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
         return;
 
 	// XXX only work if P2 -P1 === time
-    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit)
-    {
+    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit) {
 		time_t date = *rit;
 		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
 		if ( rec && rec->isOk() ) {
 		    
 		    // XXX double check reference date and timerange 
-		    if (prev != 0 )
-		    {
-		        if (rec->getTimeRange() == 4 && prev->getPeriodP1() == rec->getPeriodP1()) {
+		    if (prev != 0 ) {
+		        if (prev->getPeriodP1() == rec->getPeriodP1()) {
 		            // printf("substract %d %d %d\n", prev->getPeriodP1(), prev->getPeriodP2(), prev->getPeriodSec());
-		            prev->Substract(*rec);
-		            p1 = rec->getPeriodP2();
+		            if (rec->getTimeRange() == 4) {
+		                // accumulation
+		                // prev = prev -rec
+		                prev->Substract(*rec);
+		                p1 = rec->getPeriodP2();
+                    }
+                    else if (rec->getTimeRange() == 3) {
+                        // average
+                        // prev = (prev*d2 - rec*d1) / (double) (d2 - d1);
+                        prev->Average(*rec);
+                        p1 = rec->getPeriodP2();
+                    }
                 }
                 // convert to mm/h
-                if (p2 > p1) {
+                if (p2 > p1 && rec->getTimeRange() == 4 ) {
                     prev->multiplyAllData( 1.0/(p2 -p1) );
                 }
                 p2 = p1 = 0;
@@ -375,7 +383,7 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
 		    p2 = prev->getPeriodP2();
 		}
 	}
-	if (prev != 0 && p2 > p1) {
+	if (prev != 0 && p2 > p1 && prev->getTimeRange() == 4 ) {
 	    // the last one
         prev->multiplyAllData( 1.0/(p2 -p1) );
 	}
@@ -443,8 +451,8 @@ void GribReader::readGribFileContent()
 					for (zuint i=0; i<(zuint)recModel->getNi(); i++)
 					    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
 					    {
-					        double x = recModel->getX(i);
-						double y = recModel->getY(j);
+					        double x, y;
+					        recModel->getXY(i, j, &x, &y);
 						double dp = computeDewPoint(x, y, date);
 						recDewpoint->setValue(i, j, dp);
                                             }
@@ -568,35 +576,6 @@ double 	GribReader::get2GribsInterpolatedValueByDate (
 	return val;
 }
 
-//---------------------------------------------------
-// Rectangle de la zone couverte par les données
-bool GribReader::getZoneExtension(double *x0,double *y0, double *x1,double *y1)
-{
-    std::vector<GribRecord *> *ls = getFirstNonEmptyList();
-    if (ls != NULL) {
-        GribRecord *rec = ls->at(0);
-        if (rec != NULL) {
-            *x0 = rec->getX(0);
-            *y0 = rec->getY(0);
-            *x1 = rec->getX( rec->getNi()-1 );
-            *y1 = rec->getY( rec->getNj()-1 );
-            if (*x0 > *x1) {
-				double tmp = *x0;
-				*x0 = *x1;
-				*x1 = tmp;
-            }
-            if (*y0 > *y1) {
-				double tmp = *y0;
-				*y0 = *y1;
-				*y1 = tmp;
-            }
-        }
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 //---------------------------------------------------
 // Premier GribRecord trouvé (pour récupérer la grille)
 GribRecord * GribReader::getFirstGribRecord()

@@ -253,6 +253,8 @@ wxString                  g_SENCPrefix;
 wxString                  g_UserPresLibData;
 wxString                  g_VisibleLayers;
 wxString                  g_InvisibleLayers;
+wxString                  g_VisiNameinLayers;
+wxString                  g_InVisiNameinLayers;
 
 bool                      g_bcompression_wait;
 
@@ -599,6 +601,7 @@ int                       g_route_line_width;
 int                       g_track_line_width;
 wxColour                  g_colourTrackLineColour;
 wxString                  g_default_wp_icon;
+wxString                  g_default_routepoint_icon;
 
 ActiveTrack              *g_pActiveTrack;
 double                    g_TrackIntervalSeconds;
@@ -664,6 +667,7 @@ int                       g_AisTargetList_range;
 int                       g_AisTargetList_sortColumn;
 bool                      g_bAisTargetList_sortReverse;
 wxString                  g_AisTargetList_column_spec;
+wxString                  g_AisTargetList_column_order;
 int                       g_AisTargetList_count;
 bool                      g_bAisTargetList_autosort;
 
@@ -5107,8 +5111,8 @@ void MyFrame::ToggleENCText( ChartCanvas *cc )
         
     SetMenubarItemState( ID_MENU_ENC_TEXT, cc->GetShowENCText() );
         
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+//     if(g_pi_manager)
+//         g_pi_manager->SendConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5123,9 +5127,9 @@ void MyFrame::SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset )
        
             UpdateGlobalMenuItems();
        
-            if(g_pi_manager)
+/*            if(g_pi_manager)
                 g_pi_manager->SendConfigToAllPlugIns();
-        
+ */       
        ReloadAllVP();
        }
     }
@@ -5139,8 +5143,8 @@ void MyFrame::ToggleSoundings( ChartCanvas *cc )
 
     SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, cc->GetShowENCDepth() );
         
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+//     if(g_pi_manager)
+//         g_pi_manager->SendConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5152,7 +5156,7 @@ bool MyFrame::ToggleLights( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_LIGHTS, cc->GetShowENCLights() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns( true );
         
     ReloadAllVP();
 
@@ -5197,7 +5201,7 @@ void MyFrame::ToggleAnchor( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_ANCHOR, cc->GetShowENCAnchor() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns();
         
     ReloadAllVP();
 }
@@ -5209,7 +5213,7 @@ void MyFrame::ToggleDataQuality( ChartCanvas *cc )
     SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, cc->GetShowENCDataQual() );
 
     if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+        g_pi_manager->SendS52ConfigToAllPlugIns();
 
     ReloadAllVP();
 }
@@ -6202,8 +6206,12 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
             cc->SetDisplaySizeMM( g_display_size_mm );
     }
 
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
+    if(g_pi_manager){
+        g_pi_manager->SendBaseConfigToAllPlugIns();
+        int rrt = rr & S52_CHANGED;
+        g_pi_manager->SendS52ConfigToAllPlugIns( rrt == S52_CHANGED);
+    }
+       
     
     if(g_MainToolbar){
         g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);

@@ -17,6 +17,7 @@
 
 #include "wx/curl/base.h"
 
+#include <memory>
 
 //! One of the protocols supported by wxCurl.
 enum wxCurlProtocol
@@ -58,7 +59,7 @@ protected:
     wxString m_url;
 
     //! The libcurl handle being used for the transfer.
-    wxCurlBase *m_pCurl;
+    std::shared_ptr<wxCurlBase> m_pCurl;
 
     //! The protocol being used for the transfer.
     wxCurlProtocol m_protocol;
@@ -79,7 +80,7 @@ public:
         : wxThread(wxTHREAD_JOINABLE)
     {
         m_protocol = wxCP_INVALID;
-        m_pCurl = NULL;
+        m_pCurl = 0;
 
         m_nId = id;
         m_pHandler = handler;
@@ -89,14 +90,14 @@ public:
 
     ~wxCurlBaseThread() 
     {
-            wxDELETE(m_pCurl);
+        m_pCurl = 0;
     }
 
 public:     // thread execution management
 
     //! Returns true if this thread is ready to be started using e.g. #StartTransfer.
     virtual bool IsOk() const
-        { return !m_url.empty() && m_pCurl!=NULL; }
+        { return !m_url.empty() && m_pCurl != 0; }
 
     //! Starts the transfer. This is equivalent to call wxCurlDownloadThread::Download or
     //! wxCurlUploadThread::Upload.
@@ -127,6 +128,7 @@ public:     // setters
 
     //! Sets the URL to download/upload from/to.
     wxCurlThreadError SetURL(const wxString &url);
+    wxCurlThreadError SetURL(const wxString &url, std::shared_ptr<wxCurlBase> pCurl);
 
 public:     // getters
 
@@ -145,6 +147,9 @@ public:     // getters
     //! value of GetProtocol() (e.g. if GetProtocol() returns wxCP_HTTP, you can cast
     //! GetCurlSession() to wxCurlHTTP).
     wxCurlBase *GetCurlSession() const
+        { return m_pCurl.get(); }
+
+    std::shared_ptr<wxCurlBase> &GetCurlSharedPtr() 
         { return m_pCurl; }
 
     //! Returns the protocol used for the transfer.
@@ -168,7 +173,7 @@ public:     // public utils
     //! You'll need to wx_static_cast the return value to the 
     //! right class in order to be able to set/get further options
     //! (e.g. url/username/password/proxy/etc etc).
-    static wxCurlBase *CreateHandlerFor(wxCurlProtocol prot);
+    static std::shared_ptr<wxCurlBase>CreateHandlerFor(wxCurlProtocol prot);
 
 protected:
 

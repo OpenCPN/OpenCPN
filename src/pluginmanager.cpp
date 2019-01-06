@@ -135,6 +135,7 @@ extern double           g_display_size_mm;
 extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
+extern unsigned int     g_canvasConfig;
 
 #ifdef __WXMSW__
 static const char PATH_SEP = ';';
@@ -344,6 +345,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
 #ifndef __OCPN__ANDROID__
 #ifdef __OCPN_USE_CURL__
     m_pCurlThread = NULL;
+    m_pCurl = 0;
 #endif    
 #endif
     pParent = parent;
@@ -592,7 +594,8 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
         m_benable_blackdialog_done = true;
 
     // Tell all the PlugIns about the current OCPN configuration
-    SendConfigToAllPlugIns();
+    SendBaseConfigToAllPlugIns();
+    SendS52ConfigToAllPlugIns( true );
     
     // Inform Plugins of OpenGL configuration, if enabled
     if(g_bopengl){
@@ -1583,7 +1586,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
     return true;
 }
 
-bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp)
+bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, bool render)
 {
     for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
@@ -1599,7 +1602,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 107:
                 {
                     opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
-                    if(ppi)
+                    if(ppi && render)
                         ppi->RenderGLOverlay(pcontext, &pivp);
                     break;
                 }
@@ -1614,10 +1617,14 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 115:
                 case 116:    
                 {
-                    opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                    if(ppi)
-                        ppi->RenderGLOverlay(pcontext, &pivp);
-                    break;
+                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                     if (ppi && render)
+                          ppi->RenderGLOverlay(pcontext, &pivp);
+                     opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
+                     if (ppi116) {
+                          ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, g_canvasConfig);
+                     }
+                     break;
                 }
                 default:
                     break;
@@ -1783,7 +1790,7 @@ void PlugInManager::CloseAllPlugInPanels( int ok_apply_cancel)
 
 }
 
-int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
+int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin, const char *name )
 {
     PlugInMenuItemContainer *pmic = new PlugInMenuItemContainer;
     pmic->pmenu_item = pitem;
@@ -1791,6 +1798,7 @@ int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *p
     pmic->id = pitem->GetId()==wxID_SEPARATOR?wxID_SEPARATOR:m_plugin_menu_item_id_next;
     pmic->b_viz = true;
     pmic->b_grey = false;
+    pmic->m_in_menu = name;
 
     m_PlugInMenuItems.Add(pmic);
 
@@ -1802,13 +1810,13 @@ int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *p
 
 
 
-void PlugInManager::RemoveCanvasContextMenuItem(int item)
+void PlugInManager::RemoveCanvasContextMenuItem(int item, const char *name )
 {
     for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
     {
         PlugInMenuItemContainer *pimis = m_PlugInMenuItems[i];
         {
-            if(pimis->id == item)
+            if(pimis->id == item && !strcmp(name, pimis->m_in_menu))
             {
                 m_PlugInMenuItems.Remove(pimis);
                 delete pimis;
@@ -1818,13 +1826,13 @@ void PlugInManager::RemoveCanvasContextMenuItem(int item)
     }
 }
 
-void PlugInManager::SetCanvasContextMenuItemViz(int item, bool viz)
+void PlugInManager::SetCanvasContextMenuItemViz(int item, bool viz, const char *name)
 {
     for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
     {
         PlugInMenuItemContainer *pimis = m_PlugInMenuItems[i];
         {
-            if(pimis->id == item)
+            if(pimis->id == item && !strcmp(name, pimis->m_in_menu))
             {
                 pimis->b_viz = viz;
                 break;
@@ -1833,13 +1841,13 @@ void PlugInManager::SetCanvasContextMenuItemViz(int item, bool viz)
     }
 }
 
-void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey)
+void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey, const char *name)
 {
     for(unsigned int i=0; i < m_PlugInMenuItems.GetCount(); i++)
     {
         PlugInMenuItemContainer *pimis = m_PlugInMenuItems[i];
         {
-            if(pimis->id == item)
+            if(pimis->id == item && !strcmp(name, pimis->m_in_menu))
             {
                 pimis->b_grey = grey;
                 break;
@@ -2037,7 +2045,7 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs)
     }
 }
 
-void PlugInManager::SendConfigToAllPlugIns()
+void PlugInManager::SendBaseConfigToAllPlugIns()
 {
     // Send the current run-time configuration to all PlugIns
     wxJSONValue v;
@@ -2045,25 +2053,6 @@ void PlugInManager::SendConfigToAllPlugIns()
     v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
     v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
     v[_T("OpenCPN Version Date")] = VERSION_DATE;
-    
-    //  S52PLIB state
-    if(ps52plib){
-        v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
-        v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
-        v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
-        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
-        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
-        v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
-        v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
-        v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
-        v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
-        v[_T("OpenCPN S52PLIB ShowImpartantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
-        v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
-        v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
-        v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-        v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
-    }
-    
     
     // Some useful display metrics
     if(g_MainToolbar){
@@ -2077,6 +2066,46 @@ void PlugInManager::SendConfigToAllPlugIns()
     v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
     v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier;
     v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
+    
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
+}
+
+void PlugInManager::SendS52ConfigToAllPlugIns( bool bReconfig )
+{
+    // Send the current run-time configuration to all PlugIns
+    wxJSONValue v;
+    v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
+    v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
+    v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
+    v[_T("OpenCPN Version Date")] = VERSION_DATE;
+    
+    //  S52PLIB state
+    if(ps52plib){
+//         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
+//         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
+//         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
+        v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
+//         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
+        
+        // Global parameters
+        v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
+        v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
+        v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+        v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
+        v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+        v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
+        v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+        v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+    }
+    
+    // Notify plugins that S52PLIB may have reconfigured global options
+    v[_T("OpenCPN S52PLIB GlobalReconfig")] = bReconfig;
+    
+    
     
     wxJSONWriter w;
     wxString out;
@@ -2502,33 +2531,54 @@ void SetToolbarToolBitmapsSVG(int item, wxString SVGfile, wxString SVGfileRollov
 }
 
 
-
-int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
+int AddCanvasMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin, const char *name  )
 {
     if(s_ppim)
-        return s_ppim->AddCanvasContextMenuItem(pitem, pplugin );
+        return s_ppim->AddCanvasContextMenuItem(pitem, pplugin, name );
     else
         return -1;
 }
 
+void SetCanvasMenuItemViz(int item, bool viz, const char *name)
+{
+    if(s_ppim)
+        s_ppim->SetCanvasContextMenuItemViz(item, viz, name);
+}
+
+void SetCanvasMenuItemGrey(int item, bool grey, const char *name)
+{
+    if(s_ppim)
+        s_ppim->SetCanvasContextMenuItemGrey(item, grey, name);
+}
+
+
+void RemoveCanvasMenuItem(int item, const char *name)
+{
+    if(s_ppim)
+        s_ppim->RemoveCanvasContextMenuItem(item, name);
+}
+
+
+int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
+{
+    /* main context popup menu */
+    return AddCanvasMenuItem(pitem, pplugin, "");
+}
 
 void SetCanvasContextMenuItemViz(int item, bool viz)
 {
-    if(s_ppim)
-        s_ppim->SetCanvasContextMenuItemViz(item, viz);
+   SetCanvasMenuItemViz(item, viz);
 }
 
 void SetCanvasContextMenuItemGrey(int item, bool grey)
 {
-    if(s_ppim)
-        s_ppim->SetCanvasContextMenuItemGrey(item, grey);
+   SetCanvasMenuItemGrey(item, grey);
 }
 
 
 void RemoveCanvasContextMenuItem(int item)
 {
-    if(s_ppim)
-        s_ppim->RemoveCanvasContextMenuItem(item);
+   RemoveCanvasMenuItem(item);
 }
 
 
@@ -3927,6 +3977,11 @@ opencpn_plugin_116::opencpn_plugin_116(void *pmgr)
 
 opencpn_plugin_116::~opencpn_plugin_116(void)
 {
+}
+
+bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas)
+{
+     return false;
 }
 
 //          Helper and interface classes
@@ -6377,12 +6432,21 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     if( g_pi_manager->m_pCurlThread ) //We allow just one download at a time. Do we want more? Or at least return some other status in this case?
         return OCPN_DL_FAILED;
     g_pi_manager->m_pCurlThread = new wxCurlDownloadThread( g_pi_manager, CurlThreadId );
+    bool http = (url.StartsWith(wxS("http:")) || url.StartsWith(wxS("https:")));
+    bool keep = false;
+    if (http && g_pi_manager->m_pCurl && dynamic_cast<wxCurlHTTP*>(g_pi_manager->m_pCurl.get())) {
+        keep = true;
+    }
+    if (!keep)  {
+        g_pi_manager->m_pCurl = 0;
+    }
 
     bool failed = false;
-    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url ), g_pi_manager->m_pCurlThread, url ) )
+    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url, g_pi_manager->m_pCurl ), g_pi_manager->m_pCurlThread, url ) )
         failed = true;
     if (!failed)
     {
+        g_pi_manager->m_pCurl = g_pi_manager->m_pCurlThread->GetCurlSharedPtr();
         if (!g_pi_manager->HandleCurlThreadError(g_pi_manager->m_pCurlThread->SetOutputStream(new wxFileOutputStream(outputFile)), g_pi_manager->m_pCurlThread))
             failed = true;
     }
@@ -6413,7 +6477,8 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
-#endif
+    g_pi_manager->m_pCurl = 0;
+ #endif
 
     return OCPN_DL_FAILED;
 #else
@@ -6439,7 +6504,8 @@ void OCPN_cancelDownloadFileBackground( long handle )
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
-#endif
+    g_pi_manager->m_pCurl = 0;
+ #endif
 #endif
 }
 
@@ -6501,6 +6567,7 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
         event.setDLEventStatus( OCPN_DL_NO_ERROR );
     }
     else {
+        g_pi_manager->m_pCurl = 0;
         event.setDLEventStatus( OCPN_DL_FAILED );
     }
     event.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );

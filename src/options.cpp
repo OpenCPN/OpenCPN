@@ -70,6 +70,7 @@ extern GLuint g_raster_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
+#include "routeprop.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -305,7 +306,8 @@ extern bool g_bSpaceDropMark;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
-
+extern wxString g_default_wp_icon;
+extern wxString g_default_routepoint_icon;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -2741,94 +2743,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   pTrackGrid->Add(pTrackPrecision, 0, wxALIGN_RIGHT | wxALL,
                   group_item_spacing);
 
-  //  Routes
-  wxStaticBox* routeText =
-      new wxStaticBox(itemPanelShip, wxID_ANY, _("Routes"));
-  wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer(routeText, wxVERTICAL);
-  ownShip->Add(routeSizer, 0, wxGROW | wxALL, border_size);
-
-  wxFlexGridSizer* pRouteGrid =
-      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
-  pRouteGrid->AddGrowableCol(1);
-  routeSizer->Add(pRouteGrid, 0, wxALL | wxEXPAND, border_size);
-
-  wxStaticText* raText = new wxStaticText(
-      itemPanelShip, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)"));
-  pRouteGrid->Add(raText, 1, wxEXPAND | wxALL, group_item_spacing);
-
-  m_pText_ACRadius = new wxTextCtrl(itemPanelShip, -1);
-  pRouteGrid->Add(m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT,
-                  group_item_spacing);
-
-  pAdvanceRouteWaypointOnArrivalOnly =
-      new wxCheckBox(itemPanelShip, ID_DAILYCHECKBOX,
-                     _("Advance route waypoint on arrival only"));
-  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0);
-
-  //  Waypoints
-  wxStaticBox* waypointText =
-      new wxStaticBox(itemPanelShip, wxID_ANY, _("Waypoints"));
-  wxStaticBoxSizer* waypointSizer =
-      new wxStaticBoxSizer(waypointText, wxVERTICAL);
-  ownShip->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
-
-  //wxFlexGridSizer* dispWaypointOptionsGrid =
-  //    new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
-  //dispWaypointOptionsGrid->AddGrowableCol(1);
-
-  wxFlexGridSizer* waypointrrSelect =
-      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
-  waypointrrSelect->AddGrowableCol(1);
-  waypointSizer->Add(waypointrrSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
-                     border_size);
-
-  wxStaticText* waypointrrTxt =
-      new wxStaticText(itemPanelShip, wxID_ANY, _("Waypoint range rings"));
-  waypointrrSelect->Add(waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing);
-
-  pWaypointRangeRingsNumber =
-      new wxChoice(itemPanelShip, ID_OPWAYPOINTRANGERINGS, wxDefaultPosition,
-                   m_pShipIconType->GetSize(), 11, rrAlt);
-  waypointrrSelect->Add(pWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL,
-                        group_item_spacing);
-
-  waypointradarGrid =
-      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
-  waypointradarGrid->AddGrowableCol(1);
-  waypointSizer->Add(waypointradarGrid, 0, wxLEFT | wxEXPAND, 30);
-
-  wxStaticText* waypointdistanceText = new wxStaticText(
-      itemPanelShip, wxID_STATIC, _("Distance between rings"));
-  waypointradarGrid->Add(waypointdistanceText, 1, wxEXPAND | wxALL,
-                         group_item_spacing);
-
-  pWaypointRangeRingsStep =
-      new wxTextCtrl(itemPanelShip, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                     wxSize(100, -1), 0);
-  waypointradarGrid->Add(pWaypointRangeRingsStep, 0, wxALIGN_RIGHT | wxALL,
-                         group_item_spacing);
-
-  wxStaticText* waypointunitText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Distance Unit"));
-  waypointradarGrid->Add(waypointunitText, 1, wxEXPAND | wxALL,
-                         group_item_spacing);
-
-  m_itemWaypointRangeRingsUnits =
-      new wxChoice(itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition,
-                   m_pShipIconType->GetSize(), 2, pDistUnitsStrings);
-  waypointradarGrid->Add(m_itemWaypointRangeRingsUnits, 0,
-                         wxALIGN_RIGHT | wxALL, border_size);
-
-  wxStaticText* waypointrangeringsColour = new wxStaticText(
-      itemPanelShip, wxID_STATIC, _("Waypoint Range Ring Colours"));
-  waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
-
-  m_colourWaypointRangeRingsColour = new wxColourPickerCtrl(
-      itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
-      wxDefaultValidator, _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
-  waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
-                         wxALIGN_RIGHT | wxALL, 1);
-
   //  Calculate values
   wxStaticBox* ownshipcalcText = new wxStaticBox(itemPanelShip, wxID_ANY, _("Calculate values"));
   wxStaticBoxSizer* ownshipcalcSizer = new wxStaticBoxSizer(ownshipcalcText, wxVERTICAL);
@@ -2851,6 +2765,212 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   DimeControl(itemPanelShip);
+}
+
+void options::CreatePanel_Routes(size_t parent, int border_size,
+                                  int group_item_spacing) {
+  itemPanelRoutes = AddPage(parent, _("Routes/Points"));
+
+  Routes = new wxBoxSizer(wxVERTICAL);
+  itemPanelRoutes->SetSizer(Routes);
+
+
+  wxString pDistUnitsStrings[] = {_("Nautical miles"), _("Kilometers")};
+
+  wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
+                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
+                      _T( "8" ), _T( "9" ), _T( "10" )};
+
+  //  Routes
+  wxStaticBox* routeText =
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Routes"));
+  wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer(routeText, wxVERTICAL);
+  Routes->Add(routeSizer, 0, wxGROW | wxALL, border_size);
+
+  routeSizer->AddSpacer(5);
+
+  // Default ICON
+  wxFlexGridSizer* routepointiconSelect =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  routepointiconSelect->AddGrowableCol(1);
+  routeSizer->Add(routepointiconSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+
+  wxStaticText* routepointiconTxt =
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Routepoint default icon"));
+  routepointiconSelect->Add(routepointiconTxt, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  pRoutepointDefaultIconChoice = new OCPNIconCombo( itemPanelRoutes, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+  routepointiconSelect->Add(pRoutepointDefaultIconChoice, 0, wxALIGN_RIGHT | wxALL,
+                        group_item_spacing);
+
+  pRoutepointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
+  //  Accomodate scaling of icon
+   int min_size = GetCharHeight() * 2;
+   min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
+   pRoutepointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, min_size) );
+   
+  routeSizer->AddSpacer(5);
+
+
+  wxFlexGridSizer* pRouteGrid =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  pRouteGrid->AddGrowableCol(1);
+  routeSizer->Add(pRouteGrid, 0, wxALL | wxEXPAND, border_size);
+
+  wxStaticText* raText = new wxStaticText(
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)"));
+  pRouteGrid->Add(raText, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  m_pText_ACRadius = new wxTextCtrl(itemPanelRoutes, -1);
+  pRouteGrid->Add(m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT,
+                  group_item_spacing);
+
+  pAdvanceRouteWaypointOnArrivalOnly =
+      new wxCheckBox(itemPanelRoutes, ID_DAILYCHECKBOX,
+                     _("Advance route waypoint on arrival only"));
+  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0);
+
+  
+  //  Waypoints
+  wxStaticBox* waypointText =
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Waypoints"));
+  wxStaticBoxSizer* waypointSizer =
+      new wxStaticBoxSizer(waypointText, wxVERTICAL);
+  Routes->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+  waypointSizer->AddSpacer(5);
+
+  // Default ICON
+  wxFlexGridSizer* waypointiconSelect =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  waypointiconSelect->AddGrowableCol(1);
+  waypointSizer->Add(waypointiconSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+
+  wxStaticText* waypointiconTxt =
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint default icon"));
+  waypointiconSelect->Add(waypointiconTxt, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  pWaypointDefaultIconChoice = new OCPNIconCombo( itemPanelRoutes, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+  waypointiconSelect->Add(pWaypointDefaultIconChoice, 0, wxALIGN_RIGHT | wxALL,
+                        group_item_spacing);
+
+  pWaypointDefaultIconChoice->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
+  //  Accomodate scaling of icon
+   int rmin_size = GetCharHeight() * 2;
+   min_size = wxMax( rmin_size, (32 *g_ChartScaleFactorExp) + 4 );
+   pWaypointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, rmin_size) );
+   
+  waypointSizer->AddSpacer(5);
+
+  //Range Rings  
+  wxFlexGridSizer* waypointrrSelect =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  waypointrrSelect->AddGrowableCol(1);
+  waypointSizer->Add(waypointrrSelect, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+
+  wxStaticText* waypointrrTxt =
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint range rings"));
+  waypointrrSelect->Add(waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  pWaypointRangeRingsNumber =
+      new wxChoice(itemPanelRoutes, ID_OPWAYPOINTRANGERINGS, wxDefaultPosition,
+                   m_pShipIconType->GetSize(), 11, rrAlt);
+  waypointrrSelect->Add(pWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL,
+                        group_item_spacing);
+
+  waypointradarGrid =
+      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
+  waypointradarGrid->AddGrowableCol(1);
+  waypointSizer->Add(waypointradarGrid, 0, wxLEFT | wxEXPAND, 30);
+
+  wxStaticText* waypointdistanceText = new wxStaticText(
+      itemPanelRoutes, wxID_STATIC, _("Distance between rings"));
+  waypointradarGrid->Add(waypointdistanceText, 1, wxEXPAND | wxALL,
+                         group_item_spacing);
+
+  pWaypointRangeRingsStep =
+      new wxTextCtrl(itemPanelRoutes, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
+                     wxSize(100, -1), 0);
+  waypointradarGrid->Add(pWaypointRangeRingsStep, 0, wxALIGN_RIGHT | wxALL,
+                         group_item_spacing);
+
+  wxStaticText* waypointunitText =
+      new wxStaticText(itemPanelRoutes, wxID_STATIC, _("Distance Unit"));
+  waypointradarGrid->Add(waypointunitText, 1, wxEXPAND | wxALL,
+                         group_item_spacing);
+
+  m_itemWaypointRangeRingsUnits =
+      new wxChoice(itemPanelRoutes, ID_RADARDISTUNIT, wxDefaultPosition,
+                   m_pShipIconType->GetSize(), 2, pDistUnitsStrings);
+  waypointradarGrid->Add(m_itemWaypointRangeRingsUnits, 0,
+                         wxALIGN_RIGHT | wxALL, border_size);
+
+  wxStaticText* waypointrangeringsColour = new wxStaticText(
+      itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colours"));
+  waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
+
+  m_colourWaypointRangeRingsColour = new wxColourPickerCtrl(
+      itemPanelRoutes, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
+  waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
+                         wxALIGN_RIGHT | wxALL, 1);
+
+  // Fill the default waypoint icon selector combo box
+  pWaypointDefaultIconChoice->Clear();
+  //      Iterate on the Icon Descriptions, filling in the combo control
+  bool fillCombo = true;
+        
+  if( fillCombo ){
+      for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+          wxString *ps = pWayPointMan->GetIconDescription( i );
+          wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
+                    
+          pWaypointDefaultIconChoice->Append( *ps, bmp );
+      }
+  }
+                
+  // find the correct item in the combo box
+   int iconToSelect = -1;
+   for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+       if( *pWayPointMan->GetIconKey( i ) == g_default_wp_icon ){
+           iconToSelect = i;
+           pWaypointDefaultIconChoice->Select( iconToSelect );
+           break;
+       }
+   }
+
+   // Fill the default Routepoint icon selector combo box
+  pRoutepointDefaultIconChoice->Clear();
+  //      Iterate on the Icon Descriptions, filling in the combo control
+  fillCombo = true;
+        
+  if( fillCombo ){
+      for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+          wxString *ps = pWayPointMan->GetIconDescription( i );
+          wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
+                    
+          pRoutepointDefaultIconChoice->Append( *ps, bmp );
+      }
+  }
+                
+  // find the correct item in the combo box
+   iconToSelect = -1;
+   for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+       if( *pWayPointMan->GetIconKey( i ) == g_default_routepoint_icon ){
+           iconToSelect = i;
+           pRoutepointDefaultIconChoice->Select( iconToSelect );
+           break;
+       }
+   }
+  
+  DimeControl(itemPanelRoutes);
 }
 
 void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
@@ -5374,6 +5494,7 @@ void options::CreateControls(void) {
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
+  CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
   m_pageUI = CreatePanel(_("User Interface"));
   CreatePanel_UI(m_pageUI, border_size, group_item_spacing);
@@ -6075,9 +6196,9 @@ void options::OnRadarringSelect(wxCommandEvent& event) {
 void options::OnWaypointRangeRingSelect(wxCommandEvent& event) {
   waypointradarGrid->ShowItems(pWaypointRangeRingsNumber->GetSelection() != 0);
   dispOptions->Layout();
-  ownShip->Layout();
-  itemPanelShip->Layout();
-  itemPanelShip->Refresh();
+  Routes->Layout();
+  itemPanelRoutes->Layout();
+  itemPanelRoutes->Refresh();
   event.Skip();
 }
 
@@ -6438,6 +6559,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
   g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6); // Correct abnormally
 
+  wxString *icon_name = pWayPointMan->GetIconKey( pWaypointDefaultIconChoice->GetSelection() );
+  if(icon_name && icon_name->Length())
+    g_default_wp_icon = *icon_name;
+
+  icon_name = pWayPointMan->GetIconKey( pRoutepointDefaultIconChoice->GetSelection() );
+  if(icon_name && icon_name->Length())
+    g_default_routepoint_icon = *icon_name;
+
   //  Any Font changes?
   if(m_bfontChanged)
       m_returnChanges |= FONT_CHANGED;
@@ -6795,6 +6924,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
 #ifdef USE_S57
   //   Handle Vector Charts Tab
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+ 
+  int depthUnit = pDepthUnitSelect->GetSelection();
+  g_nDepthUnitDisplay = depthUnit;
+ 
+  //  Process the UserStandard display list, noting if any changes were made
+  bool bUserStdChange = false;
+
   int nOBJL = ps57CtlListBox->GetCount();
 
   for (int iPtr = 0; iPtr < nOBJL; iPtr++) {
@@ -6807,13 +6943,19 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
     assert(itemIndex >= 0);
     OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
+    if(pOLE->nViz != ps57CtlListBox->IsChecked(iPtr))
+        bUserStdChange = true;
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
 
-  int depthUnit = pDepthUnitSelect->GetSelection();
-  g_nDepthUnitDisplay = depthUnit;
-  
   if (ps52plib) {
+
+    // Take a snapshot of the S52 config right now,
+    // for later comparison
+    ps52plib->GenerateStateHash();
+    long stateHash = ps52plib->GetStateHash();
+
+  
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
@@ -6885,6 +7027,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_nDepthUnitDisplay = depthUnit;
     
     ps52plib->GenerateStateHash();
+    
+    // Detect a change to S52 library config
+    if( (stateHash != ps52plib->GetStateHash()) || bUserStdChange )
+        m_returnChanges |= S52_CHANGED;
+
   }
 #endif
 

@@ -39,7 +39,7 @@
 #include "wx28compat.h"
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
 extern OCPNPlatform     *g_Platform;

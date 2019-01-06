@@ -50,7 +50,7 @@ enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 // If they do not intersect, two scenario's are possible:
 // other is outside this -> return _OUT
 // other is inside this -> return _IN
-GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
+static GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
                    double lon_max, double Marge )
 {
 
@@ -68,7 +68,7 @@ GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, dou
 }
 
 // Is the given point in the vp ??
-bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
+static bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
 {
     double m_miny = vp->lat_min;
     double m_maxy = vp->lat_max;
@@ -1112,11 +1112,11 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
         wxPoint oldpy(-1000, -1000);
 
         for( int i = 0; i < imax; i++ ) {
-            double lonl = pGRX->getX( i );
+            double lonl, latl;
 
             /* at midpoint of grib so as to avoid problems in projection on
                gribs that go all the way to the north or south pole */
-            double latl = pGRX->getY( pGRX->getNj()/2 );
+            pGRX->getXY( i, pGRX->getNj()/2, &lonl, &latl);
             wxPoint pl;
             GetCanvasPixLL( vp, &pl, latl, lonl );
 
@@ -1417,8 +1417,9 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
         wxPoint oldpy(-1000, -1000);
 
         for( int i = 0; i < imax; i++ ) {
-            double lonl = pGRX->getX( i );
-            double latl = pGRX->getY( pGRX->getNj()/2 );
+            double lonl,latl;
+            pGRX->getXY( i, pGRX->getNj()/2, &lonl, &latl);
+
             wxPoint pl;
             GetCanvasPixLL( vp, &pl, latl, lonl );
 
@@ -1433,8 +1434,9 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                 firstpx = pl;
                 
             for( int j = 0; j < jmax; j++ ) {
-                double lon = pGRX->getX( i );
-                double lat = pGRX->getY( j );
+                double lon,  lat; 
+                pGRX->getXY( i,j, &lon, &lat );
+
                 wxPoint p;
                 GetCanvasPixLL( vp, &p, lat, lon );
 
@@ -1672,8 +1674,9 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 		wxPoint oldpy(-1000, -1000);
 
 		for( int i = 0; i < imax; i++ ) {
-			double lonl = pGRA->getX( i );
-			double latl = pGRA->getY( pGRA->getNj()/2 );
+			double lonl, latl;
+			pGRA->getXY( i, pGRA->getNj()/2, &lonl, &latl );
+
 			wxPoint pl;
 			GetCanvasPixLL( vp, &pl, latl, lonl );
 
@@ -1686,8 +1689,9 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 				    firstpx = pl;
 				
 				for( int j = 0; j < jmax; j++ ) {
-					double lon = pGRA->getX( i );
-					double lat = pGRA->getY( j );
+					double lon, lat;
+					pGRA->getXY( i, j, &lon, &lat );
+
 					wxPoint p;
 					GetCanvasPixLL( vp, &p, lat, lon );
 

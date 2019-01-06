@@ -173,6 +173,8 @@ extern bool             g_bframemax;
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
+extern wxString         g_VisiNameinLayers;
+extern wxString         g_InVisiNameinLayers;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
@@ -220,12 +222,14 @@ extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
 extern bool             g_benableAISNameCache;
+extern bool             g_bUseOnlyConfirmedAISName;
 extern int              g_ScaledNumWeightSOG;
 extern int              g_ScaledNumWeightCPA;
 extern int              g_ScaledNumWeightTCPA;
@@ -363,6 +367,7 @@ extern int              g_route_line_width;
 extern int              g_track_line_width;
 extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
+extern wxString         g_default_routepoint_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
@@ -651,6 +656,7 @@ int MyConfig::LoadMyConfig()
     g_tide_rectangle_scale = 100;
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
+    g_default_routepoint_icon = _T("diamond");
     
     g_nAWDefault = 50;
     g_nAWMax = 1852;
@@ -961,6 +967,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
+    Read( _T ( "VisNameInLayers" ), &g_VisiNameinLayers );
+    Read( _T ( "InvisNameInLayers" ), &g_InVisiNameinLayers );
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
@@ -1012,6 +1020,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
+    
+    g_bUseOnlyConfirmedAISName = false;
+    Read( _T ( "UseOnlyConfirmedAISName" ),  &g_bUseOnlyConfirmedAISName );
 
     Read( _T ( "bNoCPAMax" ), &g_bCPAMax );
 
@@ -1093,6 +1104,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     Read( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
+    Read( _T ("AISTargetListColumnOrder"), &g_AisTargetList_column_order);
 
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
@@ -1403,6 +1415,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
+    Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
 
     SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = GetNumberOfEntries();
@@ -1631,6 +1644,11 @@ bool MyConfig::LoadLayers(wxString &path)
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
 
+                if (g_VisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = true;
+                if (g_InVisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = false;
+
                 l->m_bIsVisibleOnChart = bLayerViz;
                 
                 wxString laymsg;
@@ -1647,7 +1665,7 @@ bool MyConfig::LoadLayers(wxString &path)
                     if( ::wxFileExists( file_path ) ) {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(file_path.fn_str());
-                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
+                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz, l->m_bHasVisibleNames);
                         l->m_NoOfItems += nItems;
                         l->m_LayerType = _("Persistent");
                         
@@ -2347,7 +2365,7 @@ void MyConfig::UpdateSettings()
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
 
-    wxString vis, invis;
+    wxString vis, invis, visnames, invisnames;
     LayerList::iterator it;
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
@@ -2355,9 +2373,15 @@ void MyConfig::UpdateSettings()
         if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
         else
             invis += ( lay->m_LayerName ) + _T(";");
+
+        if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
+        else
+            invisnames += ( lay->m_LayerName) + _T(";");
     }
     Write( _T ( "VisibleLayers" ), vis );
     Write( _T ( "InvisibleLayers" ), invis );
+    Write( _T ( "VisNameInLayers" ), visnames);
+    Write( _T ( "InvisNameInLayers" ), invisnames);
 
     Write( _T ( "Locale" ), g_locale );
     Write( _T ( "LocaleOverride" ), g_localeOverride );
@@ -2481,6 +2505,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
 
     Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
@@ -2627,6 +2652,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
+    Write( _T ( "DefaultRPIcon" ), g_default_routepoint_icon );
 
     DeleteGroup(_T ( "/MMSIProperties" ));
     SetPath( _T ( "/MMSIProperties" ) );
@@ -2987,7 +3013,7 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
                 pSet->load_file(path.fn_str());
 
                 if(islayer){
-                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
+                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
                     l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary") ;
                     
                     if(isPersistent)

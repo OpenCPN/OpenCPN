@@ -435,7 +435,7 @@ wxCurlBase::~wxCurlBase()
 //////////////////////////////////////////////////////////////////////
 
 typedef int (*func_T)(void);
-bool wxCurlBase::SetOpt(int opt, ...)
+bool wxCurlBase::SetOpt(CURLoption option, ...)
 {
     va_list arg;
 
@@ -444,8 +444,7 @@ bool wxCurlBase::SetOpt(int opt, ...)
     void *param_obj = NULL;
     curl_off_t param_offset = 0;
 
-    va_start(arg, opt);
-    CURLoption option = (CURLoption)opt;
+    va_start(arg, option);
 
     CURLcode res = CURLE_OK;
 
@@ -492,7 +491,7 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
     return SetOpt(option, (const char*)str);
 }
 
-bool wxCurlBase::GetInfo(int info, ...) const
+bool wxCurlBase::GetInfo(CURLINFO info, ...) const
 {
     va_list arg;
     void* pParam;
@@ -501,8 +500,8 @@ bool wxCurlBase::GetInfo(int info, ...) const
     pParam = va_arg(arg, void*);
 
     CURLcode res = CURLE_OK;
-    CURLINFO cInfo = (CURLINFO)info;
-    res = curl_easy_getinfo(m_pCURL, cInfo, pParam);
+
+    res = curl_easy_getinfo(m_pCURL, info, pParam);
 
     DumpErrorIfNeed(res);
     va_end(arg);
@@ -822,7 +821,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_WRITEHEADER, &m_szResponseHeader);
         SetOpt(CURLOPT_ERRORBUFFER, m_szDetailedErrorBuffer);
         SetOpt(CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0\r\n" \
-                    "Accept: application/xml,text/html,application/xhtml+xml;q=0.9,*/*;q=0.8\r\n" \
+                    "Accept: */*\r\n" \
                     "Connection: keep-alive"); //Pretend we are a normal browser
         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef __WXMSW__

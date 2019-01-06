@@ -45,7 +45,7 @@
 #include <wx/xml/xml.h>
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
 class wxGLContext;
@@ -467,7 +467,6 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
 
             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-
             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
             virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
@@ -542,7 +541,7 @@ class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
 public:
     opencpn_plugin_116(void *pmgr);
     virtual ~opencpn_plugin_116();
-
+    virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
 };
 
 //------------------------------------------------------------------
@@ -1281,5 +1280,9 @@ extern DECL_EXP wxWindow* PluginGetFocusCanvas();
 extern DECL_EXP wxWindow* PluginGetOverlayRenderCanvas();
 
 extern "C"  DECL_EXP void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scale);
+extern "C"  DECL_EXP  int AddCanvasMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin, const char *name = "");
+extern "C"  DECL_EXP void RemoveCanvasMenuItem(int item, const char *name = "");      // Fully remove this item
+extern "C"  DECL_EXP void SetCanvasMenuItemViz(int item, bool viz, const char *name = ""); // Temporarily change context menu options
+extern "C"  DECL_EXP void SetCanvasMenuItemGrey(int item, bool grey, const char *name = "");
 
 #endif //_PLUGIN_H_

@@ -62,6 +62,7 @@ class MMSI_Props_Panel;
 class MMSIProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
+class OCPNIconCombo;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -521,9 +522,12 @@ class options : private Uncopyable,
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
   wxTextCtrl *m_pOSMinSize, *m_pText_ACRadius;
   wxStaticBoxSizer *dispOptions, *dispWaypointOptions;
-  wxScrolledWindow *itemPanelShip;
-  wxBoxSizer *ownShip;
+  wxScrolledWindow *itemPanelShip, *itemPanelRoutes;
+  wxBoxSizer *ownShip, *Routes;
 
+  OCPNIconCombo *pWaypointDefaultIconChoice;
+  OCPNIconCombo *pRoutepointDefaultIconChoice;
+  
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
@@ -584,6 +588,8 @@ class options : private Uncopyable,
   void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Routes(size_t parent, int border_size, int group_item_spacing);
+
   void UpdateTemplateTitleText();
   
   int m_returnChanges;
