@@ -412,6 +412,9 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       int GetMinAvailableGshhgQuality() { return pWorldBackgroundChart->GetMinAvailableQuality(); }
       int GetMaxAvailableGshhgQuality() { return pWorldBackgroundChart->GetMaxAvailableQuality(); }
+      Route  *GetSelectedRoute() const { return m_pSelectedRoute; }
+      Track  *GetSelectedTrack() const { return m_pSelectedTrack; }
+      RoutePoint  *GetSelectedRoutePoint() const { return m_pFoundRoutePoint; }
 
       ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew = true);
       void UpdateToolbarColorScheme( ColorScheme cs );
