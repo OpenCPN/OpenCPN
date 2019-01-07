@@ -327,7 +327,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
+int wxCALLBACK SortConnectionOnPriority(wxIntPtr  item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
 #endif
@@ -9012,7 +9012,11 @@ void options::FillSourceList(void) {
   m_lcSources->SetColumnWidth(6, 90);
 #endif
 
+#if wxCHECK_VERSION(2, 9, 0)
+  m_lcSources->SortItems(SortConnectionOnPriority, (wxIntPtr)m_lcSources);
+#else
   m_lcSources->SortItems(SortConnectionOnPriority, (long)m_lcSources);
+#endif
   
   // If space is at a permium, adjust the size of the connections list to the minimum useful
   if(m_bcompact)

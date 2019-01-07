@@ -135,7 +135,7 @@ IF(NOT UNIX)
             src/bzip2/huffman.c
             src/bzip2/randtable.c
     )
-    ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
+    ADD_LIBRARY(LIB_BZIP STATIC ${SRC_BZIP})
 
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)

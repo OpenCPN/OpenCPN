@@ -8,7 +8,6 @@ matrix:
       compiler: clang
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then grep -q precise /etc/lsb-release && sudo add-apt-repository -y ppa:wxformbuilder/wxwidgets || true; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
 #  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
 # Homebrew upgrade disabled to save time
@@ -26,7 +25,7 @@ script:
     - mkdir build && cd build
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug ..; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DOCPN_USE_LIBCPP=ON -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx_opencpn_macos107/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx_opencpn_macos107" -DLibArchive_INCLUDE_DIR=/tmp/libarchive_macos107/include -DLibArchive_LIBRARY=/tmp/libarchive_macos107/lib/libarchive.dylib -DCAIRO_INCLUDE_DIR=/tmp/cairo_macos107/include -DCAIRO_LIBRARY=/tmp/cairo_macos107/lib/libcairo.dylib -DCMAKE_INSTALL_PREFIX=/tmp/opencpn ..; fi
-    - make -s
+    - make -sj2
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; chmod 644 /usr/local/lib/lib*.dylib; cp /tmp/libarchive_macos107/lib/libarchive.16.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; cp /tmp/cairo_macos107/lib/libcairo.2.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; make install; make create-dmg; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make package; fi
 
