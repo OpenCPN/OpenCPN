@@ -327,7 +327,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
+int wxCALLBACK SortConnectionOnPriority(wxIntPtr  item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
 #endif
@@ -8997,6 +8997,9 @@ void options::SetDefaultConnectionParams(void) {
   m_choicePriority->Select(m_choicePriority->FindString(_T( "1" )));
 
   m_tNetAddress->SetValue(_T("0.0.0.0"));
+
+  m_tNetComment->SetValue(wxEmptyString);
+  m_tSerialComment->SetValue(wxEmptyString);
   
   bool bserial = TRUE;
 #ifdef __WXGTK__

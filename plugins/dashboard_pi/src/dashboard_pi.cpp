@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  * $Id: dashboard_pi.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -32,6 +32,7 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <cmath>
 // xw 2.8
 #include <wx/filename.h>
 
