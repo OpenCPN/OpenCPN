@@ -8325,6 +8325,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     }           // left up
     
     if( event.RightDown() ) {
+        SetFocus();           //  This is to let a plugin know which canvas is right-clicked
         last_drag.x = mx;
         last_drag.y = my;
         
