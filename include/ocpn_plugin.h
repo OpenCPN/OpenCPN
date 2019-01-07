@@ -48,6 +48,8 @@
 #include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
+#include <memory>
+
 class wxGLContext;
 
 //    This is the most modern API Version number
@@ -1284,5 +1286,14 @@ extern "C"  DECL_EXP  int AddCanvasMenuItem(wxMenuItem *pitem, opencpn_plugin *p
 extern "C"  DECL_EXP void RemoveCanvasMenuItem(int item, const char *name = "");      // Fully remove this item
 extern "C"  DECL_EXP void SetCanvasMenuItemViz(int item, bool viz, const char *name = ""); // Temporarily change context menu options
 extern "C"  DECL_EXP void SetCanvasMenuItemGrey(int item, bool grey, const char *name = "");
+
+// Extract waypoints, routes and tracks
+extern DECL_EXP wxString GetSelectedWaypointGUID_Plugin( );
+extern DECL_EXP wxString GetSelectedRouteGUID_Plugin( );
+extern DECL_EXP wxString GetSelectedTrackGUID_Plugin( );
+
+extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin( const wxString& ); // doublon with GetSingleWaypoint
+extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& );
+extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& );
 
 #endif //_PLUGIN_H_
