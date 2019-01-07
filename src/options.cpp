@@ -1187,7 +1187,8 @@ void options::Init(void) {
   // for deferred loading
   m_pPlugInCtrl = NULL;
   m_pNMEAForm = NULL;
-
+  mSelectedConnectionPanel = NULL;
+  
 #ifdef __OCPN__ANDROID__
   m_scrollRate = 1;
 #else
@@ -1394,9 +1395,9 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   wxBoxSizer* bSizer17;
   bSizer17 = new wxBoxSizer(wxVERTICAL);
 
-  m_lcSources = new wxListCtrl(m_pNMEAForm, wxID_ANY, wxDefaultPosition,
-                               wxSize(300, m_fontHeight * 2), wxLC_REPORT | wxLC_SINGLE_SEL);
-  bSizer17->Add(m_lcSources, 1, wxALL | wxEXPAND, 5);
+  //m_lcSources = new wxListCtrl(m_pNMEAForm, wxID_ANY, wxDefaultPosition,
+  //                             wxSize(300, m_fontHeight * 2), wxLC_REPORT | wxLC_SINGLE_SEL);
+  //bSizer17->Add(m_lcSources, 1, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* bSizer18;
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
@@ -1747,9 +1748,9 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer4->Add(bSizerOuterContainer, 1, wxEXPAND, 5);
 
   // Connect Events
-  m_lcSources->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED,
-                       wxListEventHandler(options::OnSelectDatasource), NULL,
-                       this);
+//   m_lcSources->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED,
+//                        wxListEventHandler(options::OnSelectDatasource), NULL,
+//                        this);
   m_buttonAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(options::OnAddDatasourceClick),
                        NULL, this);
@@ -1856,6 +1857,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                            wxCommandEventHandler(options::OnValChange), NULL,
                            this);
 
+#if 0  
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
@@ -1903,6 +1905,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
   m_lcSources->Refresh();
+#endif  
   FillSourceList();
 
   ShowNMEACommon(FALSE);
@@ -1994,17 +1997,38 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
       new wxStaticBox(m_pNMEAForm, wxID_ANY, _("Data Connections")),
       wxVERTICAL);
 
+  
+  
+/*  
   wxBoxSizer* bSizer17;
   bSizer17 = new wxBoxSizer(wxVERTICAL);
 
   m_lcSources = new wxListCtrl(m_pNMEAForm, wxID_ANY, wxDefaultPosition,
                                wxSize(-1, 150), wxLC_REPORT | wxLC_SINGLE_SEL);
   bSizer17->Add(m_lcSources, 1, wxALL | wxEXPAND, 5);
+*/
 
+  wxPanel *cPanel = new wxPanel(m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxBG_STYLE_ERASE );
+  sbSizerLB->Add(cPanel, 0, wxALL|wxEXPAND, 5);
+  
+  wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
+  cPanel->SetSizer(boxSizercPanel);
+    
+  m_scrollWinConnections = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,100)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
+  m_scrollWinConnections->SetScrollRate(5, 5);
+  boxSizercPanel->Add(m_scrollWinConnections, 0, wxALL|wxEXPAND, 5);
+    
+  boxSizerConnections = new wxBoxSizer(wxVERTICAL);
+  m_scrollWinConnections->SetSizer(boxSizerConnections);
+
+  
+  
+  
+  
   wxBoxSizer* bSizer18;
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
 
-  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _("Add Connection"),
+  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _(""),
                              wxDefaultPosition, wxDefaultSize, 0);
   bSizer18->Add(m_buttonAdd, 0, wxALL, 5);
 
@@ -2013,8 +2037,8 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_buttonRemove->Enable(FALSE);
   bSizer18->Add(m_buttonRemove, 0, wxALL, 5);
 
-  bSizer17->Add(bSizer18, 0, wxEXPAND, 5);
-  sbSizerLB->Add(bSizer17, 1, wxEXPAND, 5);
+  //bSizer17->Add(bSizer18, 0, wxEXPAND, 5);
+  sbSizerLB->Add(bSizer18, 1, wxEXPAND, 5);
   bSizerOuterContainer->Add(sbSizerLB, 0, wxEXPAND, 5);
 
   //  Connections Properties
@@ -2151,6 +2175,17 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                               wxDefaultPosition, wxDefaultSize, 0);
   gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
 
+  //  User Comments
+  m_stNetComment = new wxStaticText(m_pNMEAForm, wxID_ANY, _("User Comment"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetComment->Wrap(-1);
+  gSizerNetProps->Add(m_stNetComment, 0, wxALL, 5);
+
+  m_tNetComment = new wxTextCtrl(m_pNMEAForm, wxID_ANY, wxEmptyString,
+                              wxDefaultPosition, wxDefaultSize, 0);
+  gSizerNetProps->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
+  
+  
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
   gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
@@ -2200,8 +2235,8 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
       m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0);
   m_choiceSerialProtocol->SetSelection(0);
   m_choiceSerialProtocol->Enable(FALSE);
-
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
+
   m_stPriority = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Priority"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stPriority->Wrap(-1);
@@ -2223,6 +2258,16 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
   fgSizer5->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+  //  User Comments
+  m_stSerialComment = new wxStaticText(m_pNMEAForm, wxID_ANY, _("User Comment"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stSerialComment->Wrap(-1);
+  fgSizer5->Add(m_stSerialComment, 0, wxALL, 5);
+
+  m_tSerialComment = new wxTextCtrl(m_pNMEAForm, wxID_ANY, wxEmptyString,
+                              wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer5->Add(m_tSerialComment, 1, wxEXPAND | wxTOP, 5);
 
   m_cbCheckCRC = new wxCheckBox(m_pNMEAForm, wxID_ANY, _("Control checksum"),
                                 wxDefaultPosition, wxDefaultSize, 0);
@@ -2355,9 +2400,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   bSizer4->Add(bSizerOuterContainer, 1, wxEXPAND, 5);
 
   // Connect Events
-  m_lcSources->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED,
-                       wxListEventHandler(options::OnSelectDatasource), NULL,
-                       this);
+//   m_lcSources->Connect(wxEVT_COMMAND_LIST_ITEM_SELECTED,
+//                        wxListEventHandler(options::OnSelectDatasource), NULL,
+//                        this);
   m_buttonAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(options::OnAddDatasourceClick),
                        NULL, this);
@@ -2464,14 +2509,22 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                            wxCommandEventHandler(options::OnValChange), NULL,
                            this);
 
-  m_lcSources->Connect(wxEVT_LEFT_DOWN,
-                       wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
-                       NULL, this);
-#if wxCHECK_VERSION(2, 9, 0)
-  m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
-                       wxListEventHandler(options::OnConnectionToggleEnable),
-                       NULL, this);
-#endif
+  m_tNetComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
+                         wxCommandEventHandler(options::OnConnValChange), NULL,
+                         this);
+  m_tSerialComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
+                         wxCommandEventHandler(options::OnConnValChange), NULL,
+                         this);
+
+#if 0  
+//   m_lcSources->Connect(wxEVT_LEFT_DOWN,
+//                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
+//                        NULL, this);
+// #if wxCHECK_VERSION(2, 9, 0)
+//   m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
+//                        wxListEventHandler(options::OnConnectionToggleEnable),
+//                        NULL, this);
+// #endif
 
   wxString columns[] = {_("Enable"),   _("Type"),       _("DataPort"),
                         _("Priority"), _("Parameters"), _("Connection"),
@@ -2480,7 +2533,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
     wxListItem col;
     col.SetId(i);
     col.SetText(columns[i]);
-    m_lcSources->InsertColumn(i, col);
+//    m_lcSources->InsertColumn(i, col);
   }
 
   //  Build the image list
@@ -2509,9 +2562,10 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   imglist->Add(unchecked_bmp);
   imglist->Add(checked_bmp);
-  m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
+//  m_lcSources->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
-  m_lcSources->Refresh();
+//  m_lcSources->Refresh();
+#endif
   FillSourceList();
 
   ShowNMEACommon(FALSE);
@@ -2520,6 +2574,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   connectionsaved = TRUE;
 }
 
+#if 0    
 void options::EnableItem(const long index) {
   if (index == wxNOT_FOUND) {
     ClearNMEAForm();
@@ -2542,13 +2597,21 @@ void options::OnConnectionToggleEnable(wxListEvent& event) {
 }
 
 void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
+#if 0    
   int flags;
   long index = m_lcSources->HitTest(event.GetPosition(), flags);
   if (index == wxNOT_FOUND || event.GetX() < m_lcSources->GetColumnWidth(0))
     EnableItem(index);
-
+#endif
   // Allow wx to process...
   event.Skip();
+}
+#endif
+
+void options::EnableConnection( ConnectionParams *conn, bool value){
+    if(conn){
+        conn->bEnabled = value;
+    }
 }
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
@@ -6505,6 +6568,14 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
     pConnectionParams->Baudrate = 0;
     //        pConnectionParams->SetAuxParameterStr(m_choiceBTDataSources->GetStringSelection());
   }
+  
+  if (pConnectionParams->Type == SERIAL) {
+    pConnectionParams->UserComment = m_tSerialComment->GetValue();
+  }
+  else if (pConnectionParams->Type == NETWORK) {
+    pConnectionParams->UserComment = m_tNetComment->GetValue();
+  }
+      
 
   return pConnectionParams;
 }
@@ -6647,21 +6718,20 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
 
   // NMEA Source
-  long itemIndex = m_lcSources->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-
   //  If the stream selected exists, capture some of its existing parameters
   //  to facility identification and allow stop and restart of the stream
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
   
-  if (itemIndex >= 0) {
-    int params_index = m_lcSources->GetItemData(itemIndex);
-    ConnectionParams* cpo = g_pConnectionParams->Item(params_index);
+  int itemIndex = -1;
+  if (mSelectedConnectionPanel) {
+    ConnectionParams* cpo = mSelectedConnectionPanel->m_pConnectionParams;
     if (cpo) {
       lastAddr = cpo->NetworkAddress;
       lastPort = cpo->NetworkPort;
       lastNetProtocol = cpo->NetProtocol;
+      itemIndex = mSelectedConnectionPanel->m_index;
     }
   }
 
@@ -6669,12 +6739,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ConnectionParams* cp = CreateConnectionParamsFromSelectedItem();
     if (cp != NULL) {
       if (itemIndex >= 0) {
-        int params_index = m_lcSources->GetItemData(itemIndex);
-        g_pConnectionParams->RemoveAt(params_index);
-        g_pConnectionParams->Insert(cp, params_index);
+        g_pConnectionParams->RemoveAt(itemIndex);
+        g_pConnectionParams->Insert(cp, itemIndex);
       } else {
         g_pConnectionParams->Add(cp);
-        itemIndex = g_pConnectionParams->Count() - 1;
       }
 
       //  Record the previous parameters, if any
@@ -6683,9 +6751,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       cp->LastNetworkPort = lastPort;
 
       FillSourceList();
-      m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED,
-                                wxLIST_STATE_SELECTED);
-      m_lcSources->Refresh();
+//      m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+//      m_lcSources->Refresh();
       connectionsaved = TRUE;
     } else {
       ::wxEndBusyCursor();
@@ -8704,6 +8771,8 @@ void options::ShowNMEANet(bool visible) {
   m_rbNetProtoGPSD->Show(visible);
   m_rbNetProtoTCP->Show(visible);
   m_rbNetProtoUDP->Show(visible);
+  m_stNetComment->Show(visible);
+  m_tNetComment->Show(visible);
 }
 
 void options::ShowNMEASerial(bool visible) {
@@ -8714,7 +8783,8 @@ void options::ShowNMEASerial(bool visible) {
   m_stSerProtocol->Show(visible);
   m_choiceSerialProtocol->Show(visible);
   m_cbGarminHost->Show(visible);
-  /// gSizerNetProps->SetDimension(0,0,0,0);
+  m_stSerialComment->Show(visible);
+  m_tSerialComment->Show(visible);
 }
 
 void options::ShowNMEAGPS(bool visible) {}
@@ -8899,6 +8969,11 @@ void options::SetConnectionParams(ConnectionParams* cp) {
   } else
     ClearNMEAForm();
 
+  if(cp->Type == SERIAL)
+      m_tSerialComment->SetValue(cp->UserComment);
+  else if (cp->Type == NETWORK)
+      m_tNetComment->SetValue(cp->UserComment);
+  
   m_connection_enabled = cp->bEnabled;
   
   // Reset touch flag
@@ -8940,106 +9015,56 @@ void options::SetDefaultConnectionParams(void) {
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
+ 
+  //  Unselect all panels
+  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
+    mConnectionsPanelList[i]->SetSelected(false);;
+
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
 
-  long itemIndex = -1;
-  for (;;) {
-    itemIndex = m_lcSources->GetNextItem(itemIndex, wxLIST_NEXT_ALL,
-                                         wxLIST_STATE_SELECTED);
-    if (itemIndex == -1) break;
-    m_lcSources->SetItemState(itemIndex, 0,
-                              wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
-  }
-  m_buttonRemove->Enable(FALSE);
+  m_buttonRemove->Disable();
 
   RecalculateSize();
 }
 
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
-  m_lcSources->DeleteAllItems();
+  
+  //  Remove all panels
+  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
+    delete mConnectionsPanelList[i];
+  mConnectionsPanelList.clear();
+  
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    wxListItem li;
-    li.SetId(i);
-    li.SetImage(g_pConnectionParams->Item(i)->bEnabled);
-    li.SetData(i);
-    li.SetText(wxEmptyString);
+      ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                             g_pConnectionParams->Item(i), this, i);
+      pPanel->SetSelected(false);
+      boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+      mConnectionsPanelList.push_back(pPanel);
 
-    long itemIndex = m_lcSources->InsertItem(li);
-
-    m_lcSources->SetItem(itemIndex, 1,
-                         g_pConnectionParams->Item(i)->GetSourceTypeStr());
-    m_lcSources->SetItem(itemIndex, 2,
-                         g_pConnectionParams->Item(i)->GetAddressStr());
-    wxString prio_str =
-        wxString::Format(_T( "%d" ), g_pConnectionParams->Item(i)->Priority);
-    m_lcSources->SetItem(itemIndex, 3, prio_str);
-    wxString parms = g_pConnectionParams->Item(i)->GetParametersStr();
-    if (parms.IsEmpty()) parms = g_pConnectionParams->Item(i)->GetPortStr();
-    m_lcSources->SetItem(itemIndex, 4, parms);
-    m_lcSources->SetItem(itemIndex, 5,
-                         g_pConnectionParams->Item(i)->GetIOTypeValueStr());
-    m_lcSources->SetItem(itemIndex, 6,
-                         g_pConnectionParams->Item(i)->GetFiltersStr());
   }
-
-#ifndef __OCPN__ANDROID__
-#ifdef __WXOSX__
-  m_lcSources->SetColumnWidth(0, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(1, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(2, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(3, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(4, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(5, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(6, wxLIST_AUTOSIZE);
-#else
-  m_lcSources->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
-  m_lcSources->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
-  m_lcSources->SetColumnWidth(2, wxLIST_AUTOSIZE);
-  m_lcSources->SetColumnWidth(3, wxLIST_AUTOSIZE_USEHEADER);
-  m_lcSources->SetColumnWidth(4, wxLIST_AUTOSIZE_USEHEADER);
-  m_lcSources->SetColumnWidth(5, wxLIST_AUTOSIZE_USEHEADER);
-  m_lcSources->SetColumnWidth(6, wxLIST_AUTOSIZE);
-#endif
-#else
-  m_lcSources->SetColumnWidth(0, 60);
-  m_lcSources->SetColumnWidth(1, 90);
-  m_lcSources->SetColumnWidth(2, 90);
-  m_lcSources->SetColumnWidth(3, 90);
-  m_lcSources->SetColumnWidth(4, 90);
-  m_lcSources->SetColumnWidth(5, 90);
-  m_lcSources->SetColumnWidth(6, 90);
-#endif
-
-  m_lcSources->SortItems(SortConnectionOnPriority, (long)m_lcSources);
+  boxSizerConnections->Layout();
   
-  // If space is at a permium, adjust the size of the connections list to the minimum useful
-  if(m_bcompact)
-    m_lcSources->SetMinSize(wxSize(-1, wxMax((m_fontHeight * 3 / 2), (g_pConnectionParams->Count() + 1) * m_fontHeight)));
-  
+  mSelectedConnectionPanel = NULL;
+  m_buttonAdd->SetLabel(_("Add Connection"));
+
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
-  long itemIndex = -1;
-  for (;;) {
-    itemIndex = m_lcSources->GetNextItem(itemIndex, wxLIST_NEXT_ALL,
-                                         wxLIST_STATE_SELECTED);
-    if (itemIndex == -1) break;
+  if(mSelectedConnectionPanel){
+      g_pConnectionParams->RemoveAt(mSelectedConnectionPanel->m_index);
 
-    int params_index = m_lcSources->GetItemData(itemIndex);
-    if (params_index != -1) {
-      ConnectionParams* cp = g_pConnectionParams->Item(params_index);
-      g_pConnectionParams->RemoveAt(params_index);
+      DataStream* pds_existing = g_pMUX->FindStream(mSelectedConnectionPanel->m_pConnectionParams->GetDSPort());
+      if (pds_existing)
+          g_pMUX->StopAndRemoveStream(pds_existing);
+      
+   }
 
-      DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
-      if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-    }
+  //  Mark connection deleted
+  m_rbTypeSerial->SetValue(TRUE);
+  m_comboPort->SetValue(_T( "Deleted" ));
 
-    //  Mark connection deleted
-    m_rbTypeSerial->SetValue(TRUE);
-    m_comboPort->SetValue(_T( "Deleted" ));
-  }
   FillSourceList();
   ShowNMEACommon(FALSE);
   ShowNMEANet(FALSE);
@@ -9050,6 +9075,29 @@ void options::OnSelectDatasource(wxListEvent& event) {
   SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
   m_buttonRemove->Enable();
   event.Skip();
+}
+
+void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
+  //  Only one panel can be selected at any time  
+  //  Clear all selections
+
+  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
+    mConnectionsPanelList[i]->SetSelected( false );
+  
+  mSelectedConnectionPanel = panel;
+  if(panel){
+    panel->SetSelected( true );  
+    SetConnectionParams(panel->m_pConnectionParams);
+    m_buttonRemove->Enable();
+    m_buttonAdd->Disable();
+    m_buttonAdd->SetLabel(_("Editing connection..."));
+  }
+  else{
+    m_buttonRemove->Disable();
+    m_buttonAdd->Enable();
+    m_buttonAdd->SetLabel(_("Add Connection"));
+  }
+     
 }
 
 void options::OnBtnIStcs(wxCommandEvent& event) {
