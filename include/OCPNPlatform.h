@@ -99,6 +99,7 @@ public:
     double GetDisplaySizeMM();
     void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
+    unsigned int GetSelectRadiusPix();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
     void onStagedResizeFinal();

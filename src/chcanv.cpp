@@ -6804,17 +6804,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 //  Retrigger the cursor tracking timer
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
-
-/*    
-    //    Calculate meaningful SelectRadius
-    float SelectRadius;
-    int sel_rad_pix = 8;
-    if(g_btouch)
-        sel_rad_pix = 50;
-
-    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-*/
-
 //      Show cursor position on Status Bar, if present
 //      except for GTK, under which status bar updates are very slow
 //      due to Update() call.
@@ -7219,9 +7208,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     
     //    Calculate meaningful SelectRadius
     float SelectRadius;
-    int sel_rad_pix = 8;
-    if(g_btouch) sel_rad_pix = 50;
-    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+    SelectRadius = g_Platform->GetSelectRadiusPix() / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
 ///
     // We start with Double Click processing. The first left click just starts a timer and
@@ -7382,8 +7369,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pMousePoint = NULL;
                 
                 //    Calculate meaningful SelectRadius
-                int nearby_sel_rad_pix = 8;
-                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / m_true_scale_ppm;
                 
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
@@ -7854,8 +7840,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pMousePoint = NULL;
                 
                 //    Calculate meaningful SelectRadius
-                int nearby_sel_rad_pix = 8;
-                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / m_true_scale_ppm;
                 
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
@@ -8813,8 +8798,7 @@ void pupHandler_PasteWaypoint() {
     RoutePoint* pasted = kml.GetParsedRoutePoint();
     if( ! pasted ) return;
 
-    int nearby_sel_rad_pix = 8;
-    double nearby_radius_meters = nearby_sel_rad_pix / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
+    double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
 
     RoutePoint *nearPoint = pWayPointMan->GetNearbyWaypoint( pasted->m_lat, pasted->m_lon,
                                nearby_radius_meters );
@@ -8853,8 +8837,7 @@ void pupHandler_PasteRoute() {
     Route* pasted = kml.GetParsedRoute();
     if( ! pasted ) return;
 
-    int nearby_sel_rad_pix = 8;
-    double nearby_radius_meters = nearby_sel_rad_pix / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
+    double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
 
     RoutePoint* curPoint;
     RoutePoint* nearPoint;
@@ -10390,6 +10373,8 @@ bool ChartCanvas::SetCursor( const wxCursor &c )
 
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 {
+    if( g_bquiting )
+        return;
     //  Keep the mouse position members up to date
     GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
 
