@@ -73,7 +73,7 @@ extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
 extern ActiveTrack      *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
-extern MarkInfoImpl     *pMarkPropDialog;
+extern MarkInfoDlg      *g_pMarkInfoDialog;
 extern MyFrame          *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
@@ -2152,10 +2152,12 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
     gFrame->RefreshAllCanvas();
     
-    pMarkPropDialog = MarkInfoImpl::getInstance( GetParent() );
+    //g_pMarkInfoDialog = MarkInfoImpl::getInstance( GetParent() );
+    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
     
-    pMarkPropDialog->SetRoutePoint( pWP );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( pWP );
+    g_pMarkInfoDialog->UpdateProperties();
 
     WptShowPropertiesDialog( pWP, GetParent() );
 }
@@ -2178,19 +2180,19 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent )
 {
-    // There is one global instance of the MarkProp Dialog
-    pMarkPropDialog = MarkInfoImpl::getInstance( parent );
+     if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-    pMarkPropDialog->SetRoutePoint( wp );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( wp );
+    g_pMarkInfoDialog->UpdateProperties();
     if( wp->m_bIsInLayer ) {
         wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( wp->m_LayerID ) ) );
-        pMarkPropDialog->SetDialogTitle( caption );
+        g_pMarkInfoDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
+        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
 
-    if( !pMarkPropDialog->IsShown() )
-        pMarkPropDialog->Show();
+    if( !g_pMarkInfoDialog->IsShown() )
+        g_pMarkInfoDialog->Show();
 
 }
 
@@ -2265,9 +2267,9 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
         UpdateWptListCtrl( wp_next, true );
 
-        if( pMarkPropDialog ) {
-            pMarkPropDialog->SetRoutePoint( NULL );
-            pMarkPropDialog->UpdateProperties();
+        if( g_pMarkInfoDialog ) {
+            g_pMarkInfoDialog->SetRoutePoint( NULL );
+            g_pMarkInfoDialog->UpdateProperties();
         }
 
         gFrame->InvalidateAllCanvasUndo();
@@ -2390,9 +2392,9 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
     if ( answer == wxID_NO && type == 2 )
         pWayPointMan->DeleteAllWaypoints( false );          // only delete unused waypoints
 
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->SetRoutePoint( NULL );
-        pMarkPropDialog->UpdateProperties();
+    if( g_pMarkInfoDialog ) {
+        g_pMarkInfoDialog->SetRoutePoint( NULL );
+        g_pMarkInfoDialog->UpdateProperties();
     }
 
     m_lastWptItem = -1;
@@ -2599,9 +2601,9 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
         node3 = NULL;
     }
 
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->SetRoutePoint( NULL );
-        pMarkPropDialog->UpdateProperties();
+    if( g_pMarkInfoDialog ) {
+        g_pMarkInfoDialog->SetRoutePoint( NULL );
+        g_pMarkInfoDialog->UpdateProperties();
     }
 
     pLayerList->DeleteObject( layer );

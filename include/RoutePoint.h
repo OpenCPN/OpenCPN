@@ -31,6 +31,9 @@
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
 
+#define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
+#define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding
+
 class ocpnDC;
 class wxDC;
 class ChartCanvas;
@@ -95,7 +98,15 @@ public:
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
       void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
-
+      void SetScaMin(wxString str);
+      void SetScaMin(long val);
+      long GetScaMin(){return m_ScaMin; };
+      void SetScaMax(wxString str);
+      void SetScaMax(long val);
+      long GetScaMax(){return m_ScaMax; };
+      bool GetUseSca(){return b_UseScamin; };
+      void SetUseSca( bool value ){ b_UseScamin = value; };
+      bool IsScaVisible(ChartCanvas *cc);
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
@@ -103,6 +114,7 @@ public:
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
       void PresetDragOffset( ChartCanvas *canvas, int x, int y);
+      void ShowScaleWarningMessage(ChartCanvas *canvas);
       
       double            m_lat, m_lon;
       double             m_seg_len;              // length in NMI to this point
@@ -150,6 +162,7 @@ public:
       float             m_fWaypointRangeRingsStep;
       int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
+      
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
@@ -187,6 +200,9 @@ private:
       int               m_drag_line_length_man, m_drag_icon_offset;
       double            m_dragHandleLat, m_dragHandleLon;
       int               m_draggingOffsetx, m_draggingOffsety;
+      bool              b_UseScamin;
+      long              m_ScaMin;
+      long              m_ScaMax;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;
