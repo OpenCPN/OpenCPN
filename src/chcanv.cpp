@@ -996,14 +996,13 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
     //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
     //  So, we provide for this case by starting a timer if required to actually Finish() a route on a legitimate
     //  focus change, but not if the focus is quickly regained ( <20 msec.) on this canvas.
-    
 #ifdef __WXOSX__
     if(m_routeState && m_FinishRouteOnKillFocus)
         m_routeFinishTimer.Start(20, wxTIMER_ONE_SHOT);
 #else
     if(m_routeState && m_FinishRouteOnKillFocus)
         FinishRoute();
-#endif     
+#endif
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
@@ -7412,16 +7411,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     
                     
                     if( brp_viz ){
-                        int dlg_return;
-#ifndef __WXOSX__
                         m_FinishRouteOnKillFocus = false;              // Avoid route finish on focus change for message dialog
-                        dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                        int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                  _("OpenCPN Route Create"),
                                                    (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
                         m_FinishRouteOnKillFocus = true;
-#else
-                        dlg_return = wxID_YES;
-#endif
+
                         if( dlg_return == wxID_YES ) {
                             pMousePoint = pNearbyPoint;
                                                      
@@ -7467,11 +7462,13 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                             << _("Would you like include the Great Circle routing points for this leg?");
                             
+                            m_FinishRouteOnKillFocus = false;
                             m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
                             
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
                             
                             m_disable_edge_pan = false;
+                            m_FinishRouteOnKillFocus = true;
                             
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
