@@ -533,6 +533,8 @@ class options : private Uncopyable,
 
   OCPNIconCombo *pWaypointDefaultIconChoice;
   OCPNIconCombo *pRoutepointDefaultIconChoice;
+  wxCheckBox*   pScaMinChckB;
+  wxTextCtrl*   m_pText_ScaMin;
   
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
