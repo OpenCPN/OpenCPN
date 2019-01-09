@@ -33,6 +33,8 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/filename.h>
+
 #include "mygdal/ogr_s57.h"
 #include "mygdal/cpl_csv.h"
 #include "chartbase.h"
@@ -327,6 +329,7 @@ class VE_Element;
 class VC_Element;
 class PolyTessGeo;
 class LineGeometryDescriptor;
+class wxFFileInputStream;
 
 typedef std::vector<S57Obj *> S57ObjVector;
 typedef std::vector<VE_Element *> VE_ElementVector;

@@ -147,7 +147,7 @@ protected:
     
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
-    void RenderNoDTA(ViewPort &vp, const LLRegion &region);
+    void RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency = 255);
     void RenderNoDTA(ViewPort &vp, ChartBase *chart);
     void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 

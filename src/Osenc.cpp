@@ -38,7 +38,7 @@
 
 #include "Osenc.h"
 #include "s52s57.h"
-#include "s57chart.h"
+#include "s57chart.h"           // for one static method
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
 #include "cpl_csv.h"

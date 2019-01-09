@@ -1465,6 +1465,8 @@ IF (USE_S57)
         include/s57RegistrarMgr.h
         src/s57RegistrarMgr.cpp
         src/s57obj.cpp
+        src/SencManager.cpp
+        include/SencManager.h
 
         src/myiso8211/ddffielddefn.cpp
         src/myiso8211/ddfmodule.cpp

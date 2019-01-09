@@ -2704,23 +2704,30 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                         }
                         
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                        RenderNoDTA(vp, get_region);
 
                         if(chart->GetChartType() == CHART_TYPE_CM93COMP){
-                            chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                           RenderNoDTA(vp, get_region);
+                           chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                         }
                         else{
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             if(Chs57){
+                                if(!Chs57->m_RAZBuilt)
+                                    RenderNoDTA(vp, get_region, 128);
+                                else
+                                    RenderNoDTA(vp, get_region);
                                 Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
                             }
                             else{
                                 ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                                 if(ChPI){
+                                    RenderNoDTA(vp, get_region);
                                     ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
                                 }
-                                else    
+                                else{    
+                                    RenderNoDTA(vp, get_region);
                                     chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                                }
                             }
                         }
                      }
@@ -3035,15 +3042,20 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
      }
 }
 
-void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
+void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency)
 {
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
     if( color.IsOk() )
-        glColor3ub( color.Red(), color.Green(), color.Blue() );
+        glColor4ub( color.Red(), color.Green(), color.Blue(), transparency );
     else
-        glColor3ub( 163, 180, 183 );
+        glColor4ub( 163, 180, 183, transparency );
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     DrawRegion(vp, region);
+    
+    glDisable(GL_BLEND);
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)

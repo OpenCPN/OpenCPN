@@ -48,6 +48,7 @@
 #include "OCPNRegion.h"
 #include "ocpndc.h"
 #include "viewport.h"
+#include "SencManager.h"
 
 class ChartCanvas;
 // ----------------------------------------------------------------------------
@@ -71,7 +72,8 @@ enum
 {
       BUILD_SENC_OK,
       BUILD_SENC_NOK_RETRY,
-      BUILD_SENC_NOK_PERMANENT
+      BUILD_SENC_NOK_PERMANENT,
+      BUILD_SENC_PENDING
 };
 
 //----------------------------------------------------------------------------
@@ -101,8 +103,6 @@ WX_DECLARE_LIST(S57Obj, ListOfS57Obj);
 
 
 WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
-
-
 
 //----------------------------------------------------------------------------
 // s57 Chart object class
@@ -200,6 +200,7 @@ public:
       wxArrayPtrVoid *pRigidATONArray;
 
       double        ref_lat, ref_lon;             // Common reference point, derived from FullExtent
+      double        m_LOD_meters;
       Extent        m_FullExtent;
       bool          m_bExtentSet;
       bool          m_bLinePrioritySet;
@@ -224,17 +225,20 @@ public:
       static int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles,
                                     wxDateTime date000, wxString edtn000 );
       wxString GetISDT(void);
+      InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
 
       char GetUsageChar(void){ return m_usage_char; }
       static bool IsCellOverlayType(char *pFullPath);
 
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
+      bool        m_RAZBuilt;
       
       struct _chart_context     *m_this_chart_context;
 
-      InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
+      int FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
+      SENCThreadStatus m_SENCthreadStatus;
 protected:
       void AssembleLineGeometry( void );
 
@@ -253,7 +257,6 @@ private:
       bool DCRenderText(wxMemoryDC& dcinput, const ViewPort& vp);
       
 
-      InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
       
       void SetLinePriorities(void);
@@ -332,7 +335,6 @@ private:
       char        m_usage_char;
       
       double      m_next_safe_cnt;
-      double      m_LOD_meters;
 
       int         m_LineVBO_name;
       
@@ -341,7 +343,6 @@ private:
       std::vector<connector_segment *> m_pcs_vector;
       std::vector<VE_Element *> m_pve_vector;
       
-
       wxString    m_TempFilePath;
 protected:      
       sm_parms    vp_transform;

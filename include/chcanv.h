@@ -201,6 +201,7 @@ public:
       void OnDeferredFocusTimerEvent( wxTimerEvent &event);
       void OnRouteFinishTimerEvent( wxTimerEvent& event );
 
+      void ClearS52PLIBStateHash(){ m_s52StateHash = 0; }
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);
       
