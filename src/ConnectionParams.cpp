@@ -24,6 +24,7 @@
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
 
+#include <wx/statline.h>
 #include "ConnectionParams.h"
 
 #include "ocpn_plugin.h"
@@ -369,6 +370,10 @@ void ConnectionParamsPanel::OnEnableCBClick(wxCommandEvent &event){
 
 void ConnectionParamsPanel::CreateControls( void ){
     int metric = GetCharHeight();
+
+    wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+    double font_size = dFont->GetPointSize() * 17/16;
+    wxFont *bFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
     
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
@@ -395,8 +400,76 @@ void ConnectionParamsPanel::CreateControls( void ){
     panelSizer->Add(parmSizer, 3, wxLEFT, metric);
 
     if(m_pConnectionParams->Type == SERIAL){
-        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+        
+        wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 6, 0, metric);
+        serialGrid->SetFlexibleDirection(wxHORIZONTAL);
+        parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
 
+        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+        
+        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
+        serialGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+        serialGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
+        
+        wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
+        serialGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol"));
+        serialGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
+       
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Serial Port"));
+        serialGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Baudrate"));
+        serialGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        //line 2
+        wxStaticText *t2 = new wxStaticText(this, wxID_ANY, _("Serial"));
+        t2->SetFont(*bFont);
+        serialGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t4 = new wxStaticText(this, wxID_ANY, _T(""));
+        serialGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t6 = new wxStaticText(this, wxID_ANY, ioDir);
+        t6->SetFont(*bFont);
+        serialGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString proto;
+        switch(m_pConnectionParams->Protocol){
+            case PROTO_NMEA0183:
+                proto = _T("NMEA 0183"); break;
+            case PROTO_SEATALK:
+                proto = _T("SEATALK"); break;
+            case PROTO_NMEA2000:
+                proto = _T("NMEA 2000"); break;
+            default:
+                proto = _("Undefined"); break;
+        }
+
+        wxStaticText *t12 = new wxStaticText(this, wxID_ANY, proto);
+        t12->SetFont(*bFont);
+        serialGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString serialPort = m_pConnectionParams->Port;
+        wxStaticText *t14 = new wxStaticText(this, wxID_ANY, serialPort);
+        t14->SetFont(*bFont);
+        serialGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString baudRate;  baudRate.Printf(_T("%d"), m_pConnectionParams->Baudrate);
+        wxStaticText *t16 = new wxStaticText(this, wxID_ANY, baudRate);
+        t16->SetFont(*bFont);
+        serialGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+        parmSizer->Add(line, 0, wxEXPAND);
+        
+        wxStaticText *t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
+        parmSizer->Add(t21, 0);
+
+#if 0
         wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Connection Type: ") + _("Serial") + _T("     ") + ioDir);
         parmSizer->Add(t1, 0);
 
@@ -421,15 +494,40 @@ void ConnectionParamsPanel::CreateControls( void ){
 
         wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t3, 0);
-
+#endif
     }
     
  
     else{
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
-        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Connection Type: ") + _("Network") + _T("     ") + ioDir);
-        parmSizer->Add(t1, 0);
+        wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric);
+        netGrid->SetFlexibleDirection(wxHORIZONTAL);
+        parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
+#if 0       
+        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type:"));
+        netGrid->Add(t1, 0);
+
+        wxStaticText *t2 = new wxStaticText(this, wxID_ANY, _("Network"));
+        t2->SetFont(*bFont);
+        netGrid->Add(t2, 0);
+
+        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t3, 0);
+        
+        wxStaticText *t4 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t4, 0);
+
+        wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction:"));
+        netGrid->Add(t5, 0);
+
+        wxStaticText *t6 = new wxStaticText(this, wxID_ANY, ioDir);
+        t6->SetFont(*bFont);
+        netGrid->Add(t6, 0);
+ 
+  
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol: "));
+        netGrid->Add(t11, 0);
 
         wxString proto;
         switch(m_pConnectionParams->NetProtocol){
@@ -443,15 +541,89 @@ void ConnectionParamsPanel::CreateControls( void ){
                 proto = _("Undefined"); break;
         }
 
+        wxStaticText *t12 = new wxStaticText(this, wxID_ANY, proto);
+        t12->SetFont(*bFont);
+        netGrid->Add(t12, 0);
+        
+       
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Address:  "));
+        netGrid->Add(t13, 0);
+        
         wxString address = m_pConnectionParams->NetworkAddress;
+        wxStaticText *t14 = new wxStaticText(this, wxID_ANY, address);
+        t14->SetFont(*bFont);
+        netGrid->Add(t14, 0);
+
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Port:  "));
+        netGrid->Add(t15, 0);
+        
         wxString port;  port.Printf(_T("%d"), m_pConnectionParams->NetworkPort);
+        wxStaticText *t16 = new wxStaticText(this, wxID_ANY, port);
+        t16->SetFont(*bFont);
+        netGrid->Add(t16, 0);
+#endif
 
-        wxStaticText *t2 = new wxStaticText(this, wxID_ANY, _("Protocol: ") + proto + _T("       ") +
-                _("Address:  ") + address + _T("      ") + _("Port:  ") + port);
-        parmSizer->Add(t2, 0);
+        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
+        netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
 
-        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
-        parmSizer->Add(t3, 0);
+        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
+        
+        wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
+        netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol "));
+        netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
+       
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Address  "));
+        netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Port  "));
+        netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        //line 2
+        wxStaticText *t2 = new wxStaticText(this, wxID_ANY, _("Network"));
+        t2->SetFont(*bFont);
+        netGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t4 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticText *t6 = new wxStaticText(this, wxID_ANY, ioDir);
+        t6->SetFont(*bFont);
+        netGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString proto;
+        switch(m_pConnectionParams->NetProtocol){
+            case UDP:
+                proto = _T("UDP"); break;
+            case TCP:
+                proto = _T("TCP"); break;
+            case GPSD:
+                proto = _T("GPSD"); break;
+            default:
+                proto = _("Undefined"); break;
+        }
+
+        wxStaticText *t12 = new wxStaticText(this, wxID_ANY, proto);
+        t12->SetFont(*bFont);
+        netGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString address = m_pConnectionParams->NetworkAddress;
+        wxStaticText *t14 = new wxStaticText(this, wxID_ANY, address);
+        t14->SetFont(*bFont);
+        netGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxString port;  port.Printf(_T("%d"), m_pConnectionParams->NetworkPort);
+        wxStaticText *t16 = new wxStaticText(this, wxID_ANY, port);
+        t16->SetFont(*bFont);
+        netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
+
+        wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+        parmSizer->Add(line, 0, wxEXPAND);
+        
+        wxStaticText *t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
+        parmSizer->Add(t21, 0);
         
     }            
 }
