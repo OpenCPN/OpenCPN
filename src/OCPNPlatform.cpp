@@ -693,15 +693,20 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
     //  user's selected install language.
     //  If so, override the config file value and use this selection for opencpn...
     #if defined(__WXMSW__)
-    if( g_bFirstRun ) {
+    if ( g_bFirstRun || wxIsEmpty(adjLocale) ) {
         wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
         if( RegKey.Exists() ) {
             wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
             RegKey.QueryValue( wxString( _T("InstallerLanguage") ), adjLocale );
         }
     }
+    if (wxIsEmpty(adjLocale)) {
+        if (g_localeOverride.Length())
+            adjLocale = g_localeOverride;
+        else
+           adjLocale = GetDefaultSystemLocale();
+    }
     #endif
-    
     #if defined(__OCPN__ANDROID__)
     if(g_localeOverride.Length())
         adjLocale = g_localeOverride;
@@ -709,7 +714,7 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
         adjLocale = GetDefaultSystemLocale();
     #endif
         
-        return adjLocale;
+    return adjLocale;
 }
 
 
