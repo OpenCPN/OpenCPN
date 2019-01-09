@@ -375,6 +375,8 @@ int                       g_lastClientRecth;
 double                    g_display_size_mm;
 double                    g_config_display_size_mm;
 bool                      g_config_display_size_manual;
+float                     g_selection_radius_mm = 2.0;
+float                     g_selection_radius_touch_mm = 10.0;
 
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;

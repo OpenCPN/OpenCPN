@@ -30,18 +30,15 @@
 #include "Track.h"
 #include "routeman.h"
 #include "Route.h"
+#include "OCPNPlatform.h"
 
 extern Routeman    *g_pRouteMan;
+extern OCPNPlatform *g_Platform;
 
 Select::Select()
 {
     pSelectList = new SelectableItemList;
-    pixelRadius = 8;
-    int w,h;
-    wxDisplaySize( &w, &h );
-    if( h > 800 ) pixelRadius = 10;
-    if( h > 1024 ) pixelRadius = 12;
-    
+    pixelRadius = g_Platform->GetSelectRadiusPix();
 }
 
 Select::~Select()

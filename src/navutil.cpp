@@ -404,6 +404,9 @@ extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
 
+extern float            g_selection_radius_mm;
+extern float            g_selection_radius_touch_mm;
+
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
@@ -703,6 +706,9 @@ int MyConfig::LoadMyConfig()
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
+        
+        g_selection_radius_mm = wxMax(g_selection_radius_mm, 0.5);
+        g_selection_radius_touch_mm = wxMax(g_selection_radius_touch_mm, 1.0);
 
         g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
 
@@ -789,6 +795,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     int size_mm = -1;
     Read( _T ( "DisplaySizeMM" ), &size_mm );
+    
+    Read( _T ( "SelectionRadiusMM" ), &g_selection_radius_mm);
+    Read( _T ( "SelectionRadiusTouchMM" ), &g_selection_radius_touch_mm);
     
     if(!bAsTemplate){
         if(size_mm > 0){
@@ -2350,6 +2359,9 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
     Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
+    
+    Write( _T ( "SelectionRadiusMM" ), g_selection_radius_mm );
+    Write( _T ( "SelectionRadiusTouchMM" ), g_selection_radius_touch_mm );
     
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
