@@ -1,0 +1,1462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<specification xmlns="http://www.opengl.org/registry/" name="WGL" specversion="4.3" fileversion="0.0.1" >
+	<typemap >
+		<type-def typename="LPVOID" C-lang="LPVOID" />
+		<type-def typename="HPBUFFERARB" C-lang="HPBUFFERARB" />
+		<type-def typename="GLfloat" C-lang="GLfloat" />
+		<type-def typename="HVIDEOOUTPUTDEVICENV" C-lang="HVIDEOOUTPUTDEVICENV" />
+		<type-def typename="HGLRC" C-lang="HGLRC" />
+		<type-def typename="GLbitfield" C-lang="GLbitfield" />
+		<type-def typename="INT64" C-lang="INT64" />
+		<type-def typename="BOOL" C-lang="BOOL" />
+		<type-def typename="HPGPUNV" C-lang="HPGPUNV" />
+		<type-def typename="PGPU_DEVICE" C-lang="PGPU_DEVICE" />
+		<type-def typename="PROC" C-lang="PROC" />
+		<type-def typename="USHORT" C-lang="USHORT" />
+		<type-def typename="String" C-lang="const char *" />
+		<type-def typename="GLint" C-lang="GLint" />
+		<type-def typename="GLuint" C-lang="GLuint" />
+		<type-def typename="INT" C-lang="INT" />
+		<type-def typename="DWORD" C-lang="DWORD" />
+		<type-def typename="GLushort" C-lang="GLushort" />
+		<type-def typename="float" C-lang="float" />
+		<type-def typename="FLOAT" C-lang="FLOAT" />
+		<type-def typename="HVIDEOINPUTDEVICENV" C-lang="HVIDEOINPUTDEVICENV" />
+		<type-def typename="GLboolean" C-lang="GLboolean" />
+		<type-def typename="HPVIDEODEV" C-lang="HPVIDEODEV" />
+		<type-def typename="UINT" C-lang="UINT" />
+		<type-def typename="int" C-lang="int" />
+		<type-def typename="GLsizei" C-lang="GLsizei" />
+		<type-def typename="HGPUNV" C-lang="HGPUNV" />
+		<type-def typename="uint" C-lang="unsigned int" />
+		<type-def typename="HDC" C-lang="HDC" />
+		<type-def typename="VOID" C-lang="VOID" />
+		<type-def typename="GLenum" C-lang="GLenum" />
+		<type-def typename="HANDLE" C-lang="HANDLE" />
+		<type-def typename="VoidPointer" C-lang="void *" />
+		<type-def typename="void" C-lang="void *" />
+		<type-def typename="HPBUFFEREXT" C-lang="HPBUFFEREXT" />
+		<type-def typename="INT32" C-lang="INT32" />
+		<type-def typename="ulong" C-lang="unsigned long" />
+	</typemap>
+	<extensions >
+		<ext name="ARB_buffer_region" />
+		<ext name="ARB_multisample" />
+		<ext name="ARB_extensions_string" />
+		<ext name="ARB_pixel_format" />
+		<ext name="ARB_make_current_read" />
+		<ext name="ARB_pbuffer" />
+		<ext name="ARB_render_texture" />
+		<ext name="ARB_pixel_format_float" />
+		<ext name="ARB_framebuffer_sRGB" />
+		<ext name="ARB_create_context" />
+		<ext name="ARB_create_context_profile" />
+		<ext name="ARB_create_context_robustness" />
+		<ext name="EXT_make_current_read" />
+		<ext name="EXT_pixel_format" />
+		<ext name="EXT_pbuffer" />
+		<ext name="EXT_swap_control" />
+		<ext name="EXT_depth_float" />
+		<ext name="3DFX_multisample" />
+		<ext name="EXT_multisample" />
+		<ext name="I3D_digital_video_control" />
+		<ext name="I3D_gamma" />
+		<ext name="I3D_genlock" />
+		<ext name="I3D_image_buffer" />
+		<ext name="I3D_swap_frame_lock" />
+		<ext name="NV_render_depth_texture" />
+		<ext name="NV_render_texture_rectangle" />
+		<ext name="ATI_pixel_format_float" />
+		<ext name="NV_float_buffer" />
+		<ext name="3DL_stereo_control" />
+		<ext name="EXT_pixel_format_packed_float" />
+		<ext name="EXT_framebuffer_sRGB" />
+		<ext name="NV_present_video" />
+		<ext name="NV_video_output" />
+		<ext name="NV_swap_group" />
+		<ext name="NV_gpu_affinity" />
+		<ext name="AMD_gpu_association" />
+		<ext name="NV_video_capture" />
+		<ext name="NV_copy_image" />
+		<ext name="NV_multisample_coverage" />
+		<ext name="EXT_create_context_es2_profile" />
+		<ext name="NV_DX_interop" />
+		<ext name="NV_DX_interop2" />
+		<ext name="EXT_swap_control_tear" />
+	</extensions>
+	<enumerations >
+		<enum name="FRONT_COLOR_BUFFER_BIT_ARB" value="0x00000001" >
+			<ext name="ARB_buffer_region" />
+		</enum>
+		<enum name="BACK_COLOR_BUFFER_BIT_ARB" value="0x00000002" >
+			<ext name="ARB_buffer_region" />
+		</enum>
+		<enum name="DEPTH_BUFFER_BIT_ARB" value="0x00000004" >
+			<ext name="ARB_buffer_region" />
+		</enum>
+		<enum name="STENCIL_BUFFER_BIT_ARB" value="0x00000008" >
+			<ext name="ARB_buffer_region" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_ARB" value="0x2041" >
+			<ext name="ARB_multisample" />
+		</enum>
+		<enum name="SAMPLES_ARB" value="0x2042" >
+			<ext name="ARB_multisample" />
+		</enum>
+		<enum name="NUMBER_PIXEL_FORMATS_ARB" value="0x2000" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="DRAW_TO_WINDOW_ARB" value="0x2001" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="DRAW_TO_BITMAP_ARB" value="0x2002" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCELERATION_ARB" value="0x2003" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="NEED_PALETTE_ARB" value="0x2004" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="NEED_SYSTEM_PALETTE_ARB" value="0x2005" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SWAP_LAYER_BUFFERS_ARB" value="0x2006" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SWAP_METHOD_ARB" value="0x2007" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="NUMBER_OVERLAYS_ARB" value="0x2008" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="NUMBER_UNDERLAYS_ARB" value="0x2009" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="TRANSPARENT_ARB" value="0x200A" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="TRANSPARENT_RED_VALUE_ARB" value="0x2037" >
+			<ext name="ARB_pixel_format" />
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="TRANSPARENT_GREEN_VALUE_ARB" value="0x2038" >
+			<ext name="ARB_pixel_format" />
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="TRANSPARENT_BLUE_VALUE_ARB" value="0x2039" >
+			<ext name="ARB_pixel_format" />
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="TRANSPARENT_ALPHA_VALUE_ARB" value="0x203A" >
+			<ext name="ARB_pixel_format" />
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_VALUE_ARB" value="0x203B" >
+			<ext name="ARB_pixel_format" />
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="SHARE_DEPTH_ARB" value="0x200C" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SHARE_STENCIL_ARB" value="0x200D" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SHARE_ACCUM_ARB" value="0x200E" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SUPPORT_GDI_ARB" value="0x200F" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SUPPORT_OPENGL_ARB" value="0x2010" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="DOUBLE_BUFFER_ARB" value="0x2011" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="STEREO_ARB" value="0x2012" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="PIXEL_TYPE_ARB" value="0x2013" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="COLOR_BITS_ARB" value="0x2014" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="RED_BITS_ARB" value="0x2015" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="RED_SHIFT_ARB" value="0x2016" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="GREEN_BITS_ARB" value="0x2017" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="GREEN_SHIFT_ARB" value="0x2018" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="BLUE_BITS_ARB" value="0x2019" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="BLUE_SHIFT_ARB" value="0x201A" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ALPHA_BITS_ARB" value="0x201B" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ALPHA_SHIFT_ARB" value="0x201C" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCUM_BITS_ARB" value="0x201D" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCUM_RED_BITS_ARB" value="0x201E" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCUM_GREEN_BITS_ARB" value="0x201F" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCUM_BLUE_BITS_ARB" value="0x2020" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ACCUM_ALPHA_BITS_ARB" value="0x2021" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="DEPTH_BITS_ARB" value="0x2022" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="STENCIL_BITS_ARB" value="0x2023" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="AUX_BUFFERS_ARB" value="0x2024" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="NO_ACCELERATION_ARB" value="0x2025" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="GENERIC_ACCELERATION_ARB" value="0x2026" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="FULL_ACCELERATION_ARB" value="0x2027" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SWAP_EXCHANGE_ARB" value="0x2028" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SWAP_COPY_ARB" value="0x2029" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="SWAP_UNDEFINED_ARB" value="0x202A" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="TYPE_RGBA_ARB" value="0x202B" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="TYPE_COLORINDEX_ARB" value="0x202C" >
+			<ext name="ARB_pixel_format" />
+		</enum>
+		<enum name="ERROR_INVALID_PIXEL_TYPE_ARB" value="0x2043" >
+			<ext name="ARB_make_current_read" />
+		</enum>
+		<enum name="ERROR_INCOMPATIBLE_DEVICE_CONTEXTS_ARB" value="0x2054" >
+			<ext name="ARB_make_current_read" />
+		</enum>
+		<enum name="DRAW_TO_PBUFFER_ARB" value="0x202D" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_PIXELS_ARB" value="0x202E" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_WIDTH_ARB" value="0x202F" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_HEIGHT_ARB" value="0x2030" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_LARGEST_ARB" value="0x2033" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_WIDTH_ARB" value="0x2034" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_HEIGHT_ARB" value="0x2035" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_LOST_ARB" value="0x2036" >
+			<ext name="ARB_pbuffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGB_ARB" value="0x2070" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGBA_ARB" value="0x2071" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_ARB" value="0x2072" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_TARGET_ARB" value="0x2073" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="MIPMAP_TEXTURE_ARB" value="0x2074" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_RGB_ARB" value="0x2075" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_RGBA_ARB" value="0x2076" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="NO_TEXTURE_ARB" value="0x2077" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_ARB" value="0x2078" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_1D_ARB" value="0x2079" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_2D_ARB" value="0x207A" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="MIPMAP_LEVEL_ARB" value="0x207B" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="CUBE_MAP_FACE_ARB" value="0x207C" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_POSITIVE_X_ARB" value="0x207D" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_NEGATIVE_X_ARB" value="0x207E" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_POSITIVE_Y_ARB" value="0x207F" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB" value="0x2080" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_POSITIVE_Z_ARB" value="0x2081" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB" value="0x2082" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="FRONT_LEFT_ARB" value="0x2083" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="FRONT_RIGHT_ARB" value="0x2084" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="BACK_LEFT_ARB" value="0x2085" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="BACK_RIGHT_ARB" value="0x2086" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX0_ARB" value="0x2087" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX1_ARB" value="0x2088" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX2_ARB" value="0x2089" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX3_ARB" value="0x208A" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX4_ARB" value="0x208B" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX5_ARB" value="0x208C" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX6_ARB" value="0x208D" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX7_ARB" value="0x208E" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX8_ARB" value="0x208F" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="AUX9_ARB" value="0x2090" >
+			<ext name="ARB_render_texture" />
+		</enum>
+		<enum name="TYPE_RGBA_FLOAT_ARB" value="0x21A0" >
+			<ext name="ARB_pixel_format_float" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_ARB" value="0x20A9" >
+			<ext name="ARB_framebuffer_sRGB" />
+		</enum>
+		<enum name="CONTEXT_DEBUG_BIT_ARB" value="0x00000001" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_FORWARD_COMPATIBLE_BIT_ARB" value="0x00000002" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_MAJOR_VERSION_ARB" value="0x2091" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_MINOR_VERSION_ARB" value="0x2092" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_LAYER_PLANE_ARB" value="0x2093" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_FLAGS_ARB" value="0x2094" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="ERROR_INVALID_VERSION_ARB" value="0x2095" >
+			<ext name="ARB_create_context" />
+		</enum>
+		<enum name="CONTEXT_PROFILE_MASK_ARB" value="0x9126" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_CORE_PROFILE_BIT_ARB" value="0x00000001" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB" value="0x00000002" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="ERROR_INVALID_PROFILE_ARB" value="0x2096" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+		<enum name="CONTEXT_ROBUST_ACCESS_BIT_ARB" value="0x00000004" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="LOSE_CONTEXT_ON_RESET_ARB" value="0x8252" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB" value="0x8256" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="NO_RESET_NOTIFICATION_ARB" value="0x8261" >
+			<ext name="ARB_create_context_robustness" />
+		</enum>
+		<enum name="ERROR_INVALID_PIXEL_TYPE_EXT" value="0x2043" >
+			<ext name="EXT_make_current_read" />
+		</enum>
+		<enum name="NUMBER_PIXEL_FORMATS_EXT" value="0x2000" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="DRAW_TO_WINDOW_EXT" value="0x2001" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="DRAW_TO_BITMAP_EXT" value="0x2002" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCELERATION_EXT" value="0x2003" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="NEED_PALETTE_EXT" value="0x2004" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="NEED_SYSTEM_PALETTE_EXT" value="0x2005" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SWAP_LAYER_BUFFERS_EXT" value="0x2006" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SWAP_METHOD_EXT" value="0x2007" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="NUMBER_OVERLAYS_EXT" value="0x2008" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="NUMBER_UNDERLAYS_EXT" value="0x2009" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="TRANSPARENT_EXT" value="0x200A" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="TRANSPARENT_VALUE_EXT" value="0x200B" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SHARE_DEPTH_EXT" value="0x200C" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SHARE_STENCIL_EXT" value="0x200D" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SHARE_ACCUM_EXT" value="0x200E" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SUPPORT_GDI_EXT" value="0x200F" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SUPPORT_OPENGL_EXT" value="0x2010" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="DOUBLE_BUFFER_EXT" value="0x2011" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="STEREO_EXT" value="0x2012" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="PIXEL_TYPE_EXT" value="0x2013" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="COLOR_BITS_EXT" value="0x2014" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="RED_BITS_EXT" value="0x2015" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="RED_SHIFT_EXT" value="0x2016" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="GREEN_BITS_EXT" value="0x2017" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="GREEN_SHIFT_EXT" value="0x2018" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="BLUE_BITS_EXT" value="0x2019" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="BLUE_SHIFT_EXT" value="0x201A" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ALPHA_BITS_EXT" value="0x201B" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ALPHA_SHIFT_EXT" value="0x201C" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCUM_BITS_EXT" value="0x201D" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCUM_RED_BITS_EXT" value="0x201E" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCUM_GREEN_BITS_EXT" value="0x201F" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCUM_BLUE_BITS_EXT" value="0x2020" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="ACCUM_ALPHA_BITS_EXT" value="0x2021" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="DEPTH_BITS_EXT" value="0x2022" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="STENCIL_BITS_EXT" value="0x2023" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="AUX_BUFFERS_EXT" value="0x2024" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="NO_ACCELERATION_EXT" value="0x2025" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="GENERIC_ACCELERATION_EXT" value="0x2026" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="FULL_ACCELERATION_EXT" value="0x2027" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SWAP_EXCHANGE_EXT" value="0x2028" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SWAP_COPY_EXT" value="0x2029" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="SWAP_UNDEFINED_EXT" value="0x202A" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="TYPE_RGBA_EXT" value="0x202B" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="TYPE_COLORINDEX_EXT" value="0x202C" >
+			<ext name="EXT_pixel_format" />
+		</enum>
+		<enum name="DRAW_TO_PBUFFER_EXT" value="0x202D" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_PIXELS_EXT" value="0x202E" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_WIDTH_EXT" value="0x202F" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="MAX_PBUFFER_HEIGHT_EXT" value="0x2030" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_WIDTH_EXT" value="0x2031" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_HEIGHT_EXT" value="0x2032" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_LARGEST_EXT" value="0x2033" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_WIDTH_EXT" value="0x2034" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="PBUFFER_HEIGHT_EXT" value="0x2035" >
+			<ext name="EXT_pbuffer" />
+		</enum>
+		<enum name="DEPTH_FLOAT_EXT" value="0x2040" >
+			<ext name="EXT_depth_float" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_3DFX" value="0x2060" >
+			<ext name="3DFX_multisample" />
+		</enum>
+		<enum name="SAMPLES_3DFX" value="0x2061" >
+			<ext name="3DFX_multisample" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_EXT" value="0x2041" >
+			<ext name="EXT_multisample" />
+		</enum>
+		<enum name="SAMPLES_EXT" value="0x2042" >
+			<ext name="EXT_multisample" />
+		</enum>
+		<enum name="DIGITAL_VIDEO_CURSOR_ALPHA_FRAMEBUFFER_I3D" value="0x2050" >
+			<ext name="I3D_digital_video_control" />
+		</enum>
+		<enum name="DIGITAL_VIDEO_CURSOR_ALPHA_VALUE_I3D" value="0x2051" >
+			<ext name="I3D_digital_video_control" />
+		</enum>
+		<enum name="DIGITAL_VIDEO_CURSOR_INCLUDED_I3D" value="0x2052" >
+			<ext name="I3D_digital_video_control" />
+		</enum>
+		<enum name="DIGITAL_VIDEO_GAMMA_CORRECTED_I3D" value="0x2053" >
+			<ext name="I3D_digital_video_control" />
+		</enum>
+		<enum name="GAMMA_TABLE_SIZE_I3D" value="0x204E" >
+			<ext name="I3D_gamma" />
+		</enum>
+		<enum name="GAMMA_EXCLUDE_DESKTOP_I3D" value="0x204F" >
+			<ext name="I3D_gamma" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_MULTIVIEW_I3D" value="0x2044" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EXTERNAL_SYNC_I3D" value="0x2045" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EXTERNAL_FIELD_I3D" value="0x2046" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EXTERNAL_TTL_I3D" value="0x2047" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_DIGITAL_SYNC_I3D" value="0x2048" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_DIGITAL_FIELD_I3D" value="0x2049" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EDGE_FALLING_I3D" value="0x204A" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EDGE_RISING_I3D" value="0x204B" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="GENLOCK_SOURCE_EDGE_BOTH_I3D" value="0x204C" >
+			<ext name="I3D_genlock" />
+		</enum>
+		<enum name="IMAGE_BUFFER_MIN_ACCESS_I3D" value="0x00000001" >
+			<ext name="I3D_image_buffer" />
+		</enum>
+		<enum name="IMAGE_BUFFER_LOCK_I3D" value="0x00000002" >
+			<ext name="I3D_image_buffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_DEPTH_NV" value="0x20A3" >
+			<ext name="NV_render_depth_texture" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_DEPTH_NV" value="0x20A4" >
+			<ext name="NV_render_depth_texture" />
+		</enum>
+		<enum name="DEPTH_TEXTURE_FORMAT_NV" value="0x20A5" >
+			<ext name="NV_render_depth_texture" />
+		</enum>
+		<enum name="TEXTURE_DEPTH_COMPONENT_NV" value="0x20A6" >
+			<ext name="NV_render_depth_texture" />
+		</enum>
+		<enum name="DEPTH_COMPONENT_NV" value="0x20A7" >
+			<ext name="NV_render_depth_texture" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_RGB_NV" value="0x20A0" >
+			<ext name="NV_render_texture_rectangle" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_RGBA_NV" value="0x20A1" >
+			<ext name="NV_render_texture_rectangle" />
+		</enum>
+		<enum name="TEXTURE_RECTANGLE_NV" value="0x20A2" >
+			<ext name="NV_render_texture_rectangle" />
+		</enum>
+		<enum name="TYPE_RGBA_FLOAT_ATI" value="0x21A0" >
+			<ext name="ATI_pixel_format_float" />
+		</enum>
+		<enum name="FLOAT_COMPONENTS_NV" value="0x20B0" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_FLOAT_R_NV" value="0x20B1" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_FLOAT_RG_NV" value="0x20B2" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGB_NV" value="0x20B3" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV" value="0x20B4" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="TEXTURE_FLOAT_R_NV" value="0x20B5" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="TEXTURE_FLOAT_RG_NV" value="0x20B6" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="TEXTURE_FLOAT_RGB_NV" value="0x20B7" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="TEXTURE_FLOAT_RGBA_NV" value="0x20B8" >
+			<ext name="NV_float_buffer" />
+		</enum>
+		<enum name="STEREO_EMITTER_ENABLE_3DL" value="0x2055" >
+			<ext name="3DL_stereo_control" />
+		</enum>
+		<enum name="STEREO_EMITTER_DISABLE_3DL" value="0x2056" >
+			<ext name="3DL_stereo_control" />
+		</enum>
+		<enum name="STEREO_POLARITY_NORMAL_3DL" value="0x2057" >
+			<ext name="3DL_stereo_control" />
+		</enum>
+		<enum name="STEREO_POLARITY_INVERT_3DL" value="0x2058" >
+			<ext name="3DL_stereo_control" />
+		</enum>
+		<enum name="TYPE_RGBA_UNSIGNED_FLOAT_EXT" value="0x20A8" >
+			<ext name="EXT_pixel_format_packed_float" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_EXT" value="0x20A9" >
+			<ext name="EXT_framebuffer_sRGB" />
+		</enum>
+		<enum name="NUM_VIDEO_SLOTS_NV" value="0x20F0" >
+			<ext name="NV_present_video" />
+		</enum>
+		<enum name="BIND_TO_VIDEO_RGB_NV" value="0x20C0" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="BIND_TO_VIDEO_RGBA_NV" value="0x20C1" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="BIND_TO_VIDEO_RGB_AND_DEPTH_NV" value="0x20C2" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_NV" value="0x20C3" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_ALPHA_NV" value="0x20C4" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_DEPTH_NV" value="0x20C5" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_ALPHA_NV" value="0x20C6" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_DEPTH_NV" value="0x20C7" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_FRAME" value="0x20C8" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_1" value="0x20C9" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_2" value="0x20CA" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_1_2" value="0x20CB" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_2_1" value="0x20CC" >
+			<ext name="NV_video_output" />
+		</enum>
+		<enum name="ERROR_INCOMPATIBLE_AFFINITY_MASKS_NV" value="0x20D0" >
+			<ext name="NV_gpu_affinity" />
+		</enum>
+		<enum name="ERROR_MISSING_AFFINITY_MASK_NV" value="0x20D1" >
+			<ext name="NV_gpu_affinity" />
+		</enum>
+		<enum name="GPU_VENDOR_AMD" value="0x1F00" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RENDERER_STRING_AMD" value="0x1F01" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_OPENGL_VERSION_STRING_AMD" value="0x1F02" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_FASTEST_TARGET_GPUS_AMD" value="0x21A2" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RAM_AMD" value="0x21A3" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_CLOCK_AMD" value="0x21A4" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_PIPES_AMD" value="0x21A5" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SIMD_AMD" value="0x21A6" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_RB_AMD" value="0x21A7" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SPI_AMD" value="0x21A8" >
+			<ext name="AMD_gpu_association" />
+		</enum>
+		<enum name="UNIQUE_ID_NV" value="0x20CE" >
+			<ext name="NV_video_capture" />
+		</enum>
+		<enum name="NUM_VIDEO_CAPTURE_SLOTS_NV" value="0x20CF" >
+			<ext name="NV_video_capture" />
+		</enum>
+		<enum name="COVERAGE_SAMPLES_NV" value="0x2042" >
+			<ext name="NV_multisample_coverage" />
+		</enum>
+		<enum name="COLOR_SAMPLES_NV" value="0x20B9" >
+			<ext name="NV_multisample_coverage" />
+		</enum>
+		<enum name="CONTEXT_ES2_PROFILE_BIT_EXT" value="0x00000004" >
+			<ext name="EXT_create_context_es2_profile" />
+		</enum>
+		<enum name="ACCESS_READ_ONLY_NV" value="0x00000000" >
+			<ext name="NV_DX_interop" />
+		</enum>
+		<enum name="ACCESS_READ_WRITE_NV" value="0x00000001" >
+			<ext name="NV_DX_interop" />
+		</enum>
+		<enum name="ACCESS_WRITE_DISCARD_NV" value="0x00000002" >
+			<ext name="NV_DX_interop" />
+		</enum>
+	</enumerations>
+	<functions >
+		<passthru ><![CDATA[#ifndef WGL_ARB_pbuffer
+DECLARE_HANDLE(HPBUFFERARB);
+#endif
+#ifndef WGL_EXT_pbuffer
+DECLARE_HANDLE(HPBUFFEREXT);
+#endif
+#ifndef WGL_NV_present_video
+DECLARE_HANDLE(HVIDEOOUTPUTDEVICENV);
+#endif
+#ifndef WGL_NV_video_output
+DECLARE_HANDLE(HPVIDEODEV);
+#endif
+#ifndef WGL_NV_gpu_affinity
+DECLARE_HANDLE(HPGPUNV);
+DECLARE_HANDLE(HGPUNV);
+typedef struct _GPU_DEVICE {
+    DWORD  cb;
+    CHAR   DeviceName[32];
+    CHAR   DeviceString[128];
+    DWORD  Flags;
+    RECT   rcVirtualScreen;
+} GPU_DEVICE, *PGPU_DEVICE;
+#endif
+#ifndef WGL_NV_video_capture
+DECLARE_HANDLE(HVIDEOINPUTDEVICENV);
+#endif]]></passthru>
+		<property-defs >
+			<property name="param" >
+				<value >retval</value>
+				<value >retained</value>
+			</property>
+			<property name="required-props" any="true" />
+			<property name="passthru" any="true" />
+			<property name="category" >
+				<value >wgl</value>
+				<value >ARB_buffer_region</value>
+				<value >ARB_extensions_string</value>
+				<value >ARB_pixel_format</value>
+				<value >ARB_make_current_read</value>
+				<value >ARB_pbuffer</value>
+				<value >ARB_render_texture</value>
+				<value >ARB_pixel_format_float</value>
+				<value >EXT_display_color_table</value>
+				<value >EXT_extensions_string</value>
+				<value >EXT_make_current_read</value>
+				<value >EXT_pbuffer</value>
+				<value >EXT_pixel_format</value>
+				<value >EXT_swap_control</value>
+				<value >OML_sync_control</value>
+				<value >I3D_digital_video_control</value>
+				<value >I3D_gamma</value>
+				<value >I3D_genlock</value>
+				<value >I3D_image_buffer</value>
+				<value >I3D_swap_frame_lock</value>
+				<value >I3D_swap_frame_usage</value>
+				<value >NV_vertex_array_range</value>
+				<value >3DL_stereo_control</value>
+				<value >NV_swap_group</value>
+				<value >NV_video_output</value>
+				<value >NV_present_video</value>
+				<value >ARB_create_context</value>
+				<value >NV_gpu_affinity</value>
+				<value >AMD_gpu_association</value>
+				<value >NV_video_capture</value>
+				<value >NV_copy_image</value>
+				<value >ARB_framebuffer_sRGB</value>
+				<value >NV_DX_interop</value>
+			</property>
+		</property-defs>
+		<function-defs >
+			<function name="wglCreateBufferRegionARB" return="HANDLE" category="ARB_buffer_region" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iLayerPlane" kind="value" type="int" input="true" />
+				<param name="uType" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglDeleteBufferRegionARB" return="VOID" category="ARB_buffer_region" >
+				<param name="hRegion" kind="value" type="HANDLE" input="true" />
+			</function>
+			<function name="wglSaveBufferRegionARB" return="BOOL" category="ARB_buffer_region" >
+				<param name="hRegion" kind="value" type="HANDLE" input="true" />
+				<param name="x" kind="value" type="int" input="true" />
+				<param name="y" kind="value" type="int" input="true" />
+				<param name="width" kind="value" type="int" input="true" />
+				<param name="height" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglRestoreBufferRegionARB" return="BOOL" category="ARB_buffer_region" >
+				<param name="hRegion" kind="value" type="HANDLE" input="true" />
+				<param name="x" kind="value" type="int" input="true" />
+				<param name="y" kind="value" type="int" input="true" />
+				<param name="width" kind="value" type="int" input="true" />
+				<param name="height" kind="value" type="int" input="true" />
+				<param name="xSrc" kind="value" type="int" input="true" />
+				<param name="ySrc" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglGetExtensionsStringARB" return="String" category="ARB_extensions_string" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglGetPixelFormatAttribivARB" return="BOOL" category="ARB_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iLayerPlane" kind="value" type="int" input="true" />
+				<param name="nAttributes" kind="value" type="UINT" input="true" />
+				<param name="piAttributes" kind="array" type="int" input="true" compute="[nAttributes]" />
+				<param name="piValues" kind="array" type="int" input="false" compute="[nAttributes]" />
+			</function>
+			<function name="wglGetPixelFormatAttribfvARB" return="BOOL" category="ARB_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iLayerPlane" kind="value" type="int" input="true" />
+				<param name="nAttributes" kind="value" type="UINT" input="true" />
+				<param name="piAttributes" kind="array" type="int" input="true" compute="[nAttributes]" />
+				<param name="pfValues" kind="array" type="FLOAT" input="false" compute="[nAttributes]" />
+			</function>
+			<function name="wglChoosePixelFormatARB" return="BOOL" category="ARB_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="piAttribIList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+				<param name="pfAttribFList" kind="array" type="FLOAT" input="true" compute="[COMPSIZE()]" />
+				<param name="nMaxFormats" kind="value" type="UINT" input="true" />
+				<param name="piFormats" kind="array" type="int" input="false" compute="[COMPSIZE(nNumFormats)]" />
+				<param name="nNumFormats" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglMakeContextCurrentARB" return="BOOL" category="ARB_make_current_read" >
+				<param name="hDrawDC" kind="value" type="HDC" input="true" />
+				<param name="hReadDC" kind="value" type="HDC" input="true" />
+				<param name="hglrc" kind="value" type="HGLRC" input="true" />
+			</function>
+			<function name="wglGetCurrentReadDCARB" return="HDC" category="ARB_make_current_read" />
+			<function name="wglCreatePbufferARB" return="HPBUFFERARB" category="ARB_pbuffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iWidth" kind="value" type="int" input="true" />
+				<param name="iHeight" kind="value" type="int" input="true" />
+				<param name="piAttribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglGetPbufferDCARB" return="HDC" category="ARB_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+			</function>
+			<function name="wglReleasePbufferDCARB" return="int" category="ARB_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="hDC" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglDestroyPbufferARB" return="BOOL" category="ARB_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+			</function>
+			<function name="wglQueryPbufferARB" return="BOOL" category="ARB_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="reference" type="int" input="false" />
+			</function>
+			<function name="wglBindTexImageARB" return="BOOL" category="ARB_render_texture" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iBuffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglReleaseTexImageARB" return="BOOL" category="ARB_render_texture" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iBuffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglSetPbufferAttribARB" return="BOOL" category="ARB_render_texture" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="piAttribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglCreateContextAttribsARB" return="HGLRC" category="ARB_create_context" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="hShareContext" kind="value" type="HGLRC" input="true" />
+				<param name="attribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglCreateDisplayColorTableEXT" return="GLboolean" category="EXT_display_color_table" >
+				<param name="id" kind="value" type="GLushort" input="true" />
+			</function>
+			<function name="wglLoadDisplayColorTableEXT" return="GLboolean" category="EXT_display_color_table" >
+				<param name="table" kind="array" type="GLushort" input="true" compute="[length]" />
+				<param name="length" kind="value" type="GLuint" input="true" />
+			</function>
+			<function name="wglBindDisplayColorTableEXT" return="GLboolean" category="EXT_display_color_table" >
+				<param name="id" kind="value" type="GLushort" input="true" />
+			</function>
+			<function name="wglDestroyDisplayColorTableEXT" return="VOID" category="EXT_display_color_table" >
+				<param name="id" kind="value" type="GLushort" input="true" />
+			</function>
+			<function name="wglGetExtensionsStringEXT" return="String" category="EXT_extensions_string" />
+			<function name="wglMakeContextCurrentEXT" return="BOOL" category="EXT_make_current_read" >
+				<param name="hDrawDC" kind="value" type="HDC" input="true" />
+				<param name="hReadDC" kind="value" type="HDC" input="true" />
+				<param name="hglrc" kind="value" type="HGLRC" input="true" />
+			</function>
+			<function name="wglGetCurrentReadDCEXT" return="HDC" category="EXT_make_current_read" />
+			<function name="wglCreatePbufferEXT" return="HPBUFFEREXT" category="EXT_pbuffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iWidth" kind="value" type="int" input="true" />
+				<param name="iHeight" kind="value" type="int" input="true" />
+				<param name="piAttribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglGetPbufferDCEXT" return="HDC" category="EXT_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFEREXT" input="true" />
+			</function>
+			<function name="wglReleasePbufferDCEXT" return="int" category="EXT_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFEREXT" input="true" />
+				<param name="hDC" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglDestroyPbufferEXT" return="BOOL" category="EXT_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFEREXT" input="true" />
+			</function>
+			<function name="wglQueryPbufferEXT" return="BOOL" category="EXT_pbuffer" >
+				<param name="hPbuffer" kind="value" type="HPBUFFEREXT" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="reference" type="int" input="false" />
+			</function>
+			<function name="wglGetPixelFormatAttribivEXT" return="BOOL" category="EXT_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iLayerPlane" kind="value" type="int" input="true" />
+				<param name="nAttributes" kind="value" type="UINT" input="true" />
+				<param name="piAttributes" kind="array" type="int" input="false" compute="[nAttributes]" />
+				<param name="piValues" kind="array" type="int" input="false" compute="[nAttributes]" />
+			</function>
+			<function name="wglGetPixelFormatAttribfvEXT" return="BOOL" category="EXT_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="iPixelFormat" kind="value" type="int" input="true" />
+				<param name="iLayerPlane" kind="value" type="int" input="true" />
+				<param name="nAttributes" kind="value" type="UINT" input="true" />
+				<param name="piAttributes" kind="array" type="int" input="false" compute="[nAttributes]" />
+				<param name="pfValues" kind="array" type="FLOAT" input="false" compute="[nAttributes]" />
+			</function>
+			<function name="wglChoosePixelFormatEXT" return="BOOL" category="EXT_pixel_format" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="piAttribIList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+				<param name="pfAttribFList" kind="array" type="FLOAT" input="true" compute="[COMPSIZE()]" />
+				<param name="nMaxFormats" kind="value" type="UINT" input="true" />
+				<param name="piFormats" kind="array" type="int" input="false" compute="[COMPSIZE(nNumFormats)]" />
+				<param name="nNumFormats" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglSwapIntervalEXT" return="BOOL" category="EXT_swap_control" >
+				<param name="interval" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglGetSwapIntervalEXT" return="int" category="EXT_swap_control" />
+			<function name="wglAllocateMemoryNV" return="VoidPointer" category="NV_vertex_array_range" >
+				<param name="size" kind="value" type="GLsizei" input="true" />
+				<param name="readfreq" kind="value" type="GLfloat" input="true" />
+				<param name="writefreq" kind="value" type="GLfloat" input="true" />
+				<param name="priority" kind="value" type="GLfloat" input="true" />
+			</function>
+			<function name="wglFreeMemoryNV" return="void" category="NV_vertex_array_range" >
+				<param name="pointer" kind="array" type="void" input="false" compute="[1]" />
+			</function>
+			<function name="wglGetSyncValuesOML" return="BOOL" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="ust" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="msc" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="sbc" kind="array" type="INT64" input="false" compute="[1]" />
+			</function>
+			<function name="wglGetMscRateOML" return="BOOL" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="numerator" kind="array" type="INT32" input="false" compute="[1]" />
+				<param name="denominator" kind="array" type="INT32" input="false" compute="[1]" />
+			</function>
+			<function name="wglSwapBuffersMscOML" return="INT64" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="target_msc" kind="value" type="INT64" input="true" />
+				<param name="divisor" kind="value" type="INT64" input="true" />
+				<param name="remainder" kind="value" type="INT64" input="true" />
+			</function>
+			<function name="wglSwapLayerBuffersMscOML" return="INT64" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="fuPlanes" kind="value" type="int" input="true" />
+				<param name="target_msc" kind="value" type="INT64" input="true" />
+				<param name="divisor" kind="value" type="INT64" input="true" />
+				<param name="remainder" kind="value" type="INT64" input="true" />
+			</function>
+			<function name="wglWaitForMscOML" return="BOOL" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="target_msc" kind="value" type="INT64" input="true" />
+				<param name="divisor" kind="value" type="INT64" input="true" />
+				<param name="remainder" kind="value" type="INT64" input="true" />
+				<param name="ust" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="msc" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="sbc" kind="array" type="INT64" input="false" compute="[1]" />
+			</function>
+			<function name="wglWaitForSbcOML" return="BOOL" category="OML_sync_control" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+				<param name="target_sbc" kind="value" type="INT64" input="true" />
+				<param name="ust" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="msc" kind="array" type="INT64" input="false" compute="[1]" />
+				<param name="sbc" kind="array" type="INT64" input="false" compute="[1]" />
+			</function>
+			<function name="wglGetDigitalVideoParametersI3D" return="BOOL" category="I3D_digital_video_control" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="array" type="int" input="false" compute="[COMPSIZE(iAttribute)]" />
+			</function>
+			<function name="wglSetDigitalVideoParametersI3D" return="BOOL" category="I3D_digital_video_control" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="array" type="int" input="true" compute="[COMPSIZE(iAttribute)]" />
+			</function>
+			<function name="wglGetGammaTableParametersI3D" return="BOOL" category="I3D_gamma" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="array" type="int" input="false" compute="[COMPSIZE(iAttribute)]" />
+			</function>
+			<function name="wglSetGammaTableParametersI3D" return="BOOL" category="I3D_gamma" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="array" type="int" input="true" compute="[COMPSIZE(iAttribute)]" />
+			</function>
+			<function name="wglGetGammaTableI3D" return="BOOL" category="I3D_gamma" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iEntries" kind="value" type="int" input="true" />
+				<param name="puRed" kind="array" type="USHORT" input="false" compute="[iEntries]" />
+				<param name="puGreen" kind="array" type="USHORT" input="false" compute="[iEntries]" />
+				<param name="puBlue" kind="array" type="USHORT" input="false" compute="[iEntries]" />
+			</function>
+			<function name="wglSetGammaTableI3D" return="BOOL" category="I3D_gamma" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="iEntries" kind="value" type="int" input="true" />
+				<param name="puRed" kind="array" type="USHORT" input="true" compute="[iEntries]" />
+				<param name="puGreen" kind="array" type="USHORT" input="true" compute="[iEntries]" />
+				<param name="puBlue" kind="array" type="USHORT" input="true" compute="[iEntries]" />
+			</function>
+			<function name="wglEnableGenlockI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglDisableGenlockI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglIsEnabledGenlockI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="pFlag" kind="reference" type="BOOL" input="false" />
+			</function>
+			<function name="wglGenlockSourceI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uSource" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglGetGenlockSourceI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uSource" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglGenlockSourceEdgeI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uEdge" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglGetGenlockSourceEdgeI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uEdge" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglGenlockSampleRateI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uRate" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglGetGenlockSampleRateI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uRate" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglGenlockSourceDelayI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uDelay" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglGetGenlockSourceDelayI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uDelay" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglQueryGenlockMaxSourceDelayI3D" return="BOOL" category="I3D_genlock" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uMaxLineDelay" kind="reference" type="UINT" input="false" />
+				<param name="uMaxPixelDelay" kind="reference" type="UINT" input="false" />
+			</function>
+			<function name="wglCreateImageBufferI3D" return="LPVOID" category="I3D_image_buffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="dwSize" kind="value" type="DWORD" input="true" />
+				<param name="uFlags" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglDestroyImageBufferI3D" return="BOOL" category="I3D_image_buffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="pAddress" kind="value" type="LPVOID" input="true" />
+			</function>
+			<function name="wglAssociateImageBufferEventsI3D" return="BOOL" category="I3D_image_buffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="pEvent" kind="array" type="HANDLE" input="true" compute="[count]" />
+				<param name="pAddress" kind="array" type="LPVOID" input="true" compute="[count]" />
+				<param name="pSize" kind="array" type="DWORD" input="true" compute="[count]" />
+				<param name="count" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglReleaseImageBufferEventsI3D" return="BOOL" category="I3D_image_buffer" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="pAddress" kind="array" type="LPVOID" input="true" compute="[count]" />
+				<param name="count" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglEnableFrameLockI3D" return="BOOL" category="I3D_swap_frame_lock" />
+			<function name="wglDisableFrameLockI3D" return="BOOL" category="I3D_swap_frame_lock" />
+			<function name="wglIsEnabledFrameLockI3D" return="BOOL" category="I3D_swap_frame_lock" >
+				<param name="pFlag" kind="reference" type="BOOL" input="false" />
+			</function>
+			<function name="wglQueryFrameLockMasterI3D" return="BOOL" category="I3D_swap_frame_lock" >
+				<param name="pFlag" kind="reference" type="BOOL" input="false" />
+			</function>
+			<function name="wglGetFrameUsageI3D" return="BOOL" category="I3D_swap_frame_usage" >
+				<param name="pUsage" kind="reference" type="float" input="false" />
+			</function>
+			<function name="wglBeginFrameTrackingI3D" return="BOOL" category="I3D_swap_frame_usage" />
+			<function name="wglEndFrameTrackingI3D" return="BOOL" category="I3D_swap_frame_usage" />
+			<function name="wglQueryFrameTrackingI3D" return="BOOL" category="I3D_swap_frame_usage" >
+				<param name="pFrameCount" kind="reference" type="DWORD" input="false" />
+				<param name="pMissedFrames" kind="reference" type="DWORD" input="false" />
+				<param name="pLastMissedUsage" kind="reference" type="float" input="false" />
+			</function>
+			<function name="wglSetStereoEmitterState3DL" return="BOOL" category="3DL_stereo_control" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uState" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglEnumerateVideoDevicesNV" return="int" category="NV_present_video" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="phDeviceList" kind="array" type="HVIDEOOUTPUTDEVICENV" input="false" />
+			</function>
+			<function name="wglBindVideoDeviceNV" return="BOOL" category="NV_present_video" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="uVideoSlot" kind="value" type="uint" input="true" />
+				<param name="hVideoDevice" kind="value" type="HVIDEOOUTPUTDEVICENV" input="true" />
+				<param name="piAttribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglQueryCurrentContextNV" return="BOOL" category="NV_present_video" >
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="array" type="int" input="false" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglGetVideoDeviceNV" return="BOOL" category="NV_video_output" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="numDevices" kind="value" type="int" input="true" />
+				<param name="hVideoDevice" kind="reference" type="HPVIDEODEV" input="false" />
+			</function>
+			<function name="wglReleaseVideoDeviceNV" return="BOOL" category="NV_video_output" >
+				<param name="hVideoDevice" kind="value" type="HPVIDEODEV" input="true" />
+			</function>
+			<function name="wglBindVideoImageNV" return="BOOL" category="NV_video_output" >
+				<param name="hVideoDevice" kind="value" type="HPVIDEODEV" input="true" />
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iVideoBuffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglReleaseVideoImageNV" return="BOOL" category="NV_video_output" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iVideoBuffer" kind="value" type="int" input="true" />
+			</function>
+			<function name="wglSendPbufferToVideoNV" return="BOOL" category="NV_video_output" >
+				<param name="hPbuffer" kind="value" type="HPBUFFERARB" input="true" />
+				<param name="iBufferType" kind="value" type="int" input="true" />
+				<param name="pulCounterPbuffer" kind="reference" type="ulong" input="false" />
+				<param name="bBlock" kind="value" type="BOOL" input="true" />
+			</function>
+			<function name="wglGetVideoInfoNV" return="BOOL" category="NV_video_output" >
+				<param name="hpVideoDevice" kind="value" type="HPVIDEODEV" input="true" />
+				<param name="pulCounterOutputPbuffer" kind="reference" type="ulong" input="false" />
+				<param name="pulCounterOutputVideo" kind="reference" type="ulong" input="false" />
+			</function>
+			<function name="wglJoinSwapGroupNV" return="BOOL" category="NV_swap_group" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="group" kind="value" type="GLuint" input="true" />
+			</function>
+			<function name="wglBindSwapBarrierNV" return="BOOL" category="NV_swap_group" >
+				<param name="group" kind="value" type="GLuint" input="true" />
+				<param name="barrier" kind="value" type="GLuint" input="true" />
+			</function>
+			<function name="wglQuerySwapGroupNV" return="BOOL" category="NV_swap_group" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="group" kind="reference" type="GLuint" input="false" />
+				<param name="barrier" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="wglQueryMaxSwapGroupsNV" return="BOOL" category="NV_swap_group" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="maxGroups" kind="reference" type="GLuint" input="false" />
+				<param name="maxBarriers" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="wglQueryFrameCountNV" return="BOOL" category="NV_swap_group" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+				<param name="count" kind="reference" type="GLuint" input="false" />
+			</function>
+			<function name="wglResetFrameCountNV" return="BOOL" category="NV_swap_group" >
+				<param name="hDC" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglEnumGpusNV" return="BOOL" category="NV_gpu_affinity" >
+				<param name="iGpuIndex" kind="value" type="UINT" input="true" />
+				<param name="phGpu" kind="reference" type="HGPUNV" input="false" />
+			</function>
+			<function name="wglEnumGpuDevicesNV" return="BOOL" category="NV_gpu_affinity" >
+				<param name="hGpu" kind="value" type="HGPUNV" input="true" />
+				<param name="iDeviceIndex" kind="value" type="UINT" input="true" />
+				<param name="lpGpuDevice" kind="value" type="PGPU_DEVICE" input="true" />
+			</function>
+			<function name="wglCreateAffinityDCNV" return="HDC" category="NV_gpu_affinity" >
+				<param name="phGpuList" kind="array" type="HGPUNV" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglEnumGpusFromAffinityDCNV" return="BOOL" category="NV_gpu_affinity" >
+				<param name="hAffinityDC" kind="value" type="HDC" input="true" />
+				<param name="iGpuIndex" kind="value" type="UINT" input="true" />
+				<param name="hGpu" kind="reference" type="HGPUNV" input="false" />
+			</function>
+			<function name="wglDeleteDCNV" return="BOOL" category="NV_gpu_affinity" >
+				<param name="hdc" kind="value" type="HDC" input="true" />
+			</function>
+			<function name="wglGetGPUIDsAMD" return="UINT" category="AMD_gpu_association" >
+				<param name="maxCount" kind="value" type="UINT" input="true" />
+				<param name="ids" kind="array" type="UINT" input="false" compute="[maxCount]" />
+			</function>
+			<function name="wglGetGPUInfoAMD" return="INT" category="AMD_gpu_association" >
+				<param name="id" kind="value" type="UINT" input="true" />
+				<param name="property" kind="value" type="int" input="true" />
+				<param name="dataType" kind="value" type="GLenum" input="true" />
+				<param name="size" kind="value" type="UINT" input="true" />
+				<param name="data" kind="array" type="void" input="false" compute="[COMPSIZE(dataType,size)]" />
+			</function>
+			<function name="wglGetContextGPUIDAMD" return="UINT" category="AMD_gpu_association" >
+				<param name="hglrc" kind="value" type="HGLRC" input="true" />
+			</function>
+			<function name="wglCreateAssociatedContextAMD" return="HGLRC" category="AMD_gpu_association" >
+				<param name="id" kind="value" type="UINT" input="true" />
+			</function>
+			<function name="wglCreateAssociatedContextAttribsAMD" return="HGLRC" category="AMD_gpu_association" >
+				<param name="id" kind="value" type="UINT" input="true" />
+				<param name="hShareContext" kind="value" type="HGLRC" input="true" />
+				<param name="attribList" kind="array" type="int" input="true" compute="[COMPSIZE()]" />
+			</function>
+			<function name="wglDeleteAssociatedContextAMD" return="BOOL" category="AMD_gpu_association" >
+				<param name="hglrc" kind="value" type="HGLRC" input="true" />
+			</function>
+			<function name="wglMakeAssociatedContextCurrentAMD" return="BOOL" category="AMD_gpu_association" >
+				<param name="hglrc" kind="value" type="HGLRC" input="true" />
+			</function>
+			<function name="wglGetCurrentAssociatedContextAMD" return="HGLRC" category="AMD_gpu_association" />
+			<function name="wglBlitContextFramebufferAMD" return="VOID" category="AMD_gpu_association" >
+				<param name="dstCtx" kind="value" type="HGLRC" input="true" />
+				<param name="srcX0" kind="value" type="GLint" input="true" />
+				<param name="srcY0" kind="value" type="GLint" input="true" />
+				<param name="srcX1" kind="value" type="GLint" input="true" />
+				<param name="srcY1" kind="value" type="GLint" input="true" />
+				<param name="dstX0" kind="value" type="GLint" input="true" />
+				<param name="dstY0" kind="value" type="GLint" input="true" />
+				<param name="dstX1" kind="value" type="GLint" input="true" />
+				<param name="dstY1" kind="value" type="GLint" input="true" />
+				<param name="mask" kind="value" type="GLbitfield" input="true" />
+				<param name="filter" kind="value" type="GLenum" input="true" />
+			</function>
+			<function name="wglBindVideoCaptureDeviceNV" return="BOOL" category="NV_video_capture" >
+				<param name="uVideoSlot" kind="value" type="UINT" input="true" />
+				<param name="hDevice" kind="value" type="HVIDEOINPUTDEVICENV" input="true" />
+			</function>
+			<function name="wglEnumerateVideoCaptureDevicesNV" return="UINT" category="NV_video_capture" >
+				<param name="hDc" kind="value" type="HDC" input="true" />
+				<param name="phDeviceList" kind="reference" type="HVIDEOINPUTDEVICENV" input="false" />
+			</function>
+			<function name="wglLockVideoCaptureDeviceNV" return="BOOL" category="NV_video_capture" >
+				<param name="hDc" kind="value" type="HDC" input="true" />
+				<param name="hDevice" kind="value" type="HVIDEOINPUTDEVICENV" input="true" />
+			</function>
+			<function name="wglQueryVideoCaptureDeviceNV" return="BOOL" category="NV_video_capture" >
+				<param name="hDc" kind="value" type="HDC" input="true" />
+				<param name="hDevice" kind="value" type="HVIDEOINPUTDEVICENV" input="true" />
+				<param name="iAttribute" kind="value" type="int" input="true" />
+				<param name="piValue" kind="reference" type="int" input="false" />
+			</function>
+			<function name="wglReleaseVideoCaptureDeviceNV" return="BOOL" category="NV_video_capture" >
+				<param name="hDc" kind="value" type="HDC" input="true" />
+				<param name="hDevice" kind="value" type="HVIDEOINPUTDEVICENV" input="true" />
+			</function>
+			<function name="wglCopyImageSubDataNV" return="BOOL" category="NV_copy_image" >
+				<param name="hSrcRC" kind="value" type="HGLRC" input="true" />
+				<param name="srcName" kind="value" type="GLuint" input="true" />
+				<param name="srcTarget" kind="value" type="GLenum" input="true" />
+				<param name="srcLevel" kind="value" type="GLint" input="true" />
+				<param name="srcX" kind="value" type="GLint" input="true" />
+				<param name="srcY" kind="value" type="GLint" input="true" />
+				<param name="srcZ" kind="value" type="GLint" input="true" />
+				<param name="hDstRC" kind="value" type="HGLRC" input="true" />
+				<param name="dstName" kind="value" type="GLuint" input="true" />
+				<param name="dstTarget" kind="value" type="GLenum" input="true" />
+				<param name="dstLevel" kind="value" type="GLint" input="true" />
+				<param name="dstX" kind="value" type="GLint" input="true" />
+				<param name="dstY" kind="value" type="GLint" input="true" />
+				<param name="dstZ" kind="value" type="GLint" input="true" />
+				<param name="width" kind="value" type="GLsizei" input="true" />
+				<param name="height" kind="value" type="GLsizei" input="true" />
+				<param name="depth" kind="value" type="GLsizei" input="true" />
+			</function>
+			<function name="wglDXSetResourceShareHandleNV" return="BOOL" category="NV_DX_interop" >
+				<param name="dxObject" kind="array" type="void" input="false" compute="[1]" />
+				<param name="shareHandle" kind="value" type="HANDLE" input="true" />
+			</function>
+			<function name="wglDXOpenDeviceNV" return="HANDLE" category="NV_DX_interop" >
+				<param name="dxDevice" kind="array" type="void" input="false" compute="[1]" />
+			</function>
+			<function name="wglDXCloseDeviceNV" return="BOOL" category="NV_DX_interop" >
+				<param name="hDevice" kind="value" type="HANDLE" input="true" />
+			</function>
+			<function name="wglDXRegisterObjectNV" return="HANDLE" category="NV_DX_interop" >
+				<param name="hDevice" kind="value" type="HANDLE" input="true" />
+				<param name="dxObject" kind="array" type="void" input="false" compute="[1]" />
+				<param name="name" kind="value" type="GLuint" input="true" />
+				<param name="type" kind="value" type="GLenum" input="true" />
+				<param name="access" kind="value" type="GLenum" input="true" />
+			</function>
+			<function name="wglDXUnregisterObjectNV" return="BOOL" category="NV_DX_interop" >
+				<param name="hDevice" kind="value" type="HANDLE" input="true" />
+				<param name="hObject" kind="value" type="HANDLE" input="true" />
+			</function>
+			<function name="wglDXObjectAccessNV" return="BOOL" category="NV_DX_interop" >
+				<param name="hObject" kind="value" type="HANDLE" input="true" />
+				<param name="access" kind="value" type="GLenum" input="true" />
+			</function>
+			<function name="wglDXLockObjectsNV" return="BOOL" category="NV_DX_interop" >
+				<param name="hDevice" kind="value" type="HANDLE" input="true" />
+				<param name="count" kind="value" type="GLint" input="true" />
+				<param name="hObjects" kind="array" type="HANDLE" input="false" compute="[count]" />
+			</function>
+			<function name="wglDXUnlockObjectsNV" return="BOOL" category="NV_DX_interop" >
+				<param name="hDevice" kind="value" type="HANDLE" input="true" />
+				<param name="count" kind="value" type="GLint" input="true" />
+				<param name="hObjects" kind="array" type="HANDLE" input="false" compute="[count]" />
+			</function>
+		</function-defs>
+	</functions>
+</specification>

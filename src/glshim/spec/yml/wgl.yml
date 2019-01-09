@@ -1,0 +1,177 @@
+3DL_stereo_control:
+  wglSetStereoEmitterState3DL: [BOOL, HDC hDC, UINT uState]
+AMD_gpu_association:
+  wglBlitContextFramebufferAMD: [VOID, HGLRC dstCtx, GLint srcX0, GLint srcY0, GLint
+      srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield
+      mask, GLenum filter]
+  wglCreateAssociatedContextAMD: [HGLRC, UINT id]
+  wglCreateAssociatedContextAttribsAMD: [HGLRC, UINT id, HGLRC hShareContext, const
+      int *attribList]
+  wglDeleteAssociatedContextAMD: [BOOL, HGLRC hglrc]
+  wglGetContextGPUIDAMD: [UINT, HGLRC hglrc]
+  wglGetCurrentAssociatedContextAMD: [HGLRC]
+  wglGetGPUIDsAMD: [UINT, UINT maxCount, UINT *ids]
+  wglGetGPUInfoAMD: [INT, UINT id, int property, GLenum dataType, UINT size, void
+      *data]
+  wglMakeAssociatedContextCurrentAMD: [BOOL, HGLRC hglrc]
+ARB_buffer_region:
+  wglCreateBufferRegionARB: [HANDLE, HDC hDC, int iLayerPlane, UINT uType]
+  wglDeleteBufferRegionARB: [VOID, HANDLE hRegion]
+  wglRestoreBufferRegionARB: [BOOL, HANDLE hRegion, int x, int y, int width, int height,
+    int xSrc, int ySrc]
+  wglSaveBufferRegionARB: [BOOL, HANDLE hRegion, int x, int y, int width, int height]
+ARB_create_context:
+  wglCreateContextAttribsARB: [HGLRC, HDC hDC, HGLRC hShareContext, const int *attribList]
+ARB_extensions_string:
+  wglGetExtensionsStringARB: [const char *, HDC hdc]
+ARB_make_current_read:
+  wglGetCurrentReadDCARB: [HDC]
+  wglMakeContextCurrentARB: [BOOL, HDC hDrawDC, HDC hReadDC, HGLRC hglrc]
+ARB_pbuffer:
+  wglCreatePbufferARB: [HPBUFFERARB, HDC hDC, int iPixelFormat, int iWidth, int iHeight,
+    const int *piAttribList]
+  wglDestroyPbufferARB: [BOOL, HPBUFFERARB hPbuffer]
+  wglGetPbufferDCARB: [HDC, HPBUFFERARB hPbuffer]
+  wglQueryPbufferARB: [BOOL, HPBUFFERARB hPbuffer, int iAttribute, int *piValue]
+  wglReleasePbufferDCARB: [int, HPBUFFERARB hPbuffer, HDC hDC]
+ARB_pixel_format:
+  wglChoosePixelFormatARB: [BOOL, HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList,
+    UINT nMaxFormats, int *piFormats, UINT *nNumFormats]
+  wglGetPixelFormatAttribfvARB: [BOOL, HDC hdc, int iPixelFormat, int iLayerPlane,
+    UINT nAttributes, const int *piAttributes, FLOAT *pfValues]
+  wglGetPixelFormatAttribivARB: [BOOL, HDC hdc, int iPixelFormat, int iLayerPlane,
+    UINT nAttributes, const int *piAttributes, int *piValues]
+ARB_render_texture:
+  wglBindTexImageARB: [BOOL, HPBUFFERARB hPbuffer, int iBuffer]
+  wglReleaseTexImageARB: [BOOL, HPBUFFERARB hPbuffer, int iBuffer]
+  wglSetPbufferAttribARB: [BOOL, HPBUFFERARB hPbuffer, const int *piAttribList]
+EXT_display_color_table:
+  wglBindDisplayColorTableEXT: [GLboolean, GLushort id]
+  wglCreateDisplayColorTableEXT: [GLboolean, GLushort id]
+  wglDestroyDisplayColorTableEXT: [VOID, GLushort id]
+  wglLoadDisplayColorTableEXT: [GLboolean, const GLushort *table, GLuint length]
+EXT_extensions_string:
+  wglGetExtensionsStringEXT: [const char *]
+EXT_make_current_read:
+  wglGetCurrentReadDCEXT: [HDC]
+  wglMakeContextCurrentEXT: [BOOL, HDC hDrawDC, HDC hReadDC, HGLRC hglrc]
+EXT_pbuffer:
+  wglCreatePbufferEXT: [HPBUFFEREXT, HDC hDC, int iPixelFormat, int iWidth, int iHeight,
+    const int *piAttribList]
+  wglDestroyPbufferEXT: [BOOL, HPBUFFEREXT hPbuffer]
+  wglGetPbufferDCEXT: [HDC, HPBUFFEREXT hPbuffer]
+  wglQueryPbufferEXT: [BOOL, HPBUFFEREXT hPbuffer, int iAttribute, int *piValue]
+  wglReleasePbufferDCEXT: [int, HPBUFFEREXT hPbuffer, HDC hDC]
+EXT_pixel_format:
+  wglChoosePixelFormatEXT: [BOOL, HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList,
+    UINT nMaxFormats, int *piFormats, UINT *nNumFormats]
+  wglGetPixelFormatAttribfvEXT: [BOOL, HDC hdc, int iPixelFormat, int iLayerPlane,
+    UINT nAttributes, int *piAttributes, FLOAT *pfValues]
+  wglGetPixelFormatAttribivEXT: [BOOL, HDC hdc, int iPixelFormat, int iLayerPlane,
+    UINT nAttributes, int *piAttributes, int *piValues]
+EXT_swap_control:
+  wglGetSwapIntervalEXT: [int]
+  wglSwapIntervalEXT: [BOOL, int interval]
+I3D_digital_video_control:
+  wglGetDigitalVideoParametersI3D: [BOOL, HDC hDC, int iAttribute, int *piValue]
+  wglSetDigitalVideoParametersI3D: [BOOL, HDC hDC, int iAttribute, const int *piValue]
+I3D_gamma:
+  wglGetGammaTableI3D: [BOOL, HDC hDC, int iEntries, USHORT *puRed, USHORT *puGreen,
+    USHORT *puBlue]
+  wglGetGammaTableParametersI3D: [BOOL, HDC hDC, int iAttribute, int *piValue]
+  wglSetGammaTableI3D: [BOOL, HDC hDC, int iEntries, const USHORT *puRed, const USHORT
+      *puGreen, const USHORT *puBlue]
+  wglSetGammaTableParametersI3D: [BOOL, HDC hDC, int iAttribute, const int *piValue]
+I3D_genlock:
+  wglDisableGenlockI3D: [BOOL, HDC hDC]
+  wglEnableGenlockI3D: [BOOL, HDC hDC]
+  wglGenlockSampleRateI3D: [BOOL, HDC hDC, UINT uRate]
+  wglGenlockSourceDelayI3D: [BOOL, HDC hDC, UINT uDelay]
+  wglGenlockSourceEdgeI3D: [BOOL, HDC hDC, UINT uEdge]
+  wglGenlockSourceI3D: [BOOL, HDC hDC, UINT uSource]
+  wglGetGenlockSampleRateI3D: [BOOL, HDC hDC, UINT *uRate]
+  wglGetGenlockSourceDelayI3D: [BOOL, HDC hDC, UINT *uDelay]
+  wglGetGenlockSourceEdgeI3D: [BOOL, HDC hDC, UINT *uEdge]
+  wglGetGenlockSourceI3D: [BOOL, HDC hDC, UINT *uSource]
+  wglIsEnabledGenlockI3D: [BOOL, HDC hDC, BOOL *pFlag]
+  wglQueryGenlockMaxSourceDelayI3D: [BOOL, HDC hDC, UINT *uMaxLineDelay, UINT *uMaxPixelDelay]
+I3D_image_buffer:
+  wglAssociateImageBufferEventsI3D: [BOOL, HDC hDC, const HANDLE *pEvent, const LPVOID
+      *pAddress, const DWORD *pSize, UINT count]
+  wglCreateImageBufferI3D: [LPVOID, HDC hDC, DWORD dwSize, UINT uFlags]
+  wglDestroyImageBufferI3D: [BOOL, HDC hDC, LPVOID pAddress]
+  wglReleaseImageBufferEventsI3D: [BOOL, HDC hDC, const LPVOID *pAddress, UINT count]
+I3D_swap_frame_lock:
+  wglDisableFrameLockI3D: [BOOL]
+  wglEnableFrameLockI3D: [BOOL]
+  wglIsEnabledFrameLockI3D: [BOOL, BOOL *pFlag]
+  wglQueryFrameLockMasterI3D: [BOOL, BOOL *pFlag]
+I3D_swap_frame_usage:
+  wglBeginFrameTrackingI3D: [BOOL]
+  wglEndFrameTrackingI3D: [BOOL]
+  wglGetFrameUsageI3D: [BOOL, float *pUsage]
+  wglQueryFrameTrackingI3D: [BOOL, DWORD *pFrameCount, DWORD *pMissedFrames, float
+      *pLastMissedUsage]
+NV_DX_interop:
+  wglDXCloseDeviceNV: [BOOL, HANDLE hDevice]
+  wglDXLockObjectsNV: [BOOL, HANDLE hDevice, GLint count, HANDLE *hObjects]
+  wglDXObjectAccessNV: [BOOL, HANDLE hObject, GLenum access]
+  wglDXOpenDeviceNV: [HANDLE, void *dxDevice]
+  wglDXRegisterObjectNV: [HANDLE, HANDLE hDevice, void *dxObject, GLuint name, GLenum
+      type, GLenum access]
+  wglDXSetResourceShareHandleNV: [BOOL, void *dxObject, HANDLE shareHandle]
+  wglDXUnlockObjectsNV: [BOOL, HANDLE hDevice, GLint count, HANDLE *hObjects]
+  wglDXUnregisterObjectNV: [BOOL, HANDLE hDevice, HANDLE hObject]
+NV_copy_image:
+  wglCopyImageSubDataNV: [BOOL, HGLRC hSrcRC, GLuint srcName, GLenum srcTarget, GLint
+      srcLevel, GLint srcX, GLint srcY, GLint srcZ, HGLRC hDstRC, GLuint dstName,
+    GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei
+      width, GLsizei height, GLsizei depth]
+NV_gpu_affinity:
+  wglCreateAffinityDCNV: [HDC, const HGPUNV *phGpuList]
+  wglDeleteDCNV: [BOOL, HDC hdc]
+  wglEnumGpuDevicesNV: [BOOL, HGPUNV hGpu, UINT iDeviceIndex, PGPU_DEVICE lpGpuDevice]
+  wglEnumGpusFromAffinityDCNV: [BOOL, HDC hAffinityDC, UINT iGpuIndex, HGPUNV *hGpu]
+  wglEnumGpusNV: [BOOL, UINT iGpuIndex, HGPUNV *phGpu]
+NV_present_video:
+  wglBindVideoDeviceNV: [BOOL, HDC hDC, unsigned int uVideoSlot, HVIDEOOUTPUTDEVICENV
+      hVideoDevice, const int *piAttribList]
+  wglEnumerateVideoDevicesNV: [int, HDC hDC, HVIDEOOUTPUTDEVICENV *phDeviceList]
+  wglQueryCurrentContextNV: [BOOL, int iAttribute, int *piValue]
+NV_swap_group:
+  wglBindSwapBarrierNV: [BOOL, GLuint group, GLuint barrier]
+  wglJoinSwapGroupNV: [BOOL, HDC hDC, GLuint group]
+  wglQueryFrameCountNV: [BOOL, HDC hDC, GLuint *count]
+  wglQueryMaxSwapGroupsNV: [BOOL, HDC hDC, GLuint *maxGroups, GLuint *maxBarriers]
+  wglQuerySwapGroupNV: [BOOL, HDC hDC, GLuint *group, GLuint *barrier]
+  wglResetFrameCountNV: [BOOL, HDC hDC]
+NV_vertex_array_range:
+  wglAllocateMemoryNV: [void *, GLsizei size, GLfloat readfreq, GLfloat writefreq,
+    GLfloat priority]
+  wglFreeMemoryNV: [void *, void *pointer]
+NV_video_capture:
+  wglBindVideoCaptureDeviceNV: [BOOL, UINT uVideoSlot, HVIDEOINPUTDEVICENV hDevice]
+  wglEnumerateVideoCaptureDevicesNV: [UINT, HDC hDc, HVIDEOINPUTDEVICENV *phDeviceList]
+  wglLockVideoCaptureDeviceNV: [BOOL, HDC hDc, HVIDEOINPUTDEVICENV hDevice]
+  wglQueryVideoCaptureDeviceNV: [BOOL, HDC hDc, HVIDEOINPUTDEVICENV hDevice, int iAttribute,
+    int *piValue]
+  wglReleaseVideoCaptureDeviceNV: [BOOL, HDC hDc, HVIDEOINPUTDEVICENV hDevice]
+NV_video_output:
+  wglBindVideoImageNV: [BOOL, HPVIDEODEV hVideoDevice, HPBUFFERARB hPbuffer, int iVideoBuffer]
+  wglGetVideoDeviceNV: [BOOL, HDC hDC, int numDevices, HPVIDEODEV *hVideoDevice]
+  wglGetVideoInfoNV: [BOOL, HPVIDEODEV hpVideoDevice, unsigned long *pulCounterOutputPbuffer,
+    unsigned long *pulCounterOutputVideo]
+  wglReleaseVideoDeviceNV: [BOOL, HPVIDEODEV hVideoDevice]
+  wglReleaseVideoImageNV: [BOOL, HPBUFFERARB hPbuffer, int iVideoBuffer]
+  wglSendPbufferToVideoNV: [BOOL, HPBUFFERARB hPbuffer, int iBufferType, unsigned
+      long *pulCounterPbuffer, BOOL bBlock]
+OML_sync_control:
+  wglGetMscRateOML: [BOOL, HDC hdc, INT32 *numerator, INT32 *denominator]
+  wglGetSyncValuesOML: [BOOL, HDC hdc, INT64 *ust, INT64 *msc, INT64 *sbc]
+  wglSwapBuffersMscOML: [INT64, HDC hdc, INT64 target_msc, INT64 divisor, INT64 remainder]
+  wglSwapLayerBuffersMscOML: [INT64, HDC hdc, int fuPlanes, INT64 target_msc, INT64
+      divisor, INT64 remainder]
+  wglWaitForMscOML: [BOOL, HDC hdc, INT64 target_msc, INT64 divisor, INT64 remainder,
+    INT64 *ust, INT64 *msc, INT64 *sbc]
+  wglWaitForSbcOML: [BOOL, HDC hdc, INT64 target_sbc, INT64 *ust, INT64 *msc, INT64
+      *sbc]

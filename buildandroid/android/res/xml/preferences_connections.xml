@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="prefb_internalGPS"
+        android:title="Use Internal GPS"
+        android:summary="Activate GPS to enable this choice."
+        android:defaultValue="false" />
+
+</PreferenceScreen>

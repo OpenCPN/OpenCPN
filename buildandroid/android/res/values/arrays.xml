@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string-array name="navmodeListArray">
+        <item>North Up</item>
+        <item>Course Up</item>
+    </string-array>
+    <string-array name="navmodeListValues">
+        <item>North Up</item>
+        <item>Course Up</item>
+    </string-array>
+
+    <string-array name="displayCategoryListArray">
+        <item>Base</item>
+        <item>Standard</item>
+        <item>All</item>
+        <item>Mariner Standard</item>
+    </string-array>
+    <string-array name="displayCategoryListValues">
+        <item>Base</item>
+        <item>Standard</item>
+        <item>All</item>
+        <item>Mariner Standard</item>
+    </string-array>
+
+
+    <string-array name="vectorGraphicsStyleListArray">
+        <item>Paper Chart</item>
+        <item>Simplified</item>
+    </string-array>
+    <string-array name="vectorGraphicsStyleListValues">
+        <item>Paper Chart</item>
+        <item>Simplified</item>
+    </string-array>
+
+
+    <string-array name="vectorBoundaryStyleListArray">
+        <item>Plain</item>
+        <item>Symbolized</item>
+    </string-array>
+    <string-array name="vectorBoundaryStyleListValues">
+        <item>Plain</item>
+        <item>Symbolized</item>
+    </string-array>
+
+    <string-array name="vectorChartColorsListArray">
+        <item>4</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="vectorChartColorsListValues">
+        <item>4</item>
+        <item>2</item>
+    </string-array>
+
+</resources>

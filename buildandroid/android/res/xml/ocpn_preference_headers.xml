@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:fragment="org.opencpn.OCPNSettingsFragmentDisplay"
+        android:title="Display"
+        android:summary="Chart display options" />
+    <header
+        android:fragment="org.opencpn.OCPNSettingsFragmentCharts"
+        android:id="@id/FragmentCharts"
+        android:title="Charts"
+        android:summary="Chart sources and options" />
+    <header
+        android:fragment="org.opencpn.OCPNSettingsFragmentConnections"
+        android:title="Connections"
+        android:summary="GPS location options" />
+</preference-headers>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:title="Display Category"
+        android:key="prefs_displaycategory"
+        android:defaultValue="0"
+        android:entries="@array/displayCategoryListArray"
+        android:entryValues="@array/displayCategoryListValues" />
+
+    <CheckBoxPreference
+        android:key="prefb_showsound"
+        android:title="Show Depth Soundings"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showATONLabels"
+        android:title="Show Buoy and Light Labels"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showlightldesc"
+        android:title="Show Light Descriptions"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showimptext"
+        android:title="Show Important Text Only"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showSCAMIN"
+        android:title="Show Reduced Detail at Small Scale"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <EditTextPreference
+        android:key="prefs_shallowdepth"
+        android:title="Shallow Depth"
+        android:summary=""
+        android:defaultValue="2" />
+
+    <EditTextPreference
+        android:key="prefs_safetydepth"
+        android:title="Safety Depth"
+        android:summary=""
+        android:defaultValue="3" />
+
+    <EditTextPreference
+        android:key="prefs_deepdepth"
+        android:title="Deep Depth"
+        android:summary=""
+        android:defaultValue="4" />
+
+    <ListPreference
+        android:title="Chart Graphics Style"
+        android:key="prefs_vectorgraphicsstyle"
+        android:defaultValue="0"
+        android:entries="@array/vectorGraphicsStyleListArray"
+        android:entryValues="@array/vectorGraphicsStyleListValues" />
+
+    <ListPreference
+        android:title="Chart Area Boundary Style"
+        android:key="prefs_vectorboundarystyle"
+        android:defaultValue="0"
+        android:entries="@array/vectorBoundaryStyleListArray"
+        android:entryValues="@array/vectorBoundaryStyleListValues" />
+
+    <ListPreference
+        android:title="Chart Colors"
+        android:key="prefs_vectorchartcolors"
+        android:defaultValue="0"
+        android:entries="@array/vectorChartColorsListArray"
+        android:entryValues="@array/vectorChartColorsListValues" />
+
+
+
+</PreferenceScreen>

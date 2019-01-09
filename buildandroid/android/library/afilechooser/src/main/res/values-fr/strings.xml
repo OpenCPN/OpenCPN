@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="daidalos_hello">Hello World!</string>
+    <string name="daidalos_app_name">AFileDialog</string>
+    <color name="daidalos_gray">#888</color>
+    <string name="daidalos_select">Sélectionner</string>
+    <string name="daidalos_cancel">Annuler</string>
+    <string name="daidalos_ok">Accepter</string>
+    <string name="daidalos_new_file">Nouveau</string>
+    <string name="daidalos_create_file">Créer fichier</string>
+    <string name="daidalos_create_folder">Créer dossier</string>
+    <string name="daidalos_accept">Accepter</string>
+    <string name="daidalos_enter_file_name">Écrivez le nom du fichier que vous souhaitez créer</string>
+    <string name="daidalos_enter_folder_name">Écrivez le nom du dossier que vous souhaitez créer</string>
+    <string name="daidalos_yes">Oui</string>
+    <string name="daidalos_no">Non</string>
+    <string name="daidalos_confirm_select_file">Etes-vous sûr que vous voulez sélectionner le fichier \'$file_name\'?</string>
+    <string name="daidalos_confirm_create_file">Le fichier \'$file_name\' n\'existe pas, êtes-vous sûr que vous voulez le créer?</string>
+    <string name="daidalos_confirm_select_folder">Etes-vous sûr que vous voulez sélectionner le dossier \'$file_name\'?</string>
+    <string name="daidalos_confirm_create_folder">Le dossier \'$file_name\' n\'existe pas, êtes-vous sûr que vous voulez le créer?</string>
+    <color name="daidalos_backgroud">#000</color>
+    <color name="daidalos_active_file">#fff</color>
+    <color name="daidalos_inactive_file">#888</color>
+        
+</resources>

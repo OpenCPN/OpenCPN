@@ -1,0 +1,930 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: OpenCPN
+Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
+Source: http://www.opencpn.org
+Files-Excluded: .*
+ buildosx
+ buildandroid
+ buildwin
+ plugins/chartdldr_pi/src/tinyxml
+ plugins/chartdldr_pi/src/unarr
+ plugins/grib_pi/src/bzip2
+ src/texcmp/lz4
+ src/wxcurl
+ src/wxsvg
+
+
+Files: *
+Copyright: 2008-2018 David S Register <bdbcat@yahoo.com>
+           2008-2018 Contributors, see src/about.cpp AuthorText[]
+License: GPL-2+
+
+Files: CMakeLists.txt plugins/CMakeLists.txt
+ plugins/grib_pi/CMakeLists.txt
+ plugins/demo_pi_sample/src/CMakeLists.txt
+ plugins/demo_pi_sample/CMakeLists.txt
+ plugins/dashboard_pi/CMakeLists.txt
+Copyright: 2010-2018 David S Register <bdbcat@yahoo.com>
+License: wxWidgets
+
+Files: data/s57data/*
+Copyright: 2000-2001 Sylvain Duclos <sylvain_duclos@yahoo.com>
+           2010 David S. Register <bdbcat@yahoo.com>
+           2010 by Pavel Kalian" <pavel@kalian.cz>
+License: GPL-2.0+
+
+Files: data/sounds/*
+Copyright: 2010 Warzyniec Szwaja
+License: GPL-2.0+
+
+Files: data/wvsdata/*
+Copyright: National Geophysical Data Center (NGDC)
+License: public-domain
+Comment: World Vector Shoreline is a U.S. Government work and is
+  not eligible for U.S. copyright protection.
+
+Files: data/tcdata/*
+Copyright: National Oceanic and Atmospheric Administration
+          2010 Dave Flater <dave@flaterco.com>
+          2010-2011 David S Register <bdbcat@yahoo.com>
+License: tcdata
+
+Files:plugins/wmm_pi/src/*
+Copyright: 2014 ESA-VirES
+Comment: https://github.com/ESA-VirES/WMM/blob/master/LICENSE
+License: Expat
+
+
+Files: CMakeLists.txt
+ include/*
+ plugins/CMakeLists.txt
+ plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
+ plugins/dashboard_pi/CMakeLists.txt
+ plugins/dashboard_pi/src/*
+ plugins/demo_pi_sample/src/*
+ plugins/grib_pi/src/*
+ plugins/wmm_pi/cmake/wxWTranslateCatalog.h.in
+ src/*
+Copyright: 2010, David S. Register
+  2012, David S. Register
+  2013, David S. Register
+  2014, David S. Register
+  2015, David S. Register
+  2016, David S. Register
+  2017, David S. Register
+  2018, David S. Register
+License: GPL-2+
+
+
+Files: plugins/*/src/nmea0183/* src/nmea0183/*
+Copyright: 2010, Samuel R. Blackburn,
+           2010 - 2011 David S Register <bdbcat@yahoo.com>
+License: GPL-2+
+Comment: Comment: wrt code duplication,
+ plugins/demo_pi_sample's copy is just for illustrative purposes.
+ see http://opencpn.org/ocpn/flyspray/index.php?do=details&task_id=725
+ .
+ wrt being an embedded library,  It does not exist in elsewhere in Debian;
+ the code here has been  specifically tailored/reworked by the OpenCPN
+ lead author and is  maintained within the OpenCPN source tree.
+ .
+ Samuel Blackburn's original source license:  "You can use it any way you
+ like."  More recent (2010) license statement from Samuel:  "It is BSD
+ license, do with it what you will"  (and what Dave's decided to do
+ with it is make our copy of it GPLv2+)
+
+Files: src/mygdal/cpl_config.h
+ src/mygdal/cpl_conv.cpp
+ src/mygdal/cpl_conv.h
+ src/mygdal/cpl_csv.cpp
+ src/mygdal/cpl_csv.h
+ src/mygdal/cpl_findfile.cpp
+ src/mygdal/cpl_minixml.cpp
+ src/mygdal/cpl_minixml.h
+ src/mygdal/cpl_multiproc.h
+ src/mygdal/cpl_odbc.h
+ src/mygdal/cpl_path.cpp
+ src/mygdal/cpl_port.h
+ src/mygdal/cpl_vsi.h
+ src/mygdal/cpl_vsisimple.cpp
+ src/mygdal/cplgetsymbol.cpp
+ src/mygdal/ddfrecordindex.cpp
+ src/mygdal/gdal.h
+ src/mygdal/gdal_frmts.h
+ src/mygdal/gdal_misc.cpp
+ src/mygdal/gdal_priv.h
+ src/mygdal/ogr_api.h
+ src/mygdal/ogr_core.h
+ src/mygdal/ogr_geometry.h
+ src/mygdal/ogr_p.h
+ src/mygdal/ogr_s57.h
+ src/mygdal/ograssemblepolygon.cpp
+ src/mygdal/ogrcurve.cpp
+ src/mygdal/ogrgeometry.cpp
+ src/mygdal/ogrgeometrycollection.cpp
+ src/mygdal/ogrgeometryfactory.cpp
+ src/mygdal/ogrlinearring.cpp
+ src/mygdal/ogrlinestring.cpp
+ src/mygdal/ogrmultilinestring.cpp
+ src/mygdal/ogrmultipoint.cpp
+ src/mygdal/ogrmultipolygon.cpp
+ src/mygdal/ogrpoint.cpp
+ src/mygdal/ogrpolygon.cpp
+ src/mygdal/ogrs57layer.cpp
+ src/mygdal/ogrutils.cpp
+ src/mygdal/s57.h
+ src/mygdal/s57classregistrar.cpp
+ src/mygdal/s57featuredefns.cpp
+ src/mygdal/s57reader.cpp
+ src/myiso8211/ddffield.cpp
+ src/myiso8211/ddffielddefn.cpp
+ src/myiso8211/ddfmodule.cpp
+ src/myiso8211/ddfrecord.cpp
+ src/myiso8211/ddfsubfielddefn.cpp
+ src/myiso8211/ddfutils.cpp
+Copyright: 1998, 2002, Frank Warmerdam
+  1998, Frank Warmerdam
+  1999, 2001, 2003, Frank Warmerdam
+  1999, 2001, Frank Warmerdam
+  1999, Frank Warmerdam
+  2000, Frank Warmerdam
+  2001, Frank Warmerdam
+  2002, Frank Warmerdam
+  2003, Frank Warmerdam
+License: Expat
+
+Files: src/glu/*
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: include/wx/json_defs.h
+ include/wx/jsonreader.h
+ include/wx/jsonval.h
+ include/wx/jsonwriter.h
+ plugins/dashboard_pi/src/wxJSON/json_defs.h
+ plugins/dashboard_pi/src/wxJSON/jsonreader.cpp
+ plugins/dashboard_pi/src/wxJSON/jsonreader.h
+ plugins/dashboard_pi/src/wxJSON/jsonval.cpp
+ plugins/dashboard_pi/src/wxJSON/jsonval.h
+ plugins/dashboard_pi/src/wxJSON/jsonwriter.cpp
+ plugins/dashboard_pi/src/wxJSON/jsonwriter.h
+ plugins/grib_pi/src/json_defs.h
+ plugins/grib_pi/src/jsonreader.cpp
+ plugins/grib_pi/src/jsonreader.h
+ plugins/grib_pi/src/jsonval.cpp
+ plugins/grib_pi/src/jsonval.h
+ plugins/grib_pi/src/jsonwriter.cpp
+ plugins/grib_pi/src/jsonwriter.h
+ plugins/wmm_pi/src/json_defs.h
+ plugins/wmm_pi/src/jsonreader.cpp
+ plugins/wmm_pi/src/jsonreader.h
+ plugins/wmm_pi/src/jsonval.cpp
+ plugins/wmm_pi/src/jsonval.h
+ plugins/wmm_pi/src/jsonwriter.cpp
+ plugins/wmm_pi/src/jsonwriter.h
+ src/wxJSON/jsonreader.cpp
+ src/wxJSON/jsonval.cpp
+ src/wxJSON/jsonwriter.cpp
+Copyright: (c) 2007 Luciano Cattani
+License: wxWidgets
+
+Files: src/texcmp/squish/*
+Copyright: 2006, Simon Brown si@sjbrown.co.uk
+License: Expat
+
+Files: include/LLRegion.h
+ include/TexFont.h
+ include/ocpndc.h
+ plugins/grib_pi/src/GribSettingsDialog.cpp
+ plugins/grib_pi/src/GribSettingsDialog.h
+ plugins/grib_pi/src/TexFont.cpp
+ plugins/grib_pi/src/TexFont.h
+ plugins/wmm_pi/src/MagneticPlotMap.cpp
+ plugins/wmm_pi/src/MagneticPlotMap.h
+ plugins/wmm_pi/src/TexFont.cpp
+ plugins/wmm_pi/src/TexFont.h
+ src/LLRegion.cpp
+ src/TexFont.cpp
+ src/mipmap/mipmap.c
+ src/mipmap/mipmap.h
+ src/mipmap/mipmap_avx2.c
+ src/mipmap/mipmap_neon.c
+ src/mipmap/mipmap_sse.c
+ src/mipmap/mipmap_sse2.c
+ src/mipmap/mipmap_ssse3.c
+ src/ocpndc.cpp
+Copyright: 2011, Sean D'Epagnier
+  2013, Sean D'Epagnier
+  2014, Sean D'Epagnier
+  2015, Sean D'Epagnier
+  2016, Sean D'Epagnier
+License: GPL-2+
+
+Files: plugins/grib_pi/src/jasper/*
+Copyright: 2001-2002, Michael David Adams.
+  2001-2003, Michael David Adams.
+  2002-2003, Michael David Adams.
+  2004, Michael David Adams.
+License: Jasper
+
+Files: src/SQLiteCpp/*
+Copyright: 2012-2013, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+  2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+  2013-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+License: wxWidgets
+
+Files: plugins/grib_pi/src/GribReader.cpp
+ plugins/grib_pi/src/GribReader.h
+ plugins/grib_pi/src/GribRecord.cpp
+ plugins/grib_pi/src/GribRecord.h
+ plugins/grib_pi/src/GribV1Record.cpp
+ plugins/grib_pi/src/GribV1Record.h
+ plugins/grib_pi/src/GribV2Record.cpp
+ plugins/grib_pi/src/GribV2Record.h
+ plugins/grib_pi/src/IsoLine.cpp
+ plugins/grib_pi/src/IsoLine.h
+ plugins/grib_pi/src/zuFile.cpp
+ plugins/grib_pi/src/zuFile.h
+Copyright: 2008, - Jacques Zaninetti - http:www.zygrib.org
+License: GPL-3+
+
+
+Files: src/garmin/jeeps/gps[acf-s]*
+ src/garmin/jeeps/gpsdatum.h
+ src/garmin/jeeps/gpsutil.*
+Copyright: 1999-2000 Alan Bleasby
+           2004-2006 Robert Lipe <robertlipe@usa.net>
+           2007 Achim Schumacher
+           2010 Martin Buck
+           2010 David S Register <bdbcat@yahoo.com>
+License: LGPL-2.0+
+
+Files: src/garmin/jeeps/gpsprot.c
+ src/garmin/jeeps/gpscom.c
+ src/garmin/jeeps/gpsapp.c
+ src/garmin/jeeps/gpsmath.c
+ src/garmin/jeeps/gpsrqst.c
+ src/garmin/jeeps/gpsutil.c
+ src/garmin/jeeps/gpsread.c
+ src/garmin/jeeps/gpssend.c
+ src/garmin/jeeps/gpsserial.c
+ src/garmin/jeeps/gpsmem.c
+Copyright: 1999-2000 Alan Bleasby
+           2004-2006 Robert Lipe <robertlipe@usa.net>
+           2007 Achim Schumacher
+           2010 Martin Buck
+License: LGPL-2.0+
+
+Files: src/garmin/jeeps/garminusb.h
+ src/garmin/jeeps/gpsdevice.c
+ src/garmin/jeeps/gpsdevice.h
+ src/garmin/jeeps/gpsdevice_ser.c
+ src/garmin/jeeps/gpsdevice_usb.c
+ src/garmin/jeeps/gpsusbcommon.c
+ src/garmin/jeeps/gpsusbcommon.h
+ src/garmin/jeeps/gpsusbint.h
+ src/garmin/jeeps/gpsusbread.c
+ src/garmin/jeeps/gpsusbsend.c
+ src/garmin/jeeps/gpsusbwin.c
+Copyright: 2004, 2006, Robert Lipe, robertlipe@usa.net
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2005-2006, Robert Lipe, robertlipe@usa.net
+  2006, Robert Lipe, robertlipe@usa.net
+License: GPL-2+
+
+Files: Curl.cmake
+ plugins/chartdldr_pi/cmake/PluginConfigure.cmake
+ plugins/chartdldr_pi/cmake/PluginInstall.cmake
+ plugins/chartdldr_pi/cmake/PluginPackage.cmake
+ plugins/demo_pi_sample/cmake/PluginConfigure.cmake
+ plugins/demo_pi_sample/cmake/PluginInstall.cmake
+ plugins/demo_pi_sample/cmake/PluginLocalization.cmake
+ plugins/demo_pi_sample/cmake/PluginPackage.cmake
+ plugins/wmm_pi/cmake/PluginConfigure.cmake
+ plugins/wmm_pi/cmake/PluginInstall.cmake
+ plugins/wmm_pi/cmake/PluginPackage.cmake
+Copyright: APvel Xalian
+License: GPL-3+
+
+
+Files: include/GL/glext.h
+Copyright: 2007, The Khronos Group Inc.
+  2007-2009, The Khronos Group Inc.
+  2007-2010, The Khronos Group Inc.
+  2007-2012, The Khronos Group Inc.
+  2008-2009, The Khronos Group Inc.
+  2013, The Khronos Group Inc.
+License: MIT
+
+Files: src/mygdal/ogr_feature.h
+ src/mygdal/ogr_spatialref.h
+ src/mygdal/ogrfeature.cpp
+ src/mygdal/ogrfeaturedefn.cpp
+ src/mygdal/ogrfielddefn.cpp
+ src/mygdal/ogrlayer.cpp
+ src/mygdal/ogrsf_frmts.h
+Copyright: 1999, Les Technologies SoftMap Inc.
+License: Expat
+Comment:Dave Register (OpenCPN lead author) wrote:
+ "We could use libgdal, with what I would call "moderate"
+ effort, with some loss of functionality. There are
+ good reasons not to. libgdal is very capable, but  not
+ optimum for dynamic GUI based systems like ours.  Its
+ great for generating static data from S57 cells.
+ .
+ I tweaked some of the code to compile on Windows, eliminate
+ redundancy, reduce memory footprint, fix some obvious bugs
+ present in the version I started with, and add call backs to
+ support Progress Dialogs on SENC creation. In theory, these
+ fixes should go upstream to GDAL.  In practice, though.....  .
+ IMHO, this kind of improvement for a specific application
+ should not block debian repo inclusion.  Otherwise we wear a
+ ball and chain, and innovation is stifled.
+ .
+ Thanks Dave"
+
+Files: plugins/chartdldr_pi/src/chartcatalog.cpp
+ plugins/chartdldr_pi/src/chartcatalog.h
+ plugins/chartdldr_pi/src/chartdldr_pi.cpp
+ plugins/chartdldr_pi/src/chartdldr_pi.h
+ plugins/wmm_pi/src/WMM_COF.h
+ plugins/wmm_pi/src/wmm_pi.cpp
+ plugins/wmm_pi/src/wmm_pi.h
+Copyright: 2011, Pavel Kalian
+License: GPL-2+
+
+
+Files: include/GL/gl.h
+ include/GL/gl_private.h
+Copyright: 1999-2001, Brian Paul
+  1999-2006, Brian Paul
+  1999-2007, Brian Paul
+License: Expat
+
+Files: src/garmin/jeeps/garmin_gps.h
+ src/garmin/jeeps/garmin_wrapper.cpp
+ src/garmin/jeeps/garmin_wrapper.h
+ src/garmin/jeeps/garmin_wrapper_utils.c
+ src/garmin/jeeps/garmin_wrapper_utils.h
+Copyright: 2010, David S Register
+License: GPL-2+
+
+Files: plugins/dashboard_pi/src/baro_history.cpp
+ plugins/dashboard_pi/src/wind_history.cpp
+ plugins/demo_pi_sample/CMakeLists.txt
+ plugins/grib_pi/src/CustomGrid.cpp
+ plugins/grib_pi/src/CustomGrid.h
+Copyright: 2010, David S. Register *
+License: GPL-2+
+
+Files: src/mygdal/cpl_error.cpp
+ src/mygdal/cpl_error.h
+ src/mygdal/cpl_string.cpp
+ src/mygdal/cpl_string.h
+Copyright: 1998, Daniel Morissette
+License: Expat
+
+Files: src/texcmp/squish/singlecolourfitfast.cpp
+ src/texcmp/squish/singlecolourfitfast.h
+ src/texcmp/squish/twocolourfitfast.cpp
+ src/texcmp/squish/twocolourfitfast.h
+Copyright: 2015, Sean D'EPagnier
+License: Expat
+
+Files: src/garmin/jeeps/gpsmath.c
+ src/garmin/jeeps/gpsmath.h
+ src/garmin/jeeps/gpsutil.c
+ src/garmin/jeeps/gpsutil.h
+Copyright: 1999, Alan Bleasby
+License: LGPL-2+
+
+
+Files: include/macutils.h
+ plugins/dashboard_pi/src/iirfilter.h
+ plugins/dashboard_pi/src/iirfilter.cpp
+ src/macutils.c
+Copyright: 2007 Transmitterdan
+  2016 Transmitterdan
+License: GPL-2+
+
+Files: src/mygdal/iso8211.h
+ src/mygdal/ogr_attrind.h
+Copyright: 1999, Frank Warmerdam <warmerdam@pobox.com>
+  2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: src/texcmp/squish/clusterfit.cpp
+ src/texcmp/squish/clusterfit.h
+Copyright: 2006, Simon Brown si@sjbrown.co.uk
+  2007, Ignacio Castano icastano@nvidia.com
+License: Expat
+
+Files: include/gshhs.h
+ src/gshhs.cpp
+Copyright: 2008, - Jacques Zaninetti - http:www.zygrib.org
+  2012, David S. Register
+  zUGrib: meteorologic GRIB file data viewer
+License: GPL-2+
+
+Files: include/routemanagerdialog.h
+ src/routemanagerdialog.cpp
+Copyright: 2010, Anders Lund <anders@alweb.dk>
+License: GPL-2+
+
+Files: src/ssl/sha1.c
+ src/ssl/sha1.h
+Copyright: 2006-2013, Brainspark B.V.
+  2006-2014, Brainspark B.V.
+License: GPL-2+
+
+Files: src/s52cnsy.cpp
+ src/s52utils.cpp
+Copyright: 2000-2001, Sylvain Duclos
+  2000-2004, Sylvain Duclos
+  2010, David S. Register
+License: GPL-2+
+
+Files: src/garmin/jeeps/gpscom.c
+ src/garmin/jeeps/gpscom.h
+Copyright: 1999, Alan Bleasby
+  2005-2006, Robert Lipe
+  2007, Achim Schumacher
+  2010, Martin Buck
+License: LGPL-2+
+
+Files: include/crashprint.h
+ src/crashprint.cpp
+Copyright: (c) 2004 wxCode
+License: wxWidgets
+
+Files: plugins/chartdldr_pi/src/checkedlistctrl.cpp
+ plugins/chartdldr_pi/src/checkedlistctrl.h
+Copyright: (c) 2005 Francesco Montorsi
+License: wxWidgets
+
+Files: plugins/grib_pi/src/smapi.cpp
+ plugins/grib_pi/src/smapi.h
+Copyright: (c) PJ Naughter
+License: wxWidgets
+
+Files: include/pugixml.hpp
+ src/pugixml.cpp
+Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+License: MIT
+
+Files: src/SQLiteCpp/include/SQLiteCpp/Backup.h
+ src/SQLiteCpp/src/Backup.cpp
+Copyright: 2015, Shibao HONG (shibaohong@outlook.com)
+  2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+License: MIT
+
+Files: FindGTK3.cmake
+Copyright: 2012, Raphael Kubo da Costa <rakuco@webkit.org>
+  2013, Igalia S.L.
+License: BSD-2-clause
+
+Files: Findgps.cmake
+Copyright: 2000-2009, Kitware, Inc., Insight Software Consortium
+  2006, Alexander Neundorf <neundorf@kde.org>
+  2006-2009, Kitware, Inc.
+  2010, David Register
+License: BSD-3-clause
+
+Files: FindPortaudio.cmake
+Copyright: 2006, Andreas Schneider <mail@cynapses.org>
+License: BSD-3-clause
+
+Files: src/texcmp/etcpak.cpp
+Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
+License: BSD-3-clause
+
+Files: src/mygdal/cpl_list.h
+Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
+License: Expat
+
+Files: plugins/dashboard_pi/src/nmea0183/vlw.cpp
+Copyright: 2010, Samuel R. Blackburn, David S Register *
+License: GPL-2+
+
+Files: include/s52utils.h
+Copyright: 2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
+License: GPL-2+
+
+Files: src/ocpnhelper.c
+Copyright: 2006, dsr
+License: GPL-2+
+
+Files: FindEXIF.cmake
+Copyright: 2011, Simone Rossetto <simros85@gmail.com>
+License: GPL-3+
+
+Files: include/GL/glu.h
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-1.1
+
+Files: plugins/chartdldr_pi/src/base64.h
+Copyright: (c) 2005 Angelo Mandato (http:www.spaceblue.com)
+License: wxWidgets
+
+Files: src/bbox.cpp include/bbox.h
+Copyright: 2000, (c) Klaas Holwerda
+License: wxWidgets
+
+Files: FindFFmpeg.cmake
+Copyright: 2006, Matthias Kretz, <kretz@kde.org>
+  2008, Alexander Neundorf, <neundorf@kde.org>
+  2011, Michael Jansen, <kde@michael-jansen.biz>
+License: BSD-CMAKE
+
+Files: src/geodesic.cpp  include/geodesic.h
+Copyright: 2012 Charles F. F. Karney (charles@karney.com)
+Comment: https://geographiclib.sourceforge.io/
+License: Expat
+
+Files: plugins/chartdldr_pi/CMakeLists.txt
+Copyright: 2014 Pavel Kalian
+License: GPL-2
+
+Files: src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
+Copyright: 2016, Paul Dreik (github@pauldreik.se)
+  2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+License: MIT
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+ Otherwise, refer to the online version at GNU website
+ `https://gnu.org/licenses/old-licenses/gpl-1.0.txt`.
+
+
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+ Otherwise, refer to the online version at GNU website
+ `https://gnu.org/licenses/old-licenses/gpl-2.0.txt`.
+
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 3 can be found in the file
+ `/usr/share/common-licenses/GPL-3'.
+ Otherwise, refer to the online version at GNU website
+ `https://gnu.org/licenses/gpl-3.0.txt`.
+
+
+License: LGPL-2+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version
+ .
+ On Debian systems, the full text of the Lesser GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/LGPL-2'.
+ Otherwise, refer to the online version at GNU website
+ `https://gnu.org/licenses/old-licenses/gpl-2.0.txt`.
+
+
+License: LGPL-3
+ On Debian systems, the full text of the Lesser GNU General Public
+ License version 3 can be found in the file
+ `/usr/share/common-licenses/LGPL-3'.
+ Otherwise, refer to the online version at GNU website
+ `https://www.gnu.org/licenses/lgpl-3.0.html`.
+
+
+License: wxWidgets
+ wxWindows Library License, Version 3.1
+ Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al
+ .
+ Everyone is permitted to copy and distribute verbatim copies of this licence
+ document, but changing it is not allowed
+ .
+ WXWINDOWS LIBRARY LICENCE
+ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ .
+ This library is free software; you can redistribute it and/or modify it
+ under the terms of the GNU Library General Public Licence as published by
+ the Free Software Foundation; either version 2 of the Licence, or (at
+ your option) any later version
+ .
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library General Public Licence
+ for more details
+ .
+ You should have received a copy of the GNU Library General Public Licence along
+ with this software, usually in a file named COPYING.LIB. If not, write to the
+ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ USA
+ .
+ EXCEPTION NOTICE
+ .
+ 1. As a special exception, the copyright holders of this library give permission
+ for additional uses of the text contained in this release of the library as
+ licenced under the wxWindows Library Licence, applying either version 3.1 of the
+ Licence, or (at your option) any later version of the Licence as published by the
+ copyright holders of version 3.1 of the Licence document
+ .
+ 2. The exception is that you may use, copy, link, modify and distribute under your
+ own terms, binary object code versions of works based on the Library
+ .
+ 3. If you copy code from files distributed under the terms of the GNU General
+ Public Licence or the GNU Library General Public Licence into a copy of this
+ library, as this licence permits, the exception does not apply to the code that
+ you add in this way. To avoid misleading anyone as to the status of such modified
+ files, you must delete this exception notice from such code and/or adjust the
+ licensing conditions notice accordingly
+ .
+ 4. If you write modifications of your own for this library, it is your choice whether
+ to permit this exception to apply to your modifications. If you do not wish that,
+ you must delete the exception notice from such code and/or adjust the licensing '
+ conditions notice accordingly.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions
+ :
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+
+
+License: SGI-B-1.1
+ License Applicability. Except to the extent portions of this file are
+ made subject to an alternative license as permitted in the SGI Free
+ Software License B, Version 1.1 (the "License"), the contents of this
+ file are subject only to the provisions of the License. You may not use
+ this file except in compliance with the License. You may obtain a copy
+ of the License at Silicon Graphics, Inc., attn: Legal Services, 1600
+ Amphitheatre Parkway, Mountain View, CA 94043-1351, or at
+ :
+ http://oss.sgi.com/projects/FreeB
+ .
+ Note that, as provided in the License, the Software is distributed on an
+ "AS IS" basis, with ALL EXPRESS AND IMPLIED WARRANTIES AND CONDITIONS
+ DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES AND
+ CONDITIONS OF MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A
+ PARTICULAR PURPOSE, AND NON-INFRINGEMENT
+ .
+ Original Code. The Original Code is: OpenGL Sample Implementation,
+ Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
+ Inc. The Original Code is Copyright (c) 1991-2000 Silicon Graphics, Inc.
+ Copyright in any portions created by third parties is as indicated
+ elsewhere herein. All Rights Reserved
+ .
+ Additional Notice Provisions: This software was created using the
+ OpenGL(R) version 1.2.1 Sample Implementation published by SGI, but has
+ not been independently verified as being compliant with the OpenGL(R)
+ version 1.2.1 Specification.
+
+
+License: SGI-B-2.0
+ SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
+ Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved
+ .
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+ :
+ The above copyright notice including the dates of first publication and
+ either this permission notice or a reference to
+ http://oss.sgi.com/projects/FreeB/
+ shall be included in all copies or substantial portions of the Software
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ SILICON GRAPHICS, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+ OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE
+ .
+ Except as contained in this notice, the name of Silicon Graphics, Inc.
+ shall not be used in advertising or otherwise to promote the sale, use or
+ other dealings in this Software without prior written authorization from
+ Silicon Graphics, Inc.
+
+License: Jasper
+ Jasper License Version 2.0
+ All rights reserved
+ .
+ Permission is hereby granted, free of charge, to any person (the
+ "User") obtaining a copy of this software and associated documentation
+ files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge,
+ publish, distribute, and/or sell copies of the Software, and to permit
+ persons to whom the Software is furnished to do so, subject to the
+ following conditions
+ :
+ 1.  The above copyright notices and this permission notice (which
+ includes the disclaimer below) shall be included in all copies or
+ substantial portions of the Software
+ .
+ 2.  The name of a copyright holder shall not be used to endorse or
+ promote products derived from the Software without specific prior
+ written permission
+ .
+ THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS
+ LICENSE.  NO USE OF THE SOFTWARE IS AUTHORIZED HEREUNDER EXCEPT UNDER
+ THIS DISCLAIMER.  THE SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
+ "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.  IN NO
+ EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+ INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
+ FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.  NO ASSURANCES ARE
+ PROVIDED BY THE COPYRIGHT HOLDERS THAT THE SOFTWARE DOES NOT INFRINGE
+ THE PATENT OR OTHER INTELLECTUAL PROPERTY RIGHTS OF ANY OTHER ENTITY.
+ EACH COPYRIGHT HOLDER DISCLAIMS ANY LIABILITY TO THE USER FOR CLAIMS
+ BROUGHT BY ANY OTHER ENTITY BASED ON INFRINGEMENT OF INTELLECTUAL
+ PROPERTY RIGHTS OR OTHERWISE.  AS A CONDITION TO EXERCISING THE RIGHTS
+ GRANTED HEREUNDER, EACH USER HEREBY ASSUMES SOLE RESPONSIBILITY TO SECURE
+ ANY OTHER INTELLECTUAL PROPERTY RIGHTS NEEDED, IF ANY.  THE SOFTWARE
+ IS NOT FAULT-TOLERANT AND IS NOT INTENDED FOR USE IN MISSION-CRITICAL
+ SYSTEMS, SUCH AS THOSE USED IN THE OPERATION OF NUCLEAR FACILITIES,
+ AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS, AIR TRAFFIC CONTROL
+ SYSTEMS, DIRECT LIFE SUPPORT MACHINES, OR WEAPONS SYSTEMS, IN WHICH
+ THE FAILURE OF THE SOFTWARE OR SYSTEM COULD LEAD DIRECTLY TO DEATH,
+ PERSONAL INJURY, OR SEVERE PHYSICAL OR ENVIRONMENTAL DAMAGE ("HIGH
+ RISK ACTIVITIES").  THE COPYRIGHT HOLDERS SPECIFICALLY DISCLAIM ANY
+ EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
+
+
+License: MIT
+ COPYRIGHT AND PERMISSION NOTICE
+ .
+ All rights reserved
+ .
+ Permission to use, copy, modify, and distribute this software for any purpose with
+ or without fee is hereby granted, provided that the above copyright notice and this
+ permission notice appear in all copies
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+ .
+ Except as contained in this notice, the name of a copyright holder shall not be
+ used in advertising or otherwise to promote the sale, use or other dealings in
+ this Software without prior written authorization of the copyright holder.
+
+
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ :
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution
+ .
+ THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ''AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms are permitted
+ provided that the above copyright notice and this paragraph are
+ duplicated in all such forms and that any documentation, advertising
+ materials, and other materials related to such distribution and use
+ acknowledge that the software was developed by the University of
+ Southern California, Information Sciences Institute.  The name of the
+ University may not be used to endorse or promote products derived from
+ this software without specific prior written permission
+ .
+ THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+
+License: BSD-CMAKE
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met
+ :
+ 1. Redistributions of source code must retain the copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+    derived from this software without specific prior written permission
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+
+License: tcdata
+The data are licensed as follows, from
+ http://www.flaterco.com/xtide/harmonics_boilerplate.txt :
+ .
+ ********* NOT FOR NAVIGATION ********  .
+ *** DO NOT RELY ON THIS DATA FILE FOR DECISIONS THAT CAN RESULT IN ***
+ ***                   HARM TO ANYONE OR ANYTHING.                  ***
+ .
+ Highly trustworthy tide predictions cannot be achieved on a zero  budget.
+ If you need guaranteed results, don't use these data!  Contact the tide
+ .authority for your region (NOAA in the U.S.).
+ .
+ This data file is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without any warranty that its use will NOT
+ INFRINGE ANY RIGHTS, and without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ .
+ WHOEVER CHOOSES TO REDISTRIBUTE THESE DATA ASSUMES ALL LIABILITY
+ ASSOCIATED THEREWITH.  NEITHER DAVID FLATER NOR ANYONE ELSE INVOLVED
+ SHALL BE LIABLE PERSONALLY OR OTHERWISE FOR ANY LOSSES THAT THE
+ REDISTRIBUTOR MIGHT SUFFER AS A CONSEQUENCE OF ANY CLAIMS, BOGUS OR
+ OTHERWISE, THAT ARE MADE TO THESE DATA.
+ .
+ --- Copyright statements ---
+ .
+ United States:  Data published by the U.S. government is by law
+ non-proprietary.  Stations in the U.S., territories of the U.S.,
+ commonwealths associated with the U.S., and countries with a Compact
+ of Free Association with the U.S. have been included.  A few other
+ stations available from the NOS web site have been dropped.
+ .
+ Notice available on the NOS web site at
+ http://tidesandcurrents.noaa.gov/disclaimers.html as of  2007-05-30:
+ .
+ The information on government servers are in the public domain,
+ unless specifically annotated otherwise, and may be used freely by
+ the public. Before using information obtained from this server,
+ special attention should be given to the date and time of the data
+ and products being displayed. This information shall not be
+ modified in content and then presented as official government
+ material.
+ .
+ The user assumes the entire risk related to its use of these
+ data. NOS is providing these data "as is," and NOS disclaims any
+ and all warranties, whether express or implied, including (without
+ limitation) any implied warranties of merchantability or fitness
+ for a particular purpose. In no event will NOS be liable to you or
+ to any third party for any direct, indirect, incidental,
+ consequential, special or exemplary damages or lost profit
+ resulting from any use or misuse of this data.
+ .
+ NOS requests that attribution be given whenever NOS material is
+ reproduced and re-disseminated. Pursuant to 17 U.S.C. 403, third
+ parties producing copyrighted (compilation) works consisting
+ predominantly of material created by Federal Government employees
+ are encouraged to provide notice with such work(s) identifying the
+ U.S. Government material incorporated and stating that such
+ material is not subject to copyright protection.
+
+License: public-domain
+ No copyright is claimed for this software and there are hence no
+ restrictions on how to use it.
+

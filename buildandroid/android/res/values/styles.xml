@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<style name="MyTheme" parent="android:Theme.Holo.Dialog">
+    <item name="android:alertDialogStyle">@style/CustomAlertDialogStyle</item>
+    <item name="android:windowBackground">@color/transparent</item>
+    <item name="android:textColorPrimary">#FFFFFF</item>
+     <item name="android:backgroundDimEnabled">false</item>
+    <item name="android:textColor">#FFFFFF</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:indeterminateDrawable">@drawable/progressbar_custom</item>
+</style>
+<style name="CustomAlertDialogStyle">
+    <item name="android:bottomBright">@color/transparent</item>
+    <item name="android:bottomDark">@color/transparent</item>
+    <item name="android:bottomMedium">@color/transparent</item>
+    <item name="android:centerBright">@color/transparent</item>
+    <item name="android:centerDark">@color/transparent</item>
+    <item name="android:centerMedium">@color/transparent</item>
+    <item name="android:fullBright">@color/transparent</item>
+    <item name="android:fullDark">@color/transparent</item>
+    <item name="android:topBright">@color/transparent</item>
+    <item name="android:topDark">@color/transparent</item>
+</style>
+
+<style name="TransparentActionBarTheme"
+           parent="@android:style/Theme.Holo">
+        <item name="android:windowActionBarOverlay">true</item>
+</style>
+
+    <style name="OCPNProgressDialog" parent="@android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:exitFadeDuration="@android:integer/config_mediumAnimTime">
+
+    <item android:drawable="@android:color/holo_orange_dark" android:state_pressed="true"/>
+    <item android:drawable="@android:color/holo_green_light" android:state_selected="true"/>
+    <item android:drawable="@android:color/holo_green_light" android:state_activated="true"/>
+
+</selector>

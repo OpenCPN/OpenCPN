@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+            android:title="Navigation Mode"
+            android:key="prefs_navmode"
+            android:defaultValue="0"
+            android:entries="@array/navmodeListArray"
+            android:entryValues="@array/navmodeListValues" />
+
+    <CheckBoxPreference
+        android:key="prefb_lookahead"
+        android:title="Look Ahead mode"
+        android:summary="Show more of the chart ahead of the ship's course"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_quilt"
+        android:title="Enable Chart Quilting"
+        android:summary="Display multiple charts at your location"
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="prefb_preservescale"
+        android:title="Preserve Scale when changing charts"
+        android:summary="Keep the chart scale when choosing charts by ChartBar"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_smoothzp"
+        android:title="Smooth Zoom/Pan"
+        android:summary="Enable smooth motion of the chart display"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showgrid"
+        android:title="Show Grid"
+        android:summary="Show Latitude/Longitude grid overlay"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showoutlines"
+        android:title="Show Chart Outlines"
+        android:summary="Individual chart outlines shown as constasting overlay"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showdepthunits"
+        android:title="Show Depth Units"
+        android:summary="Depth units displayed as emboss on chart surface"
+        android:defaultValue="false" />
+
+   <CheckBoxPreference
+        android:key="prefb_showskewnu"
+        android:title="Show Skewed Raster charts as North-Up"
+        android:summary="Switchs to unQuilted mode for these charts"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

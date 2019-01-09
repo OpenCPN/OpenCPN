@@ -1,0 +1,6 @@
+ <resources>
+     <item type="id" name="chartdirlist" />
+     <item type="id" name="FragmentCharts" />
+     <item type="id" name="buttonRemove" />
+     <item type="id" name="listItem" />
+ </resources>

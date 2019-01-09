@@ -1,0 +1,48 @@
+OpenCPN Crash Reporting Privacy Policy
+
+What information do we collect?
+We collect information from you when you send us an error report from OpenCPN.
+
+The information may include:
+
+   -Crash description XML file (crashrpt.xml) containing the basic information about the crash
+    including OpenCPN version identifier, resource usage parameters, your Windows version,
+    your country and language.
+
+   -You may enter your e-mail address and short problem description.  This is optional.
+    If present, this information is also included into the crash description XML file.
+
+   -Crash minidump file (crashdump.dmp) which contains technical information about exceptions
+    in OpenCPN ( e.g. processor information, operating system version, process and thread information,
+    stack traces for each thread, the list of loaded modules).
+
+   -Desktop screenshot image file in PNG format containing the image of OpenCPN's main window.
+   -Logfiles, e.g. OpenCPN.log
+   -Configuration files, e.g. OpenCPN.ini
+   -NMEA input logs
+
+What do we use your information for?
+Any of the information we collect from you may be used in the following ways:
+
+    To improve OpenCPN.
+    We continually strive to improve OpenCPN based on the information and feedback we receive from you.
+
+Do we disclose any information to outside parties?
+We do not sell, trade, or otherwise transfer to outside parties your personally identifiable information.
+
+California Online Privacy Protection Act Compliance
+Because we value your privacy we have taken the necessary precautions to be in compliance with the California
+Online Privacy Protection Act. We therefore will not distribute your personal information to outside parties
+without your consent.
+
+Your Consent
+By sending the error report, you consent to our privacy policy.
+
+Changes to our Privacy Policy
+If we decide to change our privacy policy, we will post those changes on this page.
+
+Contacting Us
+If there are any questions regarding this privacy policy you may contact us using the information below.
+
+OpenCPN Main discussion forum:
+http://www.cruisersforum.com/forums/f134/

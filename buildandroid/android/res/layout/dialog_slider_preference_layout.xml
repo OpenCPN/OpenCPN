@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/sliderText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="XML Adjust Scale Factor" />
+
+
+        <SeekBar
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialogSeekbar"
+            android:layout_below="@+id/sliderText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="48dp" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_below="@+id/dialogSeekbar"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+</LinearLayout>

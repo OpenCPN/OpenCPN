@@ -1,0 +1,4 @@
+The tide and current harmonic data contained herein are derived from the corresponding XTIDE harmonic data.
+The file data have been tweaked to work nicely in the US, especially fixing current direction reporting.
+We have also added additional global tide stations, and corrected calculation/display units where sensible.
+A generic XTIDE harmonic file set will be functional, but less useful than the harmonic data packaged with OpenCPN.

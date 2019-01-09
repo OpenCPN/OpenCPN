@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:title="Navigation Mode"
+        android:key="prefs_navmode"
+        android:defaultValue="0"
+        android:entries="@array/navmodeListArray"
+        android:entryValues="@array/navmodeListValues" />
+
+    <CheckBoxPreference
+        android:key="prefb_lookahead"
+        android:title="Look Ahead mode"
+        android:summary="Show more of the chart ahead of the ship's course"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_quilt"
+        android:title="Enable Chart Quilting"
+        android:summary="Display multiple charts at your location"
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="prefb_showgrid"
+        android:title="Show Grid"
+        android:summary="Show Latitude/Longitude grid overlay"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showoutlines"
+        android:title="Show Chart Outlines"
+        android:summary="Individual chart outlines shown as constrasting overlay"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_lockwp"
+        android:title="Lock Waypoints"
+        android:summary="Unless Property Dialog is shown"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_confirmdelete"
+        android:title="Confirm Delete Actions"
+        android:summary="On Routes and Tracks"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="prefb_showdepthunits"
+        android:title="Show Depth Units"
+        android:summary="Depth units displayed as emboss on chart surface"
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+            android:key="prefs_UIScaleFactor"
+            android:title="User Interface Scale Factor"
+            android:summary="Affects toolbars, dialogs, and GUI fonts."
+            android:defaultValue="50"
+            android:max="100"
+    />
+
+    <org.opencpn.opencpn.SeekBarPreference
+            android:key="prefs_chartScaleFactor"
+            android:title="Chart Display Scale Factor"
+            android:summary="Affects chart objects like marks, buoys, text, etc."
+            android:defaultValue="50"
+            android:max="100"
+    />
+
+
+    <CheckBoxPreference
+        android:key="prefb_expertmode"
+        android:title="Expert Mode"
+        android:summary="Showing toolbar and extended menus"
+        android:defaultValue="false" />
+
+
+
+</PreferenceScreen>
