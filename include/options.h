@@ -337,6 +337,8 @@ class options : private Uncopyable,
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected( wxMouseEvent &event);
+
+  void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
   
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -382,7 +384,6 @@ class options : private Uncopyable,
   int k_tides;
 
   // For the GPS page
-  wxListCtrl *m_lcSources;
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
   wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
   wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
@@ -396,8 +397,15 @@ class options : private Uncopyable,
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
+  wxStaticText *m_stNetComment, *m_stSerialComment;
+  wxTextCtrl *m_tNetComment, *m_tSerialComment;
+ 
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
+  wxScrolledWindow *m_scrollWinConnections; 
+  wxBoxSizer *boxSizerConnections;
+  ConnectionParamsPanel *mSelectedConnectionPanel;
+  std::vector <ConnectionParamsPanel *> mConnectionsPanelList;
   
   // For the Display\Units page
   wxStaticText* itemStaticTextUserVar;
@@ -436,10 +444,9 @@ class options : private Uncopyable,
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
-  void EnableItem(const long index);
-  void OnConnectionToggleEnable(wxListEvent &event);
-  void OnConnectionToggleEnableMouse(wxMouseEvent &event);
+  void EnableConnection( ConnectionParams *conn, bool value);
 
+  
   void OnCanvasConfigSelectClick( int ID, bool selected);
   
   bool connectionsaved;

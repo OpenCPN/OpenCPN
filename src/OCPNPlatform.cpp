@@ -209,6 +209,9 @@ extern double                    g_display_size_mm;
 extern double                    g_config_display_size_mm;
 extern bool                      g_config_display_size_manual;
 
+extern float                     g_selection_radius_mm;
+extern float                     g_selection_radius_touch_mm;
+
 extern bool                     g_bTrackDaily;
 extern double                   g_PlanSpeed;
 extern bool                     g_bFullScreenQuilt;
@@ -1664,6 +1667,11 @@ double OCPNPlatform::GetDisplayDPmm()
     double r = getDisplaySize().x;            // dots
     return r / GetDisplaySizeMM();
 #endif    
+}
+                    
+unsigned int OCPNPlatform::GetSelectRadiusPix()
+{
+    return GetDisplayDPmm() * (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);
 }
 
 void OCPNPlatform::onStagedResizeFinal()

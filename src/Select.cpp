@@ -30,18 +30,15 @@
 #include "Track.h"
 #include "routeman.h"
 #include "Route.h"
+#include "OCPNPlatform.h"
 
 extern Routeman    *g_pRouteMan;
+extern OCPNPlatform *g_Platform;
 
 Select::Select()
 {
     pSelectList = new SelectableItemList;
-    pixelRadius = 8;
-    int w,h;
-    wxDisplaySize( &w, &h );
-    if( h > 800 ) pixelRadius = 10;
-    if( h > 1024 ) pixelRadius = 12;
-    
+    pixelRadius = g_Platform->GetSelectRadiusPix();
 }
 
 Select::~Select()
@@ -620,6 +617,12 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
         if( pFindSel->m_seltype == fseltype ) {
             switch( fseltype ){
                 case SELTYPE_ROUTEPOINT:
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) 
+                        if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                            if( ( (RoutePoint *)pFindSel->m_pData1 )->GetScaMin() > cc->GetScaleValue())
+                                ret_list.Append( pFindSel );
+                    break;
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:

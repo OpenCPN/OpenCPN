@@ -56,6 +56,7 @@ class RoutePoint;
 #define         OUT_EXTENSION   1 << 17
 #define         OUT_ARRIVAL_RADIUS 1 << 18
 #define         OUT_WAYPOINT_RANGE_RINGS 1 << 19
+#define         OUT_WAYPOINT_SCALE 1 << 20
 
 #define  OPT_TRACKPT    OUT_TIME
 #define  OPT_WPT        (OUT_TYPE) +\
@@ -70,7 +71,8 @@ class RoutePoint;
                         (OUT_AUTO_NAME) +\
                         (OUT_HYPERLINKS) +\
                         (OUT_ARRIVAL_RADIUS) +\
-                        (OUT_WAYPOINT_RANGE_RINGS)
+                        (OUT_WAYPOINT_RANGE_RINGS) +\
+                        (OUT_WAYPOINT_SCALE)
 #define OPT_ROUTEPT     OPT_WPT                        
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track objects

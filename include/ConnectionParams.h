@@ -28,9 +28,14 @@
 #ifndef __CONNECTIONPARAMS_H__
 #define __CONNECTIONPARAMS_H__
 
-#include <wx/string.h>
-#include <wx/dynarray.h>
-#include <wx/arrstr.h>
+#include "wx/wxprec.h"
+
+#ifndef  WX_PRECOMP
+  #include "wx/wx.h"
+#endif //precompiled headers
+
+class ConnectionParams;
+class options;
 
 typedef enum
 {
@@ -67,6 +72,41 @@ typedef enum
     PROTO_NMEA2000 = 2
 } DataProtocol;
 
+#define CONN_ENABLE_ID 47621
+
+class ConnectionParamsPanel: public wxPanel
+{
+public:
+    ConnectionParamsPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
+                           ConnectionParams *p_itemConnectionParams, options *pContainer, int index );
+    ~ConnectionParamsPanel();
+    
+    void OnSelected( wxMouseEvent &event );
+    void SetSelected( bool selected );
+    void OnPaint( wxPaintEvent &event );
+    void OnEraseBackground( wxEraseEvent &event );
+    void CreateControls( void );
+    void OnEnableCBClick(wxCommandEvent &event);
+    
+    bool GetSelected(){ return m_bSelected; }
+    int GetUnselectedHeight(){ return m_unselectedHeight; }
+    ConnectionParams *m_pConnectionParams;
+    int m_index;
+    
+private:
+    options *m_pContainer;
+    bool m_bSelected;
+    wxStaticText *m_pName;
+    wxColour m_boxColour;
+    int m_unselectedHeight;
+    wxCheckBox *m_cbEnable;
+    
+    DECLARE_EVENT_TABLE()
+};
+
+
+
+
 class ConnectionParams
 {
 public:
@@ -96,7 +136,8 @@ public:
     wxArrayString   OutputSentenceList;
     int             Priority;
     bool            bEnabled;
-
+    wxString        UserComment;
+    
     wxString        Serialize();
     void            Deserialize(const wxString &configStr);
 

@@ -36,25 +36,29 @@
 #include "georef.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "Select.h"
+#include "chart1.h"
 
-extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
-extern Routeman *g_pRouteMan;
-extern wxRect g_blink_rect;
-extern Multiplexer *g_pMUX;
-extern MyFrame *gFrame;
-extern bool g_btouch;
-extern bool g_bresponsive;
+extern WayPointman  *pWayPointMan;
+extern bool         g_bIsNewLayer;
+extern int          g_LayerIdx;
+extern Routeman     *g_pRouteMan;
+extern wxRect       g_blink_rect;
+extern Multiplexer  *g_pMUX;
+extern MyFrame      *gFrame;
+extern bool         g_btouch;
+extern bool         g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern double g_n_arrival_circle_radius;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
+extern double       g_n_arrival_circle_radius;
+extern int          g_iWaypointRangeRingsNumber;
+extern float        g_fWaypointRangeRingsStep;
+extern int          g_iWaypointRangeRingsStepUnits;
+extern wxColour     g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-
-extern float g_ChartScaleFactorExp;
+extern Select       *pSelect;
+extern float        g_ChartScaleFactorExp;
+extern int          g_iWpt_ScaMin;
+extern bool         g_bUseWptScaMin;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -105,12 +109,17 @@ RoutePoint::RoutePoint()
     
     m_WaypointArrivalRadius = g_n_arrival_circle_radius;
 
-    m_bShowWaypointRangeRings = false;
+    m_bShowWaypointRangeRings = (bool)g_iWaypointRangeRingsNumber;
    
     m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_ScaMin = g_iWpt_ScaMin;
+    m_ScaMax = 0;
+    b_UseScamin = g_bUseWptScaMin;
+    
+
 #ifdef ocpnUSE_GL
     m_pos_on_screen = false;
 #endif
@@ -147,7 +156,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_pMarkFont = orig->m_pMarkFont;
     m_MarkDescription = orig->m_MarkDescription;
     m_btemp = orig->m_btemp;
-
+    m_ScaMin = orig->m_ScaMin;
+    m_ScaMax = orig->m_ScaMax;
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
     ReLoadIcon();
@@ -159,13 +169,14 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_ManagerNode = NULL;
     
     m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
-
-    m_bShowWaypointRangeRings = false;
-   
-    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
-    m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
-    m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
-    m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_bShowWaypointRangeRings = orig->m_bShowWaypointRangeRings;   
+    m_iWaypointRangeRingsNumber = orig->m_iWaypointRangeRingsNumber;
+    m_fWaypointRangeRingsStep = orig->m_fWaypointRangeRingsStep;
+    m_iWaypointRangeRingsStepUnits = orig->m_iWaypointRangeRingsStepUnits;
+    m_wxcWaypointRangeRingsColour = orig->m_wxcWaypointRangeRingsColour;
+    m_ScaMin = orig->m_ScaMin;
+    m_ScaMax = orig->m_ScaMax;
+    b_UseScamin = orig->b_UseScamin;
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
@@ -212,7 +223,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     m_IconScaleFactor = 1.0;
-    
+    m_ScaMin = MAX_INT_VAL;
+    m_ScaMax = 0;
     m_HyperlinkList = new HyperlinkList;
 
     if( !pGUID.IsEmpty() )
@@ -240,11 +252,16 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     
     SetWaypointArrivalRadius( g_n_arrival_circle_radius );
 
-    m_bShowWaypointRangeRings = false;
+    m_bShowWaypointRangeRings = (bool)g_iWaypointRangeRingsNumber;
+   
     m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_ScaMin = g_iWpt_ScaMin;
+    m_ScaMax = 0;
+    b_UseScamin = g_bUseWptScaMin;
+    
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
@@ -499,6 +516,9 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 
     if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
+    if( !m_bIsActive)  //  An active route point must always be visible
+        if( IsScaVisible( canvas) )          
+            return;           
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -644,7 +664,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
 {
     if( !m_bIsVisible )
         return;
-
+    if( !m_bIsVisible ) 
+        return;
+    if( !m_bIsActive)  //  An active route point must always be visible
+        if( IsScaVisible( canvas) )          
+            return;  ;
+    
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
 
@@ -1072,4 +1097,37 @@ wxColour RoutePoint::GetWaypointRangeRingsColour(void) {
         return g_colourWaypointRangeRingsColour;
     else
         return m_wxcWaypointRangeRingsColour; 
+}
+
+void RoutePoint::SetScaMin(long val) {
+    if(val < SCAMIN_MIN) val = SCAMIN_MIN; //prevent from waypoints hiding always with a nonlogic value
+    if(val < (long)m_ScaMax*5) val = (long)m_ScaMax*5; 
+    m_ScaMin = val;
+}
+void RoutePoint::SetScaMin(wxString str) {
+    long val;
+    if(!str.ToLong(&val)) val = MAX_INT_VAL;
+    SetScaMin(val);
+}
+
+void RoutePoint::SetScaMax(long val){
+    if( val > (int) m_ScaMin/5 ) m_ScaMax = (int) m_ScaMin/5; //prevent from waypoints hiding always with a nonlogic value
+}
+void RoutePoint::SetScaMax(wxString str) {
+    long val;
+    if(!str.ToLong(&val)) val = 0;
+    SetScaMax(val);
+}
+
+bool RoutePoint::IsScaVisible( ChartCanvas *cc){
+    return ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) );
+}
+
+void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
+{
+    wxString strA = _("The ScaMin value for new waypoints is set to");
+    wxString strB = _("but current chartscale is");
+    wxString strC = _("Therefore the new waypoint will not be visible at this zoom level.");
+    wxString MessStr = wxString::Format(_T("%s %i,\n %s %i.\n%s"),strA, (int)GetScaMin(), strB, canvas->GetScaleValue(), strC);
+    OCPNMessageBox( canvas, MessStr);
 }

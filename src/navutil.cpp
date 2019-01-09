@@ -249,6 +249,10 @@ extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
 extern wxColour         g_colourOwnshipRangeRingsColour;
+extern int              g_iWpt_ScaMin;
+extern bool             g_bUseWptScaMin;
+extern bool             g_bShowWptName;
+
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
@@ -403,6 +407,9 @@ extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
+
+extern float            g_selection_radius_mm;
+extern float            g_selection_radius_touch_mm;
 
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
@@ -703,6 +710,9 @@ int MyConfig::LoadMyConfig()
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
+        
+        g_selection_radius_mm = wxMax(g_selection_radius_mm, 0.5);
+        g_selection_radius_touch_mm = wxMax(g_selection_radius_touch_mm, 1.0);
 
         g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
 
@@ -789,6 +799,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     int size_mm = -1;
     Read( _T ( "DisplaySizeMM" ), &size_mm );
+    
+    Read( _T ( "SelectionRadiusMM" ), &g_selection_radius_mm);
+    Read( _T ( "SelectionRadiusTouchMM" ), &g_selection_radius_touch_mm);
     
     if(!bAsTemplate){
         if(size_mm > 0){
@@ -1359,6 +1372,12 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     wxString l_wxsWaypointRangeRingsColour;
     Read( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
     g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
+    
+    if ( !Read( _T("WaypointUseScaMin"), &g_bUseWptScaMin ) ) g_bUseWptScaMin = false;
+    if ( !Read( _T("WaypointScaMinValue"), &g_iWpt_ScaMin ) ) g_iWpt_ScaMin = 2147483646;
+    if ( !Read( _T("WaypointsShowName"), &g_bShowWptName ) ) g_bShowWptName = true;
+    
+
 
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
@@ -2351,6 +2370,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
     Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
     
+    Write( _T ( "SelectionRadiusMM" ), g_selection_radius_mm );
+    Write( _T ( "SelectionRadiusTouchMM" ), g_selection_radius_touch_mm );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
@@ -2617,6 +2639,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
     Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
+    Write( _T( "WaypointUseScaMin" ), g_bUseWptScaMin );
+    Write( _T( "WaypointScaMinValue" ), g_iWpt_ScaMin );
+    Write( _T("WaypointsShowName"), g_bShowWptName );
     
     // Waypoint Radar rings
     Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );
@@ -4345,20 +4370,20 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
 
             if( !NEflag || NEflag < 1 || NEflag > 2 ) //Does it EVER happen?
                     {
-                if( hi_precision ) s.Printf( _T ( "%d %02ld.%04ld'" ), d, m / 10000, m % 10000 );
+                if( hi_precision ) s.Printf( _T ( "%d\u00B0 %02ld.%04ld'" ), d, m / 10000, m % 10000 );
                 else
-                    s.Printf( _T ( "%d %02ld.%01ld'" ), d, m / 10, m % 10 );
+                    s.Printf( _T ( "%d\u00B0 %02ld.%01ld'" ), d, m / 10, m % 10 );
             } else {
                 if( hi_precision )
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld.%04ld' %c" ), d, m / 10000, ( m % 10000 ), c );
                     else
-                        s.Printf( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld.%04ld' %c" ), d, m / 10000, ( m % 10000 ), c );
                 else
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld.%01ld' %c" ), d, m / 10, ( m % 10 ), c );
                     else
-                        s.Printf( _T ( "%03d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld.%01ld' %c" ), d, m / 10, ( m % 10 ), c );
             }
             break;
         case 1:
@@ -4374,21 +4399,21 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
 
             if( !NEflag || NEflag < 1 || NEflag > 2 ) //Does it EVER happen?
                     {
-                if( hi_precision ) s.Printf( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 1000,
+                if( hi_precision ) s.Printf( _T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 1000,
                         sec % 1000 );
                 else
-                    s.Printf( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
+                    s.Printf( _T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
             } else {
                 if( hi_precision )
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m, sec / 1000, sec % 1000, c );
                     else
-                        s.Printf( _T ( "%03d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m, sec / 1000, sec % 1000, c );
                 else
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10, sec % 10, c );
                     else
-                        s.Printf( _T ( "%03d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10, sec % 10, c );
             }
             break;
     }
