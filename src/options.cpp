@@ -2611,6 +2611,8 @@ void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
 void options::EnableConnection( ConnectionParams *conn, bool value){
     if(conn){
         conn->bEnabled = value;
+        conn->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
+        m_connection_enabled = conn->bEnabled;
     }
 }
 
@@ -9040,7 +9042,6 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
 
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
-  
   
   // Add new panels as necessary
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
