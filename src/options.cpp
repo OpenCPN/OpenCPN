@@ -315,6 +315,7 @@ extern wxString g_default_wp_icon;
 extern wxString g_default_routepoint_icon;
 extern int      g_iWpt_ScaMin;
 extern bool     g_bUseWptScaMin;
+bool            g_bOverruleScaMin;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -2917,7 +2918,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   pAdvanceRouteWaypointOnArrivalOnly =
       new wxCheckBox(itemPanelRoutes, ID_DAILYCHECKBOX,
                      _("Advance route waypoint on arrival only"));
-  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0);
+  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0, wxALL, 5);
 
   
   //  Waypoints
@@ -2965,6 +2966,11 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1);
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
                   group_item_spacing);
+    
+  //Overrule the Scamin settings
+  pScaMinOverruleChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
+                     _("Overrule the settings for chartscale depending visibility and show always") );
+  waypointSizer->Add(pScaMinOverruleChckB, 0, wxALL, 5);
   
   waypointSizer->AddSpacer(5);
   //Range Rings  
@@ -5853,6 +5859,7 @@ void options::SetInitialSettings(void) {
   
   pScaMinChckB->SetValue( g_bUseWptScaMin );
   m_pText_ScaMin->SetValue( wxString::Format(_T("%i"), g_iWpt_ScaMin ));
+  pScaMinOverruleChckB->SetValue( g_bOverruleScaMin );
   
   OnRadarringSelect(eDummy);
 
@@ -6708,6 +6715,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   
   g_bUseWptScaMin = pScaMinChckB->GetValue();
   g_iWpt_ScaMin = wxAtoi( m_pText_ScaMin->GetValue() );
+  g_bOverruleScaMin = pScaMinOverruleChckB->GetValue();
 
   //  Any Font changes?
   if(m_bfontChanged)

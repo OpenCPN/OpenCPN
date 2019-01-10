@@ -59,6 +59,7 @@ extern Select       *pSelect;
 extern float        g_ChartScaleFactorExp;
 extern int          g_iWpt_ScaMin;
 extern bool         g_bUseWptScaMin;
+extern bool         g_bOverruleScaMin;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -520,7 +521,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
     if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
-        if( IsScaVisible( canvas) )          
+        if( !IsScaVisible( canvas) )          
             return;           
 
     //    Optimization, especially apparent on tracks in normal cases
@@ -665,12 +666,10 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 #ifdef ocpnUSE_GL
 void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
-    if( !m_bIsVisible )
-        return;
     if( !m_bIsVisible ) 
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
-        if( IsScaVisible( canvas) )          
+        if( !IsScaVisible( canvas) )          
             return;  ;
     
     //    Optimization, especially apparent on tracks in normal cases
@@ -1123,7 +1122,19 @@ void RoutePoint::SetScaMax(wxString str) {
 }
 
 bool RoutePoint::IsScaVisible( ChartCanvas *cc){
-    return ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) );
+    if (g_bOverruleScaMin) return true;
+    if( b_UseScamin ){
+        if (cc->GetScaleValue() < m_ScaMin) 
+            return true;
+        else 
+            return false;
+    }
+    return true;
+//     if (g_bOverruleScaMin)
+//         return true;
+//     else
+//         return false;
+   // return ( ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) ) || (g_bOverruleScaMin) );
 }
 
 void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)

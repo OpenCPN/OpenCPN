@@ -84,6 +84,7 @@ extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
 extern OCPNPlatform     *g_Platform;
+extern bool             g_bOverruleScaMin;
 
 //Helper for conditional file name separator
 void appendOSDirSlash(wxString* pString);
@@ -1979,6 +1980,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
             
             wxString scamin = wxString::Format( _T("%i"), (int)rp->GetScaMin() );
             if ( !rp->GetUseSca()) scamin = _("Always");
+            if ( g_bOverruleScaMin ) scamin = _("Overruled");
             m_pWptListCtrl->SetItem( idx, colWPTSCALE, scamin );
 
             wxString name = rp->GetName();
@@ -2145,7 +2147,7 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
         gFrame->RefreshAllCanvas();
     }
     else //  clicked on ScaMin column??
-        if( clicked_index > -1 && event.GetX() > m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE ) &&  event.GetX() < ( m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE )+ m_pWptListCtrl->GetColumnWidth( colWPTSCALE ) ) ){ 
+        if( clicked_index > -1 && event.GetX() > m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE ) &&  event.GetX() < ( m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE )+ m_pWptListCtrl->GetColumnWidth( colWPTSCALE ) ) && !g_bOverruleScaMin ){ 
             RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( clicked_index );
             wp->SetUseSca( !wp->GetUseSca() );
             pConfig->UpdateWayPoint( wp );

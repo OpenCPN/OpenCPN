@@ -533,7 +533,7 @@ class options : private Uncopyable,
 
   OCPNIconCombo *pWaypointDefaultIconChoice;
   OCPNIconCombo *pRoutepointDefaultIconChoice;
-  wxCheckBox*   pScaMinChckB;
+  wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB;
   wxTextCtrl*   m_pText_ScaMin;
   
   // For the font page
