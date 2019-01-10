@@ -73,6 +73,7 @@ RoutePoint::RoutePoint()
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
     m_seg_etd = wxInvalidDateTime;
+    m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
     m_bIsBeingEdited = false;
@@ -160,6 +161,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_ScaMax = orig->m_ScaMax;
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
+    m_TideStation = orig->m_TideStation;
+    SetPlannedSpeed(orig->GetPlannedSpeed());
     ReLoadIcon();
 
     m_bIsInLayer = orig->m_bIsInLayer;
@@ -1130,4 +1133,63 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
     wxString strC = _("Therefore the new waypoint will not be visible at this zoom level.");
     wxString MessStr = wxString::Format(_T("%s %i,\n %s %i.\n%s"),strA, (int)GetScaMin(), strB, canvas->GetScaleValue(), strC);
     OCPNMessageBox( canvas, MessStr);
+}
+
+void RoutePoint::SetPlannedSpeed(double spd)
+{
+    if( spd >= 0.0f && spd <= 1000.0f ) m_PlannedSpeed = spd;
+}
+
+double RoutePoint::GetPlannedSpeed() {
+    if( m_PlannedSpeed < 0.0001f && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+        // In case there was speed encoded in the name of the waypoint, do the conversion here.
+        wxString s_vmg = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
+        double vmg;
+        if( !s_vmg.ToDouble( &vmg ) ) {
+            m_MarkDescription.Replace( _T("VMG=") + s_vmg + ";", wxEmptyString);
+            SetPlannedSpeed(vmg);
+        }
+    }
+    return m_PlannedSpeed;
+}
+
+wxString RoutePoint::GetETD()
+{
+    if( m_seg_etd != wxInvalidDateTime ) {
+        return m_seg_etd.Format("%Y-%m-%d %H:%M");
+    }
+    return wxEmptyString;
+}
+
+wxString RoutePoint::GetETA()
+{
+    if( m_seg_eta != wxInvalidDateTime ) {
+        return m_seg_eta.Format("%Y-%m-%d %H:%M");
+    }
+    return wxEmptyString;
+}
+
+wxString RoutePoint::GetETE()
+{
+    if( m_seg_ete != 0 ) {
+        return formatTimeDelta(m_seg_ete);
+    }
+    return wxEmptyString;
+}
+
+void RoutePoint::SetETE(wxLongLong secs)
+{
+    m_seg_ete = secs;
+}
+
+bool RoutePoint::SetETD(const wxString &ts)
+{
+    wxDateTime tmp;
+    wxString::const_iterator end;
+    if( tmp.ParseDateTime(ts, &end) ) {
+        m_seg_etd = tmp;
+        m_manual_etd = TRUE;
+        return TRUE;
+    }
+    return FALSE;
 }

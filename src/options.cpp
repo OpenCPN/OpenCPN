@@ -75,6 +75,7 @@ extern GLuint g_raster_format;
 #include "routeman.h"
 #include "chcanv.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"

@@ -74,6 +74,9 @@ extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern wxString FormatDistanceAdaptive( double distance );
+extern wxString formatTimeDelta(wxTimeSpan span);
+extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
+extern wxString formatTimeDelta(wxLongLong secs);
 
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                        wxColour color, unsigned char transparency );

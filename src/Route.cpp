@@ -965,8 +965,12 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    Calculate the absolute distance from 1->2
 
     double dd;
+    double br;
     // why are we using mercator rather than great circle here?? [sean 8-11-2015]
-    DistanceBearingMercator( slat1, slon1, slat2, slon2, 0, &dd );
+    DistanceBearingMercator( slat2, slon2, slat1, slon1, &br, &dd );
+    
+    prp->SetCourse(br);
+    prp->SetDistance(dd);
 
 //    And store in Point 2
     prp->m_seg_len = dd;
@@ -977,21 +981,22 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    If Point1 Description contains ETD, store it in Point1
 
     if( planspeed > 0. ) {
-        double vmg = 0.0;
         wxDateTime etd;
 
-        if( prp0->m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
-            wxString s_vmg = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
-            if( !s_vmg.ToDouble( &vmg ) ) vmg = planspeed;
-        }
-
         double legspeed = planspeed;
-        if( vmg > 0.1 && vmg < 1000. ) legspeed = vmg;
+        if( prp->GetPlannedSpeed() > 0.1 && prp->GetPlannedSpeed() < 1000. )
+            legspeed = prp->GetPlannedSpeed();
         if( legspeed > 0.1 && legspeed < 1000. ) {
             m_route_time += 3600. * dd / legspeed;
             prp->m_seg_vmg = legspeed;
         }
+        wxLongLong duration = wxLongLong(3600.0 * prp->m_seg_len / prp->m_seg_vmg);
+        prp->SetETE(duration);
+        wxTimeSpan ts( 0, 0, duration );
+        if( !prp0->m_seg_etd.IsValid() ) {
+            prp0->m_seg_etd = m_PlannedDeparture.Add(wxTimeSpan(0, 0, m_route_time));
+        }
+        prp->m_seg_eta = prp0->m_seg_etd.Add(ts);
 
         prp0->m_seg_etd = wxInvalidDateTime;
         if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
@@ -1030,6 +1035,7 @@ void Route::UpdateSegmentDistances( double planspeed )
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
+        prp0->m_seg_etd = m_PlannedDeparture;
         node = node->GetNext();
 
         while( node ) {

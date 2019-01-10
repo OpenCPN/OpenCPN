@@ -52,6 +52,7 @@
 #include "chart1.h"
 #include "cutil.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"

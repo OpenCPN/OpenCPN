@@ -74,6 +74,8 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     wxString SymString = def_symbol_name;       // default icon
     wxString NameString;
     wxString DescString;
+    wxString TideStation;
+    double   plan_speed = 0.0;
     wxString TypeString;
     wxString GuidString = GUID;         // default
     wxString TimeString;
@@ -210,6 +212,12 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                             l_iWaypoinScaleMax = attr.as_float();
                     }
                 }
+                if( ext_name == _T ( "opencpn:tidestation" ) ) {
+                    TideStation = wxString::FromUTF8(ext_child.first_child().value()) ;
+                }
+                if( ext_name == _T ( "opencpn:rte_properties" ) ) {
+                    wxString::FromUTF8(ext_child.first_child().value()).ToDouble(&plan_speed);
+                }
              }// for 
         } //extensions
     }   // for
@@ -223,6 +231,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
     pWP->m_MarkDescription = DescString;
+    pWP->m_TideStation = TideStation;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     pWP->SetWaypointArrivalRadius( ArrivalRadius );
     pWP->SetWaypointRangeRingsNumber( l_iWaypointRangeRingsNumber );
@@ -233,6 +242,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetScaMin( l_iWaypointScaleMin );
     pWP->SetScaMax( l_iWaypoinScaleMax );
     pWP->SetUseSca( l_bWaypointUseScale );
+    pWP->SetPlannedSpeed(plan_speed);
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -693,7 +703,8 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
     }
     
     if( (flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) || (flags & OUT_SHARED)
-            || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) ) {
+       || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) || (flags & OUT_TIDE_STATION)
+       || (flags & OUT_RTE_PROPERTIES) ) {
         
         pugi::xml_node child_ext = node.append_child("extensions");
         
@@ -746,6 +757,21 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             sca.set_value( pr->GetScaMin() );
             pugi::xml_attribute max = child.append_attribute( "ScaleMax" );
             max.set_value( pr->GetScaMax() );
+        }
+        if((flags & OUT_TIDE_STATION) && !pr->m_TideStation.IsEmpty()) {
+            child = child_ext.append_child("opencpn:tidestation");
+            child.append_child(pugi::node_pcdata).set_value( pr->m_TideStation.mb_str() );
+        }
+        if((flags & OUT_RTE_PROPERTIES) && (pr->GetPlannedSpeed() > 0.0001f || pr->m_manual_etd)) {
+            child = child_ext.append_child("opencpn:rte_properties");
+            if( pr->GetPlannedSpeed() > 0.0001f ) {
+                pugi::xml_attribute use = child.append_attribute( "planned_speed" );
+                use.set_value( wxString::Format(_T("%.1lf"), pr->GetPlannedSpeed()).mb_str());
+            }
+            if( pr->m_manual_etd ) {
+                pugi::xml_attribute use = child.append_attribute( "etd" );
+                use.set_value( pr->GetETD().mb_str());
+            }
         }
     }
     
@@ -1139,6 +1165,8 @@ static void UpdateRouteA( Route *pTentRoute )
 			ex_rp->SetIconName( prp->GetIconName() );
 			ex_rp->m_MarkDescription = prp->m_MarkDescription;
 			ex_rp->SetName( prp->GetName() );
+            ex_rp->m_TideStation = prp->m_TideStation;
+            ex_rp->SetPlannedSpeed(prp->GetPlannedSpeed());
 			pChangeRoute->AddPoint( ex_rp );
 			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
 

@@ -4307,6 +4307,44 @@ wxString getUsrSpeedUnit( int unit )
     return ret;
 }
 
+wxString formatTimeDelta(wxTimeSpan span)
+{
+    wxString timeStr;
+    int days = span.GetDays();
+    span -= wxTimeSpan::Days(days);
+    int hours = span.GetHours();
+    span -= wxTimeSpan::Hours(hours);
+    double minutes = (double)span.GetSeconds().ToLong()/60.0;
+    span -= wxTimeSpan::Minutes(span.GetMinutes());
+    int seconds = (double)span.GetSeconds().ToLong();
+    
+    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_T("%02d:%02d"), hours, (int)round(minutes)) :
+     wxString::Format(_T("%02d %02d"), (int)floor(minutes), seconds));
+    
+    return timeStr;
+}
+
+wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime)
+{
+    wxString timeStr;
+    if(startTime.IsValid() && endTime.IsValid())
+    {
+        wxTimeSpan span = endTime - startTime;
+        return formatTimeDelta(span);
+    } else {
+        return _("N/A");
+    }
+}
+
+wxString formatTimeDelta(wxLongLong secs)
+{
+    wxString timeStr;
+    
+    wxTimeSpan span(0, 0, secs);
+    return formatTimeDelta(span);
+}
+
 wxString FormatDistanceAdaptive( double distance ) {
     wxString result;
     int unit = g_iDistanceFormat;

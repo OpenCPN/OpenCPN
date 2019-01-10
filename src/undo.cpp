@@ -40,6 +40,7 @@
 #include "styles.h"
 #include "routeman.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"

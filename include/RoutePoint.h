@@ -115,12 +115,22 @@ public:
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
       void PresetDragOffset( ChartCanvas *canvas, int x, int y);
       void ShowScaleWarningMessage(ChartCanvas *canvas);
+      void SetPlannedSpeed(double spd);
+      double GetPlannedSpeed();
+      wxString GetETD();
+      bool SetETD(const wxString &ts);
+      wxString GetETA();
+      wxString GetETE();
+      void SetETE(wxLongLong secs);
       
       double            m_lat, m_lon;
-      double             m_seg_len;              // length in NMI to this point
+      double            m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
       double            m_seg_vmg;
       wxDateTime        m_seg_etd;
+      wxDateTime        m_seg_eta;
+      wxLongLong        m_seg_ete = 0;
+      bool              m_manual_etd = FALSE;
 
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
@@ -137,6 +147,8 @@ public:
       bool              m_bIsActive;
       wxString          m_MarkDescription;
       wxString          m_GUID;
+    
+      wxString          m_TideStation;
 
       wxFont            *m_pMarkFont;
       wxColour          m_FontColor;
@@ -203,6 +215,7 @@ private:
       bool              b_UseScamin;
       long              m_ScaMin;
       long              m_ScaMax;
+      double            m_PlannedSpeed;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

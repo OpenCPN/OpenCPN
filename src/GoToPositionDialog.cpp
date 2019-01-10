@@ -32,6 +32,7 @@
 #include "GoToPositionDialog.h"
 #include "PositionParser.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
 #include "navutil.h"
 #include "chcanv.h"
 

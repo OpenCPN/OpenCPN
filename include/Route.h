@@ -106,6 +106,7 @@ public:
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
+      void SetDepartureDate(const wxDateTime &dt) { if( dt.IsValid() ) m_PlannedDeparture = dt; }
     
       wxString GetName() const { return m_RouteNameString; }
 

@@ -60,6 +60,8 @@
 #include "chart1.h"
 #include "cutil.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
@@ -181,6 +183,7 @@ extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoDlg      *g_pMarkInfoDialog;
 extern RouteProp        *pRoutePropDialog;
+extern RoutePropDlgImpl *pNew;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
@@ -8782,6 +8785,11 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 {
+    pNew = RoutePropDlgImpl::getInstance( this );
+    pNew->SetRouteAndUpdate( selected );
+    //pNew->UpdateProperties();
+    pNew->Show();
+    return;
     pRoutePropDialog = RouteProp::getInstance( this ); // There is one global instance of the RouteProp Dialog
 
     if( g_bresponsive ) {

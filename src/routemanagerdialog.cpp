@@ -40,6 +40,7 @@
 #include "dychart.h"
 #include "navutil.h"
 #include "routeprop.h"
+#include "MarkInfo.h"
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"

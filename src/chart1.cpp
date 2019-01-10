@@ -86,6 +86,8 @@
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "toolbar.h"
 #include "compass.h"
 #include "datastream.h"
@@ -223,6 +225,7 @@ Routeman                  *g_pRouteMan;
 WayPointman               *pWayPointMan;
 MarkInfoDlg               *g_pMarkInfoDialog;
 RouteProp                 *pRoutePropDialog;
+RoutePropDlgImpl          *pNew;
 TrackPropDlg              *pTrackPropDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
@@ -331,6 +334,9 @@ wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 wxColour                  g_colourOwnshipRangeRingsColour;
+int                       g_iWpt_ScaMin;
+bool                      g_bUseWptScaMin;
+bool                      g_bShowWptName;
 
 // Set default color scheme
 ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
