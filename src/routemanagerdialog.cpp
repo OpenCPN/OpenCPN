@@ -61,7 +61,7 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
-enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
+enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
@@ -635,6 +635,7 @@ void RouteManagerDialog::Create()
     sbsWpts->Add( bSizerWptContents, 1, wxEXPAND, 5 );    
 
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 4 * char_width );
+    m_pWptListCtrl->InsertColumn( colWPTSCALE, _("Scale"), wxLIST_FORMAT_LEFT, 8 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from own ship"), wxLIST_FORMAT_LEFT, 14 * char_width );
     
@@ -1975,6 +1976,10 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
             li.SetData( rp );
             li.SetText( _T("") );
             long idx = m_pWptListCtrl->InsertItem( li );
+            
+            wxString scamin = wxString::Format( _T("%i"), (int)rp->GetScaMin() );
+            if ( !rp->GetUseSca()) scamin = _("Always");
+            m_pWptListCtrl->SetItem( idx, colWPTSCALE, scamin );
 
             wxString name = rp->GetName();
             if( name.IsEmpty() ) name = _("(Unnamed Waypoint)");
@@ -2139,6 +2144,16 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
 
         gFrame->RefreshAllCanvas();
     }
+    else //  clicked on ScaMin column??
+        if( clicked_index > -1 && event.GetX() > m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE ) &&  event.GetX() < ( m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE )+ m_pWptListCtrl->GetColumnWidth( colWPTSCALE ) ) ){ 
+            RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( clicked_index );
+            wp->SetUseSca( !wp->GetUseSca() );
+            pConfig->UpdateWayPoint( wp );
+            gFrame->RefreshAllCanvas();
+            wxString scamin = wxString::Format( _T("%i"), (int)wp->GetScaMin() );
+            if ( !wp->GetUseSca()) scamin = _("Always");
+            m_pWptListCtrl->SetItem( clicked_index, colWPTSCALE, scamin );
+        }
 
     // Allow wx to process...
     event.Skip();
