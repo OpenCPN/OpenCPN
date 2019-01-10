@@ -868,6 +868,8 @@ private:
       bool         m_bENCGroup;
       bool         m_last_TBviz;
       
+      double       m_OSoffsetx, m_OSoffsety;
+      
 DECLARE_EVENT_TABLE()
 };
 
