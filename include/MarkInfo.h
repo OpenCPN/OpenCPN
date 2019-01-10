@@ -46,6 +46,7 @@
 #include <wx/htmllbox.h>
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>
+#include <wx/dateevt.h>
 #include <wx/list.h>
 #include <wx/combobox.h>
 
@@ -221,6 +222,7 @@ class MarkInfoDlg : public wxDialog
         wxCheckBox*             m_checkBoxVisible;
         wxChoice*               m_choiceWaypointRangeRingsUnits;
         wxColourPickerCtrl*     m_PickColor;
+        wxCheckBox*             m_cbEtaPresent;
         wxDatePickerCtrl*       m_EtaDatePickerCtrl;
         wxBoxSizer*             bMainSizer;
         wxFlexGridSizer*        fSizerBasicProperties;
@@ -301,6 +303,8 @@ class MarkInfoDlg : public wxDialog
         void On_html_link_popupmenu_Click( wxCommandEvent& event );
         void DefautlBtnClicked( wxCommandEvent& event );
         void OnNotebookPageChanged( wxNotebookEvent& event );
+        void OnTimeChanged( wxDateEvent& event ) { m_cbEtaPresent->SetValue(true); }
+
 
         
     public:

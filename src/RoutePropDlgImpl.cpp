@@ -106,7 +106,11 @@ void RoutePropDlgImpl::UpdatePoints()
         } else {
             distance = pnode->GetData()->GetDistance();
             bearing = pnode->GetData()->GetCourse();
-            eta = pnode->GetData()->GetETA();
+            if( pnode->GetData()->GetETA().IsValid() ) {
+                eta = pnode->GetData()->GetETA().Format(ETA_FORMAT_STR);
+            } else {
+                eta = wxEmptyString;
+            }
             ete = pnode->GetData()->GetETE();
         }
         data.push_back( wxVariant(in == 0 ? "---" : std::to_string(in)) );
@@ -122,7 +126,12 @@ void RoutePropDlgImpl::UpdatePoints()
         data.push_back( wxVariant(wxVariant(wxString::FromDouble(toUsrSpeed(speed)))) ); // Speed
         data.push_back( wxVariant(pnode->GetData()->m_TideStation) ); // Next Tide event TODO
         data.push_back( wxVariant(pnode->GetData()->GetDescription()) ); // Description
-        wxString etd = pnode->GetData()->GetETD();
+        wxString etd;
+        if( pnode->GetData()->GetETD().IsValid() ) {
+            etd = pnode->GetData()->GetETD().Format(ETA_FORMAT_STR);
+        } else {
+            etd = wxEmptyString;
+        }
         pnode = pnode->GetNext();
         if( pnode ) {
             slen.Printf(wxT("%5.0f \u00B0T"), pnode->GetData()->GetCourse());

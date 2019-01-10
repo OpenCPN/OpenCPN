@@ -483,6 +483,8 @@ void MarkInfoDlg::Create()
     m_staticTextEta = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("ETD") );
     gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL, 0);
     wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
+    m_cbEtaPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString);
+    bsTimestamp->Add(m_cbEtaPresent, 0, wxALL|wxEXPAND, 5);
     m_EtaDatePickerCtrl = new wxDatePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
     bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL|wxEXPAND, 5);
     m_EtaTimePickerCtrl = new wxTimePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
@@ -536,7 +538,8 @@ void MarkInfoDlg::Create()
     // catch the right up event...
     m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
     m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
-
+    m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+    m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
 }
 
 void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
@@ -586,7 +589,10 @@ MarkInfoDlg::~MarkInfoDlg()
     m_textLongitude->Disconnect( wxEVT_CONTEXT_MENU,
                              wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     m_htmlList->Disconnect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
-    
+    m_notebookProperties->Disconnect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
+    m_EtaTimePickerCtrl->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+    m_EtaDatePickerCtrl->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+
 #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
 #endif
@@ -1042,6 +1048,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
         m_PickColor->SetColour(col);
         
+        m_comboBoxTideStation->Clear();
         m_comboBoxTideStation->Append(wxEmptyString);
         if( !m_pRoutePoint->m_TideStation.IsEmpty() ) {
             m_comboBoxTideStation->Append(m_pRoutePoint->m_TideStation);
@@ -1054,12 +1061,14 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_textCtrlPlSpeed->SetValue(wxEmptyString);
         }
         
-        wxString::const_iterator end;
         wxDateTime etd;
-        etd.ParseDate(m_pRoutePoint->GetETD(), &end);
+        etd = m_pRoutePoint->GetManualETD();
         if( etd.IsValid() ) {
+            m_cbEtaPresent->SetValue(true);
             m_EtaDatePickerCtrl->SetValue(etd.GetDateOnly());
             m_EtaTimePickerCtrl->SetValue(etd);
+        } else {
+            m_cbEtaPresent->SetValue(false);
         }
 
         m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1223,6 +1232,17 @@ bool MarkInfoDlg::SaveChanges()
             double spd;
             if( m_textCtrlPlSpeed->GetValue().ToDouble(&spd) ) {
                 m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
+            }
+        }
+        
+        m_pRoutePoint->SetETD(wxEmptyString);
+        if( m_cbEtaPresent->GetValue() ) {
+            wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
+            dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
+            dt.SetMinute(m_EtaTimePickerCtrl->GetValue().GetMinute());
+            dt.SetSecond(m_EtaTimePickerCtrl->GetValue().GetSecond());
+            if( dt.IsValid() ) {
+                m_pRoutePoint->SetETD(dt.FormatISOCombined());
             }
         }
 

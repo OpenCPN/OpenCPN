@@ -1164,20 +1164,28 @@ double RoutePoint::GetPlannedSpeed() {
     return m_PlannedSpeed;
 }
 
-wxString RoutePoint::GetETD()
+wxDateTime RoutePoint::GetETD()
 {
-    if( m_seg_etd != wxInvalidDateTime ) {
-        return m_seg_etd.Format("%Y-%m-%d %H:%M");
+    if( m_seg_etd.IsValid() ) {
+        return m_seg_etd;
     }
-    return wxEmptyString;
+    return wxInvalidDateTime;
 }
 
-wxString RoutePoint::GetETA()
+wxDateTime RoutePoint::GetManualETD()
+{
+    if( m_manual_etd && m_seg_etd.IsValid() ) {
+        return m_seg_etd;
+    }
+    return wxInvalidDateTime;
+}
+
+wxDateTime RoutePoint::GetETA()
 {
     if( m_seg_eta != wxInvalidDateTime ) {
-        return m_seg_eta.Format("%Y-%m-%d %H:%M");
+        return m_seg_eta;
     }
-    return wxEmptyString;
+    return wxInvalidDateTime;
 }
 
 wxString RoutePoint::GetETE()
@@ -1195,9 +1203,17 @@ void RoutePoint::SetETE(wxLongLong secs)
 
 bool RoutePoint::SetETD(const wxString &ts)
 {
+    if( ts.IsEmpty() ) {
+        m_manual_etd = false;
+        return TRUE;
+    }
     wxDateTime tmp;
     wxString::const_iterator end;
-    if( tmp.ParseDateTime(ts, &end) ) {
+    if ( tmp.ParseISOCombined(ts) ) {
+        m_seg_etd = tmp;
+        m_manual_etd = TRUE;
+        return TRUE;
+    } else if( tmp.ParseDateTime(ts, &end) ) {
         m_seg_etd = tmp;
         m_manual_etd = TRUE;
         return TRUE;
