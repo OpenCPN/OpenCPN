@@ -300,6 +300,8 @@ class MarkInfoDlg : public wxDialog
         void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
         void On_html_link_popupmenu_Click( wxCommandEvent& event );
         void DefautlBtnClicked( wxCommandEvent& event );
+        void OnNotebookPageChanged( wxNotebookEvent& event );
+
         
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );

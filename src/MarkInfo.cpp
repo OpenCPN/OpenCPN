@@ -126,7 +126,7 @@ WX_DEFINE_LIST(BitmapList);
 #include <chart1.h>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
-
+#define EXTENDED_PROP_PAGE 2 // Index of the extended properties page
 
 
 OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& value,
@@ -535,12 +535,34 @@ void MarkInfoDlg::Create()
             wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     // catch the right up event...
     m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
+    m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
+
 }
 
+void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
+{
+    if( event.GetSelection() == EXTENDED_PROP_PAGE ) {
+        double lat = fromDMM(m_textLatitude->GetValue());
+        double lon = fromDMM(m_textLongitude->GetValue());
+        std::map<double, const IDX_entry*> tss = ptcmgr->GetStationsForLL(lat, lon);
+        wxString s = m_comboBoxTideStation->GetStringSelection();
+        wxString n;
+        int i = 0;
+        m_comboBoxTideStation->Clear();
+        m_comboBoxTideStation->Append(wxEmptyString);
+        for( auto ts : tss) {
+            i++;
+            n = wxString::Format("%s", ts.second->IDX_station_name);
+            m_comboBoxTideStation->Append(n);
+            if( s == n ) {
+                m_comboBoxTideStation->SetSelection(i);
+            }
+        }
+    }
+}
 
 void MarkInfoDlg::RecalculateSize( void )
 {
-
     wxSize b = sbSizerBasicProperties->GetMinSize();
     wxSize e = sbSizerExtProperties->GetMinSize();
     wxSize w =  wxSize( std::max(b.x, e.x), std::max(b.y, e.y));
@@ -1019,6 +1041,26 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         
         wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
         m_PickColor->SetColour(col);
+        
+        m_comboBoxTideStation->Append(wxEmptyString);
+        if( !m_pRoutePoint->m_TideStation.IsEmpty() ) {
+            m_comboBoxTideStation->Append(m_pRoutePoint->m_TideStation);
+            m_comboBoxTideStation->SetSelection(1);
+        }
+        
+        if( m_pRoutePoint->GetPlannedSpeed() > .01f ) {
+            m_textCtrlPlSpeed->SetValue(wxString::Format("%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
+        } else {
+            m_textCtrlPlSpeed->SetValue(wxEmptyString);
+        }
+        
+        wxString::const_iterator end;
+        wxDateTime etd;
+        etd.ParseDate(m_pRoutePoint->GetETD(), &end);
+        if( etd.IsValid() ) {
+            m_EtaDatePickerCtrl->SetValue(etd.GetDateOnly());
+            m_EtaTimePickerCtrl->SetValue(etd);
+        }
 
         m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
         m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1026,7 +1068,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
         m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
         m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
-
+        
         if( positionOnly ) return true;
 
         //Layer or not?
@@ -1173,6 +1215,16 @@ bool MarkInfoDlg::SaveChanges()
             m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1) );
         if(m_textArrivalRadius->GetValue().ToDouble(&value))
             m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1) );
+        
+        m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
+        if( m_textCtrlPlSpeed->GetValue() == wxEmptyString ) {
+            m_pRoutePoint->SetPlannedSpeed(0.0f);
+        } else {
+            double spd;
+            if( m_textCtrlPlSpeed->GetValue().ToDouble(&spd) ) {
+                m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
+            }
+        }
 
         // Here is some logic....
         // If the Markname is completely numeric, and is part of a route,
