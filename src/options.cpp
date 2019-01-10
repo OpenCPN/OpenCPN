@@ -1104,11 +1104,10 @@ void options::RecalculateSize(void) {
 
   wxSize fsize = GetSize();
   wxSize canvas_size = GetParent()->GetSize();
-  wxPoint canvas_pos = GetParent()->GetPosition();
+  wxPoint screen_pos = GetParent()->GetScreenPosition();
   int xp = (canvas_size.x - fsize.x) / 2;
   int yp = (canvas_size.y - fsize.y) / 2;
-  wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
-  Move(xxp.x + xp, xxp.y + yp);
+  Move(screen_pos.x + xp, screen_pos.y + yp);
   
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
