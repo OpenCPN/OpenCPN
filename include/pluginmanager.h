@@ -318,7 +318,6 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
       void DimeWindow(wxWindow *win);
-      OcpnSound*        m_plugin_sound;
       
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
