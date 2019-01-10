@@ -96,13 +96,6 @@ extern GLuint g_raster_format;
 #include "DarkMode.h"
 #endif
 
-#ifdef SILLY_SOUND_TEST
-//#include "PortAudioSound.h"
-//#include "OcpnWxSound.h"
-//#include "SystemCmdSound.h"
-#include "SoundFactory.h"
-#endif
-
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
 
@@ -336,34 +329,6 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
         #endif // ocpnUSE_SVG
 }
 
-#ifdef SILLY_SOUND_TEST
-
-int soundCount;
-
-OcpnSound* testSound = SoundFactory();
-
-wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
-
-static void onSoundFinished(void* ptr)
-{
-   auto optionsPtr  = static_cast<options*>(ptr);
-   wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-   wxPostEvent(optionsPtr, ev);
-}
-
-void options::OnSoundFinishedTest( wxCommandEvent& event )
-{
-    if (--soundCount <= 0)
-        return;
-
-wxLogMessage("Running test callback.");
-    testSound->SetFinishedCallback(onSoundFinished, this);
-    bool ok = testSound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    wxLogWarning("Loading next: %s", ok ? "true" : "false");
-    testSound->Play();
-}
-
-#endif
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1067,18 +1032,12 @@ EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
 EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
 EVT_BUTTON(ID_AISALERTSELECTSOUND, options::OnButtonSelectSound)
 EVT_BUTTON(ID_AISALERTTESTSOUND, options::OnButtonTestSound)
-#ifdef SILLY_SOUND_TEST
-EVT_BUTTON(ID_AISALERTTESTSOUND2, options::OnButtonTestSound2)
-#endif
 EVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
 EVT_CHOICE(ID_SHIPICONTYPE, options::OnShipTypeSelect)
 EVT_CHOICE(ID_RADARRINGS, options::OnRadarringSelect)
 EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
 EVT_CHAR_HOOK(options::OnCharHook)
 EVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
-#ifdef SILLY_SOUND_TEST
-   EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, options::OnSoundFinishedTest)
-#endif
 END_EVENT_TABLE()
 
 
@@ -5069,14 +5028,6 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxButton(panelAIS, ID_AISALERTTESTSOUND, _("Test Alert Sound"),
                    wxDefaultPosition, m_small_button_size, 0);
   pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
-#ifdef SILLY_SOUND_TEST
-  wxButton* m_pPlay_Sound2 =
-      new wxButton(panelAIS, ID_AISALERTTESTSOUND2, _("Test Sound - async"),
-                   wxDefaultPosition, m_small_button_size, 0);
-  pAlertGrid->Add(m_pPlay_Sound2, 0, 
-		  wxALL | wxALIGN_CENTER_HORIZONTAL, 
-		  group_item_spacing);
-#endif
 
   m_pCheck_Alert_Moored = new wxCheckBox(
       panelAIS, -1, _("Supress Alerts for anchored/moored targets"));
@@ -8059,43 +8010,10 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 }
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
-#ifdef SILLY_SOUND_TEST
-    wxLog::SetLogLevel(wxLOG_Debug);
-    wxLogMessage("Running test 1.");
-    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
-    //std::unique_ptr<OcpnSound> AIS_Sound(new SystemCmdSound());
-    bool ok = AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    wxLogWarning("Loading next: %s", ok ? "ok" : "problems");
-    AIS_Sound->Play();
-#else
     std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
     AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     AIS_Sound->Play();
-#endif         
 }
-
-#ifdef SILLY_SOUND_TEST
-#include "SystemCmdSound.h"
-
-void options::OnButtonTestSound2(wxCommandEvent& event) {
-    wxLog::SetLogLevel(wxLOG_Debug);
-    wxLogMessage("Running test.");
-    OcpnSound* sound = SoundFactory();
-    //OcpnSound* sound = new SystemCmdSound();
-    wxLogMessage("Running: new OK.");
-    wxLogMessage("Running, devices: %d", sound->DeviceCount());
-    //sound->SetFinishedCallback( []() { wxLogMessage("Running callback"); } );
-    soundCount = 8;
-    testSound->SetFinishedCallback(onSoundFinished, this);
-    bool ok = testSound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    wxLogMessage("Running: load OK: %s", ok ? "yes" : "no");
-    ok = testSound->Play();
-    wxLogMessage("Running: play OK: %s", ok ? "yes" : "no");
-
-//	wxSound* sound = new wxSound(g_sAIS_Alert_Sound_File, false);
-//	sound->Play(wxSOUND_SYNC);
-}
-#endif // SILLY_SOUND_TEST
 
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
