@@ -109,7 +109,7 @@ class RoutePropDlg : public wxFrame
 
 	public:
 
-		RoutePropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 710,370 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		RoutePropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 710,414 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~RoutePropDlg();
 

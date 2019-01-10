@@ -191,17 +191,20 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	bSizerMain->Add( m_ntbRteProp, 1, wxEXPAND | wxALL, 5 );
 
-	wxBoxSizer* bSizerButtons;
-	bSizerButtons = new wxBoxSizer( wxHORIZONTAL );
+	wxWrapSizer* wSizerCustomBtns;
+	wSizerCustomBtns = new wxWrapSizer( wxHORIZONTAL, wxWRAPSIZER_DEFAULT_FLAGS );
 
 	m_btnPrint = new wxButton( this, wxID_ANY, _("Print"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerButtons->Add( m_btnPrint, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wSizerCustomBtns->Add( m_btnPrint, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_btnExtend = new wxButton( this, wxID_ANY, _("Extend"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerButtons->Add( m_btnExtend, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wSizerCustomBtns->Add( m_btnExtend, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_btnSplit = new wxButton( this, wxID_ANY, _("Split"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerButtons->Add( m_btnSplit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wSizerCustomBtns->Add( m_btnSplit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+
+	wSizerCustomBtns->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	m_sdbSizerBtns = new wxStdDialogButtonSizer();
 	m_sdbSizerBtnsOK = new wxButton( this, wxID_OK );
@@ -210,10 +213,10 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_sdbSizerBtns->AddButton( m_sdbSizerBtnsCancel );
 	m_sdbSizerBtns->Realize();
 
-	bSizerButtons->Add( m_sdbSizerBtns, 1, wxALIGN_CENTER_VERTICAL|wxEXPAND, 5 );
+	wSizerCustomBtns->Add( m_sdbSizerBtns, 1, wxALIGN_CENTER_VERTICAL|wxEXPAND, 5 );
 
 
-	bSizerMain->Add( bSizerButtons, 0, wxEXPAND, 5 );
+	bSizerMain->Add( wSizerCustomBtns, 0, wxALIGN_BOTTOM|wxEXPAND, 0 );
 
 
 	this->SetSizer( bSizerMain );
