@@ -154,8 +154,6 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
     m_pLinkProp = new LinkPropImpl( this );
     m_pMyLinkList = NULL;
-    
-    
 }
 
 TrackPropDlg::~TrackPropDlg()
@@ -187,7 +185,7 @@ TrackPropDlg::~TrackPropDlg()
     if(m_rbShowTimePC)m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimeLocal)m_rbShowTimeLocal->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    //delete m_menuLink;
+    delete m_pLinkProp;
     instanceFlag = false;
 }
 

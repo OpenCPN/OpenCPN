@@ -223,12 +223,12 @@ class MarkInfoDlg : public wxDialog
         wxChoice*               m_choiceWaypointRangeRingsUnits;
         wxColourPickerCtrl*     m_PickColor;
         wxDatePickerCtrl*       m_EtaDatePickerCtrl;
-        wxFlexGridSizer*        fg_MainSizer;
+        wxBoxSizer*             bMainSizer;
         wxFlexGridSizer*        fSizerBasicProperties;
         wxFlexGridSizer*        waypointradarGrid;
         wxFlexGridSizer*        waypointrrSelect;
         wxGridBagSizer*         bGB_SizerProperties;
-        wxGridBagSizer*         gbSizerInnerProperties;
+        wxFlexGridSizer*        gbSizerInnerProperties;
         wxNotebook*             m_notebookProperties;
         wxObject*               m_contextObject;
         wxPanel*                m_PanelBasicProperties;
