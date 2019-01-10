@@ -627,6 +627,7 @@ class options : private Uncopyable,
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
   void FillSourceList();
+  void UpdateSourceList();
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
 
   int m_screenConfig;
