@@ -24,7 +24,7 @@
 #include "RoutePropDlgImpl.h"
 #include "navutil.h"
 #include "georef.h"
-#include <wx/dvrenderers.h>
+#include "MarkInfo.h"
 
 #define COLUMN_PLANNED_SPEED 8
 #define COLUMN_ETD 12
@@ -36,6 +36,7 @@ extern int g_StartTimeTZ;
 extern wxDateTime g_StartTime;
 extern double gLat;
 extern double gLon;
+extern MarkInfoDlg *g_pMarkInfoDialog;
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
@@ -69,6 +70,8 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
 
 void RoutePropDlgImpl::UpdatePoints()
 {
+    wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+    int selected_row = m_dvlcWaypoints->GetSelectedRow();
     m_dvlcWaypoints->DeleteAllItems();
     
     if( NULL == m_pRoute ) return;
@@ -132,6 +135,10 @@ void RoutePropDlgImpl::UpdatePoints()
         m_dvlcWaypoints->AppendItem( data );
         data.clear();
         in++;
+    }
+    if( selection > 0) {
+        m_dvlcWaypoints->SelectRow(selected_row);
+        m_dvlcWaypoints->EnsureVisible(selection);
     }
 }
 
@@ -229,17 +236,25 @@ void RoutePropDlgImpl::DepartureTimeOnTimeChanged( wxDateEvent& event )
 void RoutePropDlgImpl::PlanSpeedOnTextEnter( wxCommandEvent& event ) {
     double spd;
     if( m_tcPlanSpeed->GetValue().ToDouble(&spd) ) {
-        m_pRoute->m_PlannedSpeed = fromUsrSpeed(spd);
-        UpdatePoints();
+        if( m_pRoute->m_PlannedSpeed != fromUsrSpeed(spd) ) {
+            m_pRoute->m_PlannedSpeed = fromUsrSpeed(spd);
+            UpdatePoints();
+        }
     } else {
         m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
     }
 }
 
-
-void RoutePropDlgImpl::PlanSpeedOnText( wxCommandEvent& event )
-{
-    event.Skip();
+void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event ) {
+    double spd;
+    if( m_tcPlanSpeed->GetValue().ToDouble(&spd) ) {
+        if( m_pRoute->m_PlannedSpeed != fromUsrSpeed(spd) ) {
+            m_pRoute->m_PlannedSpeed = fromUsrSpeed(spd);
+            UpdatePoints();
+        }
+    } else {
+        m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
+    }
 }
 
 int ev_col;
@@ -254,9 +269,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
     wxDataViewModel* const model = event.GetModel();
     wxVariant value;
     model->GetValue(value, event.GetItem(), ev_col);
-    long id;
-    wxString::Format("%d", event.GetItem().GetID()).ToLong(&id);
-    RoutePoint *p = m_pRoute->GetPoint((int)id);
+    RoutePoint *p = m_pRoute->GetPoint((int)(long)event.GetItem().GetID());
     if( ev_col == COLUMN_PLANNED_SPEED ) {
         double spd;
         if( !value.GetString().ToDouble(&spd) )
@@ -271,6 +284,23 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
             etd = wxInvalidDateTime;
         p->SetETD(etd.FormatISOCombined());
     }
-
     UpdatePoints();
+}
+
+void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event ) {
+    wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+    RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+    
+    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog. TODO: This is everywhere, redo as singleton
+        g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
+    g_pMarkInfoDialog->SetRoutePoint(pRP);
+    g_pMarkInfoDialog->UpdateProperties();
+    if( pRP->m_bIsInLayer ) {
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( pRP->m_LayerID ) ) );
+        g_pMarkInfoDialog->SetDialogTitle( caption );
+    } else
+        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
+    
+    if( !g_pMarkInfoDialog->IsShown() )
+        g_pMarkInfoDialog->Show();
 }

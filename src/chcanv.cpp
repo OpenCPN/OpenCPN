@@ -8789,6 +8789,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     pNew->SetRouteAndUpdate( selected );
     //pNew->UpdateProperties();
     pNew->Show();
+    pNew->Raise();
     return;
     pRoutePropDialog = RouteProp::getInstance( this ); // There is one global instance of the RouteProp Dialog
 

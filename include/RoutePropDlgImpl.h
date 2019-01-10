@@ -27,6 +27,7 @@
 
 #include "RoutePropDlg.h"
 #include "Route.h"
+#include <wx/dvrenderers.h>
 
 
 class RoutePropDlgImpl : public RoutePropDlg
@@ -42,11 +43,12 @@ protected:
     void RoutePropDlgOnClose( wxCloseEvent& event ) { Hide(); event.Veto(); }
     void RoutePropDlgOnSize( wxSizeEvent& event ) { event.Skip(); }
     void RoutePropDlgOnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
-    void PlanSpeedOnText( wxCommandEvent& event );
+    void PlanSpeedOnKillFocus( wxFocusEvent& event );
     void PlanSpeedOnTextEnter( wxCommandEvent& event );
     void DepartureDateOnDateChanged( wxDateEvent& event );
     void DepartureTimeOnTimeChanged( wxDateEvent& event );
     void TimezoneOnChoice( wxCommandEvent& event ) { event.Skip(); }
+    void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event );
     void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -54,6 +56,7 @@ protected:
     void SplitOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
     void BtnsOnCancelButtonClick( wxCommandEvent& event ) { event.Skip(); }
     void BtnsOnOKButtonClick( wxCommandEvent& event ) { event.Skip(); }
+    
     RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 710,370 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 private:
     static bool instanceFlag;

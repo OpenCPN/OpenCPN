@@ -79,7 +79,7 @@ class RoutePropDlg : public wxFrame
 		wxDataViewColumn* m_dataViewListColumnEmpty;
 		wxPanel* m_pnlAdvanced;
 		wxStaticText* m_stDescription;
-		wxTextCtrl* m_textCtrl9;
+		wxTextCtrl* m_tcDescription;
 		wxButton* m_btnPrint;
 		wxButton* m_btnExtend;
 		wxButton* m_btnSplit;
@@ -91,14 +91,13 @@ class RoutePropDlg : public wxFrame
 		virtual void RoutePropDlgOnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void RoutePropDlgOnSize( wxSizeEvent& event ) { event.Skip(); }
 		virtual void RoutePropDlgOnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
-		virtual void PlanSpeedOnText( wxCommandEvent& event ) { event.Skip(); }
+		virtual void PlanSpeedOnKillFocus( wxFocusEvent& event ) { event.Skip(); }
 		virtual void PlanSpeedOnTextEnter( wxCommandEvent& event ) { event.Skip(); }
 		virtual void DepartureDateOnDateChanged( wxDateEvent& event ) { event.Skip(); }
 		virtual void DepartureTimeOnTimeChanged( wxDateEvent& event ) { event.Skip(); }
 		virtual void TimezoneOnChoice( wxCommandEvent& event ) { event.Skip(); }
+		virtual void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event ) { event.Skip(); }
-		virtual void WaypointsOnDataViewListCtrlItemEditingStarted( wxDataViewEvent& event ) { event.Skip(); }
-		virtual void WaypointsOnDataViewListCtrlItemStartEditing( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ExtendOnButtonClick( wxCommandEvent& event ) { event.Skip(); }

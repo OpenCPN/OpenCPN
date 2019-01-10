@@ -76,6 +76,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     wxString DescString;
     wxString TideStation;
     double   plan_speed = 0.0;
+    wxString etd;
     wxString TypeString;
     wxString GuidString = GUID;         // default
     wxString TimeString;
@@ -216,7 +217,14 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                     TideStation = wxString::FromUTF8(ext_child.first_child().value()) ;
                 }
                 if( ext_name == _T ( "opencpn:rte_properties" ) ) {
-                    wxString::FromUTF8(ext_child.first_child().value()).ToDouble(&plan_speed);
+                    for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
+                    {
+                        if( !strcmp( attr.name(), "planned_speed" ) )
+                            plan_speed = attr.as_double();
+                        else
+                            if( !strcmp( attr.name(), "etd" ) )
+                                etd = attr.as_string();
+                    }
                 }
              }// for 
         } //extensions
@@ -243,6 +251,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetScaMax( l_iWaypoinScaleMax );
     pWP->SetUseSca( l_bWaypointUseScale );
     pWP->SetPlannedSpeed(plan_speed);
+    pWP->SetETD(etd);
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -512,7 +521,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                      }
                      
                      else
-                     if( ext_name == _T ( "opencpn:planned_speed" ) ) {
+                     if( ext_name == _T ( "opencpn:rte_properties" ) ) {
                         pTentRoute->m_PlannedSpeed = atof( ext_child.first_child().value() );
                      }
                      

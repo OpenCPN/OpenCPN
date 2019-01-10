@@ -453,6 +453,14 @@ void MarkInfoDlg::Create()
         m_textCtrlGuid->SetEditable(false);
     gbSizerInnerExtProperties->Add(m_textCtrlGuid, wxGBPosition(5, 1), wxGBSpan(1, 3), wxLEFT|wxTOP|wxBOTTOM|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     
+    m_staticTextTideStation = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Tide Station"),
+                                        wxDefaultPosition, wxDefaultSize, 0 );
+    gbSizerInnerExtProperties->Add(m_staticTextTideStation, wxGBPosition(6, 0), wxDefaultSpan, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    
+    m_comboBoxTideStation = new wxComboBox( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
+    gbSizerInnerExtProperties->Add(m_comboBoxTideStation, wxGBPosition(6, 1), wxGBSpan(1, 3), wxLEFT|wxTOP|wxBOTTOM|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+
+    
     m_staticTextPlSpeed = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Planned Speed"),
             wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties->Add(m_staticTextPlSpeed, wxGBPosition(6, 0), wxGBSpan(1, 2), wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
@@ -563,7 +571,7 @@ void MarkInfoDlg::SetColorScheme( ColorScheme cs )
 
 void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
 {
-      m_pRoutePoint = pRP;
+    m_pRoutePoint = pRP;
     if( m_pRoutePoint ) {
         m_lat_save = m_pRoutePoint->m_lat;
         m_lon_save = m_pRoutePoint->m_lon;
@@ -1017,13 +1025,13 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         if( m_pRoutePoint->m_bIsInLayer ) {
             m_staticTextLayer->Enable();
             m_staticTextLayer->Show( true );
-             m_textName->SetEditable( false );
+            m_textName->SetEditable( false );
             m_textDescription->SetEditable( false );
             m_textCtrlExtDescription->SetEditable( false );
             m_textLatitude->SetEditable( false );
             m_textLongitude->SetEditable( false );
             m_bcomboBoxIcon->Enable( false );
-             m_checkBoxShowName->Enable( false );
+            m_checkBoxShowName->Enable( false );
             m_checkBoxVisible->Enable( false );
             m_textArrivalRadius->SetEditable ( false );
             m_checkBoxScaMin->Enable( false );
@@ -1031,6 +1039,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_checkBoxShowNameExt->Enable( false );
             m_SpinWaypointRangeRingsNumber->Enable( false );
             m_textWaypointRangeRingsStep->SetEditable( false );
+            m_comboBoxTideStation->SetEditable( false );
             m_PickColor->Enable( false );
             DefaultsBtn->Enable( false );
             if( !m_textDescription->IsEmpty() ){
@@ -1039,13 +1048,13 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
-             m_textName->SetEditable( true );
+            m_textName->SetEditable( true );
             m_textDescription->SetEditable( true );
             m_textCtrlExtDescription->SetEditable( true );
             m_textLatitude->SetEditable( true );
             m_textLongitude->SetEditable( true );
             m_bcomboBoxIcon->Enable( true );
-             m_checkBoxShowName->Enable( true );
+            m_checkBoxShowName->Enable( true );
             m_checkBoxVisible->Enable( true );
             m_textArrivalRadius->SetEditable ( true );
             m_checkBoxScaMin->Enable( true );
@@ -1053,6 +1062,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_checkBoxShowNameExt->Enable( true );
             m_SpinWaypointRangeRingsNumber->Enable( true );
             m_textWaypointRangeRingsStep->SetEditable( true );
+            m_comboBoxTideStation->SetEditable( true );
             m_PickColor->Enable( true );
             DefaultsBtn->Enable( true );
             m_notebookProperties->SetSelection(0);

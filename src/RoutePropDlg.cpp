@@ -167,26 +167,26 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerData->Fit( m_pnlBasic );
 	m_ntbRteProp->AddPage( m_pnlBasic, _("Basic"), false );
 	m_pnlAdvanced = new wxPanel( m_ntbRteProp, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer19;
-	bSizer19 = new wxBoxSizer( wxVERTICAL );
+	wxBoxSizer* bSizerAdvanced;
+	bSizerAdvanced = new wxBoxSizer( wxVERTICAL );
 
 	m_stDescription = new wxStaticText( m_pnlAdvanced, wxID_ANY, _("Description"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stDescription->Wrap( -1 );
-	bSizer19->Add( m_stDescription, 0, wxALL, 5 );
+	bSizerAdvanced->Add( m_stDescription, 0, wxALL, 5 );
 
-	m_textCtrl9 = new wxTextCtrl( m_pnlAdvanced, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-	bSizer19->Add( m_textCtrl9, 0, wxALL|wxEXPAND, 5 );
+	m_tcDescription = new wxTextCtrl( m_pnlAdvanced, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+	bSizerAdvanced->Add( m_tcDescription, 0, wxALL|wxEXPAND, 5 );
 
 	wxStaticBoxSizer* sbSizerLinks;
 	sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_pnlAdvanced, wxID_ANY, _("Links") ), wxVERTICAL );
 
 
-	bSizer19->Add( sbSizerLinks, 1, wxEXPAND, 5 );
+	bSizerAdvanced->Add( sbSizerLinks, 1, wxEXPAND, 5 );
 
 
-	m_pnlAdvanced->SetSizer( bSizer19 );
+	m_pnlAdvanced->SetSizer( bSizerAdvanced );
 	m_pnlAdvanced->Layout();
-	bSizer19->Fit( m_pnlAdvanced );
+	bSizerAdvanced->Fit( m_pnlAdvanced );
 	m_ntbRteProp->AddPage( m_pnlAdvanced, _("Advanced"), false );
 
 	bSizerMain->Add( m_ntbRteProp, 1, wxEXPAND | wxALL, 5 );
@@ -228,14 +228,13 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( RoutePropDlg::RoutePropDlgOnClose ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( RoutePropDlg::RoutePropDlgOnSize ) );
 	m_ntbRteProp->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
-	m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnText ), NULL, this );
+	m_tcPlanSpeed->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
+	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
-	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_STARTED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingStarted ), NULL, this );
-	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_START_EDITING, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemStartEditing ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
 	m_btnPrint->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
 	m_btnExtend->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::ExtendOnButtonClick ), NULL, this );
@@ -250,14 +249,13 @@ RoutePropDlg::~RoutePropDlg()
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( RoutePropDlg::RoutePropDlgOnClose ) );
 	this->Disconnect( wxEVT_SIZE, wxSizeEventHandler( RoutePropDlg::RoutePropDlgOnSize ) );
 	m_ntbRteProp->Disconnect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
-	m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnText ), NULL, this );
+	m_tcPlanSpeed->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
+	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
-	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_STARTED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingStarted ), NULL, this );
-	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_START_EDITING, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemStartEditing ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
 	m_btnPrint->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
 	m_btnExtend->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::ExtendOnButtonClick ), NULL, this );

@@ -47,6 +47,7 @@
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>
 #include <wx/list.h>
+#include <wx/combobox.h>
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -248,6 +249,7 @@ class MarkInfoDlg : public wxDialog
         wxStaticText*           m_staticTextEditEnabled;                                     
         wxStaticText*           m_staticTextGpx;                                             
         wxStaticText*           m_staticTextGuid;
+        wxStaticText*           m_staticTextTideStation;
         wxStaticText*           m_staticTextIcon;
         wxStaticText*           m_staticTextLatitude;
         wxStaticText*           m_staticTextLayer;
@@ -268,6 +270,7 @@ class MarkInfoDlg : public wxDialog
         wxTextCtrl*             m_textCtrlExtDescription;
         wxTextCtrl*             m_textCtrlGpx;
         wxTextCtrl*             m_textCtrlGuid;
+        wxComboBox*             m_comboBoxTideStation;
         wxTextCtrl*             m_textDescription;
         wxTextCtrl*             m_textLatitude;
         wxTextCtrl*             m_textLongitude;
