@@ -181,6 +181,7 @@ public:
 class MarkInfoDlg : public wxDialog
 {
     DECLARE_EVENT_TABLE()
+    friend class SaveDefaultsDialog;
     
 	private:
         RoutePoint  *m_pRoutePoint;
@@ -206,8 +207,6 @@ class MarkInfoDlg : public wxDialog
         double          m_WaypointArrivalRadius_save;
         float           m_PlannedSpeed_save;
         wxDateTime      m_ArrETA_save;
-        
-        
         
 	protected:
         OCPNIconCombo*          m_bcomboBoxIcon;
@@ -329,7 +328,7 @@ class SaveDefaultsDialog: public wxDialog
 {
     public:
 
-        SaveDefaultsDialog(wxWindow* parent,wxWindowID id = -1);
+        SaveDefaultsDialog(MarkInfoDlg* parent, wxWindowID id = -1);
         virtual ~SaveDefaultsDialog();
 
         //(*Handlers(SaveDefaultsDialog)
