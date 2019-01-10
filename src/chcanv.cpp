@@ -489,6 +489,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_rotation_speed = 0;
     m_mustmove = 0;
 
+    m_OSoffsetx = 0.;
+    m_OSoffsety = 0.;
+
     m_pos_image_user_yellow_day = NULL;
     m_pos_image_user_yellow_dusk = NULL;
     m_pos_image_user_yellow_night = NULL;
@@ -1469,9 +1472,15 @@ bool ChartCanvas::DoCanvasUpdate( void )
     if( m_bFollow ) {
         tLat = gLat;
         tLon = gLon;
-        vpLat = gLat;
-        vpLon = gLon;
-        
+
+        // Set the ViewPort center based on the OWNSHIP offset
+        double dx = m_OSoffsetx;
+        double dy = m_OSoffsety;
+        double d_east = dx / GetVP().view_scale_ppm;
+        double d_north = dy / GetVP().view_scale_ppm;
+
+        fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
+
         // on lookahead mode, adjust the vp center point
         if( m_bLookAhead ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
@@ -1508,6 +1517,20 @@ bool ChartCanvas::DoCanvasUpdate( void )
         vpLon = m_vLon;
         
     }
+    
+    // Calculate change in VP, in pixels, using a simple SM projection
+    // if change in pixels is smaller than 2% of screen size, do not change the VP
+    // This will avoid "jitters" at large scale.
+    if(GetVP().view_scale_ppm > 1.0){ 
+        double easting, northing;
+        toSM( GetVP().clat, GetVP().clon, vpLat, vpLon,  &easting, &northing );
+        if( (fabs(easting * GetVP().view_scale_ppm) < (GetVP().pix_width * 2 / 100)) ||
+            (fabs(northing * GetVP().view_scale_ppm) < (GetVP().pix_height * 2 / 100)) ){
+            vpLat = GetVP().clat;
+            vpLon = GetVP().clon;
+        }
+    }
+    
     
     if( GetQuiltMode() ) {
         int current_db_index = -1;
@@ -4243,6 +4266,8 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
 
 void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stoptimer )
 {
+    double old_ppm = GetVP().view_scale_ppm;
+    
     m_bzooming_to_cursor = can_zoom_to_cursor && g_bEnableZoomToCursor;
 
     if( g_bsmoothpanzoom ) {
@@ -4260,6 +4285,24 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
     }
 
     extendedSectorLegs.clear();
+   
+    //  Adjust the Viewpoint to keep ownship at the same point on-screen
+    if(m_bFollow){
+        double offx, offy;
+        toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+
+        m_OSoffsetx = offx * old_ppm;
+        m_OSoffsety = offy * old_ppm;
+
+        double nlat, nlon;
+        double dx = m_OSoffsetx;
+        double dy = m_OSoffsety;
+        double d_east = dx / GetVP().view_scale_ppm;
+        double d_north = dy / GetVP().view_scale_ppm;
+
+        fromSM( d_east, d_north, gLat, gLon, &nlat, &nlon );
+        SetViewPoint( nlat, nlon); 
+    }
 }
 
 void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
@@ -4489,6 +4532,13 @@ void ChartCanvas::SetbFollow( void )
     androidSetFollowTool(true);
     #endif
     
+    // Is the OWNSHIP on-screen?
+    // If not, then reset the OWNSHIP offset to 0 (center screen)
+    if( (fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2) ){
+        m_OSoffsetx = 0;
+        m_OSoffsety = 0;
+    }
+
     DoCanvasUpdate();
     ReloadVP();
     parent_frame->SetChartUpdatePeriod( );
@@ -4585,13 +4635,20 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
         }
     }
 
-    //ClearbFollow();      // update the follow flag
-    m_bFollow = false;      // update the follow flag
-    if( m_toolBar )
-        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    //  Turn off bFollow only if the ownship has left the screen
+    double offx, offy;
+    toSM(dlat, dlon, gLat, gLon, &offx, &offy);
+    m_OSoffsetx = offx * VPoint.view_scale_ppm;
+    m_OSoffsety = offy * VPoint.view_scale_ppm;
     
-    if(m_muiBar)
-        m_muiBar->SetFollowButton( false );
+    if( m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2)) ){
+        m_bFollow = false;      // update the follow flag
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    
+        if(m_muiBar)
+            m_muiBar->SetFollowButton( false );
+    }
     
     Refresh( false );
 

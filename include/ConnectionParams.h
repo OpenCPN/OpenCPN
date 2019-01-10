@@ -87,7 +87,8 @@ public:
     void OnEraseBackground( wxEraseEvent &event );
     void CreateControls( void );
     void OnEnableCBClick(wxCommandEvent &event);
-    
+    void Update( ConnectionParams *ConnectionParams);
+ 
     bool GetSelected(){ return m_bSelected; }
     int GetUnselectedHeight(){ return m_unselectedHeight; }
     ConnectionParams *m_pConnectionParams;
@@ -100,6 +101,15 @@ private:
     wxColour m_boxColour;
     int m_unselectedHeight;
     wxCheckBox *m_cbEnable;
+    wxStaticText *t2;
+    wxStaticText *t4;
+    wxStaticText *t6;
+    wxStaticText *t12;
+    wxStaticText *t14;
+    wxStaticText *t16;
+
+    wxStaticText *t21;
+
     
     DECLARE_EVENT_TABLE()
 };

@@ -2611,6 +2611,8 @@ void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
 void options::EnableConnection( ConnectionParams *conn, bool value){
     if(conn){
         conn->bEnabled = value;
+        conn->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
+        m_connection_enabled = conn->bEnabled;
     }
 }
 
@@ -6736,6 +6738,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   }
 
   if (!connectionsaved) {
+    size_t nCurrentPanelCount = g_pConnectionParams->GetCount();
     ConnectionParams* cp = CreateConnectionParamsFromSelectedItem();
     if (cp != NULL) {
       if (itemIndex >= 0) {
@@ -6750,14 +6753,20 @@ void options::OnApplyClick(wxCommandEvent& event) {
       cp->LastNetworkAddress = lastAddr;
       cp->LastNetworkPort = lastPort;
 
-      FillSourceList();
-//      m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-//      m_lcSources->Refresh();
+      if(g_pConnectionParams->GetCount() != nCurrentPanelCount)
+        FillSourceList();
+      else
+        UpdateSourceList();
+      
       connectionsaved = TRUE;
     } else {
       ::wxEndBusyCursor();
       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
     }
+    
+    if (itemIndex < 0)
+        ClearNMEAForm();
+
   }
 
   // Recreate datastreams that are new, or have been edited
@@ -8813,10 +8822,10 @@ void options::SetNMEAFormToSerial(void) {
   ShowNMEASerial(TRUE);
 
   m_pNMEAForm->FitInside();
-  m_pNMEAForm->Layout();
+//  m_pNMEAForm->Layout();
   Fit();
-  Layout();
-  RecalculateSize();
+//  Layout();
+//  RecalculateSize();
   SetDSFormRWStates();
 }
 
@@ -8827,10 +8836,10 @@ void options::SetNMEAFormToNet(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  m_pNMEAForm->Layout();
+//  m_pNMEAForm->Layout();
   Fit();
-  Layout();
-  RecalculateSize();
+//  Layout();
+//  RecalculateSize();
   SetDSFormRWStates();
 }
 
@@ -8841,10 +8850,10 @@ void options::SetNMEAFormToGPS(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  m_pNMEAForm->Layout();
+//  m_pNMEAForm->Layout();
   Fit();
-  Layout();
-  RecalculateSize();
+//  Layout();
+//  RecalculateSize();
   SetDSFormRWStates();
 }
 
@@ -8855,10 +8864,10 @@ void options::SetNMEAFormToBT(void) {
   ShowNMEABT(TRUE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  m_pNMEAForm->Layout();
+//  m_pNMEAForm->Layout();
   Fit();
-  Layout();
-  RecalculateSize();
+//  Layout();
+//  RecalculateSize();
   SetDSFormRWStates();
 }
 
@@ -8869,10 +8878,10 @@ void options::ClearNMEAForm(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-  m_pNMEAForm->Layout();
+//  m_pNMEAForm->Layout();
   Fit();
-  Layout();
-  RecalculateSize();
+//  Layout();
+//  RecalculateSize();
 }
 
 wxString StringArrayToString(wxArrayString arr) {
@@ -9034,24 +9043,42 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
   
-  //  Remove all panels
-  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    delete mConnectionsPanelList[i];
-  mConnectionsPanelList.clear();
-  
+  // Add new panels as necessary
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      if(mConnectionsPanelList.size() < i+1){
+        ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                              g_pConnectionParams->Item(i), this, i);
-      pPanel->SetSelected(false);
-      boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
-      mConnectionsPanelList.push_back(pPanel);
+        pPanel->SetSelected(false);
+        boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+        mConnectionsPanelList.push_back(pPanel);
+      }
+      else{
+          mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+      }
 
   }
+  // Remove any stale panels
+  while(mConnectionsPanelList.size() > g_pConnectionParams->Count()){
+      ConnectionParamsPanel *pPanel = mConnectionsPanelList.back();
+      delete pPanel;
+      mConnectionsPanelList.pop_back();
+
+  }
+  
   boxSizerConnections->Layout();
   
   mSelectedConnectionPanel = NULL;
   m_buttonAdd->SetLabel(_("Add Connection"));
+  m_buttonAdd->Enable( true );
 
+}
+
+void options::UpdateSourceList(void) {
+   
+    for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++){
+        mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+    }
+    boxSizerConnections->Layout();
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
@@ -9084,8 +9111,10 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
   //  Only one panel can be selected at any time  
   //  Clear all selections
 
-  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    mConnectionsPanelList[i]->SetSelected( false );
+  if(mSelectedConnectionPanel)
+      mSelectedConnectionPanel->SetSelected( false );
+  //for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
+    //mConnectionsPanelList[i]->SetSelected( false );
   
   mSelectedConnectionPanel = panel;
   if(panel){
