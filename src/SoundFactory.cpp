@@ -21,34 +21,28 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-
-#include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
-
-extern int g_iSoundDeviceIndex;
+#include "config.h"
+#include "SoundFactory.h"
 
 
-OcpnSound::OcpnSound()
-{
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
-}
+#ifdef USE_PORTAUDIO
+#include "PortAudioSound.h"
 
+OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
 
-OcpnSound::~OcpnSound()
-{
-}
+#elif defined(__OCPN__ANDROID__)
+#include "AndroidSound.h"
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+OcpnSound* SoundFactory(void) { return new AndroidSound(); }
+
+#elif defined(USE_SYSTEM_CMD_SOUND)
+#include "SystemCmdSound.h"
+
+OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+
+#else
+#include  "OcpnWxSound.h"
+
+OcpnSound* SoundFactory(void) { return new OcpnWxSound(); }
+
+#endif

@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+#include <memory>
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -41,6 +41,7 @@
 #include <wx/clrpicker.h>
 #include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
+#include <wx/mediactrl.h>
 #include "wx/dir.h"
 
 #if wxCHECK_VERSION(2, 9, \
@@ -50,6 +51,8 @@
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
+
+#include "config.h"
 
 #include "dychart.h"
 #include "chart1.h"
@@ -66,6 +69,7 @@ extern GLuint g_raster_format;
 #include "multiplexer.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
+#include "SoundFactory.h"
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
 #include "routeman.h"
@@ -247,7 +251,7 @@ extern bool g_bGarminHostUpload;
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern OCPN_Sound g_anchorwatch_sound;
+extern OcpnSound* g_anchorwatch_sound;
 extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
@@ -324,6 +328,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
         return wxBitmap(width, height);
         #endif // ocpnUSE_SVG
 }
+
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1035,6 +1040,8 @@ EVT_CHAR_HOOK(options::OnCharHook)
 EVT_TIMER(ID_BT_SCANTIMER, options::onBTScanTimer)
 END_EVENT_TABLE()
 
+
+
 options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
@@ -1045,7 +1052,6 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
   wxDialog::Create(parent, id, caption, pos, size, wstyle);
-
   SetFont(*dialogFont);
 
   CreateControls();
@@ -1187,7 +1193,7 @@ void options::Init(void) {
   // for deferred loading
   m_pPlugInCtrl = NULL;
   m_pNMEAForm = NULL;
-  mSelectedConnectionPanel = NULL;
+  mSelectedConnection = NULL;
   
 #ifdef __OCPN__ANDROID__
   m_scrollRate = 1;
@@ -5165,21 +5171,36 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   miscOptions->Add(pPlayShipsBells, 0, wxALL, border_size);
 
-  pSoundDeviceIndex = new wxSpinCtrl(itemPanelFont, wxID_ANY);
-  pSoundDeviceIndex->SetValue(g_iSoundDeviceIndex);
-  pSoundDeviceIndex->Hide();
-
-  if (OCPN_Sound::DeviceCount() > 1) {
+  OcpnSound* sound = SoundFactory();
+  int deviceCount = sound->DeviceCount();
+  pSoundDeviceIndex = new wxChoice();
+  wxLogMessage("options: got device count: %d", deviceCount);
+  if (deviceCount > 1) {
+    wxArrayString labels;
+    for (int i = 0; i < deviceCount; i += 1) {
+        if (!sound->IsOutputDevice(i)) {
+            continue;
+        }
+        wxString label(sound->GetDeviceInfo(i));
+        if (label == "")  {
+            label = _("Unknown device :") + std::to_string(i);
+        }
+        labels.Add(label);
+    }
+    pSoundDeviceIndex->Create(itemPanelFont,
+                              wxID_ANY,
+                              wxDefaultPosition,
+                              wxDefaultSize,
+                              labels);
+    pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
     pSoundDeviceIndex->Show();
-
     wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
     miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
                      group_item_spacing);
 
     wxStaticText* stSoundDeviceIndex =
-        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device Index"));
+        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
     pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-    pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
     pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
   }
 
@@ -5822,7 +5843,7 @@ void options::SetInitialSettings(void) {
 
   if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
-  pSoundDeviceIndex->SetValue(g_iSoundDeviceIndex);
+  pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
@@ -6495,6 +6516,20 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   ConnectionParams* pConnectionParams = new ConnectionParams();
 
+  UpdateConnectionParamsFromSelectedItem( pConnectionParams );
+  
+  ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                             pConnectionParams, this);
+  pPanel->SetSelected(false);
+  boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+  pConnectionParams->m_optionsPanel = pPanel;
+
+  return pConnectionParams;
+
+}
+
+ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams) {
+
   pConnectionParams->Valid = TRUE;
   if (m_rbTypeSerial->GetValue())
     pConnectionParams->Type = SERIAL;
@@ -6726,45 +6761,63 @@ void options::OnApplyClick(wxCommandEvent& event) {
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
   
-  int itemIndex = -1;
-  if (mSelectedConnectionPanel) {
-    ConnectionParams* cpo = mSelectedConnectionPanel->m_pConnectionParams;
-    if (cpo) {
-      lastAddr = cpo->NetworkAddress;
-      lastPort = cpo->NetworkPort;
-      lastNetProtocol = cpo->NetProtocol;
-      itemIndex = mSelectedConnectionPanel->m_index;
-    }
+  if (mSelectedConnection) {
+    ConnectionParams* cpo = mSelectedConnection;
+    lastAddr = cpo->NetworkAddress;
+    lastPort = cpo->NetworkPort;
+    lastNetProtocol = cpo->NetProtocol;
   }
 
   if (!connectionsaved) {
     size_t nCurrentPanelCount = g_pConnectionParams->GetCount();
-    ConnectionParams* cp = CreateConnectionParamsFromSelectedItem();
-    if (cp != NULL) {
-      if (itemIndex >= 0) {
-        g_pConnectionParams->RemoveAt(itemIndex);
-        g_pConnectionParams->Insert(cp, itemIndex);
+    ConnectionParams *cp = NULL;
+    int old_priority = -1;
+    {
+      if (mSelectedConnection) {
+        cp =  mSelectedConnection;
+        old_priority = cp->Priority;
+        UpdateConnectionParamsFromSelectedItem( cp );
+        cp->b_IsSetup = false;
+
+        //delete g_pConnectionParams->Item(itemIndex)->m_optionsPanel;
+        //old_priority = g_pConnectionParams->Item(itemIndex)->Priority;
+        //g_pConnectionParams->RemoveAt(itemIndex);
+        //g_pConnectionParams->Insert(cp, itemIndex);
+        //mSelectedConnection = cp;
+        //cp->m_optionsPanel->SetSelected( true );
       } else {
-        g_pConnectionParams->Add(cp);
+        cp = CreateConnectionParamsFromSelectedItem();
+        if(cp)
+            g_pConnectionParams->Add(cp);
       }
 
       //  Record the previous parameters, if any
-      cp->LastNetProtocol = lastNetProtocol;
-      cp->LastNetworkAddress = lastAddr;
-      cp->LastNetworkPort = lastPort;
+      if(cp){
+        cp->LastNetProtocol = lastNetProtocol;
+        cp->LastNetworkAddress = lastAddr;
+        cp->LastNetworkPort = lastPort;
+      }
 
       if(g_pConnectionParams->GetCount() != nCurrentPanelCount)
         FillSourceList();
-      else
-        UpdateSourceList();
+      else if(old_priority >= 0){
+          if(old_priority != cp->Priority)             // need resort
+             UpdateSourceList( true );
+          else
+             UpdateSourceList( false );
+      }
+          
+
+              
       
       connectionsaved = TRUE;
-    } else {
-      ::wxEndBusyCursor();
-      if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
     }
+//     else {
+//       ::wxEndBusyCursor();
+//       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
+//     }
     
-    if (itemIndex < 0)
+    if (!mSelectedConnection)
         ClearNMEAForm();
 
   }
@@ -6876,7 +6929,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
-  g_iSoundDeviceIndex = pSoundDeviceIndex->GetValue();
+  g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
@@ -7984,33 +8037,16 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
   if (response == wxID_OK) {
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
 
-    g_anchorwatch_sound.UnLoad();
+    g_anchorwatch_sound->Stop();
   }
 }
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
-  OCPN_Sound AIS_Sound;
-  AIS_Sound.Create(g_sAIS_Alert_Sound_File);
-
-  if (AIS_Sound.IsOk()) {
-#if defined(__OCPN__ANDROID__)
-    qDebug() << "Options play";
-    AIS_Sound.Play();
-#else
-#if defined(__WXMSW__) || defined(__WXOSX__)
-    AIS_Sound.Play(wxSOUND_SYNC);
-#else
-    AIS_Sound.Play();
-    int t = 0;
-    while (AIS_Sound.IsPlaying() && (t < 5)) {
-      wxSleep(1);
-      t++;
-    }
-    if (AIS_Sound.IsPlaying()) AIS_Sound.Stop();
-#endif
-#endif
-  }
+    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
+    AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+    AIS_Sound->Play();
 }
+
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   wxString return_string;
@@ -9029,8 +9065,8 @@ void options::SetDefaultConnectionParams(void) {
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
  
   //  Unselect all panels
-  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    mConnectionsPanelList[i]->SetSelected(false);;
+  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) 
+    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected( false );
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
@@ -9040,55 +9076,114 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
   RecalculateSize();
 }
 
+bool options::SortSourceList(void) {
+    
+    if(g_pConnectionParams->Count() < 2)
+        return false;
+    
+    std::vector<int> ivec;
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+        ivec.push_back(i);
+    
+    bool did_sort = false;
+    bool did_swap = true;
+    while(did_swap){
+        did_swap = false;
+        for (size_t j=1 ; j < ivec.size() ; j++){
+            ConnectionParams *c1 = g_pConnectionParams->Item(ivec[j]);
+            ConnectionParams *c2 = g_pConnectionParams->Item(ivec[j-1]);
+            
+            if(c1->Priority > c2->Priority){
+                int t = ivec[j-1];
+                ivec[j-1] = ivec[j];
+                ivec[j] = t;
+                did_swap = true;
+                did_sort = true;
+            }
+        }
+    }
+    
+    //if(did_sort)
+    {
+        boxSizerConnections = new wxBoxSizer(wxVERTICAL);
+        m_scrollWinConnections->SetSizer(boxSizerConnections );
+        
+        for(size_t i=0 ; i < ivec.size() ; i++){
+            ConnectionParamsPanel *pPanel = g_pConnectionParams->Item(ivec[i])->m_optionsPanel;
+            boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+        }
+    }
+    
+    return did_sort;
+    
+}           
+
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
   
   // Add new panels as necessary
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      if(mConnectionsPanelList.size() < i+1){
-        ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                             g_pConnectionParams->Item(i), this, i);
-        pPanel->SetSelected(false);
-        boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
-        mConnectionsPanelList.push_back(pPanel);
+      
+      if(!g_pConnectionParams->Item(i)->m_optionsPanel){
+            ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                             g_pConnectionParams->Item(i), this);
+            pPanel->SetSelected(false);
+            boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+            g_pConnectionParams->Item(i)->m_optionsPanel = pPanel;
       }
       else{
-          mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+          g_pConnectionParams->Item(i)->m_optionsPanel->Update(g_pConnectionParams->Item(i));
       }
 
   }
-  // Remove any stale panels
-  while(mConnectionsPanelList.size() > g_pConnectionParams->Count()){
-      ConnectionParamsPanel *pPanel = mConnectionsPanelList.back();
-      delete pPanel;
-      mConnectionsPanelList.pop_back();
-
-  }
+  SortSourceList();
+  m_scrollWinConnections->Layout();
   
-  boxSizerConnections->Layout();
-  
-  mSelectedConnectionPanel = NULL;
+  mSelectedConnection = NULL;
   m_buttonAdd->SetLabel(_("Add Connection"));
   m_buttonAdd->Enable( true );
 
 }
 
-void options::UpdateSourceList(void) {
+void options::UpdateSourceList( bool bResort ) {
    
-    for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++){
-        mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++){
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        ConnectionParamsPanel *panel = cp->m_optionsPanel;
+        if(panel)
+            panel->Update(g_pConnectionParams->Item(i));
     }
-    boxSizerConnections->Layout();
+
+    if(bResort){
+        SortSourceList();
+    }
+    
+    m_scrollWinConnections->Layout();
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
-  if(mSelectedConnectionPanel){
-      g_pConnectionParams->RemoveAt(mSelectedConnectionPanel->m_index);
+  if(mSelectedConnection){
+      // Find the index
+      int index = -1;
+      ConnectionParams *cp = NULL;
+      for (size_t i = 0; i < g_pConnectionParams->Count(); i++){
+        cp = g_pConnectionParams->Item(i);
+        if(mSelectedConnection == cp){
+            index = i;
+            break;
+        }
+      }
+            
+      if((index >= 0) && (cp)){
+        delete g_pConnectionParams->Item(index)->m_optionsPanel;  
+        g_pConnectionParams->RemoveAt(index);
 
-      DataStream* pds_existing = g_pMUX->FindStream(mSelectedConnectionPanel->m_pConnectionParams->GetDSPort());
-      if (pds_existing)
-          g_pMUX->StopAndRemoveStream(pds_existing);
-      
+        DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
+        if (pds_existing)
+            g_pMUX->StopAndRemoveStream(pds_existing);
+        //delete mSelectedConnection->m_optionsPanel;
+        mSelectedConnection = NULL;
+      }
    }
 
   //  Mark connection deleted
@@ -9109,22 +9204,21 @@ void options::OnSelectDatasource(wxListEvent& event) {
 
 void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
   //  Only one panel can be selected at any time  
-  //  Clear all selections
+  //  Clear any selections
 
-  if(mSelectedConnectionPanel)
-      mSelectedConnectionPanel->SetSelected( false );
-  //for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    //mConnectionsPanelList[i]->SetSelected( false );
+  if(mSelectedConnection && mSelectedConnection->m_optionsPanel)
+      mSelectedConnection->m_optionsPanel->SetSelected( false );
   
-  mSelectedConnectionPanel = panel;
   if(panel){
+    mSelectedConnection = panel->m_pConnectionParams;
     panel->SetSelected( true );  
-    SetConnectionParams(panel->m_pConnectionParams);
+    SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
     m_buttonAdd->Disable();
     m_buttonAdd->SetLabel(_("Editing connection..."));
   }
   else{
+    mSelectedConnection = NULL;
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
     m_buttonAdd->SetLabel(_("Add Connection"));

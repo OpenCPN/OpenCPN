@@ -44,6 +44,7 @@
 
 #include <wx/listimpl.cpp>
 
+#include "config.h" 
 #include "chcanv.h"
 #include "TCWin.h"
 #include "geodesic.h"
@@ -90,7 +91,6 @@
 #include "OCPN_AUIManager.h"
 #include "MUIBar.h"
 #include "CanvasConfig.h"
-#include <version.h>
 #include "CanvasOptions.h"
 
 #ifdef __OCPN__ANDROID__
@@ -300,7 +300,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern OCPN_Sound        g_anchorwatch_sound;
+extern OcpnSound*        g_anchorwatch_sound;
 
 extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
@@ -4266,15 +4266,12 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
 
 void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stoptimer )
 {
-    double old_ppm = GetVP().view_scale_ppm;
-    
     m_bzooming_to_cursor = can_zoom_to_cursor && g_bEnableZoomToCursor;
 
     if( g_bsmoothpanzoom ) {
         if(StartTimedMovement(stoptimer)) {
             m_mustmove += 150; /* for quick presses register as 200 ms duration */
             m_zoom_factor = factor;
-//            m_zoom_target =  VPoint.chart_scale / factor;
         }
         m_zoom_target =  VPoint.chart_scale / factor;
     } else {
@@ -4285,24 +4282,6 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
     }
 
     extendedSectorLegs.clear();
-   
-    //  Adjust the Viewpoint to keep ownship at the same point on-screen
-    if(m_bFollow){
-        double offx, offy;
-        toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
-
-        m_OSoffsetx = offx * old_ppm;
-        m_OSoffsety = offy * old_ppm;
-
-        double nlat, nlon;
-        double dx = m_OSoffsetx;
-        double dy = m_OSoffsety;
-        double d_east = dx / GetVP().view_scale_ppm;
-        double d_north = dy / GetVP().view_scale_ppm;
-
-        fromSM( d_east, d_north, gLat, gLon, &nlat, &nlon );
-        SetViewPoint( nlat, nlon); 
-    }
 }
 
 void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
@@ -4319,6 +4298,8 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     //    Cannot allow Yield() re-entrancy here
     if( m_bzooming ) return;
     m_bzooming = true;
+
+    double old_ppm = GetVP().view_scale_ppm;
 
     //  Capture current cursor position for zoom to cursor
     double zlat = m_cursor_lat;
@@ -4432,9 +4413,26 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
             //ClearbFollow();      // update the follow flag
         }
-        else
-            SetVPScale( new_scale );
-        
+        else{
+            if(m_bFollow){      //  Adjust the Viewpoint to keep ownship at the same pixel point on-screen
+                double offx, offy;
+                toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+
+                m_OSoffsetx = offx * old_ppm;
+                m_OSoffsety = offy * old_ppm;
+
+                double nlat, nlon;
+                double dx = m_OSoffsetx;
+                double dy = m_OSoffsety;
+                double d_east = dx / new_scale;
+                double d_north = dy / new_scale;
+
+                fromSM( d_east, d_north, gLat, gLon, &nlat, &nlon );
+                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation); 
+            }
+            else
+                SetVPScale( new_scale );
+        }
     }
     
     m_bzooming = false;
@@ -6146,18 +6144,12 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-
     if( play_sound ) {
-        if( !g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
-
-#ifndef __WXMSW__
-        if(g_anchorwatch_sound.IsOk() && !g_anchorwatch_sound.IsPlaying())
-            g_anchorwatch_sound.Play();
-#else
-            if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Play();
-#endif
-    } else {
-        if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Stop();
+        if( !g_anchorwatch_sound->IsOk() )
+            g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        g_anchorwatch_sound->Play();
+    } else if( g_anchorwatch_sound->IsOk() ) {
+        g_anchorwatch_sound->Stop();
     }
 
 }

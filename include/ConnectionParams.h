@@ -78,7 +78,7 @@ class ConnectionParamsPanel: public wxPanel
 {
 public:
     ConnectionParamsPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
-                           ConnectionParams *p_itemConnectionParams, options *pContainer, int index );
+                           ConnectionParams *p_itemConnectionParams, options *pContainer );
     ~ConnectionParamsPanel();
     
     void OnSelected( wxMouseEvent &event );
@@ -92,7 +92,6 @@ public:
     bool GetSelected(){ return m_bSelected; }
     int GetUnselectedHeight(){ return m_unselectedHeight; }
     ConnectionParams *m_pConnectionParams;
-    int m_index;
     
 private:
     options *m_pContainer;
@@ -107,6 +106,7 @@ private:
     wxStaticText *t12;
     wxStaticText *t14;
     wxStaticText *t16;
+    wxStaticText *t18;
 
     wxStaticText *t21;
 
@@ -121,6 +121,7 @@ class ConnectionParams
 {
 public:
     ConnectionParams();
+    ~ConnectionParams();
     ConnectionParams(const wxString &configStr);
 
     ConnectionType  Type;
@@ -164,6 +165,7 @@ public:
     
     bool            Valid;
     bool            b_IsSetup;
+    ConnectionParamsPanel *m_optionsPanel;
 private:
     wxString FilterTypeToStr(ListType type, FilterDirection dir);
     
