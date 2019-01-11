@@ -317,7 +317,7 @@ void MarkInfoDlg::Create()
     
     sbSizerBasicProperties = new wxStaticBoxSizer(wxVERTICAL, m_PanelBasicProperties, _("Properties"));
     m_staticTextLayer = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("This waypoint is part of a layer and can\'t be edited"));
-    sbSizerBasicProperties->Add(m_staticTextLayer, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    sbSizerBasicProperties->Add(m_staticTextLayer, 0, wxALL|wxEXPAND, 5);
 
     gbSizerInnerProperties = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerProperties->AddGrowableCol(2);
@@ -356,14 +356,14 @@ void MarkInfoDlg::Create()
     
     sbS_Description = new wxStaticBoxSizer( wxHORIZONTAL, m_PanelBasicProperties, _("Description"));
     m_textDescription = new wxTextCtrl( sbS_Description->GetStaticBox(), ID_DESCR_CTR_BASIC, wxEmptyString, wxDefaultPosition, wxSize( -1, smaller*2 ), wxTE_MULTILINE );
-    sbS_Description->Add( m_textDescription, 1, wxBOTTOM|wxLEFT | wxEXPAND, 5 );
+    sbS_Description->Add( m_textDescription, 1, wxBOTTOM|wxLEFT|wxEXPAND, 5 );
     m_buttonExtDescription = new wxButton( sbS_Description->GetStaticBox(), ID_BTN_DESC_BASIC, _T("\u2261"), wxDefaultPosition, wxSize( 15, smaller*2 ), 0 );
-    sbS_Description->Add( m_buttonExtDescription, 0, wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_RIGHT, 5 );
+    sbS_Description->Add( m_buttonExtDescription, 0, wxBOTTOM|wxRIGHT|wxLEFT, 5 );
     sbS_Description->SetSizeHints( sbS_Description->GetStaticBox() );
     
     wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_PanelBasicProperties, _("Links")  );
     m_htmlList = new  	wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxSize( -1, smaller*2 ), 0);
-    sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT | wxEXPAND, 5 );
+    sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
 
     sbS_SizerLinks1->SetSizeHints( sbS_Description->GetStaticBox() );
   
@@ -508,7 +508,7 @@ void MarkInfoDlg::Create()
     m_notebookProperties->AddPage(m_PanelBasicProperties, _("Basic"), false);
     m_notebookProperties->AddPage(m_PanelDescription, _("Description"), false);
     m_notebookProperties->AddPage(m_PanelExtendedProperties, _("Extended"), false);
-    bMainSizer->Add(m_notebookProperties, 1, wxLEFT|wxTOP|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxEXPAND, 5);
+    bMainSizer->Add(m_notebookProperties, 1, wxLEFT|wxTOP|wxEXPAND, 5);
     
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     //Get and convert picture.
@@ -521,7 +521,7 @@ void MarkInfoDlg::Create()
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_OK));
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL));
     m_sdbSizerButtons->Realize();
-    btnSizer->Add(m_sdbSizerButtons, 0, wxALL|wxALIGN_RIGHT, 5);
+    btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
     bMainSizer->Add( btnSizer, 0, wxEXPAND, 0);
     SetSizer(bMainSizer);
     Layout();
@@ -942,29 +942,30 @@ void MarkInfoDlg::DefautlBtnClicked( wxCommandEvent& event )
 {
     SaveDefaultsDialog* SaveDefaultDlg = new SaveDefaultsDialog( this );
     DimeControl( SaveDefaultDlg );
-    if ( SaveDefaultDlg->ShowModal() == wxID_OK ){
-        double value;
-        if ( SaveDefaultDlg->IconCB->GetValue() ){
-            g_default_wp_icon = *pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() );
+    SaveDefaultDlg->ShowWindowModalThenDo([this,SaveDefaultDlg](int retcode){
+        if ( retcode == wxID_OK ) {
+            double value;
+            if ( SaveDefaultDlg->IconCB->GetValue() ) {
+                g_default_wp_icon = *pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() );
+            }
+            if ( SaveDefaultDlg->RangRingsCB->GetValue() ) {
+                g_iWaypointRangeRingsNumber = m_SpinWaypointRangeRingsNumber->GetValue();
+                if(m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
+                    g_fWaypointRangeRingsStep = fromUsrDistance(value, -1) ;
+                g_colourWaypointRangeRingsColour = m_PickColor->GetColour();
+            }
+            if ( SaveDefaultDlg->ArrivalRCB->GetValue() )
+                if(m_textArrivalRadius->GetValue().ToDouble(&value))
+                    g_n_arrival_circle_radius = fromUsrDistance(value, -1);
+            if ( SaveDefaultDlg->ScaleCB->GetValue() ) {
+                g_iWpt_ScaMin = wxAtoi( m_textScaMin->GetValue() );
+                g_bUseWptScaMin = m_checkBoxScaMin->GetValue() ;
+            }
+            if ( SaveDefaultDlg->NameCB->GetValue() ) {
+                g_iWpt_ScaMin = m_checkBoxShowName->GetValue();
+            }
         }
-        if ( SaveDefaultDlg->RangRingsCB->GetValue() ){
-            g_iWaypointRangeRingsNumber = m_SpinWaypointRangeRingsNumber->GetValue();
-            if(m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
-                g_fWaypointRangeRingsStep = fromUsrDistance(value, -1) ;
-            g_colourWaypointRangeRingsColour = m_PickColor->GetColour();
-        }
-        if ( SaveDefaultDlg->ArrivalRCB->GetValue() )
-            if(m_textArrivalRadius->GetValue().ToDouble(&value))
-                g_n_arrival_circle_radius = fromUsrDistance(value, -1);
-        if ( SaveDefaultDlg->ScaleCB->GetValue() ){
-            g_iWpt_ScaMin = wxAtoi( m_textScaMin->GetValue() );
-            g_bUseWptScaMin = m_checkBoxScaMin->GetValue() ;
-        }
-        if ( SaveDefaultDlg->NameCB->GetValue() ){
-            g_iWpt_ScaMin = m_checkBoxShowName->GetValue();
-        }         
-    }
-    delete SaveDefaultDlg;
+    });
 }
 
 void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
@@ -1323,43 +1324,40 @@ END_EVENT_TABLE()
 SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent, wxWindowID id)
 {
     //(*Initialize(SaveDefaultsDialog)
-    wxGridBagSizer* GridBagSizer1;
+    wxBoxSizer* bSizer1 = new wxBoxSizer(wxVERTICAL);
     wxStdDialogButtonSizer* StdDialogButtonSizer1;
     
     Create(parent, id, _("Save some defaults"));
-    GridBagSizer1 = new wxGridBagSizer(0, 0);
     StaticText1 = new wxStaticText(this, wxID_ANY, _("Check which properties of current waypoint\n should be set as default for NEW waypoints."));
-    GridBagSizer1->Add(StaticText1, wxGBPosition(0, 0), wxGBSpan(1, 2), wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    bSizer1->Add(StaticText1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    
     wxString s = ( g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use"): _("Don't use") );
     NameCB = new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name") + _T("    [") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator);
-    GridBagSizer1->Add(NameCB, wxGBPosition(1, 1), wxDefaultSpan, wxALL, 5);
+    bSizer1->Add(NameCB, 0, wxALL, 5);
     s = g_pMarkInfoDialog->m_pRoutePoint->GetIconName();
     IconCB = new wxCheckBox(this, wxID_ANY, _("Icon")+ _T("    [") + s +_T("]"));
-    GridBagSizer1->Add(IconCB, wxGBPosition(2, 1), wxDefaultSpan, wxALL, 5);
+    bSizer1->Add(IconCB, 0, wxALL, 5);
     s = ( g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ?
          _("Do use") + wxString::Format(_T(" (%i) "), g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ): _("Don't use") );
     RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings")+ _T("    [") + s +_T("]"));
-    GridBagSizer1->Add(RangRingsCB, wxGBPosition(3, 1), wxDefaultSpan, wxALL, 5);
+    bSizer1->Add(RangRingsCB, 0, wxALL, 5);
     s = ( g_pMarkInfoDialog->m_textArrivalRadius->GetValue());
     ArrivalRCB = new wxCheckBox(this, wxID_ANY, _("Arrival radius")+ _T("    [") + s +_T("]"));
-    GridBagSizer1->Add(ArrivalRCB, wxGBPosition(4, 1), wxDefaultSpan, wxALL, 5);
+    bSizer1->Add(ArrivalRCB, 0, wxALL, 5);
     s = ( g_pMarkInfoDialog->m_checkBoxScaMin->GetValue() ?
          _("Show only if")+_T(" < ") + g_pMarkInfoDialog->m_textScaMin->GetValue():
          _("Show always") );
     ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale")+ _T("    [") + s +_T("]"));
+    bSizer1->Add(ScaleCB, 0, wxALL, 5);
     
-    GridBagSizer1->Add(ScaleCB, wxGBPosition(5, 1), wxDefaultSpan, wxALL, 5);
     StdDialogButtonSizer1 = new wxStdDialogButtonSizer();
     StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_OK));
     StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_CANCEL));
     StdDialogButtonSizer1->Realize();
-    GridBagSizer1->Add(StdDialogButtonSizer1, wxGBPosition(6, 0), wxGBSpan(1, 2), wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText2 = new wxStaticText(this, wxID_ANY, _T("      "));
-    GridBagSizer1->Add(StaticText2, wxGBPosition(1, 0), wxDefaultSpan, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    SetSizer(GridBagSizer1);
+    bSizer1->Add(StdDialogButtonSizer1, 0, wxALL|wxEXPAND, 5);
+
+    SetSizer(bSizer1);
     Layout();
-    GridBagSizer1->Fit(this);
-    GridBagSizer1->SetSizeHints(this);
 }
 
 SaveDefaultsDialog::~SaveDefaultsDialog()
