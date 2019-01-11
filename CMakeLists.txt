@@ -460,6 +460,10 @@ add_subdirectory(src/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
+MESSAGE (STATUS "    Adding local LIBTESS2" )
+add_subdirectory(src/libtess2)
+SET( OPENGL_LIBRARIES "LIBTESS2_static" ${OPENGL_LIBRARIES})
+MESSAGE (STATUS "    Revised GL Lib (with local libtess2): " ${OPENGL_LIBRARIES})
 
 IF(NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins.
