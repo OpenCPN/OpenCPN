@@ -48,7 +48,6 @@
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "chcanv.h"
-#include "tcmgr.h"        // pjotrc 2011.03.02
 #include "PositionParser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
@@ -540,20 +539,50 @@ void MarkInfoDlg::Create()
     m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
     m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+    m_comboBoxTideStation->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnTideStationCombobox ), NULL, this );
+}
+
+#define TIDESTATION_BATCH_SIZE 10
+
+void MarkInfoDlg::OnTideStationCombobox( wxCommandEvent& event)
+{
+    int count = m_comboBoxTideStation->GetCount();
+    int sel = m_comboBoxTideStation->GetSelection();
+    if( sel == count - 1 ) {
+        wxString n;
+        int i = 0;
+        for( auto ts : m_tss) {
+            if( i == count + TIDESTATION_BATCH_SIZE ) {
+                break;
+            }
+            if( i > count ) {
+                n = wxString::Format("%s", ts.second->IDX_station_name);
+                m_comboBoxTideStation->Append(n);
+            }
+            i++;
+        }
+    }
 }
 
 void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
 {
     if( event.GetSelection() == EXTENDED_PROP_PAGE ) {
+        if( m_lasttspos.IsSameAs(m_textLatitude->GetValue() + m_textLongitude->GetValue()) ) {
+            return;
+        }
+        m_lasttspos = m_textLatitude->GetValue() + m_textLongitude->GetValue();
         double lat = fromDMM(m_textLatitude->GetValue());
         double lon = fromDMM(m_textLongitude->GetValue());
-        std::map<double, const IDX_entry*> tss = ptcmgr->GetStationsForLL(lat, lon);
+        m_tss = ptcmgr->GetStationsForLL(lat, lon);
         wxString s = m_comboBoxTideStation->GetStringSelection();
         wxString n;
         int i = 0;
         m_comboBoxTideStation->Clear();
         m_comboBoxTideStation->Append(wxEmptyString);
-        for( auto ts : tss) {
+        for( auto ts : m_tss) {
+            if( i == TIDESTATION_BATCH_SIZE ) {
+                break;
+            }
             i++;
             n = wxString::Format("%s", ts.second->IDX_station_name);
             m_comboBoxTideStation->Append(n);

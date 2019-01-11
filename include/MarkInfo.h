@@ -56,6 +56,8 @@
 #include "scrollingdialog.h"
 #endif
 
+#include "tcmgr.h"
+
 /*!
  * Forward declarations
  */
@@ -185,10 +187,10 @@ class MarkInfoDlg : public wxDialog
     friend class SaveDefaultsDialog;
     
 	private:
-        RoutePoint  *m_pRoutePoint;
-        static bool instanceFlag;
-        int           i_htmlList_item;
-        LinkPropImpl* m_pLinkProp;
+        RoutePoint*     m_pRoutePoint;
+        static bool     instanceFlag;
+        int             i_htmlList_item;
+        LinkPropImpl*   m_pLinkProp;
         
         bool            m_bShowName_save;
         wxString        m_Name_save;
@@ -208,6 +210,8 @@ class MarkInfoDlg : public wxDialog
         double          m_WaypointArrivalRadius_save;
         float           m_PlannedSpeed_save;
         wxDateTime      m_ArrETA_save;
+        std::map<double, const IDX_entry*> m_tss;
+        wxString        m_lasttspos;
         
 	protected:
         OCPNIconCombo*          m_bcomboBoxIcon;
@@ -304,8 +308,7 @@ class MarkInfoDlg : public wxDialog
         void DefautlBtnClicked( wxCommandEvent& event );
         void OnNotebookPageChanged( wxNotebookEvent& event );
         void OnTimeChanged( wxDateEvent& event ) { m_cbEtaPresent->SetValue(true); }
-
-
+        void OnTideStationCombobox( wxCommandEvent& event);
         
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
