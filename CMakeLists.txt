@@ -61,7 +61,7 @@
 # set /MT for Release build, and /MTd for debug.
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
     CMAKE_POLICY(SET CMP0043 NEW)
@@ -86,9 +86,6 @@ IF(NOT MSVC)
    SET(OBJ_VISIBILITY "-fvisibility=hidden" )
 ENDIF()
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-
 # Locations where cmake looks for cmake modules.
 SET(CMAKE_MODULE_PATH 
   ${CMAKE_SOURCE_DIR}/build
@@ -96,17 +93,9 @@ SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    message(STATUS "Setting C++11 standard via CXX flags")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-  endif()
-else ()
-  set (CMAKE_CXX_STANDARD 11)
-  message(STATUS "Setting C++11 standard via cmake standard mechanism")
-endif ()
+
+set (CMAKE_CXX_STANDARD 11)
+message(STATUS "Setting C++11 standard via cmake standard mechanism")
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
