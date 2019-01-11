@@ -28,6 +28,7 @@
 #include "RoutePropDlg.h"
 #include "Route.h"
 #include <wx/dvrenderers.h>
+#include "ocpn_types.h"
 
 
 class RoutePropDlgImpl : public RoutePropDlg
@@ -38,6 +39,7 @@ public:
     static RoutePropDlgImpl* getInstance( wxWindow* parent );
     void SetRouteAndUpdate( Route *pR, bool only_points = FALSE );
     void UpdatePoints();
+    void SetColorScheme( ColorScheme cs );
     
 protected:
     void RoutePropDlgOnClose( wxCloseEvent& event ) { ResetChanges(); Hide(); event.Veto(); }

@@ -47,11 +47,14 @@ extern double gLon;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
+extern ColorScheme global_color_scheme;
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
     m_pRoute = NULL;
 
+    SetColorScheme(global_color_scheme);
+    
     Connect( wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
 }
@@ -510,4 +513,9 @@ void RoutePropDlgImpl::SaveChanges()
         pConfig->UpdateSettings();
         m_pRoute = NULL;
     }
+}
+
+void RoutePropDlgImpl::SetColorScheme( ColorScheme cs )
+{
+    DimeControl( this );
 }
