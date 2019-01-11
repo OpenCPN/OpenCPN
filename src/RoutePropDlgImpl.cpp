@@ -383,7 +383,7 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick( wxCommandEvent& event )
     int noCols;
     int noRows;
     noCols = m_dvlcWaypoints->GetColumnCount();
-    noRows = m_dvlcWaypoints->GetCount();
+    noRows = m_dvlcWaypoints->GetItemCount();
     wxListItem item;
     item.SetMask( wxLIST_MASK_TEXT );
     
@@ -464,7 +464,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEve
         wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
 #endif
         editItem->Enable( m_dvlcWaypoints->GetSelection() > 0 );
-        delItem->Enable( m_dvlcWaypoints->GetSelection() > 0 && m_dvlcWaypoints->GetCount() > 2 );
+        delItem->Enable( m_dvlcWaypoints->GetSelection() > 0 && m_dvlcWaypoints->GetItemCount() > 2 );
     }
 #ifndef __WXQT__
     wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
