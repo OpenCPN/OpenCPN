@@ -1187,7 +1187,7 @@ void options::Init(void) {
   // for deferred loading
   m_pPlugInCtrl = NULL;
   m_pNMEAForm = NULL;
-  mSelectedConnectionPanel = NULL;
+  mSelectedConnection = NULL;
   
 #ifdef __OCPN__ANDROID__
   m_scrollRate = 1;
@@ -6495,6 +6495,20 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   ConnectionParams* pConnectionParams = new ConnectionParams();
 
+  UpdateConnectionParamsFromSelectedItem( pConnectionParams );
+  
+  ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                             pConnectionParams, this);
+  pPanel->SetSelected(false);
+  boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+  pConnectionParams->m_optionsPanel = pPanel;
+
+  return pConnectionParams;
+
+}
+
+ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams) {
+
   pConnectionParams->Valid = TRUE;
   if (m_rbTypeSerial->GetValue())
     pConnectionParams->Type = SERIAL;
@@ -6726,45 +6740,63 @@ void options::OnApplyClick(wxCommandEvent& event) {
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
   
-  int itemIndex = -1;
-  if (mSelectedConnectionPanel) {
-    ConnectionParams* cpo = mSelectedConnectionPanel->m_pConnectionParams;
-    if (cpo) {
-      lastAddr = cpo->NetworkAddress;
-      lastPort = cpo->NetworkPort;
-      lastNetProtocol = cpo->NetProtocol;
-      itemIndex = mSelectedConnectionPanel->m_index;
-    }
+  if (mSelectedConnection) {
+    ConnectionParams* cpo = mSelectedConnection;
+    lastAddr = cpo->NetworkAddress;
+    lastPort = cpo->NetworkPort;
+    lastNetProtocol = cpo->NetProtocol;
   }
 
   if (!connectionsaved) {
     size_t nCurrentPanelCount = g_pConnectionParams->GetCount();
-    ConnectionParams* cp = CreateConnectionParamsFromSelectedItem();
-    if (cp != NULL) {
-      if (itemIndex >= 0) {
-        g_pConnectionParams->RemoveAt(itemIndex);
-        g_pConnectionParams->Insert(cp, itemIndex);
+    ConnectionParams *cp = NULL;
+    int old_priority = -1;
+    {
+      if (mSelectedConnection) {
+        cp =  mSelectedConnection;
+        old_priority = cp->Priority;
+        UpdateConnectionParamsFromSelectedItem( cp );
+        cp->b_IsSetup = false;
+
+        //delete g_pConnectionParams->Item(itemIndex)->m_optionsPanel;
+        //old_priority = g_pConnectionParams->Item(itemIndex)->Priority;
+        //g_pConnectionParams->RemoveAt(itemIndex);
+        //g_pConnectionParams->Insert(cp, itemIndex);
+        //mSelectedConnection = cp;
+        //cp->m_optionsPanel->SetSelected( true );
       } else {
-        g_pConnectionParams->Add(cp);
+        cp = CreateConnectionParamsFromSelectedItem();
+        if(cp)
+            g_pConnectionParams->Add(cp);
       }
 
       //  Record the previous parameters, if any
-      cp->LastNetProtocol = lastNetProtocol;
-      cp->LastNetworkAddress = lastAddr;
-      cp->LastNetworkPort = lastPort;
+      if(cp){
+        cp->LastNetProtocol = lastNetProtocol;
+        cp->LastNetworkAddress = lastAddr;
+        cp->LastNetworkPort = lastPort;
+      }
 
       if(g_pConnectionParams->GetCount() != nCurrentPanelCount)
         FillSourceList();
-      else
-        UpdateSourceList();
+      else if(old_priority >= 0){
+          if(old_priority != cp->Priority)             // need resort
+             UpdateSourceList( true );
+          else
+             UpdateSourceList( false );
+      }
+          
+
+              
       
       connectionsaved = TRUE;
-    } else {
-      ::wxEndBusyCursor();
-      if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
     }
+//     else {
+//       ::wxEndBusyCursor();
+//       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
+//     }
     
-    if (itemIndex < 0)
+    if (!mSelectedConnection)
         ClearNMEAForm();
 
   }
@@ -9029,8 +9061,8 @@ void options::SetDefaultConnectionParams(void) {
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
  
   //  Unselect all panels
-  for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    mConnectionsPanelList[i]->SetSelected(false);;
+  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) 
+    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected( false );
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
@@ -9040,55 +9072,114 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
   RecalculateSize();
 }
 
+bool options::SortSourceList(void) {
+    
+    if(g_pConnectionParams->Count() < 2)
+        return false;
+    
+    std::vector<int> ivec;
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+        ivec.push_back(i);
+    
+    bool did_sort = false;
+    bool did_swap = true;
+    while(did_swap){
+        did_swap = false;
+        for (size_t j=1 ; j < ivec.size() ; j++){
+            ConnectionParams *c1 = g_pConnectionParams->Item(ivec[j]);
+            ConnectionParams *c2 = g_pConnectionParams->Item(ivec[j-1]);
+            
+            if(c1->Priority > c2->Priority){
+                int t = ivec[j-1];
+                ivec[j-1] = ivec[j];
+                ivec[j] = t;
+                did_swap = true;
+                did_sort = true;
+            }
+        }
+    }
+    
+    //if(did_sort)
+    {
+        boxSizerConnections = new wxBoxSizer(wxVERTICAL);
+        m_scrollWinConnections->SetSizer(boxSizerConnections );
+        
+        for(size_t i=0 ; i < ivec.size() ; i++){
+            ConnectionParamsPanel *pPanel = g_pConnectionParams->Item(ivec[i])->m_optionsPanel;
+            boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+        }
+    }
+    
+    return did_sort;
+    
+}           
+
 void options::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
   
   // Add new panels as necessary
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      if(mConnectionsPanelList.size() < i+1){
-        ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                             g_pConnectionParams->Item(i), this, i);
-        pPanel->SetSelected(false);
-        boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
-        mConnectionsPanelList.push_back(pPanel);
+      
+      if(!g_pConnectionParams->Item(i)->m_optionsPanel){
+            ConnectionParamsPanel *pPanel = new ConnectionParamsPanel( m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                             g_pConnectionParams->Item(i), this);
+            pPanel->SetSelected(false);
+            boxSizerConnections->Add( pPanel, 0, wxEXPAND|wxALL, 0 );
+            g_pConnectionParams->Item(i)->m_optionsPanel = pPanel;
       }
       else{
-          mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+          g_pConnectionParams->Item(i)->m_optionsPanel->Update(g_pConnectionParams->Item(i));
       }
 
   }
-  // Remove any stale panels
-  while(mConnectionsPanelList.size() > g_pConnectionParams->Count()){
-      ConnectionParamsPanel *pPanel = mConnectionsPanelList.back();
-      delete pPanel;
-      mConnectionsPanelList.pop_back();
-
-  }
+  SortSourceList();
+  m_scrollWinConnections->Layout();
   
-  boxSizerConnections->Layout();
-  
-  mSelectedConnectionPanel = NULL;
+  mSelectedConnection = NULL;
   m_buttonAdd->SetLabel(_("Add Connection"));
   m_buttonAdd->Enable( true );
 
 }
 
-void options::UpdateSourceList(void) {
+void options::UpdateSourceList( bool bResort ) {
    
-    for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++){
-        mConnectionsPanelList[i]->Update(g_pConnectionParams->Item(i));
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++){
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        ConnectionParamsPanel *panel = cp->m_optionsPanel;
+        if(panel)
+            panel->Update(g_pConnectionParams->Item(i));
     }
-    boxSizerConnections->Layout();
+
+    if(bResort){
+        SortSourceList();
+    }
+    
+    m_scrollWinConnections->Layout();
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
-  if(mSelectedConnectionPanel){
-      g_pConnectionParams->RemoveAt(mSelectedConnectionPanel->m_index);
+  if(mSelectedConnection){
+      // Find the index
+      int index = -1;
+      ConnectionParams *cp = NULL;
+      for (size_t i = 0; i < g_pConnectionParams->Count(); i++){
+        cp = g_pConnectionParams->Item(i);
+        if(mSelectedConnection == cp){
+            index = i;
+            break;
+        }
+      }
+            
+      if((index >= 0) && (cp)){
+        delete g_pConnectionParams->Item(index)->m_optionsPanel;  
+        g_pConnectionParams->RemoveAt(index);
 
-      DataStream* pds_existing = g_pMUX->FindStream(mSelectedConnectionPanel->m_pConnectionParams->GetDSPort());
-      if (pds_existing)
-          g_pMUX->StopAndRemoveStream(pds_existing);
-      
+        DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
+        if (pds_existing)
+            g_pMUX->StopAndRemoveStream(pds_existing);
+        //delete mSelectedConnection->m_optionsPanel;
+        mSelectedConnection = NULL;
+      }
    }
 
   //  Mark connection deleted
@@ -9109,22 +9200,21 @@ void options::OnSelectDatasource(wxListEvent& event) {
 
 void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
   //  Only one panel can be selected at any time  
-  //  Clear all selections
+  //  Clear any selections
 
-  if(mSelectedConnectionPanel)
-      mSelectedConnectionPanel->SetSelected( false );
-  //for( size_t i=0 ; i < mConnectionsPanelList.size() ; i++)
-    //mConnectionsPanelList[i]->SetSelected( false );
+  if(mSelectedConnection && mSelectedConnection->m_optionsPanel)
+      mSelectedConnection->m_optionsPanel->SetSelected( false );
   
-  mSelectedConnectionPanel = panel;
   if(panel){
+    mSelectedConnection = panel->m_pConnectionParams;
     panel->SetSelected( true );  
-    SetConnectionParams(panel->m_pConnectionParams);
+    SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
     m_buttonAdd->Disable();
     m_buttonAdd->SetLabel(_("Editing connection..."));
   }
   else{
+    mSelectedConnection = NULL;
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
     m_buttonAdd->SetLabel(_("Add Connection"));

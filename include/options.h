@@ -404,8 +404,7 @@ class options : private Uncopyable,
   wxChoice *m_choicePriority, *m_choicePrecision;
   wxScrolledWindow *m_scrollWinConnections; 
   wxBoxSizer *boxSizerConnections;
-  ConnectionParamsPanel *mSelectedConnectionPanel;
-  std::vector <ConnectionParamsPanel *> mConnectionsPanelList;
+  ConnectionParams *mSelectedConnection;
   
   // For the Display\Units page
   wxStaticText* itemStaticTextUserVar;
@@ -627,8 +626,11 @@ class options : private Uncopyable,
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
   void FillSourceList();
-  void UpdateSourceList();
+  void UpdateSourceList( bool bResort );
+  bool SortSourceList(void);
+
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
+  ConnectionParams *UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
   
