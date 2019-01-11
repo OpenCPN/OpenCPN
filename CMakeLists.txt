@@ -1524,8 +1524,6 @@ IF (LIBSNDFILE_FOUND)
     SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
 ENDIF ()
 
-SET(SRCS ${SRCS} src/SystemCmdSound.cpp)
-
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
 IF(wx_Version_2.9+)
@@ -1873,6 +1871,7 @@ ENDIF (OPENGL_FOUND)
 CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
 
+# If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
 IF(MSVC)
   SET(SRCS ${SRCS} src/opencpn.rc)
@@ -2714,6 +2713,8 @@ ENDIF(WIN32 AND NOT UNIX)
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
 ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
+
+SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h)
 
 INCLUDE(CPack)
 
