@@ -329,6 +329,8 @@ ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, co
 
 ConnectionParamsPanel::~ConnectionParamsPanel()
 {
+    if(m_pConnectionParams)
+        m_pConnectionParams->m_optionsPanel = nullptr;
 }
 
 void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
