@@ -50,11 +50,18 @@
 #include <wx/list.h>
 #include <wx/combobox.h>
 
-#if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
-#else
-#include "scrollingdialog.h"
-#endif
+
+#define ID_WPT_RANGERINGS_NO     7507
+#define ID_RCLK_MENU_COPY_TEXT   7013
+#define ID_RCLK_MENU_DELETE      7015
+#define ID_RCLK_MENU_COPY        7016
+#define ID_RCLK_MENU_COPY_LL     7017
+#define ID_RCLK_MENU_PASTE       7018
+#define ID_RCLK_MENU_PASTE_LL    7019
+#define ID_RCLK_MENU_DELETE_LINK 7023
+#define ID_RCLK_MENU_EDIT_LINK   7024
+#define ID_RCLK_MENU_ADD_LINK    7025
 
 #include "tcmgr.h"
 

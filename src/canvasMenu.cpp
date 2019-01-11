@@ -51,8 +51,8 @@
 #include "chartdb.h"
 #include "chart1.h"
 #include "cutil.h"
-#include "routeprop.h"
 #include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
@@ -110,7 +110,7 @@ extern wxString         g_AW2GUID;
 extern int              g_click_stop;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MarkInfoDlg     *g_pMarkInfoDialog;
-extern RouteProp        *pRoutePropDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
@@ -1267,7 +1267,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
             if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
                 pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-                pRoutePropDialog->UpdateProperties();
+                //pNew->UpdateProperties();
             }
             gFrame->InvalidateAllGL();
             gFrame->RefreshAllCanvas();

@@ -39,8 +39,8 @@
 #include "styles.h"
 #include "dychart.h"
 #include "navutil.h"
-#include "routeprop.h"
 #include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
@@ -68,7 +68,7 @@ extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
-extern RouteProp *pRoutePropDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
@@ -1201,16 +1201,10 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    pRoutePropDialog = RouteProp::getInstance( GetParent() );
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( GetParent() );
 
     pRoutePropDialog->SetRouteAndUpdate( route );
-    pRoutePropDialog->UpdateProperties();
-    if( !route->m_bIsInLayer )
-        pRoutePropDialog->SetDialogTitle( _("Route Properties") );
-    else {
-        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Route Properties"), _("Layer"), GetLayerName( route->m_LayerID ) ) );
-        pRoutePropDialog->SetDialogTitle( caption );
-    }
+
 
     if( !pRoutePropDialog->IsShown() )
         pRoutePropDialog->Show();
@@ -1930,7 +1924,8 @@ void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
     //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
     UpdateRouteListCtrl();
 
-    if( pRoutePropDialog ) pRoutePropDialog->Hide();
+    if( pRoutePropDialog )
+        pRoutePropDialog->Hide();
 
     gFrame->RefreshAllCanvas();
     

@@ -41,7 +41,6 @@ extern wxString GetLayerName(int id);
 
 extern long gStart_LMT_Offset;
 extern int g_StartTimeTZ;
-extern wxDateTime g_StartTime;
 extern double gLat;
 extern double gLon;
 extern MarkInfoDlg *g_pMarkInfoDialog;
@@ -202,7 +201,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
                 pR->m_PlannedDeparture = wxDateTime::Now();
             
         } else {
-            g_StartTime = wxInvalidDateTime;
             g_StartTimeTZ = 1;
             if( !pR->m_PlannedDeparture.IsValid() )
                 pR->m_PlannedDeparture = wxDateTime::Now();

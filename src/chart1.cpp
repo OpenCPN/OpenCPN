@@ -85,7 +85,6 @@
 #include "tcmgr.h"
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
-#include "routeprop.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "toolbar.h"
@@ -224,8 +223,7 @@ Select                    *pSelectAIS;
 Routeman                  *g_pRouteMan;
 WayPointman               *pWayPointMan;
 MarkInfoDlg               *g_pMarkInfoDialog;
-RouteProp                 *pRoutePropDialog;
-RoutePropDlgImpl          *pNew;
+RoutePropDlgImpl          *pRoutePropDialog;
 TrackPropDlg              *pTrackPropDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;

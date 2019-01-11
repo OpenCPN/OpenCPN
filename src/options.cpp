@@ -74,7 +74,6 @@ extern GLuint g_raster_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
-#include "routeprop.h"
 #include "MarkInfo.h"
 
 #include "ais.h"

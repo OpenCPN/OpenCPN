@@ -39,7 +39,6 @@
 #include <wx/bmpbuttn.h>
 
 #include "styles.h"
-#include "routeprop.h"
 #include "MarkInfo.h"
 #include "navutil.h"                // for Route
 #include "georef.h"
@@ -47,6 +46,7 @@
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
+#include "RoutePropDlgImpl.h"
 #include "chcanv.h"
 #include "PositionParser.h"
 #include "pluginmanager.h"
@@ -69,7 +69,7 @@ extern WayPointman        *pWayPointMan;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern RouteProp          *pRoutePropDialog;
+extern RoutePropDlgImpl          *pRoutePropDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
@@ -1035,7 +1035,7 @@ void MarkInfoDlg::OnMarkInfoOKClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateWptListCtrl();
         
     if( pRoutePropDialog && pRoutePropDialog->IsShown() )
-        pRoutePropDialog->UpdateProperties();
+        pRoutePropDialog->UpdatePoints();
 
     SetClientSize(m_defaultClientSize);
     
