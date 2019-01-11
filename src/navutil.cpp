@@ -4695,6 +4695,15 @@ void GpxDocument::SeedRandom()
 
 void DimeControl( wxWindow* ctrl )
 {
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
+
 #ifdef __WXQT__
     return; // this is seriously broken on wxqt
 #endif
@@ -4716,7 +4725,14 @@ void DimeControl( wxWindow* ctrl )
 void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxColour ctrl_back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
-
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
     ColorScheme cs = global_color_scheme;
 
     static int depth = 0; // recursion count
