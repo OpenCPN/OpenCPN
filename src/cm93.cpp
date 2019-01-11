@@ -1950,6 +1950,7 @@ cm93chart::cm93chart()
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
       m_this_chart_context->chart = this;
+      m_RAZBuilt = true;
       
 }
 
