@@ -22,38 +22,38 @@
  ***************************************************************************
  */
 
-#ifndef __OCPNSOUNDDATA_H__
-#define __OCPNSOUNDDATA_H__
+#ifndef SYSTEM_CMD_SOUND_H__
+#define SYSTEM_CMD_SOUND_H__
 
-#ifdef OCPN_USE_PORTAUDIO
+#include "OCPN_Sound.h"
+#include "config.h"
 
-#include "wx/wxprec.h"
-#ifndef  WX_PRECOMP
-#include "wx/wx.h"
-#endif //precompiled headers
+/**
+ * Sound backend based on running a external CLI tool using system(3). 
+ * Supports synchronous and asynchronous mode. The command line tools
+ * also typically supports a wide range of audio formats; the exact
+ * list is platform dependent.
+ */
 
-/// Sound data, as loaded from .wav file:
-class OCPNSoundData
+class SystemCmdSound: public OcpnSound
 {
-public:
-    OCPNSoundData();
-    ~OCPNSoundData();
 
-    // .wav header information:
-    unsigned m_channels;       // num of channels (mono:1, stereo:2)
-    unsigned m_samplingRate;
-    unsigned m_bitsPerSample;  // if 8, then m_data contains unsigned 8bit
-    // samples (wxUint8), if 16 then signed 16bit
-    // (wxInt16)
-    unsigned m_samples;        // length in samples:
+    public:
+        SystemCmdSound(const char* cmd = SYSTEM_SOUND_CMD) 
+            :m_path("") { m_cmd = cmd; }
+        ~SystemCmdSound() {};
 
-    // wave data:
-    size_t   m_dataBytes;
-    wxUint8 *m_data;           // m_dataBytes bytes of data
+        bool Load(const char* path, int deviceIndex = -1) override;
+        bool Play() override;
+        bool Stop() override;
 
-    wxUint8 *m_dataWithHeader; // ditto, but prefixed with .wav header
+    private:
+        void worker();
+        bool canPlay();
+        bool m_isPlaying;
+        std::string m_cmd;
+        std::string m_path;
 };
 
-#endif
 
-#endif
+#endif // __WX_SOUND_H__

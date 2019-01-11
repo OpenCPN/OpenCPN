@@ -21,34 +21,22 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include "config.h"
+#include "SoundFileLoader.h"
 
-#include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
+#ifdef USE_SNDFILE
+#include "SndfileSoundLoader.h"
 
-extern int g_iSoundDeviceIndex;
-
-
-OcpnSound::OcpnSound()
+AbstractSoundLoader* SoundLoaderFactory() 
 {
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
+    return new SndfileSoundLoader(); 
 }
 
+#else
 
-OcpnSound::~OcpnSound()
+AbstractSoundLoader* SoundLoaderFactory() 
 {
+    return new SoundFileLoader(); 
 }
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+#endif

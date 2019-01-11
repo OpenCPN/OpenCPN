@@ -44,6 +44,7 @@
 
 #include <wx/listimpl.cpp>
 
+#include "config.h" 
 #include "chcanv.h"
 #include "TCWin.h"
 #include "geodesic.h"
@@ -90,7 +91,6 @@
 #include "OCPN_AUIManager.h"
 #include "MUIBar.h"
 #include "CanvasConfig.h"
-#include <version.h>
 #include "CanvasOptions.h"
 
 #ifdef __OCPN__ANDROID__
@@ -300,7 +300,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern OCPN_Sound        g_anchorwatch_sound;
+extern OcpnSound*        g_anchorwatch_sound;
 
 extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
@@ -6144,18 +6144,12 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-
     if( play_sound ) {
-        if( !g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
-
-#ifndef __WXMSW__
-        if(g_anchorwatch_sound.IsOk() && !g_anchorwatch_sound.IsPlaying())
-            g_anchorwatch_sound.Play();
-#else
-            if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Play();
-#endif
-    } else {
-        if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Stop();
+        if( !g_anchorwatch_sound->IsOk() )
+            g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        g_anchorwatch_sound->Play();
+    } else if( g_anchorwatch_sound->IsOk() ) {
+        g_anchorwatch_sound->Stop();
     }
 
 }

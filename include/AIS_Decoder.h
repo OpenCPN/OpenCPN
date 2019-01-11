@@ -81,7 +81,7 @@ private:
     
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
-    void OnTimerAISAudio(wxTimerEvent& event);
+    void OnSoundFinishedAISAudio(wxCommandEvent& event);
     void OnTimerDSC( wxTimerEvent& event );
     
     bool NMEACheckSumOK(const wxString& str);
@@ -113,7 +113,7 @@ private:
 
     bool             m_bAIS_Audio_Alert_On;
     wxTimer          m_AIS_Audio_Alert_Timer;
-    OCPN_Sound       m_AIS_Sound;
+    OcpnSound*       m_AIS_Sound;
     int              m_n_targets;
     bool             m_bSuppressed;
     bool             m_bGeneralAlert;

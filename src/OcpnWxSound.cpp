@@ -21,34 +21,59 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <thread>
 
-#include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
 #include <wx/file.h>
 #include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
+#include <wx/sound.h>
 
-extern int g_iSoundDeviceIndex;
+#include "OcpnWxSound.h"
 
 
-OcpnSound::OcpnSound()
+bool OcpnWxSound::Load(const char* path, int deviceIndex)
 {
+    m_OK = m_sound.Create(path);
+    m_isPlaying = false;
+    if (m_OK) {
+        m_path = path;
+    }
+    return m_OK;
+}
+
+
+bool OcpnWxSound::Stop(void)
+{
+    m_sound.Stop();
     m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
+    m_isPlaying = false;
+    return false;
 }
 
 
-OcpnSound::~OcpnSound()
+void OcpnWxSound::worker(void)
 {
+    wxLogInfo("wxSound::worker()");
+    m_isPlaying = true;
+    m_sound.Play(wxSOUND_SYNC);
+    if  (m_onFinished) {
+        m_onFinished(m_callbackData);
+        m_onFinished = 0;
+    }
+    m_isPlaying = false;
 }
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
+
+bool OcpnWxSound::Play()
 {
-    m_onFinished = cb;
-    m_callbackData = userData;
+    wxLogMessage("wxSound::Play()");
+    if( !m_OK || m_isPlaying) {
+        wxLogWarning("OcpnWxSound: cannot play: not loaded or busy playing.");
+        return false;
+    }
+    if  (m_onFinished) {
+        std::thread t([this]() { worker(); });
+        t.detach();
+        return true;
+    }
+    return m_sound.Play(wxSOUND_SYNC);
 }

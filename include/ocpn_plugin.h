@@ -731,6 +731,9 @@ extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
 extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
 extern DECL_EXP wxString GetNewGUID();
 extern "C" DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2);
+/**
+ * Synchronous play a sound file. Supported formats depends on sound backend.
+*/
 extern DECL_EXP void PlugInPlaySound( wxString &sound_file );
 
 
@@ -1081,6 +1084,10 @@ extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
 extern DECL_EXP double GetCanvasTilt();
 extern DECL_EXP void SetCanvasTilt(double tilt);
 
+/**
+* Synchronous play a sound file. Supported formats depends on sound backend. The
+* deviceIx is only used on platforms using the portaudio sound backend.
+*/
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();

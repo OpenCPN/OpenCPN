@@ -49,6 +49,8 @@
 #include <gelf.h>
 #endif
 
+#include "config.h"
+#include "SoundFactory.h"
 #include "dychart.h"
 #include "pluginmanager.h"
 #include "navutil.h"
@@ -76,7 +78,6 @@
 #include "gshhs.h"
 #include "mygeom.h"
 #include "OCPNPlatform.h"
-#include "version.h"
 #include "toolbar.h"
 #include "Track.h"
 #include "Route.h"
@@ -3154,17 +3155,9 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 }
 
 
-void PlugInPlaySound( wxString &sound_file )
+void PlugInPlaySound(wxString& sound_file)
 {
-    if(g_pi_manager) {
-        g_pi_manager->m_plugin_sound.Stop();
-        g_pi_manager->m_plugin_sound.UnLoad();
-
-        g_pi_manager->m_plugin_sound.Create( sound_file );
-
-        if( g_pi_manager->m_plugin_sound.IsOk() )
-            g_pi_manager->m_plugin_sound.Play();
-    }
+    PlugInPlaySoundEx(sound_file, -1);
 }
 
 // API 1.10 Route and Waypoint Support
@@ -5975,17 +5968,17 @@ void SetCanvasProjection(int projection)
 // Play a sound to a given device
 bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 {
-    if(g_pi_manager) {
-        g_pi_manager->m_plugin_sound.Stop();
-        g_pi_manager->m_plugin_sound.UnLoad();
-
-        g_pi_manager->m_plugin_sound.Create( sound_file, deviceIndex );
-
-        if( g_pi_manager->m_plugin_sound.IsOk() )
-            return g_pi_manager->m_plugin_sound.Play();
+    OcpnSound* sound = SoundFactory();
+    bool ok = sound->Load(sound_file, deviceIndex);
+    if (!ok) {
+        wxLogWarning("Cannot load sound file: %s", sound_file);
+        return false;
     }
-
-    return false;
+    ok = sound->Play();
+    if (!ok) {
+        wxLogWarning("Cannot play sound file: %s", sound_file);
+    }
+    return ok;
 }
 
 bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta )

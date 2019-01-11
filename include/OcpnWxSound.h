@@ -22,33 +22,41 @@
  ***************************************************************************
  */
 
+#ifndef __WX_SOUND_H__
+#define __WX_SOUND_H__
+
+#include <wx/sound.h>
+
 #include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
 
-extern int g_iSoundDeviceIndex;
+/**
+ * Sound backend based on wxWidget's wxSound class. On Linux, this seems
+ * to be broken -- at a minimum it requires the old OSS API which on 
+ * pulseaudio platforms means to have the osspd service running. Even so,
+ * there seems to be many quirks here.
+ *
+ * However, the backend might possibly work on MacOS and/or Windows. 
+ * Supports synchronous and asynchronous mode.
+ *
+ */
 
-
-OcpnSound::OcpnSound()
+class OcpnWxSound: public OcpnSound
 {
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
-}
+
+    public:
+        OcpnWxSound() {};
+        ~OcpnWxSound() { Stop(); };
+
+        bool Load(const char* path, int deviceIndex = -1) override;
+        bool Play() override;
+        bool Stop() override;
+
+    private:
+        void worker();
+        std::string m_path;
+        bool m_isPlaying;
+        wxSound m_sound;
+};
 
 
-OcpnSound::~OcpnSound()
-{
-}
-
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+#endif // __WX_SOUND_H__

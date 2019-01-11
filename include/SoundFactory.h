@@ -22,33 +22,16 @@
  ***************************************************************************
  */
 
+#ifndef SOUND_FACTORY_H
+#define SOUND_FACTORY_H
+
 #include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
 
-extern int g_iSoundDeviceIndex;
+/**
+ * Creates a OcpnSound instance based on configuration done by cmake 
+ * enshrined in config.h.
+ */
 
+OcpnSound* SoundFactory();
 
-OcpnSound::OcpnSound()
-{
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
-}
-
-
-OcpnSound::~OcpnSound()
-{
-}
-
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+#endif // SOUND_FACTORY_H
