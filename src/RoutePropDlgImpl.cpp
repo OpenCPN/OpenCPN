@@ -21,10 +21,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <wx/clipbrd.h>
+
 #include "RoutePropDlgImpl.h"
 #include "navutil.h"
 #include "georef.h"
 #include "MarkInfo.h"
+#include "routeman.h"
+#include "routemanagerdialog.h"
+
+#define ID_RCLK_MENU_COPY_TEXT 7013
+#define ID_RCLK_MENU_EDIT_WP   7014
+#define ID_RCLK_MENU_DELETE    7015
 
 #define COLUMN_PLANNED_SPEED 8
 #define COLUMN_ETD 12
@@ -37,19 +45,15 @@ extern wxDateTime g_StartTime;
 extern double gLat;
 extern double gLon;
 extern MarkInfoDlg *g_pMarkInfoDialog;
+extern Routeman *g_pRouteMan;
+extern MyConfig *pConfig;
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
-    /* If time allows, implement a custom picker for date and time
-     wxDataViewDateRenderer* renderer = new wxDataViewDateRenderer();
-     renderer->SetMode(wxDATAVIEW_CELL_EDITABLE);
-     etd_col = new wxDataViewColumn (_("ETD"), renderer, wxDATAVIEW_CELL_EDITABLE, wxDVR_DEFAULT_ALIGNMENT);
-     m_dvlcWaypoints->InsertColumn(m_dvlcWaypoints->GetColumnCount() - 1, etd_col);
-     */
-    wxDataViewTextRenderer* renderer = new wxDataViewTextRenderer();
-    renderer->SetMode(wxDATAVIEW_CELL_EDITABLE);
-    etd_col = new wxDataViewColumn (_("ETD"), renderer, m_dvlcWaypoints->GetColumnCount() - 1);
-    m_dvlcWaypoints->InsertColumn(m_dvlcWaypoints->GetColumnCount() - 1, etd_col);
+    m_pRoute = NULL;
+
+    Connect( wxEVT_COMMAND_MENU_SELECTED,
+            wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
 }
 
 bool RoutePropDlgImpl::instanceFlag = false;
@@ -70,14 +74,17 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
 
 void RoutePropDlgImpl::UpdatePoints()
 {
+    if( !m_pRoute )
+        return;
     wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
     int selected_row = m_dvlcWaypoints->GetSelectedRow();
     m_dvlcWaypoints->DeleteAllItems();
     
-    if( NULL == m_pRoute ) return;
+    if( NULL == m_pRoute )
+        return;
     wxVector<wxVariant> data;
     
-    m_pRoute->UpdateSegmentDistances( m_planspeed );           // to fix ETD properties
+    m_pRoute->UpdateSegmentDistances( m_pRoute->m_PlannedSpeed );           // to fix ETA properties
     m_tcDistance->SetValue(wxString::Format(wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(m_pRoute->m_route_length)));
     m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
     m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrDistance(m_pRoute->m_PlannedSpeed)));
@@ -94,7 +101,7 @@ void RoutePropDlgImpl::UpdatePoints()
         if( in == 0) {
             DistanceBearingMercator(pnode->GetData()->GetLatitude(), pnode->GetData()->GetLongitude(), gLat, gLon, &bearing, &distance);
             if( m_pRoute->m_PlannedDeparture.IsValid() ) {
-                eta = wxString::Format("Start: %s", m_pRoute->m_PlannedDeparture.FormatISOCombined().c_str());
+                eta = wxString::Format("Start: %s", m_pRoute->m_PlannedDeparture.Format(ETA_FORMAT_STR).c_str());
             } else {
                 eta = _("N/A");
             }
@@ -113,32 +120,42 @@ void RoutePropDlgImpl::UpdatePoints()
             }
             ete = pnode->GetData()->GetETE();
         }
-        data.push_back( wxVariant(in == 0 ? "---" : std::to_string(in)) );
-        data.push_back( wxVariant(pnode->GetData()->GetName()) ); // To
-        slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
-        data.push_back( wxVariant(slen) ); // Distance
-        slen.Printf(wxT("%5.0f \u00B0T"), bearing);
-        data.push_back( wxVariant(slen) ); // Bearing
-        data.push_back( wxVariant(::toSDMM( 1, pnode->GetData()->GetLatitude(), FALSE)) ); // Lat
-        data.push_back( wxVariant(::toSDMM( 1, pnode->GetData()->GetLongitude(), FALSE)) ); // Lon
-        data.push_back( wxVariant(ete) ); // ETE
-        data.push_back( eta ); //ETA
-        data.push_back( wxVariant(wxVariant(wxString::FromDouble(toUsrSpeed(speed)))) ); // Speed
-        data.push_back( wxVariant(pnode->GetData()->m_TideStation) ); // Next Tide event TODO
-        data.push_back( wxVariant(pnode->GetData()->GetDescription()) ); // Description
+        wxString name = pnode->GetData()->GetName();
+        double lat = pnode->GetData()->GetLatitude();
+        double lon = pnode->GetData()->GetLongitude();
+        wxString tide_station = pnode->GetData()->m_TideStation;
+        wxString desc = pnode->GetData()->GetDescription();
         wxString etd;
-        if( pnode->GetData()->GetETD().IsValid() ) {
-            etd = pnode->GetData()->GetETD().Format(ETA_FORMAT_STR);
+        if( pnode->GetData()->GetManualETD().IsValid() ) {
+            etd = pnode->GetData()->GetManualETD().Format(ETA_FORMAT_STR);
+            if( pnode->GetData()->GetManualETD().IsValid() && pnode->GetData()->GetETA().IsValid() && pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA() ) {
+                etd.Prepend(_T("!! ")); // Manually enteed ETD is before we arrive here!
+            }
         } else {
             etd = wxEmptyString;
         }
         pnode = pnode->GetNext();
+        wxString crs;
         if( pnode ) {
-            slen.Printf(wxT("%5.0f \u00B0T"), pnode->GetData()->GetCourse());
-            data.push_back( wxVariant(slen) ); // Course
+            crs.Printf(wxT("%5.0f \u00B0T"), pnode->GetData()->GetCourse());
         } else {
-            data.push_back( wxVariant(_("Arrived")) );
+            crs = _("Arrived");
         }
+
+        data.push_back( wxVariant(in == 0 ? "---" : std::to_string(in)) );
+        data.push_back( wxVariant(name) ); // To
+        slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
+        data.push_back( wxVariant(slen) ); // Distance
+        slen.Printf(wxT("%5.0f \u00B0T"), bearing);
+        data.push_back( wxVariant(slen) ); // Bearing
+        data.push_back( wxVariant(::toSDMM( 1, lat, FALSE)) ); // Lat
+        data.push_back( wxVariant(::toSDMM( 2, lon, FALSE)) ); // Lon
+        data.push_back( wxVariant(ete) ); // ETE
+        data.push_back( eta ); //ETA
+        data.push_back( wxVariant(wxString::FromDouble(toUsrSpeed(speed))) ); // Speed
+        data.push_back( wxVariant(tide_station) ); // Next Tide event TODO
+        data.push_back( wxVariant(desc) ); // Description
+        data.push_back( wxVariant(crs) );
         data.push_back( wxVariant(etd) );
         data.push_back( wxVariant(wxEmptyString) ); // Empty column to fill the remaining space (Usually gets squeezed to zero, even if not empty)
         m_dvlcWaypoints->AppendItem( data );
@@ -155,6 +172,12 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
 {
     if( NULL == pR )
         return;
+ 
+    if( m_pRoute && m_pRoute != pR ) // We had unsaved changes, but now display another route
+        ResetChanges();
+    
+    m_OrigRoute.m_PlannedDeparture = pR->m_PlannedDeparture;
+    m_OrigRoute.m_PlannedSpeed = pR->m_PlannedSpeed;
     
     wxString title = pR->GetName() == wxEmptyString ? _("Route Properties") : pR->GetName();
     if( !pR->m_bIsInLayer )
@@ -172,18 +195,15 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         
         if( pR == m_pRoute ) {
             gStart_LMT_Offset = 0;
-            if( pR->m_PlannedDeparture.IsValid() )
-                m_starttime = pR->m_PlannedDeparture;
-            else
-                m_starttime = g_StartTime;
+            if( !pR->m_PlannedDeparture.IsValid() )
+                pR->m_PlannedDeparture = wxDateTime::Now();
             
         } else {
             g_StartTime = wxInvalidDateTime;
             g_StartTimeTZ = 1;
-            if( pR->m_PlannedDeparture.IsValid() )
-                m_starttime = pR->m_PlannedDeparture;
-            else
-                m_starttime = g_StartTime;
+            if( !pR->m_PlannedDeparture.IsValid() )
+                pR->m_PlannedDeparture = wxDateTime::Now();
+
             if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
                 m_tz_selection = 0;
             else if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL )
@@ -193,7 +213,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
             gStart_LMT_Offset = 0;
             m_pEnroutePoint = NULL;
             m_bStartNow = false;
-            m_planspeed = pR->m_PlannedSpeed;
         }
         
         m_pRoute = pR;
@@ -214,35 +233,66 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         m_tcFrom->SetValue( m_pRoute->m_RouteStartString );
         m_tcTo->SetValue( m_pRoute->m_RouteEndString );
         m_tcName->SetFocus();
-        if( m_pRoute->m_PlannedDeparture.IsValid() ) {
+        if( m_pRoute->m_PlannedDeparture.IsValid() && m_pRoute->m_PlannedDeparture.GetValue() > 0 ) {
+            //TODO: Do the Local/LMC/UTC magic
             m_dpDepartureDate->SetValue(m_pRoute->m_PlannedDeparture.GetDateOnly());
             m_tpDepartureTime->SetValue(m_pRoute->m_PlannedDeparture);
+        } else {
+            m_dpDepartureDate->SetValue(wxDateTime::Now().GetDateOnly());
+            m_tpDepartureTime->SetValue(wxDateTime::Now());
         }
     }
+    
+    if( m_pRoute->m_Colour == wxEmptyString ) {
+        m_choiceColor->Select( 0 );
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( m_pRoute->m_Colour == ::GpxxColorNames[i] ) {
+                m_choiceColor->Select( i + 1 );
+                break;
+            }
+        }
+    }
+    
+    for( unsigned int i = 0; i < sizeof( ::StyleValues ) / sizeof(int); i++ ) {
+        if( m_pRoute->m_style == ::StyleValues[i] ) {
+            m_choiceStyle->Select( i );
+            break;
+        }
+    }
+    
+    for( unsigned int i = 0; i < sizeof( ::WidthValues ) / sizeof(int); i++ ) {
+        if( m_pRoute->m_width == ::WidthValues[i] ) {
+            m_choiceWidth->Select( i );
+            break;
+        }
+    }
+    
     UpdatePoints();
 }
 
 void RoutePropDlgImpl::DepartureDateOnDateChanged( wxDateEvent& event )
 {
-    wxDateTime dt = m_dpDepartureDate->GetValue();
-    wxTimeSpan ts = m_tpDepartureTime->GetValue().Subtract(m_tpDepartureTime->GetValue().GetDateOnly());
-    dt.Add(ts);
-    m_pRoute->SetDepartureDate(dt);
+    if( !m_pRoute )
+        return;
+    m_pRoute->SetDepartureDate(GetDepartureTS());
     UpdatePoints();
     event.Skip();
 }
 
 void RoutePropDlgImpl::DepartureTimeOnTimeChanged( wxDateEvent& event )
 {
-    wxDateTime dt = m_dpDepartureDate->GetValue();
-    wxTimeSpan ts = m_tpDepartureTime->GetValue().Subtract(m_tpDepartureTime->GetValue().GetDateOnly());
-    dt.Add(ts);
-    m_pRoute->SetDepartureDate(dt);
+    if( !m_pRoute )
+        return;
+    m_pRoute->SetDepartureDate(GetDepartureTS());
     UpdatePoints();
     event.Skip();
 }
 
-void RoutePropDlgImpl::PlanSpeedOnTextEnter( wxCommandEvent& event ) {
+void RoutePropDlgImpl::PlanSpeedOnTextEnter( wxCommandEvent& event )
+{
+    if( !m_pRoute )
+        return;
     double spd;
     if( m_tcPlanSpeed->GetValue().ToDouble(&spd) ) {
         if( m_pRoute->m_PlannedSpeed != fromUsrSpeed(spd) ) {
@@ -254,7 +304,10 @@ void RoutePropDlgImpl::PlanSpeedOnTextEnter( wxCommandEvent& event ) {
     }
 }
 
-void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event ) {
+void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event )
+{
+    if( !m_pRoute )
+        return;
     double spd;
     if( m_tcPlanSpeed->GetValue().ToDouble(&spd) ) {
         if( m_pRoute->m_PlannedSpeed != fromUsrSpeed(spd) ) {
@@ -275,41 +328,186 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEve
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event )
 {
+    if( !m_pRoute )
+        return;
     wxDataViewModel* const model = event.GetModel();
     wxVariant value;
     model->GetValue(value, event.GetItem(), ev_col);
     RoutePoint *p = m_pRoute->GetPoint((int)(long)event.GetItem().GetID());
     if( ev_col == COLUMN_PLANNED_SPEED ) {
         double spd;
-        if( !value.GetString().ToDouble(&spd) )
+        if( !value.GetString().ToDouble(&spd) ) {
             spd = 0.0;
+        }
         p->SetPlannedSpeed(fromUsrSpeed(spd));
     }
     else if( ev_col == COLUMN_ETD ) {
         wxString::const_iterator end;
         wxDateTime etd;
         
-        if( !etd.ParseDateTime(value.GetString(), &end) )
+        if( !etd.ParseDateTime(value.GetString(), &end) ) {
             etd = wxInvalidDateTime;
+        }
         p->SetETD(etd.FormatISOCombined());
     }
     UpdatePoints();
 }
 
-void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event ) {
-    wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
-    RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+wxDateTime RoutePropDlgImpl::GetDepartureTS() const
+{
+    // TODO: Do the Local/LMC/UTC magic
+    wxDateTime dt = m_dpDepartureDate->GetValue();
+    dt.SetHour(m_tpDepartureTime->GetValue().GetHour());
+    dt.SetMinute(m_tpDepartureTime->GetValue().GetMinute());
+    dt.SetSecond(m_tpDepartureTime->GetValue().GetSecond());
+    return dt;
+}
+
+
+void RoutePropDlgImpl::OnRoutepropCopyTxtClick( wxCommandEvent& event )
+{
+    wxString tab("\t", wxConvUTF8);
+    wxString eol("\n", wxConvUTF8);
+    wxString csvString;
     
-    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog. TODO: This is everywhere, redo as singleton
-        g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
-    g_pMarkInfoDialog->SetRoutePoint(pRP);
-    g_pMarkInfoDialog->UpdateProperties();
-    if( pRP->m_bIsInLayer ) {
-        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( pRP->m_LayerID ) ) );
-        g_pMarkInfoDialog->SetDialogTitle( caption );
-    } else
-        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
+    csvString << this->GetTitle() << eol
+    << _("Name") << tab << m_pRoute->m_RouteNameString << eol
+    << _("Depart From") << tab << m_pRoute->m_RouteStartString << eol
+    << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
+    << _("Total distance") << tab << m_tcDistance->GetValue() << eol
+    << _("Speed (Kts)") << tab << m_tcPlanSpeed->GetValue() << eol
+    << _("Departure Time") + _T(" (") + _T(ETA_FORMAT_STR) + _T(")") << tab << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
+    << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol << eol;
     
-    if( !g_pMarkInfoDialog->IsShown() )
-        g_pMarkInfoDialog->Show();
+    int noCols;
+    int noRows;
+    noCols = m_dvlcWaypoints->GetColumnCount();
+    noRows = m_dvlcWaypoints->GetCount();
+    wxListItem item;
+    item.SetMask( wxLIST_MASK_TEXT );
+    
+    for( int i = 0; i < noCols; i++ ) {
+        wxDataViewColumn* col = m_dvlcWaypoints->GetColumn(i);
+        csvString << col->GetTitle() << tab;
+    }
+    csvString << eol;
+    
+    wxVariant value;
+    for( int j = 0; j < noRows; j++ ) {
+        for( int i = 0; i < noCols; i++ ) {
+            m_dvlcWaypoints->GetValue(value, j, i);
+            csvString << value.MakeString() << tab;
+        }
+        csvString << eol;
+    }
+    
+    if( wxTheClipboard->Open() ) {
+        wxTextDataObject* data = new wxTextDataObject;
+        data->SetText( csvString );
+        wxTheClipboard->SetData( data );
+        wxTheClipboard->Close();
+    }
+}
+
+void RoutePropDlgImpl::OnRoutePropMenuSelected( wxCommandEvent& event )
+{
+    switch( event.GetId() ) {
+        case ID_RCLK_MENU_COPY_TEXT: {
+            OnRoutepropCopyTxtClick( event );
+            break;
+        }
+        case ID_RCLK_MENU_DELETE: {
+            int dlg_return = OCPNMessageBox( this, _("Are you sure you want to remove this waypoint?"),
+                                            _("OpenCPN Remove Waypoint"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+            
+            if( dlg_return == wxID_YES ) {
+                int sel = m_dvlcWaypoints->GetSelectedRow();
+                m_dvlcWaypoints->SelectRow(sel);
+                
+                wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+                RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+                
+                g_pRouteMan->RemovePointFromRoute( pRP, m_pRoute, NULL );
+                
+                UpdatePoints();
+            }
+            break;
+        }
+        case ID_RCLK_MENU_EDIT_WP: {
+            wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+            RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+            
+            RouteManagerDialog::WptShowPropertiesDialog( pRP, this );
+            break;
+        }
+    }
+}
+
+void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event )
+{
+    wxMenu menu;
+    
+    if( ! m_pRoute->m_bIsInLayer ) {
+#ifdef __OCPN_ANDROID__
+        wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+        // add stuff
+        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
+        editItem->SetFont(*pf);
+        menu.Append(editItem);
+        
+        wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
+        delItem->SetFont(*pf);
+        menu.Append(delItem);
+#else
+        wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
+        wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+#endif
+        editItem->Enable( m_dvlcWaypoints->GetSelection() > 0 );
+        delItem->Enable( m_dvlcWaypoints->GetSelection() > 0 && m_dvlcWaypoints->GetCount() > 2 );
+    }
+#ifndef __WXQT__
+    wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+#endif
+    
+    PopupMenu( &menu );
+}
+
+void RoutePropDlgImpl::ResetChanges()
+{
+    if( !m_pRoute )
+        return;
+    m_pRoute->m_PlannedSpeed = m_OrigRoute.m_PlannedSpeed;
+    m_pRoute->m_PlannedDeparture = m_OrigRoute.m_PlannedDeparture;
+    m_pRoute = NULL;
+}
+
+void RoutePropDlgImpl::SaveChanges()
+{
+    if( m_pRoute && !m_pRoute->m_bIsInLayer ) {
+        //  Get User input Text Fields
+        m_pRoute->m_RouteNameString = m_tcName->GetValue();
+        m_pRoute->m_RouteStartString = m_tcFrom->GetValue();
+        m_pRoute->m_RouteEndString = m_tcTo->GetValue();
+        if( m_choiceColor->GetSelection() == 0 ) {
+            m_pRoute->m_Colour = wxEmptyString;
+        } else {
+            m_pRoute->m_Colour = ::GpxxColorNames[m_choiceColor->GetSelection() - 1];
+        }
+        m_pRoute->m_style = (wxPenStyle)::StyleValues[m_choiceStyle->GetSelection()];
+        m_pRoute->m_width = ::WidthValues[m_choiceWidth->GetSelection()];
+        switch( g_StartTimeTZ ) {
+            case 1 :
+                m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+                break;
+            case 2 :
+                m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_LOCAL;
+                break;
+            default:
+                m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
+        }
+        
+        pConfig->UpdateRoute( m_pRoute );
+        pConfig->UpdateSettings();
+        m_pRoute = NULL;
+    }
 }

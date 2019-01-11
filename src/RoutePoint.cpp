@@ -1168,6 +1168,34 @@ wxDateTime RoutePoint::GetETD()
 {
     if( m_seg_etd.IsValid() ) {
         return m_seg_etd;
+    } else {
+        if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
+            wxDateTime etd = wxInvalidDateTime;
+            wxString s_etd = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
+            const wxChar *parse_return = etd.ParseDateTime( s_etd );
+            if( parse_return ) {
+                wxString tz( parse_return );
+                
+                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) {
+                    m_seg_etd = etd;
+                }
+                else {
+                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
+                        m_seg_etd = etd;
+                        long lmt_offset = (long) ( ( m_lon * 3600. ) / 15. );
+                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
+                        m_seg_etd -= lmt;
+                    } else {
+                        m_seg_etd = etd.ToUTC();
+                    }
+                }
+                if( etd.IsValid() ) {
+                    m_MarkDescription.Replace( s_etd, wxEmptyString);
+                    m_seg_etd = etd;
+                    return m_seg_etd;
+                }
+            }
+        }
     }
     return wxInvalidDateTime;
 }
@@ -1201,21 +1229,25 @@ void RoutePoint::SetETE(wxLongLong secs)
     m_seg_ete = secs;
 }
 
+void RoutePoint::SetETD(const wxDateTime &etd) {
+    m_seg_etd = etd;
+    m_manual_etd = TRUE;
+}
+
 bool RoutePoint::SetETD(const wxString &ts)
 {
     if( ts.IsEmpty() ) {
+        m_seg_etd = wxInvalidDateTime;
         m_manual_etd = false;
         return TRUE;
     }
     wxDateTime tmp;
     wxString::const_iterator end;
     if ( tmp.ParseISOCombined(ts) ) {
-        m_seg_etd = tmp;
-        m_manual_etd = TRUE;
+        SetETD(tmp);
         return TRUE;
     } else if( tmp.ParseDateTime(ts, &end) ) {
-        m_seg_etd = tmp;
-        m_manual_etd = TRUE;
+        SetETD(tmp);
         return TRUE;
     }
     return FALSE;

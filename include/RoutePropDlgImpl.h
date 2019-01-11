@@ -40,7 +40,7 @@ public:
     void UpdatePoints();
     
 protected:
-    void RoutePropDlgOnClose( wxCloseEvent& event ) { Hide(); event.Veto(); }
+    void RoutePropDlgOnClose( wxCloseEvent& event ) { ResetChanges(); Hide(); event.Veto(); }
     void RoutePropDlgOnSize( wxSizeEvent& event ) { event.Skip(); }
     void RoutePropDlgOnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
     void PlanSpeedOnKillFocus( wxFocusEvent& event );
@@ -54,30 +54,32 @@ protected:
     void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
     void ExtendOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
     void SplitOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-    void BtnsOnCancelButtonClick( wxCommandEvent& event ) { event.Skip(); }
-    void BtnsOnOKButtonClick( wxCommandEvent& event ) { event.Skip(); }
+    void BtnsOnCancelButtonClick( wxCommandEvent& event ) { ResetChanges(); Hide(); }
+    void BtnsOnOKButtonClick( wxCommandEvent& event ) { SaveChanges(); Hide(); }
+    void OnRoutePropMenuSelected( wxCommandEvent& event );
+    void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     
-    RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 710,370 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+    wxDateTime GetDepartureTS() const;
+    void SaveChanges();
+    void ResetChanges();
+    
+    RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 private:
     static bool instanceFlag;
     static RoutePropDlgImpl* single;
     
     Route       *m_pRoute;
+    Route       m_OrigRoute;
     Route       *m_pHead; // for route splitting
     Route       *m_pTail;
     RoutePoint  *m_pExtendPoint;
     Route       *m_pExtendRoute;
     RoutePoint  *m_pEnroutePoint;
     bool        m_bStartNow;
-    
-    double      m_planspeed;
-    double      m_avgspeed;
-    
+        
     int         m_nSelected; // index of point selected in Properties dialog row
     int         m_tz_selection;
-    
-    wxDateTime     m_starttime; // kept as UTC
-    
+        
     wxDataViewColumn *etd_col;
 };
 

@@ -63,6 +63,12 @@ class RoutePropDlg : public wxFrame
 		wxTimePickerCtrl* m_tpDepartureTime;
 		wxStaticText* m_stTimeZone;
 		wxChoice* m_choiceTimezone;
+		wxStaticText* m_staticTextColor;
+		wxChoice* m_choiceColor;
+		wxStaticText* m_stStyle;
+		wxChoice* m_choiceStyle;
+		wxStaticText* m_stWidth;
+		wxChoice* m_choiceWidth;
 		wxDataViewListCtrl* m_dvlcWaypoints;
 		wxDataViewColumn* m_dataViewListColumnLeg;
 		wxDataViewColumn* m_dataViewListColumnToWpt;
@@ -76,6 +82,7 @@ class RoutePropDlg : public wxFrame
 		wxDataViewColumn* m_dataViewListColumnNTE;
 		wxDataViewColumn* m_dataViewListColumnDesc;
 		wxDataViewColumn* m_dataViewListColumnCourse;
+		wxDataViewColumn* m_dataViewListColumnETD;
 		wxDataViewColumn* m_dataViewListColumnEmpty;
 		wxPanel* m_pnlAdvanced;
 		wxStaticText* m_stDescription;
@@ -108,7 +115,7 @@ class RoutePropDlg : public wxFrame
 
 	public:
 
-		RoutePropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 710,414 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		RoutePropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~RoutePropDlg();
 

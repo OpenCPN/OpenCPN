@@ -993,29 +993,18 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
         wxLongLong duration = wxLongLong(3600.0 * prp->m_seg_len / prp->m_seg_vmg);
         prp->SetETE(duration);
         wxTimeSpan ts( 0, 0, duration );
-        if( !prp0->m_seg_etd.IsValid() ) {
-            prp0->m_seg_etd = m_PlannedDeparture.Add(wxTimeSpan(0, 0, m_route_time));
-        }
-        prp->m_seg_eta = prp0->m_seg_etd.Add(ts);
-
-        prp0->m_seg_etd = wxInvalidDateTime;
-        if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
-            wxString s_etd = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
-            const wxChar *parse_return = etd.ParseDateTime( s_etd );
-            if( parse_return ) {
-                wxString tz( parse_return );
-
-                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) prp0->m_seg_etd = etd;
-                else
-                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
-                        prp0->m_seg_etd = etd;
-                        long lmt_offset = (long) ( ( prp0->m_lon * 3600. ) / 15. );
-                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
-                        prp0->m_seg_etd -= lmt;
-                    } else
-                        prp0->m_seg_etd = etd.ToUTC();
+        if( !prp0->GetManualETD().IsValid() ) {
+            prp0->m_manual_etd = false;
+            if( prp0->GetETA().IsValid() ) {
+                prp0->m_seg_etd = prp0->GetETA();
+            } else {
+                prp0->m_seg_etd = m_PlannedDeparture + wxTimeSpan(0, 0, m_route_time);
             }
+        }
+        prp->m_seg_eta = prp0->m_seg_etd + ts;
+        if( !prp->m_manual_etd || !prp->GetETD().IsValid() ) {
+            prp->m_seg_etd = prp->m_seg_eta;
+            prp->m_manual_etd = false;
         }
     }
 }
@@ -1035,7 +1024,9 @@ void Route::UpdateSegmentDistances( double planspeed )
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
-        prp0->m_seg_etd = m_PlannedDeparture;
+        if( !prp0->m_manual_etd ) {
+            prp0->m_seg_etd = m_PlannedDeparture;
+        }
         node = node->GetNext();
 
         while( node ) {

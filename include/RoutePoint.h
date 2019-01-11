@@ -34,7 +34,7 @@
 #define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
 #define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding
 
-#define ETA_FORMAT_STR "%Y-%m-%d %H:%M"
+#define ETA_FORMAT_STR "%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
 class ocpnDC;
 class wxDC;
@@ -121,6 +121,7 @@ public:
       double GetPlannedSpeed();
       wxDateTime GetETD();
       wxDateTime GetManualETD();
+      void SetETD(const wxDateTime &etd);
       bool SetETD(const wxString &ts);
       wxDateTime GetETA();
       wxString GetETE();
@@ -198,7 +199,7 @@ public:
 
       wxDateTime        m_CreateTimeX;
 private:
-    wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
+      wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;

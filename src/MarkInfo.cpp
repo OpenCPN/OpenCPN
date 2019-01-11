@@ -61,9 +61,6 @@
 
 
 extern double             gLat, gLon, gSog, gCog;
-extern double             g_PlanSpeed;
-extern wxDateTime         g_StartTime;
-extern int                g_StartTimeTZ;
 extern IDX_entry          *gpIDX;
 extern TCMgr              *ptcmgr;
 extern long               gStart_LMT_Offset;
@@ -80,13 +77,13 @@ extern bool                g_bShowTrue, g_bShowMag;
 
 extern MyFrame            *gFrame;
 extern OCPNPlatform       *g_Platform;
-extern wxString           g_default_wp_icon;
+extern wxString            g_default_wp_icon;
 
 // Global print data, to remember settings during the session
-extern wxPrintData               *g_printData;
+extern wxPrintData        *g_printData;
 
 // Global page setup data
-extern wxPageSetupData*          g_pageSetupData;
+extern wxPageSetupData*   g_pageSetupData;
 
 extern float              g_ChartScaleFactorExp;
 extern int                g_GUIScaleFactor;
@@ -1264,7 +1261,6 @@ bool MarkInfoDlg::SaveChanges()
             }
         }
         
-        m_pRoutePoint->SetETD(wxEmptyString);
         if( m_cbEtaPresent->GetValue() ) {
             wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
             dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
@@ -1273,6 +1269,8 @@ bool MarkInfoDlg::SaveChanges()
             if( dt.IsValid() ) {
                 m_pRoutePoint->SetETD(dt.FormatISOCombined());
             }
+        } else {
+            m_pRoutePoint->SetETD(wxEmptyString);
         }
 
         // Here is some logic....

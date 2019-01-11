@@ -779,7 +779,7 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             }
             if( pr->m_manual_etd ) {
                 pugi::xml_attribute use = child.append_attribute( "etd" );
-                use.set_value( pr->GetETD().Format().mb_str());
+                use.set_value( pr->GetETD().FormatISOCombined().mb_str());
             }
         }
     }
