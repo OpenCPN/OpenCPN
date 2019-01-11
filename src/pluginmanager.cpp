@@ -153,6 +153,7 @@ unsigned int      gs_plib_flags;
 wxString          g_lastPluginMessage;
 extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
+extern bool       g_bquiting;
 
 enum
 {
@@ -6773,4 +6774,9 @@ void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scal
     if(oCanvas)
         gFrame->JumpToPosition( oCanvas, lat, lon, scale);
 
+}
+
+bool ShuttingDown( void )
+{
+    return g_bquiting;
 }

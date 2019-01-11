@@ -1276,6 +1276,8 @@ extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
  */
 extern DECL_EXP wxString GetPluginDataDir(const char* plugin_name);
 
+extern DECL_EXP bool ShuttingDown( void );
+
 //  Support for MUI MultiCanvas model
 
 extern DECL_EXP wxWindow* PluginGetFocusCanvas();
