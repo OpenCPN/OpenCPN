@@ -97,7 +97,7 @@ Route::~Route()
 
 // The following is used only for route splitting, assumes just created, empty route
 //
-void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
+void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix, const bool duplicate_first_point)
 {
     m_RouteNameString = psourceroute->m_RouteNameString + suffix;
     m_RouteStartString = psourceroute->m_RouteStartString;
@@ -105,8 +105,9 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
 
     int i;
     for( i = start_nPoint; i <= end_nPoint; i++ ) {
-        if( !psourceroute->m_bIsInLayer ) AddPoint( psourceroute->GetPoint( i ), false );
-        else {
+        if( !psourceroute->m_bIsInLayer && !(i == start_nPoint && duplicate_first_point) ) {
+            AddPoint( psourceroute->GetPoint( i ), false );
+        } else {
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
                     psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
@@ -153,8 +154,9 @@ RoutePoint *Route::GetPoint( int nWhichPoint )
     int i = 1;
     while( node ) {
         prp = node->GetData();
-        if( i == nWhichPoint ) return prp;
-
+        if( i == nWhichPoint ) {
+            return prp;
+        }
         i++;
         node = node->GetNext();
     }

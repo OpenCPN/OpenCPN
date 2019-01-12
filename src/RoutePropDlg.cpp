@@ -119,7 +119,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerDepartureTS->Add( m_tpDepartureTime, 0, 0, 5 );
 
 
-	bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
+	bSizerDeparture->Add( bSizerDepartureTS, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
 
 	wSizerParams->Add( bSizerDeparture, 1, wxEXPAND, 0 );
@@ -289,6 +289,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
+	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlSelectionChanged ), NULL, this );
 	m_btnPrint->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
 	m_btnExtend->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::ExtendOnButtonClick ), NULL, this );
 	m_btnSplit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::SplitOnButtonClick ), NULL, this );
@@ -310,6 +311,7 @@ RoutePropDlg::~RoutePropDlg()
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
+	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlSelectionChanged ), NULL, this );
 	m_btnPrint->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
 	m_btnExtend->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::ExtendOnButtonClick ), NULL, this );
 	m_btnSplit->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::SplitOnButtonClick ), NULL, this );

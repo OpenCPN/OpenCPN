@@ -34,7 +34,7 @@
 class RoutePropDlgImpl : public RoutePropDlg
 {
 public:
-    ~RoutePropDlgImpl() {};
+    ~RoutePropDlgImpl();
     
     static RoutePropDlgImpl* getInstance( wxWindow* parent );
     void SetRouteAndUpdate( Route *pR, bool only_points = FALSE );
@@ -55,9 +55,10 @@ protected:
     void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event );
-    void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-    void ExtendOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-    void SplitOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+    void WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event );
+    void PrintOnButtonClick( wxCommandEvent& event );
+    void ExtendOnButtonClick( wxCommandEvent& event );
+    void SplitOnButtonClick( wxCommandEvent& event );
     void BtnsOnCancelButtonClick( wxCommandEvent& event ) { ResetChanges(); Hide(); }
     void BtnsOnOKButtonClick( wxCommandEvent& event ) { SaveChanges(); Hide(); }
     void OnRoutePropMenuSelected( wxCommandEvent& event );
@@ -81,10 +82,11 @@ private:
     RoutePoint  *m_pEnroutePoint;
     bool        m_bStartNow;
         
-    int         m_nSelected; // index of point selected in Properties dialog row
     int         m_tz_selection;
         
     wxDataViewColumn *etd_col;
+    
+    bool IsThisRouteExtendable();
 };
 
 #endif // _ROUTEPROPDLGIMPL_H_

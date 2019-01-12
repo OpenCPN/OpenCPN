@@ -29,6 +29,8 @@
 #include "MarkInfo.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
+#include "routeprintout.h"
+#include "chcanv.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
@@ -44,9 +46,14 @@ extern int g_StartTimeTZ;
 extern double gLat;
 extern double gLon;
 extern MarkInfoDlg *g_pMarkInfoDialog;
+extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 extern ColorScheme global_color_scheme;
+extern RouteList *pRouteList;
+extern Select *pSelect;
+extern MyFrame *gFrame;
+extern RouteManagerDialog *pRouteManagerDialog;
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
@@ -55,7 +62,13 @@ RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxStr
     SetColorScheme(global_color_scheme);
     
     Connect( wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
+        wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
+}
+
+RoutePropDlgImpl::~RoutePropDlgImpl()
+{
+    Disconnect( wxEVT_COMMAND_MENU_SELECTED,
+        wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
 }
 
 bool RoutePropDlgImpl::instanceFlag = false;
@@ -270,6 +283,9 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
     }
     
     UpdatePoints();
+    
+    m_btnSplit->Enable(false);
+    m_btnExtend->Enable(IsThisRouteExtendable());
 }
 
 void RoutePropDlgImpl::DepartureDateOnDateChanged( wxDateEvent& event )
@@ -353,6 +369,21 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
     }
     UpdatePoints();
 }
+
+void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event )
+{
+    if( m_dvlcWaypoints->GetSelectedRow() > 0 && m_dvlcWaypoints->GetSelectedRow() < m_dvlcWaypoints->GetItemCount() - 1 ) {
+        m_btnSplit->Enable(true);
+    } else {
+        m_btnSplit->Enable(false);
+    }
+    if( IsThisRouteExtendable() ) {
+        m_btnExtend->Enable(true);
+    } else {
+        m_btnExtend->Enable(false);
+    }
+}
+
 
 wxDateTime RoutePropDlgImpl::GetDepartureTS() const
 {
@@ -516,4 +547,121 @@ void RoutePropDlgImpl::SaveChanges()
 void RoutePropDlgImpl::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
+}
+
+void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
+{
+    m_btnSplit->Enable( false );
+    
+    if( m_pRoute->m_bIsInLayer )
+        return;
+    
+    int nSelected = m_dvlcWaypoints->GetSelectedRow() + 1;
+    if( ( nSelected > 1 ) && ( nSelected < m_pRoute->GetnPoints() ) ) {
+        m_pHead = new Route();
+        m_pTail = new Route();
+        m_pHead->CloneRoute( m_pRoute, 1, nSelected, _("_A") );
+        m_pTail->CloneRoute( m_pRoute, nSelected, m_pRoute->GetnPoints(), _("_B"), true );
+        pRouteList->Append( m_pHead );
+        pConfig->AddNewRoute( m_pHead );
+        
+        pRouteList->Append( m_pTail );
+        pConfig->AddNewRoute( m_pTail );
+        
+        pConfig->DeleteConfigRoute( m_pRoute );
+        
+        pSelect->DeleteAllSelectableRoutePoints( m_pRoute );
+        pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
+        g_pRouteMan->DeleteRoute( m_pRoute );
+        pSelect->AddAllSelectableRouteSegments( m_pTail );
+        pSelect->AddAllSelectableRoutePoints( m_pTail );
+        pSelect->AddAllSelectableRouteSegments( m_pHead );
+        pSelect->AddAllSelectableRoutePoints( m_pHead );
+        
+        SetRouteAndUpdate( m_pTail );
+        UpdatePoints();
+        
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateRouteListCtrl();
+    }
+}
+
+void RoutePropDlgImpl::PrintOnButtonClick( wxCommandEvent& event )
+{
+    RoutePrintSelection dlg( GetParent(), m_pRoute );
+    dlg.ShowModal();
+}
+
+void RoutePropDlgImpl::ExtendOnButtonClick( wxCommandEvent& event )
+{
+    m_btnExtend->Enable( false );
+    
+    if( IsThisRouteExtendable() ) {
+        int fm = m_pExtendRoute->GetIndexOf( m_pExtendPoint ) + 1;
+        int to = m_pExtendRoute->GetnPoints();
+        if( fm <= to ) {
+            pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
+            m_pRoute->CloneRoute( m_pExtendRoute, fm, to, _("_plus") );
+            pSelect->AddAllSelectableRouteSegments( m_pRoute );
+            SetRouteAndUpdate( m_pRoute );
+            UpdatePoints();
+        }
+    }
+    m_btnExtend->Enable( true );
+}
+
+bool RoutePropDlgImpl::IsThisRouteExtendable()
+{
+    m_pExtendRoute = NULL;
+    m_pExtendPoint = NULL;
+    if( m_pRoute->m_bRtIsActive || m_pRoute->m_bIsInLayer )
+        return false;
+    
+    RoutePoint *pLastPoint = m_pRoute->GetLastPoint();
+    wxArrayPtrVoid *pEditRouteArray;
+    
+    pEditRouteArray = g_pRouteMan->GetRouteArrayContaining( pLastPoint );
+    // remove invisible & own routes from choices
+    int i;
+    for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+        Route *p = (Route *) pEditRouteArray->Item( i - 1 );
+        if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt( i - 1 );
+    }
+    if( pEditRouteArray->GetCount() == 1 ) {
+        m_pExtendPoint = pLastPoint;
+    } else {
+        if( pEditRouteArray->GetCount() == 0 ) {
+            int nearby_radius_meters = (int) ( 8. / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale() );
+            double rlat = pLastPoint->m_lat;
+            double rlon = pLastPoint->m_lon;
+            
+            m_pExtendPoint = pWayPointMan->GetOtherNearbyWaypoint( rlat, rlon,
+                nearby_radius_meters, pLastPoint->m_GUID );
+            if( m_pExtendPoint ) {
+                wxArrayPtrVoid *pCloseWPRouteArray = g_pRouteMan->GetRouteArrayContaining( m_pExtendPoint );
+                if( pCloseWPRouteArray ) {
+                    pEditRouteArray = pCloseWPRouteArray;
+                    
+                    // remove invisible & own routes from choices
+                    for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+                        Route *p = (Route *) pEditRouteArray->Item( i - 1 );
+                        if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt( i - 1 );
+                    }
+                }
+            }
+        }
+    }
+    if( pEditRouteArray->GetCount() == 1 ) {
+        Route *p = (Route *) pEditRouteArray->Item( 0 );
+        int fm = p->GetIndexOf( m_pExtendPoint ) + 1;
+        int to = p->GetnPoints();
+        if( fm <= to ) {
+            m_pExtendRoute = p;
+            delete pEditRouteArray;
+            return true;
+        }
+    }
+    delete pEditRouteArray;
+    
+    return false;
 }

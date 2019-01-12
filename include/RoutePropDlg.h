@@ -106,6 +106,7 @@ class RoutePropDlg : public wxFrame
 		virtual void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event ) { event.Skip(); }
+		virtual void WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ExtendOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void SplitOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
