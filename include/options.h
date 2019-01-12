@@ -399,7 +399,7 @@ class options : private Uncopyable,
   wxStaticText *m_stTalkerIdText;
   wxStaticText *m_stNetComment, *m_stSerialComment;
   wxTextCtrl *m_tNetComment, *m_tSerialComment;
- 
+  wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
   wxScrolledWindow *m_scrollWinConnections; 
