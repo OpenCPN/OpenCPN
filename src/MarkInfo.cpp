@@ -1316,40 +1316,59 @@ bool MarkInfoDlg::SaveChanges()
     return true;
 }
 
-BEGIN_EVENT_TABLE(SaveDefaultsDialog, wxDialog)
-    //(*EventTable(SaveDefaultsDialog)
-    //*)
-END_EVENT_TABLE()
-
-SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent, wxWindowID id)
+SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, wxID_ANY, _("Save some defaults"))
 {
     //(*Initialize(SaveDefaultsDialog)
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+    
     wxBoxSizer* bSizer1 = new wxBoxSizer(wxVERTICAL);
     wxStdDialogButtonSizer* StdDialogButtonSizer1;
     
-    Create(parent, id, _("Save some defaults"));
     StaticText1 = new wxStaticText(this, wxID_ANY, _("Check which properties of current waypoint\n should be set as default for NEW waypoints."));
     bSizer1->Add(StaticText1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
     
+    wxFlexGridSizer* fgSizer1 = new wxFlexGridSizer(2);
+
     wxString s = ( g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use"): _("Don't use") );
-    NameCB = new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name") + _T("    [") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator);
-    bSizer1->Add(NameCB, 0, wxALL, 5);
+    NameCB = new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator);
+    fgSizer1->Add(NameCB, 0, wxALL, 5);
+    stName = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
+    stName->Wrap( -1 );
+    fgSizer1->Add( stName, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+    
     s = g_pMarkInfoDialog->m_pRoutePoint->GetIconName();
-    IconCB = new wxCheckBox(this, wxID_ANY, _("Icon")+ _T("    [") + s +_T("]"));
-    bSizer1->Add(IconCB, 0, wxALL, 5);
+    IconCB = new wxCheckBox(this, wxID_ANY, _("Icon"));
+    fgSizer1->Add(IconCB, 0, wxALL, 5);
+    stIcon = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
+    stIcon->Wrap( -1 );
+    fgSizer1->Add( stIcon, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+    
     s = ( g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ?
          _("Do use") + wxString::Format(_T(" (%i) "), g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ): _("Don't use") );
-    RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings")+ _T("    [") + s +_T("]"));
-    bSizer1->Add(RangRingsCB, 0, wxALL, 5);
+    RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings"));
+    fgSizer1->Add(RangRingsCB, 0, wxALL, 5);
+    stRR = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
+    stRR->Wrap( -1 );
+    fgSizer1->Add( stRR, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+    
     s = ( g_pMarkInfoDialog->m_textArrivalRadius->GetValue());
-    ArrivalRCB = new wxCheckBox(this, wxID_ANY, _("Arrival radius")+ _T("    [") + s +_T("]"));
-    bSizer1->Add(ArrivalRCB, 0, wxALL, 5);
+    ArrivalRCB = new wxCheckBox(this, wxID_ANY, _("Arrival radius"));
+    fgSizer1->Add(ArrivalRCB, 0, wxALL, 5);
+    stArrivalR = new wxStaticText( this, wxID_ANY, wxString::Format(_T("[%s %s]"), s.c_str(), getUsrDistanceUnit().c_str()), wxDefaultPosition, wxDefaultSize, 0 );
+    stArrivalR->Wrap( -1 );
+    fgSizer1->Add( stArrivalR, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+    
     s = ( g_pMarkInfoDialog->m_checkBoxScaMin->GetValue() ?
          _("Show only if")+_T(" < ") + g_pMarkInfoDialog->m_textScaMin->GetValue():
          _("Show always") );
-    ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale")+ _T("    [") + s +_T("]"));
-    bSizer1->Add(ScaleCB, 0, wxALL, 5);
+    ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale"));
+    fgSizer1->Add(ScaleCB, 0, wxALL, 5);
+    stScale = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
+    stScale->Wrap( -1 );
+    fgSizer1->Add( stScale, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
     
+    bSizer1->Add(fgSizer1, 0, wxALL|wxEXPAND, 5);
+
     StdDialogButtonSizer1 = new wxStdDialogButtonSizer();
     StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_OK));
     StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_CANCEL));
@@ -1360,13 +1379,3 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent, wxWindowID id)
     Layout();
 }
 
-SaveDefaultsDialog::~SaveDefaultsDialog()
-{
-    //(*Destroy(SaveDefaultsDialog)
-    //*)
-}
-
-void SaveDefaultsDialog::OnQuit(wxCommandEvent& event)
-{
-    Close();
-}

@@ -342,25 +342,25 @@ class MarkInfoDlg : public wxDialog
 
 class SaveDefaultsDialog: public wxDialog
 {
-    public:
+    friend class MarkInfoDlg;
 
-        SaveDefaultsDialog(MarkInfoDlg* parent, wxWindowID id = -1);
-        virtual ~SaveDefaultsDialog();
-
-        //(*Handlers(SaveDefaultsDialog)
-        void OnQuit(wxCommandEvent& event);
-
-        //(*Declarations(SaveDefaultsDialog)
-        wxCheckBox* RangRingsCB;
-        wxCheckBox* ArrivalRCB;
-        wxCheckBox* IconCB;
-        wxCheckBox* NameCB;
-        wxStaticText* StaticText1;
-        wxCheckBox* ScaleCB;
-        wxStaticText* StaticText2;
-        //*)
-
-        DECLARE_EVENT_TABLE()
+protected:
+    //(*Declarations(SaveDefaultsDialog)
+    wxCheckBox* RangRingsCB;
+    wxCheckBox* ArrivalRCB;
+    wxCheckBox* IconCB;
+    wxCheckBox* NameCB;
+    wxCheckBox* ScaleCB;
+    wxStaticText* stRR;
+    wxStaticText* stArrivalR;
+    wxStaticText* stIcon;
+    wxStaticText* stName;
+    wxStaticText* stScale;
+    wxStaticText* StaticText1;
+    //*)
+    
+public:
+    SaveDefaultsDialog(MarkInfoDlg* parent);
 };
 
 
