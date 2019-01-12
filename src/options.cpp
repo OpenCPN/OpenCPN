@@ -2028,13 +2028,14 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_scrollWinConnections->SetSizer(boxSizerConnections);
 
   
-  
-  
+  bSizerOuterContainer->Add(sbSizerLB, 0, wxEXPAND, 5);
+
   
   wxBoxSizer* bSizer18;
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
+  sbSizerLB->Add(bSizer18, 1, wxEXPAND, 5);
 
-  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _(""),
+  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _("Add Connection"),
                              wxDefaultPosition, wxDefaultSize, 0);
   bSizer18->Add(m_buttonAdd, 0, wxALL, 5);
 
@@ -2042,19 +2043,30 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_buttonRemove->Enable(FALSE);
   bSizer18->Add(m_buttonRemove, 0, wxALL, 5);
-
-  //bSizer17->Add(bSizer18, 0, wxEXPAND, 5);
-  sbSizerLB->Add(bSizer18, 1, wxEXPAND, 5);
-  bSizerOuterContainer->Add(sbSizerLB, 0, wxEXPAND, 5);
+  
+ 
+//   wxBoxSizer* bSizer19 = new wxBoxSizer(wxHORIZONTAL);
+//   sbSizerLB->Add(bSizer19, 1, wxEXPAND, 5);
+// 
+   wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+   double font_size = dFont->GetPointSize() * 17/16;
+   wxFont *bFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
+// 
+//   m_stEditCon = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Edit Selected Connection"));
+//   m_stEditCon->SetFont(*bFont);
+//   bSizer19->Add(m_stEditCon, 0, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL, 5);
+// 
 
   //  Connections Properties
-  sbSizerConnectionProps = new wxStaticBoxSizer(
-      new wxStaticBox(m_pNMEAForm, wxID_ANY, _("Properties")), wxVERTICAL);
+  m_sbConnEdit = new wxStaticBox(m_pNMEAForm, wxID_ANY, _("Edit Selected Connection"));
+  m_sbConnEdit->SetFont(*bFont);
+  
+  sbSizerConnectionProps = new wxStaticBoxSizer( m_sbConnEdit, wxVERTICAL);
 
   wxBoxSizer* bSizer15;
   bSizer15 = new wxBoxSizer(wxHORIZONTAL);
 
-  sbSizerConnectionProps->Add(bSizer15, 0, wxEXPAND, 0);
+  sbSizerConnectionProps->Add(bSizer15, 0, wxTOP | wxEXPAND, 5);
 
   m_rbTypeSerial =
       new wxRadioButton(m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition,
@@ -5995,7 +6007,7 @@ void options::SetInitialSettings(void) {
   //  Reset the touch flag...
   connectionsaved = true;
   
-          
+  SetSelectedConnectionPanel( nullptr);
   
 }
 
@@ -6817,8 +6829,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 //       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
 //     }
     
-    if (!mSelectedConnection)
-        ClearNMEAForm();
+    SetSelectedConnectionPanel( nullptr );
 
   }
 
@@ -8803,6 +8814,7 @@ void options::ShowNMEACommon(bool visible) {
     sbSizerOutFilter->SetDimension(0, 0, 0, 0);
     sbSizerInFilter->SetDimension(0, 0, 0, 0);
     sbSizerConnectionProps->SetDimension(0, 0, 0, 0);
+    m_sbConnEdit->SetLabel(_T(""));
   }
   m_bNMEAParams_shown = visible;
 }
@@ -9062,20 +9074,6 @@ void options::SetDefaultConnectionParams(void) {
   
 }
 
-void options::OnAddDatasourceClick(wxCommandEvent& event) {
- 
-  //  Unselect all panels
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) 
-    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected( false );
-
-  connectionsaved = FALSE;
-  SetDefaultConnectionParams();
-
-  m_buttonRemove->Disable();
-
-  RecalculateSize();
-}
-
 bool options::SortSourceList(void) {
     
     if(g_pConnectionParams->Count() < 2)
@@ -9140,7 +9138,6 @@ void options::FillSourceList(void) {
   m_scrollWinConnections->Layout();
   
   mSelectedConnection = NULL;
-  m_buttonAdd->SetLabel(_("Add Connection"));
   m_buttonAdd->Enable( true );
 
 }
@@ -9160,6 +9157,23 @@ void options::UpdateSourceList( bool bResort ) {
     
     m_scrollWinConnections->Layout();
 }
+
+void options::OnAddDatasourceClick(wxCommandEvent& event) {
+ 
+  //  Unselect all panels
+  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) 
+    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected( false );
+
+  connectionsaved = FALSE;
+  SetDefaultConnectionParams();
+  m_sbConnEdit->SetLabel(_T("Configure new connection"));
+
+  m_buttonRemove->Disable();
+  m_buttonAdd->Disable();
+
+  RecalculateSize();
+}
+
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
   if(mSelectedConnection){
@@ -9215,13 +9229,15 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
     m_buttonAdd->Disable();
-    m_buttonAdd->SetLabel(_("Editing connection..."));
+    m_sbConnEdit->SetLabel(_T("Edit selected connection"));
+
   }
   else{
     mSelectedConnection = NULL;
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
-    m_buttonAdd->SetLabel(_("Add Connection"));
+    m_sbConnEdit->SetLabel(_T(""));
+    ClearNMEAForm();
   }
      
 }

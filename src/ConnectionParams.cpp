@@ -329,6 +329,8 @@ ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, co
 
 ConnectionParamsPanel::~ConnectionParamsPanel()
 {
+    if(m_pConnectionParams)
+        m_pConnectionParams->m_optionsPanel = nullptr;
 }
 
 void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
@@ -413,7 +415,7 @@ void ConnectionParamsPanel::CreateControls( void ){
     
     //  Parms
     wxBoxSizer* parmSizer = new wxBoxSizer(wxVERTICAL);
-    panelSizer->Add(parmSizer, 4, wxLEFT, metric);
+    panelSizer->Add(parmSizer, 5, wxLEFT, metric);
 
     if(m_pConnectionParams->Type == SERIAL){
         
@@ -534,11 +536,11 @@ void ConnectionParamsPanel::CreateControls( void ){
         netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
        
-        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Address"));
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Network Address"));
         netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
-        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Port"));
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Network Port"));
         netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
         t15->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
