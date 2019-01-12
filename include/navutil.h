@@ -77,6 +77,7 @@ extern wxString FormatDistanceAdaptive( double distance );
 extern wxString formatTimeDelta(wxTimeSpan span);
 extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
 extern wxString formatTimeDelta(wxLongLong secs);
+extern wxString formatAngle(double angle);
 
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                        wxColour color, unsigned char transparency );

@@ -47,13 +47,9 @@ using namespace std;
 #include <wx/brush.h>
 #include <wx/colour.h>
 
-
-#if wxCHECK_VERSION( 2, 9, 0 )
 #include <wx/dialog.h>
-#else
-//  #include "scrollingdialog.h"
-#endif
 
+#include "navutil.h"
 #include "dychart.h"
 
 #ifdef __WXMSW__
@@ -173,8 +169,9 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         }
         if ( toPrintOut[ PRINT_WP_COURSE ] ) {
             wxString point_course = "---";
-            if(pointm1)
-                point_course.Printf( _T( "%03.0f Deg" ), point->GetCourse() );
+            if(pointm1) {
+                point_course = formatAngle( point->GetCourse() );
+            }
             table << point_course;
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {

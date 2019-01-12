@@ -152,7 +152,7 @@ void RoutePropDlgImpl::UpdatePoints()
         pnode = pnode->GetNext();
         wxString crs;
         if( pnode ) {
-            crs.Printf(wxT("%5.0f \u00B0T"), pnode->GetData()->GetCourse());
+            crs = formatAngle( pnode->GetData()->GetCourse() );
         } else {
             crs = _("Arrived");
         }
@@ -161,8 +161,7 @@ void RoutePropDlgImpl::UpdatePoints()
         data.push_back( wxVariant(name) ); // To
         slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
         data.push_back( wxVariant(slen) ); // Distance
-        slen.Printf(wxT("%5.0f \u00B0T"), bearing);
-        data.push_back( wxVariant(slen) ); // Bearing
+        data.push_back( wxVariant(formatAngle(bearing)) ); // Bearing
         data.push_back( wxVariant(::toSDMM( 1, lat, FALSE)) ); // Lat
         data.push_back( wxVariant(::toSDMM( 2, lon, FALSE)) ); // Lon
         data.push_back( wxVariant(ete) ); // ETE
