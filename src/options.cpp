@@ -6829,8 +6829,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 //       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
 //     }
     
-    if (!mSelectedConnection)
-        ClearNMEAForm();
+    SetSelectedConnectionPanel( nullptr );
 
   }
 
