@@ -109,7 +109,6 @@ public:
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
         LLBBox      tri_box;
-//        double      minxt, minyt, maxxt, maxyt;
         
         TriPrim     *p_next;                // chain link
         
@@ -201,8 +200,6 @@ class PolyTessGeo
         PolyTessGeo();
         ~PolyTessGeo();
 
-        PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
-
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
             double ref_lat, double ref_lon, double LOD_meters);  // Build this from OGRPolygon
 
@@ -211,8 +208,6 @@ class PolyTessGeo
         bool IsOk(){ return m_bOK;}
 
         int BuildDeferredTess(void);
-
-        int Write_PolyTriGroup( FILE *ofs);
 
         double Get_xmin(){ return xmin;}
         double Get_xmax(){ return xmax;}
@@ -235,10 +230,8 @@ class PolyTessGeo
         
     private:
         int BuildTessGL(void);
+        int BuildTessGL2(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
-        int my_bufgets( char *buf, int buf_len_max );
-
-
 
     //  Data
 
@@ -254,14 +247,20 @@ class PolyTessGeo
 
         int             m_ncnt;
         int             m_nwkb;
-
+        int             *m_cntr;
         char           *m_buf_head;
         char           *m_buf_ptr;                   // used to read passed SENC record
         int            m_nrecl;
 
         double         m_ref_lat, m_ref_lon;
         double         m_LOD_meters;
+        int            m_tess_orient;
+        bool           m_b_senc_sm;
+        bool           m_bmerc_transform;
+        
+        double            mx_rate, mx_offset, my_rate, my_offset;
 
+        double         **m_vertexPtrArray;
 };
 
 

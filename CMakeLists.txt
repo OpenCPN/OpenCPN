@@ -463,6 +463,7 @@ MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Adding local LIBTESS2" )
 add_subdirectory(src/libtess2)
 SET( OPENGL_LIBRARIES "LIBTESS2_static" ${OPENGL_LIBRARIES})
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Include)
 MESSAGE (STATUS "    Revised GL Lib (with local libtess2): " ${OPENGL_LIBRARIES})
 
 IF(NOT QT_ANDROID)

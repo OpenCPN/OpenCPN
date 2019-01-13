@@ -1415,6 +1415,9 @@ static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
       pCIB->transform_x_origin = header.easting_min;
       pCIB->transform_y_origin = header.northing_min;
 
+      pCIB->min_lat = header.lat_min;
+      pCIB->min_lon = header.lon_min;
+      
 //      pCIB->m_cell_mcovr_array.Empty();
 
       //    Extract some table sizes from the header, and pre-allocate the tables
@@ -3840,7 +3843,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->x_offset = m_CIB.transform_x_origin - trans_WGS84_offset_x;
                         xgeom->y_rate   = m_CIB.transform_y_rate;
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
-
+                        
                         pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
 
