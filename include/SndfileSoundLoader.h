@@ -22,33 +22,42 @@
  ***************************************************************************
  */
 
-#include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
+#ifndef SNDFILE_SOUND_LOADER_H
+#define SNDFILE_SOUND_LOADER_H
 
-extern int g_iSoundDeviceIndex;
+#include <sndfile.h>
 
+#include "SoundFileLoader.h"
 
-OcpnSound::OcpnSound()
+/**
+ * The original sound file loader supports WAV files only, the same format
+ * as supported by the wxSound widget.
+ */
+class SndfileSoundLoader: public AbstractSoundLoader
 {
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
-}
+
+    public:
+
+        SndfileSoundLoader() {};
+
+        virtual ~SndfileSoundLoader();
+
+        virtual bool Load(const char* path);
+
+        virtual bool Reset();
+
+        virtual size_t Get(void* samples, size_t length);
+
+        unsigned GetBytesPerSample() const { return 2 * m_sfinfo.channels; };
+
+        unsigned GetChannelCount() const;
+
+        unsigned GetSamplingRate() const;
+
+    protected:
+        SNDFILE* m_sndfile;
+        SF_INFO m_sfinfo;
+};
 
 
-OcpnSound::~OcpnSound()
-{
-}
-
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+#endif // SNDFILE_SOUND_LOADER_H

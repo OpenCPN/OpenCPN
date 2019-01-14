@@ -22,33 +22,46 @@
  ***************************************************************************
  */
 
+#ifndef OCPN_ANDROID_SOUND
+#define OCPN_ANDROID_SOUND
+
 #include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
 
-extern int g_iSoundDeviceIndex;
+#ifdef __OCPN__ANDROID__
+
+#include "AndroidSound.h"
 
 
-OcpnSound::OcpnSound()
+AndroidSound::~AndroidSound()
 {
+    Stop();
+}
+
+
+bool AndroidSound::Load(const char* path, int deviceIndex)
+{
+    m_soundfile = path;
+    m_OK = true;
+    if (deviceIndex != -1) {
+        wxLogWarning("Android backend does not support audio device setup.");
+    }
+    return true;
+}
+
+
+void AndroidSound::Stop(void)
+{
+    Stop();
     m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
 }
 
 
-OcpnSound::~OcpnSound()
+bool AndroidSound::Play(void) 
 {
+    return androidPlaySound(m_soundfile);
 }
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+
+#endif                  // __OCPN__ANDROID__
+
+#endif  //  OCPN_ANDROID_SOUND

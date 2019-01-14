@@ -22,33 +22,30 @@
  ***************************************************************************
  */
 
+#ifndef __ANDROID_SOUND_H__
+#define __ANDROID_SOUND_H__
+
+
 #include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
+#include "androidUTIL.h"
 
-extern int g_iSoundDeviceIndex;
+/**
+ * Sound backend supports synchronous mode on Android devices.
+ */
 
-
-OcpnSound::OcpnSound()
+class AndroidSound: public OcpnSound
 {
-    m_OK = false;
-    m_deviceIx = -1;
-    m_soundfile = "";
-    m_onFinished = 0;
-    m_callbackData = 0;
-}
+    public:
+        ~AndroidSound();
+
+        bool Load(const char*, int deviceIndex = -1) override;
+        bool Reset() override { return true; };
+        bool Play() override;
+        bool Stop() override;
+
+   protected:
+        std::string m_soundfile;
+};
 
 
-OcpnSound::~OcpnSound()
-{
-}
-
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
+#endif // __ANDROID_SOUND_H__

@@ -38,13 +38,12 @@
 #include <wx/clipbrd.h>
 #include <wx/html/htmlwin.h>
 #include <wx/tokenzr.h>
-#include <version.h>
 
+#include "config.h"
 #include "about.h"
 #include "chart1.h"
 #include "chcanv.h"
 #include "styles.h"
-#include "version.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 #include "navutil.h"

@@ -38,6 +38,7 @@
 
 ConnectionParams::ConnectionParams(const wxString &configStr )
 {
+    m_optionsPanel = NULL;
     Deserialize( configStr );
 }
 
@@ -141,6 +142,12 @@ ConnectionParams::ConnectionParams()
     Valid = true;
     bEnabled = true;
     b_IsSetup = false;
+    m_optionsPanel = NULL;
+}
+
+ConnectionParams::~ConnectionParams()
+{
+    //delete m_optionsPanel;
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
@@ -303,17 +310,17 @@ EVT_ERASE_BACKGROUND(ConnectionParamsPanel::OnEraseBackground)
 END_EVENT_TABLE()
 
 ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
-                                             ConnectionParams *p_itemConnectionParams, options *pContainer, int index)
+                                             ConnectionParams *p_itemConnectionParams, options *pContainer)
 :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
     m_pContainer = pContainer;
     m_pConnectionParams = p_itemConnectionParams;
-    m_index = index;
     m_bSelected = false;
 
     int refHeight = GetCharHeight();
     SetMinSize(wxSize(-1, 5 * refHeight));
     m_unselectedHeight = 5 * refHeight;
+    //SetSize(wxSize(-1, 5 * refHeight));
     
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
     CreateControls(); 
@@ -322,6 +329,8 @@ ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, co
 
 ConnectionParamsPanel::~ConnectionParamsPanel()
 {
+    if(m_pConnectionParams)
+        m_pConnectionParams->m_optionsPanel = nullptr;
 }
 
 void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
@@ -340,7 +349,7 @@ void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
 
 void ConnectionParamsPanel::SetSelected( bool selected )
 {
-    Freeze();
+    //Freeze();
     m_bSelected = selected;
     wxColour colour;
     int refHeight = GetCharHeight();
@@ -366,7 +375,7 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     }
 
     GetSizer()->Layout();
-    Thaw();
+    //Thaw();
     Refresh( true );
     
 }
@@ -406,11 +415,11 @@ void ConnectionParamsPanel::CreateControls( void ){
     
     //  Parms
     wxBoxSizer* parmSizer = new wxBoxSizer(wxVERTICAL);
-    panelSizer->Add(parmSizer, 3, wxLEFT, metric);
+    panelSizer->Add(parmSizer, 5, wxLEFT, metric);
 
     if(m_pConnectionParams->Type == SERIAL){
         
-        wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 6, 0, metric);
+        wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
         serialGrid->SetFlexibleDirection(wxHORIZONTAL);
         parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
 
@@ -439,6 +448,10 @@ void ConnectionParamsPanel::CreateControls( void ){
         wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Baudrate"));
         serialGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
         t15->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+        serialGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL );
+        t17->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
         //line 2
         t2 = new wxStaticText(this, wxID_ANY, _("Serial"));
@@ -484,6 +497,12 @@ void ConnectionParamsPanel::CreateControls( void ){
         serialGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
         t16->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
+        wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
+        t18 = new wxStaticText(this, wxID_ANY, priority);
+        t18->SetFont(*bFont);
+        serialGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL );
+        t18->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -497,7 +516,7 @@ void ConnectionParamsPanel::CreateControls( void ){
     else{
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
-        wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric);
+        wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
         netGrid->SetFlexibleDirection(wxHORIZONTAL);
         parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
 
@@ -513,17 +532,21 @@ void ConnectionParamsPanel::CreateControls( void ){
         netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
         t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
-        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol "));
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _("Protocol"));
         netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
         t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
        
-        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Address  "));
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _("Network Address"));
         netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
         t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
-        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Port  "));
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _("Network Port"));
         netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
         t15->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+        netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL );
+        t17->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
         //line 2
         t2 = new wxStaticText(this, wxID_ANY, _("Network"));
@@ -569,6 +592,12 @@ void ConnectionParamsPanel::CreateControls( void ){
         netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
         t16->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
 
+        wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
+        t18 = new wxStaticText(this, wxID_ANY, priority);
+        t18->SetFont(*bFont);
+        netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL );
+        t18->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
         wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
         parmSizer->Add(line, 0, wxEXPAND);
         line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
@@ -583,8 +612,11 @@ void ConnectionParamsPanel::CreateControls( void ){
 void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
 {
     m_pConnectionParams = ConnectionParams;
+    
+    wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+    wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
+
     if(m_pConnectionParams->Type == SERIAL){
-        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
         wxString baudRate;  baudRate.Printf(_T("%d"), m_pConnectionParams->Baudrate);
 
         wxString proto;
@@ -604,11 +636,11 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
         t12->SetLabel(proto);
         t14->SetLabel(m_pConnectionParams->Port);
         t16->SetLabel(baudRate);
+        t18->SetLabel(priority);
 
         t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
     }
     else{
-        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
         wxString proto;
         switch(m_pConnectionParams->NetProtocol){
             case UDP:
@@ -628,6 +660,7 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
         t12->SetLabel(proto);
         t14->SetLabel(m_pConnectionParams->NetworkAddress);
         t16->SetLabel(port);
+        t18->SetLabel(priority);
 
         t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
     }

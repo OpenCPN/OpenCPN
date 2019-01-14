@@ -399,13 +399,12 @@ class options : private Uncopyable,
   wxStaticText *m_stTalkerIdText;
   wxStaticText *m_stNetComment, *m_stSerialComment;
   wxTextCtrl *m_tNetComment, *m_tSerialComment;
- 
+  wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
   wxScrolledWindow *m_scrollWinConnections; 
   wxBoxSizer *boxSizerConnections;
-  ConnectionParamsPanel *mSelectedConnectionPanel;
-  std::vector <ConnectionParamsPanel *> mConnectionsPanelList;
+  ConnectionParams *mSelectedConnection;
   
   // For the Display\Units page
   wxStaticText* itemStaticTextUserVar;
@@ -568,7 +567,7 @@ class options : private Uncopyable,
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
-  wxSpinCtrl *pSoundDeviceIndex;
+  wxChoice *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
   wxArrayString *m_pSerialArray;
@@ -627,8 +626,11 @@ class options : private Uncopyable,
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
   void FillSourceList();
-  void UpdateSourceList();
+  void UpdateSourceList( bool bResort );
+  bool SortSourceList(void);
+
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
+  ConnectionParams *UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
   

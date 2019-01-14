@@ -37,10 +37,6 @@
 #include <wx/msw/iniconf.h>
 #endif
 
-#ifdef OCPN_USE_PORTAUDIO
-#include "portaudio.h"
-#endif
-
 #include "bbox.h"
 //#include "chcanv.h"
 #include "chartdbs.h"
