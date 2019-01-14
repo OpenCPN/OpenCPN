@@ -2712,11 +2712,34 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                         else{
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             if(Chs57){
-                                if(!Chs57->m_RAZBuilt)
-                                    RenderNoDTA(vp, get_region, 128);
-                                else
+                                if(Chs57->m_RAZBuilt){
                                     RenderNoDTA(vp, get_region);
-                                Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                    Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                }
+                                else{
+                                    // The SENC is quesed for building, so..
+                                    // Show GSHHS with compatible color scheme in the meantime.
+                                    ocpnDC gldc( *this );
+                                    const LLRegion &oregion = get_region;
+                                    LLBBox box = oregion.GetBox();
+
+                                    wxPoint p1 = vp.GetPixFromLL( box.GetMaxLat(), box.GetMinLon());
+                                    wxPoint p2 = vp.GetPixFromLL( box.GetMaxLat(), box.GetMaxLon());
+                                    wxPoint p3 = vp.GetPixFromLL( box.GetMinLat(), box.GetMaxLon());
+                                    wxPoint p4 = vp.GetPixFromLL( box.GetMinLat(), box.GetMinLon());
+                                        
+                                    wxRect srect(p1.x, p1.y, p3.x - p1.x, p4.y - p2.y);
+
+                                    bool world = false;
+                                    ViewPort cvp = ClippedViewport(vp, get_region);
+                                    if( m_pParentCanvas->GetWorldBackgroundChart()){
+                                        SetClipRegion(cvp, get_region);
+                                        m_pParentCanvas->GetWorldBackgroundChart()->SetColorsDirect(GetGlobalColor( _T ( "LANDA" ) ), GetGlobalColor( _T ( "DEPMS" )));
+                                        RenderWorldChart(gldc, cvp, srect, world);
+                                        m_pParentCanvas->GetWorldBackgroundChart()->SetColorScheme(global_color_scheme);
+                                        DisableClipRegion();
+                                    }
+                                }
                             }
                             else{
                                 ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
