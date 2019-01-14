@@ -73,6 +73,8 @@ public:
     s57chart *m_chart;
     wxString m_FullPath000;
     wxString m_SENCFileName;
+    double ref_lat, ref_lon;
+    double m_LOD_meters;
     
     SENCBuildThread *m_thread;
 

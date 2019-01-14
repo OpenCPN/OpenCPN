@@ -95,11 +95,11 @@ SENCThreadManager::SENCThreadManager()
      if (nCPU < 1) 
          nCPU = 1;
 
-//    m_max_jobs =  wxMax(nCPU, 1);
-    m_max_jobs = 1;
+    m_max_jobs =  wxMax(nCPU - 1, 1);
+    //m_max_jobs = 1;
 
 //    if(bthread_debug)
-    //printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
+    printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
     
     
     //  Create/connect a dynamic event handler slot for messages from the worker threads
@@ -126,7 +126,8 @@ SENCThreadStatus SENCThreadManager::ScheduleJob(SENCJobTicket *ticket)
     ticket->m_status = THREAD_PENDING;
     ticket_list.push_back(ticket);
 
-    //printf("Scheduling job:  %s\n", (const char*)ticket->m_chart->GetFullPath().mb_str());
+    printf("Scheduling job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
+    printf("Job count:  %d\n", ticket_list.size());
     StartTopJob();
     return THREAD_PENDING;
 }
@@ -154,7 +155,7 @@ void SENCThreadManager::StartTopJob()
         
         // Found one?
         if(startCandidate){
-            //printf("Starting job:  %s\n", (const char*)startCandidate->m_chart->GetFullPath().mb_str());
+            printf("Starting job:  %s\n", (const char*)startCandidate->m_FullPath000.mb_str());
 
             SENCBuildThread *thread = new SENCBuildThread( startCandidate, this);
             startCandidate->m_thread = thread;
@@ -166,14 +167,16 @@ void SENCThreadManager::StartTopJob()
 
 void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
 {
-    //printf("Finishing job:  %s\n", (const char*)ticket->m_chart->GetFullPath().mb_str());
+    printf("Finishing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
 
     // Find and remove the ticket from the list
     for(size_t i=0 ; i < ticket_list.size() ; i++){
         if(ticket_list[i] == ticket){
-            //printf("   Removing job:  %s\n", (const char*)ticket->m_chart->GetFullPath().mb_str());
+            printf("   Removing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
 
             ticket_list.erase(ticket_list.begin() + i);
+            printf("Job count:  %d\n", ticket_list.size());
+
             break;
         }
     }
@@ -181,10 +184,10 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
 
 bool SENCThreadManager::IsChartInTicketlist(s57chart *chart)
 {
-    for(size_t i=0 ; i < ticket_list.size() ; i++){
-        if(ticket_list[i]->m_chart == chart)
-            return true;
-    }
+     for(size_t i=0 ; i < ticket_list.size() ; i++){
+         if(ticket_list[i]->m_chart == chart)
+             return true;
+     }
     return false;
 
 }
@@ -192,12 +195,12 @@ bool SENCThreadManager::IsChartInTicketlist(s57chart *chart)
 bool SENCThreadManager::SetChartPointer(s57chart *chart, void *new_ptr)
 {
     // Find the ticket
-    for(size_t i=0 ; i < ticket_list.size() ; i++){
-        if(ticket_list[i]->m_chart == chart){
-            ticket_list[i]->m_chart = (s57chart *)new_ptr;
-            return true;
-        }
-    }
+     for(size_t i=0 ; i < ticket_list.size() ; i++){
+         if(ticket_list[i]->m_chart == chart){
+             ticket_list[i]->m_chart = (s57chart *)new_ptr;
+             return true;
+         }
+     }
     return false;
 }
 
@@ -248,7 +251,6 @@ SENCBuildThread::SENCBuildThread(SENCJobTicket *ticket, SENCThreadManager *manag
 {
     m_FullPath000 = ticket->m_FullPath000;
     m_SENCFileName = ticket->m_SENCFileName;
-    m_chart = ticket->m_chart;
     m_manager = manager;
     m_ticket = ticket;
     
@@ -258,22 +260,22 @@ SENCBuildThread::SENCBuildThread(SENCJobTicket *ticket, SENCThreadManager *manag
 void * SENCBuildThread::Entry()
 {
 
-#ifdef __MSVC__
-    _set_se_translator(my_translate);
+//#ifdef __MSVC__
+  //  _set_se_translator(my_translate);
 
     //  On Windows, if anything in this thread produces a SEH exception (like access violation)
     //  we handle the exception locally, and simply alow the thread to exit smoothly with no results.
     //  Upstream will notice that nothing got done, and maybe try again later.
     
     try
-#endif    
+//#endif    
     {
         // Start the SENC build
         Osenc senc;
 
-        senc.setRegistrar( g_poRegistrar );
-        senc.setRefLocn(m_chart->ref_lat, m_chart->ref_lon);
-        senc.SetLODMeters(m_chart->m_LOD_meters);
+        //senc.setRegistrar( g_poRegistrar );
+        senc.setRefLocn(m_ticket->ref_lat, m_ticket->ref_lon);
+        senc.SetLODMeters(m_ticket->m_LOD_meters);
 
         m_ticket->m_SENCResult = SENC_BUILD_STARTED;
         OCPN_BUILDSENC_ThreadEvent Sevent(wxEVT_OCPN_BUILDSENCTHREAD, 0);
@@ -306,9 +308,10 @@ void * SENCBuildThread::Entry()
         return 0;
     }           // try
     
-#ifdef __MSVC__    
-    catch (SE_Exception e)
+//#ifdef __MSVC__    
+    catch (const std::exception& e/*SE_Exception e*/)
     {
+        const char *msg = e.what();
         if( m_manager ) {
 //             OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
 //             m_ticket->b_isaborted = true;
@@ -320,7 +323,7 @@ void * SENCBuildThread::Entry()
         
         return 0;
     }
-#endif    
+//#endif    
     
 }
 

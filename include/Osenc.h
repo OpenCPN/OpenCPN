@@ -596,7 +596,7 @@ private:
 
     bool                  m_bVerbose;
     wxArrayString         *m_UpFiles;
-    
+    bool                  m_bPrivateRegistrar;
 };
 
 

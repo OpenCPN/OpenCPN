@@ -225,6 +225,9 @@ Osenc::Osenc()
 
 Osenc::~Osenc()
 {
+    if(m_bPrivateRegistrar)
+        delete m_poRegistrar;
+    
     // Free the coverage arrays, if they exist
     SENCFloatPtrArray &AuxPtrArray = getSENCReadAuxPointArray();
     std::vector<int> &AuxCntArray = getSENCReadAuxPointCountArray();
@@ -263,6 +266,7 @@ void Osenc::init( void )
 {
     m_LOD_meters = 0;
     m_poRegistrar = NULL;
+    m_bPrivateRegistrar = false;
     m_senc_file_read_version = 0;
     m_ProgDialog = NULL;
     InitializePersistentBuffer();
@@ -1443,10 +1447,13 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     m_senc_file_create_version = 200;
     
     if(!m_poRegistrar){
-        errorMessage = _T("S57 Registrar not set.");
-        return ERROR_REGISTRAR_NOT_SET;
+        m_poRegistrar = new S57ClassRegistrar();
+        m_poRegistrar->LoadInfo( g_csv_locn.mb_str(), FALSE );
+        m_bPrivateRegistrar = true;
+        //errorMessage = _T("S57 Registrar not set.");
+        //return ERROR_REGISTRAR_NOT_SET;
     }
-    
+ 
     wxFileName SENCfile = wxFileName( SENCFileName );
     wxFileName file000 = wxFileName( FullPath000 );
     
@@ -3529,6 +3536,7 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
 
 OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57ClassRegistrar *poRegistrar )
 {
+  OGRFeature * rv = NULL;
   
     if( ( NULL != pENCReader ) && ( NULL != poRegistrar ) ) {
         
@@ -3547,19 +3555,20 @@ OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57C
                 if(poDefn && (poDefn->GetOBJL() == 302/*poRegistrar->GetOBJL()*/)){
                 //  Fetch the CATCOV attribute
                     catcov = pobjectDef->GetFieldAsInteger( "CATCOV" );
-                    return pobjectDef;
+                    rv = pobjectDef;
+                    break;
                 }
                 else
                     delete pobjectDef;
             }
-            else
-                return NULL;
-        
+            else{
+                break;
+            }        
             pobjectDef = pENCReader->ReadNextFeature( );
         }
     }
     
-    return NULL;
+    return rv;
 }
 
 OGRFeature *Osenc::GetChartNextM_COVR( int &catcov, S57Reader *pENCReader )

@@ -3876,9 +3876,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     if(1/*SENC_BUILD_THREAD*/){
         if(g_SencThreadManager){
             SENCJobTicket *ticket = new SENCJobTicket();
-            ticket->m_chart = this;
+            ticket->m_LOD_meters = m_LOD_meters;
+            ticket->ref_lat = ref_lat;
+            ticket->ref_lon = ref_lon;
             ticket->m_FullPath000 = FullPath000;
             ticket->m_SENCFileName = SENCFileName;
+            ticket->m_chart = this;
             
             m_SENCthreadStatus = g_SencThreadManager->ScheduleJob(ticket);
             bReadyToRender = true;

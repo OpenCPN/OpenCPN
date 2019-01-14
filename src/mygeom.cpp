@@ -60,39 +60,11 @@
 #include <windows.h>
 #endif
 
+static const double   CM93_semimajor_axis_meters = 6378388.0;            // CM93 semimajor axis
+
 
 
 //      Module Internal Prototypes
-
-
-static int            s_nvcall;
-static int            s_nvmax;
-static GLdouble       *s_pwork_buf;
-static int            s_buf_len;
-static int            s_buf_idx;
-static unsigned int   s_gltri_type;
-TriPrim               *s_pTPG_Head;
-TriPrim               *s_pTPG_Last;
-static GLUtesselator  *GLUtessobj;
-static double         s_ref_lat;
-static double         s_ref_lon;
-
-static bool           s_bmerc_transform;
-static double         s_transform_x_rate;
-static double         s_transform_x_origin;
-static double         s_transform_y_rate;
-static double         s_transform_y_origin;
-wxArrayPtrVoid        *s_pCombineVertexArray;
-int s_tess_orient;
-
-static const double   CM93_semimajor_axis_meters = 6378388.0;            // CM93 semimajor axis
-static bool           s_bSENC_SM;
-
-static wxMemoryOutputStream *ostream1;
-static wxMemoryOutputStream *ostream2;
-
-int g_keep;
-int g_orig;
 
 
 //  For __WXMSW__ builds using GLU_TESS and glu32.dll
@@ -140,9 +112,6 @@ static LPFNDLLTESSCALLBACK      s_lpfnTessCallback;
 
 #endif
 #endif
-//  Flag to tell that dll is ready
-bool           s_glu_dll_ready;
-HINSTANCE      s_hGLU_DLL;                   // Handle to DLL
 #endif
 
 //-----------------------------------------------------------
@@ -325,8 +294,14 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     my_offset = 0.0;
 
     BuildTessGL();
+ 
+    // Free the working memory
+    for(int i = 0; i < m_ncnt ; i++)
+        free (m_vertexPtrArray[i]);
     
-    //ErrorCode = PolyTessGeoGL(poly, bSENC_SM, ref_lat, ref_lon);
+    free( m_vertexPtrArray );
+    m_vertexPtrArray = nullptr;
+    
 }
 
 
@@ -342,17 +317,8 @@ void PolyTessGeo::SetExtents(double x_left, double y_bot, double x_right, double
 
 PolyTessGeo::~PolyTessGeo()
 {
-
     delete  m_ppg_head;
-
     delete  m_pxgeom;
-
-#ifdef USE_GLU_TESS
-    if(s_pwork_buf)
-        free( s_pwork_buf );
-    s_pwork_buf = NULL;
-#endif
-
 }
 
 int PolyTessGeo::BuildDeferredTess(void)
@@ -422,7 +388,7 @@ void __CALL_CONVENTION combineCallback(GLdouble coords[3],
                      GLdouble *vertex_data[4],
                      GLfloat weight[4], GLdouble **dataOut );
 
-
+#if 0
 //      Build PolyTessGeo Object from OGR Polygon
 //      Using OpenGL/GLU tesselator
 int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon)
@@ -917,6 +883,7 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     
     return 0;
 }
+#endif
 
 int PolyTessGeo::BuildTessGL(void)
 {
@@ -1124,7 +1091,7 @@ int PolyTessGeo::BuildTessGL(void)
       TriPrim *pTPG_Last = NULL;
       TriPrim *pTPG_Head = NULL;
 
-      s_nvmax = 0;
+      //s_nvmax = 0;
 
       if (!tessTesselate(tess, TESS_WINDING_POSITIVE, TESS_POLYGONS, nvp, 2, 0))
         return -1;
@@ -1217,7 +1184,7 @@ int PolyTessGeo::BuildTessGL(void)
    
     
       m_ppg_head = new PolyTriGroup;
-      m_ppg_head->m_bSMSENC = s_bSENC_SM;
+      m_ppg_head->m_bSMSENC = m_b_senc_sm;
 
       m_ppg_head->nContours = m_ncnt;
       m_ppg_head->pn_vertex = m_cntr;             // pointer to array of poly vertex counts
@@ -1318,7 +1285,7 @@ int PolyTessGeo::BuildTessGL(void)
       return 0;
 }
 
-
+#if 0
 int PolyTessGeo::BuildTessGL2(void)
 {
 #ifdef ocpnUSE_GL
@@ -1951,6 +1918,7 @@ PolyTessGeoTrap::~PolyTessGeoTrap()
 
 
 
+#endif
 
 //------------------------------------------------------------------------------
 //          PolyTriGroup Implementation
