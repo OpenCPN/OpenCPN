@@ -2087,9 +2087,6 @@ bool MyApp::OnInit()
         g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
     }
 
-
-    g_StartTime = wxInvalidDateTime;
-    g_StartTimeTZ = 1;                // start with local times
     gpIDX = NULL;
     gpIDXn = 0;
 

@@ -29,6 +29,7 @@
 #include "Route.h"
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"
+#include <cmath>
 
 
 class RoutePropDlgImpl : public RoutePropDlg
@@ -51,7 +52,7 @@ protected:
     void PlanSpeedOnTextEnter( wxCommandEvent& event );
     void DepartureDateOnDateChanged( wxDateEvent& event );
     void DepartureTimeOnTimeChanged( wxDateEvent& event );
-    void TimezoneOnChoice( wxCommandEvent& event ) { event.Skip(); }
+    void TimezoneOnChoice( wxCommandEvent& event );
     void WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event );
     void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event );
@@ -64,7 +65,7 @@ protected:
     void OnRoutePropMenuSelected( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     
-    wxDateTime GetDepartureTS() const;
+    wxDateTime GetDepartureTS();
     void SaveChanges();
     void ResetChanges();
     
@@ -87,6 +88,9 @@ private:
     wxDataViewColumn *etd_col;
     
     bool IsThisRouteExtendable();
+    wxDateTime toUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
+    wxDateTime fromUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
+
 };
 
 #endif // _ROUTEPROPDLGIMPL_H_

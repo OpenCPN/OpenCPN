@@ -478,6 +478,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         
         RoutePoint *pWp = NULL;
 		bool route_existing = false;
+        pTentRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
         
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
@@ -532,7 +533,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                      
                      else
                      if( ext_name == _T ( "opencpn:time_display" ) ) {
-                        pTentRoute->m_TimeDisplayFormat, wxString::FromUTF8(ext_child.first_child().value());
+                        pTentRoute->m_TimeDisplayFormat = wxString::FromUTF8(ext_child.first_child().value());
                      }
                      else
                      if( ext_name.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
@@ -981,10 +982,8 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         child.append_child(pugi::node_pcdata).set_value(t.mb_str());
     }
 
-    if( pRoute->m_TimeDisplayFormat != RTE_TIME_DISP_UTC ) {
-        child = child_ext.append_child("opencpn:time_display");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
-    }                        
+    child = child_ext.append_child("opencpn:time_display");
+    child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
     
     if( pRoute->m_width != WIDTH_UNDEFINED || pRoute->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");

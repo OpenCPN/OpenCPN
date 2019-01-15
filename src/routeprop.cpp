@@ -1,3 +1,4 @@
+#if 0
 /**************************************************************************
 *
 * Project:  OpenCPN
@@ -117,6 +118,7 @@ extern wxColour           g_colourWaypointRangeRingsColour;
 #define    EVTWILIGHT    5
 #define    NIGHT        6
 
+
 /* Next high tide, low tide, transition of the mark level, or some
 combination.
 Bit      Meaning
@@ -179,7 +181,7 @@ wxString GetDaylightString(int index)
             return      _("EvTwilight");
         case 6:
             return      _("Nighttime");
-
+            
         default:
             return      _T("");
     }
@@ -213,7 +215,7 @@ static double FNrange( double x )
 }
 
 double getDaylightEvent( double glat, double glong, int riset, double altitude, int y, int m,
-        int d )
+                        int d )
 {
     double day = FNday( y, m, d, 0 );
     double days, correction;
@@ -271,26 +273,26 @@ int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
     int n = utcDateTime.GetMinute();
     int s = utcDateTime.GetSecond();
     if( y < 2000 || y > 2100 ) return ( 0 );
-
+    
     double ut = (double) h + (double) n / 60. + (double) s / 3600.;
     double lt = getLMT( ut, lon );
     double rsalt = -0.833;
     double twalt = -12.;
-
+    
     //wxString msg;
-
+    
     if( lt <= 12. ) {
         double sunrise = getDaylightEvent( lat, lon, +1, rsalt, y, m, d );
         if( sunrise < 0. ) return ( 0 );
         else
             sunrise = getLMT( sunrise, lon );
-
+        
         //            msg.Printf(_T("getDaylightEvent lat=%f lon=%f\n riset=%d rsalt=%f\n y=%d m=%d d=%d\n sun=%f lt=%f\n ut=%f\n"),
         // lat, lon, +1, rsalt, y, m, d, sunrise, lt, ut);
         //msg.Append(utcDateTime.Format());
         //            OCPNMessageDialog md1(gFrame, msg, _("Sunrise Message"), wxICON_ERROR );
         //            md1.ShowModal();
-
+        
         if( fabs( lt - sunrise ) < 0.15 ) return ( SUNRISE );
         if( lt > sunrise ) return ( DAY );
         double twilight = getDaylightEvent( lat, lon, +1, twalt, y, m, d );
@@ -2317,3 +2319,4 @@ void RouteProp::OnEvtColDragEnd( wxListEvent& event )
     m_wpList->Refresh();
 }
 
+#endif
