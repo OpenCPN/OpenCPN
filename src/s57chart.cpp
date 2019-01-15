@@ -5339,7 +5339,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                         attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                     }
                 }
-
+   
                 // What we need to do...
                 // Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
                 // This will be like (E), (L), (I), (F)
@@ -5347,7 +5347,18 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 // need to do this in creatsencrecord above, and update the senc format.
 
                 value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
-
+                
+                // If the atribute value is a filenmae, change the value into a link to that file
+                wxString AttrNamesFiles = _T("PICREP,TXTDSC,NTXTDS"); //AttrNames that might have an filename as value
+                if ( AttrNamesFiles.Find( curAttrName) != wxNOT_FOUND ){     
+                    wxFileName file ;
+                    file.Assign( GetFullPath() );   
+                    file.Assign( file.GetPath(), value );     
+                    if( file.IsOk() )
+                        if( file.Exists() )
+                            value = wxString::Format( _T("<a href=\"%s\">%s</a>"), file.GetFullPath(), file.GetFullName() );
+                }                    
+                    
                 if( isLight ) {
                     assert( curLight != nullptr);
                     curLight->attributeValues.Add( value );
@@ -5362,7 +5373,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                     if( !( curAttrName == _T("DRVAL1") ) ) {
                         attribStr << _T("</font></td></tr>\n");
-                    }
+                    }                  
                 }
 
                 attrCounter++;
@@ -5514,7 +5525,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
         lights.clear();
     }
-
+    
     return ret_val;
 }
 
