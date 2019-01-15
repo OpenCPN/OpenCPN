@@ -23,6 +23,7 @@
  */
 #include <stdlib.h>
 #include <thread>
+#include <windows.h>
 
 #include <wx/file.h>
 #include <wx/log.h>
@@ -38,15 +39,39 @@ static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
     snprintf(buff, sizeof(buff), cmd, path);
-    int status = system(buff);
-    if (status == -1) {
+    size_t buffSize = strlen(buff) + 1;
+    const size_t cmdSize = 1024;
+    size_t convChars = 0;
+    TCHAR buf[cmdSize];
+    mbstowcs_s(&convChars, buf, buffSize, buff, _TRUNCATE);
+    STARTUPINFO si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+
+    // Start the child process. 
+    int status = CreateProcess(NULL,   // No module name (use command line)
+        buf,            // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        CREATE_NO_WINDOW,// No window flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi);           // Pointer to PROCESS_INFORMATION structure
+    
+    if (!status) {
         wxLogWarning("Cannot fork process running %s", buff);
         return -1;
     }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
     if (WIFEXITED(status)) {
         status = WEXITSTATUS(status);
-        if (status != 0) {
-            wxLogWarning("Non-zero exit code %d from command %s",
+        if (status != 1) {
+            wxLogWarning("Exit code %d from command %s",
                          status, buff);
         }
     } else {
