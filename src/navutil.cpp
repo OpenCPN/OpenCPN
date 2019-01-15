@@ -238,6 +238,7 @@ extern int              g_ScaledNumWeightSizeOfT;
 extern int              g_ScaledSizeMinimal;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+int                     g_S57_extradialog_sx, g_S57_extradialog_sy;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -629,6 +630,8 @@ int MyConfig::LoadMyConfig()
     g_AisTargetList_sortColumn = 2; // Column #2 is MMSI
     g_S57_dialog_sx = 400;
     g_S57_dialog_sy = 400;
+    g_S57_extradialog_sx = 400;
+    g_S57_extradialog_sy = 400;
 
     //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
@@ -1120,6 +1123,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
+    Read( _T ( "S57QueryExtraDialogSizeX" ), &g_S57_extradialog_sx );
+    Read( _T ( "S57QueryExtraDialogSizeY" ), &g_S57_extradialog_sy );
     
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
@@ -2520,6 +2525,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
+    Write( _T ( "S57QueryExtraDialogSizeX" ), g_S57_extradialog_sx );
+    Write( _T ( "S57QueryExtraDialogSizeY" ), g_S57_extradialog_sy );
 
     Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
     Write( _T ( "bAISRolloverShowCOG" ), g_bAISRolloverShowCOG );
