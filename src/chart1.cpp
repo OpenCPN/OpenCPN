@@ -980,9 +980,29 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("no_opengl"), wxEmptyString, _("Disable OpenGL video acceleration. This setting will be remembered.") );
     parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
     parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
+    parser.AddOption( _T("l"), _T("loglevel"), _("Amount of logging: error, warning, notice, debug or trace"));
     parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
 
     parser.AddSwitch( _T("unit_test_2") );
+}
+
+/** Parse --loglevel and set up logging, falling back to defaults. */
+static void ParseLoglevel(wxCmdLineParser& parser)
+{
+    const char* strLevel = std::getenv("OPENCPN_LOGLEVEL");
+    strLevel = strLevel ? strLevel : "info";
+    wxString wxLevel;
+    if (parser.Found("l", &wxLevel)) {
+        strLevel = wxLevel.c_str();
+    }
+    LogLevel level = Logger::string2level(strLevel);
+    if (level == LogLevel::BadLevel) {
+        fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
+        strLevel = "info";
+        level = LogLevel::Info;
+    }
+    Logger::setLevel(level);
+    LOG_NOTICE("Log initiated using level %s", strLevel);
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -1001,6 +1021,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
         if( g_unit_test_1 == 0 )
             g_unit_test_1 = -1;
     }
+    ParseLoglevel(parser);
 
     return true;
 }
