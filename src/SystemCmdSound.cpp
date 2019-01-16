@@ -23,25 +23,26 @@
  */
 #include <stdlib.h>
 #include <thread>
-#include <windows.h>
 
 #include <wx/file.h>
 #include <wx/log.h>
 
 #ifdef _WIN32
-#define WIFEXITED(stat_val) ( (stat_val) != -1 )
+#include <windows.h>
+#define WIFEXITED(stat_val) ( (stat_val) != 0 )
 #define WEXITSTATUS(stat_val) ((unsigned)(stat_val))
 #endif
 
 #include "SystemCmdSound.h"
 
-extern int quitflag;
+extern bool g_bquiting;
 
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
     snprintf(buff, sizeof(buff), cmd, path);
 
+#ifdef _WIN32
     STARTUPINFOA si = { sizeof(si) };
     PROCESS_INFORMATION pi;
 
@@ -56,22 +57,42 @@ static int do_play(const char* cmd, const char* path)
         NULL,           // Use parent's starting directory 
         &si,            // Pointer to STARTUPINFO structure
         &pi);           // Pointer to PROCESS_INFORMATION structure
-    
+
     if (!status) {
         wxLogWarning("Cannot fork process running %s", buff);
         return -1;
     }
+#else
+    int status = system(buff);
+    if (status == -1) {
+        wxLogWarning("Cannot fork process running %s", buff);
+        return -1;
+    }
+#endif /* _WIN32 */
 
+#ifdef _WIN32
+    // Here we wait a bit and check if the process is finished.
     int waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
-    while (!quitflag && waitStatus == WAIT_TIMEOUT) {
+    while (!g_bquiting && waitStatus == WAIT_TIMEOUT) {
+        // if not finished wait a little bit longer
         waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
     }
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
+
+    // if thread did not terminate naturally log it
+    if (!g_bquiting && waitStatus != WAIT_OBJECT_0)
+        wxLogWarning("Sound command produced unusual waitStatus %d", (int)waitStatus);
+
+    if (!g_bquiting){   // if shutting down let windows close down the sound process
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+    return 1;
+
+#else
 
     if (WIFEXITED(status)) {
         status = WEXITSTATUS(status);
-        if (status != 1) {
+        if (status != 0) {
             wxLogWarning("Exit code %d from command %s",
                          status, buff);
         }
@@ -80,7 +101,9 @@ static int do_play(const char* cmd, const char* path)
                      status, status, buff);
     }
     return status;
-}    
+
+#endif /* _WIN32 */
+}
 
 
 bool SystemCmdSound::Load(const char* path, int deviceIndex)

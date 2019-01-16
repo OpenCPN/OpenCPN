@@ -30,8 +30,6 @@
 #include <wx/string.h>
 #include <wx/wxchar.h>
 
-extern int g_iSoundDeviceIndex;
-
 
 OcpnSound::OcpnSound()
 {
