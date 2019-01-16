@@ -35,6 +35,8 @@
 
 #include "SystemCmdSound.h"
 
+extern int quitflag;
+
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
@@ -60,7 +62,10 @@ static int do_play(const char* cmd, const char* path)
         return -1;
     }
 
-    WaitForSingleObject(pi.hProcess, maxPlayTime);
+    int waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
+    while (!quitflag && waitStatus == WAIT_TIMEOUT) {
+        waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
+    }
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
