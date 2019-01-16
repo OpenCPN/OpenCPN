@@ -112,6 +112,7 @@ class   OCPNIconCombo;
 #define ID_SET_DEFAULT_ALL 8023
 #define ID_BTN_LINK_MENU 8024
 #define ID_DEFAULT 8025
+#define ID_BTN_SHOW_TIDES 8026
 
 ////@end control identifiers
 
@@ -188,7 +189,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
-class MarkInfoDlg : public wxDialog
+class MarkInfoDlg : public wxFrame
 {
     DECLARE_EVENT_TABLE()
     friend class SaveDefaultsDialog;
@@ -226,6 +227,7 @@ class MarkInfoDlg : public wxDialog
         wxBoxSizer*             bSizerLinks;
         wxButton*               m_buttonExtDescription;
         wxButton*               m_buttonLinksMenu;
+        wxButton*               m_buttonShowTides;
         wxButton*               DefaultsBtn;
         wxCheckBox*             m_checkBoxScaMin;
         wxCheckBox*             m_checkBoxShowName;
@@ -316,6 +318,8 @@ class MarkInfoDlg : public wxDialog
         void OnNotebookPageChanged( wxNotebookEvent& event );
         void OnTimeChanged( wxDateEvent& event ) { m_cbEtaPresent->SetValue(true); }
         void OnTideStationCombobox( wxCommandEvent& event);
+        void OnClose( wxCloseEvent& event ) { Hide(); event.Veto(); }
+        void ShowTidesBtnClicked( wxCommandEvent& event );
         
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );

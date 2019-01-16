@@ -53,6 +53,7 @@
 #include "OCPNPlatform.h"
 #include "Route.h"
 #include "chart1.h"
+#include "TCWin.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -61,7 +62,6 @@
 
 
 extern double             gLat, gLon, gSog, gCog;
-extern IDX_entry          *gpIDX;
 extern TCMgr              *ptcmgr;
 extern long               gStart_LMT_Offset;
 extern MyConfig           *pConfig;
@@ -240,11 +240,12 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
 //    Mark Information Dialog Implementation
 //
 //-------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE( MarkInfoDlg, wxDialog )
+BEGIN_EVENT_TABLE( MarkInfoDlg, wxFrame )
      EVT_BUTTON( wxID_OK, MarkInfoDlg::OnMarkInfoOKClick)
      EVT_BUTTON( wxID_CANCEL, MarkInfoDlg::OnMarkInfoCancelClick)
      EVT_BUTTON( ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
      EVT_BUTTON( ID_DEFAULT, MarkInfoDlg::DefautlBtnClicked)
+     EVT_BUTTON( ID_BTN_SHOW_TIDES, MarkInfoDlg::ShowTidesBtnClicked)
      EVT_COMBOBOX(ID_BITMAPCOMBOCTRL, MarkInfoDlg::OnBitmapCombClick)
      EVT_CHECKBOX( ID_SHOWNAMECHECKBOXBASIC, MarkInfoDlg::OnShowWaypointNameSelectBasic )
      EVT_CHECKBOX( ID_SHOWNAMECHECKBOX_EXT, MarkInfoDlg::OnShowWaypointNameSelectExt )
@@ -256,6 +257,7 @@ BEGIN_EVENT_TABLE( MarkInfoDlg, wxDialog )
      EVT_SPINCTRL(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
      // the HTML listbox's events
      EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
+     EVT_CLOSE(MarkInfoDlg::OnClose)
      
      //EVT_CHOICE( ID_WAYPOINTRANGERINGS, MarkInfoDef::OnWaypointRangeRingSelect )
 END_EVENT_TABLE()
@@ -267,7 +269,7 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
     wstyle |= wxSTAY_ON_TOP;
 #endif
     
-    wxDialog::Create( parent, id, title, pos, size, wstyle );
+    wxFrame::Create( parent, id, title, pos, size, wstyle );
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
@@ -323,7 +325,6 @@ void MarkInfoDlg::Create()
     gbSizerInnerProperties->AddGrowableCol(2);
 
     m_checkBoxShowName = new wxCheckBox(m_PanelBasicProperties, ID_SHOWNAMECHECKBOXBASIC, wxEmptyString);
-    int smaller = m_checkBoxShowName->GetSize().x;
     m_checkBoxShowName->SetValue(false);
     gbSizerInnerProperties->Add(m_checkBoxShowName, 0, wxALIGN_CENTRE_VERTICAL, 0);
     m_staticTextName = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("Name"));
@@ -355,21 +356,21 @@ void MarkInfoDlg::Create()
     gbSizerInnerProperties->Add(m_textLongitude, 0, wxALL|wxEXPAND, 5);
     
     sbS_Description = new wxStaticBoxSizer( wxHORIZONTAL, m_PanelBasicProperties, _("Description"));
-    m_textDescription = new wxTextCtrl( sbS_Description->GetStaticBox(), ID_DESCR_CTR_BASIC, wxEmptyString, wxDefaultPosition, wxSize( -1, smaller*2 ), wxTE_MULTILINE );
+    m_textDescription = new wxTextCtrl( sbS_Description->GetStaticBox(), ID_DESCR_CTR_BASIC, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
     sbS_Description->Add( m_textDescription, 1, wxBOTTOM|wxLEFT|wxEXPAND, 5 );
-    m_buttonExtDescription = new wxButton( sbS_Description->GetStaticBox(), ID_BTN_DESC_BASIC, _T("\u2261"), wxDefaultPosition, wxSize( 15, smaller*2 ), 0 );
-    sbS_Description->Add( m_buttonExtDescription, 0, wxBOTTOM|wxRIGHT|wxLEFT, 5 );
+    m_buttonExtDescription = new wxButton( sbS_Description->GetStaticBox(), ID_BTN_DESC_BASIC, _T("\u2261"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    sbS_Description->Add( m_buttonExtDescription, 0, wxEXPAND, 5 );
     sbS_Description->SetSizeHints( sbS_Description->GetStaticBox() );
     
     wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_PanelBasicProperties, _("Links")  );
-    m_htmlList = new  	wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxSize( -1, smaller*2 ), 0);
+    m_htmlList = new  	wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
 
     sbS_SizerLinks1->SetSizeHints( sbS_Description->GetStaticBox() );
   
     sbSizerBasicProperties->Add(gbSizerInnerProperties, 1, wxEXPAND, 5);
-    sbSizerBasicProperties->Add(sbS_Description, 0, wxEXPAND);
-    sbSizerBasicProperties->Add(sbS_SizerLinks1, 0, wxEXPAND);
+    sbSizerBasicProperties->Add(sbS_Description, 1, wxEXPAND, 5);
+    sbSizerBasicProperties->Add(sbS_SizerLinks1, 1, wxEXPAND, 5);
     m_PanelBasicProperties->Layout();
 
         
@@ -386,7 +387,7 @@ void MarkInfoDlg::Create()
     
     m_PanelExtendedProperties = new wxPanel(m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxBoxSizer* fSizerExtProperties = new wxBoxSizer(wxVERTICAL);
-    sbSizerExtProperties = new wxStaticBoxSizer(wxVERTICAL, m_PanelExtendedProperties, _("Extended-Properties"));
+    sbSizerExtProperties = new wxStaticBoxSizer(wxVERTICAL, m_PanelExtendedProperties, _("Extended Properties"));
     wxFlexGridSizer* gbSizerInnerExtProperties = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerExtProperties->AddGrowableCol(2);
     gbSizerInnerExtProperties->SetFlexibleDirection( wxBOTH );
@@ -424,14 +425,14 @@ void MarkInfoDlg::Create()
     m_staticTextRR4 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Color"));
     gbRRExtProperties->Add(m_staticTextRR4, 0, wxLEFT, 5);
     
-    m_SpinWaypointRangeRingsNumber = new wxSpinCtrl( sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO, wxEmptyString, wxDefaultPosition, wxSize((int)smaller*2.5, -1), wxSP_VERTICAL, 0, 10, 0);
+    m_SpinWaypointRangeRingsNumber = new wxSpinCtrl( sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL, 0, 10, 0);
     gbRRExtProperties->Add(m_SpinWaypointRangeRingsNumber, 0, wxALL|wxEXPAND, 5);
-    m_textWaypointRangeRingsStep = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("0.05"), wxDefaultPosition, wxSize((int)smaller*2.5, -1), 0);
+    m_textWaypointRangeRingsStep = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("0.05"), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_textWaypointRangeRingsStep, 0, wxALL|wxEXPAND, 5);
     m_staticTextRR3 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
     gbRRExtProperties->Add(m_staticTextRR3, 0, wxALIGN_CENTRE_VERTICAL|wxALIGN_LEFT, 0);
     
-    m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxSize((int)smaller*2.5, -1), 0);
+    m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_PickColor, 0, wxALL|wxEXPAND, 5);
     sbRangeRingsExtProperties->Add(gbRRExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 
@@ -448,19 +449,22 @@ void MarkInfoDlg::Create()
     m_textCtrlGuid->SetEditable(false);
     gbSizerInnerExtProperties2->Add(m_textCtrlGuid, 0, wxALL|wxEXPAND, 5);
     
-    m_staticTextTideStation = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Tide Station"),
-                                               wxDefaultPosition, wxDefaultSize, 0 );
-    gbSizerInnerExtProperties2->Add(m_staticTextTideStation, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    
-    m_comboBoxTideStation = new wxComboBox( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
-    gbSizerInnerExtProperties2->Add(m_comboBoxTideStation, 0, wxALL|wxEXPAND, 5);
-    
     wxFlexGridSizer* gbSizerInnerExtProperties1 = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerExtProperties1->AddGrowableCol(1);
     
+    m_staticTextTideStation = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Tide Station"),
+                                               wxDefaultPosition, wxDefaultSize, 0 );
+    gbSizerInnerExtProperties1->Add(m_staticTextTideStation, 0, wxALIGN_CENTRE_VERTICAL, 5);
+    
+    m_comboBoxTideStation = new wxComboBox( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
+    gbSizerInnerExtProperties1->Add(m_comboBoxTideStation, 0, wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL, 5);
+    
+    m_buttonShowTides = new wxButton( sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, _("\u223f"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    gbSizerInnerExtProperties1->Add(m_buttonShowTides, 0, wxALL|wxALIGN_CENTRE_VERTICAL, 5);
+    
     m_staticTextArrivalRadius = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Arrival Radius") );
     gbSizerInnerExtProperties1->Add(m_staticTextArrivalRadius, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_textArrivalRadius = new wxTextCtrl( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize((int)smaller*2.5, -1), 0 );
+    m_textArrivalRadius = new wxTextCtrl( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_textArrivalRadius, 0, wxALL|wxEXPAND, 5);
     m_staticTextArrivalUnits = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString,
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -470,7 +474,7 @@ void MarkInfoDlg::Create()
             wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_staticTextPlSpeed, 0, wxALIGN_CENTRE_VERTICAL, 0);
     m_textCtrlPlSpeed = new wxTextCtrl( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString,
-            wxDefaultPosition, wxSize((int)smaller*2.5, -1), 0 );            
+            wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_textCtrlPlSpeed, 0, wxALL|wxEXPAND, 5);
     m_staticTextPlSpeedUnits = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrSpeedUnit(),
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -487,12 +491,12 @@ void MarkInfoDlg::Create()
     bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL|wxEXPAND, 5);
     gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
 
-    sbSizerExtProperties->Add(gbSizerInnerExtProperties, 1, wxEXPAND);
-    sbSizerExtProperties->Add(sbRangeRingsExtProperties, 1, wxEXPAND);
-    sbSizerExtProperties->Add(gbSizerInnerExtProperties2, 1, wxEXPAND);
-    sbSizerExtProperties->Add(gbSizerInnerExtProperties1, 1, wxEXPAND);
+    sbSizerExtProperties->Add(gbSizerInnerExtProperties, 0, wxALL|wxEXPAND, 5);
+    sbSizerExtProperties->Add(sbRangeRingsExtProperties, 0, wxALL|wxEXPAND, 5);
+    sbSizerExtProperties->Add(gbSizerInnerExtProperties2, 0, wxALL|wxEXPAND, 5);
+    sbSizerExtProperties->Add(gbSizerInnerExtProperties1, 0, wxALL|wxEXPAND, 5);
     
-    fSizerExtProperties->Add(sbSizerExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    fSizerExtProperties->Add(sbSizerExtProperties, 1, wxALL|wxEXPAND);
 
     sbSizerExtProperties->Fit(sbSizerExtProperties->GetStaticBox() );
     sbSizerExtProperties->SetSizeHints(sbSizerExtProperties->GetStaticBox());
@@ -1389,3 +1393,12 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     Layout();
 }
 
+void MarkInfoDlg::ShowTidesBtnClicked( wxCommandEvent& event )
+{
+    if( m_comboBoxTideStation->GetSelection() < 1 ) {
+        return;
+    }
+    IDX_entry* pIDX = (IDX_entry*)ptcmgr->GetIDX_entry(ptcmgr->GetStationIDXbyName(m_comboBoxTideStation->GetStringSelection(), fromDMM(m_textLatitude->GetValue()), fromDMM(m_textLongitude->GetValue())));
+    TCWin* pCwin = new TCWin( gFrame->GetPrimaryCanvas(), 0, 0, pIDX );
+    pCwin->Show();
+}
