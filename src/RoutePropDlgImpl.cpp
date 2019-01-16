@@ -31,6 +31,7 @@
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "chcanv.h"
+#include "tcmgr.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
@@ -52,7 +53,7 @@ extern RouteList *pRouteList;
 extern Select *pSelect;
 extern MyFrame *gFrame;
 extern RouteManagerDialog *pRouteManagerDialog;
-
+extern TCMgr *ptcmgr;
 
 // Sunrise/twilight calculation for route properties.
 // limitations: latitude below 60, year between 2000 and 2100
@@ -273,6 +274,7 @@ void RoutePropDlgImpl::UpdatePoints()
     int in = 0;
     wxString slen, eta, ete;
     double bearing, distance, speed;
+    wxDateTime eta_dt = wxInvalidDateTime;
     while( pnode ) {
         speed = pnode->GetData()->GetPlannedSpeed();
         if( speed < .1 ) {
@@ -283,6 +285,7 @@ void RoutePropDlgImpl::UpdatePoints()
             if( m_pRoute->m_PlannedDeparture.IsValid() ) {
                 eta = wxString::Format("Start: %s", toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR).c_str());
                 eta.Append( wxString::Format(_T(" (%s)"), GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat, pnode->GetData()->m_lon, m_pRoute->m_PlannedDeparture)).c_str()) );
+                eta_dt = m_pRoute->m_PlannedDeparture;
             } else {
                 eta = _("N/A");
             }
@@ -297,7 +300,7 @@ void RoutePropDlgImpl::UpdatePoints()
             if( pnode->GetData()->GetETA().IsValid() ) {
                 eta = toUsrDateTime( pnode->GetData()->GetETA(), m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
                 eta.Append( wxString::Format(_T(" (%s)"), GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat, pnode->GetData()->m_lon, pnode->GetData()->GetETA())).c_str()) );
-
+                eta_dt = pnode->GetData()->GetETA();
             } else {
                 eta = wxEmptyString;
             }
@@ -335,7 +338,7 @@ void RoutePropDlgImpl::UpdatePoints()
         data.push_back( wxVariant(ete) ); // ETE
         data.push_back( eta ); //ETA
         data.push_back( wxVariant(wxString::FromDouble(toUsrSpeed(speed))) ); // Speed
-        data.push_back( wxVariant(tide_station) ); // Next Tide event TODO
+        data.push_back( wxVariant(MakeTideInfo(tide_station, lat, lon, eta_dt)) ); // Next Tide event
         data.push_back( wxVariant(desc) ); // Description
         data.push_back( wxVariant(crs) );
         data.push_back( wxVariant(etd) );
@@ -864,4 +867,39 @@ bool RoutePropDlgImpl::IsThisRouteExtendable()
     delete pEditRouteArray;
     
     return false;
+}
+
+wxString RoutePropDlgImpl::MakeTideInfo( wxString stationName, double lat, double lon, wxDateTime utcTime )
+{
+    if( stationName.IsEmpty() ) {
+        return wxEmptyString;
+    }
+    if( !utcTime.IsValid() ) {
+        return _("Invalid date/time!");
+    }
+    int stationID = ptcmgr->GetStationIDXbyName( stationName, lat, lon );
+    if( stationID == 0 ) {
+        return _("Unknown station!");
+    }
+    time_t dtmtt = utcTime.FromUTC().GetTicks();
+    int ev = ptcmgr->GetNextBigEvent( &dtmtt, stationID );
+    
+    wxDateTime dtm;
+    dtm.Set( dtmtt ).MakeUTC();
+    
+    wxString tide_form = wxEmptyString;
+    
+    if( ev == 1 ) {
+        tide_form.Append( _T("LW: ") );
+    } else if( ev == 2 ) {
+        tide_form.Append( _T("HW: ") );
+    }
+    
+    int offset = ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
+    
+    tide_form.Append( toUsrDateTime(dtm, m_tz_selection, lon).Format(ETA_FORMAT_STR) );
+    dtm.Add(wxTimeSpan(0, offset, 0));
+    tide_form.Append( wxString::Format(_T(" (Local: %s) @ %s"), dtm.Format(ETA_FORMAT_STR), stationName.c_str()) );
+    
+    return tide_form;
 }

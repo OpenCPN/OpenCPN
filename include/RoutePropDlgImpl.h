@@ -90,7 +90,7 @@ private:
     bool IsThisRouteExtendable();
     wxDateTime toUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
     wxDateTime fromUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );
-
+    wxString MakeTideInfo( wxString stationName, double lat, double lon, wxDateTime utcTime );
 };
 
 #endif // _ROUTEPROPDLGIMPL_H_
