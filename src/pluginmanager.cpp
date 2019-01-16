@@ -156,6 +156,8 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 extern bool       g_bquiting;
 
+extern MyFrame    *gFrame;
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -6772,4 +6774,9 @@ void CanvasJumpToPosition( wxWindow *canvas, double lat, double lon, double scal
 bool ShuttingDown( void )
 {
     return g_bquiting;
+}
+
+wxWindow* PluginGetCanvasUnderMouse( void )
+{
+    return gFrame->GetCanvasUnderMouse();
 }
