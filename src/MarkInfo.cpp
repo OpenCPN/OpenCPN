@@ -1104,6 +1104,10 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
         m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
         m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
+        m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
+        m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
+        m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
+        m_textArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
         
         if( positionOnly ) return true;
 
@@ -1128,6 +1132,9 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_comboBoxTideStation->SetEditable( false );
             m_PickColor->Enable( false );
             DefaultsBtn->Enable( false );
+            m_EtaDatePickerCtrl->Enable(false);
+            m_EtaTimePickerCtrl->Enable(false);
+            m_cbEtaPresent->Enable(false);
             if( !m_textDescription->IsEmpty() ){
                 m_notebookProperties->SetSelection(1); //Show Description page
             }
@@ -1151,6 +1158,9 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_comboBoxTideStation->SetEditable( true );
             m_PickColor->Enable( true );
             DefaultsBtn->Enable( true );
+            m_EtaDatePickerCtrl->Enable(true);
+            m_EtaTimePickerCtrl->Enable(true);
+            m_cbEtaPresent->Enable(true);
             m_notebookProperties->SetSelection(0);
         }
                
