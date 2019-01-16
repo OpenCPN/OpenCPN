@@ -33,6 +33,7 @@
 #include "wx/image.h"                           // for some reason, needed for msvc???
 #include "wx/tokenzr.h"
 #include <wx/textfile.h>
+#include <wx/filename.h>
 
 #include "dychart.h"
 #include "OCPNPlatform.h"
@@ -5198,6 +5199,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString positionString;
     std::vector<S57Light*> lights;
     S57Light* curLight = nullptr;
+    wxFileName file ;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
         ObjRazRules *current = node->GetData();
@@ -5348,16 +5350,17 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                 value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
                 
-                // If the atribute value is a filenmae, change the value into a link to that file
-                wxString AttrNamesFiles = _T("PICREP,TXTDSC,NTXTDS"); //AttrNames that might have an filename as value
-                if ( AttrNamesFiles.Find( curAttrName) != wxNOT_FOUND ){     
-                    wxFileName file ;
-                    file.Assign( GetFullPath() );   
-                    file.Assign( file.GetPath(), value );     
-                    if( file.IsOk() )
-                        if( file.Exists() )
-                            value = wxString::Format( _T("<a href=\"%s\">%s</a>"), file.GetFullPath(), file.GetFullName() );
-                }                    
+                // If the atribute value is a filename, change the value into a link to that file
+                wxString AttrNamesFiles = _T("PICREP,TXTDSC,NTXTDS"); //AttrNames that might have a filename as value
+                if ( AttrNamesFiles.Find( curAttrName) != wxNOT_FOUND )
+                    if ( value.Find(_T(".XML")) == wxNOT_FOUND ){ // Don't show xml files   
+                        file.Assign( GetFullPath() );   
+                        file.Assign( file.GetPath(), value );
+                        file.Normalize();
+                        if( file.IsOk() )
+                            if( file.Exists() )
+                                value = wxString::Format( _T("<a href=\"%s\">%s</a>"), file.GetFullPath(), file.GetFullName() );
+                    }                    
                     
                 if( isLight ) {
                     assert( curLight != nullptr);
@@ -5399,7 +5402,28 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
         }
     } // Object for loop
-
+    
+    // Add the additional info files
+    wxArrayString files;
+    file.Assign( GetFullPath() );
+    wxString AddFiles = wxString::Format(_T("<hr noshade><br><b>Additional info files attached to: </b> <font size=-2>%s</font><br><table border=0 cellspacing=0 cellpadding=3>"), file.GetFullName() );
+    file.Normalize();
+    file.Assign( file.GetPath(), wxT("") );    
+    wxDir::GetAllFiles( file.GetFullPath(), &files,  wxT("*.TXT"), wxDIR_FILES  );
+    wxDir::GetAllFiles( file.GetFullPath(), &files,  wxT("*.txt"), wxDIR_FILES  );
+    if ( files.Count() > 0 )
+    {      
+        for ( size_t i=0; i < files.Count(); i++){
+            file.Assign( files.Item(i) );
+            AddFiles << wxString::Format( _T("<tr><td valign=top><font size=-2><a href=\"%s\">%s</a></font></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>"), file.GetFullPath(), file.GetFullName() );
+            if ( files.Count() > ++i){
+                file.Assign( files.Item(i) );
+                AddFiles << wxString::Format( _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font></td>"), file.GetFullPath(), file.GetFullName() );                
+            }                
+        }
+        ret_val << AddFiles <<_T("</table>");
+    }
+    
     if( !lights.empty() ) {
         assert( curLight != nullptr);
 
@@ -5525,7 +5549,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
         lights.clear();
     }
-    
+   
     return ret_val;
 }
 
