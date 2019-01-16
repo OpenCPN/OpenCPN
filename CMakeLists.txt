@@ -1304,6 +1304,7 @@ SET(HDRS
                 include/concanv.h
                 include/cutil.h
                 include/georef.h
+                include/logger.h
                 include/navutil.h
                 include/routeman.h
                 include/routemanagerdialog.h
@@ -1406,6 +1407,7 @@ SET(SRCS
         src/concanv.cpp
         src/cutil.cpp
         src/georef.cpp
+        src/logger.cpp
         src/navutil.cpp
         src/routeman.cpp
         src/routemanagerdialog.cpp
