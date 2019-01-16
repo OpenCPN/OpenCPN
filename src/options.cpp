@@ -1138,6 +1138,8 @@ void options::Init(void) {
   k_tides = 0;
   m_pConfig = NULL;
   
+  pSoundDeviceIndex = NULL;
+
   pCBNorthUp = NULL;
   pCBCourseUp = NULL;
   pCBLookAhead = NULL;
@@ -5185,7 +5187,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
 
   OcpnSound* sound = SoundFactory();
   int deviceCount = sound->DeviceCount();
-  pSoundDeviceIndex = new wxChoice();
   wxLogMessage("options: got device count: %d", deviceCount);
   if (deviceCount > 1) {
     wxArrayString labels;
@@ -5199,21 +5200,24 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
         }
         labels.Add(label);
     }
-    pSoundDeviceIndex->Create(itemPanelFont,
-                              wxID_ANY,
-                              wxDefaultPosition,
-                              wxDefaultSize,
-                              labels);
-    pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
-    pSoundDeviceIndex->Show();
-    wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
-    miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
-                     group_item_spacing);
+    pSoundDeviceIndex = new wxChoice();
+    if (pSoundDeviceIndex) {
+        pSoundDeviceIndex->Create(itemPanelFont,
+            wxID_ANY,
+            wxDefaultPosition,
+            wxDefaultSize,
+            labels);
+        pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+        pSoundDeviceIndex->Show();
+        wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
+        miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
+            group_item_spacing);
 
-    wxStaticText* stSoundDeviceIndex =
-        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
-    pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-    pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+        wxStaticText* stSoundDeviceIndex =
+            new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
+        pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
+        pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+    }
   }
 
   //  Mobile/Touchscreen checkboxes
@@ -5855,7 +5859,8 @@ void options::SetInitialSettings(void) {
 
   if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
-  pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+  if (pSoundDeviceIndex)
+      pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
@@ -6940,7 +6945,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
-  g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
+  if (pSoundDeviceIndex)
+      g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();

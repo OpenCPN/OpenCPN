@@ -55,5 +55,6 @@ class SystemCmdSound: public OcpnSound
         std::string m_path;
 };
 
+const unsigned maxPlayTime = 20000;   // maximum sound play time is 20 seconds
 
 #endif // __WX_SOUND_H__

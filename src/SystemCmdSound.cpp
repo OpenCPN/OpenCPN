@@ -39,17 +39,13 @@ static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
     snprintf(buff, sizeof(buff), cmd, path);
-    size_t buffSize = strlen(buff) + 1;
-    const size_t cmdSize = 1024;
-    size_t convChars = 0;
-    TCHAR buf[cmdSize];
-    mbstowcs_s(&convChars, buf, buffSize, buff, _TRUNCATE);
-    STARTUPINFO si = { sizeof(si) };
+
+    STARTUPINFOA si = { sizeof(si) };
     PROCESS_INFORMATION pi;
 
     // Start the child process. 
-    int status = CreateProcess(NULL,   // No module name (use command line)
-        buf,            // Command line
+    int status = CreateProcessA(NULL,   // No module name (use command line)
+        buff,            // Command line
         NULL,           // Process handle not inheritable
         NULL,           // Thread handle not inheritable
         FALSE,          // Set handle inheritance to FALSE
@@ -64,7 +60,7 @@ static int do_play(const char* cmd, const char* path)
         return -1;
     }
 
-    WaitForSingleObject(pi.hProcess, INFINITE);
+    WaitForSingleObject(pi.hProcess, maxPlayTime);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
