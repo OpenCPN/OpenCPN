@@ -80,6 +80,7 @@
 #include "piano.h"
 #include "concanv.h"
 #include "options.h"
+#include "logger.h"
 #include "about.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
@@ -1705,6 +1706,10 @@ bool MyApp::OnInit()
     //      Establish Log File location
     if(!g_Platform->InitializeLogFile())
         return false;
+    if (!LogBackend::getInstance().setLogfile(g_Platform->GetLogFileName())) {
+        fprintf(stderr, "Cannot initialize logging.\n");
+        return false;
+    }
 
 
 #ifdef __WXMSW__
