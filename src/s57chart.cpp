@@ -5360,6 +5360,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                         if( file.IsOk() )
                             if( file.Exists() )
                                 value = wxString::Format( _T("<a href=\"%s\">%s</a>"), file.GetFullPath(), file.GetFullName() );
+                            else
+                                value = value + _T("&nbsp;&nbsp;<font color=\"red\">[ ") + _("this file is not available") + _T(" ]</font>");
                     }                    
                     
                 if( isLight ) {
