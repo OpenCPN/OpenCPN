@@ -6776,7 +6776,7 @@ bool ShuttingDown( void )
     return g_bquiting;
 }
 
-wxWindow* PluginGetCanvasUnderMouse( void )
+wxWindow* GetCanvasUnderMouse( void )
 {
     return gFrame->GetCanvasUnderMouse();
 }
