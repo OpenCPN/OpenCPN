@@ -112,6 +112,7 @@ bool SystemCmdSound::Load(const char* path, int deviceIndex)
     if (deviceIndex != -1) {
         wxLogWarning("Selecting device is not supported by SystemCmdSound");
     }
+    m_OK = wxFileExists(m_path);
     return true;
 }
 
