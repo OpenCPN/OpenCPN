@@ -33,7 +33,7 @@
 #include "s57chart.h"
 #include "Osenc.h"
 #include "chart1.h"
-
+#include "chcanv.h"
 
 
 extern MyFrame*          gFrame;
@@ -126,14 +126,15 @@ SENCThreadStatus SENCThreadManager::ScheduleJob(SENCJobTicket *ticket)
     ticket->m_status = THREAD_PENDING;
     ticket_list.push_back(ticket);
 
-    printf("Scheduling job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
-    printf("Job count:  %d\n", ticket_list.size());
+    //printf("Scheduling job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
+    //printf("Job count:  %d\n", ticket_list.size());
     StartTopJob();
     return THREAD_PENDING;
 }
 
 void SENCThreadManager::StartTopJob()
 {
+    SENCJobTicket *startCandidate;
     // Get the running job count
     int nRunning = 0;
     for(size_t i=0 ; i < ticket_list.size() ; i++){
@@ -145,7 +146,7 @@ void SENCThreadManager::StartTopJob()
     if(nRunning < m_max_jobs){
 
         // Find the first eligible
-        SENCJobTicket *startCandidate = NULL;    
+        startCandidate = NULL;    
         for(size_t i=0 ; i < ticket_list.size() ; i++){
             if(ticket_list[i]->m_status == THREAD_PENDING){
                 startCandidate = ticket_list[i];
@@ -155,31 +156,57 @@ void SENCThreadManager::StartTopJob()
         
         // Found one?
         if(startCandidate){
-            printf("Starting job:  %s\n", (const char*)startCandidate->m_FullPath000.mb_str());
+            //printf("Starting job:  %s\n", (const char*)startCandidate->m_FullPath000.mb_str());
 
             SENCBuildThread *thread = new SENCBuildThread( startCandidate, this);
             startCandidate->m_thread = thread;
             startCandidate->m_status = THREAD_STARTED;
             thread->Run();
+            nRunning++;
         }
+    }
+    
+    if(nRunning){
+        wxString count;
+        count.Printf(_T("  %ld"), ticket_list.size());
+        gFrame->GetPrimaryCanvas()->SetAlertString( _("Preparing vector chart  ") + count);
     }
 }
 
 void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
 {
-    printf("Finishing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
+    //printf("Finishing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
 
     // Find and remove the ticket from the list
     for(size_t i=0 ; i < ticket_list.size() ; i++){
         if(ticket_list[i] == ticket){
-            printf("   Removing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
+            //printf("   Removing job:  %s\n", (const char*)ticket->m_FullPath000.mb_str());
 
             ticket_list.erase(ticket_list.begin() + i);
-            printf("Job count:  %d\n", ticket_list.size());
+            //printf("Job count:  %d\n", ticket_list.size());
 
             break;
         }
     }
+
+#if 1
+    int nRunning = 0;
+    for(size_t i=0 ; i < ticket_list.size() ; i++){
+        if(ticket_list[i]->m_status == THREAD_STARTED)
+            nRunning++;
+    }
+
+    
+    if(nRunning){
+        wxString count;
+        count.Printf(_T("  %ld"), ticket_list.size());
+        gFrame->GetPrimaryCanvas()->SetAlertString( _("Preparing vector chart  ") + count);
+    }
+    else{
+        gFrame->GetPrimaryCanvas()->SetAlertString( _T(""));
+    }        
+#endif
+
 }
 
 bool SENCThreadManager::IsChartInTicketlist(s57chart *chart)
