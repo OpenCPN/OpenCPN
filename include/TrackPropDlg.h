@@ -99,7 +99,6 @@ private:
         bool        SaveChanges(void);
         
         HyperlinkList   *m_pMyLinkList;
-        LinkPropImpl    *m_pLinkProp;
         void OnHyperLinkClick(wxHyperlinkEvent &event);
         wxHyperlinkCtrl *m_pEditedLink;
 

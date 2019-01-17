@@ -198,7 +198,6 @@ class MarkInfoDlg : public wxFrame
         RoutePoint*     m_pRoutePoint;
         static bool     instanceFlag;
         int             i_htmlList_item;
-        LinkPropImpl*   m_pLinkProp;
         
         bool            m_bShowName_save;
         wxString        m_Name_save;

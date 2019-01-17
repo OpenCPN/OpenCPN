@@ -46,6 +46,7 @@ const int WidthValues[] = { -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 class ocpnDC;
 class ChartCanvas;
+class HyperlinkList;
 
 class Route : public wxObject
 {
@@ -140,6 +141,7 @@ public:
       wxString    m_Colour;
       bool        m_btemp;
       int         m_hiliteWidth;
+      HyperlinkList *m_HyperlinkList;
       
 private:
       LLBBox     RBBox;

@@ -288,7 +288,6 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
 #endif
     Create();
     m_pMyLinkList = NULL;
-    m_pLinkProp = new LinkPropImpl( NULL );
     SetColorScheme( (ColorScheme) 0 );
 }
 
@@ -612,7 +611,6 @@ void MarkInfoDlg::RecalculateSize( void )
 
 MarkInfoDlg::~MarkInfoDlg()
 {
-    delete m_pLinkProp;
     // Disconnect Events
     m_textLatitude->Disconnect( wxEVT_CONTEXT_MENU,
                             wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
@@ -637,7 +635,6 @@ void MarkInfoDlg::InitialFocus(void)
 void MarkInfoDlg::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
-    DimeControl( m_pLinkProp );
 }
 
 void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
@@ -831,48 +828,57 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
 
 void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )
 {
-   
     switch(event.GetId()) {
- 		case ID_RCLK_MENU_DELETE_LINK:{
+ 		case ID_RCLK_MENU_DELETE_LINK:
+        {
             wxHyperlinkListNode* node = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item);
             m_pRoutePoint->m_HyperlinkList->DeleteNode(node);
- 			break;}
- 		case ID_RCLK_MENU_EDIT_LINK:{
-            Hyperlink *link = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->GetData();
-            m_pLinkProp->m_textCtrlLinkDescription->SetValue( link->DescrText ); 
-            m_pLinkProp->m_textCtrlLinkUrl->SetValue( link->Link );
-            #ifdef __WXOSX__
-                HideWithEffect(wxSHOW_EFFECT_BLEND );
-            #endif                    
-            if( m_pLinkProp->ShowModal() == wxID_OK ) {                    
-                link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-                link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-                    m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->SetData(link);
-            } 
- 			break;}
-        case ID_RCLK_MENU_ADD_LINK:{
-            #ifdef __WXOSX__
-                HideWithEffect(wxSHOW_EFFECT_BLEND );
-            #endif 
-            m_pLinkProp->m_textCtrlLinkDescription->SetValue( wxEmptyString ); 
-            m_pLinkProp->m_textCtrlLinkUrl->SetValue( wxEmptyString );
-            if( m_pLinkProp->ShowModal() == wxID_OK ) {
-                Hyperlink *link =new Hyperlink;
-                link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-                link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-                //Check if decent
-                if ( link->DescrText == wxEmptyString ) link->DescrText = link->Link;
-                if ( link->Link == wxEmptyString )
-                    delete link;
-                else
-                    m_pRoutePoint->m_HyperlinkList->Append(link);
-            }        
+            UpdateHtmlList();
  			break;
         }
-        break;
+ 		case ID_RCLK_MENU_EDIT_LINK:
+        {
+            Hyperlink *link = m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->GetData();
+            LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+            LinkPropDlg->m_textCtrlLinkDescription->SetValue( link->DescrText );
+            LinkPropDlg->m_textCtrlLinkUrl->SetValue( link->Link );
+            DimeControl( LinkPropDlg );
+            LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg,link](int retcode){
+                if ( retcode == wxID_OK ) {
+                    link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+                    link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+                    m_pRoutePoint->m_HyperlinkList->Item(i_htmlList_item)->SetData(link);
+                    UpdateHtmlList();
+                }
+            });
+ 			break;
+        }
+        case ID_RCLK_MENU_ADD_LINK:
+        {
+            LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+            LinkPropDlg->m_textCtrlLinkDescription->SetValue( wxEmptyString );
+            LinkPropDlg->m_textCtrlLinkUrl->SetValue( wxEmptyString );
+            DimeControl( LinkPropDlg );
+            LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg](int retcode){
+                if ( retcode == wxID_OK ) {
+                    Hyperlink *link =new Hyperlink;
+                    link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+                    link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+                    //Check if decent
+                    if ( link->DescrText == wxEmptyString ) {
+                        link->DescrText = link->Link;
+                    }
+                    if ( link->Link == wxEmptyString ) {
+                        delete link;
+                    } else {
+                        m_pRoutePoint->m_HyperlinkList->Append(link);
+                    }
+                    UpdateHtmlList();
+                }
+            });
+ 			break;
+        }
     }
-
-    UpdateHtmlList();
     event.Skip();
 }
 

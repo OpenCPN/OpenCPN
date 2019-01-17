@@ -475,6 +475,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
     wxString Name = wxString::FromUTF8( wpt_node.name() );
     if( Name == _T ( "rte" ) ) {
         pTentRoute = new Route();
+        HyperlinkList *linklist = NULL;
         
         RoutePoint *pWp = NULL;
 		bool route_existing = false;
@@ -594,6 +595,30 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                 DescString = wxString::FromUTF8( tschild.first_child().value() );
             }
 
+            if( ChildName == _T ( "link") ) {
+                wxString HrefString;
+                wxString HrefTextString;
+                wxString HrefTypeString;
+                if( linklist == NULL )
+                    linklist = new HyperlinkList;
+                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
+                
+                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
+                    wxString LinkString = wxString::FromUTF8( child1.name() );
+                    
+                    if( LinkString == _T ( "text" ) )
+                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                    if( LinkString == _T ( "type" ) )
+                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+                }
+                
+                Hyperlink *link = new Hyperlink;
+                link->Link = HrefString;
+                link->DescrText = HrefTextString;
+                link->LType = HrefTypeString;
+                linklist->Append( link );
+            }
+            
             else
             //TODO: This is wrong, left here just to save data of the 3.3 beta series users.
             if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
@@ -604,17 +629,18 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                          pTentRoute->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                 }
             }
-
-       }
+        }
                     
         pTentRoute->m_RouteNameString = RouteName;
         pTentRoute->m_RouteDescription = DescString;
+        if( linklist ) {
+            pTentRoute->m_HyperlinkList = linklist;
+        }
 
-        if( b_propviz )
-                  pTentRoute->SetVisible( b_viz );
-        else {
-            if( b_fullviz )
-                pTentRoute->SetVisible();
+        if( b_propviz ) {
+            pTentRoute->SetVisible( b_viz );
+        } else if( b_fullviz ) {
+            pTentRoute->SetVisible();
         }
  
         if( b_layer ){
@@ -942,6 +968,34 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         if(buffer.data()) {
             child = node.append_child("desc");
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
+    }
+    
+    // Hyperlinks
+    HyperlinkList *linklist = pRoute->m_HyperlinkList;
+    if( linklist && linklist->GetCount() ) {
+        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+            
+            pugi::xml_node child_link = node.append_child("link");
+            wxCharBuffer buffer = link->Link.ToUTF8();
+            if(buffer.data())
+                child_link.append_attribute("href") = buffer.data();
+            
+            buffer=link->DescrText.ToUTF8();
+            if(buffer.data()) {
+                child = child_link.append_child("text");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+            
+            buffer=link->LType.ToUTF8();
+            if(buffer.data()  && strlen(buffer.data()) > 0) {
+                child = child_link.append_child("type");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+            
+            linknode = linknode->GetNext();
         }
     }
     

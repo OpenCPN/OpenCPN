@@ -87,12 +87,14 @@ Route::Route()
     
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+    m_HyperlinkList = new HyperlinkList;
 }
 
 Route::~Route()
 {
     pRoutePointList->DeleteContents( false );            // do not delete Marks
     delete pRoutePointList;
+    delete m_HyperlinkList;
 }
 
 // The following is used only for route splitting, assumes just created, empty route

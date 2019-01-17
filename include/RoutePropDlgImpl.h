@@ -30,6 +30,7 @@
 #include <wx/dvrenderers.h>
 #include "ocpn_types.h"
 #include <cmath>
+#include "LinkPropDlg.h"
 
 
 class RoutePropDlgImpl : public RoutePropDlg
@@ -64,12 +65,20 @@ protected:
     void BtnsOnOKButtonClick( wxCommandEvent& event ) { SaveChanges(); Hide(); }
     void OnRoutePropMenuSelected( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
+    void ItemEditOnMenuSelection( wxCommandEvent& event );
+    void ItemAddOnMenuSelection( wxCommandEvent& event );
+    void ItemDeleteOnMenuSelection( wxCommandEvent& event );
+    void AddLinkOnButtonClick( wxCommandEvent& event );
+    void BtnEditOnToggleButton( wxCommandEvent& event );
+    void OnHyperlinkClick( wxHyperlinkEvent& event );
+    void HyperlinkContextMenu( wxMouseEvent& event );
     
     wxDateTime GetDepartureTS();
     void SaveChanges();
     void ResetChanges();
     
-    RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+    RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+    
 private:
     static bool instanceFlag;
     static RoutePropDlgImpl* single;
@@ -86,6 +95,8 @@ private:
     int         m_tz_selection;
         
     wxDataViewColumn *etd_col;
+    
+    wxHyperlinkCtrl *m_pEditedLink;
     
     bool IsThisRouteExtendable();
     wxDateTime toUsrDateTime( const wxDateTime ts, const int format, const double lon = INFINITY - INFINITY );

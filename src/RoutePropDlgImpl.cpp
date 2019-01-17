@@ -223,6 +223,9 @@ int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
+#ifdef __WXOSX__
+    SetWindowStyle(wxSTAY_ON_TOP);
+#endif
     m_pRoute = NULL;
 
     SetColorScheme(global_color_scheme);
@@ -241,7 +244,7 @@ bool RoutePropDlgImpl::instanceFlag = false;
 RoutePropDlgImpl* RoutePropDlgImpl::single = NULL;
 RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
 {
-    if(! instanceFlag)
+    if(! instanceFlag )
     {
         single = new RoutePropDlgImpl( parent );
         instanceFlag = true;
@@ -435,6 +438,44 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         }
         
         m_pRoute = pR;
+        
+        if(m_scrolledWindowLinks){
+            wxWindowList kids = m_scrolledWindowLinks->GetChildren();
+            for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+                wxWindowListNode *node = kids.Item(i);
+                wxWindow *win = node->GetData();
+                if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
+                    ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_COMMAND_HYPERLINK,
+                                                           wxHyperlinkEventHandler( RoutePropDlgImpl::OnHyperlinkClick ) );
+                    ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_RIGHT_DOWN,
+                                                           wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ) );
+                    win->Destroy();
+                }
+            }
+            int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
+            HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
+            if( NbrOfLinks > 0 ) {
+                wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+                while( linknode ) {
+                    Hyperlink *link = linknode->GetData();
+                    wxString Link = link->Link;
+                    wxString Descr = link->DescrText;
+                    
+                    wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, Descr,
+                                                                Link, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+                    ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
+                                  wxHyperlinkEventHandler( RoutePropDlgImpl::OnHyperlinkClick ), NULL, this );
+                    if( !m_pRoute->m_bIsInLayer ) {
+                        ctrl->Connect( wxEVT_RIGHT_DOWN,
+                                      wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ), NULL, this );
+                    }
+                    bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+                    
+                    linknode = linknode->GetNext();
+                }
+            }
+            bSizerLinks->Fit( m_scrolledWindowLinks );
+        }
         
         m_choiceTimezone->SetSelection(m_tz_selection);
         
@@ -899,7 +940,204 @@ wxString RoutePropDlgImpl::MakeTideInfo( wxString stationName, double lat, doubl
     
     tide_form.Append( toUsrDateTime(dtm, m_tz_selection, lon).Format(ETA_FORMAT_STR) );
     dtm.Add(wxTimeSpan(0, offset, 0));
-    tide_form.Append( wxString::Format(_T(" (Local: %s) @ %s"), dtm.Format(ETA_FORMAT_STR), stationName.c_str()) );
+    tide_form.Append( wxString::Format(_(" (Local: %s) @ %s"), dtm.Format(ETA_FORMAT_STR), stationName.c_str()) );
     
     return tide_form;
+}
+
+void RoutePropDlgImpl::ItemEditOnMenuSelection( wxCommandEvent& event )
+{
+    wxString findurl = m_pEditedLink->GetURL();
+    wxString findlabel = m_pEditedLink->GetLabel();
+    
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( findlabel );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( findurl );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg,findurl,findlabel](int retcode){
+        if ( retcode == wxID_OK ) {
+            int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
+            HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
+            //            int len = 0;
+            if( NbrOfLinks > 0 ) {
+                wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+                while( linknode ) {
+                    Hyperlink *link = linknode->GetData();
+                    wxString Link = link->Link;
+                    wxString Descr = link->DescrText;
+                    if( Link == findurl && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) {
+                        link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+                        link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+                        wxHyperlinkCtrl* h =
+                        (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel( findlabel );
+                        if( h ) {
+                            h->SetLabel( LinkPropDlg->m_textCtrlLinkDescription->GetValue() );
+                            h->SetURL( LinkPropDlg->m_textCtrlLinkUrl->GetValue() );
+                        }
+                    }
+                    linknode = linknode->GetNext();
+                }
+            }
+            
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
+            bSizerLinks->Layout();
+        }
+    });
+    event.Skip();
+}
+
+void RoutePropDlgImpl::ItemAddOnMenuSelection( wxCommandEvent& event )
+{
+    AddLinkOnButtonClick(event);
+}
+
+void RoutePropDlgImpl::ItemDeleteOnMenuSelection( wxCommandEvent& event )
+{
+    wxHyperlinkListNode* nodeToDelete = NULL;
+    wxString findurl = m_pEditedLink->GetURL();
+    wxString findlabel = m_pEditedLink->GetLabel();
+    
+    wxWindowList kids = m_scrolledWindowLinks->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item(i);
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
+            ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_COMMAND_HYPERLINK,
+                wxHyperlinkEventHandler( RoutePropDlgImpl::OnHyperlinkClick ) );
+            ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_RIGHT_DOWN,
+                wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ) );
+            win->Destroy();
+        }
+    }
+    
+    ///    m_scrolledWindowLinks->DestroyChildren();
+    int NbrOfLinks = m_pRoute->m_HyperlinkList->GetCount();
+    HyperlinkList *hyperlinklist = m_pRoute->m_HyperlinkList;
+    //      int len = 0;
+    if( NbrOfLinks > 0 ) {
+        wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+            wxString Link = link->Link;
+            wxString Descr = link->DescrText;
+            if( Link == findurl
+               && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) nodeToDelete =
+                linknode;
+            else {
+                wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, Descr,
+                                                            Link, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+                ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
+                    wxHyperlinkEventHandler( RoutePropDlgImpl::OnHyperlinkClick ), NULL, this );
+                ctrl->Connect( wxEVT_RIGHT_DOWN,
+                    wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ), NULL, this );
+                
+                bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+            }
+            linknode = linknode->GetNext();
+        }
+    }
+    if( nodeToDelete ) hyperlinklist->DeleteNode( nodeToDelete );
+    m_scrolledWindowLinks->InvalidateBestSize();
+    m_scrolledWindowLinks->Layout();
+    bSizerLinks->Layout();
+    event.Skip();
+}
+
+void RoutePropDlgImpl::AddLinkOnButtonClick( wxCommandEvent& event )
+{
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( wxEmptyString );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( wxEmptyString );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg](int retcode){
+        if ( retcode == wxID_OK ) {
+            wxString desc = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            if( desc == wxEmptyString ) desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
+                LinkPropDlg->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
+                wxHL_DEFAULT_STYLE );
+            ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
+                wxHyperlinkEventHandler( RoutePropDlgImpl::OnHyperlinkClick ), NULL, this );
+            ctrl->Connect( wxEVT_RIGHT_DOWN,
+                wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ), NULL, this );
+            
+            bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+            bSizerLinks->Fit( m_scrolledWindowLinks );
+            this->Layout();
+            
+            Hyperlink* h = new Hyperlink();
+            h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            h->LType = wxEmptyString;
+            m_pRoute->m_HyperlinkList->Append( h );
+        }
+    });
+}
+
+void RoutePropDlgImpl::BtnEditOnToggleButton( wxCommandEvent& event )
+{
+    if( m_toggleBtnEdit->GetValue() ) {
+        m_stEditEnabled->SetLabel( _("Links are opened for editing.") );
+    } else {
+        m_stEditEnabled->SetLabel( _("Links are opened in the default browser.") );
+    }
+    event.Skip();
+}
+
+void RoutePropDlgImpl::OnHyperlinkClick( wxHyperlinkEvent& event )
+{
+    if( m_toggleBtnEdit->GetValue() ) {
+        m_pEditedLink = (wxHyperlinkCtrl*) event.GetEventObject();
+        ItemEditOnMenuSelection( event );
+        event.Skip( false );
+        return;
+    }
+    //    Windows has trouble handling local file URLs with embedded anchor points, e.g file://testfile.html#point1
+    //    The trouble is with the wxLaunchDefaultBrowser with verb "open"
+    //    Workaround is to probe the registry to get the default browser, and open directly
+    //
+    //    But, we will do this only if the URL contains the anchor point character '#'
+    //    What a hack......
+    
+#ifdef __WXMSW__
+    wxString cc = event.GetURL();
+    if( cc.Find( _T("#") ) != wxNOT_FOUND ) {
+        wxRegKey RegKey( wxString( _T("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command") ) );
+        if( RegKey.Exists() ) {
+            wxString command_line;
+            RegKey.QueryValue( wxString( _T("") ), command_line );
+            
+            //  Remove "
+            command_line.Replace( wxString( _T("\"") ), wxString( _T("") ) );
+            
+            //  Strip arguments
+            int l = command_line.Find( _T(".exe") );
+            if( wxNOT_FOUND == l ) l = command_line.Find( _T(".EXE") );
+            
+            if( wxNOT_FOUND != l ) {
+                wxString cl = command_line.Mid( 0, l + 4 );
+                cl += _T(" ");
+                cc.Prepend( _T("\"") );
+                cc.Append( _T("\"") );
+                cl += cc;
+                wxExecute( cl );        // Async, so Fire and Forget...
+            }
+        }
+    } else
+        event.Skip();
+#else
+    wxString url = event.GetURL();
+    url.Replace(_T(" "), _T("%20") );
+    ::wxLaunchDefaultBrowser(url);
+#endif
+}
+
+void RoutePropDlgImpl::HyperlinkContextMenu( wxMouseEvent& event )
+{
+    m_pEditedLink = (wxHyperlinkCtrl*) event.GetEventObject();
+    m_scrolledWindowLinks->PopupMenu( m_menuLink,
+        m_pEditedLink->GetPosition().x + event.GetPosition().x,
+        m_pEditedLink->GetPosition().y + event.GetPosition().y );
 }
