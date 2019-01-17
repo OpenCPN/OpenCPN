@@ -5999,6 +5999,8 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         wxPoint r;
         GetCanvasPointPix( tlat, tlon, &r );
         int l1 = r.x - x_origin;
+        
+        m_scaleBarRect = wxRect(x_origin, y_origin- 12, l1, 12);        // Store this for later reference
 
         dc.SetPen(pen1);
         
@@ -12795,6 +12797,37 @@ wxRect ChartCanvas::GetMUIBarRect()
     
     return rv;
 }
+
+#if 0
+bool ChartCanvas::RenderOverlay( ViewPort *vp)
+{
+    //if(g_brendered_expired && !g_bnoShow_sse25)
+    {
+        wxString msg = _("SSE 25..The ENC permit for this cell has expired.\n This cell may be out of date and MUST NOT be used for NAVIGATION.");
+        
+        
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(10, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        
+        dc.SetFont( *pfont );
+        dc.SetPen( *wxTRANSPARENT_PEN);
+        
+        dc.SetBrush( wxColour(243, 229, 47 ) );
+        int w, h;
+        dc.GetMultiLineTextExtent( msg, &w, &h );
+        h += 2;
+        int yp = vp->pix_height - 20 - h;
+        
+        int label_offset = 10;
+        int wdraw = w + ( label_offset * 2 );
+        dc.DrawRectangle( 0, yp, wdraw, h );
+        dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
+                    wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
+    }
+    return false;
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines

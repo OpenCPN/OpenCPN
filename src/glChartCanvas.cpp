@@ -3354,6 +3354,47 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
     
 }
 
+void glChartCanvas::RenderGLAlertMessage()
+{
+    if(!m_pParentCanvas->GetAlertString().IsEmpty())
+    {
+        wxString msg = m_pParentCanvas->GetAlertString(); 
+    
+    
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(10, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        TexFont texfont;
+        texfont.Build(*pfont);
+ 
+        int w, h;
+        texfont.GetTextExtent( msg, &w, &h);
+        h += 2;
+        w += 4;
+        int yp = m_pParentCanvas->VPoint.pix_height - 20 - h;
+        
+        wxRect sbr = m_pParentCanvas->GetScaleBarRect();
+        int xp = sbr.x+sbr.width + 5;
+        
+        glColor3ub( 243, 229, 47 );
+        
+        glBegin(GL_QUADS);
+        glVertex2i(xp, yp);
+        glVertex2i(xp+w, yp);
+        glVertex2i(xp+w, yp+h);
+        glVertex2i(xp, yp+h);
+        glEnd();
+        
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        glColor3ub( 0, 0, 0 );
+        glEnable(GL_TEXTURE_2D);
+        texfont.RenderString( msg, xp, yp);
+        glDisable(GL_TEXTURE_2D);
+        
+    }
+}
 
 
 int n_render;
@@ -3853,6 +3894,8 @@ void glChartCanvas::Render()
     if (m_pParentCanvas->m_Compass)
         m_pParentCanvas->m_Compass->Paint(gldc);
     
+    RenderGLAlertMessage();
+
     //quiting?
     if( g_bquiting )
         DrawQuiting();

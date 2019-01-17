@@ -504,7 +504,11 @@ public:
       void SetAttenAIS( bool show );
       
       MUIBar *GetMUIBar(){ return m_muiBar; }
+     
+      void SetAlertString( wxString str){ m_alertString = str;}
+      wxString GetAlertString(){ return m_alertString; }
       
+      wxRect GetScaleBarRect(){ return m_scaleBarRect; }
 private:
       bool UpdateS52State();
       
@@ -868,6 +872,9 @@ private:
       float        m_focus_indicator_pix;
       bool         m_bENCGroup;
       bool         m_last_TBviz;
+      
+      wxString     m_alertString;
+      wxRect       m_scaleBarRect;
       
 DECLARE_EVENT_TABLE()
 };

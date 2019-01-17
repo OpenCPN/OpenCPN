@@ -139,6 +139,8 @@ public:
     double mvmatrix[16], projmatrix[16];
 
 protected:
+    void RenderGLAlertMessage();
+
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
     
