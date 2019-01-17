@@ -261,6 +261,10 @@ class PolyTessGeo
         double            mx_rate, mx_offset, my_rate, my_offset;
 
         double         **m_vertexPtrArray;
+        bool           m_printStats;
+        bool           m_bstripify;
+        double         m_feature_ref_lat, m_feature_ref_lon;
+        double         m_feature_easting, m_feature_northing;
 };
 
 

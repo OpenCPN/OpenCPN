@@ -12,8 +12,8 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 
 IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
+#  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
+#  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
@@ -49,8 +49,12 @@ SET(LIBTESS2_SOURCES
     Source/sweep.h  
     Source/tess.c  
     Source/tess.h
+    Source/Striper.cpp
+    Source/CustomArray.cpp
+    Source/Adjacency.cpp
+    Source/RevisitedRadix.cpp
     )
 
-add_library(LIBTESS2_static STATIC ${LIBTESS2_SOURCES})
-set_target_properties(LIBTESS2_static PROPERTIES OUTPUT_NAME LIBTESS2)
+add_library(TESS2_static STATIC ${LIBTESS2_SOURCES})
+set_target_properties(TESS2_static PROPERTIES OUTPUT_NAME TESS2)
  

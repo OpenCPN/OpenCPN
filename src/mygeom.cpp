@@ -54,7 +54,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #include "tesselator.h"
+#include "Striper.h"
 
 #ifdef __WXMSW__
 #include <windows.h>
@@ -113,6 +115,25 @@ static LPFNDLLTESSCALLBACK      s_lpfnTessCallback;
 #endif
 #endif
 #endif
+
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
+class OCPNStopWatchTess
+{
+public:
+    OCPNStopWatchTess() { Reset(); }
+    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+
+    double GetTime() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+
+private:
+    timespec tp;
+};
+#endif
+
 
 //-----------------------------------------------------------
 //
@@ -215,7 +236,9 @@ Extended_Geometry::~Extended_Geometry()
 PolyTessGeo::PolyTessGeo()
 {
     m_pxgeom = NULL;
-    
+    m_printStats = false;
+    m_bstripify = false;
+    m_LOD_meters = 0;
 }
 
 //      Build PolyTessGeo Object from Extended_Geometry
@@ -225,13 +248,17 @@ PolyTessGeo::PolyTessGeo(Extended_Geometry *pxGeom)
       m_bOK = false;
 
       m_pxgeom = pxGeom;
-
+      m_printStats = false;
+      m_bstripify = false;
+      m_LOD_meters= 0;
 }
 
 //      Build PolyTessGeo Object from OGR Polygon
 PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon,
                          double LOD_meters)
 {
+    m_printStats = false;
+    
     ErrorCode = 0;
     m_ppg_head = NULL;
     m_pxgeom = NULL;
@@ -243,8 +270,21 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     m_b_senc_sm = bSENC_SM;
     m_bmerc_transform = false;
     
+    //    PolyGeo BBox as lat/lon
+    OGREnvelope Envelope;
+    poly->getEnvelope(&Envelope);
+    xmin = Envelope.MinX;
+    ymin = Envelope.MinY;
+    xmax = Envelope.MaxX;
+    ymax = Envelope.MaxY;
+
+    m_feature_ref_lat = ymin + (ymax - ymin)/2;
+    m_feature_ref_lon = xmin + (xmax - xmin)/2;
+    
+    toSM(m_feature_ref_lat, m_feature_ref_lon, ref_lat, ref_lon, &m_feature_easting, &m_feature_northing);
+
     //  Build the array of contour point counts
-      //      Get total number of contours
+    //      Get total number of contours
     m_ncnt = poly->getNumInteriorRings() + 1;
 
       // build the contour point countarray
@@ -265,8 +305,12 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     double *pp = m_vertexPtrArray[0];
     for(int i = 0 ; i < m_cntr[0] ; i++){
         poly->getExteriorRing()->getPoint(i, &p);
-        *pp++ = p.getX();
-        *pp++ = p.getY();
+        
+        //  Calculate SM from feature reference point
+        double easting, northing;
+        toSM(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting, &northing);
+        *pp++ = easting;              // x
+        *pp++ = northing;             // y
     }
 
     for(int i = 1; i < m_ncnt ; i++){
@@ -274,18 +318,14 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
         double *pp = m_vertexPtrArray[i];
         for(int j = 0 ; j < m_cntr[i] ; j++){
             poly->getInteriorRing(i-1)->getPoint(j, &p);
-            *pp++ = p.getX();
-            *pp++ = p.getY();
+
+            double easting, northing;
+            toSM(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting, &northing);
+            *pp++ = easting;              // x
+            *pp++ = northing;             // y
         }
     }
        
-//    PolyGeo BBox as lat/lon
-    OGREnvelope Envelope;
-    poly->getEnvelope(&Envelope);
-    xmin = Envelope.MinX;
-    ymin = Envelope.MinY;
-    xmax = Envelope.MaxX;
-    ymax = Envelope.MaxY;
 
   
     mx_rate = 1.0;
@@ -293,6 +333,8 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     my_rate = 1.0;
     my_offset = 0.0;
 
+    m_bstripify = true;
+    
     BuildTessGL();
  
     // Free the working memory
@@ -885,6 +927,8 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 }
 #endif
 
+
+
 int PolyTessGeo::BuildTessGL(void)
 {
     //  Setup the tesselator
@@ -943,8 +987,8 @@ int PolyTessGeo::BuildTessGL(void)
       }
 
 
-      float *geoPt = (float *)malloc((npta) * 2 * sizeof(float));     // tess input vertex array
-      float *ppt = geoPt;
+      TESSreal *geoPt = (TESSreal *)malloc((npta) * 2 * sizeof(TESSreal));     // tess input vertex array
+      TESSreal *ppt = geoPt;
 
 
 //      Create input structures
@@ -1011,14 +1055,52 @@ int PolyTessGeo::BuildTessGL(void)
             y0 = y;
       }
 
+      
+      //  Apply LOD reduction
+    int beforeLOD = ptValid;
+    int afterLOD = beforeLOD;
+   
+    std::vector<bool> bool_keep;
+    if(ptValid > 5 && (m_LOD_meters > .01)){
+        
+        for(int i = 0 ; i < ptValid ; i++)
+            bool_keep.push_back(false);
 
-      for(int i = 0 ; i < ptValid ; i++){
-          double x = geoPt[i *2];
-          double y = geoPt[i*2 + 1];
-//          printf("%g  %g\n", x, y);
-      }
-//      printf("\n");
-      tessAddContour(tess, 2, geoPt, sizeof(float)*2, ptValid);
+        // Keep a few key points
+        bool_keep[0] = true;
+        bool_keep[1] = true;
+        bool_keep[ptValid-1] = true;
+        bool_keep[ptValid-2] = true;
+        
+        DouglasPeuckerFI(geoPt, 1, ptValid-2, m_LOD_meters, bool_keep);
+            
+        // Create a new buffer
+        float *LOD_result = (float *)malloc((npte) * 2 * sizeof(float));     
+        float *plod = LOD_result;
+        int kept_LOD =0;
+        
+        for(unsigned int i=0 ; i < ptValid ; i++){
+            if(bool_keep[i]){
+                float x = geoPt[i*2];
+                float y = geoPt[(i*2) + 1];
+                *plod++ = x;
+                *plod++ = y;
+                kept_LOD++;
+            }
+        }
+
+        beforeLOD = ptValid;
+        afterLOD = kept_LOD;
+    
+        tessAddContour(tess, 2, LOD_result, sizeof(float)*2, kept_LOD);
+        
+        free(LOD_result);
+    }
+    else {
+        tessAddContour(tess, 2, geoPt, sizeof(float)*2, ptValid);
+    }
+    
+    
 
 #if 1
 //  Now the interior contours
@@ -1093,94 +1175,278 @@ int PolyTessGeo::BuildTessGL(void)
 
       //s_nvmax = 0;
 
+      //OCPNStopWatchTess tt0;
+      
       if (!tessTesselate(tess, TESS_WINDING_POSITIVE, TESS_POLYGONS, nvp, 2, 0))
         return -1;
+      double tessTime = 0; //tt0.GetTime();
 
 
     //  Tesselation all done, so...
     //  Create the data structures
     
     //  Make a linked list of TriPrims from tess output arrays
-    
-    const float* verts = tessGetVertices(tess);
-//    const int* vinds = tessGetVertexIndices(tess);
+
+    const TESSreal* verts = tessGetVertices(tess);
+    const int* vinds = tessGetVertexIndices(tess);
     const int* elems = tessGetElements(tess);
     const int nverts = tessGetVertexCount(tess);
-    const int nelems = tessGetElementCount(tess);
+    int nelems = tessGetElementCount(tess);
 
-    m_nvertex_max = nverts;               // record largest vertex count
-
-    for (int i = 0; i < nelems; ++i){
-        const int* p = &elems[i*nvp];
-
-        TriPrim *pTPG = new TriPrim;
-        if(NULL == pTPG_Last){
-                pTPG_Head = pTPG;
-                pTPG_Last = pTPG;
-        }
-        else{
-                pTPG_Last->p_next = pTPG;
-                pTPG_Last = pTPG;
-        }
-
-        pTPG->p_next = NULL;
-        pTPG->type = GL_TRIANGLES;
-        pTPG->nVert = nvp;
-        
-        pTPG->p_vertex = (double *)malloc(nvp * 2 * sizeof(double));
-        GLdouble *pdd = (GLdouble*)pTPG->p_vertex;
-
-        //  Preset LLBox bounding box limits
-        double sxmax = -1000;
-        double sxmin = 1000;
-        double symax = -90;
-        double symin = 90;
-        
-
-
-        for (size_t j = 0; j < nvp && p[j] != TESS_UNDEF; ++j){
-            double yd = verts[p[j]*2];
-            double xd = verts[p[j]*2+1];
-            
-            // Calculate LLBox bounding box for each Tri-prim
-            if(m_bmerc_transform){
-                double valx = ( xd * mx_rate ) + mx_offset;
-                double valy = ( yd * my_rate ) + my_offset;
- 
-                       //    quickly convert to lat/lon
-                double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
-                double lon= ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
-
-
-                sxmax = wxMax(lon, sxmax);
-                sxmin = wxMin(lon, sxmin);
-                symax = wxMax(lat, symax);
-                symin = wxMin(lat, symin);
-            }
-            else{
-                sxmax = wxMax(xd, sxmax);
-                sxmin = wxMin(xd, sxmin);
-                symax = wxMax(yd, symax);
-                symin = wxMin(yd, symin);
-            }
-            
-            //  Append this point to TriPrim, converting to SM if called for
-
-            if(m_b_senc_sm){
-                double easting, northing;
-                toSM(yd, xd, m_ref_lat, m_ref_lon, &easting, &northing);
-                *pdd++ = easting;
-                *pdd++ = northing;
-            }
-            else{
-                *pdd++ = xd;
-                *pdd++ = yd;
-            }
-        }
-       
-       pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
-    }
+      
+    bool skip = false;
+    //skip = true;
     
+    double stripTime = 0;
+    //tt0.Reset();
+
+    int bytes_needed_vbo = 0;
+    float *vbo = 0;
+    
+    if(m_bstripify && nelems && !skip){
+        
+         
+        STRIPERCREATE sc;
+        sc.DFaces                       = (udword *)elems;
+        sc.NbFaces                      = nelems;
+        sc.AskForWords          = false;
+        sc.ConnectAllStrips     = false;
+        sc.OneSided             = false;
+        sc.SGIAlgorithm         = false;
+
+       
+        Striper Strip;
+        Strip.Init(sc);
+        
+        STRIPERRESULT sr;
+        Strip.Compute(sr);
+
+        stripTime = 0; //tt0.GetTime();
+
+/*        
+        fprintf(stdout, "Number of strips: %d\n", sr.NbStrips);
+        fprintf(stdout, "Number of points: %d\n", nelems);
+        uword* Refs = (uword*)sr.StripRuns;
+        for(udword i=0;i<sr.NbStrips;i++)
+        {
+                fprintf(stdout, "Strip %d:   ", i);
+                udword NbRefs = sr.StripLengths[i];
+                for(udword j=0;j<NbRefs;j++)
+                {
+                        fprintf(stdout, "%d ", *Refs++);
+                }
+                fprintf(stdout, "\n");
+        }
+*/
+        // calculate and allocate the final (float) VBO-like buffer for this entire feature
+        
+        int *Refs = (int *)sr.StripRuns;
+        for(unsigned int i=0;i<sr.NbStrips;i++){
+            unsigned int NbRefs = sr.StripLengths[i];         //  vertices per strip
+            bytes_needed_vbo += NbRefs * 2 * sizeof(float);
+        }
+        
+        vbo = (float *)malloc(bytes_needed_vbo);
+        float *vbo_run = vbo;
+        
+        for(unsigned int i=0;i<sr.NbStrips;i++){
+            unsigned int NbRefs = sr.StripLengths[i];         //  vertices per strip
+ 
+            if(NbRefs >= 3){                              // this is a valid primitive
+
+                TriPrim *pTPG = new TriPrim;
+                if(NULL == pTPG_Last){
+                    pTPG_Head = pTPG;
+                    pTPG_Last = pTPG;
+                }
+                else{
+                    pTPG_Last->p_next = pTPG;
+                    pTPG_Last = pTPG;
+                }
+
+                pTPG->p_next = NULL;
+                pTPG->nVert = NbRefs;
+            
+//                pTPG->p_vertex = (double *)malloc(NbRefs * 2 * sizeof(double));
+//                GLdouble *pdd = (GLdouble*)pTPG->p_vertex;
+
+                pTPG->p_vertex = (double *)vbo_run;
+
+            //  Preset LLBox bounding box limits
+                double sxmax = -1e8;
+                double sxmin = 1e8;
+                double symax = -1e8;
+                double symin = 1e8;
+
+                if(NbRefs >3)
+                    pTPG->type = GL_TRIANGLE_STRIP;
+                else
+                    pTPG->type = GL_TRIANGLES;
+
+                // Add the first two points
+                int vindex[3];
+                vindex[0] = *Refs++;
+                vindex[1] = *Refs++;
+                unsigned int np = 2;         // for the first triangle
+                    
+                for(unsigned int i = 2; i < NbRefs ; i++){    
+                    vindex[np] = *Refs++;
+                    np++;
+                    
+                    for (unsigned int j = 0; j < np; ++j){
+                        double yd = verts[vindex[j]*2];
+                        double xd = verts[vindex[j]*2+1];
+                    
+                    // Calculate LLBox bounding box for each Tri-prim
+                        if(m_bmerc_transform){
+                            double valx = ( xd * mx_rate ) + mx_offset;
+                            double valy = ( yd * my_rate ) + my_offset;
+            
+                                //    quickly convert to lat/lon
+                            double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
+                            double lon= ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
+
+
+                            sxmax = wxMax(lon, sxmax);
+                            sxmin = wxMin(lon, sxmin);
+                            symax = wxMax(lat, symax);
+                            symin = wxMin(lat, symin);
+                        }
+                        else{
+                            sxmax = wxMax(xd, sxmax);
+                            sxmin = wxMin(xd, sxmin);
+                            symax = wxMax(yd, symax);
+                            symin = wxMin(yd, symin);
+                        }
+                        
+                    //  Append this point to TriPrim vbo
+
+                        *vbo_run++ = (xd) + m_feature_easting;    // adjust to chart ref coordinates
+                        *vbo_run++ = (yd) + m_feature_northing;
+                    }               // For
+
+                    // Compute the final LLbbox for this TriPrim chain
+                    double minlat, minlon, maxlat, maxlon;
+                    fromSM(sxmin, symin, m_feature_ref_lat, m_feature_ref_lon, &minlat, &minlon);
+                    fromSM(sxmax, symax, m_feature_ref_lat, m_feature_ref_lon, &maxlat, &maxlon);
+
+                    pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
+
+                    // set for next single point
+                    np = 0;
+
+                }
+            }
+            else
+                Refs += sr.StripLengths[i];
+           
+        }                       // for strips
+    }
+    else{       // not stripified
+        
+        m_nvertex_max = nverts;               // record largest vertex count
+        
+        bytes_needed_vbo = nelems * nvp * 2 * sizeof(float);
+        vbo = (float *)malloc(bytes_needed_vbo);
+        float *vbo_run = vbo;
+
+        for (int i = 0; i < nelems; ++i){
+            const int* p = &elems[i*nvp];
+
+            TriPrim *pTPG = new TriPrim;
+            if(NULL == pTPG_Last){
+                    pTPG_Head = pTPG;
+                    pTPG_Last = pTPG;
+            }
+            else{
+                    pTPG_Last->p_next = pTPG;
+                    pTPG_Last = pTPG;
+            }
+
+            pTPG->p_next = NULL;
+            pTPG->type = GL_TRIANGLES;
+            pTPG->nVert = nvp;
+            
+//            pTPG->p_vertex = (double *)malloc(nvp * 2 * sizeof(double));
+//            GLdouble *pdd = (GLdouble*)pTPG->p_vertex;
+
+            pTPG->p_vertex = (double *)vbo_run;
+
+            //  Preset LLBox bounding box limits
+            double sxmax = -1e8;
+            double sxmin = 1e8;
+            double symax = -1e8;
+            double symin = 1e8;
+
+            for (size_t j = 0; j < nvp && p[j] != TESS_UNDEF; ++j){
+                double yd = verts[p[j]*2];
+                double xd = verts[p[j]*2+1];
+                
+                // Calculate LLBox bounding box for each Tri-prim
+                if(m_bmerc_transform){
+                    double valx = ( xd * mx_rate ) + mx_offset;
+                    double valy = ( yd * my_rate ) + my_offset;
+    
+                        //    quickly convert to lat/lon
+                    double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
+                    double lon= ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
+
+
+                    sxmax = wxMax(lon, sxmax);
+                    sxmin = wxMin(lon, sxmin);
+                    symax = wxMax(lat, symax);
+                    symin = wxMin(lat, symin);
+                }
+                else{
+                    sxmax = wxMax(xd, sxmax);
+                    sxmin = wxMin(xd, sxmin);
+                    symax = wxMax(yd, symax);
+                    symin = wxMin(yd, symin);
+                }
+                
+                //  Append this point to TriPrim, converting to SM if called for
+
+                if(m_b_senc_sm){
+                    double easting, northing;
+                    toSM(yd, xd, m_ref_lat, m_ref_lon, &easting, &northing);
+                    *vbo_run++ = easting;
+                    *vbo_run++ = northing;
+                }
+                else{
+                    *vbo_run++ = xd;
+                    *vbo_run++ = yd;
+                }
+            }
+        
+        pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
+        }
+    }           // stripify
+
+    if(m_printStats){
+        int nTri = 0;
+        int nStrip = 0;
+        
+        TriPrim *p_tp = pTPG_Head;
+        while( p_tp ) {
+            if(p_tp->type == GL_TRIANGLES)
+                nTri++;
+            if(p_tp->type == GL_TRIANGLE_STRIP)
+                nStrip++;
+            
+          p_tp = p_tp->p_next; // pick up the next in chain
+        }
+        
+        if((nTri + nStrip) > 10000){
+            printf("LOD:  %d/%d\n", afterLOD, beforeLOD);
+
+            printf("Tess time(ms): %f\n", tessTime);
+            printf("Strip time(ms): %f\n", stripTime);
+
+            printf("Primitives:   Tri: %5d  Strip: %5d  Total: %5d\n", nTri, nStrip, nTri + nStrip);
+            printf("\n");
+        }
+    }
+ 
    
     
       m_ppg_head = new PolyTriGroup;
@@ -1188,7 +1454,8 @@ int PolyTessGeo::BuildTessGL(void)
 
       m_ppg_head->nContours = m_ncnt;
       m_ppg_head->pn_vertex = m_cntr;             // pointer to array of poly vertex counts
-      m_ppg_head->data_type = DATA_TYPE_DOUBLE;
+      m_ppg_head->tri_prim_head = pTPG_Head;         // head of linked list of TriPrims
+      //m_ppg_head->data_type = DATA_TYPE_DOUBLE;
       
 
 //  Transcribe the raw geometry buffer
@@ -1237,8 +1504,8 @@ int PolyTessGeo::BuildTessGL(void)
             ppt++;                      // skip z
       }
 
-      m_ppg_head->tri_prim_head = pTPG_Head;         // head of linked list of TriPrims
 
+#if 0      
       //  Convert the Triangle vertex arrays into a single memory allocation of floats
       //  to reduce SENC size and enable efficient access later
       
@@ -1267,9 +1534,11 @@ int PolyTessGeo::BuildTessGL(void)
           p_tp->p_vertex = (double *)pfbuf;
           p_tp = p_tp->p_next; // pick up the next in chain
       }
+#endif
+
       m_ppg_head->bsingle_alloc = true;
-      m_ppg_head->single_buffer = (unsigned char *)vbuf;
-      m_ppg_head->single_buffer_size = total_byte_size;
+      m_ppg_head->single_buffer = (unsigned char *)vbo;
+      m_ppg_head->single_buffer_size = bytes_needed_vbo;
       m_ppg_head->data_type = DATA_TYPE_FLOAT;
       
 
@@ -1282,7 +1551,10 @@ int PolyTessGeo::BuildTessGL(void)
 
       m_bOK = true;
       
+
       return 0;
+      
+
 }
 
 #if 0
