@@ -86,7 +86,7 @@ static int do_play(const char* cmd, const char* path)
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
     }
-    return 1;
+    return 0;
 
 #else
 
@@ -115,7 +115,7 @@ bool SystemCmdSound::Load(const char* path, int deviceIndex)
     }
 #endif /* _DEBUG */
     m_OK = wxFileExists(m_path);
-    return true;
+    return m_OK;
 }
 
 
