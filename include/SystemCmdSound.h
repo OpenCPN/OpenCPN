@@ -40,7 +40,7 @@ class SystemCmdSound: public OcpnSound
 
     public:
         SystemCmdSound(const char* cmd = SYSTEM_SOUND_CMD)
-            :m_path(""), m_cmd(cmd), m_isPlaying(false) {};
+            :m_isPlaying(false), m_cmd(cmd), m_path("")  {};
         ~SystemCmdSound() {};
 
         bool Load(const char* path, int deviceIndex = -1) override;
