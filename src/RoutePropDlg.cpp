@@ -119,7 +119,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerDepartureTS->Add( m_tpDepartureTime, 0, 0, 5 );
 
 
-	bSizerDeparture->Add( bSizerDepartureTS, 0, wxALIGN_CENTER_VERTICAL, 5 );
+	bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
 
 
 	wSizerParams->Add( bSizerDeparture, 1, wxEXPAND, 0 );
@@ -284,7 +284,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerLinkBtns->Add( m_stEditEnabled, 0, wxALL, 5 );
 
 
-	bSizerLinksWnd->Add( bSizerLinkBtns, 0, wxALIGN_BOTTOM|wxEXPAND, 5 );
+	bSizerLinksWnd->Add( bSizerLinkBtns, 0, wxEXPAND, 5 );
 
 
 	m_scrolledWindowLinks->SetSizer( bSizerLinksWnd );
@@ -325,10 +325,10 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_sdbSizerBtns->AddButton( m_sdbSizerBtnsCancel );
 	m_sdbSizerBtns->Realize();
 
-	wSizerCustomBtns->Add( m_sdbSizerBtns, 1, wxALIGN_CENTER_VERTICAL|wxEXPAND, 5 );
+	wSizerCustomBtns->Add( m_sdbSizerBtns, 1, wxEXPAND, 5 );
 
 
-	bSizerMain->Add( wSizerCustomBtns, 0, wxALIGN_BOTTOM|wxEXPAND, 0 );
+	bSizerMain->Add( wSizerCustomBtns, 0, wxEXPAND, 0 );
 
 
 	this->SetSizer( bSizerMain );
@@ -378,8 +378,8 @@ RoutePropDlg::~RoutePropDlg()
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlSelectionChanged ), NULL, this );
-	//m_hyperlink1->Disconnect( wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler( RoutePropDlg::OnHyperlinkClick ), NULL, this );
-	//m_hyperlink1->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( RoutePropDlg::HyperlinkContextMenu ), NULL, this );
+	m_hyperlink1->Disconnect( wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler( RoutePropDlg::OnHyperlinkClick ), NULL, this );
+	m_hyperlink1->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( RoutePropDlg::HyperlinkContextMenu ), NULL, this );
 	m_btnAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::AddLinkOnButtonClick ), NULL, this );
 	m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::BtnEditOnToggleButton ), NULL, this );
 	m_btnPrint->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
