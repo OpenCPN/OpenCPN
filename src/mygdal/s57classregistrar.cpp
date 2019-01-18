@@ -136,6 +136,69 @@ int S57ClassRegistrar::FindFile( const char *pszTarget,
     return TRUE;
 }
 
+
+
+const char *S57ClassRegistrar::OCPLReadLine( FILE * fp )
+
+{
+    int         nReadSoFar = 0;
+
+/* -------------------------------------------------------------------- */
+/*      Cleanup case.                                                   */
+/* -------------------------------------------------------------------- */
+    if( fp == NULL )
+    {
+        CPLFree( pszRLBuffer );
+        pszRLBuffer = NULL;
+        nRLBufferSize = 0;
+        return NULL;
+    }
+
+/* -------------------------------------------------------------------- */
+/*      Loop reading chunks of the line till we get to the end of       */
+/*      the line.                                                       */
+/* -------------------------------------------------------------------- */
+    do {
+/* -------------------------------------------------------------------- */
+/*      Grow the working buffer if we have it nearly full.  Fail out    */
+/*      of read line if we can't reallocate it big enough (for          */
+/*      instance for a _very large_ file with no newlines).             */
+/* -------------------------------------------------------------------- */
+        if( nRLBufferSize-nReadSoFar < 256 )
+        {
+            nRLBufferSize = nRLBufferSize*2 + 256;
+            pszRLBuffer = (char *) VSIRealloc(pszRLBuffer, nRLBufferSize);
+            if( pszRLBuffer == NULL )
+            {
+                nRLBufferSize = 0;
+                return NULL;
+            }
+        }
+
+/* -------------------------------------------------------------------- */
+/*      Do the actual read.                                             */
+/* -------------------------------------------------------------------- */
+        if( CPLFGets( pszRLBuffer+nReadSoFar, nRLBufferSize-nReadSoFar, fp )
+            == NULL )
+        {
+            CPLFree( pszRLBuffer );
+            pszRLBuffer = NULL;
+            nRLBufferSize = 0;
+
+            return NULL;
+        }
+
+        nReadSoFar = strlen(pszRLBuffer);
+
+    } while( nReadSoFar == nRLBufferSize - 1
+             && pszRLBuffer[nRLBufferSize-2] != 13
+             && pszRLBuffer[nRLBufferSize-2] != 10 );
+
+    return( pszRLBuffer );
+}
+
+
+
 /************************************************************************/
 /*                              ReadLine()                              */
 /*                                                                      */
@@ -147,8 +210,11 @@ const char *S57ClassRegistrar::ReadLine( FILE * fp )
 
 {
     if( fp != NULL )
-        return CPLReadLine( fp );
+        return OCPLReadLine( fp );
+    else
+        return NULL;
 
+/*    
     if( papszNextLine == NULL )
         return NULL;
 
@@ -159,6 +225,7 @@ const char *S57ClassRegistrar::ReadLine( FILE * fp )
     }
     else
         return *(papszNextLine++);
+*/    
 }
 
 /************************************************************************/
@@ -179,6 +246,9 @@ int S57ClassRegistrar::LoadInfo( const char * pszDirectory,
     if( !FindFile( "s57objectclasses.csv", pszDirectory, bReportErr, &fp ) )
         return FALSE;
 
+    pszRLBuffer = (char *) VSIRealloc(pszRLBuffer, 512);
+    nRLBufferSize = 512;
+    
 /* -------------------------------------------------------------------- */
 /*      Skip the line defining the column titles.                       */
 /* -------------------------------------------------------------------- */
