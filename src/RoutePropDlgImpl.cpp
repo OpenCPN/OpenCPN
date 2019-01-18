@@ -1038,7 +1038,9 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection( wxCommandEvent& event )
             linknode = linknode->GetNext();
         }
     }
-    if( nodeToDelete ) hyperlinklist->DeleteNode( nodeToDelete );
+    if( nodeToDelete ) {
+        hyperlinklist->DeleteNode( nodeToDelete );
+    }
     m_scrolledWindowLinks->InvalidateBestSize();
     m_scrolledWindowLinks->Layout();
     bSizerLinks->Layout();
@@ -1064,8 +1066,9 @@ void RoutePropDlgImpl::AddLinkOnButtonClick( wxCommandEvent& event )
                 wxMouseEventHandler( RoutePropDlgImpl::HyperlinkContextMenu ), NULL, this );
             
             bSizerLinks->Add( ctrl, 0, wxALL, 5 );
-            bSizerLinks->Fit( m_scrolledWindowLinks );
-            this->Layout();
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
+            bSizerLinks->Layout();
             
             Hyperlink* h = new Hyperlink();
             h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
