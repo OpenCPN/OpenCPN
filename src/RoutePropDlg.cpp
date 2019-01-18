@@ -250,6 +250,24 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerLinks = new wxBoxSizer( wxVERTICAL );
 
 	m_hyperlink1 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	m_hyperlink1->Enable( false );
+	m_hyperlink1->Hide();
+
+	m_menuLink = new wxMenu();
+	wxMenuItem* m_menuItemEdit;
+	m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuLink->Append( m_menuItemEdit );
+
+	wxMenuItem* m_menuItemAdd;
+	m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuLink->Append( m_menuItemAdd );
+
+	wxMenuItem* m_menuItemDelete;
+	m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuLink->Append( m_menuItemDelete );
+
+	m_hyperlink1->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( RoutePropDlg::m_hyperlink1OnContextMenu ), NULL, this );
+
 	bSizerLinks->Add( m_hyperlink1, 0, wxALL, 5 );
 
 
@@ -275,18 +293,10 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_scrolledWindowLinks->SetSizer( bSizerLinksWnd );
 	m_scrolledWindowLinks->Layout();
 	bSizerLinksWnd->Fit( m_scrolledWindowLinks );
-	m_menuLink = new wxMenu();
-	wxMenuItem* m_menuItemEdit;
-	m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menuLink->Append( m_menuItemEdit );
-
-	wxMenuItem* m_menuItemAdd;
-	m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menuLink->Append( m_menuItemAdd );
-
-	wxMenuItem* m_menuItemDelete;
-	m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menuLink->Append( m_menuItemDelete );
+	m_menuLinks = new wxMenu();
+	wxMenuItem* m_menuItemAddLink;
+	m_menuItemAddLink = new wxMenuItem( m_menuLinks, wxID_ANY, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuLinks->Append( m_menuItemAddLink );
 
 	m_scrolledWindowLinks->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( RoutePropDlg::m_scrolledWindowLinksOnContextMenu ), NULL, this );
 
@@ -349,11 +359,12 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_VALUE_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemValueChanged ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlSelectionChanged ), NULL, this );
-	m_btnAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::AddLinkOnButtonClick ), NULL, this );
-	m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::BtnEditOnToggleButton ), NULL, this );
 	m_menuLink->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( RoutePropDlg::ItemEditOnMenuSelection ), this, m_menuItemEdit->GetId());
 	m_menuLink->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( RoutePropDlg::ItemAddOnMenuSelection ), this, m_menuItemAdd->GetId());
 	m_menuLink->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( RoutePropDlg::ItemDeleteOnMenuSelection ), this, m_menuItemDelete->GetId());
+	m_btnAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::AddLinkOnButtonClick ), NULL, this );
+	m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::BtnEditOnToggleButton ), NULL, this );
+	m_menuLinks->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( RoutePropDlg::ItemAddOnMenuSelection ), this, m_menuItemAddLink->GetId());
 	m_btnPrint->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::PrintOnButtonClick ), NULL, this );
 	m_btnExtend->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::ExtendOnButtonClick ), NULL, this );
 	m_btnSplit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::SplitOnButtonClick ), NULL, this );
@@ -385,4 +396,5 @@ RoutePropDlg::~RoutePropDlg()
 	m_sdbSizerBtnsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( RoutePropDlg::BtnsOnOKButtonClick ), NULL, this );
 
 	delete m_menuLink;
+	delete m_menuLinks;
 }

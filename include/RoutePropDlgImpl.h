@@ -72,6 +72,7 @@ protected:
     void BtnEditOnToggleButton( wxCommandEvent& event );
     void OnHyperlinkClick( wxHyperlinkEvent& event );
     void HyperlinkContextMenu( wxMouseEvent& event );
+    void m_scrolledWindowLinksOnContextMenu( wxMouseEvent &event );
     
     wxDateTime GetDepartureTS();
     void SaveChanges();

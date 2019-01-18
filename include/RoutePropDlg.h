@@ -28,10 +28,10 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/menu.h>
 #include <wx/hyperlink.h>
 #include <wx/button.h>
 #include <wx/tglbtn.h>
-#include <wx/menu.h>
 #include <wx/scrolwin.h>
 #include <wx/statbox.h>
 #include <wx/notebook.h>
@@ -94,10 +94,11 @@ class RoutePropDlg : public wxFrame
 		wxScrolledWindow* m_scrolledWindowLinks;
 		wxBoxSizer* bSizerLinks;
 		wxHyperlinkCtrl* m_hyperlink1;
+		wxMenu* m_menuLink;
 		wxButton* m_btnAddLink;
 		wxToggleButton* m_toggleBtnEdit;
 		wxStaticText* m_stEditEnabled;
-		wxMenu* m_menuLink;
+		wxMenu* m_menuLinks;
 		wxButton* m_btnPrint;
 		wxButton* m_btnExtend;
 		wxButton* m_btnSplit;
@@ -118,11 +119,11 @@ class RoutePropDlg : public wxFrame
 		virtual void WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event ) { event.Skip(); }
-		virtual void AddLinkOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void BtnEditOnToggleButton( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ItemEditOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ItemAddOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ItemDeleteOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
+		virtual void AddLinkOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void BtnEditOnToggleButton( wxCommandEvent& event ) { event.Skip(); }
 		virtual void PrintOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ExtendOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void SplitOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -136,9 +137,14 @@ class RoutePropDlg : public wxFrame
 
 		~RoutePropDlg();
 
+		void m_hyperlink1OnContextMenu( wxMouseEvent &event )
+		{
+			m_hyperlink1->PopupMenu( m_menuLink, event.GetPosition() );
+		}
+
 		void m_scrolledWindowLinksOnContextMenu( wxMouseEvent &event )
 		{
-			m_scrolledWindowLinks->PopupMenu( m_menuLink, event.GetPosition() );
+			m_scrolledWindowLinks->PopupMenu( m_menuLinks, event.GetPosition() );
 		}
 
 };
