@@ -474,7 +474,9 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
                     linknode = linknode->GetNext();
                 }
             }
-            bSizerLinks->Fit( m_scrolledWindowLinks );
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
+            bSizerLinks->Layout();
         }
         
         m_choiceTimezone->SetSelection(m_tz_selection);
