@@ -58,6 +58,7 @@ typedef struct {
       extern "C" void DouglasPeuckerF(float *PointList, int fp, int lp, double epsilon, std::vector<int> *keep);
       extern "C" void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep);
       extern "C" void DouglasPeuckerFI(float *PointList, int fp, int lp, double epsilon, std::vector<bool> &keep);
+      extern "C" void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon, std::vector<bool> &keep);
       
 #else /* __cplusplus */
       extern int G_PtInPolygon(MyPoint *, int, float, float) ;

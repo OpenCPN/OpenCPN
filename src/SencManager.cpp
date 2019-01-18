@@ -96,7 +96,7 @@ SENCThreadManager::SENCThreadManager()
          nCPU = 1;
 
     m_max_jobs =  wxMax(nCPU - 1, 1);
-    //m_max_jobs = 1;
+    //m_max_jobs = 2;
 
 //    if(bthread_debug)
     printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -300,7 +300,7 @@ void * SENCBuildThread::Entry()
         // Start the SENC build
         Osenc senc;
 
-        //senc.setRegistrar( g_poRegistrar );
+        senc.setRegistrar( g_poRegistrar );
         senc.setRefLocn(m_ticket->ref_lat, m_ticket->ref_lon);
         senc.SetLODMeters(m_ticket->m_LOD_meters);
 

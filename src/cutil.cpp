@@ -530,6 +530,41 @@ void DouglasPeuckerFI(float *PointList, int fp, int lp, double epsilon, std::vec
     }
 }
 
+void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon, std::vector<bool> &keep)
+{
+    keep[fp] = true;
+    keep[lp] = true;
+
+    // Find the point with the maximum distance
+    double dmax = 0;
+    int maxdistIndex = -1;
+    
+    vector2D va(PointList[2*fp] - PointList[2*lp],
+                PointList[2*fp+1] - PointList[2*lp+1]);
+    
+    double da = va.x*va.x + va.y*va.y;
+    for(int i = fp+1 ; i < lp ; ++i) {
+        vector2D vb(PointList[2*i] - PointList[2*fp],
+                    PointList[2*i + 1] - PointList[2*fp+1]);
+        
+        double dab = va.x*vb.x + va.y*vb.y;
+        double db = vb.x*vb.x + vb.y*vb.y;
+        double d = da - dab*dab/db;
+        if ( d > dmax ) {
+            maxdistIndex = i;
+            dmax = d;
+        }
+    }
+    // If max distance is greater than epsilon, recursively simplify
+    if ( dmax > epsilon*epsilon ) {
+        
+        // Recursive call
+        DouglasPeuckerDI(PointList, fp, maxdistIndex, epsilon, keep);
+        DouglasPeuckerDI(PointList, maxdistIndex, lp, epsilon, keep);
+        
+    }
+}
+
 void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep)
 {
     // Find the point with the maximum distance

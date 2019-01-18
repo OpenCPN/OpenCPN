@@ -42,6 +42,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <vector>
+#include <mutex>
 
 WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
 
@@ -493,6 +494,8 @@ public:
     
     int getNativeScale(){ return m_native_scale; }
     int GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFileName);
+
+    std::unique_lock<std::mutex> lockCR;
     
 private:
     void init();

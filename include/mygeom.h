@@ -32,7 +32,9 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-#include <wx/wfstream.h>
+//#include <wx/wfstream.h>
+
+#include "dychart.h"
 
 class OGRGeometry;
 class OGRPolygon;
@@ -169,7 +171,7 @@ typedef struct {
 } trapz_t;
 
 
-
+#if 0
 class PolyTrapGroup
 {
       public:
@@ -186,7 +188,7 @@ class PolyTrapGroup
             int             m_trap_error;
 };
 
-
+#endif
 
 
 //--------------------------------------------------------------------------------------------------
@@ -227,11 +229,29 @@ class PolyTessGeo
         
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
 
+
+        GLUtesselator* GLUtessobj;
+        wxArrayPtrVoid *m_pCombineVertexArray;
+        GLdouble        *m_pwork_buf;
+        int             m_buf_len;
+        int             m_buf_idx;
+        TriPrim         *m_pTPG_Last;
+        TriPrim         *m_pTPG_Head;
+        GLenum          m_gltri_type;
+        int             m_nvcall;
+        int             m_nvmax;
+        bool           m_bmerc_transform;
+        double            mx_rate, mx_offset, my_rate, my_offset;
+        bool           m_b_senc_sm;
+        double         m_ref_lat, m_ref_lon;
+        int            m_tess_orient;
         
-    private:
-        int BuildTessGL(void);
-        int BuildTessGL2(void);
-        int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
+        
+private:
+        int BuildTess(void);
+        //int BuildTessGL2(void);
+        //int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
+        int BuildTessGLU( void );
 
     //  Data
 
@@ -252,22 +272,21 @@ class PolyTessGeo
         char           *m_buf_ptr;                   // used to read passed SENC record
         int            m_nrecl;
 
-        double         m_ref_lat, m_ref_lon;
         double         m_LOD_meters;
-        int            m_tess_orient;
-        bool           m_b_senc_sm;
-        bool           m_bmerc_transform;
         
-        double            mx_rate, mx_offset, my_rate, my_offset;
 
         double         **m_vertexPtrArray;
         bool           m_printStats;
         bool           m_bstripify;
         double         m_feature_ref_lat, m_feature_ref_lon;
         double         m_feature_easting, m_feature_northing;
+        
+       
+
+
 };
 
-
+#if 0
 //--------------------------------------------------------------------------------------------------
 //
 //      Trapezoid Tesselator Class
@@ -312,7 +331,7 @@ class PolyTessGeoTrap
 
 };
 
-
+#endif
 
 
 #endif

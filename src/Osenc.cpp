@@ -48,6 +48,7 @@
 
 #include "mygeom.h"
 #include "georef.h"
+#include <mutex>
 
 extern s57RegistrarMgr          *m_pRegistrarMan;
 extern wxString                 g_csv_locn;
@@ -63,6 +64,9 @@ WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
 #ifndef __WXMSW__
 sigjmp_buf env_osenc_ogrf;                    // the context saved by sigsetjmp();
 #endif
+
+std::mutex m;
+
 
 
 /************************************************************************/
@@ -295,6 +299,9 @@ void Osenc::init( void )
     //      Especially CE_Fatal type errors
     //      Discovered/debugged on US5MD11M.017.  VI 548 geometry deleted
     CPLPushErrorHandler( OpenCPN_OGR_OSENC_ErrorHandler );
+    
+    lockCR = std::unique_lock<std::mutex>(m, std::defer_lock);
+
 }
 
 void Osenc::setVerbose(bool verbose )
@@ -1442,6 +1449,8 @@ bool Osenc::GetBaseFileAttr( const wxString &FullPath000 )
 
 int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg)
 {
+    lockCR.lock();
+
     m_FullPath000 = FullPath000;
     
     m_senc_file_create_version = 200;
@@ -1520,6 +1529,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     if(!CreateCOVRTables( poReader, m_poRegistrar )){
         return ERROR_SENCFILE_ABORT;
     }
+
    
     //  Establish a common reference point for the chart, from the extent
     m_ref_lat = ( m_extent.NLAT + m_extent.SLAT ) / 2.;
@@ -1736,7 +1746,9 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
 #endif    
     
     delete poS57DS;
-    
+
+    lockCR.unlock();
+   
     return ret_code;
  
    
@@ -2207,7 +2219,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
 
 
 
-    bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *pFeature, Osenc_outstream *stream)
+bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *pFeature, Osenc_outstream *stream)
 {
     int error_code;
     
@@ -2216,8 +2228,10 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     OGRGeometry *pGeo = pFeature->GetGeometryRef();
     OGRPolygon *poly = (OGRPolygon *) ( pGeo );
     
+    lockCR.unlock();
     ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, m_LOD_meters );
-    
+    lockCR.lock();
+   
     error_code = ppg->ErrorCode;
     
     if( error_code ){
