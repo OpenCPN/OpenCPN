@@ -5197,10 +5197,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
   pCmdSoundString = new wxTextCtrl(itemPanelFont, wxID_ANY, _T(""), wxDefaultPosition,
       wxSize(450, -1), wxTE_LEFT);
-  wxToolTip *pCmdSoundStringTip = new wxToolTip( _("This command is used to play sound.\n"
-                                                   "Customize command for your system.\n" 
-                                                   "Command runs in invisible terminal.") );
-  pCmdSoundString->SetToolTip( pCmdSoundStringTip );
+  //const wxString tipCmdSoundString( _("This command is used to play sound.\n"
+  //                            "Customize command for your system.\n"
+  //                            "Command runs in invisible terminal.") );
+  //wxToolTip *pCmdSoundStringTip = new wxToolTip( tipCmdSoundString );
+  //pCmdSoundString->SetToolTip( pCmdSoundStringTip );
   pSoundSizer->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
   pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
 
