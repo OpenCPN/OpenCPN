@@ -156,6 +156,9 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 extern bool       g_bquiting;
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr  g_canvasArray;
+
 extern MyFrame    *gFrame;
 
 enum
@@ -6795,3 +6798,16 @@ wxWindow* GetCanvasUnderMouse( void )
 {
     return gFrame->GetCanvasUnderMouse();
 }
+
+std::vector<wxWindow *> GetCanvasArray()
+{
+    std::vector<wxWindow *> rv;
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        rv.push_back(cc);
+    }
+    
+    return rv;
+}
+            
+ 

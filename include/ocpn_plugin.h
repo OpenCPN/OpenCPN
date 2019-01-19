@@ -1308,5 +1308,6 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& )
 extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& );
 
 extern DECL_EXP wxWindow* GetCanvasUnderMouse( );
+extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
 
 #endif //_PLUGIN_H_
