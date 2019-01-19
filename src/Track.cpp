@@ -381,7 +381,8 @@ Track *ActiveTrack::DoExtendDaily()
 
 void Track::Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const wxString & suffix)
 {
-    if( psourcetrack->m_bIsInLayer ) return;
+    if( psourcetrack->m_bIsInLayer )
+        return;
 
     m_TrackNameString = psourcetrack->m_TrackNameString + suffix;
     m_TrackStartString = psourcetrack->m_TrackStartString;
@@ -390,15 +391,16 @@ void Track::Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const 
     bool b_splitting = GetnPoints() == 0;
 
     int startTrkSegNo;
-    if( b_splitting ) startTrkSegNo = psourcetrack->GetPoint( start_nPoint )->m_GPXTrkSegNo;
-    else
+    if( b_splitting ) {
+        startTrkSegNo = psourcetrack->GetPoint( start_nPoint )->m_GPXTrkSegNo;
+    } else {
         startTrkSegNo = GetLastPoint()->m_GPXTrkSegNo;
-
+    }
     int i;
     for( i = start_nPoint; i <= end_nPoint; i++ ) {
 
         TrackPoint *psourcepoint = psourcetrack->GetPoint( i );
-        if(psourcepoint){
+        if( psourcepoint ) {
             TrackPoint *ptargetpoint = new TrackPoint( psourcepoint);
             
             AddPoint( ptargetpoint );

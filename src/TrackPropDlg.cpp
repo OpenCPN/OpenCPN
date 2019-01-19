@@ -816,7 +816,7 @@ void TrackPropDlg::CreateControls( void )
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerSplit, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       m_sdbBtmBtnsSizerSplit->Enable( false );
 
-      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend Route"),
+      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend track"),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerExtend, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -1087,11 +1087,15 @@ bool TrackPropDlg::IsThisTrackExtendable()
 {
     m_pExtendTrack = NULL;
     m_pExtendPoint = NULL;
-    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) return false;
+    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) {
+        return false;
+    }
 
     TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
-    if( !pLastPoint->GetCreateTime().IsValid() ) return false;
-
+    if( !pLastPoint->GetCreateTime().IsValid() ) {
+        return false;
+    }
+    
     wxTrackListNode *track_node = pTrackList->GetFirst();
     while( track_node ) {
         Track *ptrack = track_node->GetData();
@@ -1110,18 +1114,22 @@ bool TrackPropDlg::IsThisTrackExtendable()
         }
         track_node = track_node->GetNext();                         // next track
     }
-    if( m_pExtendTrack ) return ( !m_pExtendTrack->m_bIsInLayer );
-    else
+    if( m_pExtendTrack ) {
+        return ( !m_pExtendTrack->m_bIsInLayer );
+    } else {
         return false;
+    }
 }
 
 void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
 {
-    TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
+    TrackPoint *pFirstPoint = m_pTrack->GetPoint( 0 );
 
     if( IsThisTrackExtendable() ) {
-        int begin = 1;
-        if( pLastPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) begin = 2;
+        int begin = 0;
+        if( pFirstPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) {
+            begin = 1;
+        }
         pSelect->DeleteAllSelectableTrackSegments( m_pExtendTrack );
         m_pExtendTrack->Clone( m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus") );
         pSelect->AddAllSelectableTrackSegments( m_pExtendTrack );
@@ -1131,8 +1139,9 @@ void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( m_pExtendTrack );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
@@ -1140,21 +1149,20 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
 {
     m_sdbBtmBtnsSizerSplit->Enable( false );
 
-    if( m_pTrack->m_bIsInLayer )
+    if( m_pTrack->m_bIsInLayer ) {
         return;
+    }
 
     if( ( m_nSelected > 1 ) && ( m_nSelected < m_pTrack->GetnPoints() ) ) {
         Track *pHead = new Track();
         Track *pTail = new Track();
-        pHead->Clone( m_pTrack, 1, m_nSelected, _("_A") );
-        pTail->Clone( m_pTrack, m_nSelected, m_pTrack->GetnPoints(), _("_B") );
+        pHead->Clone( m_pTrack, 0, m_nSelected - 1, _("_A") );
+        pTail->Clone( m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B") );
         pTrackList->Append( pHead );
         pConfig->AddNewTrack( pHead );
-//        pHead->RebuildGUIDList();
 
         pTrackList->Append( pTail );
         pConfig->AddNewTrack( pTail );
-//        pTail->RebuildGUIDList();
 
         pConfig->DeleteConfigTrack( m_pTrack );
 
@@ -1166,8 +1174,9 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( pTail );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
