@@ -78,7 +78,6 @@ millions of points.
 #include "Route.h"
 #include "Track.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "ocpndc.h"
 #include "georef.h"
 #include "chartbase.h"
@@ -102,7 +101,6 @@ extern int              g_nTrackPrecision;
 extern bool             g_bTrackDaily;
 extern bool             g_bHighliteTracks;
 extern double           g_TrackDeltaDistance;
-extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
 extern wxColour         g_colourTrackLineColour;
 extern wxColor GetDimColor(wxColor c);
@@ -1078,10 +1076,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
     double delta_hdg, xte;
     double leg_speed = 0.1;
 
-    if( pRoutePropDialog )
-        leg_speed = pRoutePropDialog->m_planspeed;
-    else
-        leg_speed = g_PlanSpeed;
+    leg_speed = g_PlanSpeed;
 
 // add first point
 

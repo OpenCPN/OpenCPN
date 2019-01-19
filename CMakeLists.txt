@@ -1307,7 +1307,9 @@ SET(HDRS
                 include/navutil.h
                 include/routeman.h
                 include/routemanagerdialog.h
-                include/routeprop.h
+                include/MarkInfo.h
+                include/RoutePropDlg.h
+                include/RoutePropDlgImpl.h
                 include/routeprintout.h
                 include/trackprintout.h
                 include/PositionParser.h
@@ -1409,7 +1411,9 @@ SET(SRCS
         src/navutil.cpp
         src/routeman.cpp
         src/routemanagerdialog.cpp
-        src/routeprop.cpp
+        src/MarkInfo.cpp
+        src/RoutePropDlg.cpp
+        src/RoutePropDlgImpl.cpp
         src/routeprintout.cpp
         src/trackprintout.cpp
         src/PositionParser.cpp

@@ -59,7 +59,8 @@
 #include "chartimg.h"
 #include "chart1.h"
 #include "cutil.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
@@ -180,7 +181,7 @@ extern Select           *pSelectTC;
 extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoDlg      *g_pMarkInfoDialog;
-extern RouteProp        *pRoutePropDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
@@ -8224,12 +8225,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 //    Update the RouteProperties Dialog, if currently shown
-                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->GetRoute() == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
                                 }
 /* cannot edit track points anyway
@@ -8285,16 +8286,14 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 //    Update the RouteProperties Dialog, if currently shown
-                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->GetRoute() == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
-                                }/* else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
-                                    pTrackPropDialog->SetTrackAndUpdate( pr );
-                                    }*/
+                                }
                             }
                         }
                     }
@@ -8782,7 +8781,13 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 {
-    pRoutePropDialog = RouteProp::getInstance( this ); // There is one global instance of the RouteProp Dialog
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( this );
+    pRoutePropDialog->SetRouteAndUpdate( selected );
+    //pNew->UpdateProperties();
+    pRoutePropDialog->Show();
+    pRoutePropDialog->Raise();
+    return;
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( this ); // There is one global instance of the RouteProp Dialog
 
     if( g_bresponsive ) {
 
@@ -8815,13 +8820,6 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 
 
     pRoutePropDialog->SetRouteAndUpdate( selected );
-    pRoutePropDialog->UpdateProperties();
-    if( !selected->m_bIsInLayer )
-        pRoutePropDialog->SetDialogTitle( title );
-    else {
-        wxString caption( wxString::Format( _T("%s, %s: %s"), title, _("Layer"), GetLayerName( selected->m_LayerID ) ) );
-        pRoutePropDialog->SetDialogTitle( caption );
-    }
 
     pRoutePropDialog->Show();
 
@@ -8979,9 +8977,8 @@ void pupHandler_PasteRoute() {
         pRouteList->Append( newRoute );
         pConfig->AddNewRoute( newRoute );    // use auto next num
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
             pRoutePropDialog->SetRouteAndUpdate( newRoute );
-            pRoutePropDialog->UpdateProperties();
         }
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
@@ -9120,7 +9117,7 @@ void ChartCanvas::FinishRoute( void )
         if( m_pMouseRoute )
             m_pMouseRoute->SetHiLite(0);
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
@@ -11485,7 +11482,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 void ChartCanvas::DrawTCWindow( int x, int y, void *pvIDX )
 {
     pCwin = new TCWin( this, x, y, pvIDX );
-
 }
 
 #define NUM_CURRENT_ARROW_POINTS 9

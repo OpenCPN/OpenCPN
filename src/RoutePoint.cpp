@@ -59,6 +59,7 @@ extern Select       *pSelect;
 extern float        g_ChartScaleFactorExp;
 extern int          g_iWpt_ScaMin;
 extern bool         g_bUseWptScaMin;
+extern bool         g_bOverruleScaMin;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -73,6 +74,7 @@ RoutePoint::RoutePoint()
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
     m_seg_etd = wxInvalidDateTime;
+    m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
     m_bIsBeingEdited = false;
@@ -160,6 +162,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_ScaMax = orig->m_ScaMax;
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
+    m_TideStation = orig->m_TideStation;
+    SetPlannedSpeed(orig->GetPlannedSpeed());
     ReLoadIcon();
 
     m_bIsInLayer = orig->m_bIsInLayer;
@@ -517,7 +521,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
     if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
-        if( IsScaVisible( canvas) )          
+        if( !IsScaVisible( canvas) )          
             return;           
 
     //    Optimization, especially apparent on tracks in normal cases
@@ -662,12 +666,10 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 #ifdef ocpnUSE_GL
 void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
-    if( !m_bIsVisible )
-        return;
     if( !m_bIsVisible ) 
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
-        if( IsScaVisible( canvas) )          
+        if( !IsScaVisible( canvas) )          
             return;  ;
     
     //    Optimization, especially apparent on tracks in normal cases
@@ -1120,7 +1122,19 @@ void RoutePoint::SetScaMax(wxString str) {
 }
 
 bool RoutePoint::IsScaVisible( ChartCanvas *cc){
-    return ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) );
+    if (g_bOverruleScaMin) return true;
+    if( b_UseScamin ){
+        if (cc->GetScaleValue() < m_ScaMin) 
+            return true;
+        else 
+            return false;
+    }
+    return true;
+//     if (g_bOverruleScaMin)
+//         return true;
+//     else
+//         return false;
+   // return ( ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) ) || (g_bOverruleScaMin) );
 }
 
 void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
@@ -1130,4 +1144,111 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
     wxString strC = _("Therefore the new waypoint will not be visible at this zoom level.");
     wxString MessStr = wxString::Format(_T("%s %i,\n %s %i.\n%s"),strA, (int)GetScaMin(), strB, canvas->GetScaleValue(), strC);
     OCPNMessageBox( canvas, MessStr);
+}
+
+void RoutePoint::SetPlannedSpeed(double spd)
+{
+    if( spd >= 0.0f && spd <= 1000.0f ) m_PlannedSpeed = spd;
+}
+
+double RoutePoint::GetPlannedSpeed() {
+    if( m_PlannedSpeed < 0.0001f && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+        // In case there was speed encoded in the name of the waypoint, do the conversion here.
+        wxString s_vmg = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
+        double vmg;
+        if( !s_vmg.ToDouble( &vmg ) ) {
+            m_MarkDescription.Replace( _T("VMG=") + s_vmg + ";", wxEmptyString);
+            SetPlannedSpeed(vmg);
+        }
+    }
+    return m_PlannedSpeed;
+}
+
+wxDateTime RoutePoint::GetETD()
+{
+    if( m_seg_etd.IsValid() ) {
+        return m_seg_etd;
+    } else {
+        if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
+            wxDateTime etd = wxInvalidDateTime;
+            wxString s_etd = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
+            const wxChar *parse_return = etd.ParseDateTime( s_etd );
+            if( parse_return ) {
+                wxString tz( parse_return );
+                
+                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) {
+                    m_seg_etd = etd;
+                }
+                else {
+                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
+                        m_seg_etd = etd;
+                        long lmt_offset = (long) ( ( m_lon * 3600. ) / 15. );
+                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
+                        m_seg_etd -= lmt;
+                    } else {
+                        m_seg_etd = etd.ToUTC();
+                    }
+                }
+                if( etd.IsValid() ) {
+                    m_MarkDescription.Replace( s_etd, wxEmptyString);
+                    m_seg_etd = etd;
+                    return m_seg_etd;
+                }
+            }
+        }
+    }
+    return wxInvalidDateTime;
+}
+
+wxDateTime RoutePoint::GetManualETD()
+{
+    if( m_manual_etd && m_seg_etd.IsValid() ) {
+        return m_seg_etd;
+    }
+    return wxInvalidDateTime;
+}
+
+wxDateTime RoutePoint::GetETA()
+{
+    if( m_seg_eta != wxInvalidDateTime ) {
+        return m_seg_eta;
+    }
+    return wxInvalidDateTime;
+}
+
+wxString RoutePoint::GetETE()
+{
+    if( m_seg_ete != 0 ) {
+        return formatTimeDelta(m_seg_ete);
+    }
+    return wxEmptyString;
+}
+
+void RoutePoint::SetETE(wxLongLong secs)
+{
+    m_seg_ete = secs;
+}
+
+void RoutePoint::SetETD(const wxDateTime &etd) {
+    m_seg_etd = etd;
+    m_manual_etd = TRUE;
+}
+
+bool RoutePoint::SetETD(const wxString &ts)
+{
+    if( ts.IsEmpty() ) {
+        m_seg_etd = wxInvalidDateTime;
+        m_manual_etd = false;
+        return TRUE;
+    }
+    wxDateTime tmp;
+    wxString::const_iterator end;
+    if ( tmp.ParseISOCombined(ts) ) {
+        SetETD(tmp);
+        return TRUE;
+    } else if( tmp.ParseDateTime(ts, &end) ) {
+        SetETD(tmp);
+        return TRUE;
+    }
+    return FALSE;
 }
