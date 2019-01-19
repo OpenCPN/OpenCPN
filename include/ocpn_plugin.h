@@ -1305,4 +1305,6 @@ extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin( const wxStr
 extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& );
 extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& );
 
+extern DECL_EXP wxWindow* GetCanvasUnderMouse( );
+
 #endif //_PLUGIN_H_

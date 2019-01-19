@@ -47,13 +47,9 @@ using namespace std;
 #include <wx/brush.h>
 #include <wx/colour.h>
 
-
-#if wxCHECK_VERSION( 2, 9, 0 )
 #include <wx/dialog.h>
-#else
-//  #include "scrollingdialog.h"
-#endif
 
+#include "navutil.h"
 #include "dychart.h"
 
 #ifdef __WXMSW__
@@ -148,15 +144,15 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         RoutePoint* point = myRoute->GetPoint( n );
         
         RoutePoint* pointm1 = NULL;
-        if(((n-1)) >= 0)
-            pointm1 = myRoute->GetPoint( n-1 );
+        if(n - 1 >= 0)
+            pointm1 = myRoute->GetPoint( n - 1 );
 
         if(NULL == point)
             continue;
         
         wxString leg = _T("---");
         if(n > 1)
-            leg.Printf( _T("%d"), n-1);
+            leg.Printf( _T("%d"), n - 1);
         
         string cell( leg.mb_str() );
         
@@ -173,8 +169,9 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         }
         if ( toPrintOut[ PRINT_WP_COURSE ] ) {
             wxString point_course = "---";
-            if(pointm1)
-                point_course.Printf( _T( "%03.0f Deg" ), pointm1->GetCourse() );
+            if(pointm1) {
+                point_course = formatAngle( point->GetCourse() );
+            }
             table << point_course;
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
@@ -483,7 +480,7 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
         g_pageSetupData = new wxPageSetupDialogData;
     }
 
-    MyRoutePrintout*  myrouteprintout1 = new MyRoutePrintout( toPrintOut, route,  _( "Route Print" ) );
+    MyRoutePrintout* myrouteprintout1 = new MyRoutePrintout( toPrintOut, route,  _( "Route Print" ) );
 
     wxPrintDialogData printDialogData( *g_printData );
     printDialogData.EnablePageNumbers( true );
@@ -498,6 +495,6 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
         }
     }
 
-    Close(); //Hide();
+    Close();
     event.Skip();
 }

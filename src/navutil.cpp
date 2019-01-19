@@ -55,7 +55,6 @@
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "ocpndc.h"
@@ -129,7 +128,6 @@ extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -238,6 +236,7 @@ extern int              g_ScaledNumWeightSizeOfT;
 extern int              g_ScaledSizeMinimal;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+int                     g_S57_extradialog_sx, g_S57_extradialog_sy;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -251,6 +250,7 @@ extern bool             g_bConfirmObjectDelete;
 extern wxColour         g_colourOwnshipRangeRingsColour;
 extern int              g_iWpt_ScaMin;
 extern bool             g_bUseWptScaMin;
+extern bool             g_bOverruleScaMin;
 extern bool             g_bShowWptName;
 
 
@@ -629,6 +629,8 @@ int MyConfig::LoadMyConfig()
     g_AisTargetList_sortColumn = 2; // Column #2 is MMSI
     g_S57_dialog_sx = 400;
     g_S57_dialog_sy = 400;
+    g_S57_extradialog_sx = 400;
+    g_S57_extradialog_sy = 400;
 
     //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
@@ -1120,6 +1122,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
+    Read( _T ( "S57QueryExtraDialogSizeX" ), &g_S57_extradialog_sx );
+    Read( _T ( "S57QueryExtraDialogSizeY" ), &g_S57_extradialog_sy );
     
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
@@ -1374,6 +1378,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     if ( !Read( _T("WaypointUseScaMin"), &g_bUseWptScaMin ) ) g_bUseWptScaMin = false;
     if ( !Read( _T("WaypointScaMinValue"), &g_iWpt_ScaMin ) ) g_iWpt_ScaMin = 2147483646;
+    if ( !Read( _T("WaypointUseScaMinOverrule"), &g_bOverruleScaMin ) ) g_bOverruleScaMin = false;
     if ( !Read( _T("WaypointsShowName"), &g_bShowWptName ) ) g_bShowWptName = true;
     
 
@@ -2520,6 +2525,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
+    Write( _T ( "S57QueryExtraDialogSizeX" ), g_S57_extradialog_sx );
+    Write( _T ( "S57QueryExtraDialogSizeY" ), g_S57_extradialog_sy );
 
     Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
     Write( _T ( "bAISRolloverShowCOG" ), g_bAISRolloverShowCOG );
@@ -2640,6 +2647,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T( "WaypointUseScaMin" ), g_bUseWptScaMin );
     Write( _T( "WaypointScaMinValue" ), g_iWpt_ScaMin );
+    Write( _T( "WaypointUseScaMinOverrule" ), g_bOverruleScaMin );
     Write( _T("WaypointsShowName"), g_bShowWptName );
     
     // Waypoint Radar rings
@@ -4300,6 +4308,44 @@ wxString getUsrSpeedUnit( int unit )
     return ret;
 }
 
+wxString formatTimeDelta(wxTimeSpan span)
+{
+    wxString timeStr;
+    int days = span.GetDays();
+    span -= wxTimeSpan::Days(days);
+    int hours = span.GetHours();
+    span -= wxTimeSpan::Hours(hours);
+    double minutes = (double)span.GetSeconds().ToLong()/60.0;
+    span -= wxTimeSpan::Minutes(span.GetMinutes());
+    int seconds = (double)span.GetSeconds().ToLong();
+    
+    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_T("%02d:%02d"), hours, (int)round(minutes)) :
+     wxString::Format(_T("%02d %02d"), (int)floor(minutes), seconds));
+    
+    return timeStr;
+}
+
+wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime)
+{
+    wxString timeStr;
+    if(startTime.IsValid() && endTime.IsValid())
+    {
+        wxTimeSpan span = endTime - startTime;
+        return formatTimeDelta(span);
+    } else {
+        return _("N/A");
+    }
+}
+
+wxString formatTimeDelta(wxLongLong secs)
+{
+    wxString timeStr;
+    
+    wxTimeSpan span(0, 0, secs);
+    return formatTimeDelta(span);
+}
+
 wxString FormatDistanceAdaptive( double distance ) {
     wxString result;
     int unit = g_iDistanceFormat;
@@ -4501,6 +4547,19 @@ double fromDMM( wxString sdms )
     return sign * ( stk[0] + ( stk[1] + stk[2] / 60 ) / 60 );
 }
 
+wxString formatAngle(double angle)
+{
+    wxString out;
+    if( g_bShowMag && g_bShowTrue ) {
+        out.Printf(wxT("%.0f \u00B0T (%.0f \u00B0M)"), angle, gFrame->GetMag(angle));
+    } else if( g_bShowTrue ) {
+        out.Printf(wxT("%.0f \u00B0T"), angle);
+    } else {
+        out.Printf(wxT("%.0f \u00B0M"), gFrame->GetMag(angle));
+    }
+    return out;
+}
+
 /* render a rectangle at a given color and transparency */
 void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radius, wxColour color,
         unsigned char transparency )
@@ -4647,6 +4706,15 @@ void GpxDocument::SeedRandom()
 
 void DimeControl( wxWindow* ctrl )
 {
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
+
 #ifdef __WXQT__
     return; // this is seriously broken on wxqt
 #endif
@@ -4668,7 +4736,14 @@ void DimeControl( wxWindow* ctrl )
 void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxColour ctrl_back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
-
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
     ColorScheme cs = global_color_scheme;
 
     static int depth = 0; // recursion count

@@ -48,7 +48,6 @@
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "ocpndc.h"
@@ -119,7 +118,6 @@ extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed

@@ -85,7 +85,8 @@
 #include "tcmgr.h"
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
-#include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "toolbar.h"
 #include "compass.h"
 #include "datastream.h"
@@ -222,7 +223,7 @@ Select                    *pSelectAIS;
 Routeman                  *g_pRouteMan;
 WayPointman               *pWayPointMan;
 MarkInfoDlg               *g_pMarkInfoDialog;
-RouteProp                 *pRoutePropDialog;
+RoutePropDlgImpl          *pRoutePropDialog;
 TrackPropDlg              *pTrackPropDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
@@ -331,6 +332,9 @@ wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 wxColour                  g_colourOwnshipRangeRingsColour;
+int                       g_iWpt_ScaMin;
+bool                      g_bUseWptScaMin;
+bool                      g_bShowWptName;
 
 // Set default color scheme
 ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
@@ -2083,9 +2087,6 @@ bool MyApp::OnInit()
         g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
     }
 
-
-    g_StartTime = wxInvalidDateTime;
-    g_StartTimeTZ = 1;                // start with local times
     gpIDX = NULL;
     gpIDXn = 0;
 
@@ -3371,7 +3372,8 @@ bool MyFrame::DropMarker( bool atOwnShip )
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
     pSelect->AddSelectableRoutePoint( lat, lon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-    
+    if( pWP->GetScaMin() < GetCanvasUnderMouse()->GetScaleValue() ) 
+        pWP->ShowScaleWarningMessage(GetCanvasUnderMouse());
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
 //     undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
@@ -4867,7 +4869,7 @@ void MyFrame::ActivateMOB( void )
     pWP_MOB->m_bKeepXRoute = true;
     pWP_MOB->m_bIsolatedMark = true;
     pWP_MOB->SetWaypointArrivalRadius( -1.0 ); // Negative distance is code to signal "Never Arrive"
-
+    pWP_MOB->SetUseSca(false); //Do not use scaled hiding for MOB 
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
 
@@ -9073,14 +9075,14 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     pWP_MOB->m_bIsolatedMark = true;
     pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
-
+    pWP_MOB->SetUseSca(false); //Do not use scaled hiding for MOB
 
     /* We want to start tracking any MOB in range (Which will trigger false alarms with messages received over the network etc., but will a) not discard nearby event even in case our GPS is momentarily unavailable and b) work even when the boat is stationary, in which case some GPS units do not provide COG)
     if( bGPSValid && !std::isnan(gCog) && !std::isnan(gSog) ) { */
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
                                               wxString( _( "Own ship" ) ), wxEmptyString );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
-
+        pWP_MOB->SetUseSca(false); //Do not use scaled hiding for MOB
         pAISMOBRoute = new Route();
         pRouteList->Append( pAISMOBRoute );
 

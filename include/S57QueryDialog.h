@@ -62,6 +62,7 @@ class S57QueryDialog: public wxDialog
             void RecalculateSize( void );
             
             void OnClose(wxCloseEvent& event);
+            void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
 
       //    Overrides
             void OnPaint ( wxPaintEvent& event );
@@ -71,7 +72,34 @@ class S57QueryDialog: public wxDialog
       //    Data
             wxHtmlWindow      *m_phtml;
             wxSize            m_createsize;
+};
 
+class S57ExtraQueryInfoDlg: public S57QueryDialog
+{
+        DECLARE_CLASS( S57ExtraQueryInfoDlg )
+        DECLARE_EVENT_TABLE()
+    public:
+
+      /// Constructors
+
+            S57ExtraQueryInfoDlg( );
+            S57ExtraQueryInfoDlg( wxWindow* parent,
+                            wxWindowID id = wxID_ANY,
+                            const wxString& caption = _("Extra Object Info"),
+                                        const wxPoint& pos = wxDefaultPosition,
+                                        const wxSize& size = wxDefaultSize,
+                                        long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            bool Create( wxWindow* parent,
+                         wxWindowID id = wxID_ANY,
+                         const wxString& caption = _("Extra Object Info"),
+                                     const wxPoint& pos = wxDefaultPosition,
+                                     const wxSize& size = wxDefaultSize,
+                                     long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+
+            ~S57ExtraQueryInfoDlg( );
+            void OnClose(wxCloseEvent& event);
+            void OnSize( wxSizeEvent& event );
+            void RecalculateSize( void );
 };
 
 #endif
