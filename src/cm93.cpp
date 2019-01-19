@@ -3821,6 +3821,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  xgeom->ref_lat = lat1;
+                  xgeom->ref_lon = lon1;
+
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat2, &lon2 );

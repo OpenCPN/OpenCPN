@@ -92,6 +92,8 @@ public:
       double            x_offset;
       double            y_rate;
       double            y_offset;
+      double            ref_lat;                // Lower left corner of the cell containing this feature
+      double            ref_lon; 
 };
 
 
@@ -171,25 +173,6 @@ typedef struct {
 } trapz_t;
 
 
-#if 0
-class PolyTrapGroup
-{
-      public:
-            PolyTrapGroup();
-            PolyTrapGroup(Extended_Geometry *pxGeom);
-            ~PolyTrapGroup();
-
-            int             nContours;
-            int             *pn_vertex;             // pointer to array of poly vertex counts
-            wxPoint2DDouble *ptrapgroup_geom;       // pointer to Raw geometry, used for contour line drawing
-
-            int             ntrap_count;
-            trapz_t         *trap_array;
-            int             m_trap_error;
-};
-
-#endif
-
 
 //--------------------------------------------------------------------------------------------------
 //
@@ -245,7 +228,11 @@ class PolyTessGeo
         bool           m_b_senc_sm;
         double         m_ref_lat, m_ref_lon;
         int            m_tess_orient;
-        
+        double         m_feature_ref_lat, m_feature_ref_lon;
+        double         m_feature_easting, m_feature_northing;
+
+        double         earthAxis;
+        bool           m_bcm93;
         
 private:
         int BuildTess(void);
@@ -278,8 +265,6 @@ private:
         double         **m_vertexPtrArray;
         bool           m_printStats;
         bool           m_bstripify;
-        double         m_feature_ref_lat, m_feature_ref_lon;
-        double         m_feature_easting, m_feature_northing;
         
        
 

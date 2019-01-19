@@ -287,9 +287,13 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     my_offset = 0.0;
 
     m_bstripify = true;
+
+    earthAxis = CM93_semimajor_axis_meters * mercator_k0;
+
+    m_bcm93 = false;
     
     BuildTess();
- 
+    
     // Free the working memory
     for(int i = 0; i < m_ncnt ; i++)
         free (m_vertexPtrArray[i]);
@@ -353,8 +357,18 @@ int PolyTessGeo::BuildDeferredTess(void)
       my_rate = m_pxgeom->y_rate;
       my_offset = m_pxgeom->y_offset;
 
-      //int rv = BuildTessGL();
+      m_feature_easting = 0;
+      m_feature_northing = 0;
       
+      m_ref_lat = m_pxgeom->ref_lat;
+      m_ref_lon = m_pxgeom->ref_lon;
+      
+      //  Note Bene...  cm93 assumes no flattening constant
+      earthAxis = CM93_semimajor_axis_meters;
+
+      
+      m_bcm93 = true;
+
       // For cm93, we prefer TessGLU, since it produces more TriangleStrips, so renders faster with less storage.
       int rv = BuildTessGLU();
       
@@ -535,10 +549,9 @@ int PolyTessGeo::BuildTessGLU()
     int beforeLOD = ptValid;
     int afterLOD = beforeLOD;
    
-#if 0    
-    // Needs work...
+ 
     std::vector<bool> bool_keep;
-    if(ptValid > 5 && (m_LOD_meters > .01)){
+    if(ptValid > 20 && (m_LOD_meters > .01)){
         
         for(unsigned int i = 0 ; i < ptValid ; i++)
             bool_keep.push_back(false);
@@ -570,41 +583,23 @@ int PolyTessGeo::BuildTessGLU()
         beforeLOD = ptValid;
         afterLOD = kept_LOD;
 
-    //  Declare the gluContour and copy the points
-        gluTessBeginContour(GLUtessobj);
-    
-        double *DPrun = LOD_result;
-        for(ip = 0 ; ip < kept_LOD ; ip++)
-        {
-            
-            no, no.  This must point to a static buffer
-            GLdouble p[3];
-            p[0] = *DPrun++;
-            p[1] = *DPrun++;
-            p[2] = 0;
-            
-            gluTessVertex( GLUtessobj, p, p ) ;
-        }
-           gluTessEndContour(GLUtessobj);
-    
-        free(LOD_result);    
-    }
-    else
-#endif
+        // Copy the lod points back into the vertex buffer
+        memcpy(geoPt, LOD_result, kept_LOD * 3 * sizeof(double));
         
-    {
-           //  Declare the gluContour and copy the points
-        gluTessBeginContour(GLUtessobj);
-    
-        double *DPrun = geoPt;
-        for(ip = 0 ; ip < ptValid ; ip++)
-        {
-            gluTessVertex( GLUtessobj, DPrun, DPrun ) ;
-            DPrun += 3;
-        }
-
-        gluTessEndContour(GLUtessobj);
+        free(LOD_result);
+        ptValid = kept_LOD;
     }
+
+    //  Declare the gluContour and copy the points
+    gluTessBeginContour(GLUtessobj);
+    
+    double *DPrun = geoPt;
+    for(ip = 0 ; ip < ptValid ; ip++) {
+        gluTessVertex( GLUtessobj, DPrun, DPrun ) ;
+        DPrun += 3;
+    }
+  
+    gluTessEndContour(GLUtessobj);
         
 
     //  Now the interior contours
@@ -1477,10 +1472,10 @@ void  endCallback(void *polyData)
             pTPG->nVert = pThis->m_nvcall;
 
         //  Calculate bounding box
-            double sxmax = -1000;                   // this poly BBox
-            double sxmin = 1000;
-            double symax = -90;
-            double symin = 90;
+            double sxmax = -1e8;                   // this poly BBox
+            double sxmin =  1e8;
+            double symax = -1e8;
+            double symin =  1e8;
 
             GLdouble *pvr = pThis->m_pwork_buf;
             for(int iv=0 ; iv < pThis->m_nvcall ; iv++)
@@ -1489,34 +1484,34 @@ void  endCallback(void *polyData)
                 xd = *pvr++;
                 yd = *pvr++;
 
-                if(pThis->m_bmerc_transform)
-                {
-                      double valx = ( xd * pThis->mx_rate ) + pThis->mx_offset;
-                      double valy = ( yd * pThis->my_rate ) + pThis->my_offset;
-
-                      //    Convert to lat/lon
-                      double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
-                      double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
-
-                      sxmax = wxMax(lon, sxmax);
-                      sxmin = wxMin(lon, sxmin);
-                      symax = wxMax(lat, symax);
-                      symin = wxMin(lat, symin);
-                }
-                else
-                {
-                      sxmax = wxMax(xd, sxmax);
-                      sxmin = wxMin(xd, sxmin);
-                      symax = wxMax(yd, symax);
-                      symin = wxMin(yd, symin);
-                }
+                if(pThis->m_bcm93)
+                 {
+                     // cm93 hits here
+                       double valx = ( xd * pThis->mx_rate ) + pThis->mx_offset + pThis->m_feature_easting;
+                       double valy = ( yd * pThis->my_rate ) + pThis->my_offset + pThis->m_feature_northing;
+ 
+                       //    Convert to lat/lon
+                       double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
+                       double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
+ 
+                       sxmax = wxMax(lon, sxmax);
+                       sxmin = wxMin(lon, sxmin);
+                       symax = wxMax(lat, symax);
+                       symin = wxMin(lat, symin);
+                 }
             }
 
-            pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
+//            // Compute the final LLbbox for this TriPrim chain
+//             double minlat, minlon, maxlat, maxlon;
+//             fromSMR(sxmin, symin, pThis->m_ref_lat, pThis->m_ref_lon, pThis->earthAxis, &minlat, &minlon);
+//             fromSMR(sxmax, symax, pThis->m_ref_lat, pThis->m_ref_lon, pThis->earthAxis, &maxlat, &maxlon);
+// 
+//             pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
 
-            //  Transcribe this geometry to TriPrim, converting to SM if called for
+            if(pThis->m_bcm93)
+                pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
 
-            if(pThis->m_b_senc_sm)
+            //  Transcribe this geometry to TriPrim,
             {
                 GLdouble *pds = pThis->m_pwork_buf;
                 pTPG->p_vertex = (double *)malloc(pThis->m_nvcall * 2 * sizeof(double));
@@ -1526,19 +1521,10 @@ void  endCallback(void *polyData)
                 {
                     double dlon = *pds++;
                     double dlat = *pds++;
-
-                    double easting, northing;
-                    toSM(dlat, dlon, pThis->m_ref_lat, pThis->m_ref_lon, &easting, &northing);
-                    *pdd++ = easting;
-                    *pdd++ = northing;
+                    *pdd++ = dlon + pThis->m_feature_easting;    // adjust to feature ref coordinates
+                    *pdd++ = dlat + pThis->m_feature_northing;
                 }
             }
-            else
-            {
-                pTPG->p_vertex = (double *)malloc(pThis->m_nvcall * 2 * sizeof(double));
-                memcpy(pTPG->p_vertex, pThis->m_pwork_buf, pThis->m_nvcall * 2 * sizeof(double));
-            }
-
 
             break;
         }
