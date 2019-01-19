@@ -46,6 +46,10 @@ static int do_play(const char* cmd, const char* path)
     STARTUPINFOA si = { sizeof(si) };
     PROCESS_INFORMATION pi;
 
+#ifdef _DEBUG
+    wxLogMessage(buff);
+#endif /* _DEBUG */
+
     // Start the child process. 
     int status = CreateProcessA(NULL,   // No module name (use command line)
         buff,            // Command line
