@@ -5164,7 +5164,7 @@ bool s57chart::CompareLights( const S57Light* l1, const S57Light* l2 )
 
 static const char *type2str( GeoPrim_t type)
 {
-    const char *r = "Uknown";
+    const char *r = "Unknown";
     switch(type) {
     case GEO_POINT:
         return "Point";

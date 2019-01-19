@@ -765,7 +765,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgBarbedData1->SetFlexibleDirection( wxBOTH );
 	m_fgBarbedData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controled Colours") };
+	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controlled Colours") };
 	int m_cBarbedColoursNChoices = sizeof( m_cBarbedColoursChoices ) / sizeof( wxString );
 	m_cBarbedColours = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
 	m_cBarbedColours->SetSelection( 0 );

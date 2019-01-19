@@ -5063,7 +5063,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_Alert_Moored = new wxCheckBox(
-      panelAIS, -1, _("Supress Alerts for anchored/moored targets"));
+      panelAIS, -1, _("Suppress Alerts for anchored/moored targets"));
   pAlertGrid->Add(m_pCheck_Alert_Moored, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy2 = new wxStaticText(panelAIS, -1, _T(""));
