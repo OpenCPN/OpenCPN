@@ -285,7 +285,7 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 
 // event table. Mostly empty, because I find it much easier to see what is connected to what
 // using Connect() where possible, so that it is visible in the code.
-BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
+BEGIN_EVENT_TABLE(RouteManagerDialog, wxFrame)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
 EVT_CLOSE(RouteManagerDialog::OnClose)
 EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
@@ -330,12 +330,9 @@ RouteManagerDialog* RouteManagerDialog::getInstance(wxWindow *parent)
 
 RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
-    long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
-    wxDialog::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
+    wxFrame::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -715,6 +712,10 @@ void RouteManagerDialog::Create()
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this );
     
+    // Dialog OK button
+    itemBoxSizer6->Add( 0, 0, 1, wxEXPAND, 5 ); // Spacer
+    itemBoxSizer6->Add( new wxButton( this, wxID_OK ), 0, wxALL, DIALOG_MARGIN );
+    
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxNO_BORDER | wxTAB_TRAVERSAL );
@@ -807,11 +808,6 @@ void RouteManagerDialog::Create()
     bsLayButtonsInner->Add( btnLayToggleListing, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnLayToggleListing->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                   wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this );
-    
-    // Dialog buttons
-    wxSizer *szButtons = CreateButtonSizer( wxOK );
-    
-    itemBoxSizer5->Add( szButtons, 0, wxALL, DIALOG_MARGIN );
     
     RecalculateSize();
 

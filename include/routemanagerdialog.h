@@ -21,7 +21,7 @@
 #ifndef _RouteManagerDialog_h_
 #define _RouteManagerDialog_h_
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/notebook.h>
 #include <wx/panel.h>
@@ -47,7 +47,7 @@ class Track;
 class Layer;
 class RoutePoint;
 
-class RouteManagerDialog : public wxDialog {
+class RouteManagerDialog : public wxFrame {
       DECLARE_EVENT_TABLE()
 
       public:
