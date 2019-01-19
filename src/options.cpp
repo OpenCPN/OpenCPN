@@ -5186,20 +5186,23 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
                         group_item_spacing);
 
   wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
-  miscOptions->Add(pShipsBellsSizer, 0, wxALL | wxEXPAND, group_item_spacing);
+  miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
   // Sound options
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxALIGN_CENTER_VERTICAL, border_size);
+  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
 #ifdef USE_SYSTEM_CMD_SOUND
-
-  pCmdSoundString = new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T("Default"), wxDefaultPosition,
+  wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
+  pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
+  pCmdSoundString = new wxTextCtrl(itemPanelFont, wxID_ANY, _T(""), wxDefaultPosition,
       wxSize(450, -1), wxTE_LEFT);
-
-  pShipsBellsSizer->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")),
-                    group_item_spacing, wxALIGN_CENTER_VERTICAL );
-  pShipsBellsSizer->Add(pCmdSoundString, 0, wxALL | wxALIGN_CENTER_VERTICAL, border_size);
+  wxToolTip *pCmdSoundStringTip = new wxToolTip(_("This command is used to play sound.\n" \
+                                                  "Customize command for your system.\n" \
+                                                  "Command runs in invisible terminal."));
+  pCmdSoundString->SetToolTip( pCmdSoundStringTip );
+  pSoundSizer->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
+  pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
 
 #endif /* USE_SYSTEM_CMD_SOUND */
 
