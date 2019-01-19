@@ -37,7 +37,6 @@
 #include "logger.h"
 
 
-
 /** Use log path transformation to support both new and old style logging. */
 #define LOG_TRANSITIONAL_PATH 1
 
@@ -88,6 +87,11 @@ LogBackend& LogBackend::getInstance()
 
 bool LogBackend::setLogfile(const char* path)
 {
+#ifdef LOG_TRANSITIONAL_PATH
+    std::string newpath(path);
+    newpath.replace(newpath.rfind("."), 1, "-new.");
+    path = newpath.c_str();
+#endif
     f = fopen(path, "a");
     if (f == NULL) {
         return false;
