@@ -594,7 +594,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
     wxDataViewModel* const model = event.GetModel();
     wxVariant value;
     model->GetValue(value, event.GetItem(), ev_col);
-    RoutePoint *p = m_pRoute->GetPoint((int)(long)event.GetItem().GetID());
+    RoutePoint *p = m_pRoute->GetPoint(static_cast<int>(reinterpret_cast<long long>(event.GetItem().GetID())));
     if( ev_col == COLUMN_PLANNED_SPEED ) {
         double spd;
         if( !value.GetString().ToDouble(&spd) ) {
@@ -700,7 +700,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected( wxCommandEvent& event )
                 m_dvlcWaypoints->SelectRow(sel);
                 
                 wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
-                RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+                RoutePoint *pRP = m_pRoute->GetPoint(static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
                 
                 g_pRouteMan->RemovePointFromRoute( pRP, m_pRoute, NULL );
                 
@@ -710,7 +710,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected( wxCommandEvent& event )
         }
         case ID_RCLK_MENU_EDIT_WP: {
             wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
-            RoutePoint *pRP = m_pRoute->GetPoint((int)(long)selection.GetID());
+            RoutePoint *pRP = m_pRoute->GetPoint(static_cast<int>(reinterpret_cast<long long>(selection.GetID())));
             
             RouteManagerDialog::WptShowPropertiesDialog( pRP, this );
             break;
