@@ -30,6 +30,9 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
+#define NAME_COLUMN 2
+#define DISTANCE_COLUMN 3
+
 enum {
       SORT_ON_DISTANCE  = 1,
       SORT_ON_NAME
