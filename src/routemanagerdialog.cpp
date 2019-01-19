@@ -182,11 +182,19 @@ static int SortDouble(int column, int order, wxListCtrl *lc, wxListItem &it1, wx
     double l1, l2;
     s1.ToDouble(&l1);
     s2.ToDouble(&l2);
+    
 
-    if(order & 1)
-        return (l1 < l2);
+    if(order & 1) {
+        double x = l1;
+        l1 = l2;
+        l2 = x;
+    }
 
-    return (l2 < l1);
+    if( l1 == l2 )
+        return 0;
+    if (l2 < l1)
+        return 1;
+    return -1;
 }
 
 // sort callback. Sort by track length.
@@ -230,7 +238,6 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
     }
     else
         return 0;
-    
 }
 
 // sort callback. Sort by wpt distance.
@@ -247,7 +254,7 @@ int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
 
-    return SortDouble(2, sort_wp_len_dir, lc, it1, it2); 
+    return SortDouble(DISTANCE_COLUMN, sort_wp_len_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by layer name.
@@ -263,7 +270,7 @@ int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
-    return SortRouteTrack(1, sort_layer_name_dir, lc, it1, it2);
+    return SortRouteTrack(NAME_COLUMN, sort_layer_name_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by layer size.
@@ -285,7 +292,7 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 
 // event table. Mostly empty, because I find it much easier to see what is connected to what
 // using Connect() where possible, so that it is visible in the code.
-BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
+BEGIN_EVENT_TABLE(RouteManagerDialog, wxFrame)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
 EVT_CLOSE(RouteManagerDialog::OnClose)
 EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
@@ -330,12 +337,9 @@ RouteManagerDialog* RouteManagerDialog::getInstance(wxWindow *parent)
 
 RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
-    long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
-    wxDialog::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
+    wxFrame::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -715,6 +719,10 @@ void RouteManagerDialog::Create()
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this );
     
+    // Dialog OK button
+    itemBoxSizer6->Add( 0, 0, 1, wxEXPAND, 5 ); // Spacer
+    itemBoxSizer6->Add( new wxButton( this, wxID_OK ), 0, wxALL, DIALOG_MARGIN );
+    
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxNO_BORDER | wxTAB_TRAVERSAL );
@@ -807,11 +815,6 @@ void RouteManagerDialog::Create()
     bsLayButtonsInner->Add( btnLayToggleListing, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnLayToggleListing->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                   wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this );
-    
-    // Dialog buttons
-    wxSizer *szButtons = CreateButtonSizer( wxOK );
-    
-    itemBoxSizer5->Add( szButtons, 0, wxALL, DIALOG_MARGIN );
     
     RecalculateSize();
 
@@ -2069,16 +2072,18 @@ void RouteManagerDialog::OnWptSelected( wxListEvent &event )
 
 void RouteManagerDialog::OnWptColumnClicked( wxListEvent &event )
 {
-    if( event.m_col == 1 ) {
+    if( event.m_col == NAME_COLUMN ) {
         sort_wp_name_dir++;
         m_pWptListCtrl->SortItems( SortWaypointsOnName, (wxIntPtr) m_pWptListCtrl );
         sort_wp_key = SORT_ON_NAME;
-    } else
-        if( event.m_col == 2 ) {
+    } else {
+        if( event.m_col == DISTANCE_COLUMN ) {
             sort_wp_len_dir++;
             m_pWptListCtrl->SortItems( SortWaypointsOnDistance, (wxIntPtr) m_pWptListCtrl );
             sort_wp_key = SORT_ON_DISTANCE;
         }
+    }
+    UpdateWptListCtrl();
 }
 
 void RouteManagerDialog::UpdateWptButtons()
