@@ -113,21 +113,13 @@ static int wxCALLBACK SortRoutesOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr 
 int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
 #endif
 {
-    wxListCtrl *ctrl = (wxListCtrl*)list;
-    wxString a, b;
-    a = ctrl->GetItemText(item1, 1);
-    b = ctrl->GetItemText(item2, 1);
-    if( sort_route_name_dir )
-        return a.CmpNoCase(b);
-    return b.CmpNoCase(a);
-    /*
     wxListCtrl *lc = (wxListCtrl*)list;
+    
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
-
+    
     return SortRouteTrack(1, sort_route_name_dir, lc, it1, it2);
-    */
 }
 
 // sort callback. Sort by route Destination.
