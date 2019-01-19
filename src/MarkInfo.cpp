@@ -590,6 +590,10 @@ void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
                 m_comboBoxTideStation->SetSelection(i);
             }
         }
+        if( m_comboBoxTideStation->GetStringSelection() != s ) {
+            m_comboBoxTideStation->Insert(s, 1);
+            m_comboBoxTideStation->SetSelection(1);
+        }
     }
 }
 
@@ -723,8 +727,13 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
                 wxExecute( cl );        // Async, so Fire and Forget...
             }
         }
-    } else
-        event.Skip();
+	}
+	else {
+		wxString url = event.GetLinkInfo().GetHref().c_str();
+		url.Replace(_T(" "), _T("%20"));
+		::wxLaunchDefaultBrowser(url);
+		event.Skip();
+	}
 #else
     wxString url = event.GetLinkInfo().GetHref().c_str();
     url.Replace(_T(" "), _T("%20") );
@@ -1058,7 +1067,7 @@ void MarkInfoDlg::OnMarkInfoOKClick( wxCommandEvent& event )
 
 bool MarkInfoDlg::UpdateProperties( bool positionOnly )
 {
-    if( m_pRoutePoint ) {
+    if (m_pRoutePoint) {
 
         m_textLatitude->SetValue( ::toSDMM( 1, m_pRoutePoint->m_lat ) );
         m_textLongitude->SetValue( ::toSDMM( 2, m_pRoutePoint->m_lon ) );
@@ -1071,25 +1080,27 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_checkBoxShowNameExt->SetValue( m_pRoutePoint->m_bShowName );
         m_checkBoxVisible->SetValue( m_pRoutePoint->m_bIsVisible );
         m_checkBoxScaMin->SetValue( m_pRoutePoint->GetUseSca() );
-        m_textScaMin->SetValue( wxString::Format(wxT("%i"), (int)m_pRoutePoint->GetScaMin() ) );
+        m_textScaMin->SetValue( wxString::Format(wxT("%i"), (int)m_pRoutePoint->GetScaMin()) );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );
         m_SpinWaypointRangeRingsNumber->SetValue( m_pRoutePoint->GetWaypointRangeRingsNumber() );
-        m_staticTextRR3->SetLabel(getUsrDistanceUnit()) ;
+        m_staticTextRR3->SetLabel( getUsrDistanceUnit() );
         wxString buf;
-        buf.Printf( _T("%.3f" ), toUsrDistance( m_pRoutePoint->GetWaypointRangeRingsStep(), -1 ) );
+        buf.Printf( _T("%.3f"), toUsrDistance( m_pRoutePoint->GetWaypointRangeRingsStep(), -1) );
         m_textWaypointRangeRingsStep->SetValue( buf );
-        m_staticTextArrivalUnits->SetLabel(getUsrDistanceUnit()) ;
-        buf.Printf( _T("%.3f" ), toUsrDistance( m_pRoutePoint->GetWaypointArrivalRadius(), -1 ) );
-        m_textArrivalRadius->SetValue( buf );
-        
+        m_staticTextArrivalUnits->SetLabel( getUsrDistanceUnit() );
+        buf.Printf( _T("%.3f"), toUsrDistance(m_pRoutePoint->GetWaypointArrivalRadius(), -1) );
+        m_textArrivalRadius->SetValue(buf);
+
         wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
         m_PickColor->SetColour(col);
-        
-        m_comboBoxTideStation->Clear();
-        m_comboBoxTideStation->Append(wxEmptyString);
-        if( !m_pRoutePoint->m_TideStation.IsEmpty() ) {
-            m_comboBoxTideStation->Append(m_pRoutePoint->m_TideStation);
-            m_comboBoxTideStation->SetSelection(1);
+
+        if( m_comboBoxTideStation->GetStringSelection() != m_pRoutePoint->m_TideStation) {
+            m_comboBoxTideStation->Clear();
+            m_comboBoxTideStation->Append(wxEmptyString);
+            if (!m_pRoutePoint->m_TideStation.IsEmpty()) {
+                m_comboBoxTideStation->Append(m_pRoutePoint->m_TideStation);
+                m_comboBoxTideStation->SetSelection(1);
+            }
         }
         
         if( m_pRoutePoint->GetPlannedSpeed() > .01f ) {
@@ -1133,13 +1144,12 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_bcomboBoxIcon->Enable( false );
             m_checkBoxShowName->Enable( false );
             m_checkBoxVisible->Enable( false );
-            m_textArrivalRadius->SetEditable ( false );
+            m_textArrivalRadius->SetEditable( false );
             m_checkBoxScaMin->Enable( false );
             m_textScaMin->SetEditable ( false );
             m_checkBoxShowNameExt->Enable( false );
             m_SpinWaypointRangeRingsNumber->Enable( false );
             m_textWaypointRangeRingsStep->SetEditable( false );
-            m_comboBoxTideStation->SetEditable( false );
             m_PickColor->Enable( false );
             DefaultsBtn->Enable( false );
             m_EtaDatePickerCtrl->Enable(false);
@@ -1165,7 +1175,6 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_checkBoxShowNameExt->Enable( true );
             m_SpinWaypointRangeRingsNumber->Enable( true );
             m_textWaypointRangeRingsStep->SetEditable( true );
-            m_comboBoxTideStation->SetEditable( true );
             m_PickColor->Enable( true );
             DefaultsBtn->Enable( true );
             m_EtaDatePickerCtrl->Enable(true);
