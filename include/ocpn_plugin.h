@@ -544,6 +544,8 @@ public:
     opencpn_plugin_116(void *pmgr);
     virtual ~opencpn_plugin_116();
     virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
+    virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int max_canvas);
+
 };
 
 //------------------------------------------------------------------

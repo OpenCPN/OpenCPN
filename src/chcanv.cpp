@@ -10575,13 +10575,11 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
             pluginOverlayRender = false;
     }
     
-    if(pluginOverlayRender){
-        g_overlayCanvas = this;
+    g_overlayCanvas = this;
 
-        if( g_pi_manager ) {
-            g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
-            g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );
-        }
+    if( g_pi_manager ) {
+        g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
+        g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP(), pluginOverlayRender);
     }
 
     AISDrawAreaNotices( dc, GetVP(), this);
