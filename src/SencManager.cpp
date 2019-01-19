@@ -96,7 +96,7 @@ SENCThreadManager::SENCThreadManager()
          nCPU = 1;
 
     m_max_jobs =  wxMax(nCPU - 1, 1);
-    //m_max_jobs = 2;
+    //m_max_jobs = 1;
 
 //    if(bthread_debug)
     printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -207,6 +207,11 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket)
     }        
 #endif
 
+}
+
+int SENCThreadManager::GetJobCount()
+{
+    return ticket_list.size();
 }
 
 bool SENCThreadManager::IsChartInTicketlist(s57chart *chart)

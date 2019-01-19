@@ -120,6 +120,7 @@ public:
     void StartTopJob();
     bool IsChartInTicketlist(s57chart *chart);
     bool SetChartPointer(s57chart *chart, void *new_ptr);
+    int GetJobCount();
 
     int                 m_max_jobs;
     

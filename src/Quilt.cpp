@@ -2349,7 +2349,9 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                             else{
                                 s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                                 if(Chs57){
-                                    b_chart_rendered = Chs57->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                    if(Chs57->m_RAZBuilt){
+                                        b_chart_rendered = Chs57->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                    }
                                 }
                                 else{
                                     ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
@@ -2358,11 +2360,14 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                                     }
                                     else    
                                         b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+
+                                    b_chart_rendered = true;
+
                                 }
                             }
-                                
-                            if( chart->GetChartType() != CHART_TYPE_CM93COMP )
-                                b_chart_rendered = true;
+  
+//                            if( chart->GetChartType() != CHART_TYPE_CM93COMP )
+//                                b_chart_rendered = true;
                             screen_region.Subtract( get_screen_region );
                         }
                     }

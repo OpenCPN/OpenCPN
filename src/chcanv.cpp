@@ -363,6 +363,7 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 
 extern float            g_toolbar_scalefactor;
+extern SENCThreadManager *g_SencThreadManager;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -9756,6 +9757,13 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( fabs( VPoint.rotation ) < 0.01 ) {
             bool b_save = true;
 
+            if(g_SencThreadManager){
+                if(g_SencThreadManager->GetJobCount()){
+                    b_save = false;
+                    m_cache_vp.Invalidate();
+                }
+            }
+
             //  If the saved wxBitmap from last OnPaint is useable
             //  calculate the blit parameters
 
@@ -10074,6 +10082,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     if(m_Compass)
         m_Compass->Paint(scratch_dc);
+
+    RenderAlertMessage( mscratch_dc, GetVP());
 
     //quiting?
     if( g_bquiting ) {
@@ -12798,14 +12808,11 @@ wxRect ChartCanvas::GetMUIBarRect()
     return rv;
 }
 
-#if 0
-bool ChartCanvas::RenderOverlay( ViewPort *vp)
+void ChartCanvas::RenderAlertMessage( wxDC &dc, const ViewPort &vp)
 {
-    //if(g_brendered_expired && !g_bnoShow_sse25)
+    if(!GetAlertString().IsEmpty())
     {
-        wxString msg = _("SSE 25..The ENC permit for this cell has expired.\n This cell may be out of date and MUST NOT be used for NAVIGATION.");
-        
-        
+
         wxFont *pfont = wxTheFontList->FindOrCreateFont(10, wxFONTFAMILY_DEFAULT,
                                                         wxFONTSTYLE_NORMAL,
                                                         wxFONTWEIGHT_NORMAL);
@@ -12815,19 +12822,19 @@ bool ChartCanvas::RenderOverlay( ViewPort *vp)
         
         dc.SetBrush( wxColour(243, 229, 47 ) );
         int w, h;
-        dc.GetMultiLineTextExtent( msg, &w, &h );
+        dc.GetMultiLineTextExtent( GetAlertString(), &w, &h );
         h += 2;
-        int yp = vp->pix_height - 20 - h;
-        
-        int label_offset = 10;
-        int wdraw = w + ( label_offset * 2 );
-        dc.DrawRectangle( 0, yp, wdraw, h );
-        dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
-                    wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
+        //int yp = vp.pix_height - 20 - h;
+ 
+        wxRect sbr = GetScaleBarRect();
+        int xp = sbr.x+sbr.width + 10;
+        int yp = (sbr.y + sbr.height) - h;
+ 
+        int wdraw = w + 10;
+        dc.DrawRectangle( xp, yp, wdraw, h );
+        dc.DrawLabel( GetAlertString(), wxRect( xp, yp, wdraw, h ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
     }
-    return false;
 }
-#endif
 
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines

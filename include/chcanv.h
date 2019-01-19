@@ -509,6 +509,8 @@ public:
       wxString GetAlertString(){ return m_alertString; }
       
       wxRect GetScaleBarRect(){ return m_scaleBarRect; }
+      void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
+
 private:
       bool UpdateS52State();
       

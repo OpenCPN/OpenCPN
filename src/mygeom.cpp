@@ -1485,7 +1485,7 @@ void  endCallback(void *polyData)
                 yd = *pvr++;
 
                 if(pThis->m_bcm93)
-                 {
+                {
                      // cm93 hits here
                        double valx = ( xd * pThis->mx_rate ) + pThis->mx_offset + pThis->m_feature_easting;
                        double valy = ( yd * pThis->my_rate ) + pThis->my_offset + pThis->m_feature_northing;
@@ -1498,7 +1498,7 @@ void  endCallback(void *polyData)
                        sxmin = wxMin(lon, sxmin);
                        symax = wxMax(lat, symax);
                        symin = wxMin(lat, symin);
-                 }
+                }
             }
 
 //            // Compute the final LLbbox for this TriPrim chain
