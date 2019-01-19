@@ -194,6 +194,11 @@ extern int g_own_ship_sog_cog_calc_damp_sec;
 
 extern bool g_bPreserveScaleOnX;
 extern bool g_bPlayShipsBells;
+
+#ifdef USE_SYSTEM_CMD_SOUND
+extern wxString g_CmdSoundString;
+#endif /* USE_SYSTEM_CMD_SOUND */
+
 extern int g_iSoundDeviceIndex;
 extern bool g_bFullscreenToolbar;
 extern bool g_bTransparentToolbar;
@@ -5180,10 +5185,23 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
                         group_item_spacing);
 
+  wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
+  miscOptions->Add(pShipsBellsSizer, 0, wxALL | wxEXPAND, group_item_spacing);
   // Sound options
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-  miscOptions->Add(pPlayShipsBells, 0, wxALL, border_size);
+  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxALIGN_CENTER_VERTICAL, border_size);
+
+#ifdef USE_SYSTEM_CMD_SOUND
+
+  pCmdSoundString = new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T("Default"), wxDefaultPosition,
+      wxSize(450, -1), wxTE_LEFT);
+
+  pShipsBellsSizer->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")),
+                    group_item_spacing, wxALIGN_CENTER_VERTICAL );
+  pShipsBellsSizer->Add(pCmdSoundString, 0, wxALL | wxALIGN_CENTER_VERTICAL, border_size);
+
+#endif /* USE_SYSTEM_CMD_SOUND */
 
   OcpnSound* sound = SoundFactory();
   int deviceCount = sound->DeviceCount();
@@ -5859,6 +5877,11 @@ void options::SetInitialSettings(void) {
 
   if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
+
+#ifdef USE_SYSTEM_CMD_SOUND
+  pCmdSoundString->SetValue(g_CmdSoundString);
+#endif /* USE_SYSTEM_CMD_SOUND */
+
   if (pSoundDeviceIndex)
       pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
@@ -6943,6 +6966,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
+
+#ifdef USE_SYSTEM_CMD_SOUND
+  g_CmdSoundString = pCmdSoundString->GetValue();
+#endif /* USE_SYSTEM_CMD_SOUND */
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
   if (pSoundDeviceIndex)

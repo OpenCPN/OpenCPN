@@ -734,6 +734,10 @@ extern options          *g_pOptions;
 int n_NavMessageShown;
 wxString g_config_version_string;
 
+#ifdef USE_SYSTEM_CMD_SOUND
+wxString g_CmdSoundString;
+#endif /* USE_SYSTEM_CMD_SOUND */
+
 bool             g_btouch;
 bool             g_bresponsive;
 
