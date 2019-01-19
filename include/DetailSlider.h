@@ -29,7 +29,7 @@
 //#include "chcanv.h"
 #include "chart1.h"
 
-class PopUpDSlide: public wxDialog
+class PopUpDSlide: public wxFrame
 {
 public:
     PopUpDSlide( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartType, ChartFamilyEnum ChartF,

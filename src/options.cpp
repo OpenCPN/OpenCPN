@@ -670,6 +670,35 @@ void MMSIEditDialog::OnMMSIEditCancelClick(wxCommandEvent& event) {
   EndModal(wxID_CANCEL);
 }
 
+void MMSIEditDialog::Persist() {
+  if (m_props) {
+
+    if (m_rbTypeTrackDefault->GetValue())
+        m_props->TrackType = TRACKTYPE_DEFAULT;
+    else if (m_rbTypeTrackAlways->GetValue())
+        m_props->TrackType = TRACKTYPE_ALWAYS;
+    else
+        m_props->TrackType = TRACKTYPE_NEVER;
+    
+    m_props->m_bignore = m_IgnoreButton->GetValue();
+    m_props->m_bMOB = m_MOBButton->GetValue();
+    m_props->m_bVDM = m_VDMButton->GetValue();
+    m_props->m_bFollower = m_FollowerButton->GetValue();
+    m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
+    if (m_props->m_ShipName == wxEmptyString) {
+        AIS_Target_Data *proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
+        if (proptarget) {
+            wxString s = proptarget->GetFullName();
+            m_props->m_ShipName = s;
+        }
+        else {
+            wxString GetShipNameFromFile(int);
+            m_props->m_ShipName = GetShipNameFromFile(m_props->MMSI);
+        }
+    }
+  }
+}
+
 void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
   // Update the MMSIProperties by the passed pointer
   if (m_props) {
@@ -677,41 +706,23 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
 
+    
+      
     if (m_MMSICtl->GetValue().Length() != 9)
     {
-        if (wxID_CANCEL == OCPNMessageBox(this,
-            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."),
-            _("OpenCPN Info"),
-            wxOK | wxCANCEL))
-        {
-            return;
-        }
-    }
-    
-    if (m_rbTypeTrackDefault->GetValue())
-      m_props->TrackType = TRACKTYPE_DEFAULT;
-    else if (m_rbTypeTrackAlways->GetValue())
-      m_props->TrackType = TRACKTYPE_ALWAYS;
-    else
-      m_props->TrackType = TRACKTYPE_NEVER;
-
-    m_props->m_bignore = m_IgnoreButton->GetValue();
-    m_props->m_bMOB = m_MOBButton->GetValue();
-    m_props->m_bVDM = m_VDMButton->GetValue();
-    m_props->m_bFollower = m_FollowerButton->GetValue();
-    m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
-    if (m_props->m_ShipName == wxEmptyString) {
-        AIS_Target_Data *proptarget = g_pAIS->Get_Target_Data_From_MMSI(nmmsi);
-        if (proptarget) {
-            wxString s = proptarget->GetFullName();
-            m_props->m_ShipName = s;
-        }
-        else {
-            m_props->m_ShipName = GetShipNameFromFile(nmmsi);
-        }
+        OCPNMessageDialog* dlg = new OCPNMessageDialog(this,
+            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."), _("OpenCPN Info"), wxOK | wxCANCEL);
+        
+        dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+            if ( retcode == wxID_OK ) {
+                Persist();
+            }
+            EndModal(retcode);
+        });
+    } else {
+        EndModal(wxID_OK);
     }
   }
-  EndModal(wxID_OK);
 }
 
 void MMSIEditDialog::OnCtlUpdated(wxCommandEvent& event) {}
@@ -973,14 +984,16 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
       new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
 
-  if (pd->ShowModal() == wxID_OK) 
-    g_MMSI_Props_Array.Add(props);
-  else
-    delete props;
-
-  pd->Destroy();
-
-  UpdateMMSIList();
+  DimeControl( pd );
+  pd->ShowWindowModalThenDo([this, pd, props](int retcode){
+        if ( retcode == wxID_OK ) {
+            g_MMSI_Props_Array.Add(props);
+        }
+        else {
+            delete props;
+        }
+        UpdateMMSIList();
+    });
 }
 
 void MMSI_Props_Panel::UpdateMMSIList(void) {
@@ -3388,16 +3401,18 @@ void options::SetConfigButtonState()
 void options::OnCreateConfig( wxCommandEvent &event)
 {
     ConfigCreateDialog* pd = new ConfigCreateDialog(this, -1, _("Create Config"), wxDefaultPosition, wxSize(200, 200));
-    int rv = pd->ShowModal();
-    if( wxID_OK == rv ){
-        g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
-        UpdateTemplateTitleText();
-        
-        ClearConfigList();
-        BuildConfigList();
-        m_DisplayConfigsPage->Layout();
-    }
-    SetConfigButtonState();
+    DimeControl( pd );
+    pd->ShowWindowModalThenDo([this,pd](int retcode){
+        if ( retcode == wxID_OK ) {
+            g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
+            UpdateTemplateTitleText();
+            
+            ClearConfigList();
+            BuildConfigList();
+            m_DisplayConfigsPage->Layout();
+        }
+        SetConfigButtonState();
+    });
 }
 
 void options::OnEditConfig( wxCommandEvent &event)
@@ -7465,15 +7480,9 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 {
     gFrame->GetPrimaryCanvas()->EnablePaint(false);
     
-    extern void ParseAllENC();
-#ifdef __WXOSX__
-    HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
+    extern void ParseAllENC(wxWindow* parent);
         
-    ParseAllENC();
-#ifdef __WXOSX__
-    ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
+    ParseAllENC(g_pOptions);
     
     ViewPort vp;
     gFrame->ChartsRefresh();

@@ -64,21 +64,17 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     m_pTCRolloverWin = NULL;
 
-    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
+    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
-#ifdef __WXOSX__
-     wstyle |= wxSTAY_ON_TOP;
-#endif
-   
     pParent = parent;
     m_x = x;
     m_y = y;
     
     RecalculateSize();
      
-    wxDialog::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
+    wxFrame::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
                       m_tc_size, wstyle );
 
     m_created = true;

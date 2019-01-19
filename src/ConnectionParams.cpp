@@ -371,7 +371,11 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
         if( bg.Red() < 128 ) {
-            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+            if(selected) {
+                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+            } else {
+                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+            }
         }
     }
 #endif
