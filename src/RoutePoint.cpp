@@ -1210,7 +1210,7 @@ wxDateTime RoutePoint::GetManualETD()
 
 wxDateTime RoutePoint::GetETA()
 {
-    if( m_seg_eta != wxInvalidDateTime ) {
+    if( m_seg_eta.IsValid() ) {
         return m_seg_eta;
     }
     return wxInvalidDateTime;

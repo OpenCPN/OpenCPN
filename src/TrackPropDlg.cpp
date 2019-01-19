@@ -99,19 +99,12 @@ TrackPropDlg* TrackPropDlg::getInstance( wxWindow* parent, wxWindowID id, const 
 }
 
 TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
-  : wxDialog( parent, id, title, pos, size, style )
+  : wxFrame( parent, id, title, pos, size, style )
 {
-
-    long wstyle = style;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
-
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
-    SetWindowStyleFlag( wstyle );
-
+    SetWindowStyleFlag( style );
     
     m_scrolledWindowLinks = NULL;
     m_tDescription = NULL;

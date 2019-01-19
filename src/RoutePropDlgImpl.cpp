@@ -223,9 +223,6 @@ int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
 
 RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : RoutePropDlg( parent, id, title, pos, size, style)
 {
-#ifdef __WXOSX__
-    SetWindowStyle(wxSTAY_ON_TOP);
-#endif
     m_pRoute = NULL;
 
     SetColorScheme(global_color_scheme);

@@ -2206,7 +2206,7 @@ void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* pare
 
     if( !g_pMarkInfoDialog->IsShown() )
         g_pMarkInfoDialog->Show();
-
+    g_pMarkInfoDialog->Raise();
 }
 
 void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )

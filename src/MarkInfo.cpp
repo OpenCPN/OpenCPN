@@ -263,13 +263,8 @@ BEGIN_EVENT_TABLE( MarkInfoDlg, wxFrame )
 END_EVENT_TABLE()
 
 MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
-{    
-    long wstyle = style;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
-    
-    wxFrame::Create( parent, id, title, pos, size, wstyle );
+{
+    wxFrame::Create( parent, id, title, pos, size, style );
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
