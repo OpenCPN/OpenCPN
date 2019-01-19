@@ -8776,6 +8776,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
 
     g_pMarkInfoDialog->Show();
+    g_pMarkInfoDialog->Raise();
     g_pMarkInfoDialog->InitialFocus();
 }
 
