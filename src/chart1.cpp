@@ -1033,7 +1033,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
 bool MyApp::OnExceptionInMainLoop()
 {
-    wxLogWarning(_T("Caught MainLoopException, continuing..."));
+    LOG_WARNING(_T("Caught MainLoopException, continuing..."));
     return true;
 }
 #endif
@@ -1220,7 +1220,7 @@ void LoadS57()
         appendOSDirSlash( &plib_data );
         plib_data.Append( _T("S52RAZDS.RLE") );
 
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        LOG_INFO( _T("Looking for s57data in ") + look_data_dir );
         ps52plib = new s52plib( plib_data );
 
         if( ps52plib->m_bOK ) {
@@ -1243,14 +1243,14 @@ void LoadS57()
         appendOSDirSlash( &plib_data );
         plib_data.Append( _T("S52RAZDS.RLE") );
 
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        LOG_INFO( _T("Looking for s57data in ") + look_data_dir );
         ps52plib = new s52plib( plib_data );
 
         if( ps52plib->m_bOK ) g_csv_locn = look_data_dir;
     }
 
     if( ps52plib->m_bOK ) {
-        wxLogMessage( _T("Using s57data in ") + g_csv_locn );
+        LOG_INFO( _T("Using s57data in ") + g_csv_locn );
         m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
 
 
@@ -1285,7 +1285,7 @@ void LoadS57()
             
             
     } else {
-        wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
+        LOG_INFO( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
         ps52plib = NULL;
     }
@@ -1468,7 +1468,7 @@ void ParseAllENC()
     if(count == 0)
         return;
     
-    wxLogMessage(wxString::Format(_T("ParseAllENC() count = %d"), count ));
+    LOG_INFO(wxString::Format(_T("ParseAllENC() count = %d"), count ));
     
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
@@ -1741,20 +1741,20 @@ bool MyApp::OnInit()
 #endif
 
 //      Send init message
-    wxLogMessage( _T("\n\n________\n") );
+    LOG_INFO( _T("\n\n________\n") );
 
     wxDateTime date_now = wxDateTime::Now();
 
     wxString imsg = date_now.FormatISODate();
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
     imsg = _T(" ------- Starting OpenCPN -------");
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
     wxString version = OpenCPNVersion;
     wxString vs = version.Trim( true );
     vs = vs.Trim( false );
-    wxLogMessage( vs );
+    LOG_INFO( vs );
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
@@ -1772,9 +1772,9 @@ bool MyApp::OnInit()
     platforminfo.GetArchName()+ _T(" ") +
     platforminfo.GetPortIdName();
 
-    wxLogMessage( wxver + _T(" ") + platform );
+    LOG_INFO( wxver + _T(" ") + platform );
 
-    wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
+    LOG_INFO( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
 
     //    Initialize embedded PNG icon graphics
@@ -1783,7 +1783,7 @@ bool MyApp::OnInit()
 
     imsg = _T("SData_Locn is ");
     imsg += g_Platform->GetSharedDataDir();
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
 #ifdef __OCPN_ANDROID__
     //  Now we can load a Qt StyleSheet, if present
@@ -1793,11 +1793,11 @@ bool MyApp::OnInit()
     style_file += _T("qtstylesheet.qss");
     if(LoadQtStyleSheet(style_file)){
         wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
-        wxLogMessage( smsg );
+        LOG_INFO( smsg );
     }
     else{
         wxString smsg = _T("Qt Stylesheet not found: ") + style_file;
-        wxLogMessage( smsg );
+        LOG_INFO( smsg );
     }
 #endif
 
@@ -1810,7 +1810,7 @@ bool MyApp::OnInit()
 
     imsg = _T("PrivateDataDir is ");
     imsg += g_Platform->GetPrivateDataDir();
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
 
 //      Create an array string to hold repeating messages, so they don't
@@ -1870,18 +1870,14 @@ bool MyApp::OnInit()
     bool b_initial_load = false;
 
     wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
-    if( config_test_file_name.FileExists() ) wxLogMessage(
-        _T("Using existing Config_File: ") + g_Platform->GetConfigFileName() );
-    else {
-        {
-            wxLogMessage( _T("Creating new Config_File: ") + g_Platform->GetConfigFileName() );
-
+    if( config_test_file_name.FileExists() ) {
+        LOG_INFO( _T("Using existing Config_File: ") + g_Platform->GetConfigFileName() );
+    } else {
+            LOG_INFO( _T("Creating new Config_File: ") + g_Platform->GetConfigFileName() );
             b_initial_load = true;
-
             if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
                 if( !config_test_file_name.Mkdir(config_test_file_name.GetPath() ) )
-                    wxLogMessage( _T("Cannot create config file directory for ") + g_Platform->GetConfigFileName() );
-        }
+                    LOG_INFO( _T("Cannot create config file directory for ") + g_Platform->GetConfigFileName() );
     }
 
     //      Open/Create the Config Object
@@ -1926,14 +1922,14 @@ bool MyApp::OnInit()
     g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
     wxString msg;
     msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) g_display_size_mm);
-    wxLogMessage(msg);
+    LOG_INFO(msg);
     
     // User override....
     if((g_config_display_size_mm > 0) &&(g_config_display_size_manual)){
         g_display_size_mm = g_config_display_size_mm;
         wxString msg;
         msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
-        wxLogMessage(msg);
+        LOG_INFO(msg);
         g_Platform->SetDisplaySizeMM(g_display_size_mm);
     }
 
@@ -1963,15 +1959,15 @@ bool MyApp::OnInit()
     wxString def_lang_canonical = g_Platform->GetDefaultSystemLocale();
     
     imsg = _T("System default Language:  ") + def_lang_canonical;
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
     wxString cflmsg = _T("Config file language:  ") + g_locale;
-    wxLogMessage( cflmsg );
+    LOG_INFO( cflmsg );
 
     //  Make any adjustments necessary
     g_locale = g_Platform->GetAdjustedAppLocale();
     cflmsg = _T("Adjusted App language:  ") + g_locale;
-    wxLogMessage( cflmsg );
+    LOG_INFO( cflmsg );
 
 
     // Set the desired locale
@@ -1979,13 +1975,13 @@ bool MyApp::OnInit()
     
     imsg = _T("Opencpn language set to:  ");
     imsg += g_locale;
-    wxLogMessage( imsg );
+    LOG_INFO( imsg );
 
     //  French language locale is assumed to include the AZERTY keyboard
     //  This applies to either the system language, or to OpenCPN language selection
     if( g_locale == _T("fr_FR") ) g_b_assume_azerty = true;
 #else
-    wxLogMessage( _T("wxLocale support not available") );
+    LOG_INFO( _T("wxLocale support not available") );
 #endif
 
 //  Send the Welcome/warning message if it has never been sent before,
@@ -2001,7 +1997,7 @@ bool MyApp::OnInit()
 
     //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
-        wxLogMessage( g_Platform->GetLargeLogMessage() );
+        LOG_INFO( g_Platform->GetLargeLogMessage() );
 
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
@@ -2014,7 +2010,7 @@ bool MyApp::OnInit()
         bool b_test_result = TestGLCanvas(fn.GetPathWithSep() );
 
         if( !b_test_result )
-            wxLogMessage( _T("OpenGL disabled due to test app failure.") );
+            LOG_INFO( _T("OpenGL disabled due to test app failure.") );
 
         g_bdisable_opengl = !b_test_result;
     }
@@ -2174,7 +2170,7 @@ bool MyApp::OnInit()
     wxSize asz = getAndroidDisplayDimensions();
     ch = asz.y;
     cw = asz.x;
-//    qDebug() << cw << ch;
+    LOG_DEBUG << cw << ch;
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
@@ -2198,7 +2194,7 @@ bool MyApp::OnInit()
 
     wxString fmsg;
     fmsg.Printf(_T("Creating MyFrame...size(%d, %d)  position(%d, %d)"), new_frame_size.x, new_frame_size.y, position.x, position.y);
-    wxLogMessage(fmsg);
+    LOG_INFO(fmsg);
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
     
@@ -2275,7 +2271,7 @@ bool MyApp::OnInit()
 
         wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
         if( RegKey.Exists() ) {
-            wxLogMessage( _("Retrieving initial Chart Directory set from Windows Registry") );
+            LOG_INFO( _("Retrieving initial Chart Directory set from Windows Registry") );
             wxString dirs;
             RegKey.QueryValue( wxString( _T("ChartDirs") ), dirs );
 
@@ -2355,7 +2351,7 @@ bool MyApp::OnInit()
 
         else            // No chart database, no config hints, so bail to Options....
         {
-            wxLogMessage(
+            LOG_INFO(
                     _T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:")
                             + ChartListFileName );
 
@@ -2440,7 +2436,7 @@ extern ocpnGLOptions g_GLOptions;
 
     wxString dogmsg;
     dogmsg.Printf( _T("GPS Watchdog Timeout is: %d sec."), gps_watchdog_timeout_ticks );
-    wxLogMessage( dogmsg );
+    LOG_INFO( dogmsg );
 
     sat_watchdog_timeout_ticks = 12;
 
@@ -2528,7 +2524,7 @@ extern ocpnGLOptions g_GLOptions;
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
-    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
+    LOG_INFO( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
     OCPNPlatform::Initialize_3( );
     
@@ -2547,7 +2543,7 @@ extern ocpnGLOptions g_GLOptions;
 
 int MyApp::OnExit()
 {
-    wxLogMessage( _T("opencpn::MyApp starting exit.") );
+    LOG_INFO( _T("opencpn::MyApp starting exit.") );
 
     //  Send current nav status data to log file   // pjotrc 2010.02.09
 
@@ -2584,7 +2580,7 @@ int MyApp::OnExit()
         data.Printf( _T("OFF: Lat %10.5f Lon %10.5f"), gLat, gLon );
         navmsg += data;
     }
-    wxLogMessage( navmsg );
+    LOG_INFO( navmsg );
     g_loglast_time = lognow;
 
     if( ptcmgr ) delete ptcmgr;
@@ -2609,7 +2605,7 @@ int MyApp::OnExit()
 
     delete pDummyChart;
 
-    wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
+    LOG_INFO( _T("opencpn::MyApp exiting cleanly...\n") );
     wxLog::FlushActive();
 
     g_Platform->CloseLogFile();
@@ -3484,7 +3480,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     //    It is possible that double clicks on application exit box could cause re-entrance here
     //    Not good, and don't need it anyway, so simply return.
     if( b_inCloseWindow ) {
-//            wxLogMessage(_T("opencpn::MyFrame re-entering OnCloseWindow"));
+//            LOG_INFO(_T("opencpn::MyFrame re-entering OnCloseWindow"));
         return;
     }
 
@@ -3571,7 +3567,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pi_manager->DeactivateAllPlugIns();
     }
 
-    wxLogMessage( _T("opencpn::MyFrame exiting cleanly.") );
+    LOG_INFO( _T("opencpn::MyFrame exiting cleanly.") );
 
     quitflag++;
 
@@ -3811,7 +3807,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if(g_bopengl && g_glTextureManager && g_glTextureManager->GetRunningJobCount()){
         g_glTextureManager->ClearAllRasterTextures();
 
-        wxLogMessage(_T("Starting compressor pool drain"));
+        LOG_INFO(_T("Starting compressor pool drain"));
         wxDateTime now = wxDateTime::Now();
         time_t stall = now.GetTicks();
         time_t end = stall + THREAD_WAIT_SECONDS;
@@ -3823,7 +3819,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
             wxString msg;
             msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, g_glTextureManager->GetRunningJobCount());
-            wxLogMessage(msg);
+            LOG_INFO(msg);
             if(!g_glTextureManager->GetRunningJobCount())
                 break;
             wxYield();
@@ -3833,7 +3829,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         wxString fmsg;
         fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
                     n_comploop, g_glTextureManager->GetRunningJobCount());
-        wxLogMessage(fmsg);
+        LOG_INFO(fmsg);
     }
     delete g_glTextureManager;
 #endif
@@ -3842,7 +3838,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
-    qDebug() << "Calling OnExit()";
+    LOG_DEBUG << "Calling OnExit()";
     wxTheApp->OnExit();
 #endif
 
@@ -4130,11 +4126,11 @@ void MyFrame::ODoSetSize( void )
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
         m_pStatusBar->SetMinHeight( min_height );
-//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
+        LOG_DEBUG <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
 //        wxString msg;
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
-//        wxLogMessage(msg);
+//        LOG_INFO(msg);
 
     }
 
@@ -4948,7 +4944,7 @@ void MyFrame::ActivateMOB( void )
     mob_message += toSDMM( 1, gLat );
     mob_message += _T("   ");
     mob_message += toSDMM( 2, gLon );
-    wxLogMessage( mob_message );
+    LOG_INFO( mob_message );
 
 }
 void MyFrame::TrackOn( void )
@@ -6435,14 +6431,14 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
         pprog->Raise();
     }
     
-    wxLogMessage( _T("   ") );
-    wxLogMessage( _T("Starting chart database Update...") );
+    LOG_INFO( _T("   ") );
+    LOG_INFO( _T("Starting chart database Update...") );
     wxString gshhg_chart_loc = gWorldMapLocation;
     gWorldMapLocation = wxEmptyString;
     ChartData->Update( DirArray, b_force, pprog );
     ChartData->SaveBinary(ChartListFileName);
-    wxLogMessage( _T("Finished chart database Update") );
-    wxLogMessage( _T("   ") );
+    LOG_INFO( _T("Finished chart database Update") );
+    LOG_INFO( _T("   ") );
     if( gWorldMapLocation.empty() ) { //Last resort. User might have deleted all GSHHG data, but we still might have the default dataset distributed with OpenCPN or from the package repository...
        gWorldMapLocation = gDefaultWorldMapLocation;
        gshhg_chart_loc = wxEmptyString;
@@ -6597,7 +6593,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if( wxDir::Exists( layerdir ) ) {
                 wxString laymsg;
                 laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
-                wxLogMessage( laymsg );
+                LOG_INFO( laymsg );
                 pConfig->LoadLayers(layerdir);
             }
 
@@ -6902,11 +6898,11 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         soundfile.Prepend( g_Platform->GetSharedDataDir() );
         bells_sound[bells - 1]->Load( soundfile );
         if( !bells_sound[bells - 1]->IsOk() ) {
-            wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
+            LOG_INFO( _T("Failed to load bells sound file: ") + soundfile );
             return;
         }
 
-        wxLogMessage( _T("Using bells sound file: ") + soundfile );
+        LOG_INFO( _T("Using bells sound file: ") + soundfile );
     }
 
     bells_sound[bells - 1]->Play();
@@ -7033,7 +7029,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //      Listen for quitflag to be set, requesting application close
     if( quitflag ) {
-        wxLogMessage( _T("Got quitflag from SIGNAL") );
+        LOG_INFO( _T("Got quitflag from SIGNAL") );
         FrameTimer1.Stop();
         Close();
         return;
@@ -7064,7 +7060,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( gGPS_Watchdog == 0  ){
             wxString msg;
             msg.Printf( _T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat, gLon );
-            wxLogMessage(msg);
+            LOG_INFO(msg);
         }
         gSog = NAN;
         gCog = NAN;
@@ -7074,7 +7070,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gHDx_Watchdog--;
     if( gHDx_Watchdog <= 0 ) {
         gHdm = NAN;
-        if( g_nNMEADebug && ( gHDx_Watchdog == 0 ) ) wxLogMessage(
+        if( g_nNMEADebug && ( gHDx_Watchdog == 0 ) ) LOG_INFO(
                 _T("   ***HDx Watchdog timeout...") );
     }
 
@@ -7083,7 +7079,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( gHDT_Watchdog <= 0 ) {
         g_bHDT_Rx = false;
         gHdt = NAN;
-        if( g_nNMEADebug && ( gHDT_Watchdog == 0 ) ) wxLogMessage(
+        if( g_nNMEADebug && ( gHDT_Watchdog == 0 ) ) LOG_INFO(
                 _T("   ***HDT Watchdog timeout...") );
     }
 
@@ -7091,7 +7087,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gVAR_Watchdog--;
     if( gVAR_Watchdog <= 0 ) {
         g_bVAR_Rx = false;
-        if( g_nNMEADebug && ( gVAR_Watchdog == 0 ) ) wxLogMessage(
+        if( g_nNMEADebug && ( gVAR_Watchdog == 0 ) ) LOG_INFO(
             _T("   ***VAR Watchdog timeout...") );
     }
     //  Update and check watchdog timer for GSV (Satellite data)
@@ -7099,7 +7095,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
         g_SatsInView = 0;
-        if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
+        if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) LOG_INFO(
                 _T("   ***SAT Watchdog timeout...") );
     }
 
@@ -7208,7 +7204,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 data.Printf( _T(" DR Lat %10.5f Lon %10.5f"), gLat, gLon );
                 navmsg += data;
             }
-            wxLogMessage( navmsg );
+            LOG_INFO( navmsg );
             g_loglast_time = lognow;
 
             int bells = ( hourLOC % 4 ) * 2;     // 2 bells each hour
@@ -7746,7 +7742,7 @@ void MyFrame::SetChartThumbnail( int index )
                     }
 
                     else {
-                        wxLogMessage(
+                        LOG_INFO(
                                 _T("    chart1.cpp:SetChartThumbnail...Could not create thumbnail") );
                         pthumbwin->pThumbChart = NULL;
                         pthumbwin->Show( false );
@@ -7757,7 +7753,7 @@ void MyFrame::SetChartThumbnail( int index )
                 {
                     wxString fp = ChartData->GetFullPath( pCurrentStack, index );
                     fp.Prepend( _T("    chart1.cpp:SetChartThumbnail...Could not open chart ") );
-                    wxLogMessage( fp );
+                    LOG_INFO( fp );
                     pthumbwin->pThumbChart = NULL;
                     pthumbwin->Show( false );
                     cc1->Refresh( FALSE );
@@ -8347,7 +8343,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 
 void MyFrame::OnEvtTHREADMSG( OCPN_ThreadMessageEvent & event )
 {
-    wxLogMessage( wxString(event.GetSString().c_str(), wxConvUTF8 ));
+    LOG_INFO( wxString(event.GetSString().c_str(), wxConvUTF8 ));
 }
 
 
@@ -8416,7 +8412,7 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
                                             msg_type.c_str(),
                                             new_port.c_str(),
                                             pcontainer->current_priority);
-         wxLogMessage(logmsg );
+         LOG_INFO(logmsg );
 
          if (NMEALogWindow::Get().Active())
          {
@@ -8509,7 +8505,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         g_total_NMEAerror_messages++;
         wxString msg( _T("MEH.NMEA Sentence received...") );
         msg.Append( str_buf );
-        wxLogMessage( msg );
+        LOG_INFO( msg );
     }
 
     //  The message must be at least reasonably formed...
@@ -8525,7 +8521,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 g_total_NMEAerror_messages++;
                 wxString msg( _T(">>>>>>NMEA Sentence Checksum Bad...") );
                 msg.Append( str_buf );
-                wxLogMessage( msg );
+                LOG_INFO( msg );
             }
             return;
         }
@@ -8678,7 +8674,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             msg.Append( m_NMEA0183.ErrorMessage );
             msg.Append( _T(" : ") );
             msg.Append( str_buf );
-            wxLogMessage( msg );
+            LOG_INFO( msg );
         }
     }
         //      Process ownship (AIVDO) messages from any source
@@ -8727,7 +8723,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 g_total_NMEAerror_messages++;
                 wxString msg( _T("   Invalid AIVDO Sentence...") );
                 msg.Append( str_buf );
-                wxLogMessage( msg );
+                LOG_INFO( msg );
             }
         }
     }
@@ -8739,7 +8735,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             g_total_NMEAerror_messages++;
             wxString msg( _T("   Unrecognized NMEA Sentence...") );
             msg.Append( str_buf );
-            wxLogMessage( msg );
+            LOG_INFO( msg );
         }
     }
 
@@ -8807,7 +8803,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
     if( pos_valid ) {
         if( g_nNMEADebug ) {
             wxString msg( _T("PostProcess NMEA with valid position") );
-            wxLogMessage( msg );
+            LOG_INFO( msg );
         }
 
         //      Maintain the validity flags
@@ -8938,7 +8934,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 
             wxString msg;
             msg.Printf(_T("Setting system time, delta t is %d seconds"), b);
-            wxLogMessage(msg);
+            LOG_INFO(msg);
 
             wxString sdate(Fix_Time.Format(_T("%D")));
             sdate.Prepend(_T("sudo /bin/date -s \""));
@@ -8950,7 +8946,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 
             msg.Printf(_T("Linux command is:"));
             msg += sdate;
-            wxLogMessage(msg);
+            LOG_INFO(msg);
             wxExecute(sdate, wxEXEC_ASYNC);
 
 #endif      //__WXMSW__
@@ -9151,7 +9147,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     mob_message += toSDMM( 1, ptarget->Lat );
     mob_message += _T("   ");
     mob_message += toSDMM( 2, ptarget->Lon );
-    wxLogMessage( mob_message );
+    LOG_INFO( mob_message );
 
 }
 
@@ -9196,7 +9192,7 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
         mob_message += _T("   ");
         mob_message += toSDMM( 2, ptarget->Lon );
 
-        wxLogMessage( mob_message );
+        LOG_INFO( mob_message );
     }
 
 }
@@ -9238,7 +9234,7 @@ void MyFrame::applySettingsString( wxString settings)
         if(!ChartData->CompareChartDirArray( NewDirArray )){
             rr |= VISIT_CHARTS;
             rr |= CHANGE_CHARTS;
-            wxLogMessage(_T("Chart Dir List change detected"));
+            LOG_INFO(_T("Chart Dir List change detected"));
         }
     }
 
@@ -9616,14 +9612,14 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
  //   wxDateTime now = wxDateTime::Now();
  //   printf("OnSuspending...%d\n", now.GetTicks());
 
-    wxLogMessage(_T("System suspend starting..."));
+    LOG_INFO(_T("System suspend starting..."));
 }
 
 void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
 {
 //    wxDateTime now = wxDateTime::Now();
 //    printf("OnSuspended...%d\n", now.GetTicks());
-    wxLogMessage(_T("System is going to suspend."));
+    LOG_INFO(_T("System is going to suspend."));
 
 }
 
@@ -9631,7 +9627,7 @@ void MyFrame::OnSuspendCancel(wxPowerEvent& WXUNUSED(event))
 {
 //    wxDateTime now = wxDateTime::Now();
 //    printf("OnSuspendCancel...%d\n", now.GetTicks());
-    wxLogMessage(_T("System suspend was cancelled."));
+    LOG_INFO(_T("System suspend was cancelled."));
 }
 
 int g_last_resume_ticks;
@@ -9639,10 +9635,10 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
 {
     wxDateTime now = wxDateTime::Now();
 //    printf("OnResume...%d\n", now.GetTicks());
-    wxLogMessage(_T("System resumed from suspend."));
+    LOG_INFO(_T("System resumed from suspend."));
 
     if((now.GetTicks() - g_last_resume_ticks) > 5){
-        wxLogMessage(_T("Restarting streams."));
+        LOG_INFO(_T("Restarting streams."));
  //       printf("   Restarting streams\n");
         g_last_resume_ticks = now.GetTicks();
         if(g_pMUX){
@@ -9989,7 +9985,7 @@ void MyCPLErrorHandler( CPLErr eErrClass, int nError, const char * pszErrorMsg )
             snprintf( msg, 255, "CPL ERROR %d: %s", nError, pszErrorMsg );
 
     wxString str( msg, wxConvUTF8 );
-    wxLogMessage( str );
+    LOG_INFO( str );
 }
 #endif
 
@@ -10257,7 +10253,7 @@ wxArrayString *EnumerateSerialPorts( void )
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
         
         if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
+            LOG_INFO( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
             preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
         }
     }
@@ -10335,7 +10331,7 @@ wxArrayString *EnumerateSerialPorts( void )
 //  Return to user privileges
         seteuid(user_user_id);
 
-        wxLogMessage(_T("Warning: ocpnhelper failed...."));
+        LOG_INFO(_T("Warning: ocpnhelper failed...."));
         _exit(0);// If exec fails then exit forked process.
     }
 
@@ -10350,7 +10346,7 @@ wxArrayString *EnumerateSerialPorts( void )
 
     if (f != NULL)
     {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/serial..."));
+        LOG_INFO(_T("Parsing copy of /proc/tty/driver/serial..."));
 
         /* read in each line of the file */
         while(fgets(buf, sizeof(buf), f) != NULL)
@@ -10358,7 +10354,7 @@ wxArrayString *EnumerateSerialPorts( void )
             wxString sm(buf, wxConvUTF8);
             sm.Prepend(_T("   "));
             sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
+            LOG_INFO(sm);
 
             /* if the line doesn't start with a number get the next line */
             if (buf[0] < '0' || buf[0] > '9')
@@ -10402,7 +10398,7 @@ wxArrayString *EnumerateSerialPorts( void )
 
     if (f != NULL)
     {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/usbserial..."));
+        LOG_INFO(_T("Parsing copy of /proc/tty/driver/usbserial..."));
 
         /* read in each line of the file */
         while(fgets(buf, sizeof(buf), f) != NULL)
@@ -10411,7 +10407,7 @@ wxArrayString *EnumerateSerialPorts( void )
             wxString sm(buf, wxConvUTF8);
             sm.Prepend(_T("   "));
             sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
+            LOG_INFO(sm);
 
             /* if the line doesn't start with a number get the next line */
             if (buf[0] < '0' || buf[0] > '9')
@@ -10653,7 +10649,7 @@ wxArrayString *EnumerateSerialPorts( void )
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
 
         if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
+            LOG_INFO( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
             preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
         }
     }
@@ -10668,7 +10664,7 @@ wxArrayString *EnumerateSerialPorts( void )
                     0,
                     &deviceinterface))
     {
-        wxLogMessage(_T("Found Garmin Device."));
+        LOG_INFO(_T("Found Garmin Device."));
 
         preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
     }
@@ -10830,7 +10826,7 @@ wxColour GetGlobalColor(wxString colorName)
     //    Default
     if( !ret_color.Ok() ) {
         ret_color.Set( 128, 128, 128 );  // Simple Grey
-        wxLogMessage(_T("Warning: Color not found ") + colorName);
+        LOG_INFO(_T("Warning: Color not found ") + colorName);
         // Avoid duplicate warnings:
         if (pcurrent_user_color_hash)
             ( *pcurrent_user_color_hash )[colorName] = ret_color;
