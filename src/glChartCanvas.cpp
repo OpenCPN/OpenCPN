@@ -568,7 +568,8 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
 
 void glChartCanvas::BuildFBO( )
 {
-    SetCurrent(*m_pcontext);
+    if(IsShown())
+        SetCurrent(*m_pcontext);
     
     if( m_b_BuiltFBO ) {
         glDeleteTextures( 2, m_cache_tex );

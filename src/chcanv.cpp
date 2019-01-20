@@ -3549,7 +3549,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     if( g_bopengl && m_glcc ){
         m_glcc->SetColorScheme( cs );
         g_glTextureManager->ClearAllRasterTextures();
-        m_glcc->FlushFBO(); 
+        //m_glcc->FlushFBO(); 
     }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
