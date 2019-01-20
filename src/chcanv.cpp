@@ -4507,7 +4507,7 @@ void ChartCanvas::ClearbFollow( void )
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
     
     if(m_muiBar)
-        m_muiBar->SetFollowButton(false);
+        m_muiBar->SetFollowButtonState( 0 );
     
     DoCanvasUpdate();
     ReloadVP();
@@ -4525,7 +4525,7 @@ void ChartCanvas::SetbFollow( void )
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     if(m_muiBar)
-        m_muiBar->SetFollowButton(true);
+        m_muiBar->SetFollowButtonState( 1 );
     
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
@@ -4646,7 +4646,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
             m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     
         if(m_muiBar)
-            m_muiBar->SetFollowButton( false );
+            m_muiBar->SetFollowButtonState( 0 );
     }
     
     Refresh( false );
@@ -6353,7 +6353,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButton( m_bFollow );
+        m_muiBar->SetFollowButtonState( m_bFollow ? 1:0 );
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -6429,7 +6429,7 @@ void ChartCanvas::CreateMUIBar()
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButton( m_bFollow );
+        m_muiBar->SetFollowButtonState( m_bFollow ? 1:0 );
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
