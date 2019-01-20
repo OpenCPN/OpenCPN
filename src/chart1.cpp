@@ -11143,7 +11143,7 @@ int get_static_line( char *d, const char **p, int index, int n )
 static void InitializeUserColors( void )
 {
     const char **p = usercolors;
-    char buf[80];
+    char buf[81];
     int index = 0;
     char TableName[20];
     colTable *ctp;
@@ -11170,7 +11170,7 @@ static void InitializeUserColors( void )
     ct->color = new wxArrayPtrVoid;
     UserColorTableArray->Add( (void *) ct );
 
-    while( ( get_static_line( buf, p, index, 80 ) ) ) {
+    while( ( get_static_line( buf, p, index, sizeof(buf) - 1 ) ) ) {
         if( !strncmp( buf, "Table", 5 ) ) {
             sscanf( buf, "Table:%s", TableName );
 
