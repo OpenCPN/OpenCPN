@@ -364,8 +364,6 @@ extern ChartCanvas      *g_overlayCanvas;
 
 extern float            g_toolbar_scalefactor;
 
-bool g_MouseDragging;
-
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -1485,7 +1483,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
 
         // on lookahead mode, adjust the vp center point
-        if( m_bLookAhead && bGPSValid && !g_MouseDragging ) {
+        if( m_bLookAhead && bGPSValid && !m_MouseDragging ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
             
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * GetCanvasHeight() / 4;
@@ -6745,7 +6743,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     event.GetPosition( &x, &y );
     
-    g_MouseDragging = event.Dragging();
+    m_MouseDragging = event.Dragging();
     
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
     //  Detect this case, and abort further processing (FS#1748)
