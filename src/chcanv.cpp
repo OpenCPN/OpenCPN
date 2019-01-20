@@ -1512,6 +1512,13 @@ bool ChartCanvas::DoCanvasUpdate( void )
             
             ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
         }
+        else if(m_bLookAhead && !bGPSValid){
+            m_OSoffsetx = 0;            // center ownship on loss of GPS
+            m_OSoffsety = 0;
+            vpLat = gLat;
+            vpLon = gLon;
+        }
+            
         
     } else {
         tLat = m_vLat;
