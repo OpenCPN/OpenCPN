@@ -5208,7 +5208,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   int deviceCount = sound->DeviceCount();
   pSoundDeviceIndex = new wxChoice();
   wxLogMessage("options: got device count: %d", deviceCount);
-  if (deviceCount > 1) {
+  if (deviceCount >= 1) {
     wxArrayString labels;
     for (int i = 0; i < deviceCount; i += 1) {
         if (!sound->IsOutputDevice(i)) {
