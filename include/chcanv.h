@@ -870,7 +870,8 @@ private:
       bool         m_last_TBviz;
       
       double       m_OSoffsetx, m_OSoffsety;
-      
+      bool         m_MouseDragging;
+
 DECLARE_EVENT_TABLE()
 };
 
