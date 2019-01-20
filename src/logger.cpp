@@ -22,12 +22,7 @@
  ***************************************************************************
  */
 
-#include <algorithm>
 #include <iomanip>
-#include <iostream>
-#include <ostream>
-#include <sstream>
-#include <streambuf>
 
 #include <ctype.h>
 
@@ -109,6 +104,7 @@ bool LogBackend::setLogfile(const char* path)
  
 void LogBackend::write(const char* text)
 {
+    std::unique_lock<std::mutex> lock(log_lock);
     if (isBuffering) {
         buffer << text; 
     } else {

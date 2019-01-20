@@ -1,10 +1,10 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <memory>
 #include <cstdarg>
 #include <ostream>
 #include <sstream>
+#include <mutex>
 #include <stdio.h>
 
 /**
@@ -14,7 +14,7 @@
  *
  *     LOG_WARNING("Error running something: %s", message);
  *
- * C++ ostream logging uses the <LEVEL>_LOG macros e. g.;
+ * C++ ostream logging uses the <LEVEL>_LOG macros e. g.:
  * 
  *     WARNING_LOG << "Error running something " << message;
  */
@@ -53,6 +53,8 @@ class LogBackend
         FILE* f;
         std::stringstream buffer;
         bool isBuffering;
+        std::mutex log_lock;
+
 };
 
 /** Transient logger class, instantiated by the *LOG* macros. */
