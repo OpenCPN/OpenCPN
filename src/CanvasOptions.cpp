@@ -448,6 +448,7 @@ void CanvasOptions::UpdateCanvasOptions( void )
 
     if(pCBLookAhead->GetValue() != parentCanvas->GetLookahead()){
         parentCanvas->ToggleLookahead();
+        parentCanvas->UpdateFollowButtonState();
         b_needReLoad = true;
     }
     

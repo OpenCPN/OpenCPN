@@ -364,6 +364,8 @@ extern ChartCanvas      *g_overlayCanvas;
 
 extern float            g_toolbar_scalefactor;
 
+bool g_MouseDragging;
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -1483,7 +1485,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
 
         // on lookahead mode, adjust the vp center point
-        if( m_bLookAhead ) {
+        if( m_bLookAhead && bGPSValid && !g_MouseDragging ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
             
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * GetCanvasHeight() / 4;
@@ -3251,6 +3253,9 @@ void ChartCanvas::ToggleChartOutlines( void )
 void ChartCanvas::ToggleLookahead( )
 {
     m_bLookAhead = !m_bLookAhead;
+    m_OSoffsetx = 0;            // center ownship
+    m_OSoffsety = 0;
+
 }
 
 
@@ -4506,8 +4511,7 @@ void ChartCanvas::ClearbFollow( void )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
     
-    if(m_muiBar)
-        m_muiBar->SetFollowButtonState( 0 );
+    UpdateFollowButtonState();
     
     DoCanvasUpdate();
     ReloadVP();
@@ -4524,8 +4528,7 @@ void ChartCanvas::SetbFollow( void )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
-    if(m_muiBar)
-        m_muiBar->SetFollowButtonState( 1 );
+    UpdateFollowButtonState();
     
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
@@ -4541,6 +4544,20 @@ void ChartCanvas::SetbFollow( void )
     DoCanvasUpdate();
     ReloadVP();
     parent_frame->SetChartUpdatePeriod( );
+}
+
+void ChartCanvas::UpdateFollowButtonState( void )
+{
+   if(m_muiBar){
+        if(!m_bFollow)
+            m_muiBar->SetFollowButtonState( 0 );
+        else{
+            if(m_bLookAhead)
+                m_muiBar->SetFollowButtonState( 2 );
+            else
+                m_muiBar->SetFollowButtonState( 1 );
+        }
+   }
 }
 
 void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
@@ -4645,8 +4662,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
         if( m_toolBar )
             m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     
-        if(m_muiBar)
-            m_muiBar->SetFollowButtonState( 0 );
+        UpdateFollowButtonState();
     }
     
     Refresh( false );
@@ -6353,7 +6369,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButtonState( m_bFollow ? 1:0 );
+        UpdateFollowButtonState();
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -6429,7 +6445,7 @@ void ChartCanvas::CreateMUIBar()
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButtonState( m_bFollow ? 1:0 );
+        UpdateFollowButtonState();
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -6721,6 +6737,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     bool bret = false;
     
     event.GetPosition( &x, &y );
+    
+    g_MouseDragging = event.Dragging();
     
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
     //  Detect this case, and abort further processing (FS#1748)
