@@ -1741,8 +1741,6 @@ bool MyApp::OnInit()
 #endif
 
 //      Send init message
-    LOG_INFO( _T("\n\n________\n") );
-
     wxDateTime date_now = wxDateTime::Now();
 
     wxString imsg = date_now.FormatISODate();
