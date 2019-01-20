@@ -49,6 +49,7 @@
 #endif // ocpnUSE_SVG
 
 #include <memory>
+#include <vector>
 
 class wxGLContext;
 
