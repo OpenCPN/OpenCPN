@@ -6122,6 +6122,14 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
+static bool bAnchorSoundPlaying = false;
+
+static void onSoundFinished( void* ptr )
+{
+    bAnchorSoundPlaying = false;
+}
+
+
 void ChartCanvas::AlertDraw( ocpnDC& dc )
 {
 // Just for prototyping, visual alert for anchorwatch goes here
@@ -6148,14 +6156,17 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-    if( play_sound ) {
+    if( play_sound && !bAnchorSoundPlaying) {
 #ifdef USE_SYSTEM_CMD_SOUND
         std::string strCmd( g_CmdSoundString.mb_str( ) );
         g_anchorwatch_sound->SetCmd( strCmd );
 #endif /* USE_SYSTEM_CMD_SOUND */
         g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
-        if ( g_anchorwatch_sound->IsOk( ) )
-            g_anchorwatch_sound->Play();
+        if ( g_anchorwatch_sound->IsOk( ) ) {
+            bAnchorSoundPlaying = true;
+            g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
+            g_anchorwatch_sound->Play( );
+        }
     } else if( g_anchorwatch_sound->IsOk() ) {
         g_anchorwatch_sound->Stop();
     }
