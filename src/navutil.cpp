@@ -758,6 +758,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "ConfigVersionString" ), &g_config_version_string );
 #ifdef USE_SYSTEM_CMD_SOUND
     Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(SYSTEM_SOUND_CMD) );
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
 #endif /* USE_SYSTEM_CMD_SOUND */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
@@ -2231,6 +2233,8 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
 #ifdef USE_SYSTEM_CMD_SOUND
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
     Write( _T( "CmdSoundString" ), g_CmdSoundString );
 #endif /* USE_SYSTEM_CMD_SOUND */
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );

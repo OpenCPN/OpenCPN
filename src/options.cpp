@@ -132,6 +132,7 @@ extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
 extern int g_nDepthUnitDisplay;
+extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
 extern wxArrayOfConnPrm* g_pConnectionParams;
@@ -5197,14 +5198,10 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
   pCmdSoundString = new wxTextCtrl(itemPanelFont, wxID_ANY, _T(""), wxDefaultPosition,
       wxSize(450, -1), wxTE_LEFT);
-  //const wxString tipCmdSoundString( _("This command is used to play sound.\n"
-  //                            "Customize command for your system.\n"
-  //                            "Command runs in invisible terminal.") );
-  //wxToolTip *pCmdSoundStringTip = new wxToolTip( tipCmdSoundString );
-  //pCmdSoundString->SetToolTip( pCmdSoundStringTip );
-  pSoundSizer->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
-  pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
-
+  if ( g_bUIexpert ) {
+      pSoundSizer->Add( new wxStaticText( itemPanelFont, wxID_ANY, _( "Audio Play command:" ) ), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
+      pSoundSizer->Add( pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size );
+  }
 #endif /* USE_SYSTEM_CMD_SOUND */
 
   OcpnSound* sound = SoundFactory();
