@@ -357,7 +357,8 @@ public:
       bool IsPianoContextMenuActive(){ return m_piano_ctx_menu != 0; }
       void SetCanvasToolbarItemState( int tool_id, bool state );
       bool DoCanvasCOGSet( void );
-      
+      void UpdateFollowButtonState( void );
+
       
       //Todo build more accessors
       bool        m_bFollow;
@@ -869,7 +870,8 @@ private:
       bool         m_last_TBviz;
       
       double       m_OSoffsetx, m_OSoffsety;
-      
+      bool         m_MouseDragging;
+
 DECLARE_EVENT_TABLE()
 };
 

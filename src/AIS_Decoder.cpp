@@ -300,8 +300,8 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
       make_hash_ERI(8441, _("Ferry"));
       make_hash_ERI(8442, _("Red cross ship"));
       make_hash_ERI(8443, _("Cruise ship"));
-      make_hash_ERI(8444, _("Passenger ship without accomodation"));
-      make_hash_ERI(8460, _("Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"));
+      make_hash_ERI(8444, _("Passenger ship without accommodation"));
+      make_hash_ERI(8460, _("Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"));
       make_hash_ERI(8480, _("Fishing boat"));
       make_hash_ERI(8500, _("Barge, tanker, chemical"));
       make_hash_ERI(1500, _("General cargo Vessel maritime"));

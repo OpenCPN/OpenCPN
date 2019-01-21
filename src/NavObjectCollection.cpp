@@ -74,6 +74,9 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     wxString SymString = def_symbol_name;       // default icon
     wxString NameString;
     wxString DescString;
+    wxString TideStation;
+    double   plan_speed = 0.0;
+    wxString etd;
     wxString TypeString;
     wxString GuidString = GUID;         // default
     wxString TimeString;
@@ -210,6 +213,19 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                             l_iWaypoinScaleMax = attr.as_float();
                     }
                 }
+                if( ext_name == _T ( "opencpn:tidestation" ) ) {
+                    TideStation = wxString::FromUTF8(ext_child.first_child().value()) ;
+                }
+                if( ext_name == _T ( "opencpn:rte_properties" ) ) {
+                    for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
+                    {
+                        if( !strcmp( attr.name(), "planned_speed" ) )
+                            plan_speed = attr.as_double();
+                        else
+                            if( !strcmp( attr.name(), "etd" ) )
+                                etd = attr.as_string();
+                    }
+                }
              }// for 
         } //extensions
     }   // for
@@ -223,6 +239,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
     pWP->m_MarkDescription = DescString;
+    pWP->m_TideStation = TideStation;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     pWP->SetWaypointArrivalRadius( ArrivalRadius );
     pWP->SetWaypointRangeRingsNumber( l_iWaypointRangeRingsNumber );
@@ -233,6 +250,8 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetScaMin( l_iWaypointScaleMin );
     pWP->SetScaMax( l_iWaypoinScaleMax );
     pWP->SetUseSca( l_bWaypointUseScale );
+    pWP->SetPlannedSpeed(plan_speed);
+    pWP->SetETD(etd);
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -456,9 +475,11 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
     wxString Name = wxString::FromUTF8( wpt_node.name() );
     if( Name == _T ( "rte" ) ) {
         pTentRoute = new Route();
+        HyperlinkList *linklist = NULL;
         
         RoutePoint *pWp = NULL;
 		bool route_existing = false;
+        pTentRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
         
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
@@ -502,7 +523,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                      }
                      
                      else
-                     if( ext_name == _T ( "opencpn:planned_speed" ) ) {
+                     if( ext_name == _T ( "opencpn:rte_properties" ) ) {
                         pTentRoute->m_PlannedSpeed = atof( ext_child.first_child().value() );
                      }
                      
@@ -513,7 +534,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                      
                      else
                      if( ext_name == _T ( "opencpn:time_display" ) ) {
-                        pTentRoute->m_TimeDisplayFormat, wxString::FromUTF8(ext_child.first_child().value());
+                        pTentRoute->m_TimeDisplayFormat = wxString::FromUTF8(ext_child.first_child().value());
                      }
                      else
                      if( ext_name.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
@@ -574,6 +595,30 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                 DescString = wxString::FromUTF8( tschild.first_child().value() );
             }
 
+            if( ChildName == _T ( "link") ) {
+                wxString HrefString;
+                wxString HrefTextString;
+                wxString HrefTypeString;
+                if( linklist == NULL )
+                    linklist = new HyperlinkList;
+                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
+                
+                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
+                    wxString LinkString = wxString::FromUTF8( child1.name() );
+                    
+                    if( LinkString == _T ( "text" ) )
+                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                    if( LinkString == _T ( "type" ) )
+                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+                }
+                
+                Hyperlink *link = new Hyperlink;
+                link->Link = HrefString;
+                link->DescrText = HrefTextString;
+                link->LType = HrefTypeString;
+                linklist->Append( link );
+            }
+            
             else
             //TODO: This is wrong, left here just to save data of the 3.3 beta series users.
             if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
@@ -584,17 +629,18 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                          pTentRoute->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                 }
             }
-
-       }
+        }
                     
         pTentRoute->m_RouteNameString = RouteName;
         pTentRoute->m_RouteDescription = DescString;
+        if( linklist ) {
+            pTentRoute->m_HyperlinkList = linklist;
+        }
 
-        if( b_propviz )
-                  pTentRoute->SetVisible( b_viz );
-        else {
-            if( b_fullviz )
-                pTentRoute->SetVisible();
+        if( b_propviz ) {
+            pTentRoute->SetVisible( b_viz );
+        } else if( b_fullviz ) {
+            pTentRoute->SetVisible();
         }
  
         if( b_layer ){
@@ -693,7 +739,8 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
     }
     
     if( (flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) || (flags & OUT_SHARED)
-            || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) ) {
+       || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) || (flags & OUT_TIDE_STATION)
+       || (flags & OUT_RTE_PROPERTIES) ) {
         
         pugi::xml_node child_ext = node.append_child("extensions");
         
@@ -746,6 +793,21 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             sca.set_value( pr->GetScaMin() );
             pugi::xml_attribute max = child.append_attribute( "ScaleMax" );
             max.set_value( pr->GetScaMax() );
+        }
+        if((flags & OUT_TIDE_STATION) && !pr->m_TideStation.IsEmpty()) {
+            child = child_ext.append_child("opencpn:tidestation");
+            child.append_child(pugi::node_pcdata).set_value( pr->m_TideStation.mb_str() );
+        }
+        if((flags & OUT_RTE_PROPERTIES) && (pr->GetPlannedSpeed() > 0.0001f || pr->m_manual_etd)) {
+            child = child_ext.append_child("opencpn:rte_properties");
+            if( pr->GetPlannedSpeed() > 0.0001f ) {
+                pugi::xml_attribute use = child.append_attribute( "planned_speed" );
+                use.set_value( wxString::Format(_T("%.1lf"), pr->GetPlannedSpeed()).mb_str());
+            }
+            if( pr->m_manual_etd ) {
+                pugi::xml_attribute use = child.append_attribute( "etd" );
+                use.set_value( pr->GetETD().FormatISOCombined().mb_str());
+            }
         }
     }
     
@@ -909,6 +971,34 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         }
     }
     
+    // Hyperlinks
+    HyperlinkList *linklist = pRoute->m_HyperlinkList;
+    if( linklist && linklist->GetCount() ) {
+        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+            
+            pugi::xml_node child_link = node.append_child("link");
+            wxCharBuffer buffer = link->Link.ToUTF8();
+            if(buffer.data())
+                child_link.append_attribute("href") = buffer.data();
+            
+            buffer=link->DescrText.ToUTF8();
+            if(buffer.data()) {
+                child = child_link.append_child("text");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+            
+            buffer=link->LType.ToUTF8();
+            if(buffer.data()  && strlen(buffer.data()) > 0) {
+                child = child_link.append_child("type");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+            
+            linknode = linknode->GetNext();
+        }
+    }
+    
     pugi::xml_node child_ext = node.append_child("extensions");
     
     child = child_ext.append_child("opencpn:guid");
@@ -946,10 +1036,8 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         child.append_child(pugi::node_pcdata).set_value(t.mb_str());
     }
 
-    if( pRoute->m_TimeDisplayFormat != RTE_TIME_DISP_UTC ) {
-        child = child_ext.append_child("opencpn:time_display");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
-    }                        
+    child = child_ext.append_child("opencpn:time_display");
+    child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
     
     if( pRoute->m_width != WIDTH_UNDEFINED || pRoute->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");
@@ -1139,6 +1227,8 @@ static void UpdateRouteA( Route *pTentRoute )
 			ex_rp->SetIconName( prp->GetIconName() );
 			ex_rp->m_MarkDescription = prp->m_MarkDescription;
 			ex_rp->SetName( prp->GetName() );
+            ex_rp->m_TideStation = prp->m_TideStation;
+            ex_rp->SetPlannedSpeed(prp->GetPlannedSpeed());
 			pChangeRoute->AddPoint( ex_rp );
 			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
 

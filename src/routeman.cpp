@@ -46,7 +46,7 @@
 #include "concanv.h"
 #include "navutil.h"
 #include "georef.h"
-#include "routeprop.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
@@ -93,7 +93,7 @@ extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern int              g_track_line_width;
 
-extern RouteProp        *pRoutePropDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
@@ -381,15 +381,12 @@ bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
     
 
     //    Update the RouteProperties Dialog, if currently shown
-    if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
-        if( pRoutePropDialog->m_pRoute == pA ) {
-            if( pRoutePropDialog->m_pEnroutePoint ) pRoutePropDialog->m_pEnroutePoint =
-                    pActivePoint;
-            pRoutePropDialog->SetRouteAndUpdate( pA );
-            pRoutePropDialog->UpdateProperties();
+    if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
+        if( pRoutePropDialog->GetRoute() == pA ) {
+            pRoutePropDialog->SetEnroutePoint(pActivePoint);
+
         }
     }
-
     return true;
 }
 
@@ -423,15 +420,12 @@ bool Routeman::ActivateNextPoint( Route *pr, bool skipped )
         m_arrival_test = 0;
 
         //    Update the RouteProperties Dialog, if currently shown
-        if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
-            if( pRoutePropDialog->m_pRoute == pr ) {
-                if( pRoutePropDialog->m_pEnroutePoint ) pRoutePropDialog->m_pEnroutePoint =
-                        pActivePoint;
-                pRoutePropDialog->SetRouteAndUpdate( pr );
-                pRoutePropDialog->UpdateProperties();
+        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
+            if( pRoutePropDialog->GetRoute() == pr ) {
+                pRoutePropDialog->SetEnroutePoint(pActivePoint);
             }
         }
-
+        
         wxString msg_id( _T("OCPN_WPT_ARRIVED") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 
@@ -867,7 +861,7 @@ bool Routeman::DeleteRoute( Route *pRoute )
             return false;
         }
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (pRoute == pRoutePropDialog->GetRoute()) ) {
-                pRoutePropDialog->Hide();
+            pRoutePropDialog->Hide();
         }
             
         pConfig->DeleteConfigRoute( pRoute );

@@ -49,6 +49,7 @@
 #endif // ocpnUSE_SVG
 
 #include <memory>
+#include <vector>
 
 class wxGLContext;
 
@@ -544,6 +545,8 @@ public:
     opencpn_plugin_116(void *pmgr);
     virtual ~opencpn_plugin_116();
     virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
+    virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int max_canvas);
+
 };
 
 //------------------------------------------------------------------
@@ -1304,5 +1307,8 @@ extern DECL_EXP wxString GetSelectedTrackGUID_Plugin( );
 extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin( const wxString& ); // doublon with GetSingleWaypoint
 extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& );
 extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& );
+
+extern DECL_EXP wxWindow* GetCanvasUnderMouse( );
+extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
 
 #endif //_PLUGIN_H_

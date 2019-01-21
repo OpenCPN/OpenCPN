@@ -74,7 +74,7 @@ extern GLuint g_raster_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -312,6 +312,9 @@ extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_default_wp_icon;
 extern wxString g_default_routepoint_icon;
+extern int      g_iWpt_ScaMin;
+extern bool     g_bUseWptScaMin;
+bool            g_bOverruleScaMin;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -2914,7 +2917,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   pAdvanceRouteWaypointOnArrivalOnly =
       new wxCheckBox(itemPanelRoutes, ID_DAILYCHECKBOX,
                      _("Advance route waypoint on arrival only"));
-  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0);
+  routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0, wxALL, 5);
 
   
   //  Waypoints
@@ -2950,7 +2953,25 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
    pWaypointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, rmin_size) );
    
   waypointSizer->AddSpacer(5);
-
+  // ScaMin 
+  wxFlexGridSizer* ScaMinSizer =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  ScaMinSizer->AddGrowableCol(1);
+  waypointSizer->Add(ScaMinSizer, 0, wxLEFT | wxRIGHT | wxEXPAND,
+                     border_size);
+  pScaMinChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
+                     _("Do show waypoints only at a chartscale greater then 1 :"));
+  ScaMinSizer->Add(pScaMinChckB, 0);
+  m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1);
+  ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
+                  group_item_spacing);
+    
+  //Overrule the Scamin settings
+  pScaMinOverruleChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
+                     _("Overrule the settings for chartscale depending visibility and show always") );
+  waypointSizer->Add(pScaMinOverruleChckB, 0, wxALL, 5);
+  
+  waypointSizer->AddSpacer(5);
   //Range Rings  
   wxFlexGridSizer* waypointrrSelect =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
@@ -5042,7 +5063,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_Alert_Moored = new wxCheckBox(
-      panelAIS, -1, _("Supress Alerts for anchored/moored targets"));
+      panelAIS, -1, _("Suppress Alerts for anchored/moored targets"));
   pAlertGrid->Add(m_pCheck_Alert_Moored, 1, wxALL, group_item_spacing);
 
   wxStaticText* pStatic_Dummy2 = new wxStaticText(panelAIS, -1, _T(""));
@@ -5187,7 +5208,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   int deviceCount = sound->DeviceCount();
   pSoundDeviceIndex = new wxChoice();
   wxLogMessage("options: got device count: %d", deviceCount);
-  if (deviceCount > 1) {
+  if (deviceCount >= 1) {
     wxArrayString labels;
     for (int i = 0; i < deviceCount; i += 1) {
         if (!sound->IsOutputDevice(i)) {
@@ -5834,6 +5855,10 @@ void options::SetInitialSettings(void) {
   pNavAidRadarRingsStep->SetValue(buf);
   m_itemRadarRingsUnits->SetSelection(g_pNavAidRadarRingsStepUnits);
   m_colourOwnshipRangeRingColour->SetColour(g_colourOwnshipRangeRingsColour);
+  
+  pScaMinChckB->SetValue( g_bUseWptScaMin );
+  m_pText_ScaMin->SetValue( wxString::Format(_T("%i"), g_iWpt_ScaMin ));
+  pScaMinOverruleChckB->SetValue( g_bOverruleScaMin );
   
   OnRadarringSelect(eDummy);
 
@@ -6686,6 +6711,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   icon_name = pWayPointMan->GetIconKey( pRoutepointDefaultIconChoice->GetSelection() );
   if(icon_name && icon_name->Length())
     g_default_routepoint_icon = *icon_name;
+  
+  g_bUseWptScaMin = pScaMinChckB->GetValue();
+  g_iWpt_ScaMin = wxAtoi( m_pText_ScaMin->GetValue() );
+  g_bOverruleScaMin = pScaMinOverruleChckB->GetValue();
 
   //  Any Font changes?
   if(m_bfontChanged)

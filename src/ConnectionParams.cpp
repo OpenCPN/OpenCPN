@@ -366,12 +366,21 @@ void ConnectionParamsPanel::SetSelected( bool selected )
         m_boxColour = colour;
         SetSize(wxSize(-1, 5 * refHeight));
     }
+    
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        }
+    }
+#endif
 
     wxWindowList kids = GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
-        win->SetBackgroundColour(colour);
+        win->SetBackgroundColour(m_boxColour);
     }
 
     GetSizer()->Layout();

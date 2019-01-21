@@ -718,6 +718,14 @@ IF(OCPN_USE_CURL)
   IF(WIN32)
     INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll" "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll" DESTINATION ".")
     INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" DESTINATION ".")
+    IF(MSVC)
+        SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+        INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
+    ELSE(MSVC) ## mingw
+        SET(CURL_LIBRARIES "curl.dll")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+    ENDIF(MSVC)
     OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
   ELSE(WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
@@ -728,7 +736,6 @@ IF(OCPN_USE_CURL)
       FIND_PACKAGE(CURL REQUIRED)
       INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
     ELSE(OCPN_USE_EXTERN_CURL)
-      INCLUDE("Curl.cmake")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
@@ -1307,7 +1314,9 @@ SET(HDRS
                 include/navutil.h
                 include/routeman.h
                 include/routemanagerdialog.h
-                include/routeprop.h
+                include/MarkInfo.h
+                include/RoutePropDlg.h
+                include/RoutePropDlgImpl.h
                 include/routeprintout.h
                 include/trackprintout.h
                 include/PositionParser.h
@@ -1409,7 +1418,9 @@ SET(SRCS
         src/navutil.cpp
         src/routeman.cpp
         src/routemanagerdialog.cpp
-        src/routeprop.cpp
+        src/MarkInfo.cpp
+        src/RoutePropDlg.cpp
+        src/RoutePropDlgImpl.cpp
         src/routeprintout.cpp
         src/trackprintout.cpp
         src/PositionParser.cpp
@@ -1991,6 +2002,7 @@ IF(WIN32)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
   ENDIF(MSVC)
   ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+  target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 
 

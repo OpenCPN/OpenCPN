@@ -156,6 +156,11 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 extern bool       g_bquiting;
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr  g_canvasArray;
+
+extern MyFrame    *gFrame;
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -1461,7 +1466,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     return pic;
 }
 
-bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp)
+bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, bool render )
 {
     for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
@@ -1502,10 +1507,17 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 116:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                        if(ppi)
+                        if (ppi && render)
                             ppi->RenderOverlay(*pdc, &pivp);
+                        
+                        opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
+                        if (ppi116) 
+                            ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
+
                         break;
-                    }
+
+                     }
+                    
                     default:
                         break;
                     }
@@ -1555,10 +1567,13 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 115:
                     case 116:    
                     {
-                        opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                        if(ppi)
-                            b_rendered = ppi->RenderOverlay(mdc, &pivp);
-                        break;
+                       opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                        if (ppi && render)
+                            b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                        
+                        opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
+                        if (ppi116) 
+                            b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
                     }
                     default:
                     {
@@ -3970,6 +3985,11 @@ opencpn_plugin_116::~opencpn_plugin_116(void)
 bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas)
 {
      return false;
+}
+
+bool opencpn_plugin_116::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int max_canvas)
+{
+    return false;
 }
 
 //          Helper and interface classes
@@ -6773,3 +6793,21 @@ bool ShuttingDown( void )
 {
     return g_bquiting;
 }
+
+wxWindow* GetCanvasUnderMouse( void )
+{
+    return gFrame->GetCanvasUnderMouse();
+}
+
+std::vector<wxWindow *> GetCanvasArray()
+{
+    std::vector<wxWindow *> rv;
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        rv.push_back(cc);
+    }
+    
+    return rv;
+}
+            
+ 
