@@ -5194,11 +5194,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
 #ifdef USE_SYSTEM_CMD_SOUND
-  wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
-  pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
-  pCmdSoundString = new wxTextCtrl(itemPanelFont, wxID_ANY, _T(""), wxDefaultPosition,
-      wxSize(450, -1), wxTE_LEFT);
   if ( g_bUIexpert ) {
+      wxBoxSizer* pSoundSizer = new wxBoxSizer( wxVERTICAL );
+      pShipsBellsSizer->Add( pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing );
+      pCmdSoundString = new wxTextCtrl( itemPanelFont, wxID_ANY, _T( "" ), wxDefaultPosition,
+          wxSize( 450, -1 ), wxTE_LEFT );
       pSoundSizer->Add( new wxStaticText( itemPanelFont, wxID_ANY, _( "Audio Play command:" ) ), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
       pSoundSizer->Add( pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size );
   }
@@ -5880,7 +5880,8 @@ void options::SetInitialSettings(void) {
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
 
 #ifdef USE_SYSTEM_CMD_SOUND
-  pCmdSoundString->SetValue(g_CmdSoundString);
+  if ( g_bUIexpert )
+      pCmdSoundString->SetValue(g_CmdSoundString);
 #endif /* USE_SYSTEM_CMD_SOUND */
 
   if (pSoundDeviceIndex)
@@ -6969,7 +6970,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
 #ifdef USE_SYSTEM_CMD_SOUND
-  g_CmdSoundString = pCmdSoundString->GetValue();
+  if ( g_bUIexpert )
+      g_CmdSoundString = pCmdSoundString->GetValue();
 #endif /* USE_SYSTEM_CMD_SOUND */
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
