@@ -6150,7 +6150,8 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
     if( play_sound ) {
 #ifdef USE_SYSTEM_CMD_SOUND
-        g_anchorwatch_sound->SetCmd( std::string( g_CmdSoundString.mb_str( ) ) );
+        std::string strCmd( g_CmdSoundString.mb_str( ) );
+        g_anchorwatch_sound->SetCmd( strCmd );
 #endif /* USE_SYSTEM_CMD_SOUND */
         g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
         if ( g_anchorwatch_sound->IsOk( ) )

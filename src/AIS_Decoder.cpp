@@ -2608,7 +2608,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if ( !AIS_AlertPlaying() ) {
             m_bAIS_AlertPlaying = true;
 #ifdef USE_SYSTEM_CMD_SOUND
-            m_AIS_Sound->SetCmd( std::string( g_CmdSoundString.mb_str( ) ) );
+            std::string strCmd( g_CmdSoundString.mb_str( ) );
+            m_AIS_Sound->SetCmd( strCmd );
 #endif /* USE_SYSTEM_CMD_SOUND */
             m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
             if ( m_AIS_Sound->IsOk( ) ) {

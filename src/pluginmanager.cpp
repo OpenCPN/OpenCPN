@@ -5982,7 +5982,8 @@ bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
         return false;
     }
 #ifdef USE_SYSTEM_CMD_SOUND
-    g_PluginSound->SetCmd( std::string( g_CmdSoundString.mb_str() ) );
+    std::string strCmd( g_CmdSoundString.mb_str( ) );
+    g_PluginSound->SetCmd( strCmd );
 #endif /* USE_SYSTEM_CMD_SOUND */
 
     g_PluginSound->SetFinishedCallback( onPlugInPlaySoundExFinished, NULL );
