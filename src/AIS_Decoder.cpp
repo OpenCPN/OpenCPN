@@ -36,6 +36,7 @@
 #include "pluginmanager.h"
 #include "Track.h"
 #include <multiplexer.h>
+#include "config.h"
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -97,6 +98,10 @@ extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
 extern PlugInManager             *g_pi_manager;
 extern Multiplexer      *g_pMUX;
+
+#ifdef USE_SYSTEM_CMD_SOUND
+extern wxString g_CmdSoundString;
+#endif /* USE_SYSTEM_CMD_SOUND */
 
 bool g_benableAISNameCache;
 bool g_bUseOnlyConfirmedAISName;
@@ -2312,12 +2317,9 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
 
 void AIS_Decoder::OnSoundFinishedAISAudio( wxCommandEvent& event )
 {
+    // By clearing this flag the main event loop will trigger repeated
+    // sounds for as long as the alert condition remains.
     m_bAIS_AlertPlaying = false;
-    //if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
-    //    m_AIS_Sound->Load( g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    //    m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-    //    m_AIS_Sound->Play();
-    //}
 }
 
 void AIS_Decoder::OnTimerDSC( wxTimerEvent& event )
@@ -2603,11 +2605,19 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if (!m_AIS_Sound) {
             m_AIS_Sound = SoundFactory();
         }
-        if (!AIS_AlertPlaying()) {
+        if ( !AIS_AlertPlaying() ) {
             m_bAIS_AlertPlaying = true;
+#ifdef USE_SYSTEM_CMD_SOUND
+            m_AIS_Sound->SetCmd( std::string( g_CmdSoundString.mb_str( ) ) );
+#endif /* USE_SYSTEM_CMD_SOUND */
             m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-            m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-            m_AIS_Sound->Play();
+            if ( m_AIS_Sound->IsOk( ) ) {
+                m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
+                if ( !m_AIS_Sound->Play( ) )
+                    m_bAIS_AlertPlaying = false;
+            }
+            else
+                m_bAIS_AlertPlaying = false;
         }
     }
     //  If a SART Alert is active, check to see if the MMSI has special properties set 

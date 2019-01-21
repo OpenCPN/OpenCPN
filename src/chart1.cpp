@@ -6878,6 +6878,9 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         appendOSDirSlash( &soundfile );
         soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
         soundfile.Prepend( g_Platform->GetSharedDataDir() );
+#ifdef USE_SYSTEM_CMD_SOUND
+        bells_sound[bells - 1]->SetCmd( std::string(g_CmdSoundString.mb_str( )) );
+#endif /* USE_SYSTEM_CMD_SOUND */
         bells_sound[bells - 1]->Load( soundfile );
         if( !bells_sound[bells - 1]->IsOk() ) {
             wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );

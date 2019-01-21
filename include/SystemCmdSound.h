@@ -46,6 +46,11 @@ class SystemCmdSound: public OcpnSound
         bool Load(const char* path, int deviceIndex = -1) override;
         bool Play() override;
         bool Stop() override;
+        /**
+         * Set system command string in case program wants to change from
+         * default string.
+         */
+        void SetCmd( std::string &cmd ) { m_cmd = cmd.c_str(); };
 
     private:
         void worker();
@@ -55,6 +60,6 @@ class SystemCmdSound: public OcpnSound
         std::string m_path;
 };
 
-const unsigned maxPlayTime = 2000;   // maximum sound play time is 20 seconds
+const unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
 
 #endif // __WX_SOUND_H__

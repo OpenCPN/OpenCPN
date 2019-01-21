@@ -8091,6 +8091,9 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
     std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
+#ifdef USE_SYSTEM_CMD_SOUND
+    AIS_Sound->SetCmd( std::string( g_CmdSoundString.mb_str( ) ) );
+#endif /* USE_SYSTEM_CMD_SOUND */
     AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     AIS_Sound->Play();
 }
