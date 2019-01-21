@@ -4588,6 +4588,8 @@ void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
   
+    UpdateFollowButtonState();
+    
     //TODO
 //    if( g_pi_manager ) {
 //        g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
