@@ -6970,8 +6970,13 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
 #ifdef USE_SYSTEM_CMD_SOUND
-  if ( g_bUIexpert )
-      g_CmdSoundString = pCmdSoundString->GetValue();
+  if ( g_bUIexpert ) {
+      g_CmdSoundString = pCmdSoundString->GetValue( );
+      if ( wxIsEmpty( g_CmdSoundString ) ) {
+          g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+          pCmdSoundString->SetValue( g_CmdSoundString );
+      }
+  }
 #endif /* USE_SYSTEM_CMD_SOUND */
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
