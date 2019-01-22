@@ -738,6 +738,10 @@ extern options          *g_pOptions;
 int n_NavMessageShown;
 wxString g_config_version_string;
 
+#ifdef USE_SYSTEM_CMD_SOUND
+wxString g_CmdSoundString;
+#endif /* USE_SYSTEM_CMD_SOUND */
+
 bool             g_btouch;
 bool             g_bresponsive;
 
@@ -6877,6 +6881,10 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         appendOSDirSlash( &soundfile );
         soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
         soundfile.Prepend( g_Platform->GetSharedDataDir() );
+#ifdef USE_SYSTEM_CMD_SOUND
+        std::string strCmd( g_CmdSoundString.mb_str( ) );
+        bells_sound[bells - 1]->SetCmd( strCmd );
+#endif /* USE_SYSTEM_CMD_SOUND */
         bells_sound[bells - 1]->Load( soundfile );
         if( !bells_sound[bells - 1]->IsOk() ) {
             wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );

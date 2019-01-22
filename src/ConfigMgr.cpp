@@ -24,6 +24,7 @@
 #include <wx/tokenzr.h>
 
 #include "ConfigMgr.h"
+#include "config.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
@@ -307,6 +308,11 @@ extern int              g_BSBImgDebug;
 
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
+extern wxString        g_config_version_string;
+
+#ifdef USE_SYSTEM_CMD_SOUND
+extern wxString        g_CmdSoundString;
+#endif /* USE_SYSTEM_CMD_SOUND */
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
