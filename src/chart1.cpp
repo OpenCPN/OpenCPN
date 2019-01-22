@@ -5709,6 +5709,7 @@ void MyFrame::JumpToPosition( ChartCanvas *cc, double lat, double lon, double sc
     vLon = lon;
     cc->StopMovement();
     cc->m_bFollow = false;
+    cc->UpdateFollowButtonState();
     
     if( !cc->GetQuiltMode() ) {
         double skew = 0;
