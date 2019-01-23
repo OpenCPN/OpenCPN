@@ -138,6 +138,8 @@ extern bool             g_bopengl;
 extern ChartGroupArray  *g_pGroupArray;
 extern unsigned int     g_canvasConfig;
 
+extern wxString         g_CmdSoundString;
+
 #ifdef __WXMSW__
 static const char PATH_SEP = ';';
 #else
@@ -5986,18 +5988,23 @@ void SetCanvasProjection(int projection)
     gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
-// Play a sound to a given device
+OcpnSound* g_PluginSound = SoundFactory( );
+static void onPlugInPlaySoundExFinished( void* ptr ) { }
+
+// Start playing a sound to a given device and return status to plugin
 bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 {
-    OcpnSound* sound = SoundFactory();
-    bool ok = sound->Load(sound_file, deviceIndex);
-    if (!ok) {
-        wxLogWarning("Cannot load sound file: %s", sound_file);
+    bool ok = g_PluginSound->Load( sound_file, deviceIndex );
+    if ( !ok ) {
+        wxLogWarning( "Cannot load sound file: %s", sound_file );
         return false;
     }
-    ok = sound->Play();
-    if (!ok) {
-        wxLogWarning("Cannot play sound file: %s", sound_file);
+    g_PluginSound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+
+    g_PluginSound->SetFinishedCallback( onPlugInPlaySoundExFinished, NULL );
+    ok = g_PluginSound->Play( );
+    if ( !ok ) {
+        wxLogWarning( "Cannot play sound file: %s", sound_file );
     }
     return ok;
 }

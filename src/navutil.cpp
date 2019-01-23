@@ -74,6 +74,7 @@
 #include "Track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "config.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -329,6 +330,8 @@ extern int              g_BSBImgDebug;
 
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
+
+extern wxString        g_CmdSoundString;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -753,6 +756,11 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     // Some undocumented values
     Read( _T ( "ConfigVersionString" ), &g_config_version_string );
+#ifdef SYSTEM_SOUND_CMD
+    Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(SYSTEM_SOUND_CMD) );
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+#endif /* SYSTEM_SOUND_CMD */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
     Read( _T ( "UIexpert" ), &g_bUIexpert );
@@ -2227,6 +2235,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "LastAppliedTemplate" ), g_lastAppliedTemplateGUID );
     
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
+#ifdef SYSTEM_SOUND_CMD
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+    Write( _T( "CmdSoundString" ), g_CmdSoundString );
+#endif /* SYSTEM_SOUND_CMD */
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
     Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     

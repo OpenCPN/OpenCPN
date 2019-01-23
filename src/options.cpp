@@ -132,6 +132,7 @@ extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
 extern int g_nDepthUnitDisplay;
+extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
 extern wxArrayOfConnPrm* g_pConnectionParams;
@@ -194,6 +195,9 @@ extern int g_own_ship_sog_cog_calc_damp_sec;
 
 extern bool g_bPreserveScaleOnX;
 extern bool g_bPlayShipsBells;
+
+extern wxString g_CmdSoundString;
+
 extern int g_iSoundDeviceIndex;
 extern bool g_bFullscreenToolbar;
 extern bool g_bTransparentToolbar;
@@ -1141,6 +1145,8 @@ void options::Init(void) {
   k_tides = 0;
   m_pConfig = NULL;
   
+  pSoundDeviceIndex = NULL;
+
   pCBNorthUp = NULL;
   pCBCourseUp = NULL;
   pCBLookAhead = NULL;
@@ -1218,6 +1224,7 @@ void options::Init(void) {
 #ifdef __OCPN__ANDROID__
   m_bcompact = true;
 #endif
+  pCmdSoundString = NULL;
 }
 
 size_t options::CreatePanel(const wxString& title) {
@@ -5199,14 +5206,26 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
                         group_item_spacing);
 
+  wxBoxSizer* pShipsBellsSizer = new wxBoxSizer(wxHORIZONTAL);
+  miscOptions->Add(pShipsBellsSizer, 0, wxALL, group_item_spacing);
   // Sound options
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-  miscOptions->Add(pPlayShipsBells, 0, wxALL, border_size);
+  pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
+
+#ifdef USE_SYSTEM_CMD_SOUND
+  if ( g_bUIexpert ) {
+      wxBoxSizer* pSoundSizer = new wxBoxSizer( wxVERTICAL );
+      pShipsBellsSizer->Add( pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing );
+      pCmdSoundString = new wxTextCtrl( itemPanelFont, wxID_ANY, _T( "" ), wxDefaultPosition,
+          wxSize( 450, -1 ), wxTE_LEFT );
+      pSoundSizer->Add( new wxStaticText( itemPanelFont, wxID_ANY, _( "Audio Play command:" ) ), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
+      pSoundSizer->Add( pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size );
+  }
+#endif /* USE_SYSTEM_CMD_SOUND */
 
   OcpnSound* sound = SoundFactory();
   int deviceCount = sound->DeviceCount();
-  pSoundDeviceIndex = new wxChoice();
   wxLogMessage("options: got device count: %d", deviceCount);
   if (deviceCount >= 1) {
     wxArrayString labels;
@@ -5220,21 +5239,24 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
         }
         labels.Add(label);
     }
-    pSoundDeviceIndex->Create(itemPanelFont,
-                              wxID_ANY,
-                              wxDefaultPosition,
-                              wxDefaultSize,
-                              labels);
-    pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
-    pSoundDeviceIndex->Show();
-    wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
-    miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
-                     group_item_spacing);
+    pSoundDeviceIndex = new wxChoice();
+    if (pSoundDeviceIndex) {
+        pSoundDeviceIndex->Create(itemPanelFont,
+            wxID_ANY,
+            wxDefaultPosition,
+            wxDefaultSize,
+            labels);
+        pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+        pSoundDeviceIndex->Show();
+        wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
+        miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
+            group_item_spacing);
 
-    wxStaticText* stSoundDeviceIndex =
-        new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
-    pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-    pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+        wxStaticText* stSoundDeviceIndex =
+            new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
+        pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
+        pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+    }
   }
 
   //  Mobile/Touchscreen checkboxes
@@ -5880,7 +5902,12 @@ void options::SetInitialSettings(void) {
 
   if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
-  pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+
+  if ( g_bUIexpert && pCmdSoundString )
+      pCmdSoundString->SetValue(g_CmdSoundString);
+
+  if (pSoundDeviceIndex)
+      pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
@@ -6968,8 +6995,17 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if(pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
+  if ( g_bUIexpert && pCmdSoundString) {
+      g_CmdSoundString = pCmdSoundString->GetValue( );
+      if ( wxIsEmpty( g_CmdSoundString ) ) {
+          g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+          pCmdSoundString->SetValue( g_CmdSoundString );
+      }
+  }
+
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
-  g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
+  if (pSoundDeviceIndex)
+      g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
@@ -8083,6 +8119,7 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
     std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
+    AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
     AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     AIS_Sound->Play();
 }

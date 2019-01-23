@@ -1132,7 +1132,7 @@ ELSEIF (AFPLAY)
   SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
 ELSEIF (WIN32)
   SET(SYSTEM_SOUND_CMD
-      "\"PowerShell -Command (New-Object Media.SoundPlayer \\\"%s\\\").PlaySync();\"")
+    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
 ENDIF ()
 
 OPTION(ENABLE_SYSTEM_CMD_SOUND
