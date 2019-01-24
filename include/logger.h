@@ -40,6 +40,8 @@
 class OcpnLog: public wxLog
 {
     public:
+        static const wxLogLevel LOG_BADLEVEL;
+
         /** Create logger appending to given filename. */
         OcpnLog(const char* path);
 
@@ -48,6 +50,9 @@ class OcpnLog: public wxLog
         void DoLogRecord(wxLogLevel level,
                          const wxString& msg,
                          const wxLogRecordInfo& info) override;
+
+        static wxLogLevel str2level(const char* string);
+
     protected:
         std::ofstream log;
 

@@ -32,6 +32,8 @@
 
 #include "logger.h"
 
+const wxLogLevel OcpnLog::LOG_BADLEVEL = wxLOG_Max + 1;
+
 
 static std::string basename(const std::string path)
 {
@@ -81,6 +83,32 @@ static std::string level2str(wxLogLevel level)
 }
 
 
+wxLogLevel OcpnLog::str2level(const char* string)
+{
+    std::string level(string);
+    for (auto& c: level)
+        c = tolower(c);
+    if (level == "fatalerror")
+        return wxLOG_FatalError;
+    if (level == "error")
+        return wxLOG_Error;
+    if (level == "warning")
+        return wxLOG_Warning;
+    if (level == "message")
+        return wxLOG_Message;
+    if (level == "info")
+        return wxLOG_Info;
+    if (level == "debug")
+        return wxLOG_Debug;
+    if (level == "trace")
+        return wxLOG_Trace;
+    if (level == "progress")
+        return wxLOG_Progress;
+    return LOG_BADLEVEL;
+}
+
+
+
 OcpnLog::OcpnLog(const char* path)
 {
     log.open(path, std::fstream::out | std::fstream::app);
@@ -97,7 +125,6 @@ void OcpnLog::DoLogRecord(wxLogLevel level,
 		          const wxString& msg,
 		          const wxLogRecordInfo& info)
 {
-
     log << timeStamp() << " "
         << std::setw(7) << level2str(level) << " "
         << basename(info.filename) << ":" << info.line << " "
