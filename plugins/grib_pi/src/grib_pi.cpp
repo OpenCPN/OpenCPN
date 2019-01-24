@@ -525,8 +525,8 @@ bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort 
             return RenderGLOverlay( pcontext, vp);
         }
     }
-    else
-        return RenderGLOverlay( pcontext, vp);
+
+    return RenderGLOverlay( pcontext, vp);
 }
 
 void grib_pi::SetCursorLatLon(double lat, double lon)

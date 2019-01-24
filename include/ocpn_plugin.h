@@ -1310,6 +1310,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& )
 
 extern DECL_EXP wxWindow* GetCanvasUnderMouse( );
 //extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
+extern DECL_EXP wxWindow *GetCanvasByIndex( int canvasIndex );
 extern DECL_EXP int GetCanvasCount( );
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
 extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );

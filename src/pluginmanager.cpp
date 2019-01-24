@@ -6814,6 +6814,19 @@ wxWindow* GetCanvasUnderMouse( void )
 //     return rv;
 // }
 
+wxWindow *GetCanvasByIndex( int canvasIndex )
+{
+    if(g_canvasConfig == 0)
+        return gFrame->GetPrimaryCanvas();
+    else{
+        if( (canvasIndex >=0) && g_canvasArray[canvasIndex] ){
+            return g_canvasArray[canvasIndex];
+        }
+    }
+    return NULL;
+}
+
+    
 bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex )
 {
     if(g_canvasConfig == 0)
