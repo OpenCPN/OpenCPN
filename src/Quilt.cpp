@@ -1449,7 +1449,8 @@ void Quilt::UnlockQuilt()
     // unlocked only charts owned by the Quilt
     for(unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-        if (pqc->b_locked == true) {
+        //if (pqc->b_locked == true)
+        {
             ChartData->UnLockCacheChart(pqc->dbIndex);
             pqc->b_locked = false;
         }
@@ -2079,8 +2080,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) )
-            pqc->b_locked = ChartData->LockCacheChart( pqc->dbIndex );
+        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) ){
+            if(ChartData->IsChartLocked( pqc->dbIndex ))                // already locked
+                pqc->b_locked = true;
+            else
+                pqc->b_locked = ChartData->LockCacheChart( pqc->dbIndex );
+        }
     }
 
     // open charts not in the cache

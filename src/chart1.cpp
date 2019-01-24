@@ -45,7 +45,6 @@
 #include <wx/clrpicker.h>
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
-
 #include <wx/dialog.h>
 
 #include "dychart.h"
@@ -764,6 +763,8 @@ unsigned int     g_canvasConfig;
 bool             g_useMUI;
 bool             g_bmasterToolbarFull = true;
 bool             g_bEffects = true;
+
+int              g_memUsed;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
@@ -2033,6 +2034,11 @@ bool MyApp::OnInit()
 #ifdef __OCPN__ANDROID__
     g_memCacheLimit = 100 * 1024;
 #endif
+
+#ifdef __WXMAC__
+    g_memCacheLimit = 400 * 1024;
+    //g_nCacheLimit = 20;
+#endif    
 
 //      Establish location and name of chart database
     ChartListFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "chartlist.dat", "CHRTLIST.DAT");
@@ -7848,13 +7854,29 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 
 //      Memory monitor support
 
+#ifdef __WXMAC__
+#include <mach/mach.h>
+#include <mach/message.h>  // for mach_msg_type_number_t
+#include <mach/kern_return.h>  // for kern_return_t
+#include <mach/task_info.h>
+#include <stdio.h>
+#include <malloc/malloc.h>
+#endif
+
+#ifdef __WXGTK__
+#include <malloc.h>
+#endif
+
+int g_lastMemTick;
+extern long g_tex_mem_used;
+
 bool GetMemoryStatus( int *mem_total, int *mem_used )
 {
 #ifdef __OCPN__ANDROID__
     return androidGetMemoryStatus( mem_total, mem_used );
 #endif
 
-#ifdef __LINUX__
+#ifdef __WXGTK__
 
 //      Use filesystem /proc/self/statm to determine memory status
 //	Provides information about memory usage, measured in pages.  The columns are:
@@ -7927,6 +7949,29 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
             }
         }
     }
+    
+           struct mallinfo mi;
+
+           mi = mallinfo();
+
+           //printf("Total non-mmapped bytes (arena):       %d\n", mi.arena);
+           //printf("# of free chunks (ordblks):            %d\n", mi.ordblks);
+           //printf("# of free fastbin blocks (smblks):     %d\n", mi.smblks);
+           //printf("# of mapped regions (hblks):           %d\n", mi.hblks);
+           //printf("Bytes in mapped regions (hblkhd):      %d\n", mi.hblkhd);
+           //printf("Max. total allocated space (usmblks):  %d\n", mi.usmblks);
+           //printf("Free bytes held in fastbins (fsmblks): %d\n", mi.fsmblks);
+           printf("Total allocated space (uordblks):      %d\n", mi.uordblks / 1000);
+           //printf("Total free space (fordblks):           %d\n", mi.fordblks);
+           //printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
+
+           printf("\n");
+           
+           if(mem_used)
+               *mem_used = mi.uordblks / 1024;
+
+           printf("mem_used (Mb):  %d\n", *mem_used / 1024);
+
 
 #endif
 
@@ -7988,6 +8033,40 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
         *mem_total = statex.ullTotalPhys / 1024;
     }
+#endif
+
+#ifdef __WXMAC__
+
+    if(g_tick != g_lastMemTick){
+      malloc_zone_pressure_relief(NULL, 0);
+
+      int bytesInUse = 0;
+      int blocksInUse = 0;
+      int sizeAllocated = 0;
+      
+        malloc_statistics_t stats;
+        stats.blocks_in_use = 0;
+        stats.size_in_use = 0;
+        stats.max_size_in_use = 0;
+        stats.size_allocated = 0;
+        malloc_zone_statistics(NULL, &stats);
+        bytesInUse += stats.size_in_use;
+        blocksInUse += stats.blocks_in_use;
+        sizeAllocated += stats.size_allocated;
+
+        g_memUsed = sizeAllocated / 1024;
+
+        //printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
+        g_lastMemTick = g_tick;
+    }
+
+    if(mem_used)
+       *mem_used = g_memUsed;
+    if(mem_total)
+       *mem_total = 4000;
+
+      
+
 #endif
 
     return true;

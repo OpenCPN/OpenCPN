@@ -375,6 +375,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                 int nl = pChartCache->GetCount();       // max loop count, by definition
                     
                 wxString msg(_T("Purging unused chart from cache: "));
+                //printf("Try Purge count:  %d\n", nl);
                 while( (mem_used > mem_limit) && (nl>0) )
                 {
                     if( pChartCache->GetCount() < 2 ){
@@ -386,7 +387,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                     if(pce){
                         // don't purge background spooler
                         DeleteCacheEntry(pce, false /*true*/, msg);
-
+                        //printf("DCE, new count is:  %d\n", pChartCache->GetCount()); 
                     }
                     else {
                         break;
@@ -399,6 +400,41 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
         }
         m_cache_mutex.Unlock();
       }
+      
+      //    Else use chart count cache policy, if defined....
+      else if(g_nCacheLimit)
+      {
+          if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
+              
+            //    Check chart count to see if above limit
+                double fac10 = factor * 10;
+                int chart_limit = g_nCacheLimit * fac10 / 10;
+
+                int nl = pChartCache->GetCount();       // max loop count, by definition
+                    
+                wxString msg(_T("Purging unused chart from cache: "));
+                while( (nl > chart_limit) && (nl>0) )
+                {
+                    if( pChartCache->GetCount() < 2 ){
+                        nl = 0;
+                        break;
+                    }
+                    
+                    CacheEntry *pce = FindOldestDeleteCandidate( false );
+                    if(pce){
+                        // don't purge background spooler
+                        DeleteCacheEntry(pce, false /*true*/, msg);
+                    }
+                    else {
+                        break;
+                    }
+                    
+                    nl = pChartCache->GetCount();
+                }
+        }
+        m_cache_mutex.Unlock();
+      }
+
 }
 
 
