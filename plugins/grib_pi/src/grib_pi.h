@@ -88,6 +88,7 @@ public:
       void OnContextMenuItemCallback(int id);
       void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
       void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
       int GetToolBarToolCount(void);

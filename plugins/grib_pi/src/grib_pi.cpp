@@ -516,6 +516,11 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     return true;
 }
 
+bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    return RenderGLOverlay( pcontext, vp);
+}
+
 void grib_pi::SetCursorLatLon(double lat, double lon)
 {
     if(m_pGribCtrlBar && m_pGribCtrlBar->IsShown())
