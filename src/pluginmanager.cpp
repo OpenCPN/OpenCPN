@@ -1466,7 +1466,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     return pic;
 }
 
-bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, bool render )
+bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, int canvasIndex )
 {
     for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
@@ -1506,7 +1506,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         case 115:
                         {
                             opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                            if (ppi && render)
+                            if (ppi)
                                 ppi->RenderOverlay(*pdc, &pivp);
                             break;
                         }
@@ -1514,7 +1514,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         {
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116) 
-                                ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
+                                ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex);
                             break;
                         }
                         default:
@@ -1566,7 +1566,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         case 115:
                         {
                             opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                            if (ppi && render)
+                            if (ppi)
                                 b_rendered = ppi->RenderOverlay(*pdc, &pivp);
                             break;
                         }
@@ -1604,7 +1604,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
     return true;
 }
 
-bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, bool render)
+bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, int canvasIndex)
 {
     for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
@@ -1620,7 +1620,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                     case 107:
                     {
                         opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
-                        if(ppi && render)
+                        if(ppi)
                             ppi->RenderGLOverlay(pcontext, &pivp);
                         break;
                     }
@@ -1635,7 +1635,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                     case 115:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-                        if (ppi && render)
+                        if (ppi)
                             ppi->RenderGLOverlay(pcontext, &pivp);
                         break;
                     }
@@ -1643,7 +1643,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                     {
                         opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                         if (ppi116) {
-                            ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, g_canvasConfig);
+                            ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex);
                         }
                         break;
                     }
@@ -6803,29 +6803,45 @@ wxWindow* GetCanvasUnderMouse( void )
     return gFrame->GetCanvasUnderMouse();
 }
 
-std::vector<wxWindow *> GetCanvasArray()
+// std::vector<wxWindow *> GetCanvasArray()
+// {
+//     std::vector<wxWindow *> rv;
+//     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+//         ChartCanvas *cc = g_canvasArray.Item(i);
+//         rv.push_back(cc);
+//     }
+//     
+//     return rv;
+// }
+
+bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex )
 {
-    std::vector<wxWindow *> rv;
-    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        rv.push_back(cc);
+    if(g_canvasConfig == 0)
+        return gFrame->GetPrimaryCanvas()->CheckEdgePan( x, y, dragging, margin, delta );
+    else{
+        if( (canvasIndex >=0) && g_canvasArray[canvasIndex] ){
+            return g_canvasArray[canvasIndex]->CheckEdgePan( x, y, dragging, margin, delta );
+        }
     }
     
-    return rv;
+    return false;
 }
 
-bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, wxWindow *canvas )
+void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex )
 {
-    if(canvas == NULL)
-        return gFrame->GetPrimaryCanvas()->CheckEdgePan( x, y, dragging, margin, delta );
-    else
-        return ((ChartCanvas *)canvas)->CheckEdgePan( x, y, dragging, margin, delta );
-}
-
-void SetMUICursor_PlugIn( wxCursor *pCursor, wxWindow *canvas )
-{
-    if(canvas == NULL)
+    if(g_canvasConfig == 0)
         gFrame->GetPrimaryCanvas()->pPlugIn_Cursor = pCursor;
+    else{
+        if( (canvasIndex >=0) && g_canvasArray[canvasIndex] ){
+            g_canvasArray[canvasIndex]->pPlugIn_Cursor = pCursor;
+        }
+    }
+}
+
+int GetCanvasCount( )
+{
+    if(g_canvasConfig == 1)
+        return 2;
     else
-        ((ChartCanvas *)canvas)->pPlugIn_Cursor = pCursor;
+        return 1;
 }

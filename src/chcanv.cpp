@@ -10593,18 +10593,18 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 {
     GridDraw( dc );
 
-    bool pluginOverlayRender = true;
-    
-    if(g_canvasConfig > 0){     // Multi canvas
-        if(IsPrimaryCanvas())
-            pluginOverlayRender = false;
-    }
+//     bool pluginOverlayRender = true;
+//     
+//     if(g_canvasConfig > 0){     // Multi canvas
+//         if(IsPrimaryCanvas())
+//             pluginOverlayRender = false;
+//     }
     
     g_overlayCanvas = this;
 
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
-        g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP(), pluginOverlayRender);
+        g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP(), m_canvasIndex);
     }
 
     AISDrawAreaNotices( dc, GetVP(), this);

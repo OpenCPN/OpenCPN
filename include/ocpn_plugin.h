@@ -544,8 +544,8 @@ class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
 public:
     opencpn_plugin_116(void *pmgr);
     virtual ~opencpn_plugin_116();
-    virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int max_canvas);
-    virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int max_canvas);
+    virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
+    virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
 
 };
 
@@ -1309,8 +1309,9 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& )
 extern DECL_EXP std::unique_ptr<PlugIn_Track> GetTrack_Plugin( const wxString& );
 
 extern DECL_EXP wxWindow* GetCanvasUnderMouse( );
-extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
-extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, wxWindow *canvas );
-extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, wxWindow *canvas );
+//extern DECL_EXP std::vector<wxWindow *> GetCanvasArray();
+extern DECL_EXP int GetCanvasCount( );
+extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
+extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );
 
 #endif //_PLUGIN_H_

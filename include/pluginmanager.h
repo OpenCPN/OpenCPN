@@ -247,8 +247,8 @@ public:
       PlugInContainer *LoadPlugIn(wxString plugin_file);
       ArrayOfPlugIns *GetPlugInArray(){ return &plugin_array; }
 
-      bool RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, bool render);
-      bool RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, bool render);
+      bool RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp, int canvasIndex);
+      bool RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, int canvasIndex);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
       void SendViewPortToRequestingPlugIns( ViewPort &vp );
 
