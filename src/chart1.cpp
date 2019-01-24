@@ -1821,12 +1821,12 @@ bool MyApp::OnInit()
 //      Send init message
     wxLogMessage( _T("\n\n________\n") );
 
-    wxDateTime date_now = wxDateTime::Now();
 
-    wxString imsg = date_now.FormatISODate();
-    wxLogMessage( imsg );
-
-    imsg = _T(" ------- Starting OpenCPN -------");
+    wxDateTime now = wxDateTime::Now();
+    wxString imsg(wxString("------- OpenCPN restarted at ")
+        + now.FormatISODate() +  " " + now.FormatISOTime()
+        + "-------\n"
+    );
     wxLogMessage( imsg );
 
     wxString version = VERSION_FULL;

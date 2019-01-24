@@ -853,6 +853,7 @@ set(
   include/Layer.h
   include/LinkPropDlg.h
   include/LLRegion.h
+  include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
@@ -979,6 +980,7 @@ set(
   src/Layer.cpp
   src/LinkPropDlg.cpp
   src/LLRegion.cpp
+  src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
   src/MUIBar.cpp

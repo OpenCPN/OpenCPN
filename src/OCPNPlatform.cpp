@@ -47,6 +47,7 @@
 #include "OCPNPlatform.h"
 #include "chart1.h"
 #include "cutil.h"
+#include "logger.h"
 #include "styles.h"
 #include "navutil.h"
 #include "ocpn_utils.h"
@@ -1874,27 +1875,14 @@ bool OCPNPlatform::InitializeLogFile( void )
                 ::wxRenameFile( mlog_file, oldlog );
             }
     }
-        
 #ifdef __OCPN__ANDROID__
+    if( ::wxFileExists( mlog_file ) ){
         //  Force new logfile for each instance
         // TODO Remove this behaviour on Release
-    if( ::wxFileExists( mlog_file ) ){
         ::wxRemoveFile( mlog_file );
     }
 #endif
-        
-    flog = fopen( mlog_file.mb_str(), "a" );
-    g_logger = new wxLogStderr( flog );
-        
-#ifdef __OCPN__ANDROID__
-        //  Trouble printing timestamp
-    g_logger->SetTimestamp((const char *)NULL);
-#endif
-        
-#if defined(__WXGTK__) || defined(__WXOSX__)
-    g_logger->SetTimestamp(_T("%H:%M:%S %Z"));
-#endif
-        
+    g_logger = new OcpnLog(mlog_file.mb_str());
     m_Oldlogger = wxLog::SetActiveTarget( g_logger );
 
     return true;
