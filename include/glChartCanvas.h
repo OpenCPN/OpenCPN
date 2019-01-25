@@ -38,10 +38,47 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
+
 class glTexFactory;
 class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
+
+typedef struct{
+    wxString Renderer;
+    GLenum TextureRectangleFormat;
+    
+    bool bOldIntel;
+    bool bCanDoVBO;
+    bool bCanDoFBO;
+    
+    //      Vertex Buffer Object (VBO) support
+    PFNGLGENBUFFERSPROC                 m_glGenBuffers;
+    PFNGLBINDBUFFERPROC                 m_glBindBuffer;
+    PFNGLBUFFERDATAPROC                 m_glBufferData;
+    PFNGLDELETEBUFFERSPROC              m_glDeleteBuffers;
+
+    //      Frame Buffer Object (FBO) support
+    PFNGLGENFRAMEBUFFERSEXTPROC         m_glGenFramebuffers;
+    PFNGLGENRENDERBUFFERSEXTPROC        m_glGenRenderbuffers;
+    PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    m_glFramebufferTexture2D;
+    PFNGLBINDFRAMEBUFFEREXTPROC         m_glBindFramebuffer;
+    PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC m_glFramebufferRenderbuffer;
+    PFNGLRENDERBUFFERSTORAGEEXTPROC     m_glRenderbufferStorage;
+    PFNGLBINDRENDERBUFFEREXTPROC        m_glBindRenderbuffer;
+    PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  m_glCheckFramebufferStatus;
+    PFNGLDELETEFRAMEBUFFERSEXTPROC      m_glDeleteFramebuffers;
+    PFNGLDELETERENDERBUFFERSEXTPROC     m_glDeleteRenderbuffers;
+    
+    PFNGLCOMPRESSEDTEXIMAGE2DPROC       m_glCompressedTexImage2D;
+    PFNGLGETCOMPRESSEDTEXIMAGEPROC      m_glGetCompressedTexImage;
+
+    
+}OCPN_GLCaps;
+
+void GetglEntryPoints( OCPN_GLCaps *pcaps );
+GLboolean QueryExtension( const char *extName );
+
 
 class ocpnGLOptions
 {
@@ -58,6 +95,16 @@ public:
     bool m_GLPolygonSmoothing;
     bool m_GLLineSmoothing;
 };
+
+
+class glTestCanvas : public wxGLCanvas
+{
+public:
+    glTestCanvas(wxWindow *parent);
+    ~glTestCanvas() {};
+
+};
+
 
 class ocpnDC;
 class emboss_data;

@@ -185,6 +185,7 @@ void RedirectIOToConsole();
 OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
+bool                      g_bUpgradeInProcess;
 
 bool                      g_bPauseTest;
 int                       g_unit_test_1;
@@ -1967,6 +1968,9 @@ bool MyApp::OnInit()
     wxLogMessage( _T("wxLocale support not available") );
 #endif
 
+    // Is this an upgrade? 
+    g_bUpgradeInProcess = (vs != g_config_version_string);
+    
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
@@ -2183,6 +2187,9 @@ bool MyApp::OnInit()
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
     
+    //  Do those platform specific initialization things that need gFrame
+    g_Platform->Initialize_3();
+
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
 
@@ -2511,7 +2518,7 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
-    OCPNPlatform::Initialize_3( );
+    OCPNPlatform::Initialize_4( );
     
     if( n_NavMessageShown == 1 ) {
         //In case the user accepted the "not for navigation" nag, persist it here...

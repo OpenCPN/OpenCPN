@@ -196,8 +196,6 @@ PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatus;
 PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffers;
 PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffers;
 
-PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
-
 PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 
@@ -207,8 +205,6 @@ PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
-typedef void (APIENTRYP PFNGLGETBUFFERPARAMETERIV) (GLenum target, GLenum value, GLint *data);
-PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
@@ -243,7 +239,7 @@ static void print_region(OCPNRegion &Region)
     }
 }
 
-static GLboolean QueryExtension( const char *extName )
+GLboolean QueryExtension( const char *extName )
 {
     /*
      ** Search for extName in the extensions string. Use of strstr()
@@ -320,6 +316,97 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
 
 bool  b_glEntryPointsSet;
 
+void GetglEntryPoints( OCPN_GLCaps *pcaps )
+{
+    
+    // the following are all part of framebuffer object,
+    // according to opengl spec, we cannot mix EXT and ARB extensions
+    // (I don't know that it could ever happen, but if it did, bad things would happen)
+
+#ifndef __OCPN__ANDROID__
+    const char *extensions[] = {"", "ARB", "EXT", 0 };
+#else
+    const char *extensions[] = {"OES", 0 };
+#endif
+    
+    unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
+
+    unsigned int i;
+    for(i=0; i<n_ext; i++) {
+        if((pcaps->m_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
+            break;
+    }
+
+    if(i<n_ext){
+        pcaps->m_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
+        pcaps->m_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
+            ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
+        pcaps->m_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
+        pcaps->m_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
+        pcaps->m_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
+            ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
+        pcaps->m_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
+        pcaps->m_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
+            ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
+        pcaps->m_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
+        pcaps->m_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
+            
+        //VBO
+        pcaps->m_glGenBuffers = (PFNGLGENBUFFERSPROC)
+            ocpnGetProcAddress( "glGenBuffers", extensions[i]);
+        pcaps->m_glBindBuffer = (PFNGLBINDBUFFERPROC)
+            ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+        pcaps->m_glBufferData = (PFNGLBUFFERDATAPROC)
+            ocpnGetProcAddress( "glBufferData", extensions[i]);
+        pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
+            ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+
+             
+    }
+
+    //  Retry VBO entry points with all extensions
+    if(0 == pcaps->m_glGenBuffers){
+        for( i=0; i<n_ext; i++) {
+            if((pcaps->m_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
+                break;
+        }
+        
+        if( i < n_ext ){
+            pcaps->m_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+            pcaps->m_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
+            pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+        }
+    }
+            
+
+#ifndef __OCPN__ANDROID__            
+    for(i=0; i<n_ext; i++) {
+        if((pcaps->m_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
+            ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
+            break;
+    }
+
+    if(i<n_ext){
+        pcaps->m_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+            ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
+    }
+#else    
+    pcaps->m_glCompressedTexImage2D =          glCompressedTexImage2D;
+#endif
+    
+}
+
+
+
+
+
 static void GetglEntryPoints( void )
 {
     b_glEntryPointsSet = true;
@@ -362,8 +449,6 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
         s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
             ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
-        s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
-            ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
             
         //VBO
         s_glGenBuffers = (PFNGLGENBUFFERSPROC)
@@ -375,8 +460,6 @@ static void GetglEntryPoints( void )
         s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
 
-        s_glGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIV)
-            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
             
     }
 
@@ -411,6 +494,14 @@ static void GetglEntryPoints( void )
 #endif
     
 }
+
+int test_attribs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, WX_GL_STENCIL_SIZE, 8, 0 };
+
+glTestCanvas::glTestCanvas( wxWindow *parent ) :
+    wxGLCanvas( parent, wxID_ANY, test_attribs, wxDefaultPosition, wxSize( 2, 2 ) )
+{
+}
+
 
 // This attribute set works OK with vesa software only OpenGL renderer
 int attribs[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, WX_GL_STENCIL_SIZE, 8, 0 };
@@ -669,6 +760,7 @@ void glChartCanvas::BuildFBO( )
     /* invalidate cache */
     Invalidate();
 
+    glClear( GL_COLOR_BUFFER_BIT );
     m_b_BuiltFBO = true;
 }
 
@@ -806,24 +898,6 @@ void glChartCanvas::SetupOpenGL()
 #endif
         
     GetglEntryPoints();
-    
-    //  ATI cards do not do glGenerateMipmap very well, or at all.
-    if( GetRendererString().Upper().Find( _T("RADEON") ) != wxNOT_FOUND )
-        s_glGenerateMipmap = 0;
-    if( GetRendererString().Upper().Find( _T("ATI") ) != wxNOT_FOUND )
-        s_glGenerateMipmap = 0;
-
-    
-    // Intel drivers on Windows may export glGenerateMipmap, but it doesn't work...
-#ifdef __WXMSW__
-        if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND )
-            s_glGenerateMipmap = 0;
-#endif        
-            
-            
-
-    if( !s_glGenerateMipmap )
-        wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
     
     if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
         !s_glBindFramebuffer  || !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage  ||
@@ -2791,6 +2865,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     }
     m_pParentCanvas->m_pQuilt->SetRenderedVP( vp );
 
+#if 0    
     if(m_bfogit) {
         double scale_factor = vp.ref_scale/vp.chart_scale;
         float fog = ((scale_factor - g_overzoom_emphasis_base) * 255.) / 20.;
@@ -2873,6 +2948,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
             }
         }
     }
+#endif    
 }
 
 void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region )
