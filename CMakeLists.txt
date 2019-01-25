@@ -161,7 +161,7 @@ IF (NOT WIN32)
   SET (LIB_INSTALL_DIR "lib")
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
+    #SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -518,11 +518,11 @@ IF(NOT QT_ANDROID)
       STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
     ENDIF(MSYS)
     INCLUDE(${wxWidgets_USE_FILE})
+    
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
   ENDIF(WIN32 OR APPLE OR QT_ANDROID)
-
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -1003,6 +1003,7 @@ ENDIF(OCPN_USE_SVG)
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
+  
   IF(NOT OCPN_FORCE_GTK3)
     FIND_PACKAGE(GTK2)
   ENDIF(NOT OCPN_FORCE_GTK3)
@@ -1020,7 +1021,12 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets REQUIRED)
+  FIND_PACKAGE(wxWidgets  REQUIRED)
+
+  MESSAGE (STATUS "Found wxWidgets..." )
+  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+
   INCLUDE(${wxWidgets_USE_FILE})
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -2612,6 +2618,7 @@ IF(APPLE)
   #  SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
 ENDIF(APPLE)
 
+
 IF(UNIX AND NOT APPLE)
   #    INCLUDE(UseRPMTools)
   #    IF(RPMTools_FOUND)
@@ -2621,7 +2628,10 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
-  SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
+  
+  #SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
+  # autogenerate dependency information
+  SET (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
   SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
   SET(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
