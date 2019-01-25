@@ -39,6 +39,8 @@
 
 #include <wx/file.h>
 
+#include "dychart.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -47,7 +49,6 @@
 #include "chartbase.h" // for projections
 #include "wx28compat.h"
 
-#include "dychart.h"
 
 
 #ifdef __WXMSW__
