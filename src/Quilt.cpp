@@ -2366,8 +2366,8 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                                 }
                             }
   
-//                            if( chart->GetChartType() != CHART_TYPE_CM93COMP )
-//                                b_chart_rendered = true;
+ //                           if( chart->GetChartType() != CHART_TYPE_CM93COMP )
+ //                               b_chart_rendered = true;
                             screen_region.Subtract( get_screen_region );
                         }
                     }

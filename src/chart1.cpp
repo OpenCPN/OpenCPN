@@ -6104,11 +6104,6 @@ int MyFrame::DoOptionsDialog()
                 int index_hint = -1;
                 if( i < pathArray.GetCount())
                     index_hint = ChartData->FinddbIndex( pathArray.Item(i));
-                
-                // TODO  Why is this needed?
-                if(!g_bopengl)
-                    cc->ZoomCanvas( 1.0001, false );
-                
                 cc->canvasChartsRefresh( index_hint );
             }
         }

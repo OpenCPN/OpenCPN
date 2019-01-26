@@ -1739,12 +1739,15 @@ bool s57chart::DoRenderOnGLText( const wxGLContext &glc, const ViewPort& VPoint 
 bool s57chart::RenderRegionViewOnDCNoText( wxMemoryDC& dc, const ViewPort& VPoint,
                                      const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
+    
     bool b_text = ps52plib->GetShowS57Text();
     ps52plib->m_bShowS57Text = false;
     bool b_ret = DoRenderRegionViewOnDC( dc, VPoint, Region, false );
     ps52plib->m_bShowS57Text = b_text;
     
-    return b_ret;
+    return true;
 }
 
 bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPoint,
@@ -1798,12 +1801,17 @@ bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPo
 bool s57chart::RenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
+
     return DoRenderRegionViewOnDC( dc, VPoint, Region, false );
 }
 
 bool s57chart::RenderOverlayRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
     return DoRenderRegionViewOnDC( dc, VPoint, Region, true );
 }
 
@@ -1887,7 +1895,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 
     m_last_Region = Region;
 
-    return bnew_view;
+    return true;
 
 }
 
