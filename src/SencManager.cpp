@@ -161,6 +161,7 @@ void SENCThreadManager::StartTopJob()
             SENCBuildThread *thread = new SENCBuildThread( startCandidate, this);
             startCandidate->m_thread = thread;
             startCandidate->m_status = THREAD_STARTED;
+            thread->SetPriority(20);
             thread->Run();
             nRunning++;
         }
