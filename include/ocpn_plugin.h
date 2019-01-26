@@ -546,6 +546,7 @@ public:
     virtual ~opencpn_plugin_116();
     virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
     virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
+    virtual void PrepareContextMenu( int canvasIndex);
 
 };
 

@@ -371,6 +371,8 @@ class MyFrame: public wxFrame
     void DoSettings( void );
     void SwitchKBFocus( ChartCanvas *pCanvas );
     ChartCanvas *GetCanvasUnderMouse();
+    int GetCanvasIndexUnderMouse();
+
     bool DropMarker( bool atOwnShip = true );
     
     void TriggerResize(wxSize sz);

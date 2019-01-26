@@ -2066,6 +2066,35 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs)
     }
 }
 
+void PlugInManager::PrepareAllPluginContextMenus()
+{
+    int canvasIndex = gFrame->GetCanvasIndexUnderMouse();
+    if(canvasIndex < 0)
+        return;
+    
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array[i];
+        if(pic->m_bEnabled && pic->m_bInitState){
+            if(pic->m_cap_flag & INSTALLS_CONTEXTMENU_ITEMS){
+                switch(pic->m_api_version)
+                {
+                    case 116:
+                    {
+                        opencpn_plugin_116 *ppi = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
+                        if(ppi)
+                            ppi->PrepareContextMenu( canvasIndex );
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+}
+
+
 void PlugInManager::SendBaseConfigToAllPlugIns()
 {
     // Send the current run-time configuration to all PlugIns
@@ -3994,6 +4023,11 @@ bool opencpn_plugin_116::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugI
 bool opencpn_plugin_116::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int max_canvas)
 {
     return false;
+}
+
+void opencpn_plugin_116::PrepareContextMenu( int canvasIndex)
+{
+    return;
 }
 
 //          Helper and interface classes

@@ -251,6 +251,7 @@ public:
       bool RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp, int canvasIndex);
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
       void SendViewPortToRequestingPlugIns( ViewPort &vp );
+      void PrepareAllPluginContextMenus();
 
       void NotifySetupOptions();
       void CloseAllPlugInPanels( int );

@@ -3365,6 +3365,41 @@ ChartCanvas *MyFrame::GetCanvasUnderMouse()
     return NULL;    
 }
 
+int MyFrame::GetCanvasIndexUnderMouse()
+{
+    wxPoint screenPoint = ::wxGetMousePosition();
+    ChartCanvas *canvas = NULL;
+    canvasConfig *cc;
+    
+    switch(g_canvasConfig){
+        case 1:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(/*canvas->ScreenToClient*/(screenPoint)))
+                    return 0;
+            }
+            cc = g_canvasConfigArray.Item(1);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(/*canvas->ScreenToClient*/(screenPoint)))
+                    return 1;
+            }
+            break;
+            
+        default:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->GetScreenRect().Contains(canvas->ScreenToClient(screenPoint)))
+                    return 0;
+            }
+    }
+        
+    return -1;    
+}
+
+
 bool MyFrame::DropMarker( bool atOwnShip )
 {
     double lat, lon;

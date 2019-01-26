@@ -854,6 +854,9 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         MenuAppend1( menuFocus,  ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
 
+    // Give the plugins a chance to update their menu items
+    g_pi_manager->PrepareAllPluginContextMenus();
+    
     //  Add PlugIn Context Menu items
     ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
