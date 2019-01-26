@@ -36,15 +36,14 @@ typedef std::function<void(void* userPtr)>  AudioDoneCallback;
  * mode. Also supports sound device enumeration and various status
  * checks.
  *
- * Instances should normally be obtained using SoundFactory.Create();
+ * Instances should normally be obtained using SoundFactory();
  */
 
 class OcpnSound
 {
+    friend OcpnSound* SoundFactory();
 
     public:
-        /** Default ctor. Load() must be called before actual usage. */
-        OcpnSound();
 
         virtual ~OcpnSound();
 
@@ -106,6 +105,9 @@ class OcpnSound
         virtual void SetCmd( const char *cmd ) { };    // does nothing if not overridden
 
     protected:
+
+        /** Default ctor. Load() must be called before actual usage. */
+        OcpnSound();
 
         bool m_OK;
         int m_deviceIx;
