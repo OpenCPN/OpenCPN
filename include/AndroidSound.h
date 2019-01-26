@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __ANDROID_SOUND_H__
-#define __ANDROID_SOUND_H__
+#ifndef ANDROID_SOUND_H__
+#define ANDROID_SOUND_H__
 
 
 #include "OCPN_Sound.h"
@@ -48,4 +48,4 @@ class AndroidSound: public OcpnSound
 };
 
 
-#endif // __ANDROID_SOUND_H__
+#endif // ANDROID_SOUND_H__

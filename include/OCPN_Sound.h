@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __OCPN_SOUND_H__
-#define __OCPN_SOUND_H__
+#ifndef OCPN_SOUND_H__
+#define OCPN_SOUND_H__
 
 #include <functional>
 #include <memory>
@@ -117,4 +117,4 @@ class OcpnSound
 
 };
 
-#endif // __OCPN_SOUND_H__
+#endif // OCPN_SOUND_H__
