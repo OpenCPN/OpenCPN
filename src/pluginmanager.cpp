@@ -152,6 +152,8 @@ static const char* const DEFAULT_DATA_DIRS =
 static const char* const DEFAULT_PLUGIN_DIRS =
     "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
 
+extern int              g_iSDMMFormat;
+
 unsigned int      gs_plib_flags;
 wxString          g_lastPluginMessage;
 extern ChartCanvas      *g_focusCanvas;
@@ -6896,6 +6898,11 @@ int GetCanvasCount( )
 {
     if(g_canvasConfig == 1)
         return 2;
-    else
+//     else
         return 1;
+}
+
+int GetLatLonFormat()
+{
+    return g_iSDMMFormat;
 }
