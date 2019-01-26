@@ -322,6 +322,8 @@ extern bool              g_bAutoHideToolbar;
 extern int               g_nAutoHideToolbar;
 extern bool              g_bDeferredInitDone;
 
+extern wxString          g_CmdSoundString;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -6145,6 +6147,14 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
+static bool bAnchorSoundPlaying = false;
+
+static void onSoundFinished( void* ptr )
+{
+    bAnchorSoundPlaying = false;
+}
+
+
 void ChartCanvas::AlertDraw( ocpnDC& dc )
 {
 // Just for prototyping, visual alert for anchorwatch goes here
@@ -6171,10 +6181,14 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-    if( play_sound ) {
-        if( !g_anchorwatch_sound->IsOk() )
-            g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
-        g_anchorwatch_sound->Play();
+    if( play_sound && !bAnchorSoundPlaying) {
+        g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
+        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        if ( g_anchorwatch_sound->IsOk( ) ) {
+            bAnchorSoundPlaying = true;
+            g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
+            g_anchorwatch_sound->Play( );
+        }
     } else if( g_anchorwatch_sound->IsOk() ) {
         g_anchorwatch_sound->Stop();
     }

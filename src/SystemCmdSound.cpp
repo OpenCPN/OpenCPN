@@ -27,17 +27,61 @@
 #include <wx/file.h>
 #include <wx/log.h>
 
-#ifdef _WIN32
-#define WIFEXITED(stat_val) ( (stat_val) != -1 )
-#define WEXITSTATUS(stat_val) ((unsigned)(stat_val))
-#endif
-
 #include "SystemCmdSound.h"
+
+extern bool g_bquiting;     // Flag tells us O is shutting down
+
+#ifdef _WIN32
+#include <windows.h>
 
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
     snprintf(buff, sizeof(buff), cmd, path);
+
+    STARTUPINFOA si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+
+    // Launch external command string
+    int status = CreateProcessA(NULL,   // No module name (use command line)
+        buff,            // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        CREATE_NO_WINDOW,// No window flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi);           // Pointer to PROCESS_INFORMATION structure
+
+    if (!status) {
+        wxLogWarning("Cannot fork process running %s", buff);
+        return -1;
+    }
+    // Here we wait a bit and check if the process is finished.
+    int waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
+    while (!g_bquiting && waitStatus == WAIT_TIMEOUT) {
+        // if not finished wait a little bit longer
+        waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
+    }
+
+    // if thread did not terminate naturally log it
+    if (!g_bquiting && waitStatus != WAIT_OBJECT_0)
+        wxLogWarning("Sound command produced unusual waitStatus %d", (int)waitStatus);
+
+    if (!g_bquiting) {   // if shutting down let windows close down the sound process
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+    return 0;
+}
+
+#else
+
+static int do_play(const char* cmd, const char* path)
+{
+    char buff[1024];
+    snprintf(buff, sizeof( buff ), cmd, path);
     int status = system(buff);
     if (status == -1) {
         wxLogWarning("Cannot fork process running %s", buff);
@@ -46,25 +90,28 @@ static int do_play(const char* cmd, const char* path)
     if (WIFEXITED(status)) {
         status = WEXITSTATUS(status);
         if (status != 0) {
-            wxLogWarning("Non-zero exit code %d from command %s",
-                         status, buff);
+            wxLogWarning("Exit code %d from command %s",
+                status, buff);
         }
     } else {
-        wxLogWarning("Strange return code %d (0x%x) running %s", 
+        wxLogWarning("Strange return code %d (0x%x) running %s",
                      status, status, buff);
     }
     return status;
-}    
+}
+#endif /* _WIN32 */
 
 
 bool SystemCmdSound::Load(const char* path, int deviceIndex)
 {
     m_path = path;
+#ifdef _DEBUG
     if (deviceIndex != -1) {
         wxLogWarning("Selecting device is not supported by SystemCmdSound");
     }
-    m_isPlaying = false;
-    return true;
+#endif /* _DEBUG */
+    m_OK = wxFileExists(m_path);
+    return m_OK;
 }
 
 
@@ -81,7 +128,9 @@ bool SystemCmdSound::canPlay(void)
 
 void SystemCmdSound::worker(void)
 {
+#ifdef _DEBUG
     wxLogMessage("SystemCmdSound::worker()");
+#endif /* _DEBUG */
     m_isPlaying = true;
     do_play(m_cmd.c_str(), m_path.c_str());
     m_onFinished(m_callbackData);
@@ -92,7 +141,9 @@ void SystemCmdSound::worker(void)
 
 bool SystemCmdSound::Play()
 {
+#ifdef _DEBUG
     wxLogInfo("SystemCmdSound::Play()");
+#endif /* _DEBUG */
     if (m_isPlaying) {
         wxLogWarning("SystemCmdSound: cannot play: already playing");
         return false;

@@ -39,13 +39,18 @@ class SystemCmdSound: public OcpnSound
 {
 
     public:
-        SystemCmdSound(const char* cmd = SYSTEM_SOUND_CMD) 
-            :m_path("") { m_cmd = cmd; }
+        SystemCmdSound(const char* cmd = SYSTEM_SOUND_CMD)
+            :m_isPlaying(false), m_cmd(cmd), m_path("")  {};
         ~SystemCmdSound() {};
 
         bool Load(const char* path, int deviceIndex = -1) override;
         bool Play() override;
         bool Stop() override;
+        /**
+         * Set system command string in case program wants to change from
+         * default string.
+         */
+        void SetCmd( const char *cmd ) { m_cmd = cmd; };
 
     private:
         void worker();
@@ -55,5 +60,6 @@ class SystemCmdSound: public OcpnSound
         std::string m_path;
 };
 
+const unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
 
 #endif // __WX_SOUND_H__
