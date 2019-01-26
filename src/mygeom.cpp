@@ -452,7 +452,6 @@ int PolyTessGeo::BuildTessGLU()
     gluTessCallback(GLUtessobj, GLU_TESS_COMBINE_DATA, (GLvoid (*) ())&combineCallback);
     gluTessCallback(GLUtessobj, GLU_TESS_ERROR_DATA,   (GLvoid (*) ())&errorCallback);
 
-    glShadeModel(GL_SMOOTH);
     gluTessProperty(GLUtessobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE );
     gluTessNormal(GLUtessobj, 0, 0, 1);
 
@@ -1498,17 +1497,30 @@ void  endCallback(void *polyData)
                        symax = wxMax(lat, symax);
                        symin = wxMin(lat, symin);
                 }
+                else
+                {
+                        // ENC hits here, values are SM measures from feature reference point
+                       double valx = ( xd * pThis->mx_rate ) + pThis->mx_offset + pThis->m_feature_easting;
+                       double valy = ( yd * pThis->my_rate ) + pThis->my_offset + pThis->m_feature_northing;
+ 
+                       sxmax = wxMax(valx, sxmax);
+                       sxmin = wxMin(valx, sxmin);
+                       symax = wxMax(valy, symax);
+                       symin = wxMin(valy, symin);
+                }
             }
+            
 
-//            // Compute the final LLbbox for this TriPrim chain
-//             double minlat, minlon, maxlat, maxlon;
-//             fromSMR(sxmin, symin, pThis->m_ref_lat, pThis->m_ref_lon, pThis->earthAxis, &minlat, &minlon);
-//             fromSMR(sxmax, symax, pThis->m_ref_lat, pThis->m_ref_lon, pThis->earthAxis, &maxlat, &maxlon);
-// 
-//             pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
-
+            // Compute the final LLbbox for this TriPrim chain
             if(pThis->m_bcm93)
                 pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
+            else{
+                double minlat, minlon, maxlat, maxlon;
+                fromSM(sxmin, symin, pThis->m_ref_lat, pThis->m_ref_lon, &minlat, &minlon);
+                fromSM(sxmax, symax, pThis->m_ref_lat, pThis->m_ref_lon, &maxlat, &maxlon);
+                pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
+            }
+
 
             //  Transcribe this geometry to TriPrim,
             {
