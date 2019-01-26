@@ -292,7 +292,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
 
     m_bcm93 = false;
     
-    BuildTess();
+    BuildTessGLU();
     
     // Free the working memory
     for(int i = 0; i < m_ncnt ; i++)
@@ -571,8 +571,8 @@ int PolyTessGeo::BuildTessGLU()
         
         for(unsigned int i=0 ; i < ptValid ; i++){
             if(bool_keep[i]){
-                float x = geoPt[i*2];
-                float y = geoPt[(i*2) + 1];
+                double x = geoPt[i*3];
+                double y = geoPt[(i*3) + 1];
                 *plod++ = x;
                 *plod++ = y;
                 *plod++ = 0;
@@ -600,7 +600,6 @@ int PolyTessGeo::BuildTessGLU()
     }
   
     gluTessEndContour(GLUtessobj);
-        
 
     //  Now the interior contours
 #if 1    
