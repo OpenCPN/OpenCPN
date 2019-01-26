@@ -766,6 +766,7 @@ bool             g_bmasterToolbarFull = true;
 bool             g_bEffects = true;
 
 int              g_memUsed;
+SENCThreadManager *g_SencThreadManager;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
@@ -1130,6 +1131,9 @@ void LoadS57()
 #else
     if(ps52plib) // already loaded?
         return;
+
+    //  Start a SENC Thread manager
+    g_SencThreadManager = new SENCThreadManager();
 
 //      Set up a useable CPL library error handler for S57 stuff
     CPLSetErrorHandler( MyCPLErrorHandler );
@@ -2702,6 +2706,7 @@ EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
 EVT_POWER_SUSPEND_CANCEL(MyFrame::OnSuspendCancel)
 EVT_POWER_RESUME(MyFrame::OnResume)
 #endif // wxHAS_POWER_EVENTS
+
 END_EVENT_TABLE()
 
 // My frame constructor
@@ -2793,7 +2798,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     Connect( wxEVT_OCPN_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
 
-
+    //  And from the thread SENC creator
+    Connect( wxEVT_OCPN_BUILDSENCTHREAD, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnSENCEvtThread );
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -2845,6 +2851,37 @@ MyFrame::~MyFrame()
     }
     delete pRouteList;
 }
+
+void MyFrame::OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event)
+{
+    s57chart *chart;
+    switch(event.type){
+       case SENC_BUILD_STARTED:
+            //printf("Myframe SENC build started\n");
+            break;
+        case SENC_BUILD_DONE_NOERROR:
+            //printf("Myframe SENC build done no error\n");
+            chart = event.m_ticket->m_chart;
+            if(chart){
+                chart->PostInit(FULL_INIT, global_color_scheme);
+               // ..For each canvas, force an S52PLIB reconfig...
+                for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                    ChartCanvas *cc = g_canvasArray.Item(i);
+                        if(cc)
+                            cc->ClearS52PLIBStateHash();         // Force a S52 PLIB re-configure
+                }
+            }
+
+            ReloadAllVP();
+            break;
+        case SENC_BUILD_DONE_ERROR:
+            //printf("Myframe SENC build done ERROR\n");
+            break;
+        default:
+            break;
+    }
+}
+
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
 {
@@ -5942,7 +5979,7 @@ int MyFrame::DoOptionsDialog()
     if(last_ChartScaleFactorExp != g_ChartScaleFactor)
         rr |= S52_CHANGED;
 
-    bool b_refresh = false;
+    bool b_refresh = true;
     
     bool ccRightSizeChanged = false;
     if( g_canvasConfig > 0 ){

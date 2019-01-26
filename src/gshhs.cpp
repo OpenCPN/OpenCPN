@@ -96,6 +96,12 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
 
+void GSHHSChart::SetColorsDirect( wxColour newLand, wxColour newWater ) {
+    land =  newLand;
+    water = newWater;
+}
+    
+
 void GSHHSChart::Reset() {
     if( reader )
         delete reader;

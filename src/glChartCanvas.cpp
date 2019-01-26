@@ -2772,23 +2772,53 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                         }
                         
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                        RenderNoDTA(vp, get_region);
 
                         if(chart->GetChartType() == CHART_TYPE_CM93COMP){
-                            chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                           RenderNoDTA(vp, get_region);
+                           chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                         }
                         else{
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             if(Chs57){
-                                Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                if(Chs57->m_RAZBuilt){
+                                    RenderNoDTA(vp, get_region);
+                                    Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                }
+                                else{
+                                    // The SENC is quesed for building, so..
+                                    // Show GSHHS with compatible color scheme in the meantime.
+                                    ocpnDC gldc( *this );
+                                    const LLRegion &oregion = get_region;
+                                    LLBBox box = oregion.GetBox();
+
+                                    wxPoint p1 = vp.GetPixFromLL( box.GetMaxLat(), box.GetMinLon());
+                                    wxPoint p2 = vp.GetPixFromLL( box.GetMaxLat(), box.GetMaxLon());
+                                    wxPoint p3 = vp.GetPixFromLL( box.GetMinLat(), box.GetMaxLon());
+                                    wxPoint p4 = vp.GetPixFromLL( box.GetMinLat(), box.GetMinLon());
+                                        
+                                    wxRect srect(p1.x, p1.y, p3.x - p1.x, p4.y - p2.y);
+
+                                    bool world = false;
+                                    ViewPort cvp = ClippedViewport(vp, get_region);
+                                    if( m_pParentCanvas->GetWorldBackgroundChart()){
+                                        SetClipRegion(cvp, get_region);
+                                        m_pParentCanvas->GetWorldBackgroundChart()->SetColorsDirect(GetGlobalColor( _T ( "LANDA" ) ), GetGlobalColor( _T ( "DEPMS" )));
+                                        RenderWorldChart(gldc, cvp, srect, world);
+                                        m_pParentCanvas->GetWorldBackgroundChart()->SetColorScheme(global_color_scheme);
+                                        DisableClipRegion();
+                                    }
+                                }
                             }
                             else{
                                 ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                                 if(ChPI){
+                                    RenderNoDTA(vp, get_region);
                                     ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
                                 }
-                                else    
+                                else{    
+                                    RenderNoDTA(vp, get_region);
                                     chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                                }
                             }
                         }
                      }
@@ -3105,15 +3135,20 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
      }
 }
 
-void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
+void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency)
 {
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
     if( color.IsOk() )
-        glColor3ub( color.Red(), color.Green(), color.Blue() );
+        glColor4ub( color.Red(), color.Green(), color.Blue(), transparency );
     else
-        glColor3ub( 163, 180, 183 );
+        glColor4ub( 163, 180, 183, transparency );
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     DrawRegion(vp, region);
+    
+    glDisable(GL_BLEND);
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
@@ -3389,6 +3424,47 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
     
 }
 
+void glChartCanvas::RenderGLAlertMessage()
+{
+    if(!m_pParentCanvas->GetAlertString().IsEmpty())
+    {
+        wxString msg = m_pParentCanvas->GetAlertString(); 
+    
+    
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(10, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        TexFont texfont;
+        texfont.Build(*pfont);
+ 
+        int w, h;
+        texfont.GetTextExtent( msg, &w, &h);
+        h += 2;
+        w += 4;
+        int yp = m_pParentCanvas->VPoint.pix_height - 20 - h;
+        
+        wxRect sbr = m_pParentCanvas->GetScaleBarRect();
+        int xp = sbr.x+sbr.width + 5;
+        
+        glColor3ub( 243, 229, 47 );
+        
+        glBegin(GL_QUADS);
+        glVertex2i(xp, yp);
+        glVertex2i(xp+w, yp);
+        glVertex2i(xp+w, yp+h);
+        glVertex2i(xp, yp+h);
+        glEnd();
+        
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        glColor3ub( 0, 0, 0 );
+        glEnable(GL_TEXTURE_2D);
+        texfont.RenderString( msg, xp, yp);
+        glDisable(GL_TEXTURE_2D);
+        
+    }
+}
 
 
 int n_render;
@@ -3888,6 +3964,8 @@ void glChartCanvas::Render()
     if (m_pParentCanvas->m_Compass)
         m_pParentCanvas->m_Compass->Paint(gldc);
     
+    RenderGLAlertMessage();
+
     //quiting?
     if( g_bquiting )
         DrawQuiting();

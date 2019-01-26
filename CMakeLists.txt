@@ -491,6 +491,14 @@ add_subdirectory(src/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
+MESSAGE (STATUS "    Adding local LIBTESS2" )
+add_subdirectory(src/libtess2)
+SET( OPENGL_LIBRARIES "TESS2_static" ${OPENGL_LIBRARIES})
+SET(EXTRA_LIBS ${EXTRA_LIBS} "TESS2_static")
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Source)
+MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
 
 IF(NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -1576,6 +1584,8 @@ IF (USE_S57)
         include/s57RegistrarMgr.h
         src/s57RegistrarMgr.cpp
         src/s57obj.cpp
+        src/SencManager.cpp
+        include/SencManager.h
 
         src/myiso8211/ddffielddefn.cpp
         src/myiso8211/ddfmodule.cpp

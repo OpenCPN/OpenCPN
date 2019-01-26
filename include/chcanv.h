@@ -201,6 +201,7 @@ public:
       void OnDeferredFocusTimerEvent( wxTimerEvent &event);
       void OnRouteFinishTimerEvent( wxTimerEvent& event );
 
+      void ClearS52PLIBStateHash(){ m_s52StateHash = 0; }
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);
       
@@ -504,7 +505,13 @@ public:
       void SetAttenAIS( bool show );
       
       MUIBar *GetMUIBar(){ return m_muiBar; }
+     
+      void SetAlertString( wxString str){ m_alertString = str;}
+      wxString GetAlertString(){ return m_alertString; }
       
+      wxRect GetScaleBarRect(){ return m_scaleBarRect; }
+      void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
+
 private:
       bool UpdateS52State();
       
@@ -871,6 +878,9 @@ private:
       
       double       m_OSoffsetx, m_OSoffsety;
       bool         m_MouseDragging;
+
+      wxString     m_alertString;
+      wxRect       m_scaleBarRect;
 
 DECLARE_EVENT_TABLE()
 };

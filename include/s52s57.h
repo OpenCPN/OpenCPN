@@ -289,7 +289,6 @@ class s57chart;
 class S57Obj;
 class OGRFeature;
 class PolyTessGeo;
-class PolyTessGeoTrap;
 class line_segment_element;
 class PI_line_segment_element;
 
