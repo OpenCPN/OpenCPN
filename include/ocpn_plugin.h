@@ -1316,4 +1316,14 @@ extern DECL_EXP int GetCanvasCount( );
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
 extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );
 
+enum SDDMFORMAT
+{
+    DEGREES_DECIMAL_MINUTES = 0,
+    DECIMAL_DEGREES,
+    DEGREES_MINUTES_SECONDS,
+    END_SDDMFORMATS
+};
+
+extern DECL_EXP int GetLatLonFormat(void);
+
 #endif //_PLUGIN_H_
