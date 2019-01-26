@@ -5932,7 +5932,7 @@ int MyFrame::DoOptionsDialog()
     if(last_ChartScaleFactorExp != g_ChartScaleFactor)
         rr |= S52_CHANGED;
 
-    bool b_refresh = false;
+    bool b_refresh = true;
     
     bool ccRightSizeChanged = false;
     if( g_canvasConfig > 0 ){
@@ -6104,6 +6104,11 @@ int MyFrame::DoOptionsDialog()
                 int index_hint = -1;
                 if( i < pathArray.GetCount())
                     index_hint = ChartData->FinddbIndex( pathArray.Item(i));
+                
+                // TODO  Why is this needed?
+                if(!g_bopengl)
+                    cc->ZoomCanvas( 1.0001, false );
+                
                 cc->canvasChartsRefresh( index_hint );
             }
         }
