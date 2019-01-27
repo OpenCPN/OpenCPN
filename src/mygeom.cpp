@@ -549,11 +549,8 @@ int PolyTessGeo::BuildTessGLU()
     int afterLOD = beforeLOD;
    
  
-    std::vector<bool> bool_keep;
-    if(ptValid > 20 && (m_LOD_meters > .01)){
-        
-        for(unsigned int i = 0 ; i < ptValid ; i++)
-            bool_keep.push_back(false);
+    if(ptValid > 20 && (m_LOD_meters > .01)) {
+        std::vector<bool> bool_keep(ptValid, false);
 
         // Keep a few key points
         bool_keep[0] = true;
