@@ -159,9 +159,9 @@ void RolloverWin::SetBitmap( int rollover )
                 memcpy(e+4*i, d+3*i, 3);
                 e[4*i+3] = 255 - d[3*i+2];
             }
-            glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA,
-                          m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
-            delete [] e;
+        glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA,
+                      m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
+        delete [] e;
     }
     #endif
     
