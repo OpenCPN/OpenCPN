@@ -617,7 +617,7 @@ int PolyTessGeo::BuildTessGLU()
       //  Check and account for winding direction of ring
             bool cw = isRingClockwise(pp, m_cntr[iir+1]);
 
-            if(!cw)
+            if(cw)
             {
                   x0 = pp[0].m_x;
                   y0 = pp[0].m_y;
@@ -633,7 +633,7 @@ int PolyTessGeo::BuildTessGLU()
             for(int ip = 0 ; ip < npti ; ip++)
             {
                   int pidx;
-                  if(!cw)                               // interior contours must be cw
+                  if(cw)                               // interior contours must be cw
                         pidx = npti - ip - 1;
                   else
                         pidx = ip;
