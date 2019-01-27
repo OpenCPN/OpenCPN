@@ -2179,7 +2179,7 @@ bool MyApp::OnInit()
     app_style |= wxWANTS_CHARS;
 
 // Create the main frame window
-    wxString myframe_window_title = wxString::Format(wxT("OpenCPN %i.%i.%i"),
+    wxString myframe_window_title = wxString::Format(wxT("OpenCPN %i.%i.%s"),
             VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH); //Gunther
 
     if( g_bportable ) {
