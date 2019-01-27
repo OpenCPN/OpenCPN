@@ -237,6 +237,8 @@ public:
       struct _chart_context     *m_this_chart_context;
 
       int FindOrCreateSenc( const wxString& name, bool b_progress = true );
+      void DisableBackgroundSENC(){ m_disableBackgroundSENC = true; }
+      void EnableBackgroundSENC(){ m_disableBackgroundSENC = false; }
       
       SENCThreadStatus m_SENCthreadStatus;
 protected:
@@ -344,6 +346,7 @@ private:
       std::vector<VE_Element *> m_pve_vector;
       
       wxString    m_TempFilePath;
+      bool        m_disableBackgroundSENC;
 protected:      
       sm_parms    vp_transform;
       

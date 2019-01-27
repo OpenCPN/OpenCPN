@@ -274,6 +274,7 @@ s57chart::s57chart()
     m_SENCthreadStatus = THREAD_INACTIVE;
     bReadyToRender = false;
     m_RAZBuilt = false;
+    m_disableBackgroundSENC = false;
 }
 
 s57chart::~s57chart()
@@ -3882,7 +3883,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     ref_lat = ( m_FullExtent.NLAT + m_FullExtent.SLAT ) / 2.;
     ref_lon = ( m_FullExtent.WLON + m_FullExtent.ELON ) / 2.;
 
-    if(1/*SENC_BUILD_THREAD*/){
+    if(!m_disableBackgroundSENC){
         if(g_SencThreadManager){
             SENCJobTicket *ticket = new SENCJobTicket();
             ticket->m_LOD_meters = m_LOD_meters;

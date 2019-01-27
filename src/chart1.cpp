@@ -1483,19 +1483,19 @@ void ParseAllENC()
     
     int thread_count = 0;
     ParseENCWorkerThread **workers = NULL;
-    /*    
-     *    extern int              g_nCPUCount;
-     *    if(g_nCPUCount > 0)
-     *        thread_count = g_nCPUCount;
-     *    else
-     *        thread_count = wxThread::GetCPUCount();
-     *        
-     *    if (thread_count < 1) {
-     *        // obviously there's a least one CPU!
-     *        thread_count = 1;
-     }
-     */
-    thread_count = 1; // for now because there is a problem with more than 1
+        
+    extern int              g_nCPUCount;
+    if(g_nCPUCount > 0)
+        thread_count = g_nCPUCount;
+    else
+        thread_count = wxThread::GetCPUCount();
+            
+    if (thread_count < 1) {
+        // obviously there's a least one CPU!
+        thread_count = 1;
+    }
+    
+    //thread_count = 1; // for now because there is a problem with more than 1
     
     #if 0    
     workers = new ParseENCWorkerThread*[thread_count];
@@ -1574,8 +1574,9 @@ void ParseAllENC()
                 
                 newChart->SetNativeScale(scale);
                 newChart->SetFullExtent(ext);
+                newChart->DisableBackgroundSENC();
                 
-                newChart->FindOrCreateSenc(filename);
+                newChart->FindOrCreateSenc(filename, false);    // no progress dialog required
                 delete newChart;
                 
                 if(wxThread::IsMain()){
