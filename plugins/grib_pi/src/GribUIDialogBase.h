@@ -337,6 +337,7 @@ class GribPreferencesDialogBase : public wxDialog
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
 		wxCheckBox* m_cbDrawBarbedArrowHead;
+        wxCheckBox* m_cZoomToCenterAtInit;
 		wxRadioBox* m_rbLoadOptions;
 		wxRadioBox* m_rbStartOptions;
 		wxRadioBox* m_rbTimeFormat;
