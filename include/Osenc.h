@@ -447,6 +447,7 @@ public:
 
     wxString getLastError(){ return errorMessage; }
     void setVerbose(bool verbose );
+    void setNoErrDialog( bool val ){ m_NoErrDialog = val; }
     
     int ingestHeader(const wxString &senc_file_name);
     int ingest(const wxString &senc_file_name,
@@ -600,6 +601,7 @@ private:
     bool                  m_bVerbose;
     wxArrayString         *m_UpFiles;
     bool                  m_bPrivateRegistrar;
+    bool                  m_NoErrDialog;
 };
 
 

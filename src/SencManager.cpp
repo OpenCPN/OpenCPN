@@ -309,6 +309,7 @@ void * SENCBuildThread::Entry()
         senc.setRegistrar( g_poRegistrar );
         senc.setRefLocn(m_ticket->ref_lat, m_ticket->ref_lon);
         senc.SetLODMeters(m_ticket->m_LOD_meters);
+        senc.setNoErrDialog( true );
 
         m_ticket->m_SENCResult = SENC_BUILD_STARTED;
         OCPN_BUILDSENC_ThreadEvent Sevent(wxEVT_OCPN_BUILDSENCTHREAD, 0);

@@ -294,6 +294,7 @@ void Osenc::init( void )
     
     m_bVerbose = true;
     g_OsencVerbose = true;
+    m_NoErrDialog = false;
     
     //      Insert my local error handler to catch OGR errors,
     //      Especially CE_Fatal type errors
@@ -1164,14 +1165,15 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
             
             
-            if( 1 /*!chain_broken_mssage_shown*/ ){
+            if( !m_NoErrDialog ){
                 OCPNMessageBox(NULL, 
                     _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
                     _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
             }
         }
         else{            // no updates applied.
-                OCPNMessageBox(NULL, 
+                if( !m_NoErrDialog )
+                    OCPNMessageBox(NULL, 
                                _("S57 Cell Update failed.\nNo updates could be applied.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
                                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
         }
@@ -1471,6 +1473,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     if( true != SENCfile.DirExists( SENCfile.GetPath() ) ) {
         if( !SENCfile.Mkdir( SENCfile.GetPath() ) ) {
             errorMessage = _T("Cannot create SENC file directory for ") + SENCfile.GetFullPath();
+            lockCR.unlock();
             return ERROR_CANNOT_CREATE_SENC_DIR;
         }
     }
@@ -1502,11 +1505,13 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     if( !stream->Open( tmp_file) ) {
         errorMessage = _T("Unable to create temp SENC file: ");
         errorMessage += tmp_file;
+        lockCR.unlock();
         return ERROR_CANNOT_CREATE_TEMP_SENC_FILE;
     }
     
     //  Take a quick scan of the 000 file to get some basic attributes of the exchange set.
     if(!GetBaseFileAttr( FullPath000 ) ){
+        lockCR.unlock();
         return ERROR_BASEFILE_ATTRIBUTES;
     }
     
@@ -1520,6 +1525,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     if(ingestCell( poS57DS, FullPath000, SENCfile.GetPath())){
         errorMessage = _T("Error ingesting: ") + FullPath000;
+        lockCR.unlock();
         return ERROR_INGESTING000;
     }
     
@@ -1527,6 +1533,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     //  Create the Coverage table Records, which also calculates the chart extents
     if(!CreateCOVRTables( poReader, m_poRegistrar )){
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
 
@@ -1554,11 +1561,13 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
 
     if( !WriteHeaderRecord200( stream, HEADER_SENC_VERSION, (uint16_t)m_senc_file_create_version) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
     if( !WriteHeaderRecord200( stream, HEADER_CELL_NAME, sname) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
@@ -1566,6 +1575,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     string sdata = date000.ToStdString();
     if( !WriteHeaderRecord200( stream, HEADER_CELL_PUBLISHDATE, sdata) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
 
@@ -1574,23 +1584,27 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     m_edtn000.ToLong( &n000 );
     if( !WriteHeaderRecord200( stream, HEADER_CELL_EDITION, (uint16_t)n000) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
     sdata = m_LastUpdateDate.ToStdString();
     if( !WriteHeaderRecord200( stream, HEADER_CELL_UPDATEDATE, sdata) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
     
     if( !WriteHeaderRecord200( stream, HEADER_CELL_UPDATE, (uint16_t)m_last_applied_update) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
 
     if( !WriteHeaderRecord200( stream, HEADER_CELL_NATIVESCALE, (uint32_t)m_native_scale) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
@@ -1599,6 +1613,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     sdata = dateNow.ToStdString();
     if( !WriteHeaderRecord200( stream, HEADER_CELL_SENCCREATEDATE, sdata) ){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
@@ -1606,6 +1621,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     //  Write the Coverage table Records
     if(!CreateCovrRecords(stream)){
         stream->Close();
+        lockCR.unlock();
         return ERROR_SENCFILE_ABORT;
     }
     
