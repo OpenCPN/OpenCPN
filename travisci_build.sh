@@ -19,6 +19,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
   chmod 644 /usr/local/lib/lib*.dylib
   make install
+  make install # Dunno why the second is needed but it is, otherwise plugin data is not included in the bundle
   make create-dmg
 fi
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
