@@ -514,10 +514,10 @@ END_EVENT_TABLE()
 glChartCanvas::glChartCanvas( wxWindow *parent ) :
 #if !wxCHECK_VERSION(3,0,0)
     wxGLCanvas( parent, wxID_ANY, wxDefaultPosition, wxSize( 256, 256 ),
-            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM | wxNO_BORDER, _T(""), attribs ),
+            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
 #else
     wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
-                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM | wxNO_BORDER, _T("") ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") ),
 #endif
                         
     m_bsetup( false )
@@ -600,18 +600,14 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
     
     // this is also necessary to update the context on some platforms
-#if !wxCHECK_VERSION(3,0,0)    
-    wxGLCanvas::OnSize( event );
-#else
     // OnSize can be called with a different OpenGL context (when a plugin uses a different GL context).
     if( m_bsetup && m_pcontext && IsShown()) {
         SetCurrent(*m_pcontext);
     }
-#endif
-    
+
     /* expand opengl widget to fill viewport */
      if( GetSize() != m_pParentCanvas->GetSize() ) {
-         SetSize( m_pParentCanvas->GetClientSize() );
+         SetSize( m_pParentCanvas->GetSize() );
          if( m_bsetup )
              BuildFBO();
      }
@@ -833,6 +829,13 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
         s_b_useScissorTest = false;
 
+    // Mac scissor test is not useable, since the Size() and ClientSize() of GL window on this platform 
+    // do not match...
+#ifdef __WXOSX__
+    s_b_useScissorTest = false;
+#endif    
+    
+    
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
 
@@ -905,6 +908,11 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
+    //  Disable FBO on Mac
+    //  TODO correct this by fixing geometry calculations in the buffer
+#ifdef __WXOSX__
+        m_b_DisableFBO = true;
+#endif    
     
     // VBO??
     
@@ -3506,6 +3514,14 @@ void glChartCanvas::Render()
     int w, h;
     GetClientSize( &w, &h );
 
+#ifdef __WXOSX__    
+    h = m_pParentCanvas->GetClientSize().y;
+#endif    
+    
+//     wxString msg;
+//     msg.Printf(_T("size y:  %d  %d  %d  %d"), GetSize().y, GetClientSize().y, m_pParentCanvas->GetSize().y, m_pParentCanvas->GetClientSize().y);
+//     wxLogMessage(msg);
+    
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
     glViewport( 0, 0, (GLint) w, (GLint) h );
