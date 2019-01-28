@@ -1414,6 +1414,9 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	m_cbDrawBarbedArrowHead = new wxCheckBox( this, wxID_ANY, _("Draw Barbed Arrows Head"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer46->Add( m_cbDrawBarbedArrowHead, 0, wxALL, 5 );
 
+    m_cZoomToCenterAtInit = new wxCheckBox(this, wxID_ANY, _("Zoom to file center when opened"), wxDefaultPosition, wxDefaultSize, 0);
+    fgSizer46->Add(m_cZoomToCenterAtInit, 0, wxALL, 5);
+
 	sbSizer9->Add( fgSizer46, 1, wxEXPAND, 5 );
 
 
