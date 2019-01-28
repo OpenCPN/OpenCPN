@@ -514,10 +514,10 @@ END_EVENT_TABLE()
 glChartCanvas::glChartCanvas( wxWindow *parent ) :
 #if !wxCHECK_VERSION(3,0,0)
     wxGLCanvas( parent, wxID_ANY, wxDefaultPosition, wxSize( 256, 256 ),
-            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
+            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM | wxNO_BORDER, _T(""), attribs ),
 #else
     wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
-                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM | wxNO_BORDER, _T("") ),
 #endif
                         
     m_bsetup( false )
@@ -610,11 +610,11 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 #endif
     
     /* expand opengl widget to fill viewport */
-    if( GetSize() != m_pParentCanvas->GetSize() ) {
-        SetSize( m_pParentCanvas->GetSize() );
-        if( m_bsetup )
-            BuildFBO();
-    }
+     if( GetSize() != m_pParentCanvas->GetSize() ) {
+         SetSize( m_pParentCanvas->GetClientSize() );
+         if( m_bsetup )
+             BuildFBO();
+     }
 
     GetClientSize( &m_pParentCanvas->m_canvas_width, &m_pParentCanvas->m_canvas_height );
 }
@@ -2783,6 +2783,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                                 if(Chs57->m_RAZBuilt){
                                     RenderNoDTA(vp, get_region);
                                     Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                    DisableClipRegion();
                                 }
                                 else{
                                     // The SENC is quesed for building, so..
@@ -3646,7 +3647,6 @@ void glChartCanvas::Render()
                     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                                 
                     //    Render the reuseable portion of the cached texture
-                                
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
                     int x1, x2, y1, y2;
 
@@ -3678,7 +3678,7 @@ void glChartCanvas::Render()
                     glDisable( g_texture_rectangle_format );
                 }
 
-                } else { // must redraw the entire screen
+            } else { // must redraw the entire screen
                     ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
                                                 m_cache_tex[m_cache_page], 0 );
