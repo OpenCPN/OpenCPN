@@ -36,6 +36,7 @@ extern bool g_bquiting;     // Flag tells us O is shutting down
 
 static int do_play(const char* cmd, const char* path)
 {
+#if 0    
     char buff[1024];
     snprintf(buff, sizeof(buff), cmd, path);
 
@@ -74,6 +75,15 @@ static int do_play(const char* cmd, const char* path)
         CloseHandle(pi.hThread);
     }
     return 0;
+#else
+    wchar_t sound_path[80];
+    MultiByteToWideChar( 0, 0, path, -1, sound_path, 80 );
+    LPCWSTR wide_path = sound_path;
+
+    PlaySound( wide_path, NULL, SND_FILENAME );
+
+    return 0;
+#endif    
 }
 
 #else
