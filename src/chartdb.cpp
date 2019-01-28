@@ -1155,6 +1155,9 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
                 
                 pret = pce;
             }
+            else
+                wxLogMessage(_T("All chart in cache locked, size: %d"), nCache);
+ 
         }
         
     
@@ -1201,7 +1204,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
         }
         m_cache_mutex.Unlock();
       }
-      
+ 
 
       if(bInCache)
       {
@@ -1255,8 +1258,11 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             //    Check memory status to see if enough room to open another chart
                     int mem_used;
                     GetMemoryStatus(0, &mem_used);
-    //                  printf(" ChartdB Mem_total: %d  mem_used: %d  lock: %d\n", mem_total, mem_used, m_b_locked);
-                    
+
+                    wxString msg;
+                    msg.Printf(_T("OpenChartUsingCache, not in cache: mem_used: %d  cache size: %d\n"), mem_used, pChartCache->GetCount());
+                    wxLogMessage(msg);
+
                     if((mem_used > g_memCacheLimit * 8 / 10) && (pChartCache->GetCount() > 2)) {
                         wxString msg(_T("Removing oldest chart from cache: "));
                         while (1)
@@ -1479,6 +1485,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   }
                   else if(INIT_FAIL_REMOVE == ir)                 // some problem in chart Init()
                   {
+                        wxLogMessage(wxString::Format(_T("Problem initializing Chart %s"), msg_fn.c_str()));
+
                         delete Ch;
                         Ch = NULL;
 
@@ -1487,6 +1495,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   }
                   else if((INIT_FAIL_RETRY == ir) || (INIT_FAIL_NOERROR == ir))   // recoverable problem in chart Init()
                   {
+                        wxLogMessage(wxString::Format(_T("Recoverable problem initializing Chart %s"), msg_fn.c_str()));
                         delete Ch;
                         Ch = NULL;
                   }
@@ -1494,7 +1503,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
                   if(INIT_OK != ir)
                   {
-                        if(INIT_FAIL_NOERROR != ir)
+                        if(1/*INIT_FAIL_NOERROR != ir*/)
                         {
                               wxLogMessage(wxString::Format(_T("   OpenChartFromStack... Error opening chart %s ... return code %d"), msg_fn.c_str(), ir));
                         }
