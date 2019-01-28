@@ -6,6 +6,7 @@
 #endif //precompiled headers
 
 #include "iirfilter.h"
+#include <cmath>
 
 #include <wx/math.h>
 

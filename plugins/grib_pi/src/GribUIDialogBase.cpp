@@ -11,9 +11,10 @@
 
 GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
-    bool m_bcompact = false;
 #ifdef __OCPN__ANDROID__
-    m_bcompact = true;
+    const bool m_bcompact = true;
+#else
+    const bool m_bcompact = false;
 #endif    
 
     if(m_bcompact){
@@ -764,7 +765,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgBarbedData1->SetFlexibleDirection( wxBOTH );
 	m_fgBarbedData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controled Colours") };
+	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controlled Colours") };
 	int m_cBarbedColoursNChoices = sizeof( m_cBarbedColoursChoices ) / sizeof( wxString );
 	m_cBarbedColours = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
 	m_cBarbedColours->SetSelection( 0 );
@@ -901,7 +902,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbOverlayMap = new wxCheckBox( m_scSetDataPanel, wxID_ANY, _("OverlayMap"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbOverlayMap, 0, wxBOTTOM|wxTOP, 5 );
 
-	m_tOverlayColors = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tOverlayColors = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Color scheme"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tOverlayColors->Wrap( -1 );
 	fgSizer15->Add( m_tOverlayColors, 0, wxALL|wxEXPAND, 5 );
 

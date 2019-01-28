@@ -27,6 +27,7 @@
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
 
+#include "dychart.h"
 #include "viewport.h"
 #include "glTexCache.h"
 #include "glTextureDescriptor.h"

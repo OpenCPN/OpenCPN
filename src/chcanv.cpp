@@ -44,6 +44,7 @@
 
 #include <wx/listimpl.cpp>
 
+#include "config.h" 
 #include "chcanv.h"
 #include "TCWin.h"
 #include "geodesic.h"
@@ -58,7 +59,8 @@
 #include "chartimg.h"
 #include "chart1.h"
 #include "cutil.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
@@ -90,7 +92,6 @@
 #include "OCPN_AUIManager.h"
 #include "MUIBar.h"
 #include "CanvasConfig.h"
-#include <version.h>
 #include "CanvasOptions.h"
 
 #ifdef __OCPN__ANDROID__
@@ -179,10 +180,9 @@ extern TCMgr            *ptcmgr;
 extern Select           *pSelectTC;
 extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
-extern MarkInfoImpl     *pMarkPropDialog;
-extern RouteProp        *pRoutePropDialog;
+extern MarkInfoDlg      *g_pMarkInfoDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
-extern MarkInfoImpl     *pMarkInfoDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 
@@ -291,6 +291,7 @@ extern bool             g_b_assume_azerty;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
+extern wxString         g_default_routepoint_icon;
 
 extern int              g_current_arrow_scale;
 extern int              g_tide_rectangle_scale;
@@ -300,7 +301,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern OCPN_Sound        g_anchorwatch_sound;
+extern OcpnSound*        g_anchorwatch_sound;
 
 extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
@@ -320,6 +321,8 @@ extern bool              g_bSpaceDropMark;
 extern bool              g_bAutoHideToolbar;
 extern int               g_nAutoHideToolbar;
 extern bool              g_bDeferredInitDone;
+
+extern wxString          g_CmdSoundString;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -362,6 +365,7 @@ extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 
 extern float            g_toolbar_scalefactor;
+extern SENCThreadManager *g_SencThreadManager;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -488,6 +492,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
+
+    m_OSoffsetx = 0.;
+    m_OSoffsety = 0.;
 
     m_pos_image_user_yellow_day = NULL;
     m_pos_image_user_yellow_dusk = NULL;
@@ -995,14 +1002,13 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
     //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
     //  So, we provide for this case by starting a timer if required to actually Finish() a route on a legitimate
     //  focus change, but not if the focus is quickly regained ( <20 msec.) on this canvas.
-    
 #ifdef __WXOSX__
     if(m_routeState && m_FinishRouteOnKillFocus)
         m_routeFinishTimer.Start(20, wxTIMER_ONE_SHOT);
 #else
     if(m_routeState && m_FinishRouteOnKillFocus)
         FinishRoute();
-#endif     
+#endif
 }
 
 void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
@@ -1470,11 +1476,17 @@ bool ChartCanvas::DoCanvasUpdate( void )
     if( m_bFollow ) {
         tLat = gLat;
         tLon = gLon;
-        vpLat = gLat;
-        vpLon = gLon;
-        
+
+        // Set the ViewPort center based on the OWNSHIP offset
+        double dx = m_OSoffsetx;
+        double dy = m_OSoffsety;
+        double d_east = dx / GetVP().view_scale_ppm;
+        double d_north = dy / GetVP().view_scale_ppm;
+
+        fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
+
         // on lookahead mode, adjust the vp center point
-        if( m_bLookAhead ) {
+        if( m_bLookAhead && bGPSValid && !m_MouseDragging ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
             
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * GetCanvasHeight() / 4;
@@ -1501,6 +1513,13 @@ bool ChartCanvas::DoCanvasUpdate( void )
             
             ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
         }
+        else if(m_bLookAhead && !bGPSValid){
+            m_OSoffsetx = 0;            // center ownship on loss of GPS
+            m_OSoffsety = 0;
+            vpLat = gLat;
+            vpLon = gLon;
+        }
+            
         
     } else {
         tLat = m_vLat;
@@ -1509,6 +1528,20 @@ bool ChartCanvas::DoCanvasUpdate( void )
         vpLon = m_vLon;
         
     }
+    
+    // Calculate change in VP, in pixels, using a simple SM projection
+    // if change in pixels is smaller than 2% of screen size, do not change the VP
+    // This will avoid "jitters" at large scale.
+    if(GetVP().view_scale_ppm > 1.0){ 
+        double easting, northing;
+        toSM( GetVP().clat, GetVP().clon, vpLat, vpLon,  &easting, &northing );
+        if( (fabs(easting * GetVP().view_scale_ppm) < (GetVP().pix_width * 2 / 100)) ||
+            (fabs(northing * GetVP().view_scale_ppm) < (GetVP().pix_height * 2 / 100)) ){
+            vpLat = GetVP().clat;
+            vpLon = GetVP().clon;
+        }
+    }
+    
     
     if( GetQuiltMode() ) {
         int current_db_index = -1;
@@ -3228,6 +3261,9 @@ void ChartCanvas::ToggleChartOutlines( void )
 void ChartCanvas::ToggleLookahead( )
 {
     m_bLookAhead = !m_bLookAhead;
+    m_OSoffsetx = 0;            // center ownship
+    m_OSoffsety = 0;
+
 }
 
 
@@ -3516,7 +3552,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     if( g_bopengl && m_glcc ){
         m_glcc->SetColorScheme( cs );
         g_glTextureManager->ClearAllRasterTextures();
-        m_glcc->FlushFBO(); 
+        //m_glcc->FlushFBO(); 
     }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
@@ -4250,7 +4286,6 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if(StartTimedMovement(stoptimer)) {
             m_mustmove += 150; /* for quick presses register as 200 ms duration */
             m_zoom_factor = factor;
-//            m_zoom_target =  VPoint.chart_scale / factor;
         }
         m_zoom_target =  VPoint.chart_scale / factor;
     } else {
@@ -4277,6 +4312,8 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     //    Cannot allow Yield() re-entrancy here
     if( m_bzooming ) return;
     m_bzooming = true;
+
+    double old_ppm = GetVP().view_scale_ppm;
 
     //  Capture current cursor position for zoom to cursor
     double zlat = m_cursor_lat;
@@ -4390,9 +4427,26 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
             //ClearbFollow();      // update the follow flag
         }
-        else
-            SetVPScale( new_scale );
-        
+        else{
+            if(m_bFollow){      //  Adjust the Viewpoint to keep ownship at the same pixel point on-screen
+                double offx, offy;
+                toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
+
+                m_OSoffsetx = offx * old_ppm;
+                m_OSoffsety = offy * old_ppm;
+
+                double nlat, nlon;
+                double dx = m_OSoffsetx;
+                double dy = m_OSoffsety;
+                double d_east = dx / new_scale;
+                double d_north = dy / new_scale;
+
+                fromSM( d_east, d_north, gLat, gLon, &nlat, &nlon );
+                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation); 
+            }
+            else
+                SetVPScale( new_scale );
+        }
     }
     
     m_bzooming = false;
@@ -4465,8 +4519,7 @@ void ChartCanvas::ClearbFollow( void )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
     
-    if(m_muiBar)
-        m_muiBar->SetFollowButton(false);
+    UpdateFollowButtonState();
     
     DoCanvasUpdate();
     ReloadVP();
@@ -4483,16 +4536,36 @@ void ChartCanvas::SetbFollow( void )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
-    if(m_muiBar)
-        m_muiBar->SetFollowButton(true);
+    UpdateFollowButtonState();
     
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
     
+    // Is the OWNSHIP on-screen?
+    // If not, then reset the OWNSHIP offset to 0 (center screen)
+    if( (fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2) ){
+        m_OSoffsetx = 0;
+        m_OSoffsety = 0;
+    }
+
     DoCanvasUpdate();
     ReloadVP();
     parent_frame->SetChartUpdatePeriod( );
+}
+
+void ChartCanvas::UpdateFollowButtonState( void )
+{
+   if(m_muiBar){
+        if(!m_bFollow)
+            m_muiBar->SetFollowButtonState( 0 );
+        else{
+            if(m_bLookAhead)
+                m_muiBar->SetFollowButtonState( 2 );
+            else
+                m_muiBar->SetFollowButtonState( 1 );
+        }
+   }
 }
 
 void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
@@ -4518,6 +4591,8 @@ void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
   
+    UpdateFollowButtonState();
+    
     //TODO
 //    if( g_pi_manager ) {
 //        g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
@@ -4586,13 +4661,19 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
         }
     }
 
-    //ClearbFollow();      // update the follow flag
-    m_bFollow = false;      // update the follow flag
-    if( m_toolBar )
-        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    //  Turn off bFollow only if the ownship has left the screen
+    double offx, offy;
+    toSM(dlat, dlon, gLat, gLon, &offx, &offy);
+    m_OSoffsetx = offx * VPoint.view_scale_ppm;
+    m_OSoffsety = offy * VPoint.view_scale_ppm;
     
-    if(m_muiBar)
-        m_muiBar->SetFollowButton( false );
+    if( m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2)) ){
+        m_bFollow = false;      // update the follow flag
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    
+        UpdateFollowButtonState();
+    }
     
     Refresh( false );
 
@@ -5998,6 +6079,8 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         wxPoint r;
         GetCanvasPointPix( tlat, tlon, &r );
         int l1 = r.x - x_origin;
+        
+        m_scaleBarRect = wxRect(x_origin, y_origin- 12, l1, 12);        // Store this for later reference
 
         dc.SetPen(pen1);
         
@@ -6064,6 +6147,14 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
+static bool bAnchorSoundPlaying = false;
+
+static void onSoundFinished( void* ptr )
+{
+    bAnchorSoundPlaying = false;
+}
+
+
 void ChartCanvas::AlertDraw( ocpnDC& dc )
 {
 // Just for prototyping, visual alert for anchorwatch goes here
@@ -6090,18 +6181,16 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-
-    if( play_sound ) {
-        if( !g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
-
-#ifndef __WXMSW__
-        if(g_anchorwatch_sound.IsOk() && !g_anchorwatch_sound.IsPlaying())
-            g_anchorwatch_sound.Play();
-#else
-            if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Play();
-#endif
-    } else {
-        if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Stop();
+    if( play_sound && !bAnchorSoundPlaying) {
+        g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
+        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        if ( g_anchorwatch_sound->IsOk( ) ) {
+            bAnchorSoundPlaying = true;
+            g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
+            g_anchorwatch_sound->Play( );
+        }
+    } else if( g_anchorwatch_sound->IsOk() ) {
+        g_anchorwatch_sound->Stop();
     }
 
 }
@@ -6304,7 +6393,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButton( m_bFollow );
+        UpdateFollowButtonState();
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -6380,7 +6469,7 @@ void ChartCanvas::CreateMUIBar()
     
     if(m_muiBar){
         SetMUIBarPosition();
-        m_muiBar->SetFollowButton( m_bFollow );
+        UpdateFollowButtonState();
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -6673,6 +6762,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     event.GetPosition( &x, &y );
     
+    m_MouseDragging = event.Dragging();
+    
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
     //  Detect this case, and abort further processing (FS#1748)
 #ifdef __WXMSW__    
@@ -6803,17 +6894,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
 //  Retrigger the cursor tracking timer
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
-
-
-/*    
-    //    Calculate meaningful SelectRadius
-    float SelectRadius;
-    int sel_rad_pix = 8;
-    if(g_btouch)
-        sel_rad_pix = 50;
-
-    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-*/
 
 //      Show cursor position on Status Bar, if present
 //      except for GTK, under which status bar updates are very slow
@@ -7219,9 +7299,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     
     //    Calculate meaningful SelectRadius
     float SelectRadius;
-    int sel_rad_pix = 8;
-    if(g_btouch) sel_rad_pix = 50;
-    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+    SelectRadius = g_Platform->GetSelectRadiusPix() / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
 ///
     // We start with Double Click processing. The first left click just starts a timer and
@@ -7382,8 +7460,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pMousePoint = NULL;
                 
                 //    Calculate meaningful SelectRadius
-                int nearby_sel_rad_pix = 8;
-                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / m_true_scale_ppm;
                 
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
@@ -7411,16 +7488,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     
                     
                     if( brp_viz ){
-                        int dlg_return;
-#ifndef __WXOSX__
                         m_FinishRouteOnKillFocus = false;              // Avoid route finish on focus change for message dialog
-                        dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                        int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                  _("OpenCPN Route Create"),
                                                    (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
                         m_FinishRouteOnKillFocus = true;
-#else
-                        dlg_return = wxID_YES;
-#endif
+
                         if( dlg_return == wxID_YES ) {
                             pMousePoint = pNearbyPoint;
                                                      
@@ -7437,7 +7510,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 if( NULL == pMousePoint ) {                 // need a new point
-                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), wxEmptyString );
+                    pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
                     
                     pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
@@ -7466,11 +7539,13 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                             << _("Would you like include the Great Circle routing points for this leg?");
                             
+                            m_FinishRouteOnKillFocus = false;
                             m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
                             
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
                             
                             m_disable_edge_pan = false;
+                            m_FinishRouteOnKillFocus = true;
                             
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
@@ -7623,9 +7698,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             
             bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
             
-            if( NULL == pMarkPropDialog ) {
+            if( NULL == g_pMarkInfoDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
-            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+            } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                 DraggingAllowed = false;
             
             if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) )
@@ -7683,8 +7758,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
    
                                                    
                                                     //    Update the MarkProperties Dialog, if currently shown
-                                                    if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
+                                                    if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
+                                                        if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties( true );
                                                     }
                                                     
                                                     if(g_bopengl) {
@@ -7719,10 +7794,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             
             bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
             
-            if( NULL == pMarkPropDialog ) {
+            if( NULL == g_pMarkInfoDialog ) {
                 if( g_bWayPointPreventDragging )
                     DraggingAllowed = false;
-            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+            } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                 DraggingAllowed = false;
             
             if( m_pRoutePointEditTarget
@@ -7779,9 +7854,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                             
                         //    Update the MarkProperties Dialog, if currently shown
-                        if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                            if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
-                                pMarkPropDialog->UpdateProperties( true );
+                        if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
+                            if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() )
+                                g_pMarkInfoDialog->UpdateProperties( true );
                         }
                         
                         //    Invalidate the union region
@@ -7856,8 +7931,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pMousePoint = NULL;
                 
                 //    Calculate meaningful SelectRadius
-                int nearby_sel_rad_pix = 8;
-                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / m_true_scale_ppm;
                 
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
@@ -7887,7 +7961,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 if( NULL == pMousePoint ) {                 // need a new point
-                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), wxEmptyString );
+                    pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
                     
                     pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
@@ -8012,9 +8086,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             else {
                 
                 bool bSelectAllowed = true;
-                if( NULL == pMarkPropDialog ) {
+                if( NULL == g_pMarkInfoDialog ) {
                     if( g_bWayPointPreventDragging ) bSelectAllowed = false;
-                } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                } else if( !g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging )
                     bSelectAllowed = false;
 
 				/*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the 
@@ -8193,12 +8267,12 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 //    Update the RouteProperties Dialog, if currently shown
-                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->GetRoute() == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
                                 }
 /* cannot edit track points anyway
@@ -8254,16 +8328,14 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 //    Update the RouteProperties Dialog, if currently shown
-                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->GetRoute() == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
-                                }/* else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
-                                    pTrackPropDialog->SetTrackAndUpdate( pr );
-                                    }*/
+                                }
                             }
                         }
                     }
@@ -8324,6 +8396,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     }           // left up
     
     if( event.RightDown() ) {
+        SetFocus();           //  This is to let a plugin know which canvas is right-clicked
         last_drag.x = mx;
         last_drag.y = my;
         
@@ -8709,13 +8782,14 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
-    pMarkPropDialog = MarkInfoImpl::getInstance( this );     // There is one global instance of the MarkProp Dialog
+    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(this);
 
     if( 1/*g_bresponsive*/ ) {
 
         wxSize canvas_size = GetSize();
         wxPoint canvas_pos = GetPosition();
-        wxSize fitted_size = pMarkPropDialog->GetSize();;
+        wxSize fitted_size = g_pMarkInfoDialog->GetSize();;
 
         bool newFit = false;
         if(canvas_size.x < fitted_size.x){
@@ -8730,26 +8804,33 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         }
 
         if(newFit){
-            pMarkPropDialog->SetSize( fitted_size );
-            pMarkPropDialog->Centre();
+            g_pMarkInfoDialog->SetSize( fitted_size );
+            g_pMarkInfoDialog->Centre();
         }
     }
 
-    pMarkPropDialog->SetRoutePoint( markPoint );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( markPoint );
+    g_pMarkInfoDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
         wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( markPoint->m_LayerID ) ) );
-        pMarkPropDialog->SetDialogTitle( caption );
+        g_pMarkInfoDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
+        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
 
-    pMarkPropDialog->Show();
-    pMarkPropDialog->InitialFocus();
+    g_pMarkInfoDialog->Show();
+    g_pMarkInfoDialog->Raise();
+    g_pMarkInfoDialog->InitialFocus();
 }
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 {
-    pRoutePropDialog = RouteProp::getInstance( this ); // There is one global instance of the RouteProp Dialog
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( this );
+    pRoutePropDialog->SetRouteAndUpdate( selected );
+    //pNew->UpdateProperties();
+    pRoutePropDialog->Show();
+    pRoutePropDialog->Raise();
+    return;
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( this ); // There is one global instance of the RouteProp Dialog
 
     if( g_bresponsive ) {
 
@@ -8782,13 +8863,6 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 
 
     pRoutePropDialog->SetRouteAndUpdate( selected );
-    pRoutePropDialog->UpdateProperties();
-    if( !selected->m_bIsInLayer )
-        pRoutePropDialog->SetDialogTitle( title );
-    else {
-        wxString caption( wxString::Format( _T("%s, %s: %s"), title, _("Layer"), GetLayerName( selected->m_LayerID ) ) );
-        pRoutePropDialog->SetDialogTitle( caption );
-    }
 
     pRoutePropDialog->Show();
 
@@ -8814,8 +8888,7 @@ void pupHandler_PasteWaypoint() {
     RoutePoint* pasted = kml.GetParsedRoutePoint();
     if( ! pasted ) return;
 
-    int nearby_sel_rad_pix = 8;
-    double nearby_radius_meters = nearby_sel_rad_pix / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
+    double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
 
     RoutePoint *nearPoint = pWayPointMan->GetNearbyWaypoint( pasted->m_lat, pasted->m_lon,
                                nearby_radius_meters );
@@ -8841,6 +8914,7 @@ void pupHandler_PasteWaypoint() {
         pConfig->AddNewWayPoint( newPoint, -1 );
         pWayPointMan->AddRoutePoint( newPoint );
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+        if( newPoint->GetScaMin() < g_focusCanvas->GetScaleValue() ) newPoint->ShowScaleWarningMessage(g_focusCanvas);
     }
 
     gFrame->InvalidateAllGL();
@@ -8854,8 +8928,7 @@ void pupHandler_PasteRoute() {
     Route* pasted = kml.GetParsedRoute();
     if( ! pasted ) return;
 
-    int nearby_sel_rad_pix = 8;
-    double nearby_radius_meters = nearby_sel_rad_pix / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
+    double nearby_radius_meters = g_Platform->GetSelectRadiusPix() / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale();
 
     RoutePoint* curPoint;
     RoutePoint* nearPoint;
@@ -8947,9 +9020,8 @@ void pupHandler_PasteRoute() {
         pRouteList->Append( newRoute );
         pConfig->AddNewRoute( newRoute );    // use auto next num
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
             pRoutePropDialog->SetRouteAndUpdate( newRoute );
-            pRoutePropDialog->UpdateProperties();
         }
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
@@ -8959,7 +9031,7 @@ void pupHandler_PasteRoute() {
         gFrame->InvalidateAllGL();
         gFrame->RefreshAllCanvas( false );
     }
-
+    if( newPoint->GetScaMin() < g_focusCanvas->GetScaleValue() ) newPoint->ShowScaleWarningMessage(g_focusCanvas);
 }
 
 void pupHandler_PasteTrack() {
@@ -9088,7 +9160,7 @@ void ChartCanvas::FinishRoute( void )
         if( m_pMouseRoute )
             m_pMouseRoute->SetHiLite(0);
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
@@ -9579,6 +9651,9 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB ShowLightDescription")] = GetShowENCLightDesc();
 
         v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
+        
+        // Global options
+/*        
         v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
         v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
         v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
@@ -9587,7 +9662,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
         v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
         v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
-        
+*/        
         wxJSONWriter w;
         wxString out;
         w.Write(v, out);
@@ -9748,6 +9823,13 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         if( fabs( VPoint.rotation ) < 0.01 ) {
             bool b_save = true;
+
+            if(g_SencThreadManager){
+                if(g_SencThreadManager->GetJobCount()){
+                    b_save = false;
+                    m_cache_vp.Invalidate();
+                }
+            }
 
             //  If the saved wxBitmap from last OnPaint is useable
             //  calculate the blit parameters
@@ -10067,6 +10149,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     if(m_Compass)
         m_Compass->Paint(scratch_dc);
+
+    RenderAlertMessage( mscratch_dc, GetVP());
 
     //quiting?
     if( g_bquiting ) {
@@ -10388,6 +10472,8 @@ bool ChartCanvas::SetCursor( const wxCursor &c )
 
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 {
+    if( g_bquiting )
+        return;
     //  Keep the mouse position members up to date
     GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
 
@@ -10533,20 +10619,18 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 {
     GridDraw( dc );
 
-    bool pluginOverlayRender = true;
+//     bool pluginOverlayRender = true;
+//     
+//     if(g_canvasConfig > 0){     // Multi canvas
+//         if(IsPrimaryCanvas())
+//             pluginOverlayRender = false;
+//     }
     
-    if(g_canvasConfig > 0){     // Multi canvas
-        if(IsPrimaryCanvas())
-            pluginOverlayRender = false;
-    }
-    
-    if(pluginOverlayRender){
-        g_overlayCanvas = this;
+    g_overlayCanvas = this;
 
-        if( g_pi_manager ) {
-            g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
-            g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );
-        }
+    if( g_pi_manager ) {
+        g_pi_manager->SendViewPortToRequestingPlugIns( GetVP() );
+        g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP(), m_canvasIndex);
     }
 
     AISDrawAreaNotices( dc, GetVP(), this);
@@ -11448,7 +11532,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 void ChartCanvas::DrawTCWindow( int x, int y, void *pvIDX )
 {
     pCwin = new TCWin( this, x, y, pvIDX );
-
 }
 
 #define NUM_CURRENT_ARROW_POINTS 9
@@ -12789,6 +12872,34 @@ wxRect ChartCanvas::GetMUIBarRect()
     }
     
     return rv;
+}
+
+void ChartCanvas::RenderAlertMessage( wxDC &dc, const ViewPort &vp)
+{
+    if(!GetAlertString().IsEmpty())
+    {
+
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(10, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        
+        dc.SetFont( *pfont );
+        dc.SetPen( *wxTRANSPARENT_PEN);
+        
+        dc.SetBrush( wxColour(243, 229, 47 ) );
+        int w, h;
+        dc.GetMultiLineTextExtent( GetAlertString(), &w, &h );
+        h += 2;
+        //int yp = vp.pix_height - 20 - h;
+ 
+        wxRect sbr = GetScaleBarRect();
+        int xp = sbr.x+sbr.width + 10;
+        int yp = (sbr.y + sbr.height) - h;
+ 
+        int wdraw = w + 10;
+        dc.DrawRectangle( xp, yp, wdraw, h );
+        dc.DrawLabel( GetAlertString(), wxRect( xp, yp, wdraw, h ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------

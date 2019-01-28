@@ -217,6 +217,8 @@ typedef struct{
       double                       user_xoff;
       double                       user_yoff;
 
+      double                       min_lat, min_lon;
+      
       //    Allocated working blocks
       vector_record_descriptor      *object_vector_record_descriptor_block;
       Object                        *pobject_block;

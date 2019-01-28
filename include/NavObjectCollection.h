@@ -56,6 +56,9 @@ class RoutePoint;
 #define         OUT_EXTENSION   1 << 17
 #define         OUT_ARRIVAL_RADIUS 1 << 18
 #define         OUT_WAYPOINT_RANGE_RINGS 1 << 19
+#define         OUT_WAYPOINT_SCALE 1 << 20
+#define         OUT_TIDE_STATION 1 << 21
+#define         OUT_RTE_PROPERTIES 1 << 22
 
 #define  OPT_TRACKPT    OUT_TIME
 #define  OPT_WPT        (OUT_TYPE) +\
@@ -70,8 +73,11 @@ class RoutePoint;
                         (OUT_AUTO_NAME) +\
                         (OUT_HYPERLINKS) +\
                         (OUT_ARRIVAL_RADIUS) +\
-                        (OUT_WAYPOINT_RANGE_RINGS)
-#define OPT_ROUTEPT     OPT_WPT                        
+                        (OUT_WAYPOINT_RANGE_RINGS) +\
+                        (OUT_WAYPOINT_SCALE) +\
+                        (OUT_TIDE_STATION)
+#define OPT_ROUTEPT     OPT_WPT +\
+                        (OUT_RTE_PROPERTIES)
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track objects
 #define         RT_OUT_ACTION_ADD         1 << 1          //  opencpn:action node support
@@ -99,7 +105,7 @@ public:
     
     bool CreateAllGPXObjects();
     bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates );
-    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz);
+    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, bool b_namesviz);
     
     bool SaveFile( const wxString filename );
 

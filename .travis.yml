@@ -1,5 +1,4 @@
 language: cpp
-
 matrix:
   include:
     - dist: trusty
@@ -8,30 +7,28 @@ matrix:
       compiler: clang
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then grep -q precise /etc/lsb-release && sudo add-apt-repository -y ppa:wxformbuilder/wxwidgets || true; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
-# Homebrew upgrade disabled to save time
-
 install:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get --allow-unauthenticated install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libarchive-dev liblzma-dev libexif-dev libsqlite3-dev gettext; fi
-#    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install wxmac --devel; fi
-# We do not use wxmac, everything comes in the prebuilt tarball downloaded bellow
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif libarchive;  wget http://opencpn.navnux.org/build_deps/cairo_macos107.tar.xz; tar xJf cairo_macos107.tar.xz -C /tmp; wget http://opencpn.navnux.org/build_deps/wx_opencpn_macos107.tar.xz; tar xJf wx_opencpn_macos107.tar.xz -C /tmp; wget http://opencpn.navnux.org/build_deps/libarchive_macos107.tar.xz; tar xJf libarchive_macos107.tar.xz -C /tmp; export PATH="/usr/local/opt/gettext/bin:$PATH";  echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile; fi
-# We install cairo and libarchive from Homebrew to pull in the dependencies, but use the custom Lion compatible build later.
-
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get --allow-unauthenticated install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev libarchive-dev liblzma-dev libexif-dev libsqlite3-dev gettext; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif xz libarchive;
+    wget http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz; tar xJf
+    wx312_opencpn50_macos109.tar.xz -C /tmp; export PATH="/usr/local/opt/gettext/bin:$PATH";  echo
+    'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile; fi
 script:
-    - mkdir build && cd build
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug ..; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DOCPN_USE_LIBCPP=ON -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx_opencpn_macos107/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx_opencpn_macos107" -DLibArchive_INCLUDE_DIR=/tmp/libarchive_macos107/include -DLibArchive_LIBRARY=/tmp/libarchive_macos107/lib/libarchive.dylib -DCAIRO_INCLUDE_DIR=/tmp/cairo_macos107/include -DCAIRO_LIBRARY=/tmp/cairo_macos107/lib/libcairo.dylib -DCMAKE_INSTALL_PREFIX=/tmp/opencpn ..; fi
-    - make -s
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; chmod 644 /usr/local/lib/lib*.dylib; cp /tmp/libarchive_macos107/lib/libarchive.16.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; cp /tmp/cairo_macos107/lib/libcairo.2.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; make install; make create-dmg; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make package; fi
-
+  - ./travisci_build.sh
+before_deploy:
+  - openssl aes-256-cbc -K $encrypted_831747f1d3db_key -iv $encrypted_831747f1d3db_iv  -in deploy_rsa.enc -out /tmp/deploy_rsa -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/deploy_rsa
+  - ssh-add /tmp/deploy_rsa
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
+  on:
+    branch: master
+    tags: false
 notifications:
-    email: false
-    
+  email: false
 git:
-    depth: 10
+  depth: 10

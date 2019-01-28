@@ -53,8 +53,13 @@ class S57ClassRegistrar
                           int bReportErr, FILE **fp );
 
     const char *ReadLine( FILE * fp );
+    const char *OCPLReadLine( FILE * fp );
+    
     char      **papszNextLine;
     void        DestroySparseStringlist(char **papszStrList);
+
+    char *pszRLBuffer = NULL;
+    int  nRLBufferSize = 0;
 
 public:
                 S57ClassRegistrar();

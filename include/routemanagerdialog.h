@@ -21,7 +21,7 @@
 #ifndef _RouteManagerDialog_h_
 #define _RouteManagerDialog_h_
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/notebook.h>
 #include <wx/panel.h>
@@ -29,6 +29,9 @@
 #include <wx/notebook.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+
+#define NAME_COLUMN 2
+#define DISTANCE_COLUMN 3
 
 enum {
       SORT_ON_DISTANCE  = 1,
@@ -47,7 +50,7 @@ class Track;
 class Layer;
 class RoutePoint;
 
-class RouteManagerDialog : public wxDialog {
+class RouteManagerDialog : public wxFrame {
       DECLARE_EVENT_TABLE()
 
       public:
@@ -62,7 +65,7 @@ class RouteManagerDialog : public wxDialog {
             void RecalculateSize();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
-            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
+            void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = true);
             void UpdateLayListCtrl();
             void UpdateWptListCtrlViz();
 

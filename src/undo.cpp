@@ -39,7 +39,7 @@
 #include "navutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"
@@ -51,7 +51,7 @@ extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern WayPointman *pWayPointMan;
 extern MyFrame *gFrame;
-extern MarkInfoImpl *pMarkPropDialog;
+extern MarkInfoDlg *g_pMarkInfoDialog;
 
 Undo::Undo( ChartCanvas *parent)
 {
@@ -110,8 +110,8 @@ void doUndoMoveWaypoint( UndoAction* action, ChartCanvas *cc ) {
     selectable->m_slat = currentPoint->m_lat;
     selectable->m_slon = currentPoint->m_lon;
 
-    if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ){
-       if( currentPoint == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties(true);
+    if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ){
+       if( currentPoint == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties(true);
        }
         
     wxArrayPtrVoid* routeArray = g_pRouteMan->GetRouteArrayContaining( currentPoint );

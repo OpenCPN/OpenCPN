@@ -33,6 +33,7 @@
 #include "wx/image.h"                           // for some reason, needed for msvc???
 #include "wx/tokenzr.h"
 #include <wx/textfile.h>
+#include <wx/filename.h>
 
 #include "dychart.h"
 #include "OCPNPlatform.h"
@@ -61,6 +62,7 @@
 
 #include "Osenc.h"
 #include "chcanv.h"
+#include "SencManager.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -109,8 +111,12 @@ extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
 extern bool              g_b_EnableVBO;
+extern SENCThreadManager *g_SencThreadManager;
+extern ColorScheme       global_color_scheme;
+extern int               g_nCPUCount;
 
 int                      g_SENC_LOD_pixels;
+
 
 static jmp_buf env_ogrf;                    // the context saved by setjmp();
 
@@ -189,6 +195,7 @@ unsigned long connector_key::hash() const
     return hash_fast32(k, sizeof k, 0);
 }
 
+
 //----------------------------------------------------------------------------------
 //      render_canvas_parms Implementation
 //----------------------------------------------------------------------------------
@@ -264,7 +271,10 @@ s57chart::s57chart()
     m_this_chart_context =  0;
     m_Chart_Skew = 0;
     m_vbo_byte_length = 0;
-
+    m_SENCthreadStatus = THREAD_INACTIVE;
+    bReadyToRender = false;
+    m_RAZBuilt = false;
+    m_disableBackgroundSENC = false;
 }
 
 s57chart::~s57chart()
@@ -325,6 +335,14 @@ s57chart::~s57chart()
         if( ::wxFileExists(m_TempFilePath) )
             wxRemoveFile(m_TempFilePath);
     }
+
+    //  Check the SENCThreadManager to see if this chart is queued or active
+    if(g_SencThreadManager){
+        if(g_SencThreadManager->IsChartInTicketlist(this)){
+            g_SencThreadManager->SetChartPointer(this, NULL);
+        }
+    }
+ 
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
@@ -1462,18 +1480,24 @@ void s57chart::BuildLineVBO( void )
 bool s57chart::RenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                      const OCPNRegion &RectRegion, const LLRegion &Region )
 {
+    if(!m_RAZBuilt) return false;
+
     return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, false );
 }
 
 bool s57chart::RenderOverlayRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                             const OCPNRegion &RectRegion, const LLRegion &Region )
 {
+    if(!m_RAZBuilt) return false;
+
     return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, true );
 }
 
 bool s57chart::RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPort& VPoint,
                                      const OCPNRegion &RectRegion, const LLRegion &Region )
 {
+    if(!m_RAZBuilt) return false;
+
     bool b_text = ps52plib->GetShowS57Text();
     ps52plib->m_bShowS57Text = false;
     bool b_ret =  DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, false );
@@ -1484,6 +1508,8 @@ bool s57chart::RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPor
 
 bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint)
 {
+    if(!m_RAZBuilt) return false;
+
 #ifdef ocpnUSE_GL
     
     if( !ps52plib ) return false;
@@ -1506,6 +1532,8 @@ bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& V
 bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                        const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay )
 {
+    if(!m_RAZBuilt) return false;
+
 #ifdef ocpnUSE_GL
 
     if( !ps52plib ) return false;
@@ -1713,12 +1741,15 @@ bool s57chart::DoRenderOnGLText( const wxGLContext &glc, const ViewPort& VPoint 
 bool s57chart::RenderRegionViewOnDCNoText( wxMemoryDC& dc, const ViewPort& VPoint,
                                      const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
+    
     bool b_text = ps52plib->GetShowS57Text();
     ps52plib->m_bShowS57Text = false;
     bool b_ret = DoRenderRegionViewOnDC( dc, VPoint, Region, false );
     ps52plib->m_bShowS57Text = b_text;
     
-    return b_ret;
+    return true;
 }
 
 bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPoint,
@@ -1772,12 +1803,17 @@ bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPo
 bool s57chart::RenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
+
     return DoRenderRegionViewOnDC( dc, VPoint, Region, false );
 }
 
 bool s57chart::RenderOverlayRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         const OCPNRegion &Region )
 {
+    if(!m_RAZBuilt)
+        return false;
     return DoRenderRegionViewOnDC( dc, VPoint, Region, true );
 }
 
@@ -1861,7 +1897,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 
     m_last_Region = Region;
 
-    return bnew_view;
+    return true;
 
 }
 
@@ -2428,6 +2464,11 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
         if( m_bbase_file_attr_known ) {
 
             int sret = FindOrCreateSenc( m_FullPath );
+            if(sret == BUILD_SENC_PENDING){
+                    s_bInS57--;
+                    return INIT_OK;
+            }
+            
             if( sret != BUILD_SENC_OK ) {
                 if( sret == BUILD_SENC_NOK_RETRY ) ret_value = INIT_FAIL_RETRY;
                 else
@@ -2490,7 +2531,7 @@ wxString s57chart::buildSENCName( const wxString& name)
 //    Find or Create a relevent SENC file from a given .000 ENC file
 //    Returns with error code, and associated SENC file name in m_S57FileName
 //-----------------------------------------------------------------------------------------------
-InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
+int s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 {
     //  This method may be called for a compressed .000 cell, so check and decompress if necessary
     wxString ext;
@@ -2643,6 +2684,9 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
     if( bbuild_new_senc ) {
         m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
         build_ret_val = BuildSENCFile( m_TempFilePath, m_SENCFileName, b_progress );
+        
+        if(BUILD_SENC_PENDING == build_ret_val)
+            return BUILD_SENC_PENDING;
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) 
             return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val )
@@ -2703,6 +2747,7 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 //    Build array of contour values for later use by conditional symbology
 
     BuildDepthContourArray();
+    m_RAZBuilt = true;
     bReadyToRender = true;
 
     return INIT_OK;
@@ -3828,7 +3873,6 @@ bool s57chart::GetBaseFileAttr( const wxString& file000 )
 
 int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName, bool b_progress )
 {
-    OCPNPlatform::ShowBusySpinner();
     
     //  LOD calculation
     double display_ppm = 1 / .00025;     // nominal for most LCD displays
@@ -3838,21 +3882,44 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     //  Establish a common reference point for the chart
     ref_lat = ( m_FullExtent.NLAT + m_FullExtent.SLAT ) / 2.;
     ref_lon = ( m_FullExtent.WLON + m_FullExtent.ELON ) / 2.;
-    
-    Osenc senc;
 
-    senc.setRegistrar( g_poRegistrar );
-    senc.setRefLocn(ref_lat, ref_lon);
-    senc.SetLODMeters(m_LOD_meters);
+    if(!m_disableBackgroundSENC){
+        if(g_SencThreadManager){
+            SENCJobTicket *ticket = new SENCJobTicket();
+            ticket->m_LOD_meters = m_LOD_meters;
+            ticket->ref_lat = ref_lat;
+            ticket->ref_lon = ref_lon;
+            ticket->m_FullPath000 = FullPath000;
+            ticket->m_SENCFileName = SENCFileName;
+            ticket->m_chart = this;
+            
+            m_SENCthreadStatus = g_SencThreadManager->ScheduleJob(ticket);
+            bReadyToRender = true;
+            return BUILD_SENC_PENDING;
 
-    int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
+        }
+        else
+            return BUILD_SENC_NOK_RETRY;
 
-    OCPNPlatform::HideBusySpinner();
-    
-    if(ret == ERROR_INGESTING000)
-        return BUILD_SENC_NOK_PERMANENT;
-    else
-        return ret;
+    }
+    else{
+        Osenc senc;
+
+        senc.setRegistrar( g_poRegistrar );
+        senc.setRefLocn(ref_lat, ref_lon);
+        senc.SetLODMeters(m_LOD_meters);
+
+        OCPNPlatform::ShowBusySpinner();
+
+        int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
+
+        OCPNPlatform::HideBusySpinner();
+        
+        if(ret == ERROR_INGESTING000)
+            return BUILD_SENC_NOK_PERMANENT;
+        else
+            return ret;
+    }
 }
 
 
@@ -5163,7 +5230,7 @@ bool s57chart::CompareLights( const S57Light* l1, const S57Light* l2 )
 
 static const char *type2str( GeoPrim_t type)
 {
-    const char *r = "Uknown";
+    const char *r = "Unknown";
     switch(type) {
     case GEO_POINT:
         return "Point";
@@ -5198,6 +5265,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString positionString;
     std::vector<S57Light*> lights;
     S57Light* curLight = nullptr;
+    wxFileName file ;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
         ObjRazRules *current = node->GetData();
@@ -5339,7 +5407,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                         attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                     }
                 }
-
+   
                 // What we need to do...
                 // Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
                 // This will be like (E), (L), (I), (F)
@@ -5347,7 +5415,22 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 // need to do this in creatsencrecord above, and update the senc format.
 
                 value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
-
+                
+                // If the atribute value is a filename, change the value into a link to that file
+                wxString AttrNamesFiles = _T("PICREP,TXTDSC,NTXTDS"); //AttrNames that might have a filename as value
+                if ( AttrNamesFiles.Find( curAttrName) != wxNOT_FOUND )
+                    if ( value.Find(_T(".XML")) == wxNOT_FOUND ){ // Don't show xml files   
+                        file.Assign( GetFullPath() );   
+                        file.Assign( file.GetPath(), value );
+                        file.Normalize();
+                        if( file.IsOk() ){
+                            if( file.Exists() )
+                                value = wxString::Format( _T("<a href=\"%s\">%s</a>"), file.GetFullPath(), file.GetFullName() );
+                            else
+                                value = value + _T("&nbsp;&nbsp;<font color=\"red\">[ ") + _("this file is not available") + _T(" ]</font>");
+                        }
+                    }                    
+                    
                 if( isLight ) {
                     assert( curLight != nullptr);
                     curLight->attributeValues.Add( value );
@@ -5362,7 +5445,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                     if( !( curAttrName == _T("DRVAL1") ) ) {
                         attribStr << _T("</font></td></tr>\n");
-                    }
+                    }                  
                 }
 
                 attrCounter++;
@@ -5388,7 +5471,28 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
         }
     } // Object for loop
-
+    
+    // Add the additional info files
+    wxArrayString files;
+    file.Assign( GetFullPath() );
+    wxString AddFiles = wxString::Format(_T("<hr noshade><br><b>Additional info files attached to: </b> <font size=-2>%s</font><br><table border=0 cellspacing=0 cellpadding=3>"), file.GetFullName() );
+    file.Normalize();
+    file.Assign( file.GetPath(), wxT("") );    
+    wxDir::GetAllFiles( file.GetFullPath(), &files,  wxT("*.TXT"), wxDIR_FILES  );
+    wxDir::GetAllFiles( file.GetFullPath(), &files,  wxT("*.txt"), wxDIR_FILES  );
+    if ( files.Count() > 0 )
+    {      
+        for ( size_t i=0; i < files.Count(); i++){
+            file.Assign( files.Item(i) );
+            AddFiles << wxString::Format( _T("<tr><td valign=top><font size=-2><a href=\"%s\">%s</a></font></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</td>"), file.GetFullPath(), file.GetFullName() );
+            if ( files.Count() > ++i){
+                file.Assign( files.Item(i) );
+                AddFiles << wxString::Format( _T("<td valign=top><font size=-2><a href=\"%s\">%s</a></font></td>"), file.GetFullPath(), file.GetFullName() );                
+            }                
+        }
+        ret_val << AddFiles <<_T("</table>");
+    }
+    
     if( !lights.empty() ) {
         assert( curLight != nullptr);
 
@@ -5514,7 +5618,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
         lights.clear();
     }
-
+   
     return ret_val;
 }
 

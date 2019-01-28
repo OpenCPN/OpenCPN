@@ -467,6 +467,18 @@ fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon)
       *lon = lon0 + (x / (DEGREE * z));
 }
 
+void
+fromSMR(double x, double y, double lat0, double lon0, double axis_meters, double *lat, double *lon)
+{
+      const double s0 = sin(lat0 * DEGREE);
+      const double y0 = (.5 * log((1 + s0) / (1 - s0))) * axis_meters;
+
+      *lat = (2.0 * atan(exp((y0+y)/axis_meters)) - PI/2.) / DEGREE;
+
+      // lon = x + lon0
+      *lon = lon0 + (x / (DEGREE * axis_meters));
+}
+
 void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y)
 {
       const double f = 1.0 / WGSinvf;       // WGS84 ellipsoid flattening parameter

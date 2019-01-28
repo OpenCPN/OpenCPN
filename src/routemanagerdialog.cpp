@@ -39,7 +39,8 @@
 #include "styles.h"
 #include "dychart.h"
 #include "navutil.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
@@ -60,20 +61,20 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
-enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
+enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
-extern RouteProp *pRoutePropDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
 extern ActiveTrack      *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
-extern MarkInfoImpl     *pMarkPropDialog;
+extern MarkInfoDlg      *g_pMarkInfoDialog;
 extern MyFrame          *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
@@ -83,6 +84,7 @@ extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
 extern OCPNPlatform     *g_Platform;
+extern bool             g_bOverruleScaMin;
 
 //Helper for conditional file name separator
 void appendOSDirSlash(wxString* pString);
@@ -111,21 +113,13 @@ static int wxCALLBACK SortRoutesOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr 
 int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
 #endif
 {
-    wxListCtrl *ctrl = (wxListCtrl*)list;
-    wxString a, b;
-    a = ctrl->GetItemText(item1, 1);
-    b = ctrl->GetItemText(item2, 1);
-    if( sort_route_name_dir )
-        return a.CmpNoCase(b);
-    return b.CmpNoCase(a);
-    /*
     wxListCtrl *lc = (wxListCtrl*)list;
+    
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
-
+    
     return SortRouteTrack(1, sort_route_name_dir, lc, it1, it2);
-    */
 }
 
 // sort callback. Sort by route Destination.
@@ -180,11 +174,19 @@ static int SortDouble(int column, int order, wxListCtrl *lc, wxListItem &it1, wx
     double l1, l2;
     s1.ToDouble(&l1);
     s2.ToDouble(&l2);
+    
 
-    if(order & 1)
-        return (l1 < l2);
+    if(order & 1) {
+        double x = l1;
+        l1 = l2;
+        l2 = x;
+    }
 
-    return (l2 < l1);
+    if( l1 == l2 )
+        return 0;
+    if (l2 < l1)
+        return 1;
+    return -1;
 }
 
 // sort callback. Sort by track length.
@@ -228,7 +230,6 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
     }
     else
         return 0;
-    
 }
 
 // sort callback. Sort by wpt distance.
@@ -245,7 +246,7 @@ int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
 
-    return SortDouble(2, sort_wp_len_dir, lc, it1, it2); 
+    return SortDouble(DISTANCE_COLUMN, sort_wp_len_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by layer name.
@@ -261,7 +262,7 @@ int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
     it2.SetId(lc->FindItem(-1, item2));
-    return SortRouteTrack(1, sort_layer_name_dir, lc, it1, it2);
+    return SortRouteTrack(NAME_COLUMN, sort_layer_name_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by layer size.
@@ -283,7 +284,7 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 
 // event table. Mostly empty, because I find it much easier to see what is connected to what
 // using Connect() where possible, so that it is visible in the code.
-BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
+BEGIN_EVENT_TABLE(RouteManagerDialog, wxFrame)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
 EVT_CLOSE(RouteManagerDialog::OnClose)
 EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
@@ -328,12 +329,9 @@ RouteManagerDialog* RouteManagerDialog::getInstance(wxWindow *parent)
 
 RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
-    long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
-    wxDialog::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
+    wxFrame::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -634,6 +632,7 @@ void RouteManagerDialog::Create()
     sbsWpts->Add( bSizerWptContents, 1, wxEXPAND, 5 );    
 
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 4 * char_width );
+    m_pWptListCtrl->InsertColumn( colWPTSCALE, _("Scale"), wxLIST_FORMAT_LEFT, 8 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from own ship"), wxLIST_FORMAT_LEFT, 14 * char_width );
     
@@ -711,6 +710,10 @@ void RouteManagerDialog::Create()
     itemBoxSizer6->Add( btnExportViz, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this );
+    
+    // Dialog OK button
+    itemBoxSizer6->Add( 0, 0, 1, wxEXPAND, 5 ); // Spacer
+    itemBoxSizer6->Add( new wxButton( this, wxID_OK ), 0, wxALL, DIALOG_MARGIN );
     
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -804,11 +807,6 @@ void RouteManagerDialog::Create()
     bsLayButtonsInner->Add( btnLayToggleListing, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnLayToggleListing->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                   wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this );
-    
-    // Dialog buttons
-    wxSizer *szButtons = CreateButtonSizer( wxOK );
-    
-    itemBoxSizer5->Add( szButtons, 0, wxALL, DIALOG_MARGIN );
     
     RecalculateSize();
 
@@ -1198,16 +1196,10 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    pRoutePropDialog = RouteProp::getInstance( GetParent() );
+    pRoutePropDialog = RoutePropDlgImpl::getInstance( GetParent() );
 
     pRoutePropDialog->SetRouteAndUpdate( route );
-    pRoutePropDialog->UpdateProperties();
-    if( !route->m_bIsInLayer )
-        pRoutePropDialog->SetDialogTitle( _("Route Properties") );
-    else {
-        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Route Properties"), _("Layer"), GetLayerName( route->m_LayerID ) ) );
-        pRoutePropDialog->SetDialogTitle( caption );
-    }
+
 
     if( !pRoutePropDialog->IsShown() )
         pRoutePropDialog->Show();
@@ -1927,7 +1919,8 @@ void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
     //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
     UpdateRouteListCtrl();
 
-    if( pRoutePropDialog ) pRoutePropDialog->Hide();
+    if( pRoutePropDialog )
+        pRoutePropDialog->Hide();
 
     gFrame->RefreshAllCanvas();
     
@@ -1974,6 +1967,11 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
             li.SetData( rp );
             li.SetText( _T("") );
             long idx = m_pWptListCtrl->InsertItem( li );
+            
+            wxString scamin = wxString::Format( _T("%i"), (int)rp->GetScaMin() );
+            if ( !rp->GetUseSca()) scamin = _("Always");
+            if ( g_bOverruleScaMin ) scamin = _("Overruled");
+            m_pWptListCtrl->SetItem( idx, colWPTSCALE, scamin );
 
             wxString name = rp->GetName();
             if( name.IsEmpty() ) name = _("(Unnamed Waypoint)");
@@ -2066,16 +2064,18 @@ void RouteManagerDialog::OnWptSelected( wxListEvent &event )
 
 void RouteManagerDialog::OnWptColumnClicked( wxListEvent &event )
 {
-    if( event.m_col == 1 ) {
+    if( event.m_col == NAME_COLUMN ) {
         sort_wp_name_dir++;
         m_pWptListCtrl->SortItems( SortWaypointsOnName, (wxIntPtr) m_pWptListCtrl );
         sort_wp_key = SORT_ON_NAME;
-    } else
-        if( event.m_col == 2 ) {
+    } else {
+        if( event.m_col == DISTANCE_COLUMN ) {
             sort_wp_len_dir++;
             m_pWptListCtrl->SortItems( SortWaypointsOnDistance, (wxIntPtr) m_pWptListCtrl );
             sort_wp_key = SORT_ON_DISTANCE;
         }
+    }
+    UpdateWptListCtrl();
 }
 
 void RouteManagerDialog::UpdateWptButtons()
@@ -2138,6 +2138,16 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
 
         gFrame->RefreshAllCanvas();
     }
+    else //  clicked on ScaMin column??
+        if( clicked_index > -1 && event.GetX() > m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE ) &&  event.GetX() < ( m_pWptListCtrl->GetColumnWidth( colTRKVISIBLE )+ m_pWptListCtrl->GetColumnWidth( colWPTSCALE ) ) && !g_bOverruleScaMin ){ 
+            RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( clicked_index );
+            wp->SetUseSca( !wp->GetUseSca() );
+            pConfig->UpdateWayPoint( wp );
+            gFrame->RefreshAllCanvas();
+            wxString scamin = wxString::Format( _T("%i"), (int)wp->GetScaMin() );
+            if ( !wp->GetUseSca()) scamin = _("Always");
+            m_pWptListCtrl->SetItem( clicked_index, colWPTSCALE, scamin );
+        }
 
     // Allow wx to process...
     event.Skip();
@@ -2152,10 +2162,12 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
     gFrame->RefreshAllCanvas();
     
-    pMarkPropDialog = MarkInfoImpl::getInstance( GetParent() );
+    //g_pMarkInfoDialog = MarkInfoImpl::getInstance( GetParent() );
+    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
     
-    pMarkPropDialog->SetRoutePoint( pWP );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( pWP );
+    g_pMarkInfoDialog->UpdateProperties();
 
     WptShowPropertiesDialog( pWP, GetParent() );
 }
@@ -2178,20 +2190,20 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent )
 {
-    // There is one global instance of the MarkProp Dialog
-    pMarkPropDialog = MarkInfoImpl::getInstance( parent );
+     if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+        g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-    pMarkPropDialog->SetRoutePoint( wp );
-    pMarkPropDialog->UpdateProperties();
+    g_pMarkInfoDialog->SetRoutePoint( wp );
+    g_pMarkInfoDialog->UpdateProperties();
     if( wp->m_bIsInLayer ) {
         wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( wp->m_LayerID ) ) );
-        pMarkPropDialog->SetDialogTitle( caption );
+        g_pMarkInfoDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
+        g_pMarkInfoDialog->SetDialogTitle( _("Waypoint Properties") );
 
-    if( !pMarkPropDialog->IsShown() )
-        pMarkPropDialog->Show();
-
+    if( !g_pMarkInfoDialog->IsShown() )
+        g_pMarkInfoDialog->Show();
+    g_pMarkInfoDialog->Raise();
 }
 
 void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )
@@ -2265,9 +2277,9 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
         UpdateWptListCtrl( wp_next, true );
 
-        if( pMarkPropDialog ) {
-            pMarkPropDialog->SetRoutePoint( NULL );
-            pMarkPropDialog->UpdateProperties();
+        if( g_pMarkInfoDialog ) {
+            g_pMarkInfoDialog->SetRoutePoint( NULL );
+            g_pMarkInfoDialog->UpdateProperties();
         }
 
         gFrame->InvalidateAllCanvasUndo();
@@ -2390,9 +2402,9 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
     if ( answer == wxID_NO && type == 2 )
         pWayPointMan->DeleteAllWaypoints( false );          // only delete unused waypoints
 
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->SetRoutePoint( NULL );
-        pMarkPropDialog->UpdateProperties();
+    if( g_pMarkInfoDialog ) {
+        g_pMarkInfoDialog->SetRoutePoint( NULL );
+        g_pMarkInfoDialog->UpdateProperties();
     }
 
     m_lastWptItem = -1;
@@ -2599,9 +2611,9 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
         node3 = NULL;
     }
 
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->SetRoutePoint( NULL );
-        pMarkPropDialog->UpdateProperties();
+    if( g_pMarkInfoDialog ) {
+        g_pMarkInfoDialog->SetRoutePoint( NULL );
+        g_pMarkInfoDialog->UpdateProperties();
     }
 
     pLayerList->DeleteObject( layer );

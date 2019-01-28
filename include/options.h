@@ -62,6 +62,7 @@ class MMSI_Props_Panel;
 class MMSIProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
+class OCPNIconCombo;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -336,6 +337,8 @@ class options : private Uncopyable,
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected( wxMouseEvent &event);
+
+  void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
   
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -370,6 +373,9 @@ class options : private Uncopyable,
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pDarkDecorations;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+
+  wxTextCtrl *pCmdSoundString;
+
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
@@ -381,7 +387,6 @@ class options : private Uncopyable,
   int k_tides;
 
   // For the GPS page
-  wxListCtrl *m_lcSources;
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
   wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
   wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
@@ -395,8 +400,14 @@ class options : private Uncopyable,
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
+  wxStaticText *m_stNetComment, *m_stSerialComment;
+  wxTextCtrl *m_tNetComment, *m_tSerialComment;
+  wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
+  wxScrolledWindow *m_scrollWinConnections; 
+  wxBoxSizer *boxSizerConnections;
+  ConnectionParams *mSelectedConnection;
   
   // For the Display\Units page
   wxStaticText* itemStaticTextUserVar;
@@ -435,10 +446,9 @@ class options : private Uncopyable,
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
-  void EnableItem(const long index);
-  void OnConnectionToggleEnable(wxListEvent &event);
-  void OnConnectionToggleEnableMouse(wxMouseEvent &event);
+  void EnableConnection( ConnectionParams *conn, bool value);
 
+  
   void OnCanvasConfigSelectClick( int ID, bool selected);
   
   bool connectionsaved;
@@ -521,9 +531,14 @@ class options : private Uncopyable,
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
   wxTextCtrl *m_pOSMinSize, *m_pText_ACRadius;
   wxStaticBoxSizer *dispOptions, *dispWaypointOptions;
-  wxScrolledWindow *itemPanelShip;
-  wxBoxSizer *ownShip;
+  wxScrolledWindow *itemPanelShip, *itemPanelRoutes;
+  wxBoxSizer *ownShip, *Routes;
 
+  OCPNIconCombo *pWaypointDefaultIconChoice;
+  OCPNIconCombo *pRoutepointDefaultIconChoice;
+  wxCheckBox    *pScaMinChckB, *pScaMinOverruleChckB;
+  wxTextCtrl*   m_pText_ScaMin;
+  
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
@@ -557,7 +572,7 @@ class options : private Uncopyable,
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
-  wxSpinCtrl *pSoundDeviceIndex;
+  wxChoice *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
   wxArrayString *m_pSerialArray;
@@ -584,6 +599,8 @@ class options : private Uncopyable,
   void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Routes(size_t parent, int border_size, int group_item_spacing);
+
   void UpdateTemplateTitleText();
   
   int m_returnChanges;
@@ -614,7 +631,11 @@ class options : private Uncopyable,
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
   void FillSourceList();
+  void UpdateSourceList( bool bResort );
+  bool SortSourceList(void);
+
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
+  ConnectionParams *UpdateConnectionParamsFromSelectedItem(ConnectionParams *pConnectionParams);
 
   int m_screenConfig;
   

@@ -1054,6 +1054,26 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx)
     return 0;
 }
 
+std::map<double, const IDX_entry*> TCMgr::GetStationsForLL(double xlat, double xlon) const
+{
+    std::map<double, const IDX_entry*> x;
+    const IDX_entry *lpIDX;
+    
+    for ( int j=1 ; j<Get_max_IDX() +1 ; j++ ) {
+        lpIDX = GetIDX_entry ( j );
+        char type = lpIDX->IDX_type;
+        wxString locnx ( lpIDX->IDX_station_name, wxConvUTF8 );
+        
+        if ( type == 't' || type == 'T' ) {
+            double brg, dist;
+            DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg, &dist);
+            x.emplace(std::make_pair(dist, lpIDX));
+        }
+    }
+    
+    return x;
+}
+
 int TCMgr::GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const
 {
     const IDX_entry *lpIDX;

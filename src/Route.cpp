@@ -45,6 +45,7 @@ extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
+extern wxString g_default_routepoint_icon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -86,17 +87,19 @@ Route::Route()
     
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+    m_HyperlinkList = new HyperlinkList;
 }
 
 Route::~Route()
 {
     pRoutePointList->DeleteContents( false );            // do not delete Marks
     delete pRoutePointList;
+    delete m_HyperlinkList;
 }
 
 // The following is used only for route splitting, assumes just created, empty route
 //
-void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
+void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix, const bool duplicate_first_point)
 {
     m_RouteNameString = psourceroute->m_RouteNameString + suffix;
     m_RouteStartString = psourceroute->m_RouteStartString;
@@ -104,8 +107,9 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
 
     int i;
     for( i = start_nPoint; i <= end_nPoint; i++ ) {
-        if( !psourceroute->m_bIsInLayer ) AddPoint( psourceroute->GetPoint( i ), false );
-        else {
+        if( !psourceroute->m_bIsInLayer && !(i == start_nPoint && duplicate_first_point) ) {
+            AddPoint( psourceroute->GetPoint( i ), false );
+        } else {
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
                     psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
@@ -152,8 +156,9 @@ RoutePoint *Route::GetPoint( int nWhichPoint )
     int i = 1;
     while( node ) {
         prp = node->GetData();
-        if( i == nWhichPoint ) return prp;
-
+        if( i == nWhichPoint ) {
+            return prp;
+        }
         i++;
         node = node->GetNext();
     }
@@ -700,7 +705,7 @@ void Route::ClearHighlights( void )
 RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
         bool bRenamePoints )
 {
-    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon,
             GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
@@ -725,7 +730,7 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
         return NULL;
     nRP++;
     
-    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon,
                                            GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
@@ -964,8 +969,12 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    Calculate the absolute distance from 1->2
 
     double dd;
+    double br;
     // why are we using mercator rather than great circle here?? [sean 8-11-2015]
-    DistanceBearingMercator( slat1, slon1, slat2, slon2, 0, &dd );
+    DistanceBearingMercator( slat2, slon2, slat1, slon1, &br, &dd );
+    
+    prp->SetCourse(br);
+    prp->SetDistance(dd);
 
 //    And store in Point 2
     prp->m_seg_len = dd;
@@ -976,40 +985,30 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    If Point1 Description contains ETD, store it in Point1
 
     if( planspeed > 0. ) {
-        double vmg = 0.0;
         wxDateTime etd;
 
-        if( prp0->m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
-            wxString s_vmg = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
-            if( !s_vmg.ToDouble( &vmg ) ) vmg = planspeed;
-        }
-
         double legspeed = planspeed;
-        if( vmg > 0.1 && vmg < 1000. ) legspeed = vmg;
+        if( prp->GetPlannedSpeed() > 0.1 && prp->GetPlannedSpeed() < 1000. )
+            legspeed = prp->GetPlannedSpeed();
         if( legspeed > 0.1 && legspeed < 1000. ) {
             m_route_time += 3600. * dd / legspeed;
             prp->m_seg_vmg = legspeed;
         }
-
-        prp0->m_seg_etd = wxInvalidDateTime;
-        if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
-            wxString s_etd = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
-            const wxChar *parse_return = etd.ParseDateTime( s_etd );
-            if( parse_return ) {
-                wxString tz( parse_return );
-
-                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) prp0->m_seg_etd = etd;
-                else
-                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
-                        prp0->m_seg_etd = etd;
-                        long lmt_offset = (long) ( ( prp0->m_lon * 3600. ) / 15. );
-                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
-                        prp0->m_seg_etd -= lmt;
-                    } else
-                        prp0->m_seg_etd = etd.ToUTC();
+        wxLongLong duration = wxLongLong(3600.0 * prp->m_seg_len / prp->m_seg_vmg);
+        prp->SetETE(duration);
+        wxTimeSpan ts( 0, 0, duration );
+        if( !prp0->GetManualETD().IsValid() ) {
+            prp0->m_manual_etd = false;
+            if( prp0->GetETA().IsValid() ) {
+                prp0->m_seg_etd = prp0->GetETA();
+            } else {
+                prp0->m_seg_etd = m_PlannedDeparture + wxTimeSpan(0, 0, m_route_time);
             }
+        }
+        prp->m_seg_eta = prp0->m_seg_etd + ts;
+        if( !prp->m_manual_etd || !prp->GetETD().IsValid() ) {
+            prp->m_seg_etd = prp->m_seg_eta;
+            prp->m_manual_etd = false;
         }
     }
 }
@@ -1029,6 +1028,9 @@ void Route::UpdateSegmentDistances( double planspeed )
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
+        if( !prp0->m_manual_etd ) {
+            prp0->m_seg_etd = m_PlannedDeparture;
+        }
         node = node->GetNext();
 
         while( node ) {

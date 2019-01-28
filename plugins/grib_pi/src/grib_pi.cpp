@@ -516,6 +516,19 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     return true;
 }
 
+bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    
+    if(GetCanvasCount() > 1){            // multi?
+        if(canvasIndex == 1){
+            return RenderGLOverlay( pcontext, vp);
+        }
+    }
+
+    return RenderGLOverlay( pcontext, vp);
+}
+
 void grib_pi::SetCursorLatLon(double lat, double lon)
 {
     if(m_pGribCtrlBar && m_pGribCtrlBar->IsShown())
@@ -544,7 +557,86 @@ void grib_pi::SetDialogFont( wxWindow *dialog, wxFont *font)
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
 {
-    if(message_id == _T("GRIB_VERSION_REQUEST"))
+    if(message_id == _T("GRIB_VALUES_REQUEST"))
+    {
+        if(!m_pGribCtrlBar)
+            OnToolbarToolCallback(0);
+
+        // lat, lon, time, what
+        wxJSONReader r;
+        wxJSONValue v;
+        r.Parse(message_body, &v);
+        if (!v.HasMember(_T("Day"))) {
+            // bogus or loading grib
+            SendPluginMessage(wxString(_T("GRIB_VALUES")), _T(""));
+            return;
+        }
+        wxDateTime time(v[_T("Day")].AsInt(),
+                        (wxDateTime::Month)v[_T("Month")].AsInt(),
+                        v[_T("Year")].AsInt(),
+                        v[_T("Hour")].AsInt(),
+                        v[_T("Minute")].AsInt(),
+                        v[_T("Second")].AsInt());
+        double lat = v[_T("lat")].AsDouble();
+        double lon = v[_T("lon")].AsDouble();
+
+        if(m_pGribCtrlBar) {
+            if (v.HasMember(_T("WIND SPEED"))) {
+                double vkn, ang;
+                if ( m_pGribCtrlBar->getTimeInterpolatedValues(vkn, ang,
+                                         Idx_WIND_VX, Idx_WIND_VY,
+                                         lon, lat, time) && vkn != GRIB_NOTDEF)
+                {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("WIND SPEED")] = vkn;
+                    v[_T("WIND DIR")] = ang;
+                }
+                else {
+                    v.Remove(_T("WIND SPEED"));
+                    v.Remove(_T("WIND DIR"));
+                }
+            }
+            if (v.HasMember(_T("CURRENT SPEED"))) {
+                double vkn, ang;
+                if ( m_pGribCtrlBar->getTimeInterpolatedValues(vkn, ang,
+                                         Idx_SEACURRENT_VX, Idx_SEACURRENT_VY,
+                                         lon, lat, time) && vkn != GRIB_NOTDEF)
+                {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("CURRENT SPEED")] = vkn;
+                    v[_T("CURRENT DIR")] = ang;
+                }
+                else {
+                    v.Remove(_T("CURRENT SPEED"));
+                    v.Remove(_T("CURRENT DIR"));
+                }
+            }
+            if (v.HasMember(_T("GUST")) ) {
+                double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_WIND_GUST, lon, lat, time );
+                if ( vkn != GRIB_NOTDEF ) {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("GUST")] = vkn;
+                }
+                else
+                    v.Remove(_T("GUST"));
+            }
+            if (v.HasMember(_T("SWELL")) ) {
+                double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_HTSIGW, lon, lat, time );
+                if ( vkn != GRIB_NOTDEF ) {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("SWELL")] = vkn;
+                }
+                else
+                    v.Remove(_T("SWELL"));
+            }
+
+            wxJSONWriter w;
+            wxString out;
+            w.Write(v, out);
+            SendPluginMessage(wxString(_T("GRIB_VALUES")), out);
+        }
+    }
+    else if(message_id == _T("GRIB_VERSION_REQUEST"))
     {
         wxJSONValue v;
         v[_T("GribVersionMinor")] = GetAPIVersionMinor();
@@ -555,12 +647,12 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         w.Write(v, out);
         SendPluginMessage(wxString(_T("GRIB_VERSION")), out);
     }
-    if(message_id == _T("GRIB_TIMELINE_REQUEST"))
+    else if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
         // local time
         SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime() : wxDateTime::Now());
     }
-    if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
+    else if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
     {
         wxJSONReader r;
         wxJSONValue v;
@@ -592,7 +684,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         m_pLastTimelineSet = set;
     }
     
-    if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
+    else if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
     {
         wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
         

@@ -39,6 +39,8 @@
 
 #include <wx/file.h>
 
+#include "dychart.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -47,7 +49,6 @@
 #include "chartbase.h" // for projections
 #include "wx28compat.h"
 
-#include "dychart.h"
 
 
 #ifdef __WXMSW__
@@ -94,6 +95,12 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     land.Set( land.Red()*dim, land.Green()*dim, land.Blue()*dim );
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
+
+void GSHHSChart::SetColorsDirect( wxColour newLand, wxColour newWater ) {
+    land =  newLand;
+    water = newWater;
+}
+    
 
 void GSHHSChart::Reset() {
     if( reader )

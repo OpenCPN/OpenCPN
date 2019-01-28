@@ -195,6 +195,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 *
 *   RETURN VALUES :
 *          0 = Successful decode
+*         -2 = no memory Error.
 *         -3 = Error decode jpeg2000 code stream.
 *         -5 = decoded image had multiple color components.
 *              Only grayscale is expected.
@@ -226,7 +227,10 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //       
 
     jpcstream=jas_stream_memopen(injpc,bufsize);
-
+    if (jpcstream == nullptr) {
+        printf(" dec_jpeg2000: no memory\n");
+        return -2;
+    }
 //   
 //     Decode JPEG200 codestream into jas_image_t structure.
 //       
@@ -918,6 +922,9 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	delete [] jvals;
 	break;
 #endif
+    default:
+        erreur("Unknown packing %d", grib_msg->md.drs_templ_num);
+        break;
   }
   return true;
 }
@@ -960,11 +967,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 22: ret = GRB_WIND_GUST; break; // 
             }
             break;
-        case 3: // dataCat
+        case 3: // dataCat mass
             switch (dataNum) {
             case 0: ret = GRB_PRESSURE; break; //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
             case 1: ret = GRB_PRESSURE; break; // PRSMSL //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
             case 5: ret = GRB_GEOPOT_HGT; break; // DATA_TO_GRBV2[DATA_GEOPOT_HGT]= grb2DataType(0,3,5);
+
+            case 192: ret = GRB_PRESSURE; break; //DATA_TO_GRBV2[DATA_MSLET] = grb2DataType(0,3,192);
             }
             break;
         case 6: // dataCat
@@ -1028,12 +1037,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        erreur("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
+        erreur("unknown %d %d %d", productDiscipline,  dataCat,dataNum);
     }
 #endif    
     return ret;    
 }
 
+/** Return UINT_MAX on errors. */
 static int mapStatisticalEndTime(GRIBMessage *grid)
 {
   switch (grid->md.time_unit) { // table 4.4
@@ -1050,7 +1060,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
 	return (grid->md.stat_proc.eyr -grid->yr);
     default:
 	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
-	exit(1);
+	return UINT_MAX;
   }
 }
 
@@ -1149,6 +1159,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		}
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
+                if (*p2 == UINT_MAX) {
+                    return false;
+                }
 		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
@@ -1162,6 +1175,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		*t_range=2;
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
+                if (*p2 == UINT_MAX) {
+                    return false;
+                }
 		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
@@ -1180,6 +1196,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 			    *t_range=2;
 			    *p1=grid->md.fcst_time;
 			    *p2=mapStatisticalEndTime(grid);
+                            if (*p2 == UINT_MAX) {
+                                return false;
+                            }
 			    if (grid->md.stat_proc.t[0].incr_length == 0)
 				*n_avg=0;
 			    else {

@@ -115,6 +115,11 @@ public:
     wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
     void OpenFileFromJSON( wxString json);
         
+    // 
+    double getTimeInterpolatedValue ( int idx, double lon, double lat, wxDateTime t);
+    bool getTimeInterpolatedValues ( double &M, double &A, int idx1, int idx2, double lon, double lat, wxDateTime t);
+
+
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
@@ -244,7 +249,7 @@ public:
     GRIBUICData( GRIBUICtrlBar &parent );
     ~GRIBUICData() {}
 
-    GribGrabberWin      *m_gGrabber;
+    // GribGrabberWin      *m_gGrabber;
     GRIBUICtrlBar       &m_gpparent;
     CursorData          *m_gCursorData;
 private:

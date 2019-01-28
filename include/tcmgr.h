@@ -28,6 +28,7 @@
 #define __TCMGR_H__
 
 #include <wx/arrstr.h>
+#include <map>
 
 #include "Station_Data.h"
 #include "IDX_entry.h"
@@ -116,6 +117,8 @@ public:
         return m_Combined_IDX_array.GetCount()-1;
     }
 
+    std::map<double, const IDX_entry*> GetStationsForLL(double xlat, double xlon) const;
+    
     int GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const;
     int GetStationIDXbyNameType(const wxString & prefix, double xlat, double xlon, char type) const;
 

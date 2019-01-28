@@ -24,6 +24,7 @@
 
 #include "wx/tokenzr.h"
 
+#include "SoundFactory.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
@@ -34,10 +35,12 @@
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "Track.h"
+#include <multiplexer.h>
+#include "config.h"
 
 #if !defined(NAN)
-static const long long lNaN = 0xfff8000000000000;
-#define NAN (*(double*)&lNaN)
+    static const long long lNaN = 0xfff8000000000000;
+    #define NAN (*(double*)&lNaN)
 #endif
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -76,7 +79,7 @@ extern int      g_Show_Target_Name_Scale;
 extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
 extern bool     g_bInlandEcdis;
-
+extern int      g_iSoundDeviceIndex;
 extern bool     g_bWplIsAprsPosition;
 extern double gLat;
 extern double gLon;
@@ -94,14 +97,20 @@ extern MyConfig *pConfig;
 extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
 extern PlugInManager             *g_pi_manager;
+extern Multiplexer      *g_pMUX;
+
+extern wxString g_CmdSoundString;
 
 bool g_benableAISNameCache;
+bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
+
+wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
-    EVT_TIMER(TIMER_AISAUDIO, AIS_Decoder::OnTimerAISAudio)
     EVT_TIMER(TIMER_DSC, AIS_Decoder::OnTimerDSC)
+    EVT_COMMAND(wxID_ANY, SOUND_PLAYED_EVTYPE, AIS_Decoder::OnSoundFinishedAISAudio)
 END_EVENT_TABLE()
 
 static int n_msgs;
@@ -115,26 +124,49 @@ static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
+extern int              gps_watchdog_timeout_ticks;
+extern bool g_bquiting;
+
+static void onSoundFinished(void* ptr)
+{
+    if (!g_bquiting) {
+        auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+        wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
+        wxPostEvent(aisDecoder, ev);
+    }
+}
+
 
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
 
     // Load cached AIS target names from a file
-    AISTargetNames = new AIS_Target_Name_Hash;
+    AISTargetNamesC = new AIS_Target_Name_Hash;
+    AISTargetNamesNC = new AIS_Target_Name_Hash;
     
     if(g_benableAISNameCache){
-        std::ifstream infile( AISTargetNameFileName.mb_str() );
-        if( infile ) {
-            std::string line;
-            while ( getline( infile, line ) ) {
-                wxStringTokenizer tokenizer( wxString::FromUTF8(line.c_str()), _T(",") );
-                int mmsi = wxAtoi( tokenizer.GetNextToken() );
-                wxString name = tokenizer.GetNextToken().Trim();
-                ( *AISTargetNames )[mmsi] = name;
+        wxTextFile  infile;
+        if ( infile.Open(AISTargetNameFileName) ){    
+            AIS_Target_Name_Hash *HashFile = AISTargetNamesNC;
+            wxString line = infile.GetFirstLine();
+            while ( !infile.Eof() ) {
+                if( line.IsSameAs( wxT("+++==Confirmed Entry's==+++") ) )
+                    HashFile = AISTargetNamesC;
+                else { 
+                    if( line.IsSameAs( wxT("+++==Non Confirmed Entry's==+++") ) )
+                        HashFile = AISTargetNamesNC;
+                    else{
+                        wxStringTokenizer tokenizer( line, _T(",") );
+                        int mmsi = wxAtoi( tokenizer.GetNextToken() );
+                        wxString name = tokenizer.GetNextToken().Trim();
+                        ( *HashFile )[mmsi] = name;                        
+                    }                    
+                }
+                line = infile.GetNextLine();
             }
         }
-        infile.close();
+        infile.Close();
     }
     
     AIS_AreaNotice_Sources = new AIS_Target_Hash;
@@ -142,10 +174,13 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
 
     g_pais_alert_dialog_active = NULL;
     m_bAIS_Audio_Alert_On = false;
+    m_AIS_Sound = 0;
 
     m_n_targets = 0;
 
     m_parent_frame = parent;
+
+    m_bAIS_AlertPlaying = false;
 
     TimerAIS.SetOwner(this, TIMER_AIS1);
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
@@ -173,8 +208,35 @@ AIS_Decoder::~AIS_Decoder( void )
     
     delete AIS_AreaNotice_Sources;
 
-    AISTargetNames->clear();
-    delete AISTargetNames;
+    //Write mmsi-shipsname to file in a safe way
+    wxTempFile outfile;
+    if ( outfile.Open(AISTargetNameFileName) )
+    {
+        wxString content;
+        content = wxT("+++==Confirmed Entry's==+++");
+        AIS_Target_Name_Hash::iterator it;
+        for ( it = AISTargetNamesC->begin(); it != AISTargetNamesC->end(); ++it )
+                {
+                    content.append(_("\r\n") );
+                    content.append( wxString::Format(wxT("%i"),it->first ) );
+                    content.append( _(",") ).append(it->second );
+                }
+            content.append( _("\r\n+++==Non Confirmed Entry's==+++") );
+        for ( it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it )
+                {
+                    content.append(_("\r\n") );
+                    content.append( wxString::Format(wxT("%i"),it->first ) );
+                    content.append( _(",") ).append(it->second );
+                }
+        outfile.Write( content );
+        outfile.Commit();
+    }
+
+
+    AISTargetNamesC->clear();
+    delete AISTargetNamesC;
+    AISTargetNamesNC->clear();
+    delete AISTargetNamesNC;
 
     clear_hash_ERI();
     
@@ -245,8 +307,8 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
       make_hash_ERI(8441, _("Ferry"));
       make_hash_ERI(8442, _("Red cross ship"));
       make_hash_ERI(8443, _("Cruise ship"));
-      make_hash_ERI(8444, _("Passenger ship without accomodation"));
-      make_hash_ERI(8460, _("Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"));
+      make_hash_ERI(8444, _("Passenger ship without accommodation"));
+      make_hash_ERI(8460, _("Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"));
       make_hash_ERI(8480, _("Fishing boat"));
       make_hash_ERI(8500, _("Barge, tanker, chemical"));
       make_hash_ERI(1500, _("General cargo Vessel maritime"));
@@ -419,7 +481,7 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
 //----------------------------------------------------------------------------------------
 AIS_Error AIS_Decoder::Decode( const wxString& str )
 {
-    AIS_Error ret;
+    AIS_Error ret = AIS_GENERIC_ERROR;
     wxString string_to_parse;
 
     double gpsg_lat, gpsg_lon, gpsg_mins, gpsg_degs;
@@ -754,8 +816,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
         token = tkz.GetNextToken();
         long lchannel;
-        token.ToLong( &lchannel );
-
+        token.ToLong( &lchannel ); 
         //  Now, some decisions
 
         string_to_parse.Clear();
@@ -802,8 +863,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     else
                         break;
                 }
-            }
-            
+            }        
              //  Search the current AISTargetList for an MMSI match
             AIS_Target_Hash::iterator it = AISTargetList->find( mmsi );
             if( it == AISTargetList->end() )                  // not found
@@ -832,8 +892,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
 
             bool bhad_name = false;
-            if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid;
-
+            if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid; 
             if (pTargetData) {
               if( gpsg_mmsi ) {
                 pTargetData->PositionReportTicks = now.GetTicks();
@@ -943,7 +1002,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
                 pTargetData->b_OwnShip = true;
-
             // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array[i];
@@ -955,74 +1013,112 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     break;
                 }
             }
-                
+            if ( pTargetData->b_OwnShip )
+            {
+                //Rename nmea sentence to AIVDO and calc a new checksum
+                wxString aivdostr = str;
+                aivdostr.replace(1, 5, "AIVDO");
+                unsigned char calculated_checksum = 0;
+                wxString::iterator i;
+                for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
+                    calculated_checksum ^= static_cast<unsigned char> (*i);
+                // if i is not at least 3 positons befoere end, there is no checksum added
+                // so also no need to add one now.
+                if ( i <= aivdostr.end()-3 )
+                    aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
+
+                gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
+                //replace the changed sentence in nemea stream
+                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                std::string s = std::string( aivdostr.mb_str() );
+                event.SetNMEAString( s );
+                event.SetStream( NULL );
+                g_pMUX->AddPendingEvent( event );                   
+            }    
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
-            if( bdecode_result ) {
+            if( bdecode_result ) {               
                 if(g_benableAISNameCache){
+                    wxString ship_name = wxEmptyString; 
+                        
                     // Check for valid name data
-                    if( !pTargetData->b_nameValid ){
-                        AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
-                        if(  it != AISTargetNames->end()  ) {
-                        // If we don't have a name yet but have one in the MMSI->ShipName hash, use the one in the hash
-                            wxString ship_name = ( *AISTargetNames )[mmsi];
+                    if( !pTargetData->b_nameValid ){  
+                        AIS_Target_Name_Hash::iterator it = AISTargetNamesC->find( mmsi );
+                        if(  it != AISTargetNamesC->end()  ){ 
+                            ship_name = ( *AISTargetNamesC )[mmsi].Left(20);
                             strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
                             pTargetData->b_nameValid = true;
                             pTargetData->b_nameFromCache = true;
                         }
-                    } 
+                        else 
+                            if ( !g_bUseOnlyConfirmedAISName ){
+                            it = AISTargetNamesNC->find( mmsi );
+                            if( it != AISTargetNamesNC->end() ){ 
+                                ship_name = ( *AISTargetNamesNC )[mmsi].Left(20);
+                                strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
+                                pTargetData->b_nameValid = true;
+                                pTargetData->b_nameFromCache = true;
+                            }
+                        } 
+                    }
+                    // else there IS a valid name, lets check if it is in one of the hash lists.
                     else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) || (pTargetData->MID == 19)) {
                         //  This message contains ship static data, so has a name field
                         pTargetData->b_nameFromCache = false;
-                        AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
-                        if(  it == AISTargetNames->end()  ) {
-                        // If have a name but haven't saved it to the hash, save it
-                            wxString ship_name = trimAISField( pTargetData->ShipName );
-                            ( *AISTargetNames )[mmsi] = ship_name;
-                        // Write the MMSI->ShipName hash file
-                            std::ofstream outfile( AISTargetNameFileName.mb_str(), std::ios_base::app );
-                            if( outfile.is_open() ) {
-                                outfile << mmsi << "," << ship_name.mb_str() << "\r\n";
+                        ship_name = trimAISField( pTargetData->ShipName );
+                        AIS_Target_Name_Hash::iterator itC = AISTargetNamesC->find( mmsi );
+                        AIS_Target_Name_Hash::iterator itNC = AISTargetNamesNC->find( mmsi );
+                        if( itC != AISTargetNamesC->end() )
+                        {   //There is a confirmed entry for this mmsi
+                            if ( ( *AISTargetNamesC )[mmsi] == ship_name )
+                            {  //Received name is same as confirmed name
+                                if( itNC != AISTargetNamesNC->end() )
+                                {  //there is also an entry in the NC list, delete it
+                                    AISTargetNamesNC->erase(itNC);
+                                }
                             }
-                            outfile.close();
+                            else
+                            { //There is a confirmed name but that one is different
+                                if( itNC != AISTargetNamesNC->end() )
+                                {  //there is an entry in the NC list check if name is same
+                                    if ( ( *AISTargetNamesNC )[mmsi] == ship_name )
+                                    {  //Same name is already in NC list so promote till confirmed list
+                                        ( *AISTargetNamesC )[mmsi] = ship_name;
+                                        // And delete from NC list
+                                        AISTargetNamesNC->erase(itNC);
+                                    }
+                                    else{ //A different name is in the NC list, update with received one
+                                        ( *AISTargetNamesNC )[mmsi] = ship_name;
+                                    }
+                                    if ( g_bUseOnlyConfirmedAISName )
+                                        strncpy( pTargetData->ShipName, ( *AISTargetNamesC )[mmsi].mb_str(),  ( *AISTargetNamesC )[mmsi].Left(20).Length() +1 );
+                                }                                
+                            }
                         }
-                        else{               // there is an entry in the cache for this MMSI
-                                            // Check to see if the cached name matches the name just received.
-                            wxString ship_name = trimAISField( pTargetData->ShipName );
-                            if( it->second != ship_name){
-                                ( *AISTargetNames )[mmsi] = ship_name;  // update the in-core cache
-                                
-                                // Write an MMSI->ShipName hash file entry
-                                // Note that due to the manner in which the cache file is loaded on program start,
-                                //   the last recorded entry for a particular MMSI number, 
-                                //   (i.e. this one), takes precedence.
-                                // This also means that duplicates may be present in the cache file over time.
-                                //   A subject for later analysis...
-
-                                //  To avoid perverse behaviour if there are repeated name changes from a single target,
-                                //  only allow one name change per MMSI per session.
-                                bool bFound = false;
-                                for( unsigned int i=0; i<m_MMSI_MismatchVec.size(); i++ ) {
-                                    if(m_MMSI_MismatchVec[i] == mmsi ){
-                                        bFound = true;
-                                        break;
-                                    }
+                        else{ //No confirmed entry available
+                            if( itNC != AISTargetNamesNC->end() )
+                            {  //there is  an entry in the NC list, 
+                                if ( ( *AISTargetNamesNC )[mmsi] == ship_name )
+                                {  //Received name same as already in NC list, promote to confirmen
+                                    ( *AISTargetNamesC )[mmsi] = ship_name;
+                                    // And delete from NC list
+                                    AISTargetNamesNC->erase(itNC);
                                 }
-                                    
-                                if(!bFound){    //  Write an entry to the cache file, tagged with "Mismatch"
-                                    std::ofstream outfile( AISTargetNameFileName.mb_str(), std::ios_base::app );
-                                    if( outfile.is_open() ) {
-                                        outfile << mmsi << "," << ship_name.mb_str() << ",Mismatch" << "\r\n";
-                                    }
-                                    outfile.close();
-                                
-                                    m_MMSI_MismatchVec.push_back(mmsi);
+                                else{ //entry in NC list is not same as received one
+                                    ( *AISTargetNamesNC )[mmsi] = ship_name;
                                 }
+                            }
+                            else{ //No entry in NC list so add it
+                                ( *AISTargetNamesNC )[mmsi] = ship_name;
+                            }
+                            if ( g_bUseOnlyConfirmedAISName ){ //copy back previous name
+                                strncpy(pTargetData->ShipName, "Unknown             ", 21);
                             }
                         }
                     }
                 }
+                
                 
                 ( *AISTargetList )[pTargetData->MMSI] = pTargetData;            // update the hash table entry
 
@@ -1041,6 +1137,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
                         pSel->SetUserData( pTargetData->MMSI );
                     }
+                    
 
                     //    Calculate CPA info for this target immediately
                     UpdateOneCPA( pTargetData );
@@ -1079,6 +1176,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
     return ret;
 }
+
 
 AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
 {
@@ -1893,7 +1991,20 @@ void AIS_Decoder::UpdateAllTracks( void )
 
 void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
 {
-    if( !ptarget->b_positionOnceValid ) return;
+   if( !ptarget->b_positionOnceValid ) return;
+    // Reject for unbelievable jumps (corrupted/bad data)
+    if ( ptarget->m_ptrack->GetCount() > 0 )
+    {
+        AISTargetTrackPoint *LastTrackpoint =  ptarget->m_ptrack->GetLast()->GetData();
+        if ( fabs( LastTrackpoint->m_lat - ptarget->Lat ) > .1  || fabs( LastTrackpoint->m_lon - ptarget->Lon ) > .1 )
+        {
+            // after an unlikely jump in pos, the last trackpoint might also be wrong
+            // just to be sure we do delete this one as well.
+            ptarget->m_ptrack->pop_back();
+            ptarget->b_positionDoubtful = true;            
+            return;
+        }        
+    }
 
     //    Add the newest point
     AISTargetTrackPoint *ptrackpoint = new AISTargetTrackPoint;
@@ -2203,22 +2314,11 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     }
 }
 
-void AIS_Decoder::OnTimerAISAudio( wxTimerEvent& event )
+void AIS_Decoder::OnSoundFinishedAISAudio( wxCommandEvent& event )
 {
-    if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
-        if(!m_AIS_Sound.IsOk() )
-             m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-             
-#ifndef __WXMSW__
-       if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
-            m_AIS_Sound.Play();
-#else
-       if( m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Play();
-#endif
-    }
-    
-    m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC, wxTIMER_CONTINUOUS );
+    // By clearing this flag the main event loop will trigger repeated
+    // sounds for as long as the alert condition remains.
+    m_bAIS_AlertPlaying = false;
 }
 
 void AIS_Decoder::OnTimerDSC( wxTimerEvent& event )
@@ -2501,24 +2601,22 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         m_bAIS_Audio_Alert_On = false;
 
     if( m_bAIS_Audio_Alert_On ) {
-        if( !m_AIS_Audio_Alert_Timer.IsRunning() ) {
-            m_AIS_Audio_Alert_Timer.SetOwner( this, TIMER_AISAUDIO );
-            m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC );
-
-            if( !m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-            
-#ifndef __WXMSW__
-            if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
-                m_AIS_Sound.Play();
-#else
-            if( m_AIS_Sound.IsOk() )
-                m_AIS_Sound.Play();
-#endif
+        if (!m_AIS_Sound) {
+            m_AIS_Sound = SoundFactory();
         }
-    } else
-        m_AIS_Audio_Alert_Timer.Stop();
-
+        if ( !AIS_AlertPlaying() ) {
+            m_bAIS_AlertPlaying = true;
+            m_AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+            m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+            if ( m_AIS_Sound->IsOk( ) ) {
+                m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
+                if ( !m_AIS_Sound->Play( ) )
+                    m_bAIS_AlertPlaying = false;
+            }
+            else
+                m_bAIS_AlertPlaying = false;
+        }
+    }
     //  If a SART Alert is active, check to see if the MMSI has special properties set 
     //  indicating that this Alert is a MOB for THIS ship.
     if(palert_target && (palert_target->Class == AIS_SART) ){

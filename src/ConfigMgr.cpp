@@ -24,6 +24,7 @@
 #include <wx/tokenzr.h>
 
 #include "ConfigMgr.h"
+#include "config.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
@@ -48,7 +49,6 @@
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "ocpndc.h"
@@ -119,7 +119,6 @@ extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -210,6 +209,7 @@ extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
@@ -308,6 +308,9 @@ extern int              g_BSBImgDebug;
 
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
+extern wxString        g_config_version_string;
+
+extern wxString        g_CmdSoundString;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -1221,6 +1224,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     conf->Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     conf->Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    conf->Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
     conf->Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     conf->Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
     conf->Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
@@ -1650,6 +1654,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     CHECK_INT( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     CHECK_STR( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    CHECK_STR( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
     CHECK_INT( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     CHECK_INT( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     CHECK_INT( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );

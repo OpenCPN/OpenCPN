@@ -31,6 +31,11 @@
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
 
+#define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
+#define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding
+
+#define ETA_FORMAT_STR "%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
+
 class ocpnDC;
 class wxDC;
 class ChartCanvas;
@@ -95,7 +100,15 @@ public:
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
       void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
-
+      void SetScaMin(wxString str);
+      void SetScaMin(long val);
+      long GetScaMin(){return m_ScaMin; };
+      void SetScaMax(wxString str);
+      void SetScaMax(long val);
+      long GetScaMax(){return m_ScaMax; };
+      bool GetUseSca(){return b_UseScamin; };
+      void SetUseSca( bool value ){ b_UseScamin = value; };
+      bool IsScaVisible(ChartCanvas *cc);
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
@@ -103,12 +116,25 @@ public:
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
       void PresetDragOffset( ChartCanvas *canvas, int x, int y);
+      void ShowScaleWarningMessage(ChartCanvas *canvas);
+      void SetPlannedSpeed(double spd);
+      double GetPlannedSpeed();
+      wxDateTime GetETD();
+      wxDateTime GetManualETD();
+      void SetETD(const wxDateTime &etd);
+      bool SetETD(const wxString &ts);
+      wxDateTime GetETA();
+      wxString GetETE();
+      void SetETE(wxLongLong secs);
       
       double            m_lat, m_lon;
-      double             m_seg_len;              // length in NMI to this point
+      double            m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
       double            m_seg_vmg;
       wxDateTime        m_seg_etd;
+      wxDateTime        m_seg_eta;
+      wxLongLong        m_seg_ete = 0;
+      bool              m_manual_etd = FALSE;
 
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
@@ -125,6 +151,8 @@ public:
       bool              m_bIsActive;
       wxString          m_MarkDescription;
       wxString          m_GUID;
+    
+      wxString          m_TideStation;
 
       wxFont            *m_pMarkFont;
       wxColour          m_FontColor;
@@ -150,6 +178,7 @@ public:
       float             m_fWaypointRangeRingsStep;
       int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
+      
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
@@ -170,7 +199,7 @@ public:
 
       wxDateTime        m_CreateTimeX;
 private:
-    wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
+      wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
@@ -187,6 +216,10 @@ private:
       int               m_drag_line_length_man, m_drag_icon_offset;
       double            m_dragHandleLat, m_dragHandleLon;
       int               m_draggingOffsetx, m_draggingOffsety;
+      bool              b_UseScamin;
+      long              m_ScaMin;
+      long              m_ScaMax;
+      double            m_PlannedSpeed;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

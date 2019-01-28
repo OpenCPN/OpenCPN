@@ -45,7 +45,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE)
     ADD_DEFINITIONS( "-Wall -fexceptions -fvisibility=hidden" )
-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
@@ -135,7 +135,7 @@ IF(NOT UNIX)
             src/bzip2/huffman.c
             src/bzip2/randtable.c
     )
-    ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
+    ADD_LIBRARY(LIB_BZIP STATIC ${SRC_BZIP})
 
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)

@@ -46,6 +46,7 @@ const int WidthValues[] = { -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 class ocpnDC;
 class ChartCanvas;
+class HyperlinkList;
 
 class Route : public wxObject
 {
@@ -90,7 +91,7 @@ public:
       wxString GetNewMarkSequenced(void);
       void AssembleRoute();
       bool IsEqualTo(Route *ptargetroute);
-      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix);
+      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix, const bool duplicate_first_point = false);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp, bool bdraw_arrow, int hilite_width = 0);
       void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp);
@@ -106,6 +107,7 @@ public:
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
+      void SetDepartureDate(const wxDateTime &dt) { if( dt.IsValid() ) m_PlannedDeparture = dt; }
     
       wxString GetName() const { return m_RouteNameString; }
 
@@ -139,6 +141,7 @@ public:
       wxString    m_Colour;
       bool        m_btemp;
       int         m_hiliteWidth;
+      HyperlinkList *m_HyperlinkList;
       
 private:
       LLBBox     RBBox;

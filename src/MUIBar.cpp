@@ -93,10 +93,12 @@ class MUIButton: public wxWindow
     wxSize DoGetBestSize() const;
 public:
     MUIButton();
-    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
+    MUIButton(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0,
+              const wxString & bitmapState0 = wxEmptyString, const wxString & bitmapState1 = wxEmptyString, const wxString & bitmapState2 = wxEmptyString,
               const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
-    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0, const wxString & bitmap = wxEmptyString, const wxString & bitmapToggle = wxEmptyString,
+    bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, float scale_factor = 1.0,
+                const wxString & bitmapState0 = wxEmptyString, const wxString & bitmapState1 = wxEmptyString, const wxString & bitmapState2 = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxNO_BORDER);
     
     ~MUIButton();
@@ -104,7 +106,7 @@ public:
     void Init();
     void CreateControls();
     
-    void ToggleBitmap( bool bt );
+    void SetState( int state);
     
     void SetColorScheme( ColorScheme cs );
     void OnSize( wxSizeEvent& event );
@@ -121,13 +123,15 @@ public:
     static bool ShowToolTips();
     
 private:
-    wxString m_bitmapFile;
-    wxString m_bitmapFileToggle;
+    wxString m_bitmapFileState0;
+    wxString m_bitmapFileState1;
+    wxString m_bitmapFileState2;
     wxBitmap m_bitmap;
-    wxBitmap m_bitmapNormal;
-    wxBitmap m_bitmapToggle;
+    wxBitmap m_bitmapState0;
+    wxBitmap m_bitmapState1;
+    wxBitmap m_bitmapState2;
 
-    bool mToggle;
+    int mState;
     float m_scaleFactor;
     wxSize m_styleToolSize;
     ColorScheme m_cs;
@@ -153,18 +157,25 @@ MUIButton::MUIButton()
     Init();
 }
 
-MUIButton::MUIButton(wxWindow* parent, wxWindowID id, float scale_factor, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
+MUIButton::MUIButton(wxWindow* parent, wxWindowID id, float scale_factor,
+                     const wxString & bitmap, const wxString & bitmapState1,const wxString & bitmapState2,
+                     const wxPoint& pos, const wxSize& size, long style)
 {
     Init();
-    Create(parent, id, scale_factor, bitmap, bitmapToggle, pos, size, style);
+    Create(parent, id, scale_factor, bitmap, bitmapState1, bitmapState2, pos, size, style);
 }
 
 
-bool MUIButton::Create(wxWindow* parent, wxWindowID id, float scale_factor, const wxString & bitmap, const wxString & bitmapToggle, const wxPoint& pos, const wxSize& size, long style)
+bool MUIButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
+                       const wxString & bitmap, const wxString & bitmapState1, const wxString & bitmapState2,
+                       const wxPoint& pos, const wxSize& size, long style)
 {
     wxWindow::Create(parent, id, pos, size, style);
-    m_bitmapFile = bitmap;
-    m_bitmapFileToggle = bitmapToggle;
+    m_bitmapFileState0 = bitmap;
+    m_bitmapFileState1 = bitmapState1;
+    m_bitmapFileState2 = bitmapState2;
+    
+    
     m_scaleFactor = scale_factor;
     
     m_styleToolSize = g_StyleManager->GetCurrentStyle()->GetToolSize();
@@ -184,7 +195,7 @@ MUIButton::~MUIButton()
 
 void MUIButton::Init()
 {
-    mToggle = false;
+    mState = 0;
     m_cs = (ColorScheme)-1; //GLOBAL_COLOR_SCHEME_RGB;
 }
 
@@ -209,19 +220,36 @@ void MUIButton::SetColorScheme(ColorScheme cs)
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        wxBitmap bmp = LoadSVG( m_bitmapFile, GetSize().x, GetSize().y );
-        m_bitmapNormal = style->SetBitmapBrightness(bmp, cs);
+        wxBitmap bmp = LoadSVG( m_bitmapFileState0, GetSize().x, GetSize().y );
+        m_bitmapState0 = style->SetBitmapBrightness(bmp, cs);
         
-        bmp = LoadSVG( m_bitmapFileToggle, GetSize().x, GetSize().y );
+        bmp = LoadSVG( m_bitmapFileState1, GetSize().x, GetSize().y );
         if(bmp.IsOk())
-            m_bitmapToggle = style->SetBitmapBrightness(bmp, cs);
+            m_bitmapState1 = style->SetBitmapBrightness(bmp, cs);
         else
-            m_bitmapToggle = m_bitmapNormal;
+            m_bitmapState1 = m_bitmapState0;
 
-        if(mToggle)
-            m_bitmap = m_bitmapToggle;
+        bmp = LoadSVG( m_bitmapFileState2, GetSize().x, GetSize().y );
+        if(bmp.IsOk())
+            m_bitmapState2 = style->SetBitmapBrightness(bmp, cs);
         else
-            m_bitmap = m_bitmapNormal;
+            m_bitmapState2 = m_bitmapState0;
+        
+        
+        switch(mState){
+            case 0:
+            default:
+                m_bitmap = m_bitmapState0;
+                break;
+                
+            case 1:
+                m_bitmap = m_bitmapState1;
+                break;
+
+            case 2:
+                m_bitmap = m_bitmapState2;
+                break;
+        }
         
         m_cs = cs;
     }
@@ -234,13 +262,25 @@ bool MUIButton::ShowToolTips()
     return true;
 }
 
-void MUIButton::ToggleBitmap(bool bt)
+void MUIButton::SetState( int state)
 {
-    mToggle = bt;
-    if(mToggle)
-        m_bitmap = m_bitmapToggle;
-    else
-        m_bitmap = m_bitmapNormal;
+    switch(state){
+            case 0:
+            default:
+                m_bitmap = m_bitmapState0;
+                break;
+                
+            case 1:
+                m_bitmap = m_bitmapState1;
+                break;
+
+            case 2:
+                m_bitmap = m_bitmapState2;
+                break;
+    }
+
+    mState = state;
+    
     Refresh();
 }
 
@@ -252,20 +292,33 @@ void MUIButton::OnSize( wxSizeEvent& event )
             return;
     }
 
-    if(!m_bitmapFile.IsEmpty())
-        m_bitmapNormal = LoadSVG( m_bitmapFile, event.GetSize().x, event.GetSize().y );
+    if(!m_bitmapFileState0.IsEmpty())
+        m_bitmapState0 = LoadSVG( m_bitmapFileState0, event.GetSize().x, event.GetSize().y );
 
-    if(!m_bitmapFileToggle.IsEmpty())
-        m_bitmapToggle = LoadSVG( m_bitmapFileToggle, event.GetSize().x, event.GetSize().y );
+    if(!m_bitmapFileState1.IsEmpty())
+        m_bitmapState1 = LoadSVG( m_bitmapFileState1, event.GetSize().x, event.GetSize().y );
+    if(!m_bitmapState1.IsOk() || m_bitmapFileState1.IsEmpty())
+        m_bitmapState1 = m_bitmapState0;
+
+    if(!m_bitmapFileState2.IsEmpty())
+        m_bitmapState2 = LoadSVG( m_bitmapFileState2, event.GetSize().x, event.GetSize().y );
+    if(!m_bitmapState2.IsOk() || m_bitmapFileState2.IsEmpty())
+        m_bitmapState2 = m_bitmapState0;
     
-    if(!m_bitmapToggle.IsOk() || m_bitmapFileToggle.IsEmpty())
-        m_bitmapToggle = m_bitmapNormal;
-    
-    if(mToggle)
-        m_bitmap = m_bitmapToggle;
-    else
-        m_bitmap = m_bitmapNormal;
-        
+    switch(mState){
+        case 0:
+        default:
+            m_bitmap = m_bitmapState0;
+            break;
+               
+        case 1:
+            m_bitmap = m_bitmapState1;
+            break;
+
+        case 2:
+            m_bitmap = m_bitmapState2;
+            break;
+    }
 }
 
 wxBitmap MUIButton::GetBitmapResource( const wxString& name )
@@ -508,7 +561,8 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
+                                        iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 0, wxSHAPED);
         
         barSizer->AddSpacer(2);
@@ -649,9 +703,9 @@ void MUIBar::UpdateDynamicValues()
     m_scaleTextBox->SetLabel(scaleString);
 }
 
-void MUIBar::SetFollowButton( bool bFollow )
+void MUIBar::SetFollowButtonState( int state )
 {
-    m_followButton->ToggleBitmap( bFollow );
+    m_followButton->SetState( state );
 }
 
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )

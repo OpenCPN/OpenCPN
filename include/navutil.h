@@ -37,10 +37,6 @@
 #include <wx/msw/iniconf.h>
 #endif
 
-#ifdef OCPN_USE_PORTAUDIO
-#include "portaudio.h"
-#endif
-
 #include "bbox.h"
 //#include "chcanv.h"
 #include "chartdbs.h"
@@ -78,6 +74,10 @@ extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern wxString FormatDistanceAdaptive( double distance );
+extern wxString formatTimeDelta(wxTimeSpan span);
+extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
+extern wxString formatTimeDelta(wxLongLong secs);
+extern wxString formatAngle(double angle);
 
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                        wxColour color, unsigned char transparency );
@@ -87,7 +87,6 @@ void DimeControl(wxWindow* ctrl);
 void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 extern double fromDMM(wxString sdms);
-extern double parseLatLon(wxString latlon);
 
 class Route;
 class NavObjectCollection;

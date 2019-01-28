@@ -43,6 +43,7 @@
     #include <wx/wx.h>
 #endif
 
+#include <cmath>
 #include "wx/tokenzr.h"
 
 double rad2deg(double angle)

@@ -94,9 +94,8 @@ bool CheckSumCheck(const std::string& sentence)
         return false; // * not found, or it didn't have 2 characters following it.
         
     std::string check_str = sentence.substr(check_start+1,2);
-    unsigned long checksum;
-    //    if(!check_str.ToULong(&checksum,16))
-    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
+    unsigned long checksum = strtol(check_str.c_str(), 0, 16);
+    if(checksum == 0L && check_str != "00")
         return false;
     
     unsigned char calculated_checksum = 0;

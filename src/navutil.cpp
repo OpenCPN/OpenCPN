@@ -55,7 +55,6 @@
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "ocpndc.h"
@@ -75,6 +74,7 @@
 #include "Track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "config.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -129,7 +129,6 @@ extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -173,6 +172,8 @@ extern bool             g_bframemax;
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
+extern wxString         g_VisiNameinLayers;
+extern wxString         g_InVisiNameinLayers;
 extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
@@ -220,12 +221,14 @@ extern int              g_AisTargetList_range;
 extern int              g_AisTargetList_sortColumn;
 extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
+extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
 extern bool             g_benableAISNameCache;
+extern bool             g_bUseOnlyConfirmedAISName;
 extern int              g_ScaledNumWeightSOG;
 extern int              g_ScaledNumWeightCPA;
 extern int              g_ScaledNumWeightTCPA;
@@ -234,6 +237,7 @@ extern int              g_ScaledNumWeightSizeOfT;
 extern int              g_ScaledSizeMinimal;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+int                     g_S57_extradialog_sx, g_S57_extradialog_sy;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -245,6 +249,11 @@ extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
 extern wxColour         g_colourOwnshipRangeRingsColour;
+extern int              g_iWpt_ScaMin;
+extern bool             g_bUseWptScaMin;
+extern bool             g_bOverruleScaMin;
+extern bool             g_bShowWptName;
+
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
@@ -322,6 +331,8 @@ extern int              g_BSBImgDebug;
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
 
+extern wxString        g_CmdSoundString;
+
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
@@ -359,6 +370,7 @@ extern int              g_route_line_width;
 extern int              g_track_line_width;
 extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
+extern wxString         g_default_routepoint_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
@@ -375,7 +387,6 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
 extern Multiplexer      *g_pMUX;
-extern bool             portaudio_initialized;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -398,6 +409,9 @@ extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
+
+extern float            g_selection_radius_mm;
+extern float            g_selection_radius_touch_mm;
 
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
@@ -618,6 +632,8 @@ int MyConfig::LoadMyConfig()
     g_AisTargetList_sortColumn = 2; // Column #2 is MMSI
     g_S57_dialog_sx = 400;
     g_S57_dialog_sy = 400;
+    g_S57_extradialog_sx = 400;
+    g_S57_extradialog_sy = 400;
 
     //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
@@ -647,6 +663,7 @@ int MyConfig::LoadMyConfig()
     g_tide_rectangle_scale = 100;
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
+    g_default_routepoint_icon = _T("diamond");
     
     g_nAWDefault = 50;
     g_nAWMax = 1852;
@@ -697,6 +714,9 @@ int MyConfig::LoadMyConfig()
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
+        
+        g_selection_radius_mm = wxMax(g_selection_radius_mm, 0.5);
+        g_selection_radius_touch_mm = wxMax(g_selection_radius_touch_mm, 1.0);
 
         g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
 
@@ -736,6 +756,11 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     // Some undocumented values
     Read( _T ( "ConfigVersionString" ), &g_config_version_string );
+#ifdef SYSTEM_SOUND_CMD
+    Read(_T("CmdSoundString"), &g_CmdSoundString, wxString(SYSTEM_SOUND_CMD) );
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+#endif /* SYSTEM_SOUND_CMD */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
     Read( _T ( "UIexpert" ), &g_bUIexpert );
@@ -783,6 +808,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     int size_mm = -1;
     Read( _T ( "DisplaySizeMM" ), &size_mm );
+    
+    Read( _T ( "SelectionRadiusMM" ), &g_selection_radius_mm);
+    Read( _T ( "SelectionRadiusTouchMM" ), &g_selection_radius_touch_mm);
     
     if(!bAsTemplate){
         if(size_mm > 0){
@@ -957,6 +985,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
+    Read( _T ( "VisNameInLayers" ), &g_VisiNameinLayers );
+    Read( _T ( "InvisNameInLayers" ), &g_InVisiNameinLayers );
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
@@ -1008,6 +1038,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
+    
+    g_bUseOnlyConfirmedAISName = false;
+    Read( _T ( "UseOnlyConfirmedAISName" ),  &g_bUseOnlyConfirmedAISName );
 
     Read( _T ( "bNoCPAMax" ), &g_bCPAMax );
 
@@ -1089,6 +1122,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "AISTargetListSortColumn" ), &g_AisTargetList_sortColumn );
     Read( _T ( "bAISTargetListSortReverse" ), &g_bAisTargetList_sortReverse );
     Read( _T ( "AISTargetListColumnSpec" ), &g_AisTargetList_column_spec );
+    Read( _T ("AISTargetListColumnOrder"), &g_AisTargetList_column_order);
 
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
@@ -1096,6 +1130,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy );
+    Read( _T ( "S57QueryExtraDialogSizeX" ), &g_S57_extradialog_sx );
+    Read( _T ( "S57QueryExtraDialogSizeY" ), &g_S57_extradialog_sy );
     
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
@@ -1347,6 +1383,13 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     wxString l_wxsWaypointRangeRingsColour;
     Read( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
     g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
+    
+    if ( !Read( _T("WaypointUseScaMin"), &g_bUseWptScaMin ) ) g_bUseWptScaMin = false;
+    if ( !Read( _T("WaypointScaMinValue"), &g_iWpt_ScaMin ) ) g_iWpt_ScaMin = 2147483646;
+    if ( !Read( _T("WaypointUseScaMinOverrule"), &g_bOverruleScaMin ) ) g_bOverruleScaMin = false;
+    if ( !Read( _T("WaypointsShowName"), &g_bShowWptName ) ) g_bShowWptName = true;
+    
+
 
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
@@ -1393,6 +1436,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
+    Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
 
     SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = GetNumberOfEntries();
@@ -1621,6 +1665,11 @@ bool MyConfig::LoadLayers(wxString &path)
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
 
+                if (g_VisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = true;
+                if (g_InVisiNameinLayers.Contains(l->m_LayerName))
+                    l->m_bHasVisibleNames = false;
+
                 l->m_bIsVisibleOnChart = bLayerViz;
                 
                 wxString laymsg;
@@ -1637,7 +1686,7 @@ bool MyConfig::LoadLayers(wxString &path)
                     if( ::wxFileExists( file_path ) ) {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(file_path.fn_str());
-                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
+                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz, l->m_bHasVisibleNames);
                         l->m_NoOfItems += nItems;
                         l->m_LayerType = _("Persistent");
                         
@@ -2186,6 +2235,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "LastAppliedTemplate" ), g_lastAppliedTemplateGUID );
     
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
+#ifdef SYSTEM_SOUND_CMD
+    if ( wxIsEmpty( g_CmdSoundString ) )
+        g_CmdSoundString = wxString( SYSTEM_SOUND_CMD );
+    Write( _T( "CmdSoundString" ), g_CmdSoundString );
+#endif /* SYSTEM_SOUND_CMD */
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
     Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     
@@ -2333,11 +2387,14 @@ void MyConfig::UpdateSettings()
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
     Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
     
+    Write( _T ( "SelectionRadiusMM" ), g_selection_radius_mm );
+    Write( _T ( "SelectionRadiusTouchMM" ), g_selection_radius_touch_mm );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
 
-    wxString vis, invis;
+    wxString vis, invis, visnames, invisnames;
     LayerList::iterator it;
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
@@ -2345,9 +2402,15 @@ void MyConfig::UpdateSettings()
         if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
         else
             invis += ( lay->m_LayerName ) + _T(";");
+
+        if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
+        else
+            invisnames += ( lay->m_LayerName) + _T(";");
     }
     Write( _T ( "VisibleLayers" ), vis );
     Write( _T ( "InvisibleLayers" ), invis );
+    Write( _T ( "VisNameInLayers" ), visnames);
+    Write( _T ( "InvisNameInLayers" ), invisnames);
 
     Write( _T ( "Locale" ), g_locale );
     Write( _T ( "LocaleOverride" ), g_localeOverride );
@@ -2471,9 +2534,12 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
+    Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
 
     Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
+    Write( _T ( "S57QueryExtraDialogSizeX" ), g_S57_extradialog_sx );
+    Write( _T ( "S57QueryExtraDialogSizeY" ), g_S57_extradialog_sy );
 
     Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
     Write( _T ( "bAISRolloverShowCOG" ), g_bAISRolloverShowCOG );
@@ -2592,6 +2658,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
     Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
+    Write( _T( "WaypointUseScaMin" ), g_bUseWptScaMin );
+    Write( _T( "WaypointScaMinValue" ), g_iWpt_ScaMin );
+    Write( _T( "WaypointUseScaMinOverrule" ), g_bOverruleScaMin );
+    Write( _T("WaypointsShowName"), g_bShowWptName );
     
     // Waypoint Radar rings
     Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );
@@ -2614,6 +2684,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
+    Write( _T ( "DefaultRPIcon" ), g_default_routepoint_icon );
 
     DeleteGroup(_T ( "/MMSIProperties" ));
     SetPath( _T ( "/MMSIProperties" ) );
@@ -2974,7 +3045,7 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
                 pSet->load_file(path.fn_str());
 
                 if(islayer){
-                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
+                    l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
                     l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary") ;
                     
                     if(isPersistent)
@@ -4250,6 +4321,44 @@ wxString getUsrSpeedUnit( int unit )
     return ret;
 }
 
+wxString formatTimeDelta(wxTimeSpan span)
+{
+    wxString timeStr;
+    int days = span.GetDays();
+    span -= wxTimeSpan::Days(days);
+    int hours = span.GetHours();
+    span -= wxTimeSpan::Hours(hours);
+    double minutes = (double)span.GetSeconds().ToLong()/60.0;
+    span -= wxTimeSpan::Minutes(span.GetMinutes());
+    int seconds = (double)span.GetSeconds().ToLong();
+    
+    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_T("%02d:%02d"), hours, (int)round(minutes)) :
+     wxString::Format(_T("%02d %02d"), (int)floor(minutes), seconds));
+    
+    return timeStr;
+}
+
+wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime)
+{
+    wxString timeStr;
+    if(startTime.IsValid() && endTime.IsValid())
+    {
+        wxTimeSpan span = endTime - startTime;
+        return formatTimeDelta(span);
+    } else {
+        return _("N/A");
+    }
+}
+
+wxString formatTimeDelta(wxLongLong secs)
+{
+    wxString timeStr;
+    
+    wxTimeSpan span(0, 0, secs);
+    return formatTimeDelta(span);
+}
+
 wxString FormatDistanceAdaptive( double distance ) {
     wxString result;
     int unit = g_iDistanceFormat;
@@ -4319,20 +4428,20 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
 
             if( !NEflag || NEflag < 1 || NEflag > 2 ) //Does it EVER happen?
                     {
-                if( hi_precision ) s.Printf( _T ( "%d %02ld.%04ld'" ), d, m / 10000, m % 10000 );
+                if( hi_precision ) s.Printf( _T ( "%d\u00B0 %02ld.%04ld'" ), d, m / 10000, m % 10000 );
                 else
-                    s.Printf( _T ( "%d %02ld.%01ld'" ), d, m / 10, m % 10 );
+                    s.Printf( _T ( "%d\u00B0 %02ld.%01ld'" ), d, m / 10, m % 10 );
             } else {
                 if( hi_precision )
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld.%04ld' %c" ), d, m / 10000, ( m % 10000 ), c );
                     else
-                        s.Printf( _T ( "%03d %02ld.%04ld %c" ), d, m / 10000, ( m % 10000 ), c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld.%04ld' %c" ), d, m / 10000, ( m % 10000 ), c );
                 else
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld.%01ld' %c" ), d, m / 10, ( m % 10 ), c );
                     else
-                        s.Printf( _T ( "%03d %02ld.%01ld %c" ), d, m / 10, ( m % 10 ), c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld.%01ld' %c" ), d, m / 10, ( m % 10 ), c );
             }
             break;
         case 1:
@@ -4348,21 +4457,21 @@ wxString toSDMM( int NEflag, double a, bool hi_precision )
 
             if( !NEflag || NEflag < 1 || NEflag > 2 ) //Does it EVER happen?
                     {
-                if( hi_precision ) s.Printf( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 1000,
+                if( hi_precision ) s.Printf( _T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 1000,
                         sec % 1000 );
                 else
-                    s.Printf( _T ( "%d %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
+                    s.Printf( _T ( "%d\u00B0 %ld'%ld.%ld\"" ), d, m, sec / 10, sec % 10 );
             } else {
                 if( hi_precision )
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m, sec / 1000, sec % 1000, c );
                     else
-                        s.Printf( _T ( "%03d %02ld %02ld.%03ld %c" ), d, m, sec / 1000, sec % 1000, c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld' %02ld.%03ld\" %c" ), d, m, sec / 1000, sec % 1000, c );
                 else
                     if (NEflag == 1)
-                        s.Printf( _T ( "%02d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                        s.Printf( _T ( "%02d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10, sec % 10, c );
                     else
-                        s.Printf( _T ( "%03d %02ld %02ld.%ld %c" ), d, m, sec / 10, sec % 10, c );
+                        s.Printf( _T ( "%03d\u00B0 %02ld' %02ld.%ld\" %c" ), d, m, sec / 10, sec % 10, c );
             }
             break;
     }
@@ -4449,6 +4558,19 @@ double fromDMM( wxString sdms )
     }
 
     return sign * ( stk[0] + ( stk[1] + stk[2] / 60 ) / 60 );
+}
+
+wxString formatAngle(double angle)
+{
+    wxString out;
+    if( g_bShowMag && g_bShowTrue ) {
+        out.Printf(wxT("%.0f \u00B0T (%.0f \u00B0M)"), angle, gFrame->GetMag(angle));
+    } else if( g_bShowTrue ) {
+        out.Printf(wxT("%.0f \u00B0T"), angle);
+    } else {
+        out.Printf(wxT("%.0f \u00B0M"), gFrame->GetMag(angle));
+    }
+    return out;
 }
 
 /* render a rectangle at a given color and transparency */
@@ -4597,6 +4719,15 @@ void GpxDocument::SeedRandom()
 
 void DimeControl( wxWindow* ctrl )
 {
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
+
 #ifdef __WXQT__
     return; // this is seriously broken on wxqt
 #endif
@@ -4618,7 +4749,14 @@ void DimeControl( wxWindow* ctrl )
 void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxColour ctrl_back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
-
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            return;
+        }
+    }
+#endif
     ColorScheme cs = global_color_scheme;
 
     static int depth = 0; // recursion count

@@ -51,7 +51,8 @@
 #include "chartdb.h"
 #include "chart1.h"
 #include "cutil.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
@@ -108,8 +109,8 @@ extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_click_stop;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern MarkInfoImpl     *pMarkPropDialog;
-extern RouteProp        *pRoutePropDialog;
+extern MarkInfoDlg     *g_pMarkInfoDialog;
+extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
@@ -526,55 +527,6 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     }
     
         
-    //  Add PlugIn Context Menu items
-    ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
-
-    for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
-        PlugInMenuItemContainer *pimis = item_array[i];
-        {
-            if( pimis->b_viz ) {
-                wxMenu *submenu = NULL;
-                if(pimis->pmenu_item->GetSubMenu()) {
-                    submenu = new wxMenu();
-                    const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
-                    for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
-                        int id = -1;
-                        for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
-                            PlugInMenuItemContainer *pimis = item_array[j];
-                            if(pimis->pmenu_item == *it)
-                                id = pimis->id;
-                        }
-
-                        wxMenuItem *pmi = new wxMenuItem( submenu, id,
-#if wxCHECK_VERSION(3,0,0)
-                                                        (*it)->GetItemLabelText(),
-#else
-                                                        (*it)->GetLabel(),
-#endif
-                                                        (*it)->GetHelp(),
-                                                          (*it)->GetKind());
-                        submenu->Append(pmi);
-                        pmi->Check((*it)->IsChecked());
-                    }
-                }
-                
-                wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-#if wxCHECK_VERSION(3,0,0)
-                                                  pimis->pmenu_item->GetItemLabelText(),
-#else
-                                                  pimis->pmenu_item->GetLabel(),
-#endif
-                                                  pimis->pmenu_item->GetHelp(),
-                                                  pimis->pmenu_item->GetKind(),
-                                                  submenu );
-#ifdef __WXMSW__
-                pmi->SetFont(pimis->pmenu_item->GetFont());
-#endif
-                contextMenu->Append( pmi );
-                contextMenu->Enable( pimis->id, !pimis->b_grey );
-            }
-        }
-    }
 
     //  This is the default context menu
     menuFocus = contextMenu;
@@ -902,6 +854,70 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         MenuAppend1( menuFocus,  ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
 
+    // Give the plugins a chance to update their menu items
+    g_pi_manager->PrepareAllPluginContextMenus();
+    
+    //  Add PlugIn Context Menu items
+    ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
+
+    for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
+        PlugInMenuItemContainer *pimis = item_array[i];
+        if( !pimis->b_viz )
+            continue;
+
+        wxMenu *submenu = NULL;
+        if(pimis->pmenu_item->GetSubMenu()) {
+            submenu = new wxMenu();
+            const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
+            for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
+                int id = -1;
+                for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
+                    PlugInMenuItemContainer *pimis = item_array[j];
+                    if(pimis->pmenu_item == *it)
+                        id = pimis->id;
+                }
+
+                wxMenuItem *pmi = new wxMenuItem( submenu, id,
+#if wxCHECK_VERSION(3,0,0)
+                                                        (*it)->GetItemLabelText(),
+#else
+                                                        (*it)->GetLabel(),
+#endif
+                                                        (*it)->GetHelp(),
+                                                          (*it)->GetKind());
+                submenu->Append(pmi);
+                pmi->Check((*it)->IsChecked());
+            }
+        }
+
+        wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
+#if wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
+                                                  pimis->pmenu_item->GetKind(),
+                                                  submenu );
+#ifdef __WXMSW__
+        pmi->SetFont(pimis->pmenu_item->GetFont());
+#endif
+        wxMenu *dst = contextMenu;
+        if (pimis->m_in_menu == "Waypoint")
+            dst = menuWaypoint;
+        else if (pimis->m_in_menu == "Route" )
+            dst = menuRoute;
+        else if (pimis->m_in_menu == "Track" )
+            dst = menuTrack;
+        else if (pimis->m_in_menu == "AIS" )
+            dst = menuAIS;
+
+        if (dst != NULL) {
+            dst->Append( pmi );
+            dst->Enable( pimis->id, !pimis->b_grey );
+        }
+    }
+
     //        Invoke the correct focused drop-down menu
     parent->PopupMenu( menuFocus, x, y );
 
@@ -1000,6 +1016,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
         pSelect->AddSelectableRoutePoint( zlat, zlon, pWP );
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+        if( pWP->GetScaMin() < parent->GetScaleValue() ) pWP->ShowScaleWarningMessage(parent);
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
         parent->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
@@ -1097,9 +1114,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 parent->undo->AfterUndoableAction( NULL );
             }
 
-            if( pMarkPropDialog ) {
-                pMarkPropDialog->SetRoutePoint( NULL );
-                pMarkPropDialog->UpdateProperties();
+            if( g_pMarkInfoDialog ) {
+                g_pMarkInfoDialog->SetRoutePoint( NULL );
+                g_pMarkInfoDialog->UpdateProperties();
             }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
@@ -1253,7 +1270,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
             if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
                 pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-                pRoutePropDialog->UpdateProperties();
+                //pNew->UpdateProperties();
             }
             gFrame->InvalidateAllGL();
             gFrame->RefreshAllCanvas();
@@ -1281,9 +1298,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateRouteListCtrl();
 
-            if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
-                pMarkPropDialog->ValidateMark();
-                pMarkPropDialog->UpdateProperties();
+            if( g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown() ) {
+                g_pMarkInfoDialog->ValidateMark();
+                g_pMarkInfoDialog->UpdateProperties();
             }
 
             parent->undo->InvalidateUndo();

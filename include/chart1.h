@@ -42,6 +42,7 @@
 #include "nmea0183.h"
 #include "chartdbs.h"
 #include "s52s57.h"
+#include "SencManager.h"
 
 #ifdef USE_S57
 #include "mygdal/cpl_error.h"
@@ -341,6 +342,8 @@ class MyFrame: public wxFrame
     void OnMemFootTimer(wxTimerEvent& event);
     void OnBellsTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
+    void OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event);
+
 #ifdef wxHAS_POWER_EVENTS
     void OnSuspending(wxPowerEvent &event);
     void OnSuspended(wxPowerEvent &event);
@@ -371,6 +374,8 @@ class MyFrame: public wxFrame
     void DoSettings( void );
     void SwitchKBFocus( ChartCanvas *pCanvas );
     ChartCanvas *GetCanvasUnderMouse();
+    int GetCanvasIndexUnderMouse();
+
     bool DropMarker( bool atOwnShip = true );
     
     void TriggerResize(wxSize sz);

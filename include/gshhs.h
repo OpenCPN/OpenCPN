@@ -296,6 +296,7 @@ public:
     void SetColorScheme( ColorScheme scheme );
     void RenderViewOnDC( ocpnDC& dc, ViewPort& VPoint );
     void Reset();
+    void SetColorsDirect( wxColour newLand, wxColour newWater );
 
     wxColor land;
     wxColor water;

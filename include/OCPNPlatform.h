@@ -78,8 +78,11 @@ public:
     //  Called from MyApp() immediately before creation of MyFrame()
     void Initialize_2( void );
     
+    //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
+    void Initialize_3( void );
+
     //  Called from MyApp() just before end of MyApp::OnInit()
-    static void Initialize_3( void );
+    static void Initialize_4( void );
     
     static void OnExit_1( void );
     static void OnExit_2( void );
@@ -99,6 +102,7 @@ public:
     double GetDisplaySizeMM();
     void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
+    unsigned int GetSelectRadiusPix();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
     void onStagedResizeFinal();
@@ -162,6 +166,13 @@ public:
     wxString ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale);
 #endif
     
+    
+//--------------------------------------------------------------------------
+//      Per-Platform OpenGL support
+//--------------------------------------------------------------------------
+    bool BuildGLCaps( void *pbuf );
+    bool IsGLCapable();
+
 private:
     bool        GetWindowsMonitorSize( int *width, int *height);
     
