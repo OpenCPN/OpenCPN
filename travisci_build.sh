@@ -15,7 +15,8 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   fi
 make -sj2
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-  mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/
+  mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
+  mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
   chmod 644 /usr/local/lib/lib*.dylib
   make install
   make create-dmg
