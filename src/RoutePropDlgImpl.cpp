@@ -347,7 +347,7 @@ void RoutePropDlgImpl::UpdatePoints()
         data.clear();
         in++;
     }
-    if( selection > 0) {
+    if( selected_row > 0) {
         m_dvlcWaypoints->SelectRow(selected_row);
         m_dvlcWaypoints->EnsureVisible(selection);
     }
@@ -737,8 +737,8 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEve
         wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
         wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
 #endif
-        editItem->Enable( m_dvlcWaypoints->GetSelection() > 0 );
-        delItem->Enable( m_dvlcWaypoints->GetSelection() > 0 && m_dvlcWaypoints->GetItemCount() > 2 );
+        editItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 0 );
+        delItem->Enable( m_dvlcWaypoints->GetSelectedRow() >= 0 && m_dvlcWaypoints->GetItemCount() > 2 );
     }
 #ifndef __WXQT__
     wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );

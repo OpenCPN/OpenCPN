@@ -55,16 +55,16 @@ extern about *g_pAboutDlg;
 extern bool g_bresponsive;
 
 wxString OpenCPNVersion =
-    wxString::Format( wxT("\n      Version %i.%i.%i Build "),
+    wxString::Format( wxT("\n      Version %i.%i.%s Build "),
                       VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
     + wxString::FromAscii(VERSION_DATE);
 
-    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.0<br>Base %i.%i.%i<br>Build Date %s"),
+    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.0<br>Base %i.%i.%s<br>Build Date %s"),
                                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2018 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")

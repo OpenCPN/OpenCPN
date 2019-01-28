@@ -1000,41 +1000,49 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             m_pLatestTargetData = pTargetData;
 
-            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
+            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )            
                 pTargetData->b_OwnShip = true;
-            // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
-            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                MMSIProperties *props =  g_MMSI_Props_Array[i];
-                if(mmsi == props->MMSI)
-                {
-                    pTargetData->b_OwnShip = (props->m_bVDM) ? true : false;
-                    pTargetData->b_PersistTrack = (props->m_bPersistentTrack) ? true : false;
-                    pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER) ? true : false;                    
-                    break;
+            else{ 
+                //set  mmsi-props to default values
+                pTargetData->b_OwnShip = false;
+                pTargetData->b_PersistTrack = false;
+                pTargetData->b_NoTrack = false;
+                // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
+                for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                    MMSIProperties *props =  g_MMSI_Props_Array[i];
+                    if(mmsi == props->MMSI)
+                    {
+                       if (props->m_bVDM){
+                            // set OwnShip to prevent target from being drawn
+                            pTargetData->b_OwnShip = true;
+                            //Rename nmea sentence to AIVDO and calc a new checksum
+                            wxString aivdostr = str;
+                            aivdostr.replace(1, 5, "AIVDO");
+                            unsigned char calculated_checksum = 0;
+                            wxString::iterator i;
+                            for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
+                                calculated_checksum ^= static_cast<unsigned char> (*i);
+                            // if i is not at least 3 positons befoere end, there is no checksum added
+                            // so also no need to add one now.
+                            if ( i <= aivdostr.end()-3 )
+                                aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
+
+                            gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
+                            //replace the changed sentence in nemea stream
+                            OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                            std::string s = std::string( aivdostr.mb_str() );
+                            event.SetNMEAString( s );
+                            event.SetStream( NULL );
+                            g_pMUX->AddPendingEvent( event );                   
+                        }
+                        else{
+                            pTargetData->b_PersistTrack = (props->m_bPersistentTrack);
+                            pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER);
+                        }
+                        break;
+                    }
                 }
             }
-            if ( pTargetData->b_OwnShip )
-            {
-                //Rename nmea sentence to AIVDO and calc a new checksum
-                wxString aivdostr = str;
-                aivdostr.replace(1, 5, "AIVDO");
-                unsigned char calculated_checksum = 0;
-                wxString::iterator i;
-                for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
-                    calculated_checksum ^= static_cast<unsigned char> (*i);
-                // if i is not at least 3 positons befoere end, there is no checksum added
-                // so also no need to add one now.
-                if ( i <= aivdostr.end()-3 )
-                    aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
-
-                gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
-                //replace the changed sentence in nemea stream
-                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-                std::string s = std::string( aivdostr.mb_str() );
-                event.SetNMEAString( s );
-                event.SetStream( NULL );
-                g_pMUX->AddPendingEvent( event );                   
-            }    
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
