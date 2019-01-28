@@ -34,6 +34,7 @@
 #include "chart1.h"
 #include "navutil.h"
 #include "FontMgr.h"
+#include "ocpn_plugin.h"
 
 extern bool             g_bopengl;
 #ifdef ocpnUSE_GL    
@@ -65,6 +66,8 @@ wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER ),
 RolloverWin::~RolloverWin()
 {
     delete m_pbm;
+    glDeleteTextures(1, &m_texture);
+
 }
 void RolloverWin::OnTimer( wxTimerEvent& event )
 {
@@ -97,6 +100,11 @@ void RolloverWin::SetBitmap( int rollover )
     mdc.Clear();
 #ifdef ocpnUSE_GL
     bool usegl = g_bopengl && g_texture_rectangle_format;
+
+#ifdef __WXOSX__
+    usegl = false;
+#endif
+        
 #else
     bool usegl = false;
 #endif
@@ -142,12 +150,20 @@ void RolloverWin::SetBitmap( int rollover )
     if(usegl) {
         if(!m_texture) {
             glGenTextures( 1, &m_texture );
+            wxString msg;
+            msg.Printf(_T("New texture  %d"), m_texture);
+            wxLogMessage(msg);
+
             glBindTexture( g_texture_rectangle_format, m_texture );
             glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         } else
             glBindTexture( g_texture_rectangle_format, m_texture );
-        
+ 
+        wxString msg;
+        msg.Printf(_T("Render texture  %d"), m_texture);
+        wxLogMessage(msg);
+
         // make texture data
         wxImage image = m_pbm->ConvertToImage();
         
@@ -162,6 +178,9 @@ void RolloverWin::SetBitmap( int rollover )
         glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA,
                       m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
         delete [] e;
+        glDisable(g_texture_rectangle_format);
+        glDisable(GL_BLEND);
+
     }
     #endif
     
@@ -273,10 +292,16 @@ void RolloverWin::Draw(ocpnDC &dc)
     if(!IsActive())
         return;
 #ifdef ocpnUSE_GL
+//#ifndef __WXOSX__    
     if(g_bopengl && m_texture) {
-        glBindTexture( g_texture_rectangle_format, m_texture );
+        wxString msg;
+        msg.Printf(_T("Draw texture  %d"), m_texture);
+        wxLogMessage(msg);
+        
         glEnable(g_texture_rectangle_format);
+        glBindTexture( g_texture_rectangle_format, m_texture );
         glEnable(GL_BLEND);
+        
         int x0 = m_position.x, x1 = x0 + m_size.x;
         int y0 = m_position.y, y1 = y0 + m_size.y;
         float tx, ty;
@@ -296,6 +321,7 @@ void RolloverWin::Draw(ocpnDC &dc)
         glDisable(g_texture_rectangle_format);
         glDisable(GL_BLEND);
     } else
+//#endif        
 #endif    
     dc.DrawBitmap( *m_pbm, m_position.x, m_position.y, false );
 }
