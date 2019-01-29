@@ -1368,7 +1368,8 @@ SET(HDRS
                 include/gshhs.h
                 include/kml.h
                 include/undo.h
-                include/about.h
+                include/AboutFrame.h
+                include/AboutFrameImpl.h
                 include/ais.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
@@ -1471,7 +1472,8 @@ SET(SRCS
         src/gshhs.cpp
         src/kml.cpp
         src/undo.cpp
-        src/about.cpp
+        src/AboutFrame.cpp
+        src/AboutFrameImpl.cpp
         src/ais.cpp
         src/pluginmanager.cpp
         src/wxJSON/jsonwriter.cpp
@@ -2061,6 +2063,12 @@ IF(APPLE)
              data/license.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
 
   SET_SOURCE_FILES_PROPERTIES(
+             data/authors.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
+  SET_SOURCE_FILES_PROPERTIES(
+             data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
+  SET_SOURCE_FILES_PROPERTIES(
              data/CoC-909_2013-InlandECDIS_20170308.pdf PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
 
   FILE(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/data/sounds/*)
@@ -2167,6 +2175,8 @@ IF(APPLE)
         ${s57data}
         ${tcData}
         data/license.txt
+        data/authors.txt
+        data/opencpn.png
         data/CoC-909_2013-InlandECDIS_20170308s.pdf
         ${SOUND_FILES}
         buildosx/opencpn.icns
