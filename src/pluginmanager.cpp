@@ -2105,8 +2105,12 @@ void PlugInManager::SendBaseConfigToAllPlugIns()
     wxJSONValue v;
     v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
     v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
-    v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
-    v[_T("OpenCPN Version Date")] = VERSION_DATE;
+    v[_T("OpenCPN Version Date")] = _T(VERSION_DATE);
+
+    wxString sPatch = _T(VERSION_PATCH);
+    long nPatch = 0;
+    sPatch.ToLong( &nPatch );
+    v[_T("OpenCPN Version Patch")] = nPatch;
     
     // Some useful display metrics
     if(g_MainToolbar){
@@ -2133,9 +2137,13 @@ void PlugInManager::SendS52ConfigToAllPlugIns( bool bReconfig )
     wxJSONValue v;
     v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
     v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
-    v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
-    v[_T("OpenCPN Version Date")] = VERSION_DATE;
-    
+    v[_T("OpenCPN Version Date")] = _T(VERSION_DATE);
+ 
+    wxString sPatch = _T(VERSION_PATCH);
+    long nPatch = 0;
+    sPatch.ToLong( &nPatch );
+    v[_T("OpenCPN Version Patch")] = nPatch;
+
     //  S52PLIB state
     if(ps52plib){
 //         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
