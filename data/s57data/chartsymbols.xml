@@ -13174,7 +13174,7 @@
 			<attrib-code index="0">COLOUR3,4,3</attrib-code>
 			<attrib-code index="1">BCNSHP1</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1302" RCID="31354" name="bcnlat">
@@ -13185,7 +13185,7 @@
 			<attrib-code index="0">COLOUR3,4,3</attrib-code>
 			<attrib-code index="1">BCNSHP5</attrib-code>
 			<instruction>SY(BCNLAT15);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1303" RCID="31355" name="bcnlat">
@@ -13196,7 +13196,7 @@
 			<attrib-code index="0">COLOUR4,3,4</attrib-code>
 			<attrib-code index="1">BCNSHP1</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1304" RCID="31356" name="bcnlat">
@@ -13207,7 +13207,7 @@
 			<attrib-code index="0">COLOUR4,3,4</attrib-code>
 			<attrib-code index="1">BCNSHP5</attrib-code>
 			<instruction>SY(BCNLAT16);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1305" RCID="31357" name="bcnlat">
@@ -13218,7 +13218,7 @@
 			<attrib-code index="0">COLOUR3</attrib-code>
 			<attrib-code index="1">BCNSHP1</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1306" RCID="31358" name="bcnlat">
@@ -13229,7 +13229,7 @@
 			<attrib-code index="0">COLOUR3</attrib-code>
 			<attrib-code index="1">BCNSHP5</attrib-code>
 			<instruction>SY(BCNLAT15);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1307" RCID="31359" name="bcnlat">
@@ -13240,7 +13240,7 @@
 			<attrib-code index="0">COLOUR4</attrib-code>
 			<attrib-code index="1">BCNSHP1</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1308" RCID="31360" name="bcnlat">
@@ -13251,7 +13251,7 @@
 			<attrib-code index="0">BCNSHP5</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BCNLAT16);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1309" RCID="31361" name="bcnlat">
@@ -13261,7 +13261,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BCNLAT15);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1310" RCID="31362" name="bcnlat">
@@ -13271,7 +13271,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BCNLAT16);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1311" RCID="31363" name="bcnlat">
@@ -13281,7 +13281,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam11</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1312" RCID="31364" name="bcnlat">
@@ -13291,7 +13291,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam12</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1313" RCID="31365" name="bcnlat">
@@ -13301,7 +13301,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam13</attrib-code>
 			<instruction>SY(BCNSPP21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1314" RCID="31366" name="bcnlat">
@@ -13311,7 +13311,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam14</attrib-code>
 			<instruction>SY(BCNSPP21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1315" RCID="31367" name="bcnlat">
@@ -13321,7 +13321,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam15</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1316" RCID="31368" name="bcnlat">
@@ -13331,7 +13331,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam16</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1317" RCID="31369" name="bcnlat">
@@ -13341,7 +13341,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam17</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1318" RCID="31370" name="bcnlat">
@@ -13351,7 +13351,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam18</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1319" RCID="31371" name="bcnlat">
@@ -13361,7 +13361,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam19</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1320" RCID="31372" name="bcnlat">
@@ -13371,7 +13371,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam20</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1321" RCID="31373" name="bcnlat">
@@ -13381,7 +13381,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam21</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1322" RCID="31374" name="bcnlat">
@@ -13391,7 +13391,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam22</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1323" RCID="31375" name="bcnlat">
@@ -13401,7 +13401,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">COLOUR3</attrib-code>
 			<instruction>SY(BCNLAT15);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1324" RCID="31376" name="bcnlat">
@@ -13411,7 +13411,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">COLOUR4</attrib-code>
 			<instruction>SY(BCNLAT16);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1325" RCID="31377" name="bcnlat">
@@ -13421,7 +13421,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam5</attrib-code>
 			<instruction>SY(BCNLAT21);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1326" RCID="31378" name="bcnlat">
@@ -13431,7 +13431,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam6</attrib-code>
 			<instruction>SY(BCNLAT22);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1327" RCID="31379" name="bcnlat">
@@ -13441,7 +13441,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catlam9</attrib-code>
 			<instruction>SY(BCNLAT23);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1328" RCID="31380" name="bcnlat">
@@ -13450,7 +13450,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(BCNDEF13);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1329" RCID="31381" name="bcnwtw">
@@ -13459,7 +13459,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(BCNLAT50);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="1330" RCID="31382" name="berths">
@@ -13479,7 +13479,7 @@
 			<attrib-code index="0">catlam3</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1332" RCID="31384" name="boylat">
@@ -13490,7 +13490,7 @@
 			<attrib-code index="0">catlam3</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYLAT23);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1333" RCID="31385" name="boylat">
@@ -13501,7 +13501,7 @@
 			<attrib-code index="0">catlam4</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYLAT14);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1334" RCID="31386" name="boylat">
@@ -13512,7 +13512,7 @@
 			<attrib-code index="0">catlam4</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1335" RCID="31387" name="boylat">
@@ -13523,7 +13523,7 @@
 			<attrib-code index="0">catlam10</attrib-code>
 			<attrib-code index="1">COLOUR3,4</attrib-code>
 			<instruction>SY(BOYLAT25);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1336" RCID="31388" name="boylat">
@@ -13534,7 +13534,7 @@
 			<attrib-code index="0">catlam10</attrib-code>
 			<attrib-code index="1">COLOUR4,3</attrib-code>
 			<instruction>SY(BOYLAT25);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1337" RCID="31389" name="boylat">
@@ -13545,7 +13545,7 @@
 			<attrib-code index="0">catlam15</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BOYLAT26);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1338" RCID="31390" name="boylat">
@@ -13556,7 +13556,7 @@
 			<attrib-code index="0">catlam16</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BOYLAT27);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1339" RCID="31391" name="boylat">
@@ -13567,7 +13567,7 @@
 			<attrib-code index="0">catlam23</attrib-code>
 			<attrib-code index="1">COLOUR6</attrib-code>
 			<instruction>SY(BOYSPP25);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1340" RCID="31392" name="boylat">
@@ -13578,7 +13578,7 @@
 			<attrib-code index="0">catlam1</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
 			<instruction>SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1341" RCID="31393" name="boylat">
@@ -13589,7 +13589,7 @@
 			<attrib-code index="0">catlam1</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BOYLAT23);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1342" RCID="31394" name="boylat">
@@ -13600,7 +13600,7 @@
 			<attrib-code index="0">catlam2</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
 			<instruction>SY(BOYLAT14);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1343" RCID="31395" name="boylat">
@@ -13611,7 +13611,7 @@
 			<attrib-code index="0">catlam2</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1344" RCID="31396" name="boylat">
@@ -13622,7 +13622,7 @@
 			<attrib-code index="0">catlam7</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
 			<instruction>SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1345" RCID="31397" name="boylat">
@@ -13633,7 +13633,7 @@
 			<attrib-code index="0">catlam8</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1346" RCID="31398" name="boylat">
@@ -13642,7 +13642,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(BOYDEF03);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1347" RCID="31399" name="boywtw">
@@ -13653,7 +13653,7 @@
 			<attrib-code index="0">catwwm10</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYLAT53);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="1348" RCID="31400" name="boywtw">
@@ -26170,7 +26170,7 @@
 			<attrib-code index="0">BCNSHP2</attrib-code>
 			<attrib-code index="1">CATLAM1</attrib-code>
 			<instruction>SY(PRICKE03);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2535" RCID="30606" name="bcnlat">
@@ -26181,7 +26181,7 @@
 			<attrib-code index="0">BCNSHP2</attrib-code>
 			<attrib-code index="1">CATLAM2</attrib-code>
 			<instruction>SY(PRICKE04);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2536" RCID="30607" name="bcnlat">
@@ -26192,7 +26192,7 @@
 			<attrib-code index="0">BCNSHP6</attrib-code>
 			<attrib-code index="1">CONVIS1</attrib-code>
 			<instruction>SY(CAIRNS11);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2537" RCID="30608" name="bcnlat">
@@ -26202,7 +26202,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP1</attrib-code>
 			<instruction>SY(BCNSTK03);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2538" RCID="30609" name="bcnlat">
@@ -26212,7 +26212,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP3</attrib-code>
 			<instruction>SY(BCNTOW01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2539" RCID="30610" name="bcnlat">
@@ -26222,7 +26222,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP4</attrib-code>
 			<instruction>SY(BCNLTC01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2540" RCID="30611" name="bcnlat">
@@ -26232,7 +26232,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP5</attrib-code>
 			<instruction>SY(BCNGEN01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2541" RCID="30612" name="bcnlat">
@@ -26242,7 +26242,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP6</attrib-code>
 			<instruction>SY(CAIRNS01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2542" RCID="30613" name="bcnlat">
@@ -26252,7 +26252,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BCNSHP7</attrib-code>
 			<instruction>SY(BCNGEN01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2543" RCID="30614" name="bcnlat">
@@ -26261,7 +26261,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(BCNGEN03);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2544" RCID="30615" name="bcnwtw">
@@ -26270,7 +26270,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(BCNLAT50);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17020</comment>
 		</lookup>
 		<lookup id="2545" RCID="30616" name="berths">
@@ -26448,7 +26448,7 @@
 			<attrib-code index="0">BOYSHP1</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BOYCON61);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2559" RCID="30627" name="boylat">
@@ -26459,7 +26459,7 @@
 			<attrib-code index="0">BOYSHP1</attrib-code>
 			<attrib-code index="1">COLOUR6</attrib-code>
 			<instruction>SY(BOYCON62);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2560" RCID="30628" name="boylat">
@@ -26470,7 +26470,7 @@
 			<attrib-code index="0">BOYSHP2</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
 			<instruction>SY(BOYCAN60);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2561" RCID="30629" name="boylat">
@@ -26481,7 +26481,7 @@
 			<attrib-code index="0">BOYSHP2</attrib-code>
 			<attrib-code index="1">COLOUR6</attrib-code>
 			<instruction>SY(BOYCAN63);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2562" RCID="30630" name="boylat">
@@ -26492,7 +26492,7 @@
 			<attrib-code index="0">BOYSHP3</attrib-code>
 			<attrib-code index="1">COLOUR6</attrib-code>
 			<instruction>SY(BOYSPH62);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2563" RCID="30631" name="boylat">
@@ -26502,7 +26502,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP1</attrib-code>
 			<instruction>SY(BOYCON01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2564" RCID="30632" name="boylat">
@@ -26512,7 +26512,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP2</attrib-code>
 			<instruction>SY(BOYCAN01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2565" RCID="30633" name="boylat">
@@ -26522,7 +26522,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP3</attrib-code>
 			<instruction>SY(BOYSPH01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2566" RCID="30634" name="boylat">
@@ -26532,7 +26532,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP4</attrib-code>
 			<instruction>SY(BOYPIL01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2567" RCID="30635" name="boylat">
@@ -26542,7 +26542,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP5</attrib-code>
 			<instruction>SY(BOYSPR01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2568" RCID="30636" name="boylat">
@@ -26552,7 +26552,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP6</attrib-code>
 			<instruction>SY(BOYBAR01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2569" RCID="30637" name="boylat">
@@ -26562,7 +26562,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP7</attrib-code>
 			<instruction>SY(BOYSUP01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2570" RCID="30638" name="boylat">
@@ -26572,7 +26572,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP8</attrib-code>
 			<instruction>SY(BOYSPR01);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2571" RCID="30639" name="boylat">
@@ -26581,7 +26581,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(BOYGEN03);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2572" RCID="94013" name="boywtw">
@@ -26593,7 +26593,7 @@
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<attrib-code index="2">COLPAT1</attrib-code>
 			<instruction>SY(BOYSPR65);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2573" RCID="30640" name="boywtw">
@@ -26604,7 +26604,7 @@
 			<attrib-code index="0">catwwm10</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2574" RCID="30641" name="boywtw">
@@ -26615,7 +26615,7 @@
 			<attrib-code index="0">catwwm13</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2575" RCID="30642" name="boywtw">
@@ -26626,7 +26626,7 @@
 			<attrib-code index="0">catwwm14</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2576" RCID="30643" name="boywtw">
@@ -26637,7 +26637,7 @@
 			<attrib-code index="0">catwwm15</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2577" RCID="30644" name="boywtw">
@@ -26648,7 +26648,7 @@
 			<attrib-code index="0">catwwm16</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2578" RCID="30645" name="boywtw">
@@ -26659,7 +26659,7 @@
 			<attrib-code index="0">catwwm17</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2579" RCID="30646" name="boywtw">
@@ -26670,7 +26670,7 @@
 			<attrib-code index="0">catwwm18</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2580" RCID="30647" name="boywtw">
@@ -26681,7 +26681,7 @@
 			<attrib-code index="0">catwwm7</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2581" RCID="30648" name="boywtw">
@@ -26692,7 +26692,7 @@
 			<attrib-code index="0">catwwm8</attrib-code>
 			<attrib-code index="1">COLOUR4,3,4</attrib-code>
 			<instruction>SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2582" RCID="30649" name="boywtw">
@@ -26703,7 +26703,7 @@
 			<attrib-code index="0">catwwm9</attrib-code>
 			<attrib-code index="1">COLOUR3,4,3</attrib-code>
 			<instruction>SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2583" RCID="30650" name="boywtw">
@@ -26714,7 +26714,7 @@
 			<attrib-code index="0">catwwm10</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2584" RCID="30651" name="boywtw">
@@ -26725,7 +26725,7 @@
 			<attrib-code index="0">catwwm10</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2585" RCID="30652" name="boywtw">
@@ -26736,7 +26736,7 @@
 			<attrib-code index="0">catwwm11</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2586" RCID="30653" name="boywtw">
@@ -26747,7 +26747,7 @@
 			<attrib-code index="0">catwwm11</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2587" RCID="30654" name="boywtw">
@@ -26758,7 +26758,7 @@
 			<attrib-code index="0">catwwm12</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2588" RCID="30655" name="boywtw">
@@ -26769,7 +26769,7 @@
 			<attrib-code index="0">catwwm12</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2589" RCID="30656" name="boywtw">
@@ -26780,7 +26780,7 @@
 			<attrib-code index="0">catwwm13</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2590" RCID="30657" name="boywtw">
@@ -26791,7 +26791,7 @@
 			<attrib-code index="0">catwwm13</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2591" RCID="30658" name="boywtw">
@@ -26802,7 +26802,7 @@
 			<attrib-code index="0">catwwm14</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2592" RCID="30659" name="boywtw">
@@ -26813,7 +26813,7 @@
 			<attrib-code index="0">catwwm14</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2593" RCID="30660" name="boywtw">
@@ -26824,7 +26824,7 @@
 			<attrib-code index="0">catwwm15</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2594" RCID="30661" name="boywtw">
@@ -26835,7 +26835,7 @@
 			<attrib-code index="0">catwwm15</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2595" RCID="30662" name="boywtw">
@@ -26846,7 +26846,7 @@
 			<attrib-code index="0">catwwm16</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2596" RCID="30663" name="boywtw">
@@ -26857,7 +26857,7 @@
 			<attrib-code index="0">catwwm16</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2597" RCID="30664" name="boywtw">
@@ -26868,7 +26868,7 @@
 			<attrib-code index="0">catwwm17</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2598" RCID="30665" name="boywtw">
@@ -26879,7 +26879,7 @@
 			<attrib-code index="0">catwwm17</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BCNSTK78);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2599" RCID="30666" name="boywtw">
@@ -26890,7 +26890,7 @@
 			<attrib-code index="0">catwwm18</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2600" RCID="30667" name="boywtw">
@@ -26901,7 +26901,7 @@
 			<attrib-code index="0">catwwm18</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BCNSTK81);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2601" RCID="30668" name="boywtw">
@@ -26912,7 +26912,7 @@
 			<attrib-code index="0">catwwm6</attrib-code>
 			<attrib-code index="1">COLOUR3,4</attrib-code>
 			<instruction>SY(BOYLAT54);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2602" RCID="30669" name="boywtw">
@@ -26923,7 +26923,7 @@
 			<attrib-code index="0">catwwm6</attrib-code>
 			<attrib-code index="1">COLOUR4,3</attrib-code>
 			<instruction>SY(BOYLAT54);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2603" RCID="30670" name="boywtw">
@@ -26934,7 +26934,7 @@
 			<attrib-code index="0">catwwm7</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BOYLAT55);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2604" RCID="30671" name="boywtw">
@@ -26945,7 +26945,7 @@
 			<attrib-code index="0">catwwm7</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BOYLAT55);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2605" RCID="30672" name="boywtw">
@@ -26956,7 +26956,7 @@
 			<attrib-code index="0">catwwm8</attrib-code>
 			<attrib-code index="1">COLOUR1,4</attrib-code>
 			<instruction>SY(BOYLAT56);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2606" RCID="30673" name="boywtw">
@@ -26967,7 +26967,7 @@
 			<attrib-code index="0">catwwm8</attrib-code>
 			<attrib-code index="1">COLOUR4,1</attrib-code>
 			<instruction>SY(BOYLAT56);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2607" RCID="30674" name="boywtw">
@@ -26978,7 +26978,7 @@
 			<attrib-code index="0">catwwm9</attrib-code>
 			<attrib-code index="1">COLOUR1,3</attrib-code>
 			<instruction>SY(BOYLAT55);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2608" RCID="30675" name="boywtw">
@@ -26989,7 +26989,7 @@
 			<attrib-code index="0">catwwm9</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<instruction>SY(BOYLAT55);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2609" RCID="30679" name="boywtw">
@@ -27000,7 +27000,7 @@
 			<attrib-code index="0">catwwm19</attrib-code>
 			<attrib-code index="1">COLOUR6</attrib-code>
 			<instruction>SY(BOYBAR62);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2610" RCID="30677" name="boywtw">
@@ -27011,7 +27011,7 @@
 			<attrib-code index="0">catwwm4</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
 			<instruction>SY(BOYCAN60);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2611" RCID="30678" name="boywtw">
@@ -27022,7 +27022,7 @@
 			<attrib-code index="0">catwwm5</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BOYCON61);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2612" RCID="30680" name="boywtw">
@@ -27031,7 +27031,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(BOYDEF03);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
 		<lookup id="2613" RCID="30681" name="bridge">
