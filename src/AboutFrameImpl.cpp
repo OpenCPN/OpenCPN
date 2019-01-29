@@ -48,8 +48,8 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_bitmapLogo->SetBitmap(logo);
     
-    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + 40;
-    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + 40;
+    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + 50;
+    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + 50;
 
     SetMinSize(wxSize(width, height));
     Layout();

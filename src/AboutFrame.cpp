@@ -22,7 +22,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	wxBoxSizer* bSizerLeftColumn;
 	bSizerLeftColumn = new wxBoxSizer( wxVERTICAL );
 
-	m_bitmapLogo = new wxStaticBitmap( this, wxID_ANY, wxBitmap( wxT("src/bitmaps/opencpn.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 100,100 ), 0 );
+	m_bitmapLogo = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 100,100 ), 0 );
 	m_bitmapLogo->SetMaxSize( wxSize( 100,100 ) );
 
 	bSizerLeftColumn->Add( m_bitmapLogo, 0, wxALL, 10 );
