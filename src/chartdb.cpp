@@ -1178,6 +1178,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
       ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
       
+      wxString msg1;
+      msg1.Printf(_T("OpenChartUsingCache:  type %d  "), chart_type);
+//      wxLogMessage(msg1 + ChartFullPath);
+      
       if(cte.GetLatMax() > 90.0)          // Chart has been disabled...
           return NULL;
       
@@ -1208,6 +1212,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
       if(bInCache)
       {
+          wxString msg;
+          msg.Printf(_T("OpenChartUsingCache, IN cache: cache size: %d\n"), pChartCache->GetCount());
+//          wxLogMessage(msg);
           if(FULL_INIT == init_flag)                            // asking for full init?
           {
               if(Ch->IsReadyToRender())
@@ -1260,8 +1267,12 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     GetMemoryStatus(0, &mem_used);
 
                     wxString msg;
-                    msg.Printf(_T("OpenChartUsingCache, not in cache: mem_used: %d  cache size: %d\n"), mem_used, pChartCache->GetCount());
+                    msg.Printf(_T("OpenChartUsingCache, NOT in cache:   cache size: %d\n"),  pChartCache->GetCount());
                     wxLogMessage(msg);
+                    wxString msg1;
+                    msg1.Printf(_T("   OpenChartUsingCache:  type %d  "), chart_type);
+                    wxLogMessage(msg1 + ChartFullPath);
+
 
                     if((mem_used > g_memCacheLimit * 8 / 10) && (pChartCache->GetCount() > 2)) {
                         wxString msg(_T("Removing oldest chart from cache: "));
@@ -1309,6 +1320,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
 
 //#endif      // ndef __WXMSW__
+
+            wxLogMessage(_T("Creating new chart"));
 
             if(chart_type == CHART_TYPE_KAP)
                   Ch = new ChartKAP();
@@ -1426,8 +1439,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             }
 
 
-            else
+            else{
                   Ch = NULL;
+                  wxLogMessage(_T("Unknown chart type"));
+            }
 
 
             if(Ch)
