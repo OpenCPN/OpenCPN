@@ -38,6 +38,7 @@
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
+#include "config.h"
 #include "chart1.h"
 #include "cutil.h"
 #include "styles.h"
@@ -106,7 +107,6 @@ extern bool                      g_bUpgradeInProcess;
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
 extern bool                      g_bportable;
-extern wxString                  OpenCPNVersion;
 
 extern MyConfig                  *pConfig;
 
@@ -366,7 +366,7 @@ void OCPNPlatform::Initialize_1( void )
     info.cb = sizeof(CR_INSTALL_INFO);
     info.pszAppName = _T("OpenCPN");
     
-    info.pszAppVersion = OpenCPNVersion.c_str();
+    info.pszAppVersion = wxString(VERSION_FULL).c_str();
 
     int type =  MiniDumpNormal;
     

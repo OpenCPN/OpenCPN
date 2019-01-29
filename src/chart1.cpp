@@ -79,7 +79,7 @@
 #include "piano.h"
 #include "concanv.h"
 #include "options.h"
-#include "about.h"
+#include "AboutFrameImpl.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
 #include "ais.h"
@@ -641,7 +641,7 @@ double                    g_n_arrival_circle_radius;
 
 bool                      g_bPreserveScaleOnX;
 
-about                     *g_pAboutDlg;
+AboutFrameImpl            *g_pAboutDlg;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;
@@ -732,7 +732,6 @@ int               g_sticky_projection;
 
 bool              g_benableUDPNullHeader;
 
-extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
 
 int n_NavMessageShown;
@@ -1738,7 +1737,7 @@ bool MyApp::OnInit()
     imsg = _T(" ------- Starting OpenCPN -------");
     wxLogMessage( imsg );
 
-    wxString version = OpenCPNVersion;
+    wxString version = VERSION_FULL;
     wxString vs = version.Trim( true );
     vs = vs.Trim( false );
     wxLogMessage( vs );
@@ -4526,14 +4525,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case wxID_ABOUT:
         case ID_ABOUT: {
             g_MainToolbar->HideTooltip();
-            if( !g_pAboutDlg )
-#ifdef __WXOSX__
-                g_pAboutDlg = new about( GetPrimaryCanvas(), g_Platform->GetSharedDataDir() );
-#else
-                g_pAboutDlg = new about( this, g_Platform->GetSharedDataDir() );
-#endif
-            else
+            if( !g_pAboutDlg ) {
+                g_pAboutDlg = new AboutFrameImpl( this );
+                //g_pAboutDlg->();
+            } else {
                 g_pAboutDlg->SetFocus();
+            }
             g_pAboutDlg->Show();
 
             break;

@@ -1,0 +1,122 @@
+    David S Register
+      OpenCPN Lead Developer
+
+    Pavel Kalian
+      Packaging and PlugIn development
+
+    Sean D'Epagnier
+      OpenGL Architecture
+
+    J.P. Joubert
+      GRIB PlugIn enhancements
+
+    Thomas Höckne
+      Documentation and Wiki support
+
+    Didier Gautheron
+      App debugging and optimization
+
+    Wiets Wilken
+      Extended vector Icon implementation
+
+    Gene Seybold
+      Extended vector Icon design
+
+    Caesar Schinas
+      User Interface and OS X improvements
+
+    Jesper Weissglas
+      Vector Chart Rendering
+
+    Jean-Eudes Onfray
+      Dashboard and Dialog enhancements
+
+    Kathleen Boswell
+      Icon design
+
+    Flavius Bindea
+      CM93 Offset and AIS enhancements
+
+    Gunther Pilz
+      Windows Installer enhancements
+
+    Alan Bleasby
+      Garmin jeeps module
+
+    Piotr Carlson
+      General usability enhancements
+
+    Anders Lund
+      RouteManagerDialog
+
+    Gordon Mau
+      OpenCPN Documentation
+
+    Tim Francis
+      OpenCPN Documentation
+
+    Mark A Sikes
+      OpenCPN CoDeveloper
+
+    Thomas Haller
+      GPX Import/Export Implementation
+
+    Will Kamp
+      Toolbar Icon design
+
+    Richard Smith
+      OpenCPN CoDeveloper, MacOSX
+
+    David Herring
+      OpenCPN CoDeveloper, MacOSX
+
+    Philip Lange
+      OpenCPN Documentation
+
+    Ron Kuris
+      wxWidgets Support
+
+    Julian Smart, Robert Roebling et al
+      wxWidgets Authors
+
+    Sylvain Duclos
+      S52 Presentation Library code
+
+    Manish P. Pagey
+      Serial Port Library
+
+    David Flater
+      XTIDE tide and current code
+
+    Frank Warmerdam
+      GDAL Class Library
+
+    Mike Higgins
+      BSB Chart Format Detail
+
+    Samuel R. Blackburn
+      NMEA0183 Class Library
+
+    Atul Narkhede
+      Polygon Graphics utilities
+
+    Jan C. Depner
+      WVS Chart Library
+
+    Stuart Cunningham, et al
+      BSB Chart Georeferencing Algorithms
+
+    John F. Waers
+      UTM Conversion Algorithms
+
+    Carsten Tschach
+      UTM Conversion Algorithms
+
+    Ed Williams
+      Great Circle Formulary
+
+    Philippe Bekaert
+      CIE->RGB Color Conversion Matrix
+
+    Robert Lipe
+      Garmin USB GPS Interface
