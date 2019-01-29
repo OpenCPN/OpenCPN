@@ -21,8 +21,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#ifndef SOUND_LOADER_FACTORY_H
+#define SOUND_LOADER_FACTORY_H
+
 
 #include "SoundFileLoader.h"
 
 /** Returnm the sound loader to use as configured by cmake. */
 AbstractSoundLoader* SoundLoaderFactory();
+
+#endif  // SOUND_LOADER_FACTORY_H

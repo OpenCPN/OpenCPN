@@ -22,8 +22,8 @@
  ***************************************************************************
  */
 
-#ifndef __OCPN_SOUND_H__
-#define __OCPN_SOUND_H__
+#ifndef OCPN_SOUND_H__
+#define OCPN_SOUND_H__
 
 #include <functional>
 #include <memory>
@@ -36,15 +36,14 @@ typedef std::function<void(void* userPtr)>  AudioDoneCallback;
  * mode. Also supports sound device enumeration and various status
  * checks.
  *
- * Instances should normally be obtained using SoundFactory.Create();
+ * Instances should normally be obtained using SoundFactory();
  */
 
 class OcpnSound
 {
+    friend OcpnSound* SoundFactory();
 
     public:
-        /** Default ctor. Load() must be called before actual usage. */
-        OcpnSound();
 
         virtual ~OcpnSound();
 
@@ -107,6 +106,9 @@ class OcpnSound
 
     protected:
 
+        /** Default ctor. Load() must be called before actual usage. */
+        OcpnSound();
+
         bool m_OK;
         int m_deviceIx;
         std::string m_soundfile;
@@ -115,4 +117,4 @@ class OcpnSound
 
 };
 
-#endif // __OCPN_SOUND_H__
+#endif // OCPN_SOUND_H__

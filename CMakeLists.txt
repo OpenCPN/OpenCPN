@@ -61,7 +61,7 @@
 # set /MT for Release build, and /MTd for debug.
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
     CMAKE_POLICY(SET CMP0043 NEW)
@@ -86,23 +86,16 @@ IF(NOT MSVC)
    SET(OBJ_VISIBILITY "-fvisibility=hidden" )
 ENDIF()
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    message(STATUS "Setting C++11 standard via CXX flags")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    message(STATUS "Setting C++0x standard via CXX FLAGS")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-  endif()
-else ()
-  set (CMAKE_CXX_STANDARD 11)
-  message(STATUS "Setting C++11 standard via cmake standard mechanism")
-endif ()
+# Locations where cmake looks for cmake modules.
+SET(CMAKE_MODULE_PATH 
+  ${CMAKE_SOURCE_DIR}/build
+  ${CMAKE_SOURCE_DIR}/
+  ${CMAKE_SOURCE_DIR}/cmake
+)
+
+
+set (CMAKE_CXX_STANDARD 11)
+message(STATUS "Setting C++11 standard via cmake standard mechanism")
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
@@ -424,6 +417,9 @@ ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
 
+# Prefer libGL.so to libOpenGL.so, see CMP0072
+set (OpenGL_GL_PREFERENCE  "LEGACY")
+
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on "native linux" arm systems
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -643,12 +639,6 @@ IF(MSVC)
   ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(MSVC)
 
-# Location where cmake first looks for cmake modules.
-SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
-
-# Let cmake find additional modules private to opencpn
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
-
 IF (NOT WIN32 AND NOT APPLE)
 
   IF(QT_ANDROID)
@@ -753,6 +743,7 @@ IF(OCPN_USE_CURL)
       FIND_PACKAGE(CURL REQUIRED)
       INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
     ELSE(OCPN_USE_EXTERN_CURL)
+      INCLUDE("Curl")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
@@ -884,7 +875,7 @@ IF(OCPN_USE_SVG)
       #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
 
       FIND_PACKAGE(EXPAT REQUIRED)
-      INCLUDE(FindEXIF.cmake)
+      INCLUDE(FindEXIF)
     ELSE(NOT WIN32)
       #On Windows, we have our own expat
       SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
@@ -1173,42 +1164,41 @@ IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   ENDIF()
 ENDIF()
 
-OPTION(ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available" ON)
+IF (WIN32)
+  SET (DEFAULT_PA OFF)
+ELSE ()
+  SET (DEFAULT_PA ON)
+ENDIF ()
+OPTION(ENABLE_PORTAUDIO
+       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 SET (USE_PORTAUDIO "")
 IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
-  IF(UNIX)
-    INCLUDE("FindPortaudio.cmake")
-    IF (PORTAUDIO_FOUND)
-      MESSAGE (STATUS "Portaudio Found")
-      INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
-      ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
-      SET(USE_PORTAUDIO 1)
-    ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
-      MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
-      SET(USE_PORTAUDIO "")
-    ENDIF()
-  ELSE(UNIX)
-    MESSAGE (STATUS "Portaudio not used by the main OpenCPN application on Windows")
-  ENDIF(UNIX)
+  INCLUDE("FindPortaudio")
+  IF (PORTAUDIO_FOUND)
+    MESSAGE (STATUS "Portaudio Found")
+    INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
+    ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
+    SET(USE_PORTAUDIO 1)
+  ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
+    MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
+    SET(USE_PORTAUDIO "")
+  ENDIF()
 ENDIF ()
 
-OPTION(ENABLE_SNDFILE "Use libsndfile if available for sound files." ON)
+OPTION(ENABLE_SNDFILE
+       "Use libsndfile if available for sound files." ${DEFAULT_PA})
 SET(USE_SNDFILE "")
 IF (NOT ENABLE_SNDFILE MATCHES OFF)
-  IF (UNIX)
-    INCLUDE(FindLibSndfile.cmake)
-    IF (LIBSNDFILE_FOUND)
-      MESSAGE (STATUS "libsndfile Found")
-      INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${LIBSNDFILE_LIBRARIES})
-      SET(USE_SNDFILE 1)
-    ELSEIF (ENABLE_SNDFILE MATCHES ON)
-      MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
-    ENDIF ()
-  ELSE ()
-    MESSAGE (STATUS "Libsndfile not used on Windows")
-  ENDIF ()
+  INCLUDE(FindLibSndfile)
+  IF(LIBSNDFILE_FOUND)
+    MESSAGE (STATUS "libsndfile Found")
+    INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LIBSNDFILE_LIBRARIES})
+    SET(USE_SNDFILE 1)
+  ELSEIF (ENABLE_SNDFILE MATCHES ON)
+    MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
+  ENDIF()
 ENDIF ()
 
 
@@ -1534,8 +1524,6 @@ IF (LIBSNDFILE_FOUND)
     SET(HDRS ${HDRS} include/SndfileSoundLoader.h)
     SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
 ENDIF ()
-
-SET(SRCS ${SRCS} src/SystemCmdSound.cpp)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
@@ -1884,6 +1872,7 @@ ENDIF (OPENGL_FOUND)
 CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
 
+# If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
 IF(MSVC)
   SET(SRCS ${SRCS} src/opencpn.rc)
@@ -2737,6 +2726,8 @@ ENDIF(WIN32 AND NOT UNIX)
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
 ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
+
+SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h)
 
 INCLUDE(CPack)
 

@@ -50,7 +50,7 @@ class SystemCmdSound: public OcpnSound
          * Set system command string in case program wants to change from
          * default string.
          */
-        void SetCmd( const char *cmd ) { m_cmd = cmd; };
+        void SetCmd( const char *cmd ) override { m_cmd = cmd; };
 
     private:
         void worker();
@@ -62,4 +62,4 @@ class SystemCmdSound: public OcpnSound
 
 const unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
 
-#endif // __WX_SOUND_H__
+#endif // SYSTEM_CMD_SOUND_H__
