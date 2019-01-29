@@ -1590,7 +1590,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 {
     bool ret = true;
 
-    std::auto_ptr<wxZipEntry> entry(new wxZipEntry());
+    std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 
     do
     {
