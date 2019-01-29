@@ -61,7 +61,9 @@ extern TCMgr *ptcmgr;
 // adapted by author's permission from QBASIC source as published at
 //     http://www.stargazing.net/kepler
 
+#ifndef PI
 #define    PI      (4.*atan(1.0))
+#endif
 #define    TPI     (2.*PI)
 #define    DEGS    (180./PI)
 #define    RADS    (PI/180.)
