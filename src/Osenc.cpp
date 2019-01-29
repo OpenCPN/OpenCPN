@@ -2244,6 +2244,9 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
     OGRGeometry *pGeo = pFeature->GetGeometryRef();
     OGRPolygon *poly = (OGRPolygon *) ( pGeo );
     
+    if( !poly->getExteriorRing() )
+        return false;
+    
     lockCR.unlock();
     ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, m_LOD_meters );
     lockCR.lock();
