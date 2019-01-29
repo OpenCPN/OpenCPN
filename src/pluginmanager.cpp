@@ -6854,6 +6854,18 @@ wxWindow* GetCanvasUnderMouse( void )
     return gFrame->GetCanvasUnderMouse();
 }
 
+int GetCanvasIndexUnderMouse( void )
+{
+    ChartCanvas *l_canvas = gFrame->GetCanvasUnderMouse();
+    if(l_canvas) {
+        for(int i = 0; i < g_canvasArray.GetCount(); ++i) {
+            if(l_canvas == g_canvasArray[i])
+                return i;
+        }
+    }
+    return 0;
+}
+
 // std::vector<wxWindow *> GetCanvasArray()
 // {
 //     std::vector<wxWindow *> rv;
