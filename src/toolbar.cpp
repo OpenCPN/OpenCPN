@@ -2511,7 +2511,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     PrepareDC( dc );
 
     wxPoint drawAt( tool->m_x, tool->m_y );
-    wxBitmap bmp;
+    wxBitmap bmp = wxNullBitmap;
 
     if( tool->bitmapOK ) {
         if( tool->IsEnabled() ) {
@@ -2549,7 +2549,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     svgFile = tool->pluginRolloverIconSVG;
             }
             
-            if(svgFile.Length()){         // try SVG
+            if(!svgFile.IsEmpty()){         // try SVG
 #ifdef ocpnUSE_SVG
                 if( wxFileExists( svgFile ) ){
                     wxSVGDocument svgDoc;
@@ -2564,22 +2564,25 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
 #endif           
             }
 
-            if( !bmp.IsOk() ){
-      
-                bmp = m_style->GetToolIcon( tool->GetToolname(), toggleFlag, tool->rollover,
-                                        tool->m_width, tool->m_height );
+            if( !bmp.IsOk() || bmp.IsNull() ) {
+                if( m_style->NativeToolIconExists(tool->GetToolname()) ) {
+                    bmp = m_style->GetToolIcon( tool->GetToolname(), toggleFlag, tool->rollover, tool->m_width, tool->m_height );
+                } else {
+                    bmp = wxNullBitmap;
+                }
             
-                if( bmp.GetDepth() == 1 ) {     // Tool icon not found
+                if( bmp.IsNull() ) {     // Tool icon not found
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, toggleFlag );
-                        if( ! bmp.IsOk() )
+                        if( !bmp.IsOk() ) {
                             bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, toggleFlag );
+                        }
                     }
-                    else
+                    else {
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, toggleFlag );
-                    
-                    if( fabs(m_sizefactor - 1.0) > 0.01){
-                        if(tool->m_width && tool->m_height){
+                    }
+                    if( fabs(m_sizefactor - 1.0) > 0.01) {
+                        if(tool->m_width && tool->m_height) {
                             wxImage scaled_image = bmp.ConvertToImage();
                             bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
                         }
@@ -2588,7 +2591,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             }
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;
-        } else {
+        } else { // Not a plugin tool
             bmp = tool->GetNormalBitmap();
             if( tool->IsEnabled() ) {
                 if( tool->IsToggled() ){
