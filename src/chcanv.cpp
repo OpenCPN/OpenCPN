@@ -1550,15 +1550,15 @@ bool ChartCanvas::DoCanvasUpdate( void )
         else
             m_pCurrentStack = new ChartStack;
             
-            //  This logic added to enable opening a chart when there is no
-                //  previous chart indication, either from inital startup, or from adding new chart directory
-            if( m_bautofind && (-1 == GetQuiltReferenceChartIndex()) && m_pCurrentStack ){
-                if(m_pCurrentStack->nEntry){
-                    int new_dbIndex = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry-1);    // smallest scale
+        //  This logic added to enable opening a chart when there is no
+            //  previous chart indication, either from inital startup, or from adding new chart directory
+        if( m_bautofind && (-1 == GetQuiltReferenceChartIndex()) && m_pCurrentStack ){
+            if (m_pCurrentStack->nEntry) {
+                int new_dbIndex = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry-1);    // smallest scale
                 SelectQuiltRefdbChart(new_dbIndex, true);
                 m_bautofind = false;
-             }
-         }
+            }
+        }
                 
          ChartData->BuildChartStack( m_pCurrentStack, tLat, tLon, m_groupIndex );
          m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
@@ -12196,12 +12196,12 @@ void ChartCanvas::UpdateGPSCompassStatusBox( bool b_force_new )
                 m_Compass->Move( wxPoint( GetSize().x - rect.width - cc1_edge_comp,
                                           GetSize().y - ( rect.height + cc1_edge_comp ) ) );
                 
-                if(rect != m_Compass->GetRect()) {
-                    Refresh(true);
-                    m_brepaint_piano = true;
-                    b_update = true;
-                }
-                m_mainlast_tb_rect = tb_rect;
+            if (rect != m_Compass->GetRect()) {
+                Refresh(true);
+                m_brepaint_piano = true;
+                b_update = true;
+            }
+            m_mainlast_tb_rect = tb_rect;
             
         }
     }
