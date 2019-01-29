@@ -526,6 +526,8 @@ bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort 
         if(canvasIndex == 1){
             return RenderGLOverlay( pcontext, vp);
         }
+        else
+            return false;
     }
 
     return RenderGLOverlay( pcontext, vp);
