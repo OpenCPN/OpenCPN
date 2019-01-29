@@ -718,7 +718,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
   struct {
     int *ref_vals,*widths;
     int *lengths;
-    int *first_vals,sign,omin;
+    int *first_vals = 0,sign,omin;
     long long miss_val,group_miss_val;
     int max_length;
   } groups;

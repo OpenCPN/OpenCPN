@@ -8978,8 +8978,8 @@ void pupHandler_PasteRoute() {
         }
     }
 
-    Route* newRoute = NULL;
-    RoutePoint* newPoint;
+    Route* newRoute = 0;
+    RoutePoint* newPoint = 0;
 
     if( createNewRoute ) {
         newRoute = new Route();
