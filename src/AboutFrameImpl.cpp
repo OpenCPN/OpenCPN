@@ -47,6 +47,12 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_bitmapLogo->SetBitmap(logo);
+    
+    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + 20;
+    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + 20;
+
+    SetMinSize(wxSize(width, height));
+    Layout();
     Fit();
 }
 
@@ -59,15 +65,12 @@ void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
     m_scrolledWindowAbout->Hide();
     m_btnBack->Show();
     m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
-    Maximize();
+    SetSize(m_parent->GetSize());
+    Centre();
 }
 
 void AboutFrameImpl::OnLinkLicense( wxHyperlinkEvent& event )
 {
-    if(m_htmlWinHelp->IsShown()) {
-        Fit();
-        Center();
-    }
     m_htmlWinAuthors->Hide();
     m_htmlWinLicense->Show();
     m_htmlWinHelp->Hide();
@@ -78,10 +81,6 @@ void AboutFrameImpl::OnLinkLicense( wxHyperlinkEvent& event )
 
 void AboutFrameImpl::OnLinkAuthors( wxHyperlinkEvent& event )
 {
-    if(m_htmlWinHelp->IsShown()) {
-        Fit();
-        Center();
-    }
     m_htmlWinAuthors->Show();
     m_htmlWinLicense->Hide();
     m_htmlWinHelp->Hide();
@@ -92,10 +91,6 @@ void AboutFrameImpl::OnLinkAuthors( wxHyperlinkEvent& event )
 
 void AboutFrameImpl::AboutFrameOnActivate( wxActivateEvent& event )
 {
-    if(m_htmlWinHelp->IsShown()) {
-        Fit();
-        Center();
-    }
     m_htmlWinAuthors->Hide();
     m_htmlWinLicense->Hide();
     m_htmlWinHelp->Hide();

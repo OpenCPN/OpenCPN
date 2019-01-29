@@ -64,10 +64,6 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerAuthors1->Add( m_staticTextCopyYears, 0, wxALL, 5 );
 
 	m_hyperlinkAuthors = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("The OpenCPN Authors"), wxT("https://opencpn.org"), wxDefaultPosition, wxDefaultSize, 0 );
-
-	m_hyperlinkAuthors->SetHoverColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkAuthors->SetNormalColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkAuthors->SetVisitedColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
 	m_hyperlinkAuthors->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerAuthors1->Add( m_hyperlinkAuthors, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -87,10 +83,6 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerParticipate->Add( m_staticTextHelp, 0, wxALL|wxTOP, 5 );
 
 	m_hyperlinkDonate = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("Donate"), wxT("https://sourceforge.net/donate/index.php?group_id=180842"), wxDefaultPosition, wxDefaultSize, 0 );
-
-	m_hyperlinkDonate->SetHoverColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkDonate->SetNormalColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkDonate->SetVisitedColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
 	m_hyperlinkDonate->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerParticipate->Add( m_hyperlinkDonate, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -100,10 +92,6 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerParticipate->Add( m_staticTextOr, 0, wxALL, 5 );
 
 	m_hyperlinkGetInvolved = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("get involved!"), wxT("https://github.com/OpenCPN/OpenCPN"), wxDefaultPosition, wxDefaultSize, 0 );
-
-	m_hyperlinkGetInvolved->SetHoverColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkGetInvolved->SetNormalColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkGetInvolved->SetVisitedColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
 	m_hyperlinkGetInvolved->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerParticipate->Add( m_hyperlinkGetInvolved, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -119,10 +107,6 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerLogFile->Add( m_staticTextLogfile, 0, wxALL, 5 );
 
 	m_hyperlinkLogFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Logs/opencpn.log"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU );
-
-	m_hyperlinkLogFile->SetHoverColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkLogFile->SetNormalColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkLogFile->SetVisitedColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
 	m_hyperlinkLogFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerLogFile->Add( m_hyperlinkLogFile, 0, wxALL, 5 );
@@ -138,10 +122,6 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerIniFile->Add( m_staticTextIniFile, 0, wxALL, 5 );
 
 	m_hyperlinkIniFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU );
-
-	m_hyperlinkIniFile->SetHoverColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkIniFile->SetNormalColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
-	m_hyperlinkIniFile->SetVisitedColour( wxSystemSettings::GetColour( wxSYS_COLOUR_HIGHLIGHT ) );
 	m_hyperlinkIniFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_hyperlinkIniFile->SetToolTip( _("Copy to clipboard") );
 
@@ -175,7 +155,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizerMainLnks = new wxBoxSizer( wxHORIZONTAL );
 
 	m_panelMainLinks = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_panelMainLinks->SetBackgroundColour( wxColour( 108, 108, 108 ) );
+	m_panelMainLinks->SetBackgroundColour( wxColour( 153, 153, 153 ) );
 
 	wxBoxSizer* bSizerLinksInner;
 	bSizerLinksInner = new wxBoxSizer( wxHORIZONTAL );
@@ -185,7 +165,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 
 	m_hyperlinkWebsite = new wxHyperlinkCtrl( m_panelMainLinks, wxID_ANY, _("OpenCPN Website"), wxT("https://opencpn.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
 
-	m_hyperlinkWebsite->SetNormalColour( wxColour( 252, 255, 255 ) );
+	m_hyperlinkWebsite->SetNormalColour( wxColour( 255, 255, 255 ) );
 	m_hyperlinkWebsite->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 
 	bSizerLinksInner->Add( m_hyperlinkWebsite, 0, wxALL, 20 );
