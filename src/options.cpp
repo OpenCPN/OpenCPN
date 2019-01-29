@@ -2966,7 +2966,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointSizer->Add(ScaMinSizer, 0, wxLEFT | wxRIGHT | wxEXPAND,
                      border_size);
   pScaMinChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
-                     _("Do show waypoints only at a chartscale greater then 1 :"));
+                     _("Show waypoints only at a chartscale greater than 1 :"));
   ScaMinSizer->Add(pScaMinChckB, 0);
   m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1);
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
@@ -2974,7 +2974,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
     
   //Overrule the Scamin settings
   pScaMinOverruleChckB = new wxCheckBox(itemPanelRoutes, wxID_ANY,
-                     _("Overrule the settings for chartscale depending visibility and show always") );
+                     _("Override the settings for chartscale based visibility and show always") );
   waypointSizer->Add(pScaMinOverruleChckB, 0, wxALL, 5);
   
   waypointSizer->AddSpacer(5);
