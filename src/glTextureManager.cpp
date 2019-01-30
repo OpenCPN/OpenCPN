@@ -27,6 +27,7 @@
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
 
+#include "dychart.h"
 #include "viewport.h"
 #include "glTexCache.h"
 #include "glTextureDescriptor.h"
@@ -951,7 +952,9 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
             itt != m_chart_texfactory_hash.end(); ++itt ) {
             glTexFactory *ptf = itt->second;
             if(ptf && ptf->OnTimer())
-                ;//break;
+            {
+                //break;
+            }
         }
     }
 
@@ -1422,9 +1425,37 @@ void glTextureManager::BuildCompressedCache()
 
     wxLogMessage(wxString::Format(_T("BuildCompressedCache() count = %d"), count ));
 
-    b_inCompressAllCharts = true;
+    m_timer.Stop();
     PurgeJobList();
+    if (GetRunningJobCount()) {
+
+        wxLogMessage(_T("Starting compressor pool drain"));
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        #define THREAD_WAIT_SECONDS 5
+        time_t end = stall + THREAD_WAIT_SECONDS;
+
+        int n_comploop = 0;
+        while(stall < end ) {
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+
+            wxString msg;
+            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, GetRunningJobCount());
+            wxLogMessage(msg);
+            if(!GetRunningJobCount())
+                break;
+            wxYield();
+            wxSleep(1);
+        }
+
+        wxString fmsg;
+        fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+                    n_comploop, GetRunningJobCount());
+        wxLogMessage(fmsg);
+    }
     ClearAllRasterTextures();
+    b_inCompressAllCharts = true;
 
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
@@ -1597,6 +1628,7 @@ void glTextureManager::BuildCompressedCache()
     }
     
     b_inCompressAllCharts = false;
+    m_timer.Start(500);
     
     delete m_progDialog;
     m_progDialog = NULL;

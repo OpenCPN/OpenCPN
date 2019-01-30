@@ -765,7 +765,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgBarbedData1->SetFlexibleDirection( wxBOTH );
 	m_fgBarbedData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controled Colours") };
+	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controlled Colours") };
 	int m_cBarbedColoursNChoices = sizeof( m_cBarbedColoursChoices ) / sizeof( wxString );
 	m_cBarbedColours = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
 	m_cBarbedColours->SetSelection( 0 );
@@ -902,7 +902,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbOverlayMap = new wxCheckBox( m_scSetDataPanel, wxID_ANY, _("OverlayMap"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbOverlayMap, 0, wxBOTTOM|wxTOP, 5 );
 
-	m_tOverlayColors = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tOverlayColors = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Color scheme"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tOverlayColors->Wrap( -1 );
 	fgSizer15->Add( m_tOverlayColors, 0, wxALL|wxEXPAND, 5 );
 
@@ -1413,6 +1413,9 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 
 	m_cbDrawBarbedArrowHead = new wxCheckBox( this, wxID_ANY, _("Draw Barbed Arrows Head"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer46->Add( m_cbDrawBarbedArrowHead, 0, wxALL, 5 );
+
+    m_cZoomToCenterAtInit = new wxCheckBox(this, wxID_ANY, _("Zoom to file center when opened"), wxDefaultPosition, wxDefaultSize, 0);
+    fgSizer46->Add(m_cZoomToCenterAtInit, 0, wxALL, 5);
 
 	sbSizer9->Add( fgSizer46, 1, wxEXPAND, 5 );
 

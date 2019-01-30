@@ -29,6 +29,7 @@
  * *
  */
 
+#include <assert.h>
 #include "s57.h"
 #include "ogr_api.h"
 #include "cpl_conv.h"
@@ -863,15 +864,23 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
             if( strlen(pszValue) == 0 )
             {
                 if( nOptionFlags & S57M_PRESERVE_EMPTY_NUMBERS )
+                {
                     poFeature->SetField( iField, EMPTY_NUMBER_MARKER );
+                }
                 else
+                {
                     /* leave as null if value was empty string */;
+                }
             }
             else
+            {
                 poFeature->SetField( iField, pszValue );
+            }
         }
         else
+        {
             poFeature->SetField( iField, pszValue );
+        }
     }
 
 /* -------------------------------------------------------------------- */
@@ -2683,10 +2692,11 @@ int S57Reader::FindAndApplyUpdates( const char * pszPath )
 
     for( iUpdate = 1; bSuccess; iUpdate++ )
     {
-        char    szExtension[4];
+        char    szExtension[16];
         char    *pszUpdateFilename;
         DDFModule oUpdateModule;
 
+        assert(iUpdate <= 999);
         sprintf( szExtension, "%03d", iUpdate );
 
         pszUpdateFilename = CPLStrdup(CPLResetExtension(pszPath,szExtension));

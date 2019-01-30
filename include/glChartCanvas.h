@@ -26,6 +26,9 @@
 #define __GLCHARTCANVAS_H__
 
 #include <wx/glcanvas.h>
+
+#include "dychart.h"
+
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
 #include "LLRegion.h"
@@ -38,10 +41,47 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
+
 class glTexFactory;
 class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
+
+typedef struct{
+    wxString Renderer;
+    GLenum TextureRectangleFormat;
+    
+    bool bOldIntel;
+    bool bCanDoVBO;
+    bool bCanDoFBO;
+    
+    //      Vertex Buffer Object (VBO) support
+    PFNGLGENBUFFERSPROC                 m_glGenBuffers;
+    PFNGLBINDBUFFERPROC                 m_glBindBuffer;
+    PFNGLBUFFERDATAPROC                 m_glBufferData;
+    PFNGLDELETEBUFFERSPROC              m_glDeleteBuffers;
+
+    //      Frame Buffer Object (FBO) support
+    PFNGLGENFRAMEBUFFERSEXTPROC         m_glGenFramebuffers;
+    PFNGLGENRENDERBUFFERSEXTPROC        m_glGenRenderbuffers;
+    PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    m_glFramebufferTexture2D;
+    PFNGLBINDFRAMEBUFFEREXTPROC         m_glBindFramebuffer;
+    PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC m_glFramebufferRenderbuffer;
+    PFNGLRENDERBUFFERSTORAGEEXTPROC     m_glRenderbufferStorage;
+    PFNGLBINDRENDERBUFFEREXTPROC        m_glBindRenderbuffer;
+    PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  m_glCheckFramebufferStatus;
+    PFNGLDELETEFRAMEBUFFERSEXTPROC      m_glDeleteFramebuffers;
+    PFNGLDELETERENDERBUFFERSEXTPROC     m_glDeleteRenderbuffers;
+    
+    PFNGLCOMPRESSEDTEXIMAGE2DPROC       m_glCompressedTexImage2D;
+    PFNGLGETCOMPRESSEDTEXIMAGEPROC      m_glGetCompressedTexImage;
+
+    
+}OCPN_GLCaps;
+
+void GetglEntryPoints( OCPN_GLCaps *pcaps );
+GLboolean QueryExtension( const char *extName );
+
 
 class ocpnGLOptions
 {
@@ -58,6 +98,16 @@ public:
     bool m_GLPolygonSmoothing;
     bool m_GLLineSmoothing;
 };
+
+
+class glTestCanvas : public wxGLCanvas
+{
+public:
+    glTestCanvas(wxWindow *parent);
+    ~glTestCanvas() {};
+
+};
+
 
 class ocpnDC;
 class emboss_data;
@@ -139,6 +189,8 @@ public:
     double mvmatrix[16], projmatrix[16];
 
 protected:
+    void RenderGLAlertMessage();
+
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
     
@@ -147,7 +199,7 @@ protected:
     
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
-    void RenderNoDTA(ViewPort &vp, const LLRegion &region);
+    void RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency = 255);
     void RenderNoDTA(ViewPort &vp, ChartBase *chart);
     void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 

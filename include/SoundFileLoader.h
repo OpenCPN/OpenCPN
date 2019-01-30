@@ -107,4 +107,4 @@ class SoundFileLoader: public AbstractSoundLoader
 };
 
 
-#endif // __OCPN_SOUND_H__
+#endif //  SOUND_FILE_LOADER_H

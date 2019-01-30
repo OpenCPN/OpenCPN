@@ -36,6 +36,7 @@
 #include "pluginmanager.h"
 #include "Track.h"
 #include <multiplexer.h>
+#include "config.h"
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -98,6 +99,8 @@ extern OCPNPlatform     *g_Platform;
 extern PlugInManager             *g_pi_manager;
 extern Multiplexer      *g_pMUX;
 
+extern wxString g_CmdSoundString;
+
 bool g_benableAISNameCache;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
@@ -122,13 +125,15 @@ static double arpa_ref_hdg = NAN;
 
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 extern int              gps_watchdog_timeout_ticks;
-
+extern bool g_bquiting;
 
 static void onSoundFinished(void* ptr)
 {
-   auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
-   wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-   wxPostEvent(aisDecoder, ev);
+    if (!g_bquiting) {
+        auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+        wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
+        wxPostEvent(aisDecoder, ev);
+    }
 }
 
 
@@ -174,6 +179,8 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
     m_n_targets = 0;
 
     m_parent_frame = parent;
+
+    m_bAIS_AlertPlaying = false;
 
     TimerAIS.SetOwner(this, TIMER_AIS1);
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
@@ -300,8 +307,8 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
       make_hash_ERI(8441, _("Ferry"));
       make_hash_ERI(8442, _("Red cross ship"));
       make_hash_ERI(8443, _("Cruise ship"));
-      make_hash_ERI(8444, _("Passenger ship without accomodation"));
-      make_hash_ERI(8460, _("Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"));
+      make_hash_ERI(8444, _("Passenger ship without accommodation"));
+      make_hash_ERI(8460, _("Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"));
       make_hash_ERI(8480, _("Fishing boat"));
       make_hash_ERI(8500, _("Barge, tanker, chemical"));
       make_hash_ERI(1500, _("General cargo Vessel maritime"));
@@ -993,41 +1000,49 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             m_pLatestTargetData = pTargetData;
 
-            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
+            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )            
                 pTargetData->b_OwnShip = true;
-            // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
-            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                MMSIProperties *props =  g_MMSI_Props_Array[i];
-                if(mmsi == props->MMSI)
-                {
-                    pTargetData->b_OwnShip = (props->m_bVDM) ? true : false;
-                    pTargetData->b_PersistTrack = (props->m_bPersistentTrack) ? true : false;
-                    pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER) ? true : false;                    
-                    break;
+            else{ 
+                //set  mmsi-props to default values
+                pTargetData->b_OwnShip = false;
+                pTargetData->b_PersistTrack = false;
+                pTargetData->b_NoTrack = false;
+                // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
+                for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                    MMSIProperties *props =  g_MMSI_Props_Array[i];
+                    if(mmsi == props->MMSI)
+                    {
+                       if (props->m_bVDM){
+                            // set OwnShip to prevent target from being drawn
+                            pTargetData->b_OwnShip = true;
+                            //Rename nmea sentence to AIVDO and calc a new checksum
+                            wxString aivdostr = str;
+                            aivdostr.replace(1, 5, "AIVDO");
+                            unsigned char calculated_checksum = 0;
+                            wxString::iterator i;
+                            for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
+                                calculated_checksum ^= static_cast<unsigned char> (*i);
+                            // if i is not at least 3 positons befoere end, there is no checksum added
+                            // so also no need to add one now.
+                            if ( i <= aivdostr.end()-3 )
+                                aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
+
+                            gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
+                            //replace the changed sentence in nemea stream
+                            OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                            std::string s = std::string( aivdostr.mb_str() );
+                            event.SetNMEAString( s );
+                            event.SetStream( NULL );
+                            g_pMUX->AddPendingEvent( event );                   
+                        }
+                        else{
+                            pTargetData->b_PersistTrack = (props->m_bPersistentTrack);
+                            pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER);
+                        }
+                        break;
+                    }
                 }
             }
-            if ( pTargetData->b_OwnShip )
-            {
-                //Rename nmea sentence to AIVDO and calc a new checksum
-                wxString aivdostr = str;
-                aivdostr.replace(1, 5, "AIVDO");
-                unsigned char calculated_checksum = 0;
-                wxString::iterator i;
-                for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
-                    calculated_checksum ^= static_cast<unsigned char> (*i);
-                // if i is not at least 3 positons befoere end, there is no checksum added
-                // so also no need to add one now.
-                if ( i <= aivdostr.end()-3 )
-                    aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
-
-                gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
-                //replace the changed sentence in nemea stream
-                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-                std::string s = std::string( aivdostr.mb_str() );
-                event.SetNMEAString( s );
-                event.SetStream( NULL );
-                g_pMUX->AddPendingEvent( event );                   
-            }    
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
@@ -1840,6 +1855,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                                     case AIS8_001_22_SHAPE_CIRCLE:
                                     case AIS8_001_22_SHAPE_SECTOR:
                                         sa.radius_m = bstr->GetInt( base + 58, 12 ) * scale_factor;
+                                        // FALL THROUGH
                                     case AIS8_001_22_SHAPE_RECT:
                                         sa.longitude = bstr->GetInt( base + 6, 25, true ) / 60000.0;
                                         sa.latitude = bstr->GetInt( base + 31, 24, true ) / 60000.0;
@@ -2308,11 +2324,9 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
 
 void AIS_Decoder::OnSoundFinishedAISAudio( wxCommandEvent& event )
 {
-    if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
-        m_AIS_Sound->Load( g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        m_AIS_Sound->Play();
-    }
+    // By clearing this flag the main event loop will trigger repeated
+    // sounds for as long as the alert condition remains.
+    m_bAIS_AlertPlaying = false;
 }
 
 void AIS_Decoder::OnTimerDSC( wxTimerEvent& event )
@@ -2598,9 +2612,18 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if (!m_AIS_Sound) {
             m_AIS_Sound = SoundFactory();
         }
-        m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        m_AIS_Sound->Play();
+        if ( !AIS_AlertPlaying() ) {
+            m_bAIS_AlertPlaying = true;
+            m_AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+            m_AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+            if ( m_AIS_Sound->IsOk( ) ) {
+                m_AIS_Sound->SetFinishedCallback( onSoundFinished, this );
+                if ( !m_AIS_Sound->Play( ) )
+                    m_bAIS_AlertPlaying = false;
+            }
+            else
+                m_bAIS_AlertPlaying = false;
+        }
     }
     //  If a SART Alert is active, check to see if the MMSI has special properties set 
     //  indicating that this Alert is a MOB for THIS ship.

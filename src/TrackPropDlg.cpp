@@ -99,19 +99,12 @@ TrackPropDlg* TrackPropDlg::getInstance( wxWindow* parent, wxWindowID id, const 
 }
 
 TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
-  : wxDialog( parent, id, title, pos, size, style )
+  : wxFrame( parent, id, title, pos, size, style )
 {
-
-    long wstyle = style;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
-
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
-    SetWindowStyleFlag( wstyle );
-
+    SetWindowStyleFlag( style );
     
     m_scrolledWindowLinks = NULL;
     m_tDescription = NULL;
@@ -152,10 +145,7 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     if(m_rbShowTimePC)m_rbShowTimePC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimeLocal)m_rbShowTimeLocal->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    m_pLinkProp = new LinkPropImpl( this );
     m_pMyLinkList = NULL;
-    
-    
 }
 
 TrackPropDlg::~TrackPropDlg()
@@ -187,7 +177,6 @@ TrackPropDlg::~TrackPropDlg()
     if(m_rbShowTimePC)m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimeLocal)m_rbShowTimeLocal->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    //delete m_menuLink;
     instanceFlag = false;
 }
 
@@ -771,21 +760,21 @@ void TrackPropDlg::CreateControls( void )
       bSizerLinks->Fit( m_scrolledWindowLinks );
       sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
 
-      wxBoxSizer* bSizer27;
-      bSizer27 = new wxBoxSizer( wxHORIZONTAL );
+      wxBoxSizer* bSizerLinkBtns;
+      bSizerLinkBtns = new wxBoxSizer( wxHORIZONTAL );
 
       m_buttonAddLink = new wxButton( m_panelAdvanced, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
-      bSizer27->Add( m_buttonAddLink, 0, wxALL, 5 );
+      bSizerLinkBtns->Add( m_buttonAddLink, 0, wxALL, 5 );
 
       m_toggleBtnEdit = new wxToggleButton( m_panelAdvanced, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize, 0 );
-      bSizer27->Add( m_toggleBtnEdit, 0, wxALL, 5 );
+      bSizerLinkBtns->Add( m_toggleBtnEdit, 0, wxALL, 5 );
 
       m_staticTextEditEnabled = new wxStaticText( m_panelAdvanced, wxID_ANY, _("Links are opened in the default browser."), wxDefaultPosition, wxDefaultSize, 0 );
       //m_staticTextEditEnabled->Wrap( -1 );
-      bSizer27->Add( m_staticTextEditEnabled, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+      bSizerLinkBtns->Add( m_staticTextEditEnabled, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-      sbSizerLinks->Add( bSizer27, 0, wxEXPAND, 5 );
+      sbSizerLinks->Add( bSizerLinkBtns, 0, wxEXPAND, 5 );
 
 
       bSizerAdvanced->Add( sbSizerLinks, 1, wxEXPAND, 5 );
@@ -827,7 +816,7 @@ void TrackPropDlg::CreateControls( void )
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerSplit, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       m_sdbBtmBtnsSizerSplit->Enable( false );
 
-      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend Route"),
+      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend track"),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerExtend, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -1098,11 +1087,15 @@ bool TrackPropDlg::IsThisTrackExtendable()
 {
     m_pExtendTrack = NULL;
     m_pExtendPoint = NULL;
-    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) return false;
+    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) {
+        return false;
+    }
 
     TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
-    if( !pLastPoint->GetCreateTime().IsValid() ) return false;
-
+    if( !pLastPoint->GetCreateTime().IsValid() ) {
+        return false;
+    }
+    
     wxTrackListNode *track_node = pTrackList->GetFirst();
     while( track_node ) {
         Track *ptrack = track_node->GetData();
@@ -1121,18 +1114,22 @@ bool TrackPropDlg::IsThisTrackExtendable()
         }
         track_node = track_node->GetNext();                         // next track
     }
-    if( m_pExtendTrack ) return ( !m_pExtendTrack->m_bIsInLayer );
-    else
+    if( m_pExtendTrack ) {
+        return ( !m_pExtendTrack->m_bIsInLayer );
+    } else {
         return false;
+    }
 }
 
 void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
 {
-    TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
+    TrackPoint *pFirstPoint = m_pTrack->GetPoint( 0 );
 
     if( IsThisTrackExtendable() ) {
-        int begin = 1;
-        if( pLastPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) begin = 2;
+        int begin = 0;
+        if( pFirstPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) {
+            begin = 1;
+        }
         pSelect->DeleteAllSelectableTrackSegments( m_pExtendTrack );
         m_pExtendTrack->Clone( m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus") );
         pSelect->AddAllSelectableTrackSegments( m_pExtendTrack );
@@ -1142,8 +1139,9 @@ void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( m_pExtendTrack );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
@@ -1151,21 +1149,20 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
 {
     m_sdbBtmBtnsSizerSplit->Enable( false );
 
-    if( m_pTrack->m_bIsInLayer )
+    if( m_pTrack->m_bIsInLayer ) {
         return;
+    }
 
     if( ( m_nSelected > 1 ) && ( m_nSelected < m_pTrack->GetnPoints() ) ) {
         Track *pHead = new Track();
         Track *pTail = new Track();
-        pHead->Clone( m_pTrack, 1, m_nSelected, _("_A") );
-        pTail->Clone( m_pTrack, m_nSelected, m_pTrack->GetnPoints(), _("_B") );
+        pHead->Clone( m_pTrack, 0, m_nSelected - 1, _("_A") );
+        pTail->Clone( m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B") );
         pTrackList->Append( pHead );
         pConfig->AddNewTrack( pHead );
-//        pHead->RebuildGUIDList();
 
         pTrackList->Append( pTail );
         pConfig->AddNewTrack( pTail );
-//        pTail->RebuildGUIDList();
 
         pConfig->DeleteConfigTrack( m_pTrack );
 
@@ -1177,8 +1174,9 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( pTail );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
@@ -1310,7 +1308,6 @@ void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )
     m_scrolledWindowLinks->PopupMenu( m_menuLink,
             m_pEditedLink->GetPosition().x + event.GetPosition().x,
             m_pEditedLink->GetPosition().y + event.GetPosition().y );
-
 }
 
 void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
@@ -1370,68 +1367,75 @@ void TrackPropDlg::OnEditLink( wxCommandEvent& event )
 {
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
-    m_pLinkProp->m_textCtrlLinkDescription->SetValue( findlabel );
-    m_pLinkProp->m_textCtrlLinkUrl->SetValue( findurl );
-    if( m_pLinkProp->ShowModal() == wxID_OK ) {
-        int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-        HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
-//            int len = 0;
-        if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
-            while( linknode ) {
-                Hyperlink *link = linknode->GetData();
-                wxString Link = link->Link;
-                wxString Descr = link->DescrText;
-                if( Link == findurl
-                        && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) {
-                    link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-                    link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-                    wxHyperlinkCtrl* h =
-                            (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel(
-                                    findlabel );
-                    if( h ) {
-                        h->SetLabel( m_pLinkProp->m_textCtrlLinkDescription->GetValue() );
-                        h->SetURL( m_pLinkProp->m_textCtrlLinkUrl->GetValue() );
+    
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( findlabel );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( findurl );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg,findurl,findlabel](int retcode){
+        if ( retcode == wxID_OK ) {
+            int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
+            HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
+    //            int len = 0;
+            if( NbrOfLinks > 0 ) {
+                wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+                while( linknode ) {
+                    Hyperlink *link = linknode->GetData();
+                    wxString Link = link->Link;
+                    wxString Descr = link->DescrText;
+                    if( Link == findurl
+                            && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) {
+                        link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+                        link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+                        wxHyperlinkCtrl* h =
+                                (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel(
+                                        findlabel );
+                        if( h ) {
+                            h->SetLabel( LinkPropDlg->m_textCtrlLinkDescription->GetValue() );
+                            h->SetURL( LinkPropDlg->m_textCtrlLinkUrl->GetValue() );
+                        }
                     }
+                    linknode = linknode->GetNext();
                 }
-                linknode = linknode->GetNext();
             }
-        }
 
-        m_scrolledWindowLinks->InvalidateBestSize();
-        m_scrolledWindowLinks->Layout();
-        sbSizerLinks->Layout();
-        event.Skip();
-    }
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
+            sbSizerLinks->Layout();
+        }
+    });
     event.Skip();
 }
 
 void TrackPropDlg::OnAddLink( wxCommandEvent& event )
 {
-    m_pLinkProp->m_textCtrlLinkDescription->SetValue( wxEmptyString );
-    m_pLinkProp->m_textCtrlLinkUrl->SetValue( wxEmptyString );
-    if( m_pLinkProp->ShowModal() == wxID_OK ) {
-        wxString desc = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-        if( desc == wxEmptyString ) desc = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-        wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
-                m_pLinkProp->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
-                wxHL_DEFAULT_STYLE );
-        ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
-                wxHyperlinkEventHandler( TrackPropDlg::OnHyperLinkClick ), NULL, this );
-        ctrl->Connect( wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler( TrackPropDlg::m_hyperlinkContextMenu ), NULL, this );
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( wxEmptyString );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( wxEmptyString );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg](int retcode){
+        if ( retcode == wxID_OK ) {
+            wxString desc = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            if( desc == wxEmptyString ) desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
+                    LinkPropDlg->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
+                    wxHL_DEFAULT_STYLE );
+            ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
+                    wxHyperlinkEventHandler( TrackPropDlg::OnHyperLinkClick ), NULL, this );
+            ctrl->Connect( wxEVT_RIGHT_DOWN,
+                    wxMouseEventHandler( TrackPropDlg::m_hyperlinkContextMenu ), NULL, this );
 
-        bSizerLinks->Add( ctrl, 0, wxALL, 5 );
-        bSizerLinks->Fit( m_scrolledWindowLinks );
-        this->Fit();
+            bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+            bSizerLinks->Fit( m_scrolledWindowLinks );
+            this->Fit();
 
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-        h->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-        h->LType = wxEmptyString;
-        m_pTrack->m_HyperlinkList->Append( h );
-    }
-
+            Hyperlink* h = new Hyperlink();
+            h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            h->LType = wxEmptyString;
+            m_pTrack->m_HyperlinkList->Append( h );
+        }
+    });
     sbSizerLinks->Layout();
 
     event.Skip();

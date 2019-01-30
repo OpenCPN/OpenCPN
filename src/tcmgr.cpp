@@ -1054,6 +1054,26 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx)
     return 0;
 }
 
+std::map<double, const IDX_entry*> TCMgr::GetStationsForLL(double xlat, double xlon) const
+{
+    std::map<double, const IDX_entry*> x;
+    const IDX_entry *lpIDX;
+    
+    for ( int j=1 ; j<Get_max_IDX() +1 ; j++ ) {
+        lpIDX = GetIDX_entry ( j );
+        char type = lpIDX->IDX_type;
+        wxString locnx ( lpIDX->IDX_station_name, wxConvUTF8 );
+        
+        if ( type == 't' || type == 'T' ) {
+            double brg, dist;
+            DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg, &dist);
+            x.emplace(std::make_pair(dist, lpIDX));
+        }
+    }
+    
+    return x;
+}
+
 int TCMgr::GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const
 {
     const IDX_entry *lpIDX;
@@ -2543,10 +2563,10 @@ NV_INT32 get_time (const NV_CHAR *string)
 NV_CHAR *ret_time (NV_INT32 time)
 {
     NV_INT32          hour, minute;
-    static NV_CHAR    tname[10];
+    static NV_CHAR    tname[16];
 
     hour = abs (time) / 100;
-    assert (hour < 100000); /* 9 chars: +99999:99 */
+    assert (hour <= 99999 && hour >= -99999); /* 9 chars: +99999:99 */
     minute = abs (time) % 100;
 
     if (time < 0)
@@ -2568,10 +2588,10 @@ NV_CHAR *ret_time (NV_INT32 time)
 NV_CHAR *ret_time_neat (NV_INT32 time)
 {
     NV_INT32          hour, minute;
-    static NV_CHAR    tname[10];
+    static NV_CHAR    tname[16];
 
     hour = abs (time) / 100;
-    assert (hour < 100000); /* 9 chars: +99999:99 */
+    assert (hour <= 99999 && hour >= -99999); /* 9 chars: +99999:99 */
     minute = abs (time) % 100;
 
     if (time < 0)

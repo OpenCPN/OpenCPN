@@ -61,7 +61,7 @@
 # set /MT for Release build, and /MTd for debug.
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
     CMAKE_POLICY(SET CMP0043 NEW)
@@ -86,23 +86,16 @@ IF(NOT MSVC)
    SET(OBJ_VISIBILITY "-fvisibility=hidden" )
 ENDIF()
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    message(STATUS "Setting C++11 standard via CXX flags")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    message(STATUS "Setting C++0x standard via CXX FLAGS")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-  endif()
-else ()
-  set (CMAKE_CXX_STANDARD 11)
-  message(STATUS "Setting C++11 standard via cmake standard mecahnism")
-endif ()
+# Locations where cmake looks for cmake modules.
+SET(CMAKE_MODULE_PATH 
+  ${CMAKE_SOURCE_DIR}/build
+  ${CMAKE_SOURCE_DIR}/
+  ${CMAKE_SOURCE_DIR}/cmake
+)
+
+
+set (CMAKE_CXX_STANDARD 11)
+message(STATUS "Setting C++11 standard via cmake standard mechanism")
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
@@ -142,7 +135,16 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
 endif()
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
-SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+
+IF(OCPN_CI_BUILD)
+  INCLUDE(Utils)
+  TODAY(DATE)
+  COMMIT_ID(COMMIT)
+  SET(VERSION_TAIL "+${COMMIT}")
+  SET(VERSION_DATE "${DATE}")
+ENDIF(OCPN_CI_BUILD)
+
+SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}" )
 IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
   MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
 ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
@@ -161,7 +163,7 @@ IF (NOT WIN32)
   SET (LIB_INSTALL_DIR "lib")
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
+    #SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -415,6 +417,9 @@ ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
 
+# Prefer libGL.so to libOpenGL.so, see CMP0072
+set (OpenGL_GL_PREFERENCE  "LEGACY")
+
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on "native linux" arm systems
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -491,6 +496,14 @@ add_subdirectory(src/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
+MESSAGE (STATUS "    Adding local LIBTESS2" )
+add_subdirectory(src/libtess2)
+SET( OPENGL_LIBRARIES "TESS2_static" ${OPENGL_LIBRARIES})
+SET(EXTRA_LIBS ${EXTRA_LIBS} "TESS2_static")
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Source)
+MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
 
 IF(NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -518,11 +531,11 @@ IF(NOT QT_ANDROID)
       STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
     ENDIF(MSYS)
     INCLUDE(${wxWidgets_USE_FILE})
+    
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
   ENDIF(WIN32 OR APPLE OR QT_ANDROID)
-
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -626,12 +639,6 @@ IF(MSVC)
   ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(MSVC)
 
-# Location where cmake first looks for cmake modules.
-SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
-
-# Let cmake find additional modules private to opencpn
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
-
 IF (NOT WIN32 AND NOT APPLE)
 
   IF(QT_ANDROID)
@@ -718,6 +725,14 @@ IF(OCPN_USE_CURL)
   IF(WIN32)
     INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll" "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll" DESTINATION ".")
     INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" DESTINATION ".")
+    IF(MSVC)
+        SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+        INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
+    ELSE(MSVC) ## mingw
+        SET(CURL_LIBRARIES "curl.dll")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+    ENDIF(MSVC)
     OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
   ELSE(WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
@@ -728,7 +743,7 @@ IF(OCPN_USE_CURL)
       FIND_PACKAGE(CURL REQUIRED)
       INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
     ELSE(OCPN_USE_EXTERN_CURL)
-      INCLUDE("Curl.cmake")
+      INCLUDE("Curl")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
@@ -775,6 +790,8 @@ ENDIF(OCPN_USE_CURL)
 
 OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
 OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
+
+OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
 IF(OCPN_USE_SVG)
   MESSAGE(STATUS "SVG support enabled...")
@@ -858,7 +875,7 @@ IF(OCPN_USE_SVG)
       #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
 
       FIND_PACKAGE(EXPAT REQUIRED)
-      INCLUDE(FindEXIF.cmake)
+      INCLUDE(FindEXIF)
     ELSE(NOT WIN32)
       #On Windows, we have our own expat
       SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
@@ -996,6 +1013,7 @@ ENDIF(OCPN_USE_SVG)
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
+  
   IF(NOT OCPN_FORCE_GTK3)
     FIND_PACKAGE(GTK2)
   ENDIF(NOT OCPN_FORCE_GTK3)
@@ -1013,7 +1031,12 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets REQUIRED)
+  FIND_PACKAGE(wxWidgets  REQUIRED)
+
+  MESSAGE (STATUS "Found wxWidgets..." )
+  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+
   INCLUDE(${wxWidgets_USE_FILE})
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -1125,7 +1148,7 @@ ELSEIF (AFPLAY)
   SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
 ELSEIF (WIN32)
   SET(SYSTEM_SOUND_CMD
-      "\"PowerShell -Command (New-Object Media.SoundPlayer \\\"%s\\\").PlaySync();\"")
+    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
 ENDIF ()
 
 OPTION(ENABLE_SYSTEM_CMD_SOUND
@@ -1141,26 +1164,33 @@ IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   ENDIF()
 ENDIF()
 
-OPTION(ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available" ON)
+IF (WIN32)
+  SET (DEFAULT_PA OFF)
+ELSE ()
+  SET (DEFAULT_PA ON)
+ENDIF ()
+OPTION(ENABLE_PORTAUDIO
+       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 SET (USE_PORTAUDIO "")
 IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
-  INCLUDE("FindPortaudio.cmake")
+  INCLUDE("FindPortaudio")
   IF (PORTAUDIO_FOUND)
-      MESSAGE (STATUS "Portaudio Found")
-      INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
-      ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
-      SET(USE_PORTAUDIO 1)
+    MESSAGE (STATUS "Portaudio Found")
+    INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
+    ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
+    SET(USE_PORTAUDIO 1)
   ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
-      MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
-      SET(USE_PORTAUDIO "")
+    MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
+    SET(USE_PORTAUDIO "")
   ENDIF()
 ENDIF ()
 
-OPTION(ENABLE_SNDFILE "Use libsndfile if available for sound files." ON)
+OPTION(ENABLE_SNDFILE
+       "Use libsndfile if available for sound files." ${DEFAULT_PA})
 SET(USE_SNDFILE "")
 IF (NOT ENABLE_SNDFILE MATCHES OFF)
-  INCLUDE(FindLibSndfile.cmake)
+  INCLUDE(FindLibSndfile)
   IF(LIBSNDFILE_FOUND)
     MESSAGE (STATUS "libsndfile Found")
     INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
@@ -1307,7 +1337,9 @@ SET(HDRS
                 include/navutil.h
                 include/routeman.h
                 include/routemanagerdialog.h
-                include/routeprop.h
+                include/MarkInfo.h
+                include/RoutePropDlg.h
+                include/RoutePropDlgImpl.h
                 include/routeprintout.h
                 include/trackprintout.h
                 include/PositionParser.h
@@ -1326,7 +1358,8 @@ SET(HDRS
                 include/gshhs.h
                 include/kml.h
                 include/undo.h
-                include/about.h
+                include/AboutFrame.h
+                include/AboutFrameImpl.h
                 include/ais.h
                 include/pluginmanager.h
                 include/ocpn_plugin.h
@@ -1409,7 +1442,9 @@ SET(SRCS
         src/navutil.cpp
         src/routeman.cpp
         src/routemanagerdialog.cpp
-        src/routeprop.cpp
+        src/MarkInfo.cpp
+        src/RoutePropDlg.cpp
+        src/RoutePropDlgImpl.cpp
         src/routeprintout.cpp
         src/trackprintout.cpp
         src/PositionParser.cpp
@@ -1427,7 +1462,8 @@ SET(SRCS
         src/gshhs.cpp
         src/kml.cpp
         src/undo.cpp
-        src/about.cpp
+        src/AboutFrame.cpp
+        src/AboutFrameImpl.cpp
         src/ais.cpp
         src/pluginmanager.cpp
         src/wxJSON/jsonwriter.cpp
@@ -1488,8 +1524,6 @@ IF (LIBSNDFILE_FOUND)
     SET(HDRS ${HDRS} include/SndfileSoundLoader.h)
     SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
 ENDIF ()
-
-SET(SRCS ${SRCS} src/SystemCmdSound.cpp)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
@@ -1559,6 +1593,8 @@ IF (USE_S57)
         include/s57RegistrarMgr.h
         src/s57RegistrarMgr.cpp
         src/s57obj.cpp
+        src/SencManager.cpp
+        include/SencManager.h
 
         src/myiso8211/ddffielddefn.cpp
         src/myiso8211/ddfmodule.cpp
@@ -1700,8 +1736,6 @@ ENDIF (USE_GARMINHOST)
 SET(SRC_SYMBOLS
     src/chartsymbols.cpp
     include/chartsymbols.h
-    src/razdsparser.cpp
-    include/razdsparser.h
 )
 
 ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
@@ -1836,6 +1870,7 @@ ENDIF (OPENGL_FOUND)
 CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
 
+# If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
 IF(MSVC)
   SET(SRCS ${SRCS} src/opencpn.rc)
@@ -1991,6 +2026,7 @@ IF(WIN32)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
   ENDIF(MSVC)
   ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+  target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 
 
@@ -2012,6 +2048,12 @@ IF(APPLE)
 
   SET_SOURCE_FILES_PROPERTIES(
              data/license.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
+  SET_SOURCE_FILES_PROPERTIES(
+             data/authors.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
+  SET_SOURCE_FILES_PROPERTIES(
+             data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
 
   SET_SOURCE_FILES_PROPERTIES(
              data/CoC-909_2013-InlandECDIS_20170308.pdf PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
@@ -2120,6 +2162,8 @@ IF(APPLE)
         ${s57data}
         ${tcData}
         data/license.txt
+        data/authors.txt
+        data/opencpn.png
         data/CoC-909_2013-InlandECDIS_20170308s.pdf
         ${SOUND_FILES}
         buildosx/opencpn.icns
@@ -2296,6 +2340,10 @@ IF(NOT APPLE)
 
   INSTALL(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
   INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
+  INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+  INSTALL(FILES data/authors.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+  INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
   IF(PACKAGE_FORMAT EQUAL "DEB")
     INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -2531,7 +2579,7 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
 SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
 SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
+SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
 SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
 SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
@@ -2547,7 +2595,7 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
 
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup" )
+SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}_setup" )
 
   SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
@@ -2586,20 +2634,6 @@ set(CPACK_SOURCE_IGNORE_FILES
 "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
 )
 
-IF(APPLE)
-  #  SET(CPACK_GENERATOR "Bundle")
-  #  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  #  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
-  #  SET(CPACK_BUNDLE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  #  SET(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/buildosx/opencpn.icns")
-  #  SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
-
-  #  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
-  #  SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/buildosx/README.txt")
-
-  #  SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
-ENDIF(APPLE)
-
 IF(UNIX AND NOT APPLE)
   #    INCLUDE(UseRPMTools)
   #    IF(RPMTools_FOUND)
@@ -2609,7 +2643,10 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
-  SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
+  
+  #SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
+  # autogenerate dependency information
+  SET (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
   SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH})
   SET(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
@@ -2673,6 +2710,8 @@ ENDIF(WIN32 AND NOT UNIX)
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
 ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
 
+SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h)
+
 INCLUDE(CPack)
 
 IF(APPLE)
@@ -2700,15 +2739,15 @@ IF(APPLE)
   )
 
   ADD_CUSTOM_COMMAND(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg
-    COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
+COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
   )
 
   ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg
+${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
   )
 ENDIF(APPLE)
 

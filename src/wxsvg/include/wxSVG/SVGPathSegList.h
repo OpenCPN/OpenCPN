@@ -19,7 +19,9 @@ class wxSVGPathSegList: public wxSVGPathSegListBase
 {
   public:
     wxSVGPathSegList() {}
-    wxSVGPathSegList(const wxSVGPathSegList& src) { DoCopy(src); }
+    wxSVGPathSegList(const wxSVGPathSegList& src)
+        : wxSVGPathSegListBase()
+        { DoCopy(src); }
     wxSVGPathSegList& operator=(const wxSVGPathSegList& src)
     { Clear(); DoCopy(src); return *this; }
     

@@ -88,6 +88,7 @@ public:
       void OnContextMenuItemCallback(int id);
       void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
       void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
       int GetToolBarToolCount(void);
@@ -144,7 +145,8 @@ private:
       // preference data
       bool              m_bGRIBUseHiDef;
       bool              m_bGRIBUseGradualColors;
-      bool		m_bDrawBarbedArrowHead;
+      bool              m_bDrawBarbedArrowHead;
+      bool              m_bZoomToCenterAtInit;
       int              m_bTimeZone;
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;

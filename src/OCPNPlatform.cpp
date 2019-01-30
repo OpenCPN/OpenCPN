@@ -38,6 +38,7 @@
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
+#include "config.h"
 #include "chart1.h"
 #include "cutil.h"
 #include "styles.h"
@@ -101,11 +102,11 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 extern OCPNPlatform              *g_Platform;
 extern bool                      g_bFirstRun;
+extern bool                      g_bUpgradeInProcess;
 
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
 extern bool                      g_bportable;
-extern wxString                  OpenCPNVersion;
 
 extern MyConfig                  *pConfig;
 
@@ -365,7 +366,7 @@ void OCPNPlatform::Initialize_1( void )
     info.cb = sizeof(CR_INSTALL_INFO);
     info.pszAppName = _T("OpenCPN");
     
-    info.pszAppVersion = OpenCPNVersion.c_str();
+    info.pszAppVersion = wxString(VERSION_FULL).c_str();
 
     int type =  MiniDumpNormal;
     
@@ -578,8 +579,33 @@ void OCPNPlatform::Initialize_2( void )
     
 }
 
-//  Called from MyApp() just before end of MyApp::OnInit()
+//  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
 void OCPNPlatform::Initialize_3( void )
+{
+    bool bcapable = IsGLCapable();
+    
+    // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade or fresh install
+    
+    if( (g_bFirstRun || g_bUpgradeInProcess) && bcapable){
+        g_bopengl = true;
+        
+        // Set up visually nice options
+        g_GLOptions.m_bUseAcceleratedPanning = true;
+        g_GLOptions.m_bTextureCompression = true;
+        g_GLOptions.m_bTextureCompressionCaching = true;
+
+        g_GLOptions.m_iTextureDimension = 512;
+        g_GLOptions.m_iTextureMemorySize = 64;
+    
+        g_GLOptions.m_GLPolygonSmoothing = true;
+        g_GLOptions.m_GLLineSmoothing = true;
+
+    }
+    
+}
+
+//  Called from MyApp() just before end of MyApp::OnInit()
+void OCPNPlatform::Initialize_4( void )
 {
 #ifdef __OCPN__ANDROID__
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
@@ -600,6 +626,108 @@ void OCPNPlatform::OnExit_2( void ){
 #endif
 #endif
     
+}
+
+
+bool OCPNPlatform::BuildGLCaps( void *pbuf )
+{
+
+    // Investigate OpenGL capabilities
+    gFrame->Show();
+    glTestCanvas *tcanvas = new glTestCanvas(gFrame);
+    tcanvas->Show();
+    wxGLContext *pctx = new wxGLContext(tcanvas);
+    tcanvas->SetCurrent(*pctx);
+    
+    OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
+    
+    char *str = (char *) glGetString( GL_RENDERER );
+    if (str == NULL){
+        delete tcanvas;
+        return false;
+    }
+    
+    char render_string[80];
+    strncpy( render_string, str, 79 );
+    pcaps->Renderer = wxString( render_string, wxConvUTF8 );
+
+    
+    if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
+        pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+    else if( QueryExtension( "GL_OES_texture_npot" ) )
+        pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+    else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
+        pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
+
+
+    GetglEntryPoints( pcaps );
+    
+    if( pcaps->Renderer.Upper().Find( _T("INTEL") ) != wxNOT_FOUND ){
+        if( pcaps->Renderer.Upper().Find( _T("965") ) != wxNOT_FOUND ){
+            pcaps->bOldIntel = true;
+        }
+    }
+ 
+    // Can we use VBO?
+    pcaps->bCanDoVBO = true;
+    if( !pcaps->m_glBindBuffer || !pcaps->m_glBufferData || !pcaps->m_glGenBuffers || !pcaps->m_glDeleteBuffers )
+        pcaps->bCanDoVBO = false;
+
+#if defined( __WXMSW__ ) || defined(__WXOSX__)
+    if(pcaps->bOldIntel)    
+        pcaps->bCanDoVBO = false;
+#endif
+
+#ifdef __OCPN__ANDROID__
+    pcaps->bCanDoVBO = false;
+#endif
+    
+    // Can we use FBO?
+    pcaps->bCanDoFBO = true;
+
+#ifndef __OCPN__ANDROID__
+    //  We need NPOT to support FBO rendering
+    if(!pcaps->TextureRectangleFormat)
+        pcaps->bCanDoFBO = false;
+        
+    //      We require certain extensions to support FBO rendering
+    if(!QueryExtension( "GL_EXT_framebuffer_object" ))
+        pcaps->bCanDoFBO = false;
+#endif
+
+    if( !pcaps->m_glGenFramebuffers  || !pcaps->m_glGenRenderbuffers        || !pcaps->m_glFramebufferTexture2D ||
+        !pcaps->m_glBindFramebuffer  || !pcaps->m_glFramebufferRenderbuffer || !pcaps->m_glRenderbufferStorage  ||
+        !pcaps->m_glBindRenderbuffer || !pcaps->m_glCheckFramebufferStatus  || !pcaps->m_glDeleteFramebuffers   ||
+        !pcaps->m_glDeleteRenderbuffers )
+        pcaps->bCanDoFBO = false;
+
+#ifdef __WXMSW__
+    if( pcaps->Renderer.Upper().Find( _T("INTEL") ) != wxNOT_FOUND ) {
+        if(pcaps->Renderer.Upper().Find( _T("MOBILE") ) != wxNOT_FOUND ){
+            pcaps->bCanDoFBO = false;
+        }
+    }
+#endif
+
+
+    delete tcanvas;
+    
+    return true;
+}
+
+bool OCPNPlatform::IsGLCapable()
+{
+    OCPN_GLCaps *pcaps = (OCPN_GLCaps * )calloc( 1, sizeof(OCPN_GLCaps));
+    
+    BuildGLCaps(pcaps);
+
+    // and so we decide....
+    
+    // We insist on FBO support, since otherwise DC mode is always faster on canvas panning..
+    if(!pcaps->bCanDoFBO)
+        return false;    
+    
+    return true;
 }
 
 

@@ -42,7 +42,6 @@
 #include "cutil.h"
 #include "s52utils.h"
 #include "chartsymbols.h"
-#include "razdsparser.h"
 #include "TexFont.h"
 #include "ocpn_plugin.h"
 #include "cpl_csv.h"
@@ -230,12 +229,8 @@ int CompareLUPObjects( LUPrec *item1, LUPrec *item2 )
     
     if( ir != 0 )
         return ir;
-    int c1 = 0;
-    int c2 = 0;
-    if( item1->ATTCArray )
-        c1 = item1->ATTCArray->Count();
-    if( item2->ATTCArray )
-        c2 = item2->ATTCArray->Count();
+    int c1 = item1->ATTArray.size();
+    int c2 = item2->ATTArray.size();
     
     if( c1 != c2 )
         return c2 - c1;
@@ -497,7 +492,9 @@ void s52plib::DestroyLUP( LUPrec *pLUP )
     Rules *top = pLUP->ruleList;
     DestroyRulesChain(top);
     
-    delete pLUP->ATTCArray;
+    for(unsigned int i = 0 ; i < pLUP->ATTArray.size() ; i++)
+        free (pLUP->ATTArray[i]);
+    
     delete pLUP->INST;
 }
 
@@ -745,22 +742,18 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
     for( unsigned int i = 0; i < count; ++i ) {
         LUPrec *LUPCandidate = LUPArray->Item( startIndex + i );
         
-        if( !LUPCandidate->ATTCArray )
+        if( !LUPCandidate->ATTArray.size() )
             continue;        // this LUP has no attributes coded
 
         countATT = 0;
         char *currATT = pObj->att_array;
         int attIdx = 0;
 
-        for( unsigned int iLUPAtt = 0; iLUPAtt < LUPCandidate->ATTCArray->GetCount(); iLUPAtt++ ) {
+        for( unsigned int iLUPAtt = 0; iLUPAtt < LUPCandidate->ATTArray.size(); iLUPAtt++ ) {
 
             // Get the LUP attribute name
-            wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
-            char *slatc = NULL;
-            wxCharBuffer buffer=LATTC.ToUTF8();
-            slatc = buffer.data();
-            //  Get the LUP attribute value as a string
-                        
+            char *slatc = LUPCandidate->ATTArray[iLUPAtt];
+
             if( slatc && (strlen(slatc) < 6) )
                 goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
 
@@ -873,7 +866,7 @@ next_LUP_Attr:
         //      Used later for resolving "ties"
         
         int nattr_matching_on_candidate = countATT;
-        int nattrs_on_candidate = LUPCandidate->ATTCArray->GetCount();
+        int nattrs_on_candidate = LUPCandidate->ATTArray.size();
         double candidate_score = ( 1. * nattr_matching_on_candidate )
         / ( 1. * nattrs_on_candidate );
         
@@ -901,7 +894,7 @@ check_LUP:
                 LUPrec *LUPtmp = NULL;
                 
                 LUPtmp = LUPArray->Item( startIndex + j );
-                if( LUPtmp->ATTCArray == NULL ) {
+                if( !LUPtmp->ATTArray.size() ) {
                     return LUPtmp;
                 }
             }
@@ -1122,6 +1115,7 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy )
     m_unused_color.B = 2;
     m_unused_wxColor.Set( 2,2,2 );
 
+#if 0
     // First, honor the user attempt for force Lecagy mode.
     // Next, try to load symbols using the newer XML/PNG format.
     // If this fails, try Legacy S52RAZDS.RLE file.
@@ -1148,6 +1142,16 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy )
             } else
                 return 0;
         }
+    }
+#endif
+    ChartSymbols chartSymbols;
+    useLegacyRaster = false;
+    if( !chartSymbols.LoadConfigFile( this, PLib ) ) {
+        wxString msg( _T("Could not load XML PLib symbol file: ") );
+        msg += PLib;
+        wxLogMessage( msg );
+ 
+        return 0;
     }
 
     //   Initialize the _cond_sym Hash Table from the jump table found in S52CNSY.CPP

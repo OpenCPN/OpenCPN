@@ -78,7 +78,7 @@ public:
     void UpdateDynamicValues();
     int GetOrientation(){ return m_orientation; }
     void ResetCanvasOptions();
-    void SetFollowButton( bool bFollow );
+    void SetFollowButtonState( int state );
     CanvasOptions *GetCanvasOptions(){ return m_canvasOptions; }
     void SetColorScheme( ColorScheme cs );
     void SetCanvasENCAvailable( bool avail );

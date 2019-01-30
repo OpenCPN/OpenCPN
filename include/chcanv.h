@@ -201,6 +201,7 @@ public:
       void OnDeferredFocusTimerEvent( wxTimerEvent &event);
       void OnRouteFinishTimerEvent( wxTimerEvent& event );
 
+      void ClearS52PLIBStateHash(){ m_s52StateHash = 0; }
       void SetupCanvasQuiltMode( void );
       void ApplyCanvasConfig(canvasConfig *pcc);
       
@@ -357,7 +358,8 @@ public:
       bool IsPianoContextMenuActive(){ return m_piano_ctx_menu != 0; }
       void SetCanvasToolbarItemState( int tool_id, bool state );
       bool DoCanvasCOGSet( void );
-      
+      void UpdateFollowButtonState( void );
+
       
       //Todo build more accessors
       bool        m_bFollow;
@@ -503,7 +505,13 @@ public:
       void SetAttenAIS( bool show );
       
       MUIBar *GetMUIBar(){ return m_muiBar; }
+     
+      void SetAlertString( wxString str){ m_alertString = str;}
+      wxString GetAlertString(){ return m_alertString; }
       
+      wxRect GetScaleBarRect(){ return m_scaleBarRect; }
+      void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
+
 private:
       bool UpdateS52State();
       
@@ -869,7 +877,11 @@ private:
       bool         m_last_TBviz;
       
       double       m_OSoffsetx, m_OSoffsety;
-      
+      bool         m_MouseDragging;
+
+      wxString     m_alertString;
+      wxRect       m_scaleBarRect;
+
 DECLARE_EVENT_TABLE()
 };
 

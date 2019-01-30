@@ -253,6 +253,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
     Pref->m_cbDrawBarbedArrowHead->SetValue(m_bDrawBarbedArrowHead);
+    Pref->m_cZoomToCenterAtInit->SetValue(m_bZoomToCenterAtInit);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
@@ -264,6 +265,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
          m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
+         m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
 
           if( m_pGRIBOverlayFactory )
               m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
@@ -445,8 +447,8 @@ void grib_pi::OnToolbarToolCallback(int id)
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
         
-        // Do an automatic "zoom-to-center" on the overlay canvas
-        if( m_pGribCtrlBar ){
+        // Do an automatic "zoom-to-center" on the overlay canvas if set in Preferences
+        if( m_pGribCtrlBar && m_bZoomToCenterAtInit){
            m_pGribCtrlBar->DoZoomToCenter();
         }
  
@@ -514,6 +516,21 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     #endif
     
     return true;
+}
+
+bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    
+    if(GetCanvasCount() > 1){            // multi?
+        if(canvasIndex == 1){
+            return RenderGLOverlay( pcontext, vp);
+        }
+        else
+            return false;
+    }
+
+    return RenderGLOverlay( pcontext, vp);
 }
 
 void grib_pi::SetCursorLatLon(double lat, double lon)
@@ -699,7 +716,7 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
     pConf->Read ( _T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0 );
     pConf->Read ( _T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1 );
-
+    pConf->Read(  _T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
     pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
@@ -735,7 +752,8 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
-    pConf->Write ( _T( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
+    pConf->Write ( _T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
+    pConf->Write ( _T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
 
     pConf->Write ( _T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x );
     pConf->Write ( _T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y );

@@ -34,6 +34,9 @@
 #define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
 #define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding
 
+#define ETA_FORMAT_STR "%x %H:%M"
+//"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
+
 class ocpnDC;
 class wxDC;
 class ChartCanvas;
@@ -115,12 +118,24 @@ public:
       void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
       void PresetDragOffset( ChartCanvas *canvas, int x, int y);
       void ShowScaleWarningMessage(ChartCanvas *canvas);
+      void SetPlannedSpeed(double spd);
+      double GetPlannedSpeed();
+      wxDateTime GetETD();
+      wxDateTime GetManualETD();
+      void SetETD(const wxDateTime &etd);
+      bool SetETD(const wxString &ts);
+      wxDateTime GetETA();
+      wxString GetETE();
+      void SetETE(wxLongLong secs);
       
       double            m_lat, m_lon;
-      double             m_seg_len;              // length in NMI to this point
+      double            m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
       double            m_seg_vmg;
       wxDateTime        m_seg_etd;
+      wxDateTime        m_seg_eta;
+      wxLongLong        m_seg_ete = 0;
+      bool              m_manual_etd = FALSE;
 
       bool              m_bPtIsSelected;
       bool              m_bIsBeingEdited;
@@ -137,6 +152,8 @@ public:
       bool              m_bIsActive;
       wxString          m_MarkDescription;
       wxString          m_GUID;
+    
+      wxString          m_TideStation;
 
       wxFont            *m_pMarkFont;
       wxColour          m_FontColor;
@@ -183,7 +200,7 @@ public:
 
       wxDateTime        m_CreateTimeX;
 private:
-    wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
+      wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
@@ -203,6 +220,7 @@ private:
       bool              b_UseScamin;
       long              m_ScaMin;
       long              m_ScaMax;
+      double            m_PlannedSpeed;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

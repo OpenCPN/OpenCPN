@@ -24,6 +24,7 @@
 #include <wx/tokenzr.h>
 
 #include "ConfigMgr.h"
+#include "config.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
@@ -48,7 +49,6 @@
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "routeprop.h"
 #include "s52utils.h"
 #include "chartbase.h"
 #include "ocpndc.h"
@@ -119,7 +119,6 @@ extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -309,6 +308,9 @@ extern int              g_BSBImgDebug;
 
 extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
+extern wxString        g_config_version_string;
+
+extern wxString        g_CmdSoundString;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;

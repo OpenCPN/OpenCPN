@@ -1390,7 +1390,9 @@ void OGRFeature::SetField( int iField, int nValue )
         pauFields[iField].String = CPLStrdup( szTempBuffer );
     }
     else
+    {
         /* do nothing for other field types */;
+    }
 }
 
 /************************************************************************/
@@ -1466,7 +1468,9 @@ void OGRFeature::SetField( int iField, double dfValue )
         pauFields[iField].String = CPLStrdup( szTempBuffer );
     }
     else
+    {
         /* do nothing for other field types */;
+    }
 }
 
 /************************************************************************/
@@ -1537,7 +1541,9 @@ void OGRFeature::SetField( int iField, const char * pszValue )
         pauFields[iField].Real = atof(pszValue);
     }
     else
+    {
         /* do nothing for other field types */;
+    }
 }
 
 /************************************************************************/
@@ -1855,7 +1861,9 @@ void OGRFeature::SetField( int iField, OGRField * puValue )
         }
     }
     else
+    {
         /* do nothing for other field types */;
+    }
 }
 
 /************************************************************************/

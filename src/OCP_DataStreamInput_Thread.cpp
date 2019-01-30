@@ -302,7 +302,7 @@ void *OCP_DataStreamInput_Thread::Entry()
             strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
             free(qmsg);
             
-            if( -1 == WriteComPortPhysical(msg) && 10 < retries++ ) {
+            if( static_cast<size_t>(-1) == WriteComPortPhysical(msg) && 10 < retries++ ) {
                 // We failed to write the port 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
                 retries = 0;
                 CloseComPortPhysical();

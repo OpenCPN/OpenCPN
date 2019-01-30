@@ -35,6 +35,8 @@
 // headers
 // ----------------------------------------------------------------------------
 
+#include <assert.h>
+
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
@@ -1324,7 +1326,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               i = tkz.GetPosition();
 
                               char date_string[40];
-                              char date_buf[10];
+                              char date_buf[16];
                               date_string[0] = 0;
                               date_buf[0] = 0;
                               sscanf(&buffer[i], "%s\r\n", date_string);
@@ -1346,6 +1348,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                       iyear += 1900;
                                       dt.SetYear(iyear);
                                   }
+                                  assert(iyear <= 9999);
                                   sprintf(date_buf, "%d", iyear);
 
                               //    Initialize the wxDateTime menber for Edition Date
@@ -3809,8 +3812,10 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, size_t data_size, wxRect&
       if((target_height == 0) || (target_width == 0))
             return false;
 
-      unsigned char *target_data = ppn;
-      unsigned char *data = ppn;
+      // `volatile` may be needed with regard to `sigsetjmp()` below;
+      // at least it prevents compiler warning about clobbering the variable.
+      unsigned char * volatile target_data = ppn;
+      unsigned char * data = ppn;
 
       if(factor > 1)                // downsampling
       {

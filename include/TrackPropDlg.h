@@ -76,7 +76,7 @@ class   HyperlinkList;
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg
 ///////////////////////////////////////////////////////////////////////////////
-class TrackPropDlg : public wxDialog 
+class TrackPropDlg : public wxFrame
 {
 private:
         static bool instanceFlag;
@@ -99,7 +99,6 @@ private:
         bool        SaveChanges(void);
         
         HyperlinkList   *m_pMyLinkList;
-        LinkPropImpl    *m_pLinkProp;
         void OnHyperLinkClick(wxHyperlinkEvent &event);
         wxHyperlinkCtrl *m_pEditedLink;
 
@@ -178,7 +177,7 @@ private:
 public:
         static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track properties"),
                                       const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
-                                      long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
+                                      long style = wxCAPTION|wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
         static bool getInstanceFlag(){ return instanceFlag; } 
         ~TrackPropDlg();
 

@@ -75,7 +75,8 @@ public:
     AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *acc );
     void DeletePersistentTrack( Track *track );
     std::map<int, Track*> m_persistent_tracks;
-    
+    bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
+
 private:
     wxString GetShipNameFromFile(int nmmsi);
     
@@ -122,6 +123,7 @@ private:
     wxString         m_dsc_last_string;
     std::vector<int> m_MMSI_MismatchVec;
     
+    bool             m_bAIS_AlertPlaying;
 DECLARE_EVENT_TABLE()
 };
 

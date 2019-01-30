@@ -110,63 +110,15 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
    as a possible optimization, write this function to also
    take latitude longitude boundaries so the resulting record can be
    a subset of the input, but also would need to be recomputed when panning the screen */
-GribTimelineRecordSet::GribTimelineRecordSet()
+GribTimelineRecordSet::GribTimelineRecordSet(unsigned int cnt): GribRecordSet(cnt)
 {
     for(int i=0; i<Idx_COUNT; i++)
         m_IsobarArray[i] = NULL;
 }
-#if 0
-GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
-{
-    for(int i=0; i<Idx_COUNT; i++) {
-        m_GribRecordPtrArray[i] = NULL;
-        m_IsobarArray[i] = NULL;
-    }
-
-    for(int i=0; i<Idx_COUNT; i++) {
-        if(m_GribRecordPtrArray[i])
-            continue;
-
-        GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
-        GribRecord *GR2 = GRS2.m_GribRecordPtrArray[i];
-
-        if(!GR1 || !GR2)
-            continue;
-
-        /* if this is a vector interpolation use the 2d method */
-        if(i < Idx_WIND_VY) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i <= Idx_WIND_VY300)
-            continue;
-        else if(i == Idx_SEACURRENT_VX) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i == Idx_SEACURRENT_VY)
-            continue;
-
-        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
-    }
-
-    m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
-        + interp_const*GRS2.m_Reference_Time;
-}
-#endif
 
 GribTimelineRecordSet::~GribTimelineRecordSet()
 {
-    for(int i=0; i<Idx_COUNT; i++)
-        delete m_GribRecordPtrArray[i]; /* delete these for timeline */
+    // RemoveGribRecords();
     ClearCachedData();
 }
 
@@ -1293,7 +1245,7 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
     if(rsa->GetCount() == 0)
         return NULL;
 
-    GribTimelineRecordSet *set = new GribTimelineRecordSet;
+    GribTimelineRecordSet *set = new GribTimelineRecordSet(m_bGRIBActiveFile->GetCounter());
     for(int i=0; i<Idx_COUNT; i++) {
         GribRecordSet *GRS1 = NULL, *GRS2 = NULL;
         GribRecord *GR1 = NULL, *GR2 = NULL;
@@ -1333,7 +1285,8 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
 
         double interp_const;
         if(minute1 == minute2) {
-            set->m_GribRecordPtrArray[i] = new GribRecord(*GR1);
+            // with big grib a copy is slow use a reference.
+            set->m_GribRecordPtrArray[i] = GR1;
             continue;
         } else
             interp_const = (nminute-minute1) / (minute2-minute1);
@@ -1343,8 +1296,9 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
             GribRecord *GR1y = GRS1->m_GribRecordPtrArray[i + Idx_WIND_VY];
             GribRecord *GR2y = GRS2->m_GribRecordPtrArray[i + Idx_WIND_VY];
             if(GR1y && GR2y) {
-                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (set->m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                GribRecord *Ry;
+                set->SetUnRefGribRecord(i, GribRecord::Interpolated2DRecord(Ry, *GR1, *GR1y, *GR2, *GR2y, interp_const));
+                set->SetUnRefGribRecord(i + Idx_WIND_VY, Ry);
                 continue;
             }
         } else if(i <= Idx_WIND_VY300)
@@ -1353,14 +1307,15 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
             GribRecord *GR1y = GRS1->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
             GribRecord *GR2y = GRS2->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
             if(GR1y && GR2y) {
-                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (set->m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                GribRecord *Ry;
+                set->SetUnRefGribRecord(i,  GribRecord::Interpolated2DRecord(Ry, *GR1, *GR1y, *GR2, *GR2y, interp_const));
+                set->SetUnRefGribRecord(Idx_SEACURRENT_VY, Ry);
                 continue;
             }
         } else if(i == Idx_SEACURRENT_VY)
             continue;
 
-        set->m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
+        set->SetUnRefGribRecord(i,  GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR));
     }
 
     set->m_Reference_Time = time.GetTicks();
@@ -1801,13 +1756,13 @@ void GRIBUICtrlBar::SetFactoryOptions()
 //----------------------------------------------------------------------------------------------------------
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
+unsigned int GRIBFile::ID = 0;
 
-GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile ): m_counter(++ID)
 {
     m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
     m_last_message = wxEmptyString;
-
     for (unsigned int i = 0; i < file_names.GetCount(); i++) {
         wxString file_name = file_names[i];
         if( ::wxFileExists( file_name ) )
@@ -1819,7 +1774,6 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
         return;
     }
     //    Use the zyGrib support classes, as (slightly) modified locally....
-
     m_pGribReader = new GribReader();
 
     //    Read and ingest the entire GRIB file.......
@@ -1863,7 +1817,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     std::set<time_t>::iterator iter;
     std::set<time_t> date_list = m_pGribReader->getListDates();
     for( iter = date_list.begin(); iter != date_list.end(); iter++ ) {
-        GribRecordSet *t = new GribRecordSet();
+        GribRecordSet *t = new GribRecordSet(m_counter);
         time_t reftime = *iter;
         t->m_Reference_Time = reftime;
         m_GribRecordSetArray.Add( t );

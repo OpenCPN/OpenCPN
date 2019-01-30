@@ -1415,6 +1415,9 @@ static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
       pCIB->transform_x_origin = header.easting_min;
       pCIB->transform_y_origin = header.northing_min;
 
+      pCIB->min_lat = header.lat_min;
+      pCIB->min_lon = header.lon_min;
+      
 //      pCIB->m_cell_mcovr_array.Empty();
 
       //    Extract some table sizes from the header, and pre-allocate the tables
@@ -1950,6 +1953,7 @@ cm93chart::cm93chart()
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
       m_this_chart_context->chart = this;
+      m_RAZBuilt = true;
       
 }
 
@@ -3817,6 +3821,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  xgeom->ref_lat = lat1;
+                  xgeom->ref_lon = lon1;
+
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat2, &lon2 );
@@ -3839,7 +3846,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->x_offset = m_CIB.transform_x_origin - trans_WGS84_offset_x;
                         xgeom->y_rate   = m_CIB.transform_y_rate;
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
-
+                        
                         pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
 
