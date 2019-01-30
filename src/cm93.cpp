@@ -3398,7 +3398,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       char u[201];
       strncpy ( u, sclass_sub.mb_str(), 199 );
       u[200] = '\0';
-      strncpy ( pobj->FeatureName, u, 7 );
+      memcpy ( pobj->FeatureName, u, 7 );
 
       //  Touch up the geom types
       int geomtype_sub = geomtype;
