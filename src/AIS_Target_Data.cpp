@@ -231,7 +231,7 @@ void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
     Euro_Length = q->Euro_Length;            // Extensions for European Inland AIS
     Euro_Beam = q->Euro_Beam;
     Euro_Draft = q->Euro_Draft;
-    strncpy(Euro_VIN, q->Euro_VIN, 8);
+    memcpy(Euro_VIN, q->Euro_VIN, EURO_VIN_LEN);
     UN_shiptype = q->UN_shiptype;
     
     b_isEuroInland = q->b_isEuroInland;
