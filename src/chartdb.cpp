@@ -1213,7 +1213,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       if(bInCache)
       {
           wxString msg;
-          msg.Printf(_T("OpenChartUsingCache, IN cache: cache size: %d\n"), pChartCache->GetCount());
+          msg.Printf(_T("OpenChartUsingCache, IN cache: cache size: %d\n"), (int)pChartCache->GetCount());
 //          wxLogMessage(msg);
           if(FULL_INIT == init_flag)                            // asking for full init?
           {
@@ -1267,7 +1267,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     GetMemoryStatus(0, &mem_used);
 
                     wxString msg;
-                    msg.Printf(_T("OpenChartUsingCache, NOT in cache:   cache size: %d\n"),  pChartCache->GetCount());
+                    msg.Printf(_T("OpenChartUsingCache, NOT in cache:   cache size: %d\n"),  (int)pChartCache->GetCount());
                     wxLogMessage(msg);
                     wxString msg1;
                     msg1.Printf(_T("   OpenChartUsingCache:  type %d  "), chart_type);
