@@ -30,8 +30,13 @@
 
 #include "ais.h"
 
+#define SHIP_NAME_LEN  21
+#define CALL_SIGN_LEN  8
+
 void make_hash_ERI(int key, const wxString & description);
 void clear_hash_ERI( void );
+
+
 
 class AIS_Target_Data
 {
@@ -64,8 +69,8 @@ public:
     double                    Lat;
     int                       ROTAIS;
     int                       ROTIND;
-    char                      CallSign[8];                // includes terminator
-    char                      ShipName[21];
+    char                      CallSign[CALL_SIGN_LEN];                // includes terminator
+    char                      ShipName[SHIP_NAME_LEN];
     char                      ShipNameExtension[15];
     unsigned char             ShipType;
     int                       IMO;

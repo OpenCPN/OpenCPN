@@ -910,7 +910,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->SOG = gpsg_sog;
                 pTargetData->ShipType = 52; // buddy
                 pTargetData->Class = AIS_GPSG_BUDDY;
-                strncpy( pTargetData->ShipName, gpsg_name_str, strlen( gpsg_name_str ) + 1 );
+                memcpy( pTargetData->ShipName, gpsg_name_str, SHIP_NAME_LEN );
                 pTargetData->b_nameValid = true;
                 pTargetData->b_active = true;
                 pTargetData->b_lost = false;
@@ -946,7 +946,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->ShipType = 55; // arpa
                 pTargetData->Class = AIS_ARPA;
 
-                strncpy( pTargetData->ShipName, arpa_name_str, strlen( arpa_name_str ) + 1 );
+                memcpy( pTargetData->ShipName, arpa_name_str, SHIP_NAME_LEN );
                 if( arpa_status != _T("Q") )
                     pTargetData->b_nameValid = true;
                 else
@@ -975,7 +975,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->b_positionOnceValid = true;
                 pTargetData->ShipType = 56; // aprs
                 pTargetData->Class = AIS_APRS;
-                strncpy( pTargetData->ShipName, aprs_name_str, strlen( aprs_name_str ) + 1 );
+                memcpy( pTargetData->ShipName, aprs_name_str, SHIP_NAME_LEN );
                 pTargetData->b_nameValid = true;
                 pTargetData->b_active = true;
                 pTargetData->b_lost = false;
