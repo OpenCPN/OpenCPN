@@ -27,6 +27,14 @@
 #include "config.h"
 #include "OCPNPlatform.h"
 
+#ifdef __WXMSW__
+#define EXTEND_WIDTH 70
+#define EXTEND_HEIGHT 70
+#else
+#define EXTEND_WIDTH 50
+#define EXTEND_HEIGHT 50
+#endif
+
 extern OCPNPlatform  *g_Platform;
 
 AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : AboutFrame( parent, id, title, pos, size, style )
@@ -41,15 +49,15 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinLicense->Hide();
     m_htmlWinHelp->Hide();
     m_btnBack->Hide();
-    m_htmlWinLicense->LoadFile(wxString::Format("%s/license.txt", g_Platform->GetSharedDataDir().c_str()));
-    m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.txt", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinLicense->LoadFile(wxString::Format("%s/license.html", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
     m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_bitmapLogo->SetBitmap(logo);
     
-    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + 50;
-    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + 50;
+    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + EXTEND_WIDTH;
+    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + EXTEND_HEIGHT;
 
     SetMinSize(wxSize(width, height));
     Layout();
