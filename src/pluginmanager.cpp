@@ -6852,7 +6852,7 @@ int GetCanvasIndexUnderMouse( void )
 {
     ChartCanvas *l_canvas = gFrame->GetCanvasUnderMouse();
     if(l_canvas) {
-        for(int i = 0; i < g_canvasArray.GetCount(); ++i) {
+        for(unsigned int i  = 0; i < g_canvasArray.GetCount(); ++i) {
             if(l_canvas == g_canvasArray[i])
                 return i;
         }
