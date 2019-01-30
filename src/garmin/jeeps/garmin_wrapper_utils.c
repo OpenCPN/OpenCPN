@@ -191,7 +191,8 @@ fix_win_serial_name_r(const char *comname, char *obuf, size_t len)
            ((strlen(comname) == 5) && (comname[4] == ':')) ||
            ((strlen(comname) == 4) && (case_ignore_strncmp(comname, "com", 3) == 0))
          ) {
-            strncpy(obuf, comname, len);
+            strncpy(obuf, comname, len - 1);
+            obuf[len - 1] = '\0';
          } else {
                size_t l;
                snprintf(obuf, len, DEV_PREFIX "%s", comname);
