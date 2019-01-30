@@ -315,7 +315,7 @@ void RoutePropDlgImpl::UpdatePoints()
         if( pnode->GetData()->GetManualETD().IsValid() ) {
             etd = toUsrDateTime(pnode->GetData()->GetManualETD(), m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
             if( pnode->GetData()->GetManualETD().IsValid() && pnode->GetData()->GetETA().IsValid() && pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA() ) {
-                etd.Prepend(_T("!! ")); // Manually enteed ETD is before we arrive here!
+                etd.Prepend(_T("!! ")); // Manually entered ETD is before we arrive here!
             }
         } else {
             etd = wxEmptyString;
