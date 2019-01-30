@@ -399,6 +399,7 @@ wxSvgXmlDocument::wxSvgXmlDocument(wxInputStream& stream, const wxString& encodi
 }
 
 wxSvgXmlDocument::wxSvgXmlDocument(const wxSvgXmlDocument& doc)
+: wxObject()
 {
     DoCopy(doc);
 }

@@ -2563,10 +2563,10 @@ NV_INT32 get_time (const NV_CHAR *string)
 NV_CHAR *ret_time (NV_INT32 time)
 {
     NV_INT32          hour, minute;
-    static NV_CHAR    tname[10];
+    static NV_CHAR    tname[16];
 
     hour = abs (time) / 100;
-    assert (hour < 100000); /* 9 chars: +99999:99 */
+    assert (hour <= 99999 && hour >= -99999); /* 9 chars: +99999:99 */
     minute = abs (time) % 100;
 
     if (time < 0)
@@ -2588,10 +2588,10 @@ NV_CHAR *ret_time (NV_INT32 time)
 NV_CHAR *ret_time_neat (NV_INT32 time)
 {
     NV_INT32          hour, minute;
-    static NV_CHAR    tname[10];
+    static NV_CHAR    tname[16];
 
     hour = abs (time) / 100;
-    assert (hour < 100000); /* 9 chars: +99999:99 */
+    assert (hour <= 99999 && hour >= -99999); /* 9 chars: +99999:99 */
     minute = abs (time) % 100;
 
     if (time < 0)

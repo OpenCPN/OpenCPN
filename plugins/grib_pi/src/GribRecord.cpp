@@ -480,7 +480,8 @@ void  GribRecord::multiplyAllData(double k)
         return;
 
     for (zuint j=0; j<Nj; j++) {
-        for (zuint i=0; i<Ni; i++) {
+        for (zuint i=0; i<Ni; i++)
+        {
             if (isDefined(i,j)) {
                 data[j*Ni+i] *= k;
             }

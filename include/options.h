@@ -847,7 +847,7 @@ class SentenceListDlg : private Uncopyable, public wxDialog {
   void OnClearAllClick(wxCommandEvent &event);
 
   void Populate(const wxArrayString &list);
-  const wxString GetBoxLabel(void) const;
+  wxString GetBoxLabel(void) const;
 
   wxCheckListBox *m_clbSentences;
   wxButton *m_btnDel;
@@ -861,21 +861,21 @@ class SentenceListDlg : private Uncopyable, public wxDialog {
 class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
  public:
   explicit OpenGLOptionsDlg(wxWindow *parent);
-  const bool GetAcceleratedPanning(void) const;
-  const bool GetTextureCompression(void) const;
-  const bool GetPolygonSmoothing(void) const;
-  const bool GetLineSmoothing(void) const;
-  const bool GetShowFPS(void) const;
-  const bool GetSoftwareGL(void) const;
-  const bool GetTextureCompressionCaching(void) const;
-  const bool GetRebuildCache(void) const;
-  const int GetTextureMemorySize(void) const;
+  bool GetAcceleratedPanning(void) const;
+  bool GetTextureCompression(void) const;
+  bool GetPolygonSmoothing(void) const;
+  bool GetLineSmoothing(void) const;
+  bool GetShowFPS(void) const;
+  bool GetSoftwareGL(void) const;
+  bool GetTextureCompressionCaching(void) const;
+  bool GetRebuildCache(void) const;
+  int GetTextureMemorySize(void) const;
 
  private:
   void Populate(void);
   void OnButtonRebuild(wxCommandEvent &event);
   void OnButtonClear(wxCommandEvent &event);
-  const wxString GetTextureCacheSize(void);
+  wxString GetTextureCacheSize(void);
 
   wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
   wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL,

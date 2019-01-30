@@ -3351,7 +3351,7 @@ END_EVENT_TABLE()
              ToolbarMOBDialog mdlg( this );
              int dialog_ret = mdlg.ShowModal( );
              int answer = mdlg.GetSelection( );
-             if ( dialog_ret == wxID_OK )
+             if ( dialog_ret == wxID_OK ) {
                  if ( answer == 1 ) {
                      g_bPermanentMOBIcon = true;
                      cb->SetValue( true );
@@ -3359,8 +3359,7 @@ END_EVENT_TABLE()
                  else if ( answer == 0 ) {
                      cb->SetValue( true );
                  }
-                 else
-                     ;
+             }
              else { // wxID_CANCEL
                  new_toolbarConfig = toolbarConfigSave;
                  return;

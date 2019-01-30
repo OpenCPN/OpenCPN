@@ -44,6 +44,7 @@ struct COMMANDDATA COMMAND_ID[2]=
     /* Device Command Protocol 2 (A011) */
     {
 	0,4,0,17,8,20,0,21,26,0,0
+	/* explicit initializers */,12,13,14,15,16,17,18,19,20,21,21,23,24
     }
 };
 

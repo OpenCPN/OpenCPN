@@ -952,7 +952,9 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
             itt != m_chart_texfactory_hash.end(); ++itt ) {
             glTexFactory *ptf = itt->second;
             if(ptf && ptf->OnTimer())
-                ;//break;
+            {
+                //break;
+            }
         }
     }
 
