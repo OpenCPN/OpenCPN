@@ -471,7 +471,7 @@ int DDFModule::Create( const char *pszFilename )
     achLeader[9] = _appIndicator;
     sprintf( achLeader+10, "%02d", (int) _fieldControlLength );
     sprintf( achLeader+12, "%05d", (int) _fieldAreaStart );
-    strncpy( achLeader+17, _extendedCharSet, 3 );
+    memcpy( achLeader+17, _extendedCharSet, 3 );
     sprintf( achLeader+20, "%1d", (int) _sizeFieldLength );
     sprintf( achLeader+21, "%1d", (int) _sizeFieldPos );
     achLeader[22] = '0';
