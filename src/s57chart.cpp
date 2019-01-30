@@ -5327,7 +5327,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             classAttributes << Type;
 
             LUPstring = _T("    LUP ATTC: ");
-            if( current->LUP->ATTCArray ) LUPstring += current->LUP->ATTCArray->Item( 0 );
+            if( current->LUP->ATTArray.size() ) LUPstring += wxString(current->LUP->ATTArray[0], wxConvUTF8);
             LUPstring += _T("<br>");
             classAttributes << LUPstring;
 

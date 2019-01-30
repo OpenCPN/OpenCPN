@@ -190,7 +190,7 @@ public:
    DisPrio        DPRI;             // Display Priority
    RadPrio        RPRI;             // 'O' or 'S', Radar Priority
    LUPname        TNAM;             // FTYP:  areas, points, lines
-   wxArrayString *ATTCArray;        // ArrayString of LUP Attributes
+   std::vector<char *> ATTArray;    // Array of LUP Attributes
    wxString       *INST;            // Instruction Field (rules)
    DisCat         DISC;             // Display Categorie: D/S/O, DisplayBase, Standard, Other
    int            LUCM;             // Look-Up Comment (PLib3.x put 'groupes' here,

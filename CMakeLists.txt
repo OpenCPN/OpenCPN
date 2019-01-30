@@ -1736,8 +1736,6 @@ ENDIF (USE_GARMINHOST)
 SET(SRC_SYMBOLS
     src/chartsymbols.cpp
     include/chartsymbols.h
-    src/razdsparser.cpp
-    include/razdsparser.h
 )
 
 ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
