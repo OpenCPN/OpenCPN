@@ -31,7 +31,7 @@
 class AboutFrameImpl : public AboutFrame
 {
 protected:
-    void AboutFrameOnClose( wxCloseEvent& event ) { Hide(); event.Veto(); }
+    void AboutFrameOnClose(wxCloseEvent& event) { Hide(); SetSize(GetMinSize()); Centre();  event.Veto(); }
     void OnLinkDonate( wxHyperlinkEvent& event ) { event.Skip(); }
     void OnLinkGetInvolved( wxHyperlinkEvent& event ) { event.Skip(); }
     void OnLinkLogfile( wxHyperlinkEvent& event ) { event.Skip(); }

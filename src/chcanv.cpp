@@ -9640,6 +9640,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
         v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
         v[_T("OpenCPN Version Date")] = VERSION_DATE;
+        v[_T("OpenCPN Version Full")] = VERSION_FULL;
         
         //  S52PLIB state
         v[_T("OpenCPN S52PLIB ShowText")] = GetShowENCText();

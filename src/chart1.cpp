@@ -915,8 +915,8 @@ DO NOT rely upon OpenCPN for safety of life or property.\n\n\
 Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
 
     wxString vs =
-        wxString::Format(wxT(" .. Version %i.%i.%i"),
-            VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+        wxString::Format(wxT(" .. Version %s"),
+            VERSION_FULL);
 
 //    wxMessageDialog odlg( gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
 
@@ -2178,8 +2178,8 @@ bool MyApp::OnInit()
     app_style |= wxWANTS_CHARS;
 
 // Create the main frame window
-    wxString myframe_window_title = wxString::Format(wxT("OpenCPN %i.%i.%s"),
-            VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH); //Gunther
+    wxString myframe_window_title = wxString::Format(wxT("OpenCPN %s"),
+            VERSION_FULL); //Gunther
 
     if( g_bportable ) {
         myframe_window_title += _(" -- [Portable(-p) executing from ");
