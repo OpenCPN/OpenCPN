@@ -939,6 +939,10 @@ int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
                                      int *pnBytesUsed, int nNewValue )
 
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+
     int nSize;
     char szWork[30];
 
@@ -1011,6 +1015,7 @@ int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
     }
 
     return TRUE;
+#pragma GCC diagnostic pop
 }
 
 /************************************************************************/
@@ -1028,6 +1033,9 @@ int DDFSubfieldDefn::FormatFloatValue( char *pachData, int nBytesAvailable,
                                        int *pnBytesUsed, double dfNewValue )
 
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
     int nSize;
     char szWork[120];
 
@@ -1075,4 +1083,5 @@ int DDFSubfieldDefn::FormatFloatValue( char *pachData, int nBytesAvailable,
     }
 
     return TRUE;
+#pragma GCC diagnostic pop
 }
