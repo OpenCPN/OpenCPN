@@ -523,27 +523,31 @@ long CPLScanLong( char *pszString, int nMaxLength )
  * @return Double value, converted from its ASCII form.
  */
 
-double CPLScanDouble( char *pszString, int nMaxLength, char *pszLocale )
+double CPLScanDouble( const char *pszString, int nMaxLength, char *pszLocale )
 {
-    int     i;
-    double  dfValue;
-    char    *pszValue = (char *)CPLMalloc( nMaxLength + 1);
+    char szValue[32] = {};
+    char *pszValue = nullptr;
+
+    if( nMaxLength + 1 < static_cast<int>(sizeof(szValue)) )
+        pszValue = szValue;
+    else
+        pszValue = static_cast<char *>(CPLMalloc(nMaxLength + 1));
 
 /* -------------------------------------------------------------------- */
-/*	Compute string into local buffer, and terminate it.		*/
+/*      Compute string into local buffer, and terminate it.             */
 /* -------------------------------------------------------------------- */
-    strncpy( pszValue, pszString, nMaxLength );
+    strncpy(pszValue, pszString, nMaxLength);
     pszValue[nMaxLength] = '\0';
 
 /* -------------------------------------------------------------------- */
-/*	Make a pass through converting 'D's to 'E's.			*/
+/*      Make a pass through converting 'D's to 'E's.                    */
 /* -------------------------------------------------------------------- */
-    for( i = 0; i < nMaxLength; i++ )
-        if ( pszValue[i] == 'd' || pszValue[i] == 'D' )
+    for( int i = 0; i < nMaxLength; i++ )
+        if( pszValue[i] == 'd' || pszValue[i] == 'D' )
             pszValue[i] = 'E';
 
 /* -------------------------------------------------------------------- */
-/*	Use atof() to fetch out the result                              */
+/*      The conversion itself.                                          */
 /* -------------------------------------------------------------------- */
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
     char        *pszCurLocale = NULL;
@@ -557,7 +561,7 @@ double CPLScanDouble( char *pszString, int nMaxLength, char *pszLocale )
     }
 #endif
 
-    dfValue = atof( pszValue );
+    const double dfValue = atof(pszValue);
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
     // Restore stored locale back
@@ -565,7 +569,8 @@ double CPLScanDouble( char *pszString, int nMaxLength, char *pszLocale )
         setlocale(LC_ALL, pszCurLocale );
 #endif
 
-    CPLFree( pszValue );
+    if( pszValue != szValue )
+        CPLFree(pszValue);
     return dfValue;
 }
 
