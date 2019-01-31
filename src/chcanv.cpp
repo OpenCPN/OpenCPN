@@ -11477,7 +11477,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                         else
                             continue;
                         
-                        if( ( type == 'c' ) )
+                        if( type == 'c' )
                         {
                             {
 
