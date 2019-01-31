@@ -3032,6 +3032,31 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
 
+  
+  // Control Options
+    
+    wxStaticBox* waypointControl =
+        new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Control Options"));
+    wxStaticBoxSizer* ControlSizer =
+        new wxStaticBoxSizer(waypointControl, wxVERTICAL);
+    Routes->Add(ControlSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+    ControlSizer->AddSpacer(5);
+
+    pWayPointPreventDragging = new wxCheckBox(
+        itemPanelRoutes, ID_DRAGGINGCHECKBOX,
+        _("Lock Waypoints (Unless waypoint property dialog visible)"));
+    pWayPointPreventDragging->SetValue(FALSE);
+    ControlSizer->Add(pWayPointPreventDragging, verticleInputFlags);
+
+    pConfirmObjectDeletion =
+        new wxCheckBox(itemPanelRoutes, ID_DELETECHECKBOX,
+                        _("Confirm deletion of tracks and routes"));
+    pConfirmObjectDeletion->SetValue(FALSE);
+    ControlSizer->Add(pConfirmObjectDeletion, verticleInputFlags);
+    ControlSizer->AddSpacer(5);
+
+  
   // Fill the default waypoint icon selector combo box
   pWaypointDefaultIconChoice->Clear();
   //      Iterate on the Icon Descriptions, filling in the combo control
@@ -3469,19 +3494,19 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 //                                     _("Suppress scaled vector charts on overzoom"));
 //     boxCharts->Add(pOZScaleVector, inputFlags);
 
-    // Control Options
-    wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
-    itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
-
-    pWayPointPreventDragging = new wxCheckBox(
-        m_ChartDisplayPage, ID_DRAGGINGCHECKBOX, _("Lock Waypoints"));
-    pWayPointPreventDragging->SetValue(FALSE);
-    boxCtrls->Add(pWayPointPreventDragging, inputFlags);
-
-    pConfirmObjectDeletion = new wxCheckBox(
-        m_ChartDisplayPage, ID_DELETECHECKBOX, _("Confirm deletion"));
-    pConfirmObjectDeletion->SetValue(FALSE);
-    boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
+//     // Control Options
+//     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
+//     itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
+// 
+//     pWayPointPreventDragging = new wxCheckBox(
+//         m_ChartDisplayPage, ID_DRAGGINGCHECKBOX, _("Lock Waypoints"));
+//     pWayPointPreventDragging->SetValue(FALSE);
+//     boxCtrls->Add(pWayPointPreventDragging, inputFlags);
+// 
+//     pConfirmObjectDeletion = new wxCheckBox(
+//         m_ChartDisplayPage, ID_DELETECHECKBOX, _("Confirm deletion"));
+//     pConfirmObjectDeletion->SetValue(FALSE);
+//     boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
 
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
@@ -3694,25 +3719,6 @@ With a higher value, the same zoom level shows a more detailed chart."));
     // spacer
     itemBoxSizerUI->Add(0, border_size * 8);
     itemBoxSizerUI->Add(0, border_size * 8);
-
-    // Control Options
-    itemBoxSizerUI->Add(
-        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Controls")),
-        groupLabelFlags);
-    wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
-    itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
-
-    pWayPointPreventDragging = new wxCheckBox(
-        m_ChartDisplayPage, ID_DRAGGINGCHECKBOX,
-        _("Lock Waypoints (Unless waypoint property dialog visible)"));
-    pWayPointPreventDragging->SetValue(FALSE);
-    boxCtrls->Add(pWayPointPreventDragging, verticleInputFlags);
-
-    pConfirmObjectDeletion =
-        new wxCheckBox(m_ChartDisplayPage, ID_DELETECHECKBOX,
-                       _("Confirm deletion of tracks and routes"));
-    pConfirmObjectDeletion->SetValue(FALSE);
-    boxCtrls->Add(pConfirmObjectDeletion, verticleInputFlags);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
