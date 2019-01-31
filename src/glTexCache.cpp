@@ -27,6 +27,7 @@
 #include <wx/wxprec.h>
 #include <wx/tokenzr.h>
 #include <wx/filename.h>
+#include <wx/wx.h>
 
 #include <stdint.h>
 
