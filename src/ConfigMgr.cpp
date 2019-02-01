@@ -548,7 +548,7 @@ bool OCPNConfigCatalog::IsOpenCPN()
     for (pugi::xml_attribute attr = root().first_child().first_attribute(); attr; attr = attr.next_attribute())
         if( !strcmp(attr.name(), "creator") && !strcmp(attr.value(), "OpenCPN") )
             return true;
-        return false;
+    return false;
 }
 
 bool OCPNConfigCatalog::SaveFile( const wxString filename )

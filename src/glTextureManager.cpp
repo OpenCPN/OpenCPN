@@ -26,6 +26,7 @@
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
+#include <wx/wx.h>
 
 #include "dychart.h"
 #include "viewport.h"

@@ -4068,8 +4068,8 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
 
     pret->alarm_state =     (plugin_ais_alarm_type)ptarget->n_alert_state;
 
-    strncpy(pret->CallSign, ptarget->CallSign, sizeof(ptarget->CallSign));
-    strncpy(pret->ShipName, ptarget->ShipName, sizeof(ptarget->ShipName));
+    memcpy(pret->CallSign, ptarget->CallSign, CALL_SIGN_LEN);
+    memcpy(pret->ShipName, ptarget->ShipName, SHIP_NAME_LEN);
 
     return pret;
 }
@@ -6852,7 +6852,7 @@ int GetCanvasIndexUnderMouse( void )
 {
     ChartCanvas *l_canvas = gFrame->GetCanvasUnderMouse();
     if(l_canvas) {
-        for(int i = 0; i < g_canvasArray.GetCount(); ++i) {
+        for(unsigned int i  = 0; i < g_canvasArray.GetCount(); ++i) {
             if(l_canvas == g_canvasArray[i])
                 return i;
         }

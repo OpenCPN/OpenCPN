@@ -640,7 +640,7 @@ void ChartSymbols::BuildLookup( Lookup &lookup )
     LUP->RPRI = lookup.radarPrio;
     LUP->TNAM = lookup.tableName;
     LUP->OBCL[6] = 0;
-    strncpy( LUP->OBCL, lookup.name.mb_str(), 7 );
+    memcpy( LUP->OBCL, lookup.name.mb_str(), 7 );
 
     LUP->ATTArray = lookup.attributeCodeArray;
 
@@ -752,7 +752,7 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle )
     plib->pAlloc->Add( lnst );
 
     lnst->RCID = lineStyle.RCID;
-    strncpy( lnst->name.PANM, lineStyle.name.mb_str(), 8 );
+    memcpy( lnst->name.PANM, lineStyle.name.mb_str(), 8 );
     lnst->bitmap.PBTM = NULL;
 
     lnst->vector.LVCT = (char *) malloc( lineStyle.HPGL.Len() + 1 );
@@ -892,7 +892,7 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern )
 
     patt->RCID = pattern.RCID;
     patt->exposition.PXPO = new wxString( pattern.description );
-    strncpy( patt->name.PANM, pattern.name.mb_str(), 8 );
+    memcpy( patt->name.PANM, pattern.name.mb_str(), 8 );
     patt->bitmap.PBTM = NULL;
     patt->fillType.PATP = pattern.fillType;
     patt->spacing.PASP = pattern.spacing;
@@ -1069,7 +1069,7 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol )
     wxString SCRF;
 
     symb->RCID = symbol.RCID;
-    strncpy( symb->name.SYNM, symbol.name.char_str(), 8 );
+    memcpy( symb->name.SYNM, symbol.name.char_str(), 8 );
 
     symb->exposition.SXPO = new wxString( symbol.description );
 

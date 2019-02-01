@@ -586,6 +586,8 @@ IF(NOT WIN32 AND NOT APPLE )
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  ADD_DEFINITIONS("-Wno-deprecated-declarations")
+  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof

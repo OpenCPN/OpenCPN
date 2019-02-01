@@ -382,7 +382,7 @@ void WMM_DegreeToDMSstring (double DegreesOfArc, int UnitDepth, char *DMSstring)
 	{
 	int DMS[3], i;
 	double temp = DegreesOfArc;
-	char tempstring[20] = "";
+	char tempstring[32] = "";
 	char tempstring2[20] = "";
 	strcpy(DMSstring, "");
 	if(UnitDepth >= 3)
@@ -405,7 +405,8 @@ void WMM_DegreeToDMSstring (double DegreesOfArc, int UnitDepth, char *DMSstring)
 		temp = (temp - DMS[i])*60;
 		if(i == UnitDepth - 1 && temp >= 30)
 			DMS[i]++;
-		sprintf(tempstring, "%4d%4s", DMS[i], tempstring2);
+		snprintf(tempstring ,sizeof(tempstring),
+                         "%4d%4s", DMS[i], tempstring2);
 		strcat(DMSstring, tempstring);
 	}
 	} /*WMM_DegreeToDMSstring*/
