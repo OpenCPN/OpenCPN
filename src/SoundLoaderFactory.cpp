@@ -24,7 +24,7 @@
 #include "config.h"
 #include "SoundFileLoader.h"
 
-#ifdef USE_SNDFILE
+#ifdef HAVE_SNDFILE
 #include "SndfileSoundLoader.h"
 
 AbstractSoundLoader* SoundLoaderFactory() 
