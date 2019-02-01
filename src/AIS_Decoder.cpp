@@ -221,7 +221,7 @@ AIS_Decoder::~AIS_Decoder( void )
                     content.append( wxString::Format(wxT("%i"),it->first ) );
                     content.append( _T(",") ).append(it->second );
                 }
-            content.append( _T("\r\n");
+            content.append( _T("\r\n"));
             content.append( _("+++==Non Confirmed Entry's==+++") );
         for ( it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it )
                 {
