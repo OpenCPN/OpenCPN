@@ -287,8 +287,10 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
             }
             
             else if( !strcmp( lookupNode.name(), "attrib-code") ) {
-                char *attVal = (char *)calloc(8, sizeof(char));
-                strncpy(attVal, nodeText, 7);
+                int nc = strlen(nodeText);
+                char *attVal = (char *)calloc(nc+2, sizeof(char));
+                strncpy(attVal, nodeText, nc);
+                
                 if( attVal[6] == '\0')
                     attVal[6] = ' ';
                 lookup.attributeCodeArray.push_back(attVal);
