@@ -620,7 +620,7 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) 
                         if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
-                            if( ( (RoutePoint *)pFindSel->m_pData1 )->GetScaMin() > cc->GetScaleValue())
+                            if( ( (RoutePoint *)pFindSel->m_pData1 )->IsVisibleSelectable(cc) )
                                 ret_list.Append( pFindSel );
                     break;
                 case SELTYPE_TIDEPOINT:

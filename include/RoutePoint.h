@@ -61,6 +61,7 @@ public:
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
       bool IsNameShown() { return m_bShowName; }
+      bool IsVisibleSelectable(ChartCanvas *canvas);
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
@@ -109,7 +110,6 @@ public:
       long GetScaMax(){return m_ScaMax; };
       bool GetUseSca(){return b_UseScamin; };
       void SetUseSca( bool value ){ b_UseScamin = value; };
-      bool IsScaVisible(ChartCanvas *cc);
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }

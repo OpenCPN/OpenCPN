@@ -508,6 +508,22 @@ void RoutePoint::ReLoadIcon( void )
     m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
+bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas)
+{    
+    if( m_bIsActive)  //  An active route point must always be visible
+        return true;
+    if( !m_bIsVisible ) // if not visible nevermind the rest.
+        return false;         
+    if( b_UseScamin ){
+        if (g_bOverruleScaMin)
+            return true;
+        else
+            if (canvas->GetScaleValue() > m_ScaMin) 
+                return false;
+    }
+    return true;
+}
+
 void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 {
     wxPoint r;
@@ -518,11 +534,12 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
     //  return the home point in this dc to allow "connect the dots"
     if( NULL != rpn ) *rpn = r;
 
-    if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
+    /*if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
         if( !IsScaVisible( canvas) )          
-            return;           
+            return;   */ 
+    if ( !IsVisibleSelectable(canvas) ) return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -666,11 +683,12 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 #ifdef ocpnUSE_GL
 void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
-    if( !m_bIsVisible ) 
-        return;
-    if( !m_bIsActive)  //  An active route point must always be visible
-        if( !IsScaVisible( canvas) )          
-            return;  ;
+//     if( !m_bIsVisible ) 
+//         return;
+//     if( !m_bIsActive)  //  An active route point must always be visible
+//         if( !IsScaVisible( canvas) )          
+//             return;  ;
+    if ( !IsVisibleSelectable(canvas) ) return;
     
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -1121,21 +1139,6 @@ void RoutePoint::SetScaMax(wxString str) {
     SetScaMax(val);
 }
 
-bool RoutePoint::IsScaVisible( ChartCanvas *cc){
-    if (g_bOverruleScaMin) return true;
-    if( b_UseScamin ){
-        if (cc->GetScaleValue() < m_ScaMin) 
-            return true;
-        else 
-            return false;
-    }
-    return true;
-//     if (g_bOverruleScaMin)
-//         return true;
-//     else
-//         return false;
-   // return ( ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) ) || (g_bOverruleScaMin) );
-}
 
 void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
 {
