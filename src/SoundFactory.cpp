@@ -25,7 +25,7 @@
 #include "SoundFactory.h"
 
 
-#ifdef USE_PORTAUDIO
+#ifdef HAVE_PORTAUDIO
 #include "PortAudioSound.h"
 
 OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
@@ -35,7 +35,7 @@ OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
 
 OcpnSound* SoundFactory(void) { return new AndroidSound(); }
 
-#elif defined(USE_SYSTEM_CMD_SOUND)
+#elif defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }

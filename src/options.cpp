@@ -75,6 +75,7 @@ extern GLuint g_raster_format;
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
+#include "SystemCmdSound.h"
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
 #include "routeman.h"
@@ -5269,16 +5270,17 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
-#ifdef USE_SYSTEM_CMD_SOUND
-  if ( g_bUIexpert ) {
+  if ( g_bUIexpert && (bool) dynamic_cast<SystemCmdSound*>(SoundFactory()) ) {
       wxBoxSizer* pSoundSizer = new wxBoxSizer( wxVERTICAL );
       pShipsBellsSizer->Add( pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing );
-      pCmdSoundString = new wxTextCtrl( itemPanelFont, wxID_ANY, _T( "" ), wxDefaultPosition,
-          wxSize( 450, -1 ), wxTE_LEFT );
-      pSoundSizer->Add( new wxStaticText( itemPanelFont, wxID_ANY, _( "Audio Play command:" ) ), 0, wxALIGN_CENTER_HORIZONTAL | wxALL );
+      pCmdSoundString = new wxTextCtrl( itemPanelFont, wxID_ANY, _T( "" ),
+                                        wxDefaultPosition,
+                                        wxSize( 450, -1 ), wxTE_LEFT );
+      pSoundSizer->Add( new wxStaticText( itemPanelFont, wxID_ANY,
+                        _( "Audio Play command:" ) ), 0,
+                        wxALIGN_CENTER_HORIZONTAL | wxALL );
       pSoundSizer->Add( pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size );
   }
-#endif /* USE_SYSTEM_CMD_SOUND */
 
   OcpnSound* sound = SoundFactory();
   int deviceCount = sound->DeviceCount();

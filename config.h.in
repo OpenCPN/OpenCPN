@@ -2,9 +2,9 @@
 #define OCPN_CONFIG_H
 
 #cmakedefine OPENGL_FOUND
-#cmakedefine USE_PORTAUDIO
-#cmakedefine USE_SYSTEM_CMD_SOUND
-#cmakedefine USE_SNDFILE
+#cmakedefine HAVE_PORTAUDIO
+#cmakedefine HAVE_SYSTEM_CMD_SOUND
+#cmakedefine HAVE_SNDFILE
 
 // Command line to play a sound in system(3), like "aplay %s".
 #define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}
