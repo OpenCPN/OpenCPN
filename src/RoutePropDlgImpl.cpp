@@ -357,6 +357,9 @@ void RoutePropDlgImpl::UpdatePoints()
 
 wxDateTime RoutePropDlgImpl::toUsrDateTime(const wxDateTime ts, const int format, const double lon )
 {
+    if( !ts.IsValid() ) {
+        return ts;
+    }
     wxDateTime dt;
     switch( m_tz_selection ) {
         case 2: //LMT@Location
@@ -378,6 +381,9 @@ wxDateTime RoutePropDlgImpl::toUsrDateTime(const wxDateTime ts, const int format
 
 wxDateTime RoutePropDlgImpl::fromUsrDateTime(const wxDateTime ts, const int format, const double lon )
 {
+    if( !ts.IsValid() ) {
+        return ts;
+    }
     wxDateTime dt;
     switch( m_tz_selection ) {
         case 2: //LMT@Location
@@ -608,7 +614,14 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
         wxString::const_iterator end;
         wxDateTime etd;
         
-        if( !etd.ParseDateTime(value.GetString(), &end) ) {
+        wxString ts = value.GetString();
+        if( ts.StartsWith("!") ) {
+            ts.Replace("!", wxEmptyString, true);
+        }
+        ts.Trim(true);
+        ts.Trim(false);
+        
+        if( !etd.ParseDateTime(ts, &end) ) {
             etd = wxInvalidDateTime;
         }
         p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());

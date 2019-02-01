@@ -1167,7 +1167,7 @@ double RoutePoint::GetPlannedSpeed() {
 wxDateTime RoutePoint::GetETD()
 {
     if( m_seg_etd.IsValid() ) {
-        if(m_seg_etd > GetETA()) {
+        if(!GetETA().IsValid() || m_seg_etd > GetETA()) {
             return m_seg_etd;
         } else {
             return GetETA();
@@ -1193,7 +1193,7 @@ wxDateTime RoutePoint::GetETD()
                         m_seg_etd = etd.ToUTC();
                     }
                 }
-                if( etd.IsValid() && etd > GetETA() ) {
+                if( etd.IsValid() && (!GetETA().IsValid() || etd > GetETA()) ) {
                     m_MarkDescription.Replace( s_etd, wxEmptyString);
                     m_seg_etd = etd;
                     return m_seg_etd;
