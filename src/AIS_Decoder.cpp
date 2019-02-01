@@ -217,16 +217,17 @@ AIS_Decoder::~AIS_Decoder( void )
         AIS_Target_Name_Hash::iterator it;
         for ( it = AISTargetNamesC->begin(); it != AISTargetNamesC->end(); ++it )
                 {
-                    content.append(_("\r\n") );
+                    content.append(_T("\r\n") );
                     content.append( wxString::Format(wxT("%i"),it->first ) );
-                    content.append( _(",") ).append(it->second );
+                    content.append( _T(",") ).append(it->second );
                 }
-            content.append( _("\r\n+++==Non Confirmed Entry's==+++") );
+            content.append( _T("\r\n");
+            content.append( _("+++==Non Confirmed Entry's==+++") );
         for ( it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it )
                 {
-                    content.append(_("\r\n") );
+                    content.append(_T("\r\n") );
                     content.append( wxString::Format(wxT("%i"),it->first ) );
-                    content.append( _(",") ).append(it->second );
+                    content.append( _T(",") ).append(it->second );
                 }
         outfile.Write( content );
         outfile.Commit();
