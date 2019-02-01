@@ -3534,7 +3534,9 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     }
     else{
         SetWindowStyleFlag( (GetWindowStyleFlag() & ~wxNO_BORDER) | wxSIMPLE_BORDER);
+#ifndef __WXMAC__
         SetBackgroundColour( wxNullColour );
+#endif
     }
         
     UpdateToolbarColorScheme( cs );
