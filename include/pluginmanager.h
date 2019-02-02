@@ -35,6 +35,8 @@
 #include <wx/glcanvas.h>
 #endif
 
+#include "config.h"
+
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 //#include "chcanv.h"                 // for ViewPort
@@ -52,7 +54,7 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
 #include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
 #endif
@@ -351,7 +353,7 @@ private:
       wxString GetPluginOrder();
     
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
       
 public:
       wxCurlDownloadThread *m_pCurlThread;

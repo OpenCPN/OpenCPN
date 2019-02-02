@@ -36,6 +36,7 @@
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
 
+#include "config.h"
 #include "chartdb.h"
 #include "chartimg.h"
 #include "chart1.h"

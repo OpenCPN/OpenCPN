@@ -25,6 +25,8 @@
  *
  */
 
+#include "config.h"
+
 #ifdef USE_LZMA
 #include <lzma.h>
 

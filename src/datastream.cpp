@@ -47,6 +47,8 @@
 #include <netinet/tcp.h>
 #endif
 
+#include "config.h"
+
 #include "dychart.h"
 
 #include "datastream.h"

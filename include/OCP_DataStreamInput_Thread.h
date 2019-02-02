@@ -39,6 +39,8 @@
 	#include "setupapi.h"                   // presently stored in opencpn/src
 #endif
 
+#include "config.h"
+
 #include "dsPortType.h"
 
 #ifdef ocpnUSE_NEWSERIAL
