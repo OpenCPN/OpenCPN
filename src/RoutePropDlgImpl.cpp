@@ -954,7 +954,7 @@ wxString RoutePropDlgImpl::MakeTideInfo( wxString stationName, double lat, doubl
     
     tide_form.Append( toUsrDateTime(dtm, m_tz_selection, lon).Format(ETA_FORMAT_STR) );
     dtm.Add(wxTimeSpan(0, offset, 0));
-    tide_form.Append( wxString::Format(_(" (Local: %s) @ %s"), dtm.Format(ETA_FORMAT_STR), stationName.c_str()) );
+    tide_form.Append( wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"), dtm.Format(ETA_FORMAT_STR), stationName.c_str()) );
     
     return tide_form;
 }
