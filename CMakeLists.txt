@@ -60,7 +60,8 @@
 # I also find it deficient in some areas. For instance, I cannot make it output a VS project with certain compile switches set as desired, namely /MT vs /MD. This means I must manually set this and other compiler options after the CMake step. Sometimes I forget. Grrr...
 # set /MT for Release build, and /MTd for debug.
 
-# define minimum cmake version
+
+
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
@@ -82,10 +83,6 @@ ELSE(APPLE)
   SET(PACKAGE_NAME opencpn)
 ENDIF(APPLE)
 
-IF(NOT MSVC)
-   SET(OBJ_VISIBILITY "-fvisibility=hidden" )
-ENDIF()
-
 # Locations where cmake looks for cmake modules.
 SET(CMAKE_MODULE_PATH 
   ${CMAKE_SOURCE_DIR}/build
@@ -93,14 +90,95 @@ SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
+IF (UNIX)
+  SET(IS_UNIX "ON")
+  SET(IS_NOT_UNIX "OFF")
+ELSE ()
+  SET(IS_UNIX "OFF")
+  SET(IS_NOT_UNIX "ON")
+ENDIF ()
+IF (WIN32)
+  SET(IS_WIN32 "ON")
+  SET(IS_NOT_WIN32 "OFF")
+ELSE ()
+  SET(IS_WIN32 "OFF")
+  SET(IS_NOT_WIN32 "ON")
+ENDIF ()
 
-set (CMAKE_CXX_STANDARD 11)
-message(STATUS "Setting C++11 standard via cmake standard mechanism")
+#
+# Options
+#
+MACRO(BUNDLE_DOCS_OPT onoff)
+  OPTION(BUNDLE_DOCS ${onoff} "Include documentation in package")
+ENDMACRO(BUNDLE_DOCS)
+
+MACRO(BUNDLE_TCDATA_OPT onoff)
+  OPTION(BUNDLE_TCDATA "${onoff}" "Include tide/current harmonics data in package")
+ENDMACRO(BUNDLE_TCDATA_OPT)
+
+MACRO(BUNDLE_GSHHS_OPT value)
+  SET(BUNDLE_GSHHS "${value}" CACHE STRING 
+      "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDMACRO(BUNDLE_GSHHS_OPT)
+
+SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
+
+OPTION (USE_GL "Enable OpenGL support" ON)
+
+IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
+    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+ELSE()
+    SET(OCPN_USE_CRASHREPORT FALSE)
+ENDIF()
+
+OPTION(ENABLE_PORTAUDIO
+       "Use portaudio(3) to play sounds if available" ${IS_NOT_WIN32})
+
+OPTION(ENABLE_SNDFILE
+       "Use libsndfile for portaudio if available." ${IS_NOT_WIN32})
+
+OPTION (USE_S57 "Enable S57 ENC support" ON)
+
+OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+
+set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
+
+IF(WIN32 AND NOT UNIX)
+  OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
+  OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
+ENDIF()
+
+if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+  OPTION(ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
+  set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
+endif()
+
+if ( CMAKE_VERSION VERSION_GREATER 3.9 )
+    OPTION(ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
+endif()
+
+IF( NOT CMAKE_BUILD_TYPE )
+  SET( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+       FORCE )
+ENDIF( NOT CMAKE_BUILD_TYPE )
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
+OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
+
+#
+# Language, compiler and static checkers setup
+#
+
+set (CMAKE_CXX_STANDARD 11)
+message(STATUS "Setting C++11 standard via cmake standard mechanism")
+IF(NOT MSVC)
+   SET(OBJ_VISIBILITY "-fvisibility=hidden" )
+ENDIF()
+
+
 if ( CMAKE_VERSION VERSION_GREATER 3.4 )
-  set(ENABLE_CLANG_TIDY OFF CACHE BOOL "Add clang-tidy automatically to builds")
   if (ENABLE_CLANG_TIDY)
     find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
     if (CLANG_TIDY_EXE)
@@ -117,23 +195,26 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
   endif()
 endif()
 
-# Add support for address etc sanitizers, part 1/2 (other half after ADD_EXECUTABLE)
 if ( CMAKE_VERSION VERSION_GREATER 3.4 )
-  set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
-  set_property(CACHE ENABLE_SANITIZER PROPERTY STRINGS none address memory thread undefined)
+  # Add support for address etc sanitizers, part 1/2 
+  # (other half after ADD_EXECUTABLE)
+  set_property(CACHE ENABLE_SANITIZER PROPERTY 
+               STRINGS none address memory thread undefined)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
     add_compile_options(-fsanitize=${ENABLE_SANITIZER})
   endif()
 endif()
 
 if ( CMAKE_VERSION VERSION_GREATER 3.9 )
-  set(ENABLE_CPPCHECK OFF CACHE BOOL "Add cppcheck automatically to builds")
   if (ENABLE_CPPCHECK)
     find_program (CPPCHECK_EXECUTABLE NAMES "cppcheck" )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
 
+#
+# Version handling
+#
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 
 IF(OCPN_CI_BUILD)
@@ -242,7 +323,6 @@ ENDIF (NOT WIN32)
 #ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
 
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
-SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 #  Detect the Apple Version of the build machine
 IF (APPLE)
@@ -260,34 +340,30 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
 
 IF(APPLE OR WIN32)
-  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
-  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
-  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+  BUNDLE_DOCS_OPT("ON")
+  BUNDLE_TCDATA_OPT("ON")
+  BUNDLE_GSHHS_OPT("CRUDE")
 ELSE(APPLE OR WIN32)
-  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
-  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
-  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+  BUNDLE_DOCS_OPT("OFF")
+  BUNDLE_TCDATA_OPT("OFF")
+  BUNDLE_GSHHS_OPT("NONE")
 ENDIF(APPLE OR WIN32)
 
-IF(UNIX)
-  SET(USE_BUNDLED_LIBS "OFF" CACHE BOOL "Use bundled libraries instead of system's")
-ELSE(UNIX)
-  SET(USE_BUNDLED_LIBS "ON" CACHE BOOL "Use bundled libraries instead of system's")
-ENDIF(UNIX)
+OPTION(USE_BUNDLED_LIBS "Use bundled libraries instead of system's" ${IS_NOT_UNIX} )
+OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
+OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
+OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
+OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
+OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
+IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+ENDIF ()
 
+OPTION(ENABLE_SYSTEM_CMD_SOUND
+       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
 
-IF(APPLE OR WIN32)
-  IF(NOT BUNDLE_DOCS)
-    SET (BUNDLE_DOCS "ON")
-  ENDIF(NOT BUNDLE_DOCS)
-  IF(NOT BUNDLE_GSHHS)
-    SET (BUNDLE_GSHHS "CRUDE")
-  ENDIF(NOT BUNDLE_GSHHS)
-  IF(NOT BUNDLE_TCDATA)
-    SET (BUNDLE_TCDATA "ON")
-  ENDIF(NOT BUNDLE_TCDATA)
-ENDIF(APPLE OR WIN32)
-
+OPTION(ENABLE_PORTAUDIO
+       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 IF(BUNDLE_DOCS MATCHES "ON")
   MESSAGE (STATUS "*** Package will include documentation ***")
   IF(UNIX AND NOT APPLE)
@@ -301,7 +377,8 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers),
+  # CRUDE, LOW, INTERMEDIATE, HIGH, FULL
   MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
   IF(UNIX AND NOT APPLE)
     IF(BUNDLE_GSHHS MATCHES "NONE")
@@ -415,7 +492,6 @@ ELSE()
   SET(wxWidgets_USE_LIBS net xml html adv aui core base)
 ENDIF()
 
-OPTION (USE_GL "Enable OpenGL support" ON)
 
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set (OpenGL_GL_PREFERENCE  "LEGACY")
@@ -513,7 +589,6 @@ IF(NOT QT_ANDROID)
   SET( wxWidgets_USE_UNIVERSAL OFF)
   SET( wxWidgets_USE_STATIC OFF)
 
-  set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
   if(WXWIDGETS_FORCE_VERSION)
     set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
   endif()
@@ -555,12 +630,6 @@ MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
-IF( NOT CMAKE_BUILD_TYPE )
-  SET( CMAKE_BUILD_TYPE Release CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-       FORCE )
-ENDIF( NOT CMAKE_BUILD_TYPE )
-
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 IF (NOT CMAKE_INSTALL_PREFIX)
@@ -610,12 +679,6 @@ IF( APPLE )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
-#Enable CrashReporting for Windows (visual studio) and Linux
-IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
-    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
-ELSE()
-    SET(OCPN_USE_CRASHREPORT FALSE)
-ENDIF()
 IF(OCPN_USE_CRASHREPORT)
   MESSAGE (STATUS "Crash reporting enabled")
   IF(MSVC)
@@ -672,7 +735,6 @@ IF (NOT WIN32 AND NOT APPLE)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
 
-OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
 
 IF(OCPN_NEW_SERIAL)
   if(APPLE)
@@ -716,7 +778,6 @@ IF(OCPN_NEW_SERIAL)
   message(STATUS "Using new serial library...")
 ENDIF(OCPN_NEW_SERIAL)
 
-OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
 
 IF(OCPN_USE_CURL)
   IF(WIN32)
@@ -730,7 +791,6 @@ IF(OCPN_USE_CURL)
         SET(CURL_LIBRARIES "curl.dll")
         INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
     ENDIF(MSVC)
-    OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
   ELSE(WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
   ENDIF(WIN32)
@@ -785,10 +845,6 @@ IF(OCPN_USE_CURL)
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_CURL)
 
-OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
-OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
-
-OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
 IF(OCPN_USE_SVG)
   MESSAGE(STATUS "SVG support enabled...")
@@ -1008,9 +1064,6 @@ ENDIF(OCPN_USE_SVG)
 
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
-
-  
   IF(NOT OCPN_FORCE_GTK3)
     FIND_PACKAGE(GTK2)
   ENDIF(NOT OCPN_FORCE_GTK3)
@@ -1082,8 +1135,10 @@ IF(UNIX AND NOT APPLE)
     MESSAGE(STATUS "Found SQLite3 dev environment.")
     INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 
-    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
-    string(REGEX REPLACE "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1" SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE 
+          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
+    string(REGEX REPLACE "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1" 
+           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
     MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
     IF( ${SQLITE3_VERSION} LESS "3019000" )
       add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
@@ -1147,8 +1202,6 @@ ELSEIF (WIN32)
     "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
 ENDIF ()
 
-OPTION(ENABLE_SYSTEM_CMD_SOUND
-       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
 SET (HAVE_SYSTEM_CMD_SOUND "")
 IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   IF (APLAY OR AFPLAY OR WIN32)
@@ -1160,13 +1213,6 @@ IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   ENDIF()
 ENDIF()
 
-IF (WIN32)
-  SET (DEFAULT_PA OFF)
-ELSE ()
-  SET (DEFAULT_PA ON)
-ENDIF ()
-OPTION(ENABLE_PORTAUDIO
-       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 SET (HAVE_PORTAUDIO "")
 IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
   INCLUDE("FindPortaudio")
@@ -1182,8 +1228,6 @@ IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
   ENDIF()
 ENDIF ()
 
-OPTION(ENABLE_SNDFILE
-       "Use libsndfile if available for sound files." ${DEFAULT_PA})
 SET(HAVE_SNDFILE "")
 IF (NOT ENABLE_SNDFILE MATCHES OFF)
   INCLUDE(FindLibSndfile)
@@ -1576,8 +1620,6 @@ ELSE(TINYXML_FOUND)
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
-
-OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
   message (STATUS "S57 ENC support: enabled")
   SET(SRC_S57ENC
@@ -1676,7 +1718,6 @@ ELSE (USE_S57)
   message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)
 
-OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 IF (USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: enabled")
 
@@ -2521,13 +2562,11 @@ ENDIF(WIN32 OR APPLE)
 
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable directory
 IF(WIN32 AND NOT UNIX)
-  OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
   IF(BUNDLE_WXDLLS)
     FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
     INSTALL(FILES ${wxdll_files} DESTINATION ".")
     MESSAGE(STATUS "wxWidgets DLLs bundled into the installer package...")
   ENDIF(BUNDLE_WXDLLS)
-  OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
   IF(BUNDLE_VCDLLS)
     FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
     INSTALL(FILES ${vcdll_files} DESTINATION ".")
