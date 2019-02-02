@@ -3098,7 +3098,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     }
     
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
-#ifdef __WXOSX__
+
+#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
+
     if( g_bDarkDecorations ) {
         applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
     }
@@ -11081,7 +11083,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1; 107;107;107;",              // Compass Window Background
 
         "GREY3;  20; 20; 20;",              // MUIBar/TB background
-        "BLUE4; 107;153;177;",              // Canvas Focus Bar
+        "BLUE4;  80; 80;160;",              // Canvas Focus Bar
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -11130,7 +11132,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "COMP1;  24; 24; 24;",              // Compass Window Background
         
         "GREY3;  10; 10; 10;",              // MUIBar/TB background
-        "BLUE4; 107;153;177;",              // Canvas Focus Bar
+        "BLUE4;  70; 70;140;",              // Canvas Focus Bar
         
         "*****" };
 

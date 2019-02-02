@@ -4767,9 +4767,11 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
 #ifdef __WXOSX__
             window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
             ctrl->SetBackgroundColour( window_back_color );
+#ifdef OCPN_USE_DARKMODE
             if( g_bDarkDecorations ) {
                 applyDarkAppearanceToWindow(ctrl->MacGetTopLevelWindowRef(), false, true, true);
             }
+#endif            
 #else
             window_back_color = wxNullColour;
             ctrl->SetBackgroundColour( window_back_color );

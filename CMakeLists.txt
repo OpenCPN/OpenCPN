@@ -877,7 +877,7 @@ IF(OCPN_USE_SVG)
       #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
 
       FIND_PACKAGE(EXPAT REQUIRED)
-      INCLUDE(FindEXIF)
+      INCLUDE(${CMAKE_SOURCE_DIR}/cmake/FindEXIF.cmake)
     ELSE(NOT WIN32)
       #On Windows, we have our own expat
       SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
@@ -1499,11 +1499,17 @@ SET(SRCS
         src/CanvasConfig.cpp
 )
 IF(APPLE)
-  SET(SRCS ${SRCS}
-    src/DarkMode.mm
-    src/DarkMode.h
-  )
+    IF (DARWIN_VERSION LESS 16)
+        message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
+    ELSE()    
+        SET(SRCS ${SRCS}
+            src/DarkMode.mm
+            src/DarkMode.h
+            )
+        ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
+    ENDIF()    
 ENDIF(APPLE)
+
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
