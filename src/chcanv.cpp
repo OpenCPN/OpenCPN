@@ -35,6 +35,8 @@
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
 #include "wx/progdlg.h"
+
+#include "config.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
@@ -44,7 +46,6 @@
 
 #include <wx/listimpl.cpp>
 
-#include "config.h" 
 #include "chcanv.h"
 #include "TCWin.h"
 #include "geodesic.h"

@@ -1,6 +1,24 @@
 #ifndef OCPN_CONFIG_H
 #define OCPN_CONFIG_H
 
+#cmakedefine LINUX_CRASHRPT
+#cmakedefine OCPN_USE_CRASHRPT
+#cmakedefine OCPN_HAVE_X11
+
+// Garmin Host Mode support
+#cmakedefine USE_GARMINHOST
+
+#cmakedefine USE_LZMA
+
+#cmakedefine OCPN_USE_CURL
+
+#cmakedefine USE_S57
+
+#cmakedefine USE_LIBELF
+
+#cmakedefine ocpnUSE_NEWSERIAL
+
+
 #cmakedefine OPENGL_FOUND
 #cmakedefine HAVE_PORTAUDIO
 #cmakedefine HAVE_SYSTEM_CMD_SOUND
@@ -11,6 +29,7 @@
 
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11
+
 
 #define VERSION_MAJOR ${VERSION_MAJOR}
 #define VERSION_MINOR ${VERSION_MINOR}

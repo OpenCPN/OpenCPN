@@ -32,6 +32,7 @@
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
+#include "config.h"
 #include "dychart.h"
 #include "androidUTIL.h"
 #include "OCPN_DataStreamEvent.h"
