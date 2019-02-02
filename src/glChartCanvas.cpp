@@ -829,13 +829,6 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
         s_b_useScissorTest = false;
 
-    // Mac scissor test is not useable, since the Size() and ClientSize() of GL window on this platform 
-    // do not match...
-#ifdef __WXOSX__
-    s_b_useScissorTest = false;
-#endif    
-    
-    
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
 
@@ -908,12 +901,6 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
-    //  Disable FBO on Mac
-    //  TODO correct this by fixing geometry calculations in the buffer
-#ifdef __WXOSX__
-        m_b_DisableFBO = true;
-#endif    
-    
     // VBO??
     
     g_b_EnableVBO = true;
@@ -2282,7 +2269,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
 {
     if(m_pParentCanvas->GetPiano())
-        m_pParentCanvas->GetPiano()->DrawGL(m_pParentCanvas->m_canvas_height - m_pParentCanvas->GetPiano()->GetHeight());
+        m_pParentCanvas->GetPiano()->DrawGL(m_pParentCanvas->GetClientSize().y - m_pParentCanvas->GetPiano()->GetHeight());
 }
 
 void glChartCanvas::DrawQuiting()
@@ -3511,24 +3498,20 @@ void glChartCanvas::Render()
     ViewPort VPoint = m_pParentCanvas->VPoint;
     ocpnDC gldc( *this );
 
-    int w, h;
-    GetClientSize( &w, &h );
+    int gl_width, gl_height;
+    GetClientSize( &gl_width, &gl_height );
 
 #ifdef __WXOSX__    
-    h = m_pParentCanvas->GetClientSize().y;
+    gl_height = m_pParentCanvas->GetClientSize().y;
 #endif    
-    
-//     wxString msg;
-//     msg.Printf(_T("size y:  %d  %d  %d  %d"), GetSize().y, GetClientSize().y, m_pParentCanvas->GetSize().y, m_pParentCanvas->GetClientSize().y);
-//     wxLogMessage(msg);
     
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
-    glViewport( 0, 0, (GLint) w, (GLint) h );
+    glViewport( 0, 0, (GLint) gl_width, (GLint) gl_height );
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
 
-    glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+    glOrtho( 0, (GLint) gl_width, (GLint) gl_height, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -3563,8 +3546,8 @@ void glChartCanvas::Render()
     
     bool bpost_hilite = !m_pParentCanvas->m_pQuilt->GetHiliteRegion( ).Empty();
     bool useFBO = false;
-    int sx = GetSize().x;
-    int sy = GetSize().y;
+    int sx = gl_width;
+    int sy = gl_height;
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
@@ -3731,22 +3714,8 @@ void glChartCanvas::Render()
                         glPushMatrix();
                         
                         glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-
-                        //g_Platform->ShowBusySpinner();
                         RenderCharts(gldc, screen_region);
-                        //g_Platform->HideBusySpinner();
                         
-    /*                    
-     w xRect rect( 50, 50, m_pParentCanvas*->VPoint.rv_rect.width-100, m_pParentCanvas*->VPoint.rv_rect.height-100 );
-                        glColor3ub(250, 0, 0);
-                        
-                        glBegin( GL_QUADS );
-                        glVertex2f( rect.x,                     rect.y );
-                        glVertex2f( rect.x + rect.width,        rect.y );
-                        glVertex2f( rect.x + rect.width,        rect.y + rect.height );
-                        glVertex2f( rect.x,                     rect.y + rect.height );
-                        glEnd();
-    */                    
                         glPopMatrix();
 
                         glViewport( 0, 0, (GLint) sx, (GLint) sy );
@@ -3792,13 +3761,13 @@ void glChartCanvas::Render()
         glMatrixMode (GL_PROJECTION);
         glLoadIdentity();
 
-        gluPerspective(2*180/PI*atan2((double)h, (double)w), (GLfloat) w/(GLfloat) h, 1, w);
+        gluPerspective(2*180/PI*atan2((double)gl_height, (double)gl_width), (GLfloat) gl_width/(GLfloat) gl_height, 1, gl_width);
         
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
         glScalef(1, -1, 1);
-        glTranslatef(-w/2, -h/2, -w/2);
+        glTranslatef(-gl_width/2, -gl_height/2, -gl_width/2);
         glRotated(VPoint.tilt*180/PI, 1, 0, 0);
 
         glGetIntegerv(GL_VIEWPORT, viewport);
@@ -3904,7 +3873,7 @@ void glChartCanvas::Render()
         glMatrixMode (GL_PROJECTION);
         glLoadIdentity();
 
-        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+        glOrtho( 0, (GLint) gl_width, (GLint) gl_height, 0, -1, 1 );
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
     }
