@@ -158,7 +158,7 @@ extern "C"
     size_t wxcurl_string_read(void* ptr, size_t size, size_t nmemb, void* pcharbuf)
     {
 #pragma GCC diagnostic push
-#if defined(__GNUC__) && __GNUC >= 8
+#if defined(__GNUC__) && __GNUC__ >= 8
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif

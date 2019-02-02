@@ -940,7 +940,7 @@ int DDFSubfieldDefn::FormatIntValue( char *pachData, int nBytesAvailable,
 
 {
 #pragma GCC diagnostic push
-#if defined(__GNUC__) && __GNUC >= 8
+#if defined(__GNUC__) && __GNUC__ >= 8
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
@@ -1036,7 +1036,7 @@ int DDFSubfieldDefn::FormatFloatValue( char *pachData, int nBytesAvailable,
 
 {
 #pragma GCC diagnostic push
-#if defined(__GNUC__) && __GNUC >= 8
+#if defined(__GNUC__) && __GNUC__ >= 8
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
