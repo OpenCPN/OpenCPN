@@ -9902,37 +9902,37 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 
     ToolbarItemContainer *tic= new ToolbarItemContainer( ID_MASTERTOGGLE,
                                                          style->GetToolIcon( _T("MUI_menu"), TOOLICON_NORMAL),
-                                                         wxITEM_NORMAL, _("Hide Toolbar"), _("MUI_menu"));
+                                                         wxITEM_NORMAL, _("Hide Toolbar"), _T("MUI_menu"));
     tic->m_bRequired = true;
 
     g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_SETTINGS,
                                    style->GetToolIcon( _T("MUI_settings"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("Options"), _("MUI_settings"));
+                                   wxITEM_NORMAL, _("Options"), _T("MUI_settings"));
     g_MainToolbar->AddToolItem(tic);
     
     tic= new ToolbarItemContainer( ID_MENU_ROUTE_NEW,
                                    style->GetToolIcon( _T("MUI_route"), TOOLICON_NORMAL),
                                    style->GetToolIcon( _T("MUI_route"), TOOLICON_TOGGLED),
-                                   wxITEM_CHECK, wxString( _("Create Route") ) << _T(" (Ctrl-R)"), _("MUI_route") );
+                                   wxITEM_CHECK, wxString( _("Create Route") ) << _T(" (Ctrl-R)"), _T("MUI_route") );
    
     g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_ROUTEMANAGER,
                                    style->GetToolIcon( _T("MUI_RMD"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("Route & Mark Manager"), _("MUI_RMD"));
+                                   wxITEM_NORMAL, _("Route & Mark Manager"), _T("MUI_RMD"));
     g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_TRACK,
                                    style->GetToolIcon( _T("MUI_track"), TOOLICON_NORMAL),
                                    style->GetToolIcon( _T("MUI_track"), TOOLICON_TOGGLED),
-                                   wxITEM_CHECK, _("Enable Tracking"), _("MUI_track"));
+                                   wxITEM_CHECK, _("Enable Tracking"), _T("MUI_track"));
     g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_COLSCHEME,
                                    style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("Change Color Scheme"), _("MUI_colorscheme"));
+                                   wxITEM_NORMAL, _("Change Color Scheme"), _T("MUI_colorscheme"));
     g_MainToolbar->AddToolItem(tic);
     //if( GetMasterToolItemShow(ID_COLSCHEME) ){
       //  tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon( _T("MUI_colorscheme"), TOOLICON_NORMAL ),
@@ -9943,12 +9943,12 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
 
     tic= new ToolbarItemContainer( ID_PRINT,
                                    style->GetToolIcon( _T("MUI_print"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("Print Chart"), _("MUI_print"));
+                                   wxITEM_NORMAL, _("Print Chart"), _T("MUI_print"));
     g_MainToolbar->AddToolItem(tic);
 
     tic= new ToolbarItemContainer( ID_ABOUT,
                                    style->GetToolIcon( _T("MUI_help"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, _("About OpenCPN"), _("MUI_help"));
+                                   wxITEM_NORMAL, _("About OpenCPN"), _T("MUI_help"));
     g_MainToolbar->AddToolItem(tic);
 
     //      Add any PlugIn toolbar tools that request default positioning
@@ -9957,7 +9957,7 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar()
     //  And finally add the MOB tool
     tic= new ToolbarItemContainer( ID_MOB,
                                    style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL),
-                                   wxITEM_NORMAL, wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)"), _("mob_btn"));
+                                   wxITEM_NORMAL, wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)"), _T("mob_btn"));
     g_MainToolbar->AddToolItem(tic);
 
     // Build the toolbar

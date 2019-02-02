@@ -3077,7 +3077,7 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
                     int wpt_dups;
                     pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(), wpt_dups ); // Import with full visibility of names and objects
                     if(wpt_dups > 0) {
-                        OCPNMessageBox(parent, wxString::Format(_("%d duplicate waypoints detected during import and ignored."), wpt_dups), _("OpenCPN Info"), wxICON_INFORMATION|wxOK, 10);
+                        OCPNMessageBox(parent, wxString::Format(_T("%d ")+_("duplicate waypoints detected during import and ignored."), wpt_dups), _("OpenCPN Info"), wxICON_INFORMATION|wxOK, 10);
                     }
                 }
                 delete pSet;

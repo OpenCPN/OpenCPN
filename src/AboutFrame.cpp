@@ -50,7 +50,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 
 	bSizerAbout->Add( m_staticTextOCPN, 0, wxALL, 5 );
 
-	m_staticTextVersion = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, _("5.0.0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticTextVersion = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, _T("5.0.0"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextVersion->Wrap( -1 );
 	m_staticTextVersion->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 
@@ -106,7 +106,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextLogfile->Wrap( -1 );
 	bSizerLogFile->Add( m_staticTextLogfile, 0, wxALL, 5 );
 
-	m_hyperlinkLogFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Logs/opencpn.log"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
+	m_hyperlinkLogFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _T("/Users/nohal/Library/Logs/opencpn.log"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
 	m_hyperlinkLogFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerLogFile->Add( m_hyperlinkLogFile, 0, wxALL, 5 );
@@ -121,7 +121,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextIniFile->Wrap( -1 );
 	bSizerIniFile->Add( m_staticTextIniFile, 0, wxALL, 5 );
 
-	m_hyperlinkIniFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
+	m_hyperlinkIniFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _T("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
 	m_hyperlinkIniFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_hyperlinkIniFile->SetToolTip( _("Copy to clipboard") );
 
