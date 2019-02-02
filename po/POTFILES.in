@@ -222,3 +222,4 @@ src/viewport.cpp
 src/wificlient.cpp
 src/wxcurl/dialog.cpp
 src/wxcurl/panel.cpp
+src/ConfigMgr.cpp

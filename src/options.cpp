@@ -9291,7 +9291,7 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
-  m_sbConnEdit->SetLabel(_T("Configure new connection"));
+  m_sbConnEdit->SetLabel(_("Configure new connection"));
 
   m_buttonRemove->Disable();
   m_buttonAdd->Disable();
