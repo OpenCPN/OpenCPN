@@ -980,7 +980,13 @@ void ChartCanvas::SetupGlCanvas( )
             wxLogMessage( _T("Creating glChartCanvas") );
             m_glcc = new glChartCanvas(this);
 
-        // We use one context for all GL windows, so that textures etc will be automatically shared
+#ifdef __WXOSX__
+            // The way wx works on macOS with 'peer' NS windows means we must have a 1-1
+            // relationship between wxGLContext and the wxFrame in glChartCanvas...
+            wxGLContext *pctx = new wxGLContext(m_glcc);
+            m_glcc->SetContext(pctx);
+#else
+            // We use one context for all GL windows, so that textures etc will be automatically shared
             if(IsPrimaryCanvas()){
                 wxGLContext *pctx = new wxGLContext(m_glcc);
                 m_glcc->SetContext(pctx);
@@ -989,6 +995,7 @@ void ChartCanvas::SetupGlCanvas( )
             else{
                 m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
             }
+#endif
         }
     }
 #endif
