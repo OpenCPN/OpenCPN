@@ -22,6 +22,8 @@
 #ifndef MACUTILS_H_INCLUDED_H__
 #define MACUTILS_H_INCLUDED_H__
 
+#include "config.h"
+
 #ifdef __WXOSX__
 
 #ifndef ocpnUSE_NEWSERIAL
