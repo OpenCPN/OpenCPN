@@ -2268,7 +2268,7 @@ void ChartCanvas::SetDisplaySizeMM( double size )
      msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
      wxLogMessage(msg);
     
-     m_focus_indicator_pix = std::round(2 * GetPixPerMM());
+     m_focus_indicator_pix = std::round(1 * GetPixPerMM());
 
 }
 #if 0
