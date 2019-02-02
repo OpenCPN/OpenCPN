@@ -25,6 +25,7 @@
 
 #include "wx/wx.h"
 
+#include "config.h"
 #include "multiplexer.h"
 #include "navutil.h"
 #include "NMEALogWindow.h"

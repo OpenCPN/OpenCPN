@@ -35,10 +35,10 @@
 #include "wx/stdpaths.h"
 #include <wx/filename.h>
 
+#include "config.h"
+
 #include "dychart.h"
 #include "OCPNPlatform.h"
-
-#include "config.h"
 #include "chart1.h"
 #include "cutil.h"
 #include "styles.h"

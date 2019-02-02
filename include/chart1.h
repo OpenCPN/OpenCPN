@@ -37,6 +37,8 @@
 #include "wx/msw/private.h"
 #endif
 
+#include "config.h"
+
 #include "ocpn_types.h"
 #include "viewport.h"
 #include "nmea0183.h"

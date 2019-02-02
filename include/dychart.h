@@ -28,12 +28,14 @@
 //----------------------------------------------------------------------------------
 //          Global Build options for opencpn
 //----------------------------------------------------------------------------------
-
 #ifndef _DYCHART_H_
 #define _DYCHART_H_
 
+#include "config.h"
+
 #include <cmath>
 #include <algorithm>
+
 
 //    Profiling support
 
@@ -75,8 +77,6 @@
 #ifdef __MSVC__
 #pragma warning(disable:4114)
 #pragma warning(disable:4284)             // This one is to do with "reverse iterator UDT..." Huh?
-
-
 #endif
 
 //    Following definition required by GDAL

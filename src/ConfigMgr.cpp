@@ -23,8 +23,8 @@
 
 #include <wx/tokenzr.h>
 
-#include "ConfigMgr.h"
 #include "config.h"
+#include "ConfigMgr.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>

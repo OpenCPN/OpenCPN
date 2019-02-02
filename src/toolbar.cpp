@@ -31,6 +31,7 @@
 
 #include <vector>
 
+#include "config.h"
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "styles.h"
