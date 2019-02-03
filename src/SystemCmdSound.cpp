@@ -31,51 +31,12 @@
 
 extern bool g_bquiting;     // Flag tells us O is shutting down
 
+
 #ifdef _WIN32
 #include <windows.h>
 
 static int do_play(const char* cmd, const char* path)
 {
-#if 0    
-    char buff[1024];
-    snprintf(buff, sizeof(buff), cmd, path);
-
-    STARTUPINFOA si = { sizeof(si) };
-    PROCESS_INFORMATION pi;
-
-    // Launch external command string
-    int status = CreateProcessA(NULL,   // No module name (use command line)
-        buff,            // Command line
-        NULL,           // Process handle not inheritable
-        NULL,           // Thread handle not inheritable
-        FALSE,          // Set handle inheritance to FALSE
-        CREATE_NO_WINDOW,// No window flags
-        NULL,           // Use parent's environment block
-        NULL,           // Use parent's starting directory 
-        &si,            // Pointer to STARTUPINFO structure
-        &pi);           // Pointer to PROCESS_INFORMATION structure
-
-    if (!status) {
-        wxLogWarning("Cannot fork process running %s", buff);
-        return -1;
-    }
-    // Here we wait a bit and check if the process is finished.
-    int waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
-    while (!g_bquiting && waitStatus == WAIT_TIMEOUT) {
-        // if not finished wait a little bit longer
-        waitStatus = WaitForSingleObject(pi.hProcess, maxPlayTime);
-    }
-
-    // if thread did not terminate naturally log it
-    if (!g_bquiting && waitStatus != WAIT_OBJECT_0)
-        wxLogWarning("Sound command produced unusual waitStatus %d", (int)waitStatus);
-
-    if (!g_bquiting) {   // if shutting down let windows close down the sound process
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    }
-    return 0;
-#else
     wchar_t sound_path[80];
     MultiByteToWideChar( 0, 0, path, -1, sound_path, 80 );
     LPCWSTR wide_path = sound_path;
@@ -83,11 +44,10 @@ static int do_play(const char* cmd, const char* path)
     PlaySound( wide_path, NULL, SND_FILENAME );
 
     return 0;
-#endif    
 }
+#endif /* _WIN32 */
 
-#else
-
+#ifdef __WXGTK__
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
@@ -109,7 +69,18 @@ static int do_play(const char* cmd, const char* path)
     }
     return status;
 }
-#endif /* _WIN32 */
+#endif
+
+#ifdef __WXMAC__
+#include "MacSound.h"
+static int do_play(const char* cmd, const char* path)
+{
+     MacSound snd;
+     snd.playSound( path );
+
+    return 0;
+}
+#endif
 
 
 bool SystemCmdSound::Load(const char* path, int deviceIndex)

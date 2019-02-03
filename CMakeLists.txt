@@ -1508,6 +1508,12 @@ IF(APPLE)
             )
         ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
     ENDIF()    
+    
+    SET(SRCS ${SRCS}
+        src/MacSound.mm
+        src/MacSound.h
+        )
+    
 ENDIF(APPLE)
 
 
