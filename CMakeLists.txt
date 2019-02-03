@@ -470,12 +470,13 @@ SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
 MESSAGE (STATUS "    Adding local LIBTESS2" )
-add_subdirectory(src/libtess2)
-SET( OPENGL_LIBRARIES "TESS2_static" ${OPENGL_LIBRARIES})
-SET(EXTRA_LIBS ${EXTRA_LIBS} "TESS2_static")
+add_subdirectory(libs/libtess2)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Include)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Source)
+# TODO: check this... is it required on both places, really?
+SET(OPENGL_LIBRARIES TESS2 ${OPENGL_LIBRARIES})
+SET(EXTRA_LIBS ${EXTRA_LIBS} TESS2)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/libtess2/Include)
 MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
 
 IF(NOT QT_ANDROID)

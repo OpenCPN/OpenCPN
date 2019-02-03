@@ -16,7 +16,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CustomArray::CustomArray(unsigned long startsize, void* inputbuffer) : mNbPushedAddies(0), mNbAllocatedAddies(0), mBitCount(0), mBitMask(0), mAddresses(null), mCollapsed(null)
+CustomArray::CustomArray(unsigned long startsize, void* inputbuffer) : mCollapsed(null), mAddresses(null), mNbPushedAddies(0), mNbAllocatedAddies(0), mBitCount(0), mBitMask(0)
 {
 	// Initialize first export block
 	NewBlock(null, startsize);
@@ -34,7 +34,7 @@ CustomArray::CustomArray(unsigned long startsize, void* inputbuffer) : mNbPushed
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CustomArray::CustomArray(const char* filename) : mNbPushedAddies(0), mNbAllocatedAddies(0), mBitCount(0), mBitMask(0), mAddresses(null), mCollapsed(null)
+CustomArray::CustomArray(const char* filename) :  mCollapsed(null), mAddresses(null), mNbPushedAddies(0), mNbAllocatedAddies(0), mBitCount(0), mBitMask(0)
 {
 	// Catch the file's size to initialize first block
 	unsigned long StartSize = FileSize(filename);
@@ -702,7 +702,7 @@ CustomArray& CustomArray::StoreASCIICode(char Code)
 CustomArray& CustomArray::StoreASCII(BOOL Bo)
 {
 	char Text[256];
-	sprintf(Text, "%d", (long)Bo);
+	sprintf(Text, "%d", (int)Bo);
 	StoreASCII((const char*)Text);
 	return *this;
 }
@@ -797,7 +797,7 @@ CustomArray& CustomArray::StoreASCII(unsigned short w)
 CustomArray& CustomArray::StoreASCII(long d)
 {
 	char Text[256];
-	sprintf(Text, "%d", d);
+	sprintf(Text, "%ld", d);
 	StoreASCII((const char*)Text);
 	return *this;
 }
@@ -813,7 +813,7 @@ CustomArray& CustomArray::StoreASCII(long d)
 CustomArray& CustomArray::StoreASCII(unsigned long d)
 {
 	char Text[256];
-	sprintf(Text, "%u", d);
+	sprintf(Text, "%lu", d);
 	StoreASCII((const char*)Text);
 	return *this;
 }

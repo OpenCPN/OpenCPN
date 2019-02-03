@@ -4,13 +4,6 @@ project(libtess2)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
-link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-
-
 IF(NOT WIN32 AND NOT APPLE )
 #  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
 #  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
@@ -37,11 +30,10 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
         SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
         SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
-
     ENDIF(MSVC)
 ENDIF(WIN32)
 
-SET(LIBTESS2_SOURCES
+SET(SRC
     Source/bucketalloc.c
     Source/bucketalloc.h
     Source/dict.c
@@ -60,8 +52,9 @@ SET(LIBTESS2_SOURCES
     Source/CustomArray.cpp
     Source/Adjacency.cpp
     Source/RevisitedRadix.cpp
-    )
+)
+add_library(TESS2 STATIC ${SRC})
+add_library(tess2::tess2 ALIAS TESS2)
 
-add_library(TESS2_static STATIC ${LIBTESS2_SOURCES})
-set_target_properties(TESS2_static PROPERTIES OUTPUT_NAME TESS2)
- 
+set_target_properties(TESS2 PROPERTIES COMPILE_FLAGS "${OBJ_VISIBILITY}")
+target_include_directories(TESS2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
