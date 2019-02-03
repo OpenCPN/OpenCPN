@@ -57,4 +57,9 @@ SET(LIBTESS2_SOURCES
 
 add_library(TESS2_static STATIC ${LIBTESS2_SOURCES})
 set_target_properties(TESS2_static PROPERTIES OUTPUT_NAME TESS2)
- 
+if (OBJ_VISIBILITY)
+    set_target_properties(TESS2_static 
+                          PROPERTIES COMPILE_FLAGS "${OBJ_VISIBILITY}")
+endif ()
+file(GLOB TESS2_LIB ${CMAKE_CURRENT_SOURCE_DIR}/build/lib/*TESS2*)
+set(TESS2_LIBRARIES ${TESS2_LIB} PARENT_SCOPE)
