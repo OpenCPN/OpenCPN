@@ -19,6 +19,8 @@
 
  */
 
+#include "config.h"
+
 #include "garmin_wrapper.h"
 
 #include "gpsapp.h"
