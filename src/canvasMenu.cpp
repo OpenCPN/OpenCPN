@@ -390,13 +390,13 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
 
         if( ( parent->m_singleChart && ( parent->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
-            MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _( "..." ) );
+            MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _T( "..." ) );
         }
 
     } else {
         ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
         if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
-            MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _( "..." ) );
+            MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _T( "..." ) );
         } else {
 #ifndef __OCPN__ANDROID__            
 if( !g_bBasicMenus && (nChartStack > 1 ) ) {
@@ -685,7 +685,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 		if ( !g_bBasicMenus && m_pFoundRoutePoint ) {
 			name = m_pFoundRoutePoint->GetName();
 			if ( name.IsEmpty() )
-				name = _("Unnamed Routepoint");
+				name = _("Unnamed Waypoint");
 			name.Prepend(_T(" ( ")).Append(_T(" )"));
 		} else
 			name = wxEmptyString;
@@ -694,14 +694,14 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             blay = true;
 
         if( blay ){
-			menuWaypoint = new wxMenu(_("Layer Routepoint") + name);
+			menuWaypoint = new wxMenu(_("Layer Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
 
             if( m_pSelectedRoute && m_pSelectedRoute->IsActive() )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_ACTPOINT, _( "Activate" ) );
         }
         else {
-			menuWaypoint = new wxMenu(_("Routepoint") + name);
+			menuWaypoint = new wxMenu(_("Waypoint") + name);
             MenuAppend1( menuWaypoint, ID_WP_MENU_PROPERTIES, _( "Properties" ) + _T( "..." ) );
             if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
                 if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint )

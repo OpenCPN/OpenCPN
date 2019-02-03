@@ -13059,7 +13059,7 @@ int InitScreenBrightness( void )
     wxArrayString output;
     long r = wxExecute ( cmd, output );
     if(0 != r)
-        wxLogMessage(_("   External application \"xcalib\" not found. Screen brightness not changed."));
+        wxLogMessage(_T("   External application \"xcalib\" not found. Screen brightness not changed."));
 
     g_brightness_init = true;
     return 0;

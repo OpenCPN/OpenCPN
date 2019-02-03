@@ -531,7 +531,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                  if(dest.Length() )
                      html << html_escape(dest);
                  else
-                     html << _("---");
+                     html << _T("---");
                  html << _T("</b></td><td nowrap align=right><b>");
 
             if( ( ETA_Mo ) && ( ETA_Hr < 24 ) ) {
@@ -541,7 +541,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         now.GetYear() + yearOffset, ETA_Hr, ETA_Min );
                 html << eta.Format( _T("%b %d %H:%M") );
             }
-            else html << _("---");
+            else html << _T("---");
             html << rowEnd;
         }
 
@@ -573,7 +573,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             }
 //                sogStr = wxString::Format( _T("%5.2f ") + getUsrSpeedUnit(), toUsrSpeed( SOG ) );
             else
-                sogStr = _("---");
+                sogStr = _T("---");
 
             if( (int) HDG != 511 )
                 hdgStr = wxString::Format( _T("%03d&deg;"), (int) HDG );
@@ -591,14 +591,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                 }
             }
             else if( !b_SarAircraftPosnReport )
-                rotStr = _("---");
+                rotStr = _T("---");
         }
     }
 
     if( b_positionOnceValid && bGPSValid && ( Range_NM >= 0. ) )
         rngStr = FormatDistanceAdaptive( Range_NM );
     else
-        rngStr = _("---");
+        rngStr = _T("---");
 
     int brg = (int) wxRound( Brg );
     if( Brg > 359.5 )
@@ -613,7 +613,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         brgStr << trueString << magString;
     }   
     else
-        brgStr = _("---");
+        brgStr = _T("---");
 
     wxString turnRateHdr; // Blank if ATON or BASE or Special Position Report (9)
     if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {

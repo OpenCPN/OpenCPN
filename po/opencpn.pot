@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 4.99.1326\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-02 12:33-0500\n"
+"POT-Creation-Date: 2019-02-02 22:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: include/AboutFrame.h:82 include/AboutFrameImpl.h:50 src/chart1.cpp:5621
@@ -1389,12 +1389,6 @@ msgstr ""
 msgid "ETA (UTC)"
 msgstr ""
 
-#: src/AIS_Target_Data.cpp:534 src/AIS_Target_Data.cpp:544
-#: src/AIS_Target_Data.cpp:576 src/AIS_Target_Data.cpp:594
-#: src/AIS_Target_Data.cpp:601 src/AIS_Target_Data.cpp:616
-msgid "---"
-msgstr ""
-
 #: src/AIS_Target_Data.cpp:585 src/AIS_Target_Data.cpp:588
 msgid "Right"
 msgstr ""
@@ -1479,6 +1473,7 @@ msgid "Aid to Navigation"
 msgstr ""
 
 #: src/AIS_Target_Data.cpp:891 src/options.cpp:3865 src/options.cpp:4076
+#: src/CanvasOptions.cpp:241
 msgid "Base"
 msgstr ""
 
@@ -2475,6 +2470,7 @@ msgstr ""
 #: src/options.cpp:9731 src/Osenc.cpp:1661 src/routemanagerdialog.cpp:337
 #: src/TCWin.cpp:85 src/TCWin.cpp:199 src/toolbar.cpp:3247
 #: src/TrackPropDlg.cpp:104 src/TrackPropDlg.cpp:243 src/TrackPropDlg.cpp:539
+#: src/CanvasOptions.cpp:85 src/MarkInfo.cpp:269
 msgid "Dialog"
 msgstr ""
 
@@ -2488,7 +2484,7 @@ msgstr ""
 
 #: src/AISTargetListDialog.cpp:511 src/routeprintout.cpp:385
 #: src/RoutePropDlg.cpp:27 src/RoutePropDlgImpl.cpp:664 src/TrackPropDlg.cpp:260
-#: src/TrackPropDlg.cpp:565 src/TrackPropDlg.cpp:1190
+#: src/TrackPropDlg.cpp:565 src/TrackPropDlg.cpp:1190 src/MarkInfo.cpp:324
 msgid "Name"
 msgstr ""
 
@@ -2638,11 +2634,6 @@ msgstr ""
 msgid "Scale Out"
 msgstr ""
 
-#: src/canvasMenu.cpp:393 src/canvasMenu.cpp:399 src/options.cpp:1772
-#: src/options.cpp:1806 src/options.cpp:2435 src/options.cpp:2470
-msgid "..."
-msgstr ""
-
 #: src/canvasMenu.cpp:411
 msgid "Drop Mark"
 msgstr ""
@@ -2709,7 +2700,7 @@ msgstr ""
 msgid "All Active Charts"
 msgstr ""
 
-#: src/canvasMenu.cpp:547
+#: src/canvasMenu.cpp:547 src/CanvasOptions.cpp:177
 msgid "AIS"
 msgstr ""
 
@@ -2756,6 +2747,7 @@ msgstr ""
 #: src/canvasMenu.cpp:600 src/canvasMenu.cpp:617 src/canvasMenu.cpp:671
 #: src/canvasMenu.cpp:675 src/canvasMenu.cpp:698 src/canvasMenu.cpp:705
 #: src/canvasMenu.cpp:762 src/canvasMenu.cpp:766 src/options.cpp:1487
+#: src/MarkInfo.cpp:314
 msgid "Properties"
 msgstr ""
 
@@ -2792,7 +2784,7 @@ msgstr ""
 
 #: src/canvasMenu.cpp:634 src/canvasMenu.cpp:677 src/canvasMenu.cpp:724
 #: src/canvasMenu.cpp:774 src/options.cpp:813 src/options.cpp:9436
-#: src/RoutePropDlg.cpp:266 src/TrackPropDlg.cpp:750
+#: src/RoutePropDlg.cpp:266 src/TrackPropDlg.cpp:750 src/MarkInfo.cpp:822
 msgid "Delete"
 msgstr ""
 
@@ -2812,32 +2804,20 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:688
-msgid "Unnamed Routepoint"
+#: src/canvasMenu.cpp:688 src/canvasMenu.cpp:752
+msgid "Unnamed Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:697
-msgid "Layer Routepoint"
+#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:761
+msgid "Layer Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:704
-msgid "Routepoint"
+#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:765
+msgid "Waypoint"
 msgstr ""
 
 #: src/canvasMenu.cpp:719
 msgid "Remove from Route"
-msgstr ""
-
-#: src/canvasMenu.cpp:752
-msgid "Unnamed Waypoint"
-msgstr ""
-
-#: src/canvasMenu.cpp:761
-msgid "Layer Waypoint"
-msgstr ""
-
-#: src/canvasMenu.cpp:765
-msgid "Waypoint"
 msgstr ""
 
 #: src/canvasMenu.cpp:769
@@ -3095,12 +3075,12 @@ msgid "&Navigate"
 msgstr ""
 
 #: src/chart1.cpp:5538 src/chart1.cpp:5541 src/options.cpp:4480
-#: src/options.cpp:4636
+#: src/options.cpp:4636 src/CanvasOptions.cpp:160
 msgid "Enable Chart Quilting"
 msgstr ""
 
 #: src/chart1.cpp:5539 src/chart1.cpp:5542 src/options.cpp:4524
-#: src/options.cpp:4677
+#: src/options.cpp:4677 src/CanvasOptions.cpp:168
 msgid "Show Chart Outlines"
 msgstr ""
 
@@ -3137,6 +3117,7 @@ msgid "Show Tides"
 msgstr ""
 
 #: src/chart1.cpp:5566 src/chcanv.cpp:1180 src/toolbar.cpp:1351
+#: src/CanvasOptions.cpp:201
 msgid "Show Currents"
 msgstr ""
 
@@ -3375,82 +3356,6 @@ msgstr ""
 msgid "OpenCPN Chart Add...."
 msgstr ""
 
-#: src/chartimg.cpp:239
-msgid "No Chart Available"
-msgstr ""
-
-#: src/chartimg.cpp:808 src/chartimg.cpp:1671
-msgid "   Invalid nColorSize data, corrupt on chart "
-msgstr ""
-
-#: src/chartimg.cpp:884
-#, c-format
-msgid "   Could not read first %d bytes of header for chart file: "
-msgstr ""
-
-#: src/chartimg.cpp:907
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr ""
-
-#: src/chartimg.cpp:1412
-msgid "   Chart File contains less than 3 or too many PLY points: "
-msgstr ""
-
-#: src/chartimg.cpp:1595
-msgid "---<<< Warning:  Chart Datum may be incorrect. >>>---"
-msgstr ""
-
-#: src/chartimg.cpp:1661
-msgid "   Chart File RLL data corrupt on chart "
-msgstr ""
-
-#: src/chartimg.cpp:1976
-msgid "   Invalid nColorSize data, corrupt in PostInit() on chart "
-msgstr ""
-
-#: src/chartimg.cpp:1983
-msgid "   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart "
-msgstr ""
-
-#: src/chartimg.cpp:2048 src/chartimg.cpp:2083 src/chartimg.cpp:2093
-#: src/chartimg.cpp:2112
-msgid "   Chart File corrupt in PostInit() on chart "
-msgstr ""
-
-#: src/chartimg.cpp:2152
-msgid "   Line Index corrupt, recreating Index for chart "
-msgstr ""
-
-#: src/chartimg.cpp:2157
-msgid "   Error creating Line Index for chart "
-msgstr ""
-
-#: src/chartimg.cpp:5364
-msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr ""
-
-#: src/chartimg.cpp:5464
-msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr ""
-
-#: src/chartimg.cpp:5472 src/chartimg.cpp:5540
-msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr ""
-
-#: src/chartimg.cpp:5479
-msgid "   Trying again with internally calculated georef solution "
-msgstr ""
-
-#: src/chartimg.cpp:5532
-msgid ""
-"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
-"chart "
-msgstr ""
-
-#: src/chartimg.cpp:5544
-msgid "   Result: OK, Internal georef solution used."
-msgstr ""
-
 #: src/chcanv.cpp:1146
 msgid "Hide Tides"
 msgstr ""
@@ -3612,11 +3517,6 @@ msgstr ""
 
 #: src/chcanv.cpp:12685
 msgid "Hide This Chart"
-msgstr ""
-
-#: src/chcanv.cpp:13062
-msgid ""
-"   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr ""
 
 #: src/cm93.cpp:6834
@@ -3858,22 +3758,22 @@ msgstr ""
 msgid "Failed to initialize OpenGL"
 msgstr ""
 
-#: src/glChartCanvas.cpp:1596 src/s52plib.cpp:2165 src/s52plib.cpp:2285
+#: src/glChartCanvas.cpp:1598 src/s52plib.cpp:2165 src/s52plib.cpp:2285
 #: src/s52plib.cpp:2464
 msgid "ChartTexts"
 msgstr ""
 
-#: src/glChartCanvas.cpp:3958
+#: src/glChartCanvas.cpp:3960
 msgid "Waiting for raster chart compression thread exit."
 msgstr ""
 
 #: src/GoToPositionDialog.cpp:127 src/RoutePropDlg.cpp:205
-#: src/TrackPropDlg.cpp:220
+#: src/TrackPropDlg.cpp:220 src/MarkInfo.cpp:341
 msgid "Latitude"
 msgstr ""
 
 #: src/GoToPositionDialog.cpp:137 src/RoutePropDlg.cpp:207
-#: src/TrackPropDlg.cpp:221
+#: src/TrackPropDlg.cpp:221 src/MarkInfo.cpp:347
 msgid "Longitude"
 msgstr ""
 
@@ -4091,14 +3991,6 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: src/OCPNPlatform.cpp:827
-msgid "Retrieving initial language selection from Windows Registry"
-msgstr ""
-
-#: src/OCPNPlatform.cpp:1545
-msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
-
 #: src/SoundFileLoader.cpp:53
 #, c-format
 msgid "Couldn't load sound data from '%s'."
@@ -4115,7 +4007,8 @@ msgstr ""
 
 #: src/options.cpp:509 src/routeprintout.cpp:117 src/routeprintout.cpp:414
 #: src/RoutePropDlg.cpp:217 src/RoutePropDlg.cpp:235 src/TrackPropDlg.cpp:726
-#: src/ConfigMgr.cpp:630
+#: src/ConfigMgr.cpp:630 src/MarkInfo.cpp:352 src/MarkInfo.cpp:374
+#: src/MarkInfo.cpp:507
 msgid "Description"
 msgstr ""
 
@@ -4193,7 +4086,7 @@ msgid "MMSI Properties"
 msgstr ""
 
 #: src/options.cpp:810 src/RoutePropDlg.cpp:258 src/RoutePropDlg.cpp:282
-#: src/TrackPropDlg.cpp:742 src/TrackPropDlg.cpp:769
+#: src/TrackPropDlg.cpp:742 src/TrackPropDlg.cpp:769 src/MarkInfo.cpp:823
 msgid "Edit"
 msgstr ""
 
@@ -4593,7 +4486,7 @@ msgstr ""
 msgid "Connection"
 msgstr ""
 
-#: src/options.cpp:2707
+#: src/options.cpp:2707 src/CanvasOptions.cpp:157
 msgid "Display Options"
 msgstr ""
 
@@ -4736,8 +4629,8 @@ msgstr ""
 msgid "Routes"
 msgstr ""
 
-#: src/options.cpp:2944
-msgid "Routepoint default icon"
+#: src/options.cpp:2944 src/options.cpp:2998
+msgid "Waypoint default icon"
 msgstr ""
 
 #: src/options.cpp:2947 src/options.cpp:3001
@@ -4754,10 +4647,6 @@ msgstr ""
 
 #: src/options.cpp:2983 src/routemanagerdialog.cpp:594 src/TrackPropDlg.cpp:421
 msgid "Waypoints"
-msgstr ""
-
-#: src/options.cpp:2998
-msgid "Waypoint default icon"
 msgstr ""
 
 #: src/options.cpp:3021
@@ -4938,15 +4827,15 @@ msgstr ""
 msgid "Vector Chart Display"
 msgstr ""
 
-#: src/options.cpp:3864 src/options.cpp:4075
+#: src/options.cpp:3864 src/options.cpp:4075 src/CanvasOptions.cpp:240
 msgid "Display Category"
 msgstr ""
 
-#: src/options.cpp:3865 src/options.cpp:4076
+#: src/options.cpp:3865 src/options.cpp:4076 src/CanvasOptions.cpp:241
 msgid "Standard"
 msgstr ""
 
-#: src/options.cpp:3865 src/options.cpp:4076
+#: src/options.cpp:3865 src/options.cpp:4076 src/CanvasOptions.cpp:241
 msgid "All"
 msgstr ""
 
@@ -4970,11 +4859,11 @@ msgstr ""
 msgid "Buoys/Lights"
 msgstr ""
 
-#: src/options.cpp:3899 src/options.cpp:4104
+#: src/options.cpp:3899 src/options.cpp:4104 src/CanvasOptions.cpp:220
 msgid "Buoy/Light Labels"
 msgstr ""
 
-#: src/options.cpp:3903 src/options.cpp:4109
+#: src/options.cpp:3903 src/options.cpp:4109 src/CanvasOptions.cpp:228
 msgid "Light Descriptions"
 msgstr ""
 
@@ -5102,19 +4991,19 @@ msgstr ""
 msgid "Delete Group"
 msgstr ""
 
-#: src/options.cpp:4447
+#: src/options.cpp:4447 src/CanvasOptions.cpp:134
 msgid "Navigation Mode"
 msgstr ""
 
-#: src/options.cpp:4455 src/options.cpp:4612
+#: src/options.cpp:4455 src/options.cpp:4612 src/CanvasOptions.cpp:140
 msgid "North Up"
 msgstr ""
 
-#: src/options.cpp:4458 src/options.cpp:4615
+#: src/options.cpp:4458 src/options.cpp:4615 src/CanvasOptions.cpp:144
 msgid "Course Up"
 msgstr ""
 
-#: src/options.cpp:4465 src/options.cpp:4622
+#: src/options.cpp:4465 src/options.cpp:4622 src/CanvasOptions.cpp:148
 msgid "Look Ahead Mode"
 msgstr ""
 
@@ -5138,11 +5027,11 @@ msgstr ""
 msgid "Display Features"
 msgstr ""
 
-#: src/options.cpp:4520 src/options.cpp:4673
+#: src/options.cpp:4520 src/options.cpp:4673 src/CanvasOptions.cpp:164
 msgid "Show Grid"
 msgstr ""
 
-#: src/options.cpp:4528 src/options.cpp:4681
+#: src/options.cpp:4528 src/options.cpp:4681 src/CanvasOptions.cpp:172
 msgid "Show Depth Units"
 msgstr ""
 
@@ -5168,7 +5057,7 @@ msgstr ""
 
 #: src/options.cpp:4706 src/options.cpp:4814 src/routeprintout.cpp:114
 #: src/routeprintout.cpp:407 src/RoutePropDlg.cpp:63 src/RoutePropDlg.cpp:201
-#: src/TrackPropDlg.cpp:218
+#: src/TrackPropDlg.cpp:218 src/MarkInfo.cpp:416
 msgid "Distance"
 msgstr ""
 
@@ -5824,7 +5713,7 @@ msgstr ""
 msgid "Route from Track"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:634
+#: src/routemanagerdialog.cpp:634 src/MarkInfo.cpp:330 src/MarkInfo.cpp:1364
 msgid "Icon"
 msgstr ""
 
@@ -5882,7 +5771,7 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:796 src/routemanagerdialog.cpp:2450
 #: src/routemanagerdialog.cpp:2462 src/TrackPropDlg.cpp:291
-#: src/TrackPropDlg.cpp:598
+#: src/TrackPropDlg.cpp:598 src/MarkInfo.cpp:392
 msgid "Show on chart"
 msgstr ""
 
@@ -6126,6 +6015,7 @@ msgid "LMT@Location"
 msgstr ""
 
 #: src/RoutePropDlg.cpp:148 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:601
+#: src/MarkInfo.cpp:419
 msgid "Color"
 msgstr ""
 
@@ -6281,15 +6171,15 @@ msgstr ""
 msgid "Next tide event"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:221
+#: src/RoutePropDlg.cpp:221 src/MarkInfo.cpp:477
 msgid "ETD"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:526
+#: src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:526 src/MarkInfo.cpp:506
 msgid "Basic"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:243 src/TrackPropDlg.cpp:733
+#: src/RoutePropDlg.cpp:243 src/TrackPropDlg.cpp:733 src/MarkInfo.cpp:359
 msgid "Links"
 msgstr ""
 
@@ -6651,7 +6541,7 @@ msgstr ""
 msgid "Pause"
 msgstr ""
 
-#: src/TTYWindow.cpp:83
+#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:892
 msgid "Copy"
 msgstr ""
 
@@ -6793,4 +6683,158 @@ msgstr ""
 
 #: src/ConfigMgr.cpp:726
 msgid "Apply this template to return to a known safe configuration"
+msgstr ""
+
+#: src/CanvasOptions.cpp:114
+msgid "Chart Panel Options"
+msgstr ""
+
+#: src/CanvasOptions.cpp:180
+msgid "Show AIS targets"
+msgstr ""
+
+#: src/CanvasOptions.cpp:184
+msgid "Minimize less critical targets"
+msgstr ""
+
+#: src/CanvasOptions.cpp:194
+msgid "Tides and Currents"
+msgstr ""
+
+#: src/CanvasOptions.cpp:197
+msgid "Show Tide stations"
+msgstr ""
+
+#: src/CanvasOptions.cpp:209
+msgid "Vector Charts"
+msgstr ""
+
+#: src/CanvasOptions.cpp:212
+msgid "Show text"
+msgstr ""
+
+#: src/CanvasOptions.cpp:216
+msgid "Show depths"
+msgstr ""
+
+#: src/CanvasOptions.cpp:224
+msgid "Lights"
+msgstr ""
+
+#: src/CanvasOptions.cpp:232
+msgid "Anchoring Info"
+msgstr ""
+
+#: src/CanvasOptions.cpp:241
+msgid "User Standard"
+msgstr ""
+
+#: src/MarkInfo.cpp:315
+msgid "This waypoint is part of a layer and can't be edited"
+msgstr ""
+
+#: src/MarkInfo.cpp:375
+msgid "wxEmptyString "
+msgstr ""
+
+#: src/MarkInfo.cpp:384
+msgid "Extended Properties"
+msgstr ""
+
+#: src/MarkInfo.cpp:398
+msgid "Show at scale > 1 :"
+msgstr ""
+
+#: src/MarkInfo.cpp:405
+msgid "Show waypoint name"
+msgstr ""
+
+#: src/MarkInfo.cpp:409 src/MarkInfo.cpp:1372
+msgid "Range rings"
+msgstr ""
+
+#: src/MarkInfo.cpp:414
+msgid "Number"
+msgstr ""
+
+#: src/MarkInfo.cpp:424
+msgid "0.05"
+msgstr ""
+
+#: src/MarkInfo.cpp:438
+msgid "GUID"
+msgstr ""
+
+#: src/MarkInfo.cpp:449
+msgid "Tide Station"
+msgstr ""
+
+#: src/MarkInfo.cpp:456
+msgid "∿"
+msgstr ""
+
+#: src/MarkInfo.cpp:459
+msgid "Arrival Radius"
+msgstr ""
+
+#: src/MarkInfo.cpp:467
+msgid "Planned Speed"
+msgstr ""
+
+#: src/MarkInfo.cpp:508
+msgid "Extended"
+msgstr ""
+
+#: src/MarkInfo.cpp:825
+msgid "Add New"
+msgstr ""
+
+#: src/MarkInfo.cpp:893
+msgid "Copy lat/long"
+msgstr ""
+
+#: src/MarkInfo.cpp:894
+msgid "Paste"
+msgstr ""
+
+#: src/MarkInfo.cpp:895
+msgid "Paste lat/long"
+msgstr ""
+
+#: src/MarkInfo.cpp:1343
+msgid "Save some defaults"
+msgstr ""
+
+#: src/MarkInfo.cpp:1351
+msgid ""
+"Check which properties of current waypoint\n"
+" should be set as default for NEW waypoints."
+msgstr ""
+
+#: src/MarkInfo.cpp:1356 src/MarkInfo.cpp:1371
+msgid "Do use"
+msgstr ""
+
+#: src/MarkInfo.cpp:1356 src/MarkInfo.cpp:1371
+msgid "Don't use"
+msgstr ""
+
+#: src/MarkInfo.cpp:1357
+msgid "Show Waypoint Name"
+msgstr ""
+
+#: src/MarkInfo.cpp:1379
+msgid "Arrival radius"
+msgstr ""
+
+#: src/MarkInfo.cpp:1386
+msgid "Show only if"
+msgstr ""
+
+#: src/MarkInfo.cpp:1387
+msgid "Show always"
+msgstr ""
+
+#: src/MarkInfo.cpp:1388
+msgid "Show only at scale"
 msgstr ""

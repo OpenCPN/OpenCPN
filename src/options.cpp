@@ -1769,7 +1769,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer11->Add(m_tcInputStc, 1, wxALL, 5);
 
   m_btnInputStcList =
-      new wxButton(m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition,
+      new wxButton(m_pNMEAForm, wxID_ANY, _T("..."), wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer11->Add(m_btnInputStcList, 0, wxALL, 5);
 
@@ -1803,7 +1803,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer12->Add(m_tcOutputStc, 1, wxALL, 5);
 
   m_btnOutputStcList =
-      new wxButton(m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition,
+      new wxButton(m_pNMEAForm, wxID_ANY, _T("..."), wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer12->Add(m_btnOutputStcList, 0, wxALL, 5);
 
@@ -2432,7 +2432,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   bSizer11->Add(m_tcInputStc, 1, wxALL | wxEXPAND, 5);
 
   m_btnInputStcList =
-      new wxButton(m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition,
+      new wxButton(m_pNMEAForm, wxID_ANY, _T("..."), wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer11->Add(m_btnInputStcList, 0, wxALL, 5);
 
@@ -2467,7 +2467,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   bSizer12->Add(m_tcOutputStc, 1, wxALL | wxEXPAND, 5);
 
   m_btnOutputStcList =
-      new wxButton(m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition,
+      new wxButton(m_pNMEAForm, wxID_ANY, _T("..."), wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer12->Add(m_btnOutputStcList, 0, wxALL, 5);
 
@@ -2941,7 +2941,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      border_size);
 
   wxStaticText* routepointiconTxt =
-      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Routepoint default icon"));
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint default icon"));
   routepointiconSelect->Add(routepointiconTxt, 1, wxEXPAND | wxALL, group_item_spacing);
 
   pRoutepointDefaultIconChoice = new OCPNIconCombo( itemPanelRoutes, wxID_ANY, _("Combo!"),

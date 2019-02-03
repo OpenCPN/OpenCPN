@@ -824,7 +824,7 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
     if ( g_bFirstRun || wxIsEmpty(adjLocale) ) {
         wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
         if( RegKey.Exists() ) {
-            wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
+            wxLogMessage( _T("Retrieving initial language selection from Windows Registry") );
             RegKey.QueryValue( wxString( _T("InstallerLanguage") ), adjLocale );
         }
     }
@@ -1542,7 +1542,7 @@ bool OCPNPlatform::InitializeLogFile( void )
                 wxString oldlog = mlog_file;
                 oldlog.Append( _T(".log") );
                 //  Defer the showing of this messagebox until the system locale is established.
-                large_log_message = ( _("Old log will be moved to opencpn.log.log") );
+                large_log_message = ( _T("Old log will be moved to opencpn.log.log") );
                 ::wxRenameFile( mlog_file, oldlog );
             }
     }
