@@ -1317,7 +1317,13 @@ SET(SRCS
     src/MUIBar.cpp
     src/OCPN_AUIManager.cpp
     src/CanvasConfig.cpp
+    src/garmin_wrapper.h
 )
+
+IF (USE_GARMINHOST)
+    SET(SRCS ${SRCS} src/garmin_wrapper.cpp)
+ENDIF()
+
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
         message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
@@ -1501,61 +1507,13 @@ ELSE (USE_S57)
 ENDIF (USE_S57)
 
 IF (USE_GARMINHOST)
-  message (STATUS "Garmin Host Mode support: enabled")
-
-  SET(SRC_GARMINHOST
-            src/garmin/jeeps/gpsapp.c
-            src/garmin/jeeps/gpscom.c
-            src/garmin/jeeps/gpsmath.c
-            src/garmin/jeeps/gpsmem.c
-            src/garmin/jeeps/gpsprot.c
-            src/garmin/jeeps/gpsread.c
-            src/garmin/jeeps/gpsdevice.c
-            src/garmin/jeeps/gpsdevice_ser.c
-            src/garmin/jeeps/gpsdevice_usb.c
-            src/garmin/jeeps/gpsrqst.c
-            src/garmin/jeeps/gpssend.c
-            src/garmin/jeeps/gpsserial.c
-            src/garmin/jeeps/gpsutil.c
-            src/garmin/jeeps/gpsusbread.c
-            src/garmin/jeeps/gpsusbsend.c
-            src/garmin/jeeps/gpsusbcommon.c
-            src/garmin/jeeps/garmin_wrapper_utils.c
-            src/garmin/jeeps/garmin_wrapper.cpp
-            src/garmin/jeeps/garmin_gps.h
-            src/garmin/jeeps/garmin_wrapper.h
-            src/garmin/jeeps/gpsapp.h
-            src/garmin/jeeps/gpsdatum.h
-            src/garmin/jeeps/gpsfmt.h
-            src/garmin/jeeps/gpsmath.h
-            src/garmin/jeeps/gpsport.h
-            src/garmin/jeeps/gpsprot.h
-            src/garmin/jeeps/gpsrqst.h
-            src/garmin/jeeps/gpsserial.h
-            src/garmin/jeeps/gpsusbint.h
-            src/garmin/jeeps/garminusb.h
-            src/garmin/jeeps/garmin_wrapper_utils.h
-            src/garmin/jeeps/gpscom.h
-            src/garmin/jeeps/gpsdevice.h
-            src/garmin/jeeps/gpsinput.h
-            src/garmin/jeeps/gpsmem.h
-            src/garmin/jeeps/gpsproj.h
-            src/garmin/jeeps/gpsread.h
-            src/garmin/jeeps/gpssend.h
-            src/garmin/jeeps/gpsusbcommon.h
-            src/garmin/jeeps/gpsutil.h
-  )
-  IF(WIN32)
-    SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
-  ENDIF()
-
-  ADD_LIBRARY(GARMINHOST STATIC ${SRC_GARMINHOST})
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
-  set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-  SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
   IF(WIN32)
      ADD_DEFINITIONS(-D__WIN32__)
   ENDIF()
+  add_subdirectory("libs/garmin" "${CMAKE_SOURCE_DIR}/libs/garmin/build")
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/garmin/jeeps)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GARMIN_LIBRARIES})
+  message(STATUS "Garmin Host Mode support: enabled")
 ELSE (USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)

@@ -16,6 +16,8 @@
 
 #cmakedefine USE_LIBELF
 
+#cmakedefine USE_GARMINHOST
+
 #cmakedefine ocpnUSE_NEWSERIAL
 
 
