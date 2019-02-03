@@ -968,31 +968,10 @@ ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 # SQLite3 support required for MBTiles.
 
-set(SQLITECPP_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Backup.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Column.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Database.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Exception.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Statement.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Transaction.cpp
-)
-# list of header files of the library
-set(SQLITECPP_INC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/SQLiteCpp.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Assertion.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Backup.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Column.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Database.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Exception.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Statement.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Transaction.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Utils.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
-)
-include_directories( src/SQLiteCpp/include )
-ADD_LIBRARY(SQLiteCpp STATIC ${SQLITECPP_SRC} ${SQLITECPP_INC})
-set_property(TARGET SQLiteCpp PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
+add_subdirectory("libs/SQLiteCpp" "${CMAKE_SOURCE_DIR}/libs/SQLiteCpp/build")
+include_directories(libs/SQLiteCpp/include )
+SET(SQLITE3_CPP_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/SQLiteCpp/build")
 SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
 
 IF(UNIX AND NOT APPLE)
@@ -1025,8 +1004,11 @@ IF(UNIX AND NOT APPLE)
 ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32 OR APPLE)
-  ADD_LIBRARY(sqlite3 STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
-  include_directories( src/SQLiteCpp/sqlite3 )
+  ADD_LIBRARY(sqlite3 STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
+  )
+  include_directories( libs/SQLiteCpp/sqlite3 )
   SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
 ENDIF(WIN32 OR APPLE)
 
@@ -2127,6 +2109,7 @@ IF (OCPN_NEW_SERIAL)
 ENDIF ()
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${LIBTESS2_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${GARMINHOST_LIB_DIR})
+TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${SQLITE3_CPP_LIB_DIR})
 
 IF(UNIX)
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
