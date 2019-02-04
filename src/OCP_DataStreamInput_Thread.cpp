@@ -258,7 +258,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun1");
                     
                 }
                 if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -267,7 +267,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun2");
                     
                     *ptmpbuf = 0;
                     
