@@ -1461,104 +1461,28 @@ ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
 set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
+pkg_search_module(LZ4 liblz4 lz4)
+if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    message(STATUS "Building with system lz4")
+    include_directories(${LZ4_INCLUDE_DIR})
+    target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+else ()
+    message(STATUS "Building with bundled lz4")
+    add_subdirectory("libs/lz4")
+    set(EXTRA_LIBS ${EXTRA_LIBS} LZ4)
+endif ()
+
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
-  SET(SRC_TEXCMP
-    src/texcmp/squish/alpha.cpp
-    src/texcmp/squish/clusterfit.cpp
-    src/texcmp/squish/colourblock.cpp
-    src/texcmp/squish/colourfit.cpp
-    src/texcmp/squish/colourset.cpp
-    src/texcmp/squish/maths.cpp
-    src/texcmp/squish/rangefit.cpp
-    src/texcmp/squish/singlecolourfit.cpp
-    src/texcmp/squish/singlecolourfitfast.cpp
-    src/texcmp/squish/twocolourfitfast.cpp
-    src/texcmp/squish/squish.cpp
-    src/texcmp/etcpak.cpp
-  )
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
-  PKG_SEARCH_MODULE(LZ4 liblz4 lz4)
-  IF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with system lz4")
-    INCLUDE_DIRECTORIES(${LZ4_INCLUDE_DIR})
-    SET(LATE_LIBS ${LATE_LIBS} ${LZ4_LIBRARIES})
-  ELSE (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with bundled lz4")
-    SET(SRC_TEXCMP ${SRC_TEXCMP}
-      src/texcmp/lz4/lz4.c
-      src/texcmp/lz4/lz4hc.c
-    )
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
-  ENDIF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+  add_subdirectory("libs/texcmp")
+  include_directories(${CMAKE_SOURCE_DIR}/libs/texcmp/squish)
+  set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
 
-  ADD_LIBRARY(TEXCMP STATIC ${SRC_TEXCMP})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
-
-  # always use optimizations for the texture compression which is much faster
-  IF ( NOT MSVC )
-    # try to use sse on x86 based systems
-    IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
-    ELSE ()
-      # use standard optimizations for other architectures
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -fPIC")
-    ENDIF ()
-  ELSE (NOT MSVC)
-    # try to use sse on x86 based systems
-    IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/arch:SSE2 -DSQUISH_USE_SSE=2")
-    ENDIF ()
-  ENDIF (NOT MSVC)
-
-
-  SET(SRC_MIPMAP
-    src/mipmap/mipmap.h
-    src/mipmap/mipmap.c
-    src/mipmap/mipmap_sse.c
-    src/mipmap/mipmap_sse2.c
-    src/mipmap/mipmap_ssse3.c
-    src/mipmap/mipmap_avx2.c
-    src/mipmap/mipmap_neon.c)
-
-  ADD_LIBRARY(MIPMAP STATIC ${SRC_MIPMAP})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
-
-  # always use optimizations for the texture compression which is much faster
-  IF ( NOT MSVC )
-    set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
-
-    IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-      set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
-      set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
-      set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
-
-      IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        # require at least gcc 4.8
-        IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-        ELSE()
-          set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
-        ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-      ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-
-    ELSE ()
-      IF(NOT (ARCH MATCHES "arm64" OR ARCH MATCHES "aarch64"))
-        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
-      ENDIF()
-    ENDIF ()
-  ELSE (NOT MSVC)
-    # try to use sse on x86 based systems
-    IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
-      set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "/arch:SSE")
-      set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "/arch:SSE2")
-      set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "/arch:AVX")
-    ENDIF ()
-  ENDIF (NOT MSVC)
+  add_subdirectory("libs/mipmap")
+  include_directories(${CMAKE_SOURCE_DIR}/libs/mipmap/include)
+  set(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
 
 ENDIF (OPENGL_FOUND)
 
