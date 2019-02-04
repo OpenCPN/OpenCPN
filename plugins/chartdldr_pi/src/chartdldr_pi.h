@@ -105,7 +105,7 @@ public:
 #endif
 
 //    Public properties
-    wxArrayOfChartSources *m_chartSources;
+    wxArrayOfChartSources *m_pChartSources;
     wxWindow       *m_parent_window;
     ChartCatalog   *m_pChartCatalog;
     ChartSource    *m_pChartSource;
