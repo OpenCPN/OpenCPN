@@ -987,13 +987,17 @@ void ChartCanvas::SetupGlCanvas( )
                 g_pGLcontext = pctx;                // Save a copy of the common context
             }
             else{
+#ifdef __WXOSX__
+                m_glcc->SetContext(new wxGLContext(m_glcc, g_pGLcontext));
+#else
                 m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+#endif
             }
         }
     }
 #endif
 }
-
+ 
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
     RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
