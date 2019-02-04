@@ -128,7 +128,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
 
     num_IDX=0;
 
-    m_abbreviation_array.Clear();
+    m_abbreviation_array.clear();
     m_IDX_array.Clear();
     //   free_harmonic_file_list();
     int have_index = 0;
@@ -142,7 +142,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
                     xref_start = IndexFileIO(IFF_TELL, 0);
             }
             else if (!have_index && !strncmp(index_line_buffer, "*END*", 5)) {
-                if (m_abbreviation_array.GetCount() == 0) {
+                if (m_abbreviation_array.empty()) {
                     IndexFileIO(IFF_CLOSE, 0);
                     return(TC_INDEX_FILE_CORRUPT); // missing at least some data so no valid index
                 }
@@ -153,23 +153,23 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
             else if (!have_index && xref_start) {
                 wxString line( index_line_buffer, wxConvUTF8 );
 
-                abbr_entry *entry  = new abbr_entry;
+                abbr_entry entry;
 
                 wxStringTokenizer tkz(line, _T(" "));
                 wxString token = tkz.GetNextToken();
                 if(token.IsSameAs(_T("REGION"), FALSE))
-                    entry->type = REGION;
+                    entry.type = REGION;
                 else if(token.IsSameAs(_T("COUNTRY"), FALSE))
-                    entry->type = COUNTRY;
+                    entry.type = COUNTRY;
                 else if(token.IsSameAs(_T("STATE"), FALSE))
-                    entry->type = STATE;
+                    entry.type = STATE;
 
                 token = tkz.GetNextToken();
-                entry->short_s = token;
+                entry.short_s = token;
 
-                entry->long_s = line.Mid(tkz.GetPosition()).Strip();
+                entry.long_s = line.Mid(tkz.GetPosition()).Strip();
 
-                m_abbreviation_array.Add(entry);
+                m_abbreviation_array.push_back(entry);
 
             }
 
