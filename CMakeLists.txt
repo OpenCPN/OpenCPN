@@ -840,103 +840,25 @@ IF(OCPN_USE_SVG)
         ${GTK_LIBRARIES}
       )
     ENDIF(WIN32)
-
-    SET(SRC_WXSVG
-      src/wxsvg/src/CSSStyleDeclaration.cpp
-      src/wxsvg/src/CSSValue.cpp
-      src/wxsvg/src/Elements_CopyConstructors.cpp
-      src/wxsvg/src/Elements_GetAttribute.cpp
-      src/wxsvg/src/Elements_GetAttributes.cpp
-      src/wxsvg/src/Elements_HasAttribute.cpp
-      src/wxsvg/src/Elements_SetAttribute.cpp
-      src/wxsvg/src/GetSVGDocument.cpp
-      src/wxsvg/src/NodeList.cpp
-      src/wxsvg/src/SVGAngle.cpp
-      src/wxsvg/src/SVGAnimateTransformElement.cpp
-      src/wxsvg/src/SVGAnimateMotionElement.cpp
-      src/wxsvg/src/SVGAnimatedType.cpp
-      src/wxsvg/src/SVGAnimationElement.cpp
-      src/wxsvg/src/SVGCanvas.cpp
-      src/wxsvg/src/SVGCanvasItem.cpp
-      src/wxsvg/src/SVGCircleElement.cpp
-      src/wxsvg/src/SVGColor.cpp
-      src/wxsvg/src/SVGDocument.cpp
-      src/wxsvg/src/SVGElementInstanceList.cpp
-      src/wxsvg/src/SVGEllipseElement.cpp
-      src/wxsvg/src/SVGFEGaussianBlurElement.cpp
-      src/wxsvg/src/SVGFilterElement.cpp
-      src/wxsvg/src/SVGFitToViewBox.cpp
-      src/wxsvg/src/SVGImageElement.cpp
-      src/wxsvg/src/SVGLength.cpp
-      src/wxsvg/src/SVGLengthList.cpp
-      src/wxsvg/src/SVGLineElement.cpp
-      src/wxsvg/src/SVGLocatable.cpp
-      src/wxsvg/src/SVGMarkerElement.cpp
-      src/wxsvg/src/SVGMatrix.cpp
-      src/wxsvg/src/SVGNumberList.cpp
-      src/wxsvg/src/SVGPaint.cpp
-      src/wxsvg/src/SVGPathElement.cpp
-      src/wxsvg/src/SVGPathSegList.cpp
-      src/wxsvg/src/SVGPoint.cpp
-      src/wxsvg/src/SVGPointList.cpp
-      src/wxsvg/src/SVGPolygonElement.cpp
-      src/wxsvg/src/SVGPolylineElement.cpp
-      src/wxsvg/src/SVGPreserveAspectRatio.cpp
-      src/wxsvg/src/SVGRadialGradientElement.cpp
-      src/wxsvg/src/SVGRect.cpp
-      src/wxsvg/src/SVGRectElement.cpp
-      src/wxsvg/src/SVGSVGElement.cpp
-      src/wxsvg/src/SVGStringList.cpp
-      src/wxsvg/src/SVGStylable.cpp
-      src/wxsvg/src/SVGTests.cpp
-      src/wxsvg/src/SVGTextContentElement.cpp
-      src/wxsvg/src/SVGTextElement.cpp
-      src/wxsvg/src/SVGTransform.cpp
-      src/wxsvg/src/SVGTransformList.cpp
-      src/wxsvg/src/SVGTransformable.cpp
-      src/wxsvg/src/SVGUseElement.cpp
-      src/wxsvg/src/SVGVideoElement.cpp
-      src/wxsvg/src/imagsvg.cpp
-      #src/wxsvg/src/mediadec_ffmpeg.cpp
-      src/wxsvg/src/svgctrl.cpp
-      src/wxsvg/src/cairo/SVGCanvasCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasCairo.h
-      src/wxsvg/src/cairo/SVGCanvasImageCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasImageCairo.h
-      src/wxsvg/src/cairo/SVGCanvasPathCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasPathCairo.h
-      src/wxsvg/src/cairo/SVGCanvasTextCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasTextCairo.h
-      src/wxsvg/src/svgxml/svgxml.cpp
-      src/wxsvg/src/svgxml/svgxmlhelpr.cpp
-    )
-    if(EXIF_FOUND)
-      SET(SRC_WXSVG ${SRC_WXSVG} src/wxsvg/src/ExifHandler.cpp)
-      ADD_DEFINITIONS(-DwxsvgUSE_EXIF)
-      INCLUDE_DIRECTORIES(${EXIF_INCLUDE_DIR})
-    endif()
+    set(LATE_LIBS ${LATE_LIBS} ${SVG_LIBS})
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxsvg includes")
       INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${WXSVG_LIBRARIES})
-    ELSE (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-      message (STATUS "Building with bundled wxsvg includes")
-      ADD_LIBRARY(WXSVG STATIC ${SRC_WXSVG})
-      TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVG)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVGXML)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
-      set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-      SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
-    ENDIF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      SET(LATE_LIBS ${LATE_LIBS} ${WXSVG_LIBRARIES})
+    ELSE ()
+      add_subdirectory("libs/wxsvg")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
+    ENDIF ()
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
-# SQLite3 support required for MBTiles.
 
+#
+# SQLite3
+#
 add_subdirectory("libs/SQLiteCpp")
 include_directories(libs/SQLiteCpp/include )
 SET(EXTRA_LIBS ${EXTRA_LIBS} SQLITE_CPP)
@@ -1607,7 +1529,7 @@ IF (OPENGL_FOUND)
   IF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
     message (STATUS "Building with system lz4")
     INCLUDE_DIRECTORIES(${LZ4_INCLUDE_DIR})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+    SET(LATE_LIBS ${LATE_LIBS} ${LZ4_LIBRARIES})
   ELSE (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
     message (STATUS "Building with bundled lz4")
     SET(SRC_TEXCMP ${SRC_TEXCMP}
@@ -2032,7 +1954,6 @@ IF(APPLE)
         ${wxWidgets_LIBRARIES}
         ${LATE_LIBS}
   )
-
   set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                          "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 

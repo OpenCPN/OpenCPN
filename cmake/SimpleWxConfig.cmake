@@ -1,0 +1,28 @@
+macro(SimpleWxConfig)
+    set( wxWidgets_USE_DEBUG OFF)
+    set( wxWidgets_USE_UNICODE ON)
+    set( wxWidgets_USE_UNIVERSAL OFF)
+    set( wxWidgets_USE_STATIC OFF)
+    if(WXWIDGETS_FORCE_VERSION)
+        set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
+    endif()
+    if(MSVC)
+        # Exclude wxexpat.lib, since we use our own version.
+        # Other things are excluded as well, but we don't need them
+        SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+    endif(MSVC)
+    set(wxWidgets_USE_LIBS base core xml html)
+    find_package(GTK2) 
+    if(GTK2_FOUND)
+        set(wxWidgets_CONFIG_OPTIONS 
+            ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+    else ()
+        find_package(GTK3) 
+        if(GTK3_FOUND)
+            set(wxWidgets_CONFIG_OPTIONS
+                ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+        endif ()
+    endif ()
+    find_package(wxWidgets REQUIRED)
+    INCLUDE(${wxWidgets_USE_FILE})
+endmacro(SimpleWxConfig)
