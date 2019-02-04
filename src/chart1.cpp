@@ -1850,9 +1850,6 @@ bool MyApp::OnInit()
 #endif
 
 
-    // Instantiate and initialize the Config Manager
-    ConfigMgr::Get();
-    
     bool b_initial_load = false;
 
     wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
@@ -1973,6 +1970,9 @@ bool MyApp::OnInit()
 #else
     wxLogMessage( _T("wxLocale support not available") );
 #endif
+
+    // Instantiate and initialize the Config Manager
+    ConfigMgr::Get();
 
     // Is this an upgrade? 
     g_bUpgradeInProcess = (vs != g_config_version_string);

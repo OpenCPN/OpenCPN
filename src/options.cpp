@@ -540,7 +540,9 @@ void ConfigCreateDialog::OnConfigEditCancelClick(wxCommandEvent& event)
                
 void ConfigCreateDialog::OnConfigEditOKClick(wxCommandEvent& event)
 {
-    m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(m_TitleCtl->GetValue(), m_DescriptionCtl->GetValue(), wxEmptyString);
+    const wxString &title = m_TitleCtl->GetValue();
+    const wxString &desc = m_DescriptionCtl->GetValue();
+    m_createdTemplateGUID = ConfigMgr::Get().CreateNamedConfig(title, desc, _T(""));
     EndModal(wxID_OK);
     
 }
@@ -9354,7 +9356,7 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
     m_buttonAdd->Disable();
-    m_sbConnEdit->SetLabel(_T("Edit selected connection"));
+    m_sbConnEdit->SetLabel(_("Edit Selected Connection"));
 
   }
   else{

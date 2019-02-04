@@ -723,8 +723,9 @@ void ConfigMgr::Init()
     configList = new ConfigObjectList;
 
     //  Add the default "Recovery" template
-     CreateNamedConfig( _("Recovery Template"), _("Apply this template to return to a known safe configuration"),
-                                                   _T("11111111-1111-1111-1111-111111111111"));
+     wxString t_title = _("Recovery Template");
+     wxString t_desc = _("Apply this template to return to a known safe configuration");
+     CreateNamedConfig( t_title, t_desc, _T("11111111-1111-1111-1111-111111111111"));
     
 }
 
@@ -785,7 +786,7 @@ bool ConfigMgr::SaveCatalog()
     return true;
 }
 
-wxString ConfigMgr::CreateNamedConfig( wxString title, wxString description, wxString UUID )
+wxString ConfigMgr::CreateNamedConfig( const wxString &title, const wxString &description, wxString UUID )
 {
     wxString GUID;
     
