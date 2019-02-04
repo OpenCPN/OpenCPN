@@ -179,6 +179,9 @@ typedef struct {
 //      Triangle Tesselator Class
 //
 //--------------------------------------------------------------------------------------------------
+class OGRPolygon;
+class GLUtesselator;
+
 class PolyTessGeo
 {
     public:
@@ -189,6 +192,8 @@ class PolyTessGeo
             double ref_lat, double ref_lon, double LOD_meters);  // Build this from OGRPolygon
 
         PolyTessGeo(Extended_Geometry *pxGeom);
+
+        PolyTessGeo(unsigned char *polybuf, int nrecl, int index,  int senc_file_version);
 
         bool IsOk(){ return m_bOK;}
 
@@ -211,16 +216,17 @@ class PolyTessGeo
         void Set_OK( bool bok ){ m_bOK = bok;}
         
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
+        int my_bufgets( char *buf, int buf_len_max );
 
 
         GLUtesselator* GLUtessobj;
         wxArrayPtrVoid *m_pCombineVertexArray;
-        GLdouble        *m_pwork_buf;
+        double        *m_pwork_buf;
         int             m_buf_len;
         int             m_buf_idx;
         TriPrim         *m_pTPG_Last;
         TriPrim         *m_pTPG_Head;
-        GLenum          m_gltri_type;
+        int             m_gltri_type;
         int             m_nvcall;
         int             m_nvmax;
         bool           m_bmerc_transform;
@@ -265,58 +271,10 @@ private:
         double         **m_vertexPtrArray;
         bool           m_printStats;
         bool           m_bstripify;
-        
-       
-
 
 };
 
-#if 0
-//--------------------------------------------------------------------------------------------------
-//
-//      Trapezoid Tesselator Class
-//
-//--------------------------------------------------------------------------------------------------
-class PolyTessGeoTrap
-{
-      public:
-            PolyTessGeoTrap();
-            ~PolyTessGeoTrap();
 
-
-            PolyTessGeoTrap(Extended_Geometry *pxGeom);  // Build this from Extended Geometry
-
-            void BuildTess();
-
-            double Get_xmin(){ return xmin;}
-            double Get_xmax(){ return xmax;}
-            double Get_ymin(){ return ymin;}
-            double Get_ymax(){ return ymax;}
-            PolyTrapGroup *Get_PolyTrapGroup_head(){ return m_ptg_head;}
-            int GetnVertexMax(){ return m_nvertex_max; }
-            void SetnVertexMax( int max ){ m_nvertex_max = max; }
-            bool IsOk(){ return m_bOK;}
-            int     ErrorCode;
-
-
-      private:
-
-
-
-    //  Data
-            bool            m_bOK;
-
-            double          xmin, xmax, ymin, ymax;
-            PolyTrapGroup   *m_ptg_head;                  // PolyTrapGroup
-            int             m_nvertex_max;                // computed max vertex count
-                                                          // used by drawing primitives as
-                                                          // optimization for malloc
-            int             m_ncnt;
-            int             m_nwkb;
-
-};
-
-#endif
 
 
 #endif
