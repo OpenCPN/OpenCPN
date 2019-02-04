@@ -47,8 +47,7 @@ if(WIN32)
   set(SRC ${SRC} jeeps/gpsusbwin.c)
 endif()
 
+link_directories(${wxWidgets_LIBRARIES})
 add_library(GARMINHOST STATIC ${SRC})
-target_link_directories(GARMINHOST PRIVATE ${wxWidgets_LIBRARIES})
 set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})
-
