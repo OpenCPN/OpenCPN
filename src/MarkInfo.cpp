@@ -551,7 +551,7 @@ void MarkInfoDlg::OnTideStationCombobox( wxCommandEvent& event)
                 break;
             }
             if( i > count ) {
-                n = wxString::Format("%s", ts.second->IDX_station_name);
+                n = wxString::FromUTF8(ts.second->IDX_station_name);
                 m_comboBoxTideStation->Append(n);
             }
             i++;
@@ -579,7 +579,7 @@ void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
                 break;
             }
             i++;
-            n = wxString::Format("%s", ts.second->IDX_station_name);
+            n = wxString::FromUTF8(ts.second->IDX_station_name);
             m_comboBoxTideStation->Append(n);
             if( s == n ) {
                 m_comboBoxTideStation->SetSelection(i);
