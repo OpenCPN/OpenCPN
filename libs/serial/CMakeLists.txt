@@ -64,6 +64,7 @@ set(serial_HEADERS
 
 # Build, link and install main library
 add_library(${PROJECT_NAME} STATIC ${serial_SRCS})
+message(STATUS "name: ${PROJECT_NAME} vers: ${PROJECT_VERSION} header: ${serial_HEADERS}")
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION ${PACKAGE_VERSION}
     PUBLIC_HEADER "${serial_HEADERS}"
