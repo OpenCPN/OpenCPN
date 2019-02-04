@@ -1028,53 +1028,10 @@ ENDIF ()
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
-SET(SRC_NMEA0183
-        src/nmea0183/LatLong.hpp
-        src/nmea0183/latlong.cpp
-        src/nmea0183/long.cpp
-        src/nmea0183/nmea0183.cpp
-        src/nmea0183/nmea0183.hpp
-        src/nmea0183/Response.hpp
-        src/nmea0183/response.cpp
-        src/nmea0183/RMB.hpp
-        src/nmea0183/rmb.cpp
-        src/nmea0183/Sentence.hpp
-        src/nmea0183/sentence.cpp
-        src/nmea0183/talkerid.cpp
-        src/nmea0183/RMC.HPP
-        src/nmea0183/rmc.cpp
-        src/nmea0183/hexvalue.cpp
-        src/nmea0183/lat.cpp
-        src/nmea0183/expid.cpp
-        src/nmea0183/wpl.hpp
-        src/nmea0183/wpl.cpp
-        src/nmea0183/rte.hpp
-        src/nmea0183/rte.cpp
-        src/nmea0183/hdt.hpp
-        src/nmea0183/hdt.cpp
-        src/nmea0183/hdg.hpp
-        src/nmea0183/hdg.cpp
-        src/nmea0183/hdm.hpp
-        src/nmea0183/hdm.cpp
-        src/nmea0183/gll.hpp
-        src/nmea0183/gll.cpp
-        src/nmea0183/vtg.hpp
-        src/nmea0183/vtg.cpp
-        src/nmea0183/gga.hpp
-        src/nmea0183/gga.cpp
-        src/nmea0183/gsv.hpp
-        src/nmea0183/gsv.cpp
-        src/nmea0183/GPwpl.cpp
-        src/nmea0183/GPwpl.hpp
-        src/nmea0183/apb.cpp
-        src/nmea0183/apb.hpp
-        src/nmea0183/xte.cpp
-        src/nmea0183/xte.hpp
-)
-ADD_LIBRARY(NMEA0183 STATIC ${SRC_NMEA0183})
+add_subdirectory("libs/nmea0183" "${CMAKE_SOURCE_DIR}/libs/nmea0183/build")
 set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
+SET(NMEA0183_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/garmin/nmea0183")
 
 
 #IF(NOT WIN32)
@@ -2035,6 +1992,7 @@ IF (OCPN_NEW_SERIAL)
 ENDIF ()
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${LIBTESS2_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${GARMINHOST_LIB_DIR})
+TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${NMEA0183_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${SQLITE3_CPP_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${WXSVG_LIB_DIR})
 
