@@ -829,6 +829,9 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
         s_b_useScissorTest = false;
 
+    if( GetRendererString().Find( _T("GeForce") ) != wxNOT_FOUND )   //GeForce GTX 1070
+        s_b_useScissorTest = false;
+        
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
 
