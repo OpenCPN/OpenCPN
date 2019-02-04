@@ -2142,7 +2142,11 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 void GRIBOverlayFactory::OnParticleTimer( wxTimerEvent & event )
 {
     m_bUpdateParticles = true;
-    GetOCPNCanvasWindow()->Refresh(false);
+    
+    if(GetCanvasCount() > 1)            // multi?
+        PluginGetOverlayRenderCanvas()->Refresh(false);
+    else
+        GetOCPNCanvasWindow()->Refresh(false);
 }
 
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
