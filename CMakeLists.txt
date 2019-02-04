@@ -1484,58 +1484,12 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
-  SET(SRC_TEXCMP
-    src/texcmp/squish/alpha.cpp
-    src/texcmp/squish/clusterfit.cpp
-    src/texcmp/squish/colourblock.cpp
-    src/texcmp/squish/colourfit.cpp
-    src/texcmp/squish/colourset.cpp
-    src/texcmp/squish/maths.cpp
-    src/texcmp/squish/rangefit.cpp
-    src/texcmp/squish/singlecolourfit.cpp
-    src/texcmp/squish/singlecolourfitfast.cpp
-    src/texcmp/squish/twocolourfitfast.cpp
-    src/texcmp/squish/squish.cpp
-    src/texcmp/etcpak.cpp
-  )
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
-  PKG_SEARCH_MODULE(LZ4 liblz4 lz4)
-  IF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with system lz4")
-    INCLUDE_DIRECTORIES(${LZ4_INCLUDE_DIR})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
-  ELSE (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with bundled lz4")
-    SET(SRC_TEXCMP ${SRC_TEXCMP}
-      src/texcmp/lz4/lz4.c
-      src/texcmp/lz4/lz4hc.c
-    )
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
-  ENDIF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
 
-  ADD_LIBRARY(TEXCMP STATIC ${SRC_TEXCMP})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
-
-  # always use optimizations for the texture compression which is much faster
-  IF ( NOT MSVC )
-    # try to use sse on x86 based systems
-    IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
-    ELSE ()
-      # use standard optimizations for other architectures
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -fPIC")
-    ENDIF ()
-  ELSE (NOT MSVC)
-    # try to use sse on x86 based systems
-    IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/arch:SSE2 -DSQUISH_USE_SSE=2")
-    ENDIF ()
-  ENDIF (NOT MSVC)
-
+  add_subdirectory("libs/texcmp" "${CMAKE_SOURCE_DIR}/libs/texcmp/build")
+  set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+  include_directories(${CMAKE_SOURCE_DIR}/libs/texcmp/squish)
+  set(TEXCMP_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/texcmp/build")
+  set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP ${LZ4_LIBRARIES})
 
   SET(SRC_MIPMAP
     src/mipmap/mipmap.h
@@ -1994,6 +1948,7 @@ TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${LIBTESS2_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${GARMINHOST_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${NMEA0183_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${SQLITE3_CPP_LIB_DIR})
+TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${TEXCMP_LIB_DIR})
 TARGET_LINK_DIRECTORIES(${PACKAGE_NAME} PRIVATE ${WXSVG_LIB_DIR})
 
 IF(UNIX)
