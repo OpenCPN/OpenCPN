@@ -551,7 +551,11 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
                 g_pGLcontext = pctx;                // Save a copy of the common context
             }
             else{
+#ifdef __WXOSX__
+                m_glcc->SetContext(new wxGLContext(m_glcc, g_pGLcontext));
+#else
                 m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+#endif
             }
         }
     }
