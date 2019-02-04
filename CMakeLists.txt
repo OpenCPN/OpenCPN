@@ -72,6 +72,9 @@ IF (COMMAND cmake_policy)
   endif ()
 ENDIF (COMMAND cmake_policy)
 
+# Prefer libGL.so to libOpenGL.so, see CMP0072
+set (OpenGL_GL_PREFERENCE  "LEGACY")
+
 PROJECT(OpenCPN)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
@@ -158,14 +161,20 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
 endif()
 
 IF( NOT CMAKE_BUILD_TYPE )
-  SET( CMAKE_BUILD_TYPE Release CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-       FORCE )
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE
+  )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
 OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
+
+IF (NOT CMAKE_INSTALL_PREFIX)
+  SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
+ENDIF (NOT CMAKE_INSTALL_PREFIX)
+
 
 #
 # Language, compiler and static checkers setup
@@ -178,7 +187,7 @@ IF(NOT MSVC)
 ENDIF()
 
 
-if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (ENABLE_CLANG_TIDY)
     find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
     if (CLANG_TIDY_EXE)
@@ -195,7 +204,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
   endif()
 endif()
 
-if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+if (CMAKE_VERSION VERSION_GREATER 3.4)
   # Add support for address etc sanitizers, part 1/2 
   # (other half after ADD_EXECUTABLE)
   set_property(CACHE ENABLE_SANITIZER PROPERTY 
@@ -211,6 +220,48 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
+
+
+#ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
+#TODO: Should we use  -fno-stack-protector
+#  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
+IF(NOT WIN32 AND NOT APPLE )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+    ADD_DEFINITIONS( " -O0")
+  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  ADD_DEFINITIONS("-Wno-deprecated-declarations")
+  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
+
+  ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+  # profiling with gprof
+  #   ADD_DEFINITIONS( -pg )
+  #   SET(CMAKE_EXE_LINKER_FLAGS -pg)
+  # profiling with gcov
+  #   ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
+  #   SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
+ENDIF(NOT WIN32 AND NOT APPLE)
+
+IF(MINGW)
+  ADD_DEFINITIONS( "-Wall -Wno-unused -Wno-cpp -fexceptions" )
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+ENDIF(MINGW)
+
+IF( APPLE )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
+  ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
+ENDIF(APPLE)
+
+# Add some definitions to satisfy MS
+IF(MSVC)
+  ADD_DEFINITIONS(-D__MSVC__)
+  ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+  ADD_DEFINITIONS(-DPSAPI_VERSION=1)
+ENDIF(MSVC)
+
 
 #
 # Version handling
@@ -284,94 +335,64 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs OFF")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
+#
+# Linux: set up GTK
+#
+IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  IF(NOT OCPN_FORCE_GTK3)
+    FIND_PACKAGE(GTK2)
+  ENDIF()
 
-IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers),
-  # CRUDE, LOW, INTERMEDIATE, HIGH, FULL
-  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
-  IF(UNIX AND NOT APPLE)
-    IF(BUNDLE_GSHHS MATCHES "NONE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "NONE")
-    IF(BUNDLE_GSHHS MATCHES "MIN")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "MIN")
-    IF(BUNDLE_GSHHS MATCHES "CRUDE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
-    IF(BUNDLE_GSHHS MATCHES "LOW")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "LOW")
-    IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-    IF(BUNDLE_GSHHS MATCHES "HIGH")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
-    IF(BUNDLE_GSHHS MATCHES "FULL")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full ON")
-    ENDIF(BUNDLE_GSHHS MATCHES "FULL")
-  ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  SET(BUNDLE_GSHHS "NONE")
-  MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  IF(GTK2_FOUND)
+    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+    SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
+    MESSAGE(STATUS "Building against GTK2...")
+  ELSE(GTK2_FOUND)
+    FIND_PACKAGE(GTK3)
+    INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+    SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
+    MESSAGE(STATUS "Building against GTK3...")
+  ENDIF(GTK2_FOUND)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
+ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
-IF(BUNDLE_TCDATA MATCHES "ON")
-  MESSAGE (STATUS "*** Package will include tide and current data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata ON")
-  ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_TCDATA MATCHES "ON")
-  MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_TCDATA MATCHES "ON")
+
+# Search for opengles, short of running a program to test the speed
+# of acceleration, I simply use gles on "native linux" arm systems
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+  find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+  IF (OPENGLESv1_INCLUDE_DIR)
+    MESSAGE (STATUS "Found OpenGLESv1")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+
+    SET(OPENGLES_FOUND "YES")
+    SET(OPENGL_FOUND "YES")
+
+    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    add_subdirectory(src/glshim)
+
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
+  ENDIF()
+ENDIF()
+
+#  Building for QT_ANDROID involves a cross-building environment,
+#  So the include directories, flags, etc must be stated explicitly
+#  without trying to locate them on the host build system.
+IF(QT_ANDROID)
+  MESSAGE (STATUS "Using GLESv1 for Android")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+  ADD_DEFINITIONS(-DocpnUSE_GL)
+  ADD_DEFINITIONS(-DARMHF)
+
+  SET(OPENGLES_FOUND "YES")
+  SET(OPENGL_FOUND "YES")
+
+  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  add_subdirectory(src/glshim)
+ENDIF(QT_ANDROID)
+
 
 #  To build for android, use this cmake invocation..
 #$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
@@ -392,60 +413,20 @@ ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  #SET(CMAKE_BUILD_TYPE Debug)
-ENDIF()
-
-IF((_wx_selected_config MATCHES "qt-armv7"))
   SET(wxWidgets_USE_LIBS base core     xml html adv aui)
 ELSE()
   SET(wxWidgets_USE_LIBS net xml html adv aui core base)
 ENDIF()
 
-
-# Prefer libGL.so to libOpenGL.so, see CMP0072
-set (OpenGL_GL_PREFERENCE  "LEGACY")
-
-# Search for opengles, short of running a program to test the speed
-# of acceleration, I simply use gles on "native linux" arm systems
-IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
-  find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
-  IF (OPENGLESv1_INCLUDE_DIR)
-    MESSAGE (STATUS "Found OpenGLESv1")
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
-
-    SET(OPENGLES_FOUND "YES")
-    SET(OPENGL_FOUND "YES")
-
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-    add_subdirectory(src/glshim)
-
-    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
-  ENDIF()
-ENDIF()
-
-#  Building for QT_ANDROID involves a cross-building environment,
-#  So the include directories, flags, etc must be stated explicitly
-#  without trying to locate them on the host build system.
-IF(QT_ANDROID)
-  MESSAGE (STATUS "Using GLESv1 for Android")
-  ADD_DEFINITIONS(-DocpnUSE_GLES)
-  ADD_DEFINITIONS(-DocpnUSE_GL)
-  ADD_DEFINITIONS(-DARMHF)
-
-  SET(OPENGLES_FOUND "YES")
-  SET(OPENGL_FOUND "YES")
-
+IF (OPENGLES_FOUND)
   SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-  add_subdirectory(src/glshim)
-ENDIF(QT_ANDROID)
+ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
-
   IF(USE_GL)
     FIND_PACKAGE(OpenGL)
   ELSE(USE_GL)
-    MESSAGE (STATUS "OpenGL disabled by option..." )
+      MESSAGE (STATUS "OpenGL disabled by option USE_GL..." )
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
@@ -508,18 +489,23 @@ IF(NOT QT_ANDROID)
     SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
   ENDIF(MSVC)
 
-  IF(WIN32 OR APPLE OR QT_ANDROID)
-    FIND_PACKAGE(wxWidgets REQUIRED)
-    IF(MSYS)
-      # this is to convert msys to windows paths, and handle the missing /usr
-      STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
-    ENDIF(MSYS)
-    INCLUDE(${wxWidgets_USE_FILE})
-    
-    MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-  ENDIF(WIN32 OR APPLE OR QT_ANDROID)
+  IF(GTK2_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+  ELSEIF(GTK3_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+  ENDIF ()
+
+  FIND_PACKAGE(wxWidgets REQUIRED)
+  IF(MSYS)
+    # Convert msys to windows paths, and handle the missing /usr
+    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" 
+           wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+  ENDIF(MSYS)
+  INCLUDE(${wxWidgets_USE_FILE})
+  
+  MESSAGE (STATUS "Found wxWidgets..." )
+  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -537,15 +523,9 @@ ENDIF(NOT QT_ANDROID)
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
-
-#SET(CMAKE_BUILD_TYPE Debug)
-MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-
-IF (NOT CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
-ENDIF (NOT CMAKE_INSTALL_PREFIX)
-
+MESSAGE (STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 MESSAGE (STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
+
 SET(PREFIX_BIN bin)
 SET(PREFIX_INCLUDE include)
 SET(PREFIX_DATA share)
@@ -553,40 +533,6 @@ SET(PREFIX_PKGDATA ${PREFIX_DATA}/${PACKAGE_NAME})
 SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
-
-# require proper c++
-#ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
-#TODO: Should we use  -fno-stack-protector
-#  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
-IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-    ADD_DEFINITIONS( " -O0")
-  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-  ADD_DEFINITIONS("-Wno-deprecated-declarations")
-  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
-
-  ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
-  # profiling with gprof
-  #   ADD_DEFINITIONS( -pg )
-  #   SET(CMAKE_EXE_LINKER_FLAGS -pg)
-  # profiling with gcov
-  #   ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
-  #   SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
-ENDIF(NOT WIN32 AND NOT APPLE)
-
-IF(MINGW)
-  ADD_DEFINITIONS( "-Wall -Wno-unused -Wno-cpp -fexceptions" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-ENDIF(MINGW)
-
-IF( APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
-  ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
-ENDIF(APPLE)
 
 IF(OCPN_USE_CRASHREPORT)
   MESSAGE (STATUS "Crash reporting enabled")
@@ -604,54 +550,34 @@ IF(OCPN_USE_CRASHREPORT)
   ENDIF(MSVC)
 ENDIF(OCPN_USE_CRASHREPORT)
 
-# Add some definitions to satisfy MS
-IF(MSVC)
-  ADD_DEFINITIONS(-D__MSVC__)
-  ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
-  ADD_DEFINITIONS(-DPSAPI_VERSION=1)
-ENDIF(MSVC)
 
-IF (NOT WIN32 AND NOT APPLE)
+IF(QT_ANDROID)
+  SET(CMAKE_BUILD_TYPE Debug)
+  ADD_DEFINITIONS(-D__WXQT__)
+  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+  ADD_DEFINITIONS(-DANDROID)
 
-  IF(QT_ANDROID)
-    SET(CMAKE_BUILD_TYPE Debug)
-    ADD_DEFINITIONS(-D__WXQT__)
-    ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
-    ADD_DEFINITIONS(-D__OCPN__ANDROID__)
-    ADD_DEFINITIONS(-DANDROID)
+  SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
 
-    SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+  ## Compiler flags
+  #  if(CMAKE_COMPILER_IS_GNUCXX)
+  #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
+  #  endif()
+  set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 
-    ## Compiler flags
-    #  if(CMAKE_COMPILER_IS_GNUCXX)
-    #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
-    #  endif()
-    set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-    INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-
-    ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
-
-  ENDIF(QT_ANDROID)
-
-ENDIF (NOT WIN32 AND NOT APPLE)
-
-
-IF(OCPN_NEW_SERIAL)
-  add_subdirectory("libs/serial" "${CMAKE_SOURCE_DIR}/libs/serial/build")
-  SET(EXTRA_LIBS ${EXTRA_LIBS} "serial")
-  SET(SERIAL_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/serial/build")
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/serial/include)
-  message(STATUS "Using new serial library...")
-ENDIF(OCPN_NEW_SERIAL)
+  ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+ENDIF(QT_ANDROID)
 
 
 IF(OCPN_USE_CURL)
@@ -849,52 +775,27 @@ IF(OCPN_USE_SVG)
       INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
       SET(EXTRA_LIBS ${EXTRA_LIBS} ${WXSVG_LIBRARIES} ${EXPAT_LIBRARIES})
     ELSE ()
-      SET (BUILD_BUNDLED_WXSVG 1)   # defer build until wx is configured
+      message (STATUS "Building with bundled wxsvg includes")
+      add_subdirectory("libs/wxsvg" "${CMAKE_SOURCE_DIR}/libs/wxsvg/build")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
+      SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
+      SET(WXSVG_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/wxsvg/build")
     ENDIF ()
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
 
-IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  IF(NOT OCPN_FORCE_GTK3)
-    FIND_PACKAGE(GTK2)
-  ENDIF(NOT OCPN_FORCE_GTK3)
+IF(OCPN_NEW_SERIAL)
+  add_subdirectory("libs/serial" "${CMAKE_SOURCE_DIR}/libs/serial/build")
+  SET(EXTRA_LIBS ${EXTRA_LIBS} "serial")
+  SET(SERIAL_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/serial/build")
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/serial/include)
+  message(STATUS "Using new serial library...")
+ENDIF(OCPN_NEW_SERIAL)
 
-  IF(GTK2_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-    SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
-    MESSAGE(STATUS "Building against GTK2...")
-  ELSE(GTK2_FOUND)
-    FIND_PACKAGE(GTK3)
-    INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
-    SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
-    MESSAGE(STATUS "Building against GTK3...")
-  ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets  REQUIRED)
 
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-
-  INCLUDE(${wxWidgets_USE_FILE})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
-ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-
-IF (BUILD_BUNDLED_WXSVG)
-    message (STATUS "Building with bundled wxsvg includes")
-    add_subdirectory("libs/wxsvg" "${CMAKE_SOURCE_DIR}/libs/wxsvg/build")
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
-    SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
-    SET(WXSVG_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/wxsvg/build")
-ENDIF ()
- 
 # SQLite3 support required for MBTiles.
-
-
 add_subdirectory("libs/SQLiteCpp" "${CMAKE_SOURCE_DIR}/libs/SQLiteCpp/build")
 include_directories(libs/SQLiteCpp/include )
 SET(SQLITE3_CPP_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/SQLiteCpp/build")
@@ -1025,9 +926,6 @@ IF (NOT ENABLE_SNDFILE MATCHES OFF)
 ENDIF ()
 
 
-# For convenience we define the sources as a variable. You can add
-# header files and cpp/c files and CMake will sort them out
-
 add_subdirectory("libs/nmea0183" "${CMAKE_SOURCE_DIR}/libs/nmea0183/build")
 set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
@@ -1053,8 +951,6 @@ SET(NMEA0183_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/garmin/nmea0183")
 #      ENDIF (GPS_FOUND)
 #ENDIF (USE_GPSD)
 #ENDIF (NOT WIN32)
-
-
 
 
 SET(HDRS
@@ -2264,6 +2160,98 @@ MESSAGE (STATUS "")
 IF(NOT SKIP_PLUGINS)
   add_subdirectory (plugins)
 ENDIF ()
+
+#
+#  RPM package setup
+#
+IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers),
+  # CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
+  IF(UNIX AND NOT APPLE)
+    IF(BUNDLE_GSHHS MATCHES "NONE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "NONE")
+    IF(BUNDLE_GSHHS MATCHES "MIN")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "MIN")
+    IF(BUNDLE_GSHHS MATCHES "CRUDE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
+    IF(BUNDLE_GSHHS MATCHES "LOW")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "LOW")
+    IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+    IF(BUNDLE_GSHHS MATCHES "HIGH")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
+    IF(BUNDLE_GSHHS MATCHES "FULL")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full ON")
+    ENDIF(BUNDLE_GSHHS MATCHES "FULL")
+  ENDIF(UNIX AND NOT APPLE)
+ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  SET(BUNDLE_GSHHS "NONE")
+  MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
+  ENDIF(UNIX AND NOT APPLE)
+ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+
+IF(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will include tide and current data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata ON")
+  ENDIF(UNIX AND NOT APPLE)
+ELSE(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
+  ENDIF(UNIX AND NOT APPLE)
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
+
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
