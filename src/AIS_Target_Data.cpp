@@ -1016,7 +1016,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 306: return b_CntryLongStr ? _("Antilles") : _T("AN") ;
     case 307: return b_CntryLongStr ? _("Aruba") : _T("AW") ;
     case 308: 
-    case 309: 
+    case 309: return b_CntryLongStr ? _("Bahamas") : _T("BS") ;
     case 310: return b_CntryLongStr ? _("Bermuda") : _T("BM") ;
     case 311: return b_CntryLongStr ? _("Bahamas") : _T("BS") ;
     case 312: return b_CntryLongStr ? _("Belize") : _T("BZ") ;
