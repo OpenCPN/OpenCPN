@@ -597,7 +597,8 @@ void MUIBar::CreateControls()
 //         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 //         barSizer->Add(pl1, 1);
         
-        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor, iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"));
+        m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
+                                        iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
