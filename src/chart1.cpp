@@ -3470,7 +3470,7 @@ bool MyFrame::DropMarker( bool atOwnShip )
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
     pSelect->AddSelectableRoutePoint( lat, lon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-    if( pWP->GetScaMin() < GetCanvasUnderMouse()->GetScaleValue() ) 
+    if( pWP->GetUseSca() & pWP->GetScaMin() < GetCanvasUnderMouse()->GetScaleValue() )
         pWP->ShowScaleWarningMessage(GetCanvasUnderMouse());
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
