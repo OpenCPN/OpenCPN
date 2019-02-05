@@ -27,8 +27,9 @@
 
 #include <list>
 #include "TexFont.h"
+#include "GeomagnetismHeader.h"
 
-enum MagneticPlotType {DECLINATION, INCLINATION, FIELD_STRENGTH};
+enum MagneticPlotType {DECLINATION_PLOT, INCLINATION_PLOT, FIELD_STRENGTH_PLOT};
 
 /* must be a power of 2, and also divide 360 and 176;
    really only 8 works without more modifications */
@@ -69,9 +70,9 @@ class MagneticPlotMap
 {
 public:
     MagneticPlotMap(MagneticPlotType type,
-                    WMMtype_MagneticModel *&mm,
-                    WMMtype_MagneticModel *&tmm,
-                    WMMtype_Ellipsoid *ellip)
+                    MAGtype_MagneticModel *&mm,
+                    MAGtype_MagneticModel *&tmm,
+                    MAGtype_Ellipsoid *ellip)
         : m_type(type), m_bEnabled(false), m_Spacing(0.0), m_Step(0.0), m_PoleAccuracy(0.0), MagneticModel(mm), TimedMagneticModel(tmm), Ellip(ellip), lastx(0), lasty(0)
     {
         UserDate.Year = 2015;
@@ -107,10 +108,10 @@ public:
        currently being built */
     ParamCache m_Cache[2];
 
-    WMMtype_MagneticModel *&MagneticModel;
-    WMMtype_MagneticModel *&TimedMagneticModel;
-    WMMtype_Ellipsoid *Ellip;
-    WMMtype_Date UserDate;
+    MAGtype_MagneticModel *&MagneticModel;
+    MAGtype_MagneticModel *&TimedMagneticModel;
+    MAGtype_Ellipsoid *Ellip;
+    MAGtype_Date UserDate;
 
     /* the line segments for the entire globe split into zones */
     std::list<PlotLineSeg*> m_map[LATITUDE_ZONES][LONGITUDE_ZONES];
