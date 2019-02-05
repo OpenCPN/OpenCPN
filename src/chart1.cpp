@@ -534,6 +534,7 @@ int                       g_border_size_default;
 int                       g_sash_size_default;
 wxColour                  g_caption_color_default;
 wxColour                  g_sash_color_default;
+wxColour                  g_background_color_default;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -2213,6 +2214,7 @@ bool MyApp::OnInit()
     g_sash_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_SASH_SIZE);
     g_caption_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR);
     g_sash_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_SASH_COLOUR );
+    g_background_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BACKGROUND_COLOUR );
     
         
          
@@ -2970,26 +2972,33 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             break;
     }
 
-   
-    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
-        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+
+    g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
         
-        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
-        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
-        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
-        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
-        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
-        
-    }
-    else{
-        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, g_grad_default);
-        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, g_border_color_default);
-        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, g_border_size_default);
-        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, g_sash_color_default);
-        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, g_sash_size_default);
-        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, g_caption_color_default);
+    g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
+    g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
+    g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
+    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
+    g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
+    g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0,0,0));
+
+//    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT )
+//    {
+//        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+//        g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, wxColour(0,0,0));
+//        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
+//    }
     
-    }
+//      else{
+//          g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, g_grad_default);
+//          g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, g_border_color_default);
+//          g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, g_border_size_default);
+//          g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, g_sash_color_default);
+//          g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, g_sash_size_default);
+//          g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, g_caption_color_default);
+//          g_pauidockart->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, g_background_color_default);
+//      
+//      }
     
     g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
     g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);

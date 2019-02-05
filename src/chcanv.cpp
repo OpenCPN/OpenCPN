@@ -411,7 +411,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     pscratch_bm = NULL;
 
-    SetBackgroundColour ( GetGlobalColor ( _T ( "NODTA" ) ) );
+    SetBackgroundColour ( wxColour(0,0,0) );
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing on color scheme change
 
     m_groupIndex = 0;
@@ -3535,6 +3535,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     m_fog_color.Set( m_fog_color.Red()*dim, m_fog_color.Green()*dim, m_fog_color.Blue()*dim );
 
     //  Really dark
+#if 0    
     if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
         SetBackgroundColour( wxColour(0,0,0) );
         
@@ -3546,7 +3547,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         SetBackgroundColour( wxNullColour );
 #endif
     }
-        
+#endif
+
     UpdateToolbarColorScheme( cs );
     
     m_Piano->SetColorScheme( cs );

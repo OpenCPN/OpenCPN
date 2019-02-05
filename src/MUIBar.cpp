@@ -632,6 +632,10 @@ void MUIBar::SetBestPosition( void )
     
 #else   // for wxDialog
     int x = (m_parent->GetClientSize().x - (GetSize().x * 1.00));
+
+#ifndef __WXGTK__       // Adjust for wxNO_BORDER canvas window style
+    x -= 2;
+#endif
     
     //if(x > 0)
     {
