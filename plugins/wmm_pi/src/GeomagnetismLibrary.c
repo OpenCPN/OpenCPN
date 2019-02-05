@@ -584,8 +584,9 @@ int MAG_robustReadMagneticModel_Large(char *filename, char *filenameSV, MAGtype_
     return 1;
 } /*MAG_robustReadMagneticModel_Large*/
 
-int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[], int array_size)
+int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[1])
 {
+    int array_size = 1;
     char line[MAXLINELENGTH];
     int n, nMax = 0, num_terms, a;
     FILE *MODELFILE;
@@ -597,7 +598,7 @@ int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmod
         return 0;
     }
     if(line[0] == '%'){
-        MAG_readMagneticModel_SHDF(filename, magneticmodels, array_size);
+        MAG_readMagneticModel_SHDF(filename, magneticmodels);
     }
     else if(array_size == 1)
     {
@@ -2007,9 +2008,10 @@ void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel 
     return;
 } /*MAG_PrintEMMFormat*/
 
-void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)[], int epochs)
+void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)[1])
 {
-    	int i, n, m, index, epochRange;
+    int epochs = 1;
+    int i, n, m, index, epochRange;
 	FILE *SHDF_file;
 	SHDF_file = fopen(filename, "w");
 	/*lines = (int)(UFM_DEGREE / 2.0 * (UFM_DEGREE + 3));*/
@@ -2221,7 +2223,7 @@ int MAG_readMagneticModel_Large(char *filename, char *filenameSV, MAGtype_Magnet
     return TRUE;
 } /*MAG_readMagneticModel_Large*/
 
-int MAG_readMagneticModel_SHDF(char *filename, MAGtype_MagneticModel *(*magneticmodels)[], int array_size)
+int MAG_readMagneticModel_SHDF(char *filename, MAGtype_MagneticModel *(*magneticmodels)[1])
 /*
  * MAG_readMagneticModels - Read the Magnetic Models from an SHDF format file
  *
@@ -2272,6 +2274,7 @@ int MAG_readMagneticModel_SHDF(char *filename, MAGtype_MagneticModel *(*magnetic
     int tempint;
     int allocationflag = 0;
     char coefftype; /* Internal or External (I/E) */
+    int array_size = 1;
 
     /* For reading coefficients */
     int n, m;

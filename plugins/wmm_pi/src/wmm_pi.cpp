@@ -160,7 +160,7 @@ int wmm_pi::Init(void)
     int NumTerms, epochs = 1, nMax = 0;
     wxString cof_filename = m_shareLocn + "WMM.COF";
     
-    if(!MAG_robustReadMagModels((const_cast<char*>((const char*)cof_filename.mb_str())), (MAGtype_MagneticModel *(*)[])&MagneticModels, epochs)) {
+    if(!MAG_robustReadMagModels((const_cast<char*>((const char*)cof_filename.mb_str())), &MagneticModels)) {
         WMMLogMessage1(_T("initialization error"));
         m_buseable = false;
     } else {
