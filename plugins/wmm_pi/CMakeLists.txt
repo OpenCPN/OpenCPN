@@ -38,31 +38,31 @@ SET(CMAKE_MACOSX_RPATH "ON")
 INCLUDE("cmake/PluginConfigure.cmake")
 
 SET(SRC_WMM
-            src/wmm_pi.h
-            src/wmm_pi.cpp
-            src/MagneticPlotMap.h
-            src/MagneticPlotMap.cpp
-            src/icons.h
-            src/icons.cpp
-	    src/WMMHeader.h
-	    src/WMM_SubLibrary.c
-	    src/WmmUIDialog.h
-	    src/WmmUIDialog.cpp
-	    src/WMM_COF.h
-            src/TexFont.cpp
-            src/TexFont.h
+    src/wmm_pi.h
+    src/wmm_pi.cpp
+    src/MagneticPlotMap.h
+    src/MagneticPlotMap.cpp
+    src/icons.h
+    src/icons.cpp
+    src/GeomagnetismHeader.h
+    src/GeomagnetismLibrary.c
+    src/EGM9615.h
+    src/WmmUIDialog.h
+    src/WmmUIDialog.cpp
+    src/TexFont.cpp
+    src/TexFont.h
 	)
 
 IF(WIN32)
 SET(SRC_JSON
-	    src/json_defs.h
-	    src/jsonreader.h
-	    src/jsonval.h
-	    src/jsonwriter.h
-	    src/jsonreader.cpp
-	    src/jsonval.cpp
-	    src/jsonwriter.cpp
-        )
+    src/json_defs.h
+    src/jsonreader.h
+    src/jsonval.h
+    src/jsonwriter.h
+    src/jsonreader.cpp
+    src/jsonval.cpp
+    src/jsonwriter.cpp
+    )
 ENDIF(WIN32)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
