@@ -8916,7 +8916,7 @@ void pupHandler_PasteWaypoint() {
         pConfig->AddNewWayPoint( newPoint, -1 );
         pWayPointMan->AddRoutePoint( newPoint );
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-        if( newPoint->GetScaMin() < g_focusCanvas->GetScaleValue() ) newPoint->ShowScaleWarningMessage(g_focusCanvas);
+        if( newPoint->IsVisibleSelectable(g_focusCanvas) ) newPoint->ShowScaleWarningMessage(g_focusCanvas);
     }
 
     gFrame->InvalidateAllGL();
@@ -9033,7 +9033,7 @@ void pupHandler_PasteRoute() {
         gFrame->InvalidateAllGL();
         gFrame->RefreshAllCanvas( false );
     }
-    if( newPoint->GetScaMin() < g_focusCanvas->GetScaleValue() ) newPoint->ShowScaleWarningMessage(g_focusCanvas);
+    if( newPoint->IsVisibleSelectable(g_focusCanvas )) newPoint->ShowScaleWarningMessage(g_focusCanvas);
 }
 
 void pupHandler_PasteTrack() {
