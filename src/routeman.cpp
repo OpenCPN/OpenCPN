@@ -1040,7 +1040,7 @@ void Routeman::SetColorScheme( ColorScheme cs )
     int scaled_line_width = g_route_line_width;
     int track_scaled_line_width = g_track_line_width;
     if(g_btouch){
-        double size_mult =  g_ChartScaleFactorExp * 1.5;
+        double size_mult =  g_ChartScaleFactorExp; // * 1.5;
         double sline_width = wxRound(size_mult * scaled_line_width);
         double tsline_width = wxRound( size_mult * track_scaled_line_width );
         scaled_line_width = wxMax( sline_width, 1);
