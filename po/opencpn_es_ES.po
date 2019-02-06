@@ -4108,7 +4108,7 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
-msgstr "\n"
+msgstr 
 "el dispositivo seleccionado no es accesible; OpenCPN es probable que no sea capaz de\n"
 "utilizar este dispositivo tal cual. Querrá reiniciar OpenCPN y\n"
 "después  crear un archivo llamado /etc/udev/rules.d/70-opencpn.rules\n"
