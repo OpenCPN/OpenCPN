@@ -222,7 +222,7 @@ AIS_Decoder::~AIS_Decoder( void )
                     content.append( _T(",") ).append(it->second );
                 }
             content.append( _T("\r\n"));
-            content.append( _("+++==Non Confirmed Entry's==+++") );
+            content.append( _T("+++==Non Confirmed Entry's==+++") );
         for ( it = AISTargetNamesNC->begin(); it != AISTargetNamesNC->end(); ++it )
                 {
                     content.append(_T("\r\n") );
