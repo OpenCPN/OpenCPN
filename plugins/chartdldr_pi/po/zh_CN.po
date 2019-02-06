@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-24 10:24-0500\n"
-"PO-Revision-Date: 2018-05-27 08:15-0400\n"
+"POT-Creation-Date: 2019-02-01 13:05-0500\n"
+"PO-Revision-Date: 2019-02-03 13:37\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -18,240 +18,254 @@ msgstr ""
 
 #: src/chartcatalog.cpp:46
 msgid "Catalog is not valid."
-msgstr ""
+msgstr "目录无效"
 
 #: src/chartcatalog.cpp:560
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
-msgstr ""
+msgstr "%s (%s 至 %s),内河英里%3.1f - %3.1f"
 
 #: src/chartcatalog.cpp:567
 #, c-format
 msgid "%s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:243
+#: src/chartdldr_pi.cpp:227
 msgid "ChartDownloader"
-msgstr ""
+msgstr "海图下载器"
 
-#: src/chartdldr_pi.cpp:248
+#: src/chartdldr_pi.cpp:232
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr ""
+msgstr "OpenCPN海图下载器插件"
 
-#: src/chartdldr_pi.cpp:253
+#: src/chartdldr_pi.cpp:237
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
-msgstr ""
+msgstr "OpenCPN海图下载器插件\n"
+"管理支持数据源NOAA海图目录格式海图的\n"
+"下载和更新"
 
-#: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
-#: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
-#: src/chartdldr_pi.cpp:829 src/chartdldr_pi.cpp:835 src/chartdldr_pi.cpp:1018
-#: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
-#: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
+#: src/chartdldr_pi.cpp:244 src/chartdldr_pi.cpp:683 src/chartdldr_pi.cpp:690
+#: src/chartdldr_pi.cpp:696 src/chartdldr_pi.cpp:714 src/chartdldr_pi.cpp:749
+#: src/chartdldr_pi.cpp:813 src/chartdldr_pi.cpp:819 src/chartdldr_pi.cpp:1008
+#: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1277
+#: src/chartdldr_pi.cpp:1942
 msgid "Chart Downloader"
-msgstr ""
+msgstr "海图下载器"
 
-#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
+#: src/chartdldr_pi.cpp:419 src/chartdldr_pi.cpp:441
 msgid "Select all"
-msgstr ""
+msgstr "选择所有"
 
-#: src/chartdldr_pi.cpp:439 src/chartdldr_pi.cpp:458
+#: src/chartdldr_pi.cpp:423 src/chartdldr_pi.cpp:442
 msgid "Deselect all"
-msgstr ""
+msgstr "取消选择所有"
 
-#: src/chartdldr_pi.cpp:443 src/chartdldr_pi.cpp:459
+#: src/chartdldr_pi.cpp:427 src/chartdldr_pi.cpp:443
 msgid "Invert selection"
-msgstr ""
+msgstr "反向选择"
 
-#: src/chartdldr_pi.cpp:447 src/chartdldr_pi.cpp:460
+#: src/chartdldr_pi.cpp:431 src/chartdldr_pi.cpp:444
 msgid "Select updated"
-msgstr ""
+msgstr "选择已更新的"
 
-#: src/chartdldr_pi.cpp:451 src/chartdldr_pi.cpp:461
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:445
 msgid "Select new"
-msgstr ""
+msgstr "选择新的"
 
-#: src/chartdldr_pi.cpp:569
+#: src/chartdldr_pi.cpp:553
 msgid "New"
-msgstr ""
+msgstr "新的"
 
-#: src/chartdldr_pi.cpp:578
+#: src/chartdldr_pi.cpp:562
 msgid "Update available"
-msgstr ""
+msgstr "有可用更新"
 
-#: src/chartdldr_pi.cpp:584
+#: src/chartdldr_pi.cpp:568
 msgid "Up to date"
-msgstr ""
+msgstr "更新"
 
-#: src/chartdldr_pi.cpp:591
+#: src/chartdldr_pi.cpp:575
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu 海图总计, %lu 跟新的, %lu 新的"
 
-#: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
+#: src/chartdldr_pi.cpp:654 src/chartdldr_pi.cpp:1251
 msgid "(Please update first)"
-msgstr ""
+msgstr "(请先更新)"
 
-#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
+#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731
 msgid "Error, the URL to the chart source data seems wrong."
-msgstr ""
+msgstr "出错，海图源URL可能不对."
 
-#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747 src/chartdldr_pi.cpp:1029
+#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731 src/chartdldr_pi.cpp:1019
 msgid "Error"
-msgstr ""
+msgstr "出错"
 
-#: src/chartdldr_pi.cpp:698
+#: src/chartdldr_pi.cpp:682
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
-msgstr ""
+msgstr "已选择更新所有海图目录.\n"
+"即将开始下载所有新和更新的海图.\n"
+"可能需要较长时间."
 
-#: src/chartdldr_pi.cpp:705
+#: src/chartdldr_pi.cpp:689
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
-msgstr ""
+msgstr "已选择更新所有海图目录.\n"
+"即将开始下载新海图（不含有更新）.\n"
+"可能需要较长时间."
 
-#: src/chartdldr_pi.cpp:711
+#: src/chartdldr_pi.cpp:695
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
-msgstr ""
+msgstr "已选择更新所有海图目录.\n"
+"即将开始下载可更新海图（不含新海图）.\n"
+"可能需要较长时间."
 
-#: src/chartdldr_pi.cpp:729 src/chartdldr_pi.cpp:1092
+#: src/chartdldr_pi.cpp:713 src/chartdldr_pi.cpp:1096
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
-msgstr ""
+msgstr "%d 之 %d 海图下载失败.\n"
+"检查清单，确认有可用互联网连接，需要的重新操作下载."
 
-#: src/chartdldr_pi.cpp:765 src/chartdldr_pi.cpp:1914 src/chartdldr_pi.cpp:1937
+#: src/chartdldr_pi.cpp:749 src/chartdldr_pi.cpp:1919 src/chartdldr_pi.cpp:1942
 #, c-format
 msgid "Directory %s can't be created."
-msgstr ""
+msgstr "目录%s不能创建."
 
-#: src/chartdldr_pi.cpp:801
+#: src/chartdldr_pi.cpp:785
 msgid "Downloading file"
-msgstr ""
+msgstr "下载文件中"
 
-#: src/chartdldr_pi.cpp:802
+#: src/chartdldr_pi.cpp:786
 msgid "Reading Headers: "
-msgstr ""
+msgstr "读取文件头:"
 
-#: src/chartdldr_pi.cpp:828
+#: src/chartdldr_pi.cpp:812
 #, c-format
 msgid "Failed to Find New Catalog: %s "
-msgstr ""
+msgstr "未能发现新海图目录:%s "
 
-#: src/chartdldr_pi.cpp:834
+#: src/chartdldr_pi.cpp:818
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
-msgstr ""
+msgstr "下载目录失败: %s \n"
+"检查有无可用互联网连接."
 
-#: src/chartdldr_pi.cpp:985 src/chartdldr_pi.cpp:991
+#: src/chartdldr_pi.cpp:969 src/chartdldr_pi.cpp:975
 msgid "No charts selected for download."
-msgstr ""
+msgstr "没有选择海图下载."
+
+#: src/chartdldr_pi.cpp:985
+msgid "Abort download"
+msgstr "中断下载"
 
 #: src/chartdldr_pi.cpp:1001
-msgid "Abort download"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:1010
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
-#: src/chartdldr_pi.cpp:1017
+#: src/chartdldr_pi.cpp:1007
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
-msgstr ""
+msgstr "所选择海图 '%s'不能自动下载, 是否打开浏览器并手动下载?\n\n"
+"海图下载后，请将海图文件解压缩至 %s"
 
-#: src/chartdldr_pi.cpp:1029
+#: src/chartdldr_pi.cpp:1019
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr ""
+msgstr "出错，海图URL (%s)数据可能有误."
 
 #: src/chartdldr_pi.cpp:1055
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "下载海图 %u 之 %u, %u 下载失败 (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
+#: src/chartdldr_pi.cpp:1089 src/chartdldrgui.cpp:294
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "下载\n"
+"所选海图"
 
-#: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
+#: src/chartdldr_pi.cpp:1091 src/chartdldrgui.cpp:401
 msgid "Download selected charts"
-msgstr ""
+msgstr "下载所选海图"
 
-#: src/chartdldr_pi.cpp:1117 src/chartdldrgui.cpp:95
+#: src/chartdldr_pi.cpp:1122 src/chartdldrgui.cpp:95
 msgid "Catalog"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:1118
-msgid "Released"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:1119
-msgid "Local path"
-msgstr ""
+msgstr "目录"
 
 #: src/chartdldr_pi.cpp:1123
-msgid "Title"
-msgstr ""
+msgid "Released"
+msgstr "已发行的"
 
 #: src/chartdldr_pi.cpp:1124
+msgid "Local path"
+msgstr "本地路径"
+
+#: src/chartdldr_pi.cpp:1128
+msgid "Title"
+msgstr "题目"
+
+#: src/chartdldr_pi.cpp:1129
 msgid "Status"
-msgstr ""
+msgstr "状态"
 
-#: src/chartdldr_pi.cpp:1125
+#: src/chartdldr_pi.cpp:1130
 msgid "Latest"
-msgstr ""
+msgstr "最近的"
 
-#: src/chartdldr_pi.cpp:1168
+#: src/chartdldr_pi.cpp:1173
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed, but you will not be able to update the charts anymore."
-msgstr ""
+msgstr "确实需要移除海图源吗?\n"
+"本地海图文件不会移除，但海图再不会更新."
 
-#: src/chartdldr_pi.cpp:1232
+#: src/chartdldr_pi.cpp:1237
 msgid "Edit Chart Source"
-msgstr ""
+msgstr "编辑海图源"
 
-#: src/chartdldr_pi.cpp:1271
+#: src/chartdldr_pi.cpp:1276
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
-msgstr ""
+msgstr "路径 %s 似乎没有被配置的海图目录涵盖.\n"
+"须在“海图文件”选项卡中调整配置才能看到海图."
 
-#: src/chartdldr_pi.cpp:1899 src/chartdldr_pi.cpp:1902
+#: src/chartdldr_pi.cpp:1904 src/chartdldr_pi.cpp:1907
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:1905
-msgid "The chart source must have a name.\n"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:1908
-msgid "The chart source must have a valid URL.\n"
-msgstr ""
+msgstr "必须选择预定义的海图源之一或者创建自己的.\n"
 
 #: src/chartdldr_pi.cpp:1910
-msgid "You must select a local folder to store the charts.\n"
-msgstr ""
+msgid "The chart source must have a name.\n"
+msgstr "海图源必须有一个名称.\n"
 
-#: src/chartdldr_pi.cpp:1917
+#: src/chartdldr_pi.cpp:1913
+msgid "The chart source must have a valid URL.\n"
+msgstr "海图源必须有一个有效的URL。\n"
+
+#: src/chartdldr_pi.cpp:1915
+msgid "You must select a local folder to store the charts.\n"
+msgstr "必须选择一个本地文件夹保存海图.\n"
+
+#: src/chartdldr_pi.cpp:1922
 msgid "Chart source definition problem"
-msgstr ""
+msgstr "海图源定义问题"
 
 #: src/chartdldrgui.cpp:104
 msgid "Predefined"
-msgstr ""
+msgstr "预定义的"
 
 #: src/chartdldrgui.cpp:125
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: src/chartdldrgui.cpp:133
 msgid "URL"
@@ -259,210 +273,102 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:145
 msgid "Custom"
-msgstr ""
+msgstr "自定义"
 
 #: src/chartdldrgui.cpp:149
 msgid "Chart Directory"
-msgstr ""
+msgstr "海图目录"
 
 #: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
 msgid "Select a folder"
-msgstr ""
+msgstr "选择一个文件夹"
 
 #: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "选择海图文件目录"
 
 #: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
 msgid "Catalogs"
-msgstr ""
+msgstr "海图目录"
 
 #: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
 msgid "Add"
-msgstr ""
+msgstr "添加"
 
 #: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
 msgid "Add a new chart catalog."
-msgstr ""
+msgstr "添加一个新的海图目录"
 
 #: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr ""
+msgstr "删除海图目录。已下载海图不会删除."
 
 #: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
 msgid "Edit..."
-msgstr ""
+msgstr "编辑..."
 
 #: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
 msgid "Download the current chart catalog and update the data."
-msgstr ""
+msgstr "下载当前海图目录并更新数据."
 
 #: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
 msgid "Update All"
-msgstr ""
+msgstr "更新所有"
 
 #: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
 msgid "Charts"
-msgstr ""
+msgstr "海图"
 
 #: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
 msgid "Help"
-msgstr ""
+msgstr "帮助"
 
 #: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
 msgid "Show local files"
-msgstr ""
+msgstr "显示本地文件"
 
 #: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
 #, c-format
 msgid "%u charts total, %u updated, %u new"
-msgstr ""
+msgstr "%u 海图总计, %u 更新的, %u 新增的"
 
 #: src/chartdldrgui.cpp:464
 msgid "Default Path to Charts"
-msgstr ""
+msgstr "海图默认路径"
 
 #: src/chartdldrgui.cpp:480
 msgid "Preferences"
-msgstr ""
+msgstr "首选项"
 
 #: src/chartdldrgui.cpp:484
 msgid "After catalog update select for download"
-msgstr ""
+msgstr "目录更新后，选择下载"
 
 #: src/chartdldrgui.cpp:488
 msgid "All updated charts"
-msgstr ""
+msgstr "所有更行的海图"
 
 #: src/chartdldrgui.cpp:492
 msgid "All new charts"
-msgstr ""
+msgstr "所有新增的海图"
 
 #: src/chartdldrgui.cpp:498
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr ""
+msgstr "允许所有配置的海图源和海图单独更新"
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"
-msgstr ""
+msgstr "新海图源"
 
 #: src/chartdldrgui.h:154
 msgid "Chart Downloader Preferences"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:137
-msgid "Not available"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:168
-msgid "URL:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:187
-msgid "Speed:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:196
-msgid "Elapsed time:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:198
-msgid "Estimated total time:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:200
-msgid "Estimated remaining time:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
-msgid "Abort"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:245
-msgid "Settings"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
-msgid "Pause"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:252
-msgid "Start"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:397
-msgid "Close"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:408
-msgid "Resume"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:411
-msgid "0 (transfer paused)"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:459
-msgid "Connection settings"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:459
-msgid "Connection settings used for the transfer:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:514
-msgid "0 (transfer completed)"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:535
-msgid "Downloaded:"
-msgstr ""
-
-#: src/wxcurl/dialog.cpp:583
-msgid "Uploaded:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:111
-msgid "Username:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:112
-msgid "Password:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:120
-msgid "Port:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:134
-msgid "Proxy settings"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:136
-msgid "Use proxy"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:141
-msgid "Proxy host:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:142
-msgid "Proxy username:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:143
-msgid "Proxy password:"
-msgstr ""
-
-#: src/wxcurl/panel.cpp:144
-msgid "Proxy port:"
-msgstr ""
+msgstr "海图下载器首选项"
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-02-01 14:00-0500\n"
+"POT-Creation-Date: 2019-02-01 13:04-0500\n"
+"PO-Revision-Date: 2019-02-03 13:34\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -27,7 +27,16 @@ msgid "\n"
 "The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
-msgstr ""
+msgstr "\n"
+"Το πρόσθετο World Magnetic Model Plotting επιτρέπει τον έλεγχο των τιμών της μαγνητικής απόκλισης που υπάρχουν στους διάφορους τυπωμένους χάρτες.\n\n"
+"Απόκλιση είναι η γωνία ανάμεσα στον πραγματικό και στον μαγνητικό βορρά.\n"
+"Κλίση είναι η κατακόρυφη γωνία στου μαγνητικού πεδίου.\n"
+"\t(+- 90 στους μαγνητικούς πόλους)\n"
+"Η ισχύς του μαγνητικού πεδίου εκφράζεται σε nano tesla από\n"
+"\t20000 μέχρι 66000\n\n"
+"Οι καμπύλες είναι ίδιες με αυτές σε ένα τοπογραφικό χάρτη.  Η απόσταση μεταξύ τους είναι επιλέξιμη.  Μεγαλύτερη απόσταση σημαίνει μικρότερος υπολογιστικός χρόνος.\n\n"
+"Καθορίζοντας το βήμα και την πολική ακρίβεια μπορείτε να βρείτε τον κατάλληλο συμβιβασμό για τον υπολογιστικό χρόνο.\n\n"
+"Το πρόσθετο World Magnetic Model γράφτηκε από τον Pavel Kalian και επεκτάθηκε από τον Sean D'Epagnier για τα γραφικά."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
@@ -177,19 +186,19 @@ msgstr "Εμφάνιση δεδομένων στο εικονίδιο της ε�
 msgid "Window transparency"
 msgstr "Διαφάνεια του παράθυρου"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
 msgid "Variation"
-msgstr ""
+msgstr "Παραλλαγή"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
 msgstr "Μοίρες"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
 msgid "Inclination"
 msgstr "Κλίση"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
 msgid "Field Strength"
 msgstr "Ένταση πεδίου"
 
@@ -217,7 +226,7 @@ msgstr "Αποθήκευση"
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: src/MagneticPlotMap.cpp:361
+#: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
 msgstr "Δημιουργία μαγνητικού χάρτη"
 

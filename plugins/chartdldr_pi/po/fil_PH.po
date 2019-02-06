@@ -1,0 +1,374 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-01 13:05-0500\n"
+"PO-Revision-Date: 2019-02-03 13:38\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Filipino\n"
+"Language: fil_PH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fil\n"
+"X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "Ang Katalogo ay hindi balido."
+
+#: src/chartcatalog.cpp:560
+#, c-format
+msgid "%s (%s to %s), river miles %3.1f - %3.1f"
+msgstr "%s (%s sa %s), mga milya ng ilog %3.1f - %3.1f"
+
+#: src/chartcatalog.cpp:567
+#, c-format
+msgid "%s"
+msgstr "%s"
+
+#: src/chartdldr_pi.cpp:227
+msgid "ChartDownloader"
+msgstr "Ang ChartDownloader"
+
+#: src/chartdldr_pi.cpp:232
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "Ang Tsart Downloader sa Plugin para sa OpenCPN"
+
+#: src/chartdldr_pi.cpp:237
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "Ang Tsart Downloader ng Plugin para sa OpenCPN\n"
+"Namamahala sa tsart ng mga Taga-download at mga update mula sa pinagkukunan ng pagsuporta\n"
+"NOAA Ang Tsart sa katalogo ng pormat"
+
+#: src/chartdldr_pi.cpp:244 src/chartdldr_pi.cpp:683 src/chartdldr_pi.cpp:690
+#: src/chartdldr_pi.cpp:696 src/chartdldr_pi.cpp:714 src/chartdldr_pi.cpp:749
+#: src/chartdldr_pi.cpp:813 src/chartdldr_pi.cpp:819 src/chartdldr_pi.cpp:1008
+#: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1277
+#: src/chartdldr_pi.cpp:1942
+msgid "Chart Downloader"
+msgstr "Ang Tsart Downloader"
+
+#: src/chartdldr_pi.cpp:419 src/chartdldr_pi.cpp:441
+msgid "Select all"
+msgstr "Piliin Lahat"
+
+#: src/chartdldr_pi.cpp:423 src/chartdldr_pi.cpp:442
+msgid "Deselect all"
+msgstr "Hindi Piliin lahat"
+
+#: src/chartdldr_pi.cpp:427 src/chartdldr_pi.cpp:443
+msgid "Invert selection"
+msgstr "Baligtarin ang pagpipilian"
+
+#: src/chartdldr_pi.cpp:431 src/chartdldr_pi.cpp:444
+msgid "Select updated"
+msgstr "Ang update sa napili"
+
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:445
+msgid "Select new"
+msgstr "Pumili ng bago"
+
+#: src/chartdldr_pi.cpp:553
+msgid "New"
+msgstr "Bago"
+
+#: src/chartdldr_pi.cpp:562
+msgid "Update available"
+msgstr "Magagamit na ang Update"
+
+#: src/chartdldr_pi.cpp:568
+msgid "Up to date"
+msgstr "Ang hanggang sa petsa"
+
+#: src/chartdldr_pi.cpp:575
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr "%lu kabuuan ng mga tsart, %lu i-update, %lu bago"
+
+#: src/chartdldr_pi.cpp:654 src/chartdldr_pi.cpp:1251
+msgid "(Please update first)"
+msgstr "(Pakiusap na i-update ang una)"
+
+#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr "Mali, ang URL sa tsart na pinagkukunan ng data ay tila mali."
+
+#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731 src/chartdldr_pi.cpp:1019
+msgid "Error"
+msgstr "Ang Mali"
+
+#: src/chartdldr_pi.cpp:682
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download all new and updated charts.\n"
+"This may take a long time."
+msgstr "Napili mo na i-update ang mga katalogo sa tsart.\n"
+"Pagkatapos ay i-download ang lahat ng bago at na-update na mga tsart.\n"
+"Ito ay maaaring gumugol ng mahabang oras."
+
+#: src/chartdldr_pi.cpp:689
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only new (but not updated) charts.\n"
+"This may take a long time."
+msgstr "Napili mo na i-update ang mga katalogo sa tsart.\n"
+"Pagkatapos ay i-download lamang ang bago (ngunit ang hindi aktibo) na mga tsart.\n"
+"Ito ay maaaring gumugol ng mahabang oras."
+
+#: src/chartdldr_pi.cpp:695
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only updated (but not new) charts.\n"
+"This may take a long time."
+msgstr "Napili mo na i-update ang lahat ng mga katalogo sa tsart.\n"
+"Pagkatapos ay i-download lamang ang na-update (ngunit ang hindi bago).\n"
+"Ito ay maaaring gumugol ng mahabang oras."
+
+#: src/chartdldr_pi.cpp:713 src/chartdldr_pi.cpp:1096
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr "%d mula sa %d mga tsart na bigong ma-download.\n"
+"Suriin ang listahan. patunayan ang trabaho ng internet koneksyon at pagulit ng operasyon kung kinakailangan."
+
+#: src/chartdldr_pi.cpp:749 src/chartdldr_pi.cpp:1919 src/chartdldr_pi.cpp:1942
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "Ang Diksyonaryo %s ay hindi malikha."
+
+#: src/chartdldr_pi.cpp:785
+msgid "Downloading file"
+msgstr "I-Download ang payl"
+
+#: src/chartdldr_pi.cpp:786
+msgid "Reading Headers: "
+msgstr "Basahin ang mga Header: "
+
+#: src/chartdldr_pi.cpp:812
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "Bigo na Mahanap ang Bagong Katalogo: %s "
+
+#: src/chartdldr_pi.cpp:818
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "Bigo na Ma-Download ang Katalogo: %s \n"
+"Patunayan kung ang internet koneksyon ay gumagana."
+
+#: src/chartdldr_pi.cpp:969 src/chartdldr_pi.cpp:975
+msgid "No charts selected for download."
+msgstr "Walang mga tsart ang napili para sa pag-download."
+
+#: src/chartdldr_pi.cpp:985
+msgid "Abort download"
+msgstr "I-Abort ang pag-download"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Unknown"
+msgstr "Hindi matukoy"
+
+#: src/chartdldr_pi.cpp:1007
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr "Ang napili na tsart '%s' hindi awtomatikong ma-download, gusto mo ba na magbukas ako ng browser window at i-download sila ng mano-mano?\n\n"
+"Pagkatapos ma-download ang tsart, pakiusap na kunin din sila %s"
+
+#: src/chartdldr_pi.cpp:1019
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "Mali, ang URL sa tsart (%s) ang data ay tila mali."
+
+#: src/chartdldr_pi.cpp:1055
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "I-download ang tsart %u ng %u, %u mga na-download at nabigo (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1089 src/chartdldrgui.cpp:294
+msgid "Download\n"
+" selected charts"
+msgstr "I-Download\n"
+" ang napili na mga tsart"
+
+#: src/chartdldr_pi.cpp:1091 src/chartdldrgui.cpp:401
+msgid "Download selected charts"
+msgstr "Na-Download ang napili na mga tsart"
+
+#: src/chartdldr_pi.cpp:1122 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Ang Katalogo"
+
+#: src/chartdldr_pi.cpp:1123
+msgid "Released"
+msgstr "Ang bumitaw"
+
+#: src/chartdldr_pi.cpp:1124
+msgid "Local path"
+msgstr "Lokal na daan"
+
+#: src/chartdldr_pi.cpp:1128
+msgid "Title"
+msgstr "Ang Titulo"
+
+#: src/chartdldr_pi.cpp:1129
+msgid "Status"
+msgstr "Ang Istado"
+
+#: src/chartdldr_pi.cpp:1130
+msgid "Latest"
+msgstr "Ang Pinakabago"
+
+#: src/chartdldr_pi.cpp:1173
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "Nais mo ba talaga alisin ang pinagkukunan ng tsart?\n"
+"Ang lokal na tsart payl ay hindi ma alis, ngunit hindi mo magagawa na ma-update ang tsart ngayon."
+
+#: src/chartdldr_pi.cpp:1237
+msgid "Edit Chart Source"
+msgstr "Baguhin ang Pinagmulan ng Tsart"
+
+#: src/chartdldr_pi.cpp:1276
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "Ang Daan %s ay tila hindi sakop ng iyong isinaayos na mga direktoryo sa tsart.\n"
+"Upang makita ang mga tsart na iyong aayusin sa pagsasaayos ng 'Mga payl sa Tsart' ng tab."
+
+#: src/chartdldr_pi.cpp:1904 src/chartdldr_pi.cpp:1907
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "Kailangan mong pumili ng isa sa paunang na natukoy sa tsart ang mga pinagmulan o lumikha ng isa sa iyong sarili.\n"
+
+#: src/chartdldr_pi.cpp:1910
+msgid "The chart source must have a name.\n"
+msgstr "Ang pinagmulan ng tsart ay kinakailangan may pangalan.\n"
+
+#: src/chartdldr_pi.cpp:1913
+msgid "The chart source must have a valid URL.\n"
+msgstr "Ang pinagmulan ng tsart ay kinakailangan may balido na URL.\n"
+
+#: src/chartdldr_pi.cpp:1915
+msgid "You must select a local folder to store the charts.\n"
+msgstr "Kailangan mong pumili ng lokal na polder upang iimbak ang mga tsart.\n"
+
+#: src/chartdldr_pi.cpp:1922
+msgid "Chart source definition problem"
+msgstr "Ang pinagmulan ng depinisyon ay may problema"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Ang Paunang natukoy"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Ang Pangalan"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "Ang URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Ang Pasadya"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Direktoryo ng Tsart"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
+msgid "Select a folder"
+msgstr "Pumili ng Polder"
+
+#: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
+msgid "Choose Chart File Directory"
+msgstr "Pumili ng Direktoryo ng payl sa tsart"
+
+#: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
+msgid "Catalogs"
+msgstr "Mga katalogo"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add"
+msgstr "Ang Magdagdag"
+
+#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
+msgid "Add a new chart catalog."
+msgstr "Magdagdag ng bagong katalogo ng tsart."
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete"
+msgstr "Burahin"
+
+#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Burahin ang katalogo sa tsart. Ang na-download na mga tsart ay hindi nabura."
+
+#: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
+msgid "Edit..."
+msgstr "Baguhin..."
+
+#: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
+msgid "Update"
+msgstr "I-Update"
+
+#: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
+msgid "Download the current chart catalog and update the data."
+msgstr "I-Download ang kasalukuyang katalogo sa tsart at i-update ang data."
+
+#: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
+msgid "Update All"
+msgstr "I-Update lahat"
+
+#: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
+msgid "Charts"
+msgstr "Ang mga Tsart"
+
+#: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
+msgid "Help"
+msgstr "Tulong"
+
+#: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
+msgid "Show local files"
+msgstr "Ipakita ang mga lokal payl"
+
+#: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u kabuuan ng mga tsart, %u na-update na, %u bago"
+
+#: src/chartdldrgui.cpp:464
+msgid "Default Path to Charts"
+msgstr "I-Default ang daan sa mga Tsart"
+
+#: src/chartdldrgui.cpp:480
+msgid "Preferences"
+msgstr "Ang mga Kagustuhan"
+
+#: src/chartdldrgui.cpp:484
+msgid "After catalog update select for download"
+msgstr "Pagkatapos ma-update ang katalogo sa napili para sa pag-download"
+
+#: src/chartdldrgui.cpp:488
+msgid "All updated charts"
+msgstr "Lahat ng naupdate na mga tsart"
+
+#: src/chartdldrgui.cpp:492
+msgid "All new charts"
+msgstr "Lahat ng bagong mga tsart"
+
+#: src/chartdldrgui.cpp:498
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Payagan ang na-update na bulk sa lahat ng isinaaayos na tsart mga mapagkukunan at mga tsart"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Ang pagkukunan ng Bagong tsart"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Ang kagustuhan sa Downloader ng Tsart"
+

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:41-0500\n"
+"POT-Creation-Date: 2019-02-01 13:04-0500\n"
+"PO-Revision-Date: 2019-02-03 13:37\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Window transparency"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
 msgid "Variation"
 msgstr ""
 
@@ -179,11 +179,11 @@ msgstr ""
 msgid "Degrees"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
 msgid "Inclination"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
 msgid "Field Strength"
 msgstr ""
 
@@ -211,7 +211,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/MagneticPlotMap.cpp:361
+#: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
 msgstr ""
 

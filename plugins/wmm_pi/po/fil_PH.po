@@ -1,0 +1,232 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-01 13:04-0500\n"
+"PO-Revision-Date: 2019-02-03 13:38\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Filipino\n"
+"Language: fil_PH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fil\n"
+"X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
+
+#: src/wmm_pi.cpp:86
+msgid "\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+"Variation is the angle between true and magnetic north.\n"
+"Inclination or dip, is the vertical angle of the magnetic field.\n"
+"\t(+- 90 at the magnetic poles)\n"
+"Field Strength is the magnetic field in nano tesla from\n"
+"\t20000 to 66000\n\n"
+"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
+msgstr "\n"
+"World Magnetic Model Plotting ay humihintulot sa mga gumagamit  na gumamit ng maraming batayan sa pagiiba ng magnetic na mga value na naiprinta sa maraming raster tsart.\n\n"
+"Pagiiba ng angulo mula sa dalawang totoo at magnetic field sa hilaga.\n"
+"Ang pagkahilig, ay ang angulo ng patayong magnetic field.\n"
+"\t(+- 90 at sa magnetic poles)\n"
+"Lakas ng field ay ang magnetic field sa nano tesla mula\n"
+"\t20000 hanggang 66000\n\n"
+"Angplotted na mga linyaay kapareho sa isang topographic na mapa.  The pagitan mula sa dalawa ay maaayos pa; malaking pagitan ay nangangailagan ng mas maliit na oras sa pag calculate.\n\n"
+"Ang laki ng hakbang at ang accuracy ng pole sliders ay nagbibigay ng hakbang sa pagkalakal para sa bilis laban sa pagcompute ng oras.\n\n"
+"Ang Magnetic Model Plugin ng mundo ay naisulat ni Pavel Kalian at napalawig ni Sean D'Epagnier para masuportahan ang plotting."
+
+#: src/wmm_pi.cpp:102
+msgid "WMM Plugin"
+msgstr "WMM Plugin"
+
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
+msgid "WMM"
+msgstr "WMM"
+
+#: src/wmm_pi.cpp:283
+msgid "World Magnetic Model PlugIn for OpenCPN"
+msgstr "World Magnetic Model Plugin para sa OpenCPN"
+
+#: src/wmm_pi.cpp:288
+msgid "World Magnetic Model PlugIn for OpenCPN\n"
+"Implements the NOAA World Magnetic Model\n"
+"More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"The bundled WMM2015 model expires on December 31, 2019.\n"
+"After then, if new version of the plugin will not be released\n"
+"in time, get a new WMM.COF from NOAA and place it to the\n"
+"location you can find in the OpenCPN logfile."
+msgstr "Ang Magnetic Model PlugIn ng mundo para sa OpenCPN\n"
+"Ay nagpatupad ng NOAA World Magnetic Model\n"
+"Mga Impormasyon: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"Ang kasama sa WMM2015 model ay matatapos sa December 31, 2019.\n"
+"Pagkatapos, kung may bagong bersyon ng plugin na hindi mailalabas sa angkop\n"
+"na oras, kumuha ng panibagong WMM.COF mula sa NOAA at ilagay ito sa \n"
+"lokasyon kung saan mo mahahanap ang OpenCPN logfile."
+
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
+msgid "Error, see log."
+msgstr "Mali, tingnan ang log."
+
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
+msgid "WMM Preferences"
+msgstr "WMM Pagpipilin"
+
+#: src/wmm_pi.h:79 src/WmmUIDialog.h:152
+msgid "Magnetic Plot Settings"
+msgstr "Mga setting para sa Magnetic Plot"
+
+#: src/WmmUIDialog.cpp:26
+msgid "Boat"
+msgstr "Bangka"
+
+#: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
+msgid "F "
+msgstr "F "
+
+#: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
+msgid "Total Intensity"
+msgstr "Kabuuang Intensity"
+
+#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
+msgid "H "
+msgstr "H "
+
+#: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
+msgid "Horizontal Intensity"
+msgstr "Pahalang na Intensity"
+
+#: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
+msgid "X "
+msgstr "X "
+
+#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
+msgid "North Component"
+msgstr "Hilagang Bahagi"
+
+#: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
+msgid "Y "
+msgstr "Y "
+
+#: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
+msgid "East Component"
+msgstr "Silangang Bahagi"
+
+#: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
+msgid "Z "
+msgstr "Z "
+
+#: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
+msgid "Vertical Component"
+msgstr "Patayong Bahagi"
+
+#: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
+msgid "Incl"
+msgstr "Incl"
+
+#: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - Geomagnetic na pagkahilig "
+
+#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
+msgid "Vari"
+msgstr "Vari"
+
+#: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
+msgid "Magnetic Variation"
+msgstr "Magnetic na pagkakaiba"
+
+#: src/WmmUIDialog.cpp:122
+msgid "Cursor"
+msgstr "Kursor"
+
+#: src/WmmUIDialog.cpp:222
+msgid "Plot"
+msgstr "Banghay"
+
+#: src/WmmUIDialog.cpp:231
+msgid "Enable plot"
+msgstr "Paganahin ang banghay"
+
+#: src/WmmUIDialog.cpp:235
+msgid "Settings..."
+msgstr "Mga setting..."
+
+#: src/WmmUIDialog.cpp:274
+msgid "Extended"
+msgstr "Palawigin"
+
+#: src/WmmUIDialog.cpp:274
+msgid "Variation only"
+msgstr "Pagkakaiba lamang"
+
+#: src/WmmUIDialog.cpp:276
+msgid "View"
+msgstr "Tingnan"
+
+#: src/WmmUIDialog.cpp:280
+msgid "Show Plot Options"
+msgstr "Ipakita ang mga opsyon ng banghay"
+
+#: src/WmmUIDialog.cpp:283
+msgid "Show also data at cursor position"
+msgstr "Ipakita rin ang opsyon para sa kursor at datos"
+
+#: src/WmmUIDialog.cpp:286
+msgid "Show toolbar icon"
+msgstr "Ipakita ang icon ng toolbar"
+
+#: src/WmmUIDialog.cpp:289
+msgid "Show data in toolbar icon"
+msgstr "Ipakita ang datos sa icon ng toolbar"
+
+#: src/WmmUIDialog.cpp:293
+msgid "Window transparency"
+msgstr "Transparency ng window"
+
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
+msgid "Variation"
+msgstr "Pagkakaiba"
+
+#: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
+msgid "Degrees"
+msgstr "Antas"
+
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
+msgid "Inclination"
+msgstr "Pagkahilig"
+
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
+msgid "Field Strength"
+msgstr "Lakas ng Field"
+
+#: src/WmmUIDialog.cpp:356
+msgid "Nano Tesla"
+msgstr "Nano Tesla"
+
+#: src/WmmUIDialog.cpp:366
+msgid "Step Size"
+msgstr "Laki ng hakbang"
+
+#: src/WmmUIDialog.cpp:377
+msgid "Pole Accuracy"
+msgstr "Accuracy ng pole"
+
+#: src/WmmUIDialog.cpp:381
+msgid "About"
+msgstr "Tungkol"
+
+#: src/WmmUIDialog.cpp:384
+msgid "Save"
+msgstr "I-save"
+
+#: src/WmmUIDialog.cpp:387
+msgid "Cancel"
+msgstr "I-cancel"
+
+#: src/MagneticPlotMap.cpp:357
+msgid "Building Magnetic Map"
+msgstr "Gumawa ng magnetic map"
+

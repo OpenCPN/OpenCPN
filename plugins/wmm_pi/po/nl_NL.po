@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"POT-Creation-Date: 2019-02-01 13:04-0500\n"
+"PO-Revision-Date: 2019-02-06 01:02\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -27,7 +27,15 @@ msgid "\n"
 "The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
-msgstr ""
+msgstr "\n"
+"De PlugIn 'World Magnetic Model Plotting' stelt gebruikers in staat de magnetische variatie die is afgedrukt op veel rasterkaarten, te controleren.\n\n"
+"Variatie is de hoek tussen het ware en het magnetische noorden. \n"
+"Inclinatie is de verticale hoek van de aardmagnetisch veld \n"
+"(+90 of -90 graden ter plaatse van de magnetische polen). \n"
+"Veldsterkte is een waarde van het aardmagnetisch veld in nanotesla (tussen 20.000 en 66.000).\n\n"
+"De getekende lijnen zijn lijnen van gelijke variatie, inclinatie of veldsterkte.  De ruimte ertussen kan worden aangepast; meer ruimte vergt minder berekeningstijd.\n\n"
+"De schuifregelaars voor stapgrootte en poolnauwkeurigheid maken het mogelijk de verhouding tussen berekeningssnelheid en -tijd te variëren.\n\n"
+"Deze PlugIn is geschreven door Pavel Kalian en is uitgebreid door Sean D'Epagnier met  plotfunctionaliteit."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
@@ -175,19 +183,19 @@ msgstr "Toon gegevens in werkbalkpictogram"
 msgid "Window transparency"
 msgstr "Venstertransparantie"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
 msgid "Variation"
-msgstr ""
+msgstr "Variatie"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
 msgstr "graden"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
 msgid "Inclination"
 msgstr "Inclinatie"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
 msgid "Field Strength"
 msgstr "Veldsterkte"
 
@@ -215,7 +223,7 @@ msgstr "Opslaan"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/MagneticPlotMap.cpp:361
+#: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
 msgstr "Isogonenkaart wordt gemaakt"
 
