@@ -1066,7 +1066,7 @@ set(SQLITECPP_INC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Utils.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
 )
-include_directories( src/SQLiteCpp/include )
+include_directories( src/SQLiteCpp/include src/SQLiteCpp/sqlite3 )
 ADD_LIBRARY(SQLiteCpp STATIC ${SQLITECPP_SRC} ${SQLITECPP_INC})
 set_property(TARGET SQLiteCpp PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
