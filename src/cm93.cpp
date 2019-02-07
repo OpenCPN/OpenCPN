@@ -85,10 +85,6 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern bool             g_bShowDetailSlider;
 extern wxString         g_PrivateDataDir;
 
-// Flav add for CM93Offset manual setup
-extern double           g_CM93Maps_Offset_x;
-extern double           g_CM93Maps_Offset_y;
-extern bool             g_CM93Maps_Offset_on;
 extern bool             g_bopengl;
 extern PlugInManager    *g_pi_manager;
 extern float            g_GLMinSymbolLineWidth;
