@@ -36,7 +36,6 @@
 #endif
 
 #include <wx/progdlg.h>
-#include <wx/sound.h>
 #include <wx/radiobox.h>
 #include <wx/listbox.h>
 #include <wx/imaglist.h>
@@ -276,7 +275,6 @@ extern s52plib* ps52plib;
 extern wxString g_locale;
 extern bool g_bportable;
 extern bool g_bdisable_opengl;
-extern wxString* pHome_Locn;
 
 extern ChartGroupArray* g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;

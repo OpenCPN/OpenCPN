@@ -27,7 +27,6 @@
 #include "wx/wx.h"
 #include "wx/tokenzr.h"
 #include "wx/datetime.h"
-#include "wx/sound.h"
 #include <wx/wfstream.h>
 #include <wx/imaglist.h>
 
@@ -53,7 +52,6 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 
-extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
 extern MyFrame          *gFrame;
@@ -78,8 +76,6 @@ extern bool             g_bRemoveLost;
 extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
-extern bool             g_bShowTracks;
-extern double           g_ShowTracks_Mins;
 extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
@@ -89,7 +85,6 @@ extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bInlandEcdis;
 
-extern bool             g_bGPSAISMux;
 extern ColorScheme      global_color_scheme;
 
 extern bool             g_bAIS_CPA_Alert;
