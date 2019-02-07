@@ -1059,7 +1059,9 @@ void glChartCanvas::SetupOpenGL()
     //  Inform the S52 PLIB of options determined
     if(ps52plib)
         ps52plib->SetGLOptions(s_b_useStencil, s_b_useStencilAP, s_b_useScissorTest,  s_b_useFBO, g_b_EnableVBO, g_texture_rectangle_format);
-       
+    
+    m_bsetup = true;
+    
     SendJSONConfigMessage();    
 }
 
@@ -1067,6 +1069,7 @@ void glChartCanvas::SendJSONConfigMessage()
 {
     if(g_pi_manager){
         wxJSONValue v;
+        v[_T("setupComplete")] =  m_bsetup;
         v[_T("useStencil")] =  s_b_useStencil;
         v[_T("useStencilAP")] =  s_b_useStencilAP;
         v[_T("useScissorTest")] =  s_b_useScissorTest;
