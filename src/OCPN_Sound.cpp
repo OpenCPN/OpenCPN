@@ -23,13 +23,6 @@
  */
 
 #include "OCPN_Sound.h"
-#include <wx/defs.h>
-#include <wx/dialog.h>
-#include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
-#include <wx/wxchar.h>
-
 
 OcpnSound::OcpnSound()
 {
