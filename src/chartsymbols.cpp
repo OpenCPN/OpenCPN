@@ -288,12 +288,14 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
             
             else if( !strcmp( lookupNode.name(), "attrib-code") ) {
                 int nc = strlen(nodeText);
-                char *attVal = (char *)calloc(nc+2, sizeof(char));
-                strncpy(attVal, nodeText, nc);
+                if(nc >= 6){                            //  ignore spurious short fields
+                    char *attVal = (char *)calloc(nc+2, sizeof(char));
+                    strncpy(attVal, nodeText, nc);
                 
-                if( attVal[6] == '\0')
-                    attVal[6] = ' ';
-                lookup.attributeCodeArray.push_back(attVal);
+                    if( attVal[6] == '\0')
+                        attVal[6] = ' ';
+                    lookup.attributeCodeArray.push_back(attVal);
+                }
                 
             }
         
