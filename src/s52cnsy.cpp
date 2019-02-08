@@ -1442,7 +1442,7 @@ static void *LIGHTS05 (void *param)
                   _parseList(litvisstr, litvis, sizeof(litvis));
 
                 if (strpbrk(litvis, "\003\007\010"))
-                     strcpy(sym, ";CA(CHBLK, 1,CHBLK, 0");
+                     strcpy(sym, ";CA(CHBLK, 4,CHBRN, 1");
             }
 
             if(sectr2 <= sectr1)
@@ -1778,7 +1778,7 @@ static void *LIGHTS06 (void *param)
                 _parseList(litvisstr, litvis, sizeof(litvis));
                 
                 if (strpbrk(litvis, "\003\007\010"))
-                    strcpy(sym, ";CA(CHBLK, 1,CHBLK, 0");
+                    strcpy(sym, ";CA(CHBLK, 4,CHBRN, 1");
             }
             
             if(sectr2 <= sectr1)

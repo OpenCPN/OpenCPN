@@ -5525,17 +5525,36 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             lightsHtml << _T("<tr>");
             lightsHtml << _T("<td><font size=-1>");
 
+            wxString colorStr;
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
                 wxString color = thisLight->attributeValues.Item( attrIndex );
                 if( color == _T("red (3)") )
-                    lightsHtml << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                    colorStr = _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
                 if( color == _T("green (4)") )
-                    lightsHtml << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                    colorStr = _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
                 if( color == _T("white (1)") )
-                    lightsHtml << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                    colorStr = _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
             }
 
+            int visIndex = thisLight->attributeNames.Index( _T("LITVIS") );
+            if(visIndex != wxNOT_FOUND){
+                wxString vis = thisLight->attributeValues.Item( visIndex );
+                if(vis.Contains( _T("8"))){
+                    if( attrIndex != wxNOT_FOUND ) {
+                        wxString color = thisLight->attributeValues.Item( attrIndex );
+                        if( color == _T("red (3)") )
+                            colorStr = _T("<table border=0><tr><td bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                        if( color == _T("green (4)") )
+                            colorStr = _T("<table border=0><tr><td bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                        if( color == _T("white (1)") )
+                            colorStr = _T("<table border=0><tr><td bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                    }
+                }
+            }
+            
+            lightsHtml << colorStr;
+            
             lightsHtml << _T("</font></td><td><font size=-1><nobr><b>");
 
             attrIndex = thisLight->attributeNames.Index( _T("LITCHR") );
