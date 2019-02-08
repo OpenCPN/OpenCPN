@@ -59,7 +59,6 @@
 #include "Route.h"
 #include "Select.h"
 #include "FontMgr.h"
-#include "OCPN_Sound.h"
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"

@@ -70,7 +70,6 @@ extern AISTargetListDialog       *g_pAISTargetList;
 extern MarkInfoImpl              *pMarkPropDialog;
 extern RouteProp                 *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
-extern MarkInfoImpl              *pMarkInfoDialog;
 extern S57QueryDialog            *g_pObjectQueryDialog;
 extern options                   *g_options;
 extern bool                       g_bSleep;
@@ -218,7 +217,6 @@ extern s52plib          *ps52plib;
 extern wxString         g_locale;
 extern bool             g_bportable;
 extern bool             g_bdisable_opengl;
-extern wxString         *pHome_Locn;
 
 extern ChartGroupArray  *g_pGroupArray;
 
