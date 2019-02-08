@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-01 13:05-0500\n"
-"PO-Revision-Date: 2019-02-06 01:02\n"
+"PO-Revision-Date: 2019-02-08 02:18\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/chartcatalog.cpp:46
 msgid "Catalog is not valid."
-msgstr "Catalogus is niet geldig."
+msgstr "Ongeldige catalogus."
 
 #: src/chartcatalog.cpp:560
 #, c-format
@@ -32,17 +32,17 @@ msgstr "%s"
 
 #: src/chartdldr_pi.cpp:227
 msgid "ChartDownloader"
-msgstr "KaartDownloader"
+msgstr "Kaart-downloader"
 
 #: src/chartdldr_pi.cpp:232
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "Kaart Downloader PlugIn voor OpenCPN"
+msgstr "Kaart-downloader plugin voor OpenCPN"
 
 #: src/chartdldr_pi.cpp:237
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
-msgstr "Kaart Downloader PlugIn voor OpenCPN\n"
+msgstr "Kaart-downloader plugin voor OpenCPN\n"
 "Voor het downloaden van kaarten en verbeteringen vanaf bronnen die de NOAA\n"
 "kaartcatalogus ondersteunen."
 
@@ -52,7 +52,7 @@ msgstr "Kaart Downloader PlugIn voor OpenCPN\n"
 #: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1277
 #: src/chartdldr_pi.cpp:1942
 msgid "Chart Downloader"
-msgstr "Kaart Downloader"
+msgstr "Kaart-downloader"
 
 #: src/chartdldr_pi.cpp:419 src/chartdldr_pi.cpp:441
 msgid "Select all"
@@ -116,7 +116,7 @@ msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
-"het downloaden van alleen nieuwe (dus niet de bijgewerkte) kaarten. \n"
+"het downloaden van alleen nieuwe (dus niet bijgewerkte) kaarten. \n"
 "Dit kan lang duren."
 
 #: src/chartdldr_pi.cpp:695
@@ -145,7 +145,7 @@ msgstr "Downloaden bestand"
 
 #: src/chartdldr_pi.cpp:786
 msgid "Reading Headers: "
-msgstr "Lezen van koppen: "
+msgstr "Headers lezen: "
 
 #: src/chartdldr_pi.cpp:812
 #, c-format
@@ -156,7 +156,7 @@ msgstr "Nieuwe catalogus: %s niet gevonden "
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
-msgstr "Download van catalogus %s niet gelukt.\n"
+msgstr "Download van catalogus %s mislukt.\n"
 "Controleer of er een werkende internetverbinding is."
 
 #: src/chartdldr_pi.cpp:969 src/chartdldr_pi.cpp:975
@@ -309,7 +309,7 @@ msgstr "Verwijder de kaartcatalogus. De gedownloade kaarten worden niet verwijde
 
 #: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
 msgid "Edit..."
-msgstr "Bewerken ..."
+msgstr "Bewerken..."
 
 #: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
 msgid "Update"
@@ -362,7 +362,7 @@ msgstr "Alle nieuwe kaarten"
 
 #: src/chartdldrgui.cpp:498
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "Bulkbijwerking van alle geconfigureerde kaartbronnen en kaarten"
+msgstr "Bulk-bijwerken van alle geconfigureerde kaartbronnen en kaarten toestaan"
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"

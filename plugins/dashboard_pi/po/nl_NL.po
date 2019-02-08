@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-01 13:05-0500\n"
-"PO-Revision-Date: 2019-02-06 01:01\n"
+"PO-Revision-Date: 2019-02-08 02:17\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -31,7 +31,7 @@ msgstr "Grondvaart (Vgr)"
 
 #: src/dashboard_pi.cpp:111
 msgid "Speedometer"
-msgstr "Vaart en verheid"
+msgstr "Snelheidsmeter"
 
 #: src/dashboard_pi.cpp:113
 msgid "COG"
@@ -47,7 +47,7 @@ msgstr "GPS-kompas (GrK)"
 
 #: src/dashboard_pi.cpp:119
 msgid "True Compass"
-msgstr "Stuurkompas (WK)"
+msgstr "Kompaskoers"
 
 #: src/dashboard_pi.cpp:121
 msgid "STW"
@@ -179,7 +179,7 @@ msgstr "Lokale GPS klok"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local CPU Clock"
-msgstr "Lokale computer klok"
+msgstr "Lokale CPU-klok"
 
 #: src/dashboard_pi.cpp:198
 msgid "Local Sunrise/Sunset"
@@ -247,7 +247,7 @@ msgstr "Omlaag"
 
 #: src/dashboard_pi.cpp:1815
 msgid "Appearance"
-msgstr "Lettertypes"
+msgstr "Uiterlijk"
 
 #: src/dashboard_pi.cpp:1817
 msgid "Fonts"
@@ -275,7 +275,7 @@ msgstr "Eenheden"
 
 #: src/dashboard_pi.cpp:1855
 msgid "Speedometer max value:"
-msgstr "Max. vaartindicatie log:"
+msgstr "Snelheidsmeter max waarde:"
 
 #: src/dashboard_pi.cpp:1861
 msgid "Speed Over Ground Damping Factor:"
@@ -291,7 +291,7 @@ msgstr "Lokaal verschil met UTC:"
 
 #: src/dashboard_pi.cpp:1892
 msgid "Boat speed units:"
-msgstr "Eenheid voor vaart:"
+msgstr "Eenheid voor bootsnelheid:"
 
 #: src/dashboard_pi.cpp:1895 src/dashboard_pi.cpp:1936
 msgid "Honor OpenCPN settings"
@@ -340,7 +340,7 @@ msgstr "cm"
 #: src/dashboard_pi.cpp:1909
 #, c-format
 msgid "Depth Offset (%s):"
-msgstr ""
+msgstr "Diepte Offset (%s):"
 
 #: src/dashboard_pi.cpp:1933
 msgid "Distance units:"
@@ -372,11 +372,11 @@ msgstr "Kies toe te voegen instrument:"
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr ""
+msgstr "Afvaren"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."
-msgstr "Voorkeuren ..."
+msgstr "Voorkeuren..."
 
 #: src/dial.cpp:526 src/wind.cpp:66 src/wind_history.cpp:439
 msgid "NE"
@@ -412,7 +412,7 @@ msgstr "waar"
 
 #: src/instrument.cpp:240
 msgid " mag"
-msgstr "M"
+msgstr " magnetisch"
 
 #: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
