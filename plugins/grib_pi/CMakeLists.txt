@@ -51,8 +51,6 @@ IF(NOT WIN32 AND NOT APPLE)
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
-   ADD_DEFINITIONS( "-fexceptions -fvisibility=hidden" )
-   ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
 
@@ -117,10 +115,6 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-
-            ../../src/wxJSON/jsonval.cpp
-            ../../src/wxJSON/jsonreader.cpp
-            ../../src/wxJSON/jsonwriter.cpp
 )
 IF(WIN32)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
@@ -236,13 +230,14 @@ IF(WIN32)
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
-
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} WXJSON )
 
 IF(NOT WIN32)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
 ENDIF()
+
 IF(APPLE)
  FIND_PACKAGE(ZLIB REQUIRED)
  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${ZLIB_LIBRARIES} )
@@ -256,6 +251,16 @@ IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY})
 ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
+
+IF( APPLE )
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        "-Wall -Wno-unused" "-fexceptions"
+        "-Wno-overloaded-virtual"
+        "-Wno-deprecated" "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+ENDIF(APPLE)
 
 IF(APPLE)
     INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
