@@ -4,7 +4,6 @@ set(SRC
     include/gdal/cpl_config.h
     include/gdal/gdal_priv.h
     include/gdal/cpl_conv.h
-    include/gdal/iso8211.h
     include/gdal/cpl_csv.h
     include/gdal/ogr_api.h
     include/gdal/cpl_error.h

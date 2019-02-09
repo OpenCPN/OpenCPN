@@ -1347,49 +1347,46 @@ ENDIF(TINYXML_FOUND)
 IF (USE_S57)
   message (STATUS "S57 ENC support: enabled")
   SET(SRC_S57ENC
-        include/TexFont.h
+        include/cm93.h
+        include/mygeom.h
+        include/ogr_s57.h
+        include/Osenc.h
         include/s52plib.h
         include/s52utils.h
         include/s57chart.h
-        include/mygeom.h
-        src/TexFont.cpp
+        include/s57RegistrarMgr.h
+        include/SencManager.h
+        include/TexFont.h
+        src/cm93.cpp
+        src/mygeom.cpp
+        src/ogrs57datasource.cpp
+        src/ogrs57layer.cpp
+        src/Osenc.cpp
         src/s52cnsy.cpp
         src/s52plib.cpp
         src/s52utils.cpp
         src/s57chart.cpp
-        src/cm93.cpp
-        src/mygeom.cpp
-        include/cm93.h
-        src/Osenc.cpp
-        include/Osenc.h
-        src/s57obj.cpp
-        src/SencManager.cpp
-        include/SencManager.h
-        include/s57RegistrarMgr.h
-        include/ogr_s57.h
-        src/myiso8211/ddffielddefn.cpp
-        src/myiso8211/ddfmodule.cpp
-        src/myiso8211/ddfrecord.cpp
-        src/myiso8211/ddfsubfielddefn.cpp
-        src/myiso8211/ddffield.cpp
-        src/myiso8211/ddfutils.cpp
-        src/ddfrecordindex.cpp
-        src/ogrs57datasource.cpp
-        src/ogrs57layer.cpp
         src/s57classregistrar.cpp
         src/s57featuredefns.cpp
+        src/s57obj.cpp
         src/s57reader.cpp
         src/s57RegistrarMgr.cpp
+        src/SencManager.cpp
+        src/TexFont.cpp
   )
-
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
   INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
 
+  add_subdirectory(libs/iso8211)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/iso8211/include)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} ISO8211)
+
   add_subdirectory(libs/gdal)
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/gdal/include)
   SET(EXTRA_LIBS ${EXTRA_LIBS} GDAL)
+
 ELSE (USE_S57)
   message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)

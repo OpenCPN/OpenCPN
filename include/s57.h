@@ -35,7 +35,7 @@
 #define _S57_H_INCLUDED
 
 #include "gdal/ogr_feature.h"
-#include "gdal/iso8211.h"
+#include "iso8211.h"
 #include "S57ClassRegistrar.h"
 
 class S57Reader;

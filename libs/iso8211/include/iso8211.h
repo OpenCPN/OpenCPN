@@ -32,7 +32,7 @@
 #ifndef _ISO8211_H_INCLUDED
 #define _ISO8211_H_INCLUDED
 
-#include "cpl_port.h"
+#include "gdal/cpl_port.h"
 
 /**
   General data type

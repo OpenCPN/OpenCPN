@@ -73,8 +73,8 @@
  *
  */
 
-#include "gdal/iso8211.h"
 #include "gdal/cpl_conv.h"
+#include "iso8211.h"
 
 /************************************************************************/
 /*                          DDFSubfieldDefn()                           */

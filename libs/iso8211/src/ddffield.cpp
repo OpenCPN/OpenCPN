@@ -84,7 +84,7 @@
  *
  */
 
-#include "gdal/iso8211.h"
+#include "iso8211.h"
 #include "gdal/cpl_conv.h"
 
 // Note, we implement no constructor for this class to make instantiation

@@ -37,7 +37,7 @@
 #include "wx/wfstream.h"
 #include "gdal/ogrsf_frmts.h"
 
-#include "gdal/iso8211.h"
+#include "iso8211.h"
 
 #include "gdal/gdal.h"
 #include "s57RegistrarMgr.h"
