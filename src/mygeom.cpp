@@ -38,7 +38,7 @@
 #include "config.h"
 
 #ifdef USE_S57
-#include "mygdal/ogr_geometry.h"
+#include "gdal/ogr_geometry.h"
 #endif
 
 #include "cutil.h"

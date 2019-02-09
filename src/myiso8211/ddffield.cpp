@@ -84,8 +84,8 @@
  *
  */
 
-#include "iso8211.h"
-#include "mygdal/cpl_conv.h"
+#include "gdal/iso8211.h"
+#include "gdal/cpl_conv.h"
 
 // Note, we implement no constructor for this class to make instantiation
 // cheaper.  It is required that the Initialize() be called before anything

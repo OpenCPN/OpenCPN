@@ -29,9 +29,9 @@
  *
  */
 
+#include "gdal/cpl_conv.h"
+#include "gdal/cpl_string.h"
 #include "s57.h"
-#include "cpl_conv.h"
-#include "cpl_string.h"
 #include "S57ClassRegistrar.h"
 
 

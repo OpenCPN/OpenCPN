@@ -51,10 +51,10 @@
 #include "s52utils.h"
 #include "wx28compat.h"
 
-#include "mygdal/cpl_csv.h"
+#include "gdal/cpl_csv.h"
 #include "setjmp.h"
 
-#include "mygdal/ogr_s57.h"
+#include "ogr_s57.h"
 
 #include "pluginmanager.h"                      // for S57 lights overlay
 

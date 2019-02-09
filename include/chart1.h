@@ -47,7 +47,7 @@
 #include "SencManager.h"
 
 #ifdef USE_S57
-#include "mygdal/cpl_error.h"
+#include "gdal/cpl_error.h"
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );

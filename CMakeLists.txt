@@ -1362,82 +1362,34 @@ IF (USE_S57)
         include/cm93.h
         src/Osenc.cpp
         include/Osenc.h
-        include/s57RegistrarMgr.h
-        src/s57RegistrarMgr.cpp
         src/s57obj.cpp
         src/SencManager.cpp
         include/SencManager.h
-
+        include/s57RegistrarMgr.h
+        include/ogr_s57.h
         src/myiso8211/ddffielddefn.cpp
         src/myiso8211/ddfmodule.cpp
         src/myiso8211/ddfrecord.cpp
         src/myiso8211/ddfsubfielddefn.cpp
         src/myiso8211/ddffield.cpp
         src/myiso8211/ddfutils.cpp
-        src/mygdal/cpl_config.h
-        src/mygdal/gdal_priv.h
-        src/mygdal/cpl_conv.h
-        src/mygdal/iso8211.h
-        src/mygdal/cpl_csv.h
-        src/mygdal/ogr_api.h
-        src/mygdal/cpl_error.h
-        src/mygdal/ogr_attrind.h
-        src/mygdal/cpl_list.h
-        src/mygdal/cpl_minixml.h
-        src/mygdal/ogr_feature.h
-        src/mygdal/cpl_multiproc.h
-        src/mygdal/ogr_geometry.h
-        src/mygdal/cpl_odbc.h
-        src/mygdal/ogr_p.h
-        src/mygdal/ogr_core.h
-        src/mygdal/cpl_port.h
-        src/mygdal/ogr_s57.h
-        src/mygdal/cpl_string.h
-        src/mygdal/ogr_spatialref.h
-        src/mygdal/cpl_vsi.h
-        src/mygdal/ogrsf_frmts.h
-        src/mygdal/gdal.h
-        src/mygdal/s57.h
-        src/mygdal/gdal_frmts.h
-        src/mygdal/ddfrecordindex.cpp
-        src/mygdal/cpl_conv.cpp
-        src/mygdal/cpl_csv.cpp
-        src/mygdal/cpl_error.cpp
-        src/mygdal/cpl_findfile.cpp
-        src/mygdal/cpl_minixml.cpp
-        src/mygdal/cpl_path.cpp
-        src/mygdal/cpl_string.cpp
-        src/mygdal/cpl_vsisimple.cpp
-        src/mygdal/cplgetsymbol.cpp
-        src/mygdal/ograssemblepolygon.cpp
-        src/mygdal/ogrcurve.cpp
-        src/mygdal/ogrfeature.cpp
-        src/mygdal/ogrfeaturedefn.cpp
-        src/mygdal/ogrfielddefn.cpp
-        src/mygdal/ogrgeometry.cpp
-        src/mygdal/ogrgeometrycollection.cpp
-        src/mygdal/ogrgeometryfactory.cpp
-        src/mygdal/ogrlinearring.cpp
-        src/mygdal/ogrlinestring.cpp
-        src/mygdal/ogrmultilinestring.cpp
-        src/mygdal/ogrmultipoint.cpp
-        src/mygdal/ogrmultipolygon.cpp
-        src/mygdal/ogrpoint.cpp
-        src/mygdal/ogrpolygon.cpp
-        src/mygdal/ogrs57datasource.cpp
-        src/mygdal/ogrlayer.cpp
-        src/mygdal/ogrs57layer.cpp
-        src/mygdal/ogrutils.cpp
-        src/mygdal/s57classregistrar.cpp
-        src/mygdal/s57featuredefns.cpp
-        src/mygdal/s57reader.cpp
-        src/mygdal/gdal_misc.cpp
+        src/ddfrecordindex.cpp
+        src/ogrs57datasource.cpp
+        src/ogrs57layer.cpp
+        src/s57classregistrar.cpp
+        src/s57featuredefns.cpp
+        src/s57reader.cpp
+        src/s57RegistrarMgr.cpp
   )
+
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
   INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
 
+  add_subdirectory(libs/gdal)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/gdal/include)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} GDAL)
 ELSE (USE_S57)
   message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)

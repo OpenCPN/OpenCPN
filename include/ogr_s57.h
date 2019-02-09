@@ -32,7 +32,7 @@
 #ifndef _OGR_S57_H_INCLUDED
 #define _OGR_S57_H_INCLUDED
 
-#include "ogrsf_frmts.h"
+#include "gdal/ogrsf_frmts.h"
 #include "s57.h"
 
 

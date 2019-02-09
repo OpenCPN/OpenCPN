@@ -79,8 +79,8 @@
  *
  */
 
-#include "iso8211.h"
-#include "mygdal/cpl_conv.h"
+#include "gdal/iso8211.h"
+#include "gdal/cpl_conv.h"
 
 /************************************************************************/
 /*                             DDFModule()                              */

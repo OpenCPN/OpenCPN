@@ -59,7 +59,7 @@
  */
 
 #include "s57.h"
-#include "cpl_conv.h"
+#include "gdal/cpl_conv.h"
 
 /************************************************************************/
 /*                           DDFRecordIndex()                           */

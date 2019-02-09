@@ -30,8 +30,8 @@
  */
 
 #include "ogr_s57.h"
-#include "cpl_conv.h"
-#include "cpl_string.h"
+#include "gdal/cpl_conv.h"
+#include "gdal/cpl_string.h"
 
 //S57ClassRegistrar *OGRS57DataSource::poRegistrar = NULL;
 

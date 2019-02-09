@@ -100,8 +100,8 @@
  *
  */
 
-#include "iso8211.h"
-#include "mygdal/cpl_string.h"
+#include "gdal/iso8211.h"
+#include "gdal/cpl_string.h"
 #include <ctype.h>
 
 /************************************************************************/
