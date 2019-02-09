@@ -393,7 +393,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Li
     SET(OPENGL_FOUND "YES")
 
     # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-    add_subdirectory(src/glshim)
+    add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
@@ -412,7 +412,7 @@ IF(QT_ANDROID)
   SET(OPENGL_FOUND "YES")
 
   # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-  add_subdirectory(src/glshim)
+  add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 
 
