@@ -677,18 +677,8 @@ IF(OCPN_USE_CURL)
       INCLUDE("Curl")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
-    SET(SRC_WXCURL
-      src/wxcurl/base.cpp
-      src/wxcurl/dav.cpp
-      src/wxcurl/davtool.cpp
-      src/wxcurl/dialog.cpp
-      src/wxcurl/ftp.cpp
-      src/wxcurl/http.cpp
-      src/wxcurl/panel.cpp
-      src/wxcurl/telnet.cpp
-      src/wxcurl/thread.cpp
-      src/wxcurl/utils.cpp
-    )
+
+    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
     PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
     IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxcurl")
@@ -696,13 +686,13 @@ IF(OCPN_USE_CURL)
       SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
     ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with bundled wxcurl")
-      ADD_LIBRARY(WXCURL STATIC ${SRC_WXCURL})
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
-      SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
+      include("Curl")
+      add_subdirectory("libs/wxcurl")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxcurl/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
 
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
-    MESSAGE (STATUS "CURL_LIBRARIES:"  ${CURL_LIBRARIES})
 
     IF(WIN32 AND OCPN_USE_EXTERN_CURL)
       FIND_LIBRARY(CURL_LIBRARY_DLL NAMES
