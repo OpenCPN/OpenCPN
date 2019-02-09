@@ -55,4 +55,5 @@ SET(GLU_SOURCES
     )
 
 add_library(GLU_static STATIC ${GLU_SOURCES})
+add_library(glu_static::glu_static ALIAS GLU_static)
 set_target_properties(GLU_static PROPERTIES OUTPUT_NAME GLU)

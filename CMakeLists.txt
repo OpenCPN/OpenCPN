@@ -473,7 +473,7 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 ENDIF()
 
 MESSAGE (STATUS "    Adding local GLU" )
-add_subdirectory(src/glu)
+add_subdirectory(libs/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
