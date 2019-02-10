@@ -30,6 +30,8 @@ IF( NOT CMAKE_BUILD_TYPE )
        FORCE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
+
+
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #SET(CMAKE_BUILD_TYPE Debug)
@@ -81,6 +83,15 @@ IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
 ENDIF(QT_ANDROID)
 
+IF( APPLE )
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        "-Wall -Wno-unused" "-fexceptions"
+        "-Wno-overloaded-virtual"
+        "-Wno-deprecated" "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+ENDIF(APPLE)
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")
