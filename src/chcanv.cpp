@@ -2781,7 +2781,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     case WXK_F12: {
         if( m_modkeys == wxMOD_ALT )
-            m_nMeasureState = *(int *)(0);          // generate a fault for testing
+            m_nMeasureState = *(volatile int *)(0);     // generate a fault for testing
 
         ToggleChartOutlines();
         break;
