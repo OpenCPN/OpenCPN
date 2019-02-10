@@ -7682,7 +7682,7 @@ This may make them incompatible with other programs or older versions of OpenCPN
 Compressed charts may take slightly longer to load and display on some systems.\n\
 They can be decompressed again using unxz or 7 zip programs."),
                      _("OpenCPN Warning"),
-                     (long) wxYES | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING) != wxID_YES)
+                     wxYES | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING) != wxID_YES)
       return;
 
     wxArrayString filespecs;
