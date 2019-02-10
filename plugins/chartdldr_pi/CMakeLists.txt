@@ -190,6 +190,16 @@ IF (QT_ANDROID )
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
 ENDIF(QT_ANDROID)
 
+IF( APPLE )
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        "-Wall -Wno-unused" "-fexceptions"
+        "-Wno-overloaded-virtual"
+        "-Wno-deprecated" "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+ENDIF(APPLE)
+
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")
