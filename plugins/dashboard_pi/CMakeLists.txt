@@ -52,8 +52,8 @@ IF(NOT WIN32 AND NOT APPLE)
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
-   ADD_DEFINITIONS( "-O3 -fexceptions -fvisibility=hidden" )
-   ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
+    ADD_COMPILE_OPTIONS( "-O3" "-fexceptions" "-fvisibility=hidden" )
+    ADD_COMPILE_OPTIONS("-Wno-unused" "-Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
 

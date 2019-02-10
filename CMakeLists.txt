@@ -240,37 +240,51 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
   endif()
 endif()
 
-#ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
+#ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_COMPILE_OPTIONS( "-Wall"  "-g"
+      "-Wno-unused" 
+      "-fexceptions"
+      "-rdynamic" 
+      "-fno-strict-aliasing"
+  )
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-  ADD_DEFINITIONS("-Wno-deprecated-declarations")
+  ADD_COMPILE_OPTIONS("-Wno-deprecated-declarations")
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
-  #   ADD_DEFINITIONS( -pg )
+  #   ADD_COMPILE_OPTIONS( -pg )
   #   SET(CMAKE_EXE_LINKER_FLAGS -pg)
   # profiling with gcov
-  #   ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
+  #   ADD_COMPILE_OPTIONS( "-fprofile-arcs -ftest-coverage" )
   #   SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF(MINGW)
-  ADD_DEFINITIONS( "-Wall -Wno-unused -Wno-cpp -fexceptions" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+        "-Wno-unused"
+        "-Wno-cpp"
+        "-fexceptions"
+        "-fno-strict-aliasing"
+    )
 ENDIF(MINGW)
 
 IF( APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
-  ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
+    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+        "-Wno-unused"
+        "-fexceptions"
+        "-Wno-overloaded-virtual" 
+        "-fno-strict-aliasing"
+        "-Wno-deprecated"
+        "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas" 
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" 
+    )
 ENDIF(APPLE)
 
 # Add some definitions to satisfy MS
@@ -280,6 +294,18 @@ IF(MSVC)
   ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(MSVC)
 
+IF(MSVC) 
+  SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
+  SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
+  SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
+  SET(CMAKE_CXX_FLAGS_DEBUG             "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
+  SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
+  SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+ENDIF(MSVC)
+ 
 SET(LINUX_LIB_PATHS
     /usr/local/lib
     /usr/local/lib64
@@ -303,9 +329,9 @@ IF(OCPN_CI_BUILD)
 ENDIF(OCPN_CI_BUILD)
 
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}" )
+
 include(GetArch)
 GetArch()
-
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 
 #  Detect the Apple Version of the build machine
@@ -1503,18 +1529,7 @@ ENDIF(xAPPLE)
 
 
 IF(WIN32)
-  IF(MSVC)
-    SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
-    SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
-    SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi")
-    SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
-    SET(CMAKE_CXX_FLAGS_DEBUG             "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
-    SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
-    SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
-    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
-    SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
-  ENDIF(MSVC)
-  ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+ ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 

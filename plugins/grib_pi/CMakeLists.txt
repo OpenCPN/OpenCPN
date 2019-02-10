@@ -248,7 +248,7 @@ ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
-        "-Wall -Wno-unused" "-fexceptions"
+        "-Wall" "-Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
         "-Wno-unknown-pragmas"

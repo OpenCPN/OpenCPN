@@ -12,10 +12,15 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 #add_definitions(-g -O2 )
 
-IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
-ENDIF(NOT WIN32 AND NOT APPLE)
+IF (NOT WIN32 AND NOT APPLE)
+    ADD_COMPILE_OPTIONS("-Wall"  "-g"
+        "-Wno-unused"
+        "-fexceptions"
+        "-rdynamic" 
+        "-fno-strict-aliasing"
+        "-O2"
+    )
+ENDIF ()
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(include)
