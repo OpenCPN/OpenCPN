@@ -10621,8 +10621,12 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
     }
 
     if(m_pEM_OverZoom){
-        m_pEM_OverZoom->x = 0;
-        m_pEM_OverZoom->y = 40;
+        m_pEM_OverZoom->x = 4;
+        m_pEM_OverZoom->y = 0;
+        if(g_MainToolbar && IsPrimaryCanvas()){
+            wxRect masterToolbarRect = g_MainToolbar->GetRect();
+            m_pEM_OverZoom->x = masterToolbarRect.width + 4;
+        }
     }
     return m_pEM_OverZoom;
 }
