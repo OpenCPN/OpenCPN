@@ -2142,9 +2142,10 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 void GRIBOverlayFactory::OnParticleTimer( wxTimerEvent & event )
 {
     m_bUpdateParticles = true;
-    
+
+    // If multicanvas are active, render the overlay on the right canvas only
     if(GetCanvasCount() > 1)            // multi?
-        PluginGetOverlayRenderCanvas()->Refresh(false);
+        GetCanvasByIndex(1)->Refresh(false);     // update the last rendered canvas
     else
         GetOCPNCanvasWindow()->Refresh(false);
 }
