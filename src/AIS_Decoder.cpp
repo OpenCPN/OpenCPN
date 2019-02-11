@@ -2430,6 +2430,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 td->SOG = 103.0;
                 td->HDG = 511.0;
                 td->ROTAIS = -128;
+                
+                SendJSONMsg(td);
 
                 long mmsi_long = td->MMSI;
                 pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
