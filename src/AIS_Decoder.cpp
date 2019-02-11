@@ -342,6 +342,9 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
             ( g_bWplIsAprsPosition && message.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) )
         {
                 nr = Decode( message );
+                if( nr == AIS_NoError ) {
+                    g_pi_manager->SendAISSentenceToAllPlugIns(message);
+                }
                 gFrame->TouchAISActive();
         }
     }
