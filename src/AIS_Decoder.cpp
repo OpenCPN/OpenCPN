@@ -2439,8 +2439,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 //      If we have not seen a static report in 3 times the removal spec,
                 //      then remove the target from all lists
                 //      or a lost ARPA target.
-                if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost )
+                if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost ) {
+                    td->b_removed = true;
+                    SendJSONMsg(td);
                     remove_array.push_back(td->MMSI);         //Add this target to removal list
+                }
             }
         }
         
@@ -2838,5 +2841,6 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
         if(l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
     }
     jMsg[wxS("callsign")] = l_CallSign;
+    jMsg[wxS("removed")] = pTarget->b_removed;
     g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
 }

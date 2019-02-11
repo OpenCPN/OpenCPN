@@ -103,6 +103,7 @@ AIS_Target_Data::AIS_Target_Data()
     PositionReportTicks = now.GetTicks();       // Default is my idea of NOW
     StaticReportTicks = now.GetTicks();
     b_lost = false;
+    b_removed = false;
 
     IMO = 0;
     MID = 555;
@@ -188,6 +189,7 @@ void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
     PositionReportTicks = q->PositionReportTicks;
     StaticReportTicks = q->StaticReportTicks;
     b_lost = q->b_lost;
+    b_removed = q->b_removed;
     
     IMO = q->IMO;
     MID = q->MID;
