@@ -807,6 +807,14 @@ void RoutePropDlgImpl::SetColorScheme( ColorScheme cs )
     DimeControl( this );
 }
 
+void RoutePropDlgImpl::BtnsOnOKButtonClick( wxCommandEvent& event )
+{
+    SaveChanges();
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+        pRouteManagerDialog->UpdateRouteListCtrl();Hide();
+    }
+}
+
 void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
 {
     m_btnSplit->Enable( false );

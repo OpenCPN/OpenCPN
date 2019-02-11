@@ -62,7 +62,7 @@ protected:
     void ExtendOnButtonClick( wxCommandEvent& event );
     void SplitOnButtonClick( wxCommandEvent& event );
     void BtnsOnCancelButtonClick( wxCommandEvent& event ) { ResetChanges(); Hide(); }
-    void BtnsOnOKButtonClick( wxCommandEvent& event ) { SaveChanges(); Hide(); }
+    void BtnsOnOKButtonClick( wxCommandEvent& event );
     void OnRoutePropMenuSelected( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     void ItemEditOnMenuSelection( wxCommandEvent& event );
