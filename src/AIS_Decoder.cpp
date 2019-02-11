@@ -2811,12 +2811,11 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     wxJSONValue jMsg;
     
     wxLongLong t = ::wxGetLocalTimeMillis();
-    int ms = t.GetLo();
     
     jMsg[wxS("Source")] = wxS("AIS_Decoder");
     jMsg[wxT("Type")] = wxT("Information");
     jMsg[wxT("Msg")] = wxS("AIS Target");
-    jMsg[wxT("MsgId")] = ms;
+    jMsg[wxT("MsgId")] = t.GetValue();
     jMsg[wxS("lat")] = pTarget->Lat;
     jMsg[wxS("lon")] = pTarget->Lon;
     jMsg[wxS("sog")] = pTarget->SOG;
