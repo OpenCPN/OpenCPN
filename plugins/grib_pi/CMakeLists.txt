@@ -157,22 +157,15 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-    #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
-    
-    file(GLOB jasper_base_sources "src/jasper/base/*.c")
-    file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
-    file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
-    file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
-    file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
-    file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
-    
-    SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
 
-    ADD_DEFINITIONS(-DJASPER)
-    ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
+ADD_DEFINITIONS(-DJASPER)
+ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT
+                -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT
+                -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
    
-    INCLUDE_DIRECTORIES(BEFORE "src/jasper/include")
-
+add_subdirectory("libs/jasper")
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libs/jasper/src/include)
+message(STATUS "Using bundled jasper library...")
 
 
 # On Android, PlugIns need a specific linkage set....
@@ -233,6 +226,7 @@ ENDIF(WIN32)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} WXJSON )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} JASPER )
 
 IF(NOT WIN32)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
@@ -263,12 +257,13 @@ IF( APPLE )
 ENDIF(APPLE)
 
 IF(APPLE)
-    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION
+            ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
 
-	IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-		INSTALL(DIRECTORY data DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
-	ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-
+    IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
+       INSTALL(DIRECTORY data DESTINATION 
+           ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
+    ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 ENDIF(APPLE)
 
 IF(UNIX AND NOT APPLE)
