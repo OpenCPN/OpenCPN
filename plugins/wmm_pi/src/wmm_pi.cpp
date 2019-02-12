@@ -557,7 +557,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         }
 
         wxColour cf;
-        GetGlobalColor(_T("CHBLK"), &cf);
+        GetGlobalColor(_T("CHWHT"), &cf);
         dc.SetTextForeground(cf);
         if(pFontSmall->IsOk()){
             if(live.IsOk()){
