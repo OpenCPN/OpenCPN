@@ -2451,8 +2451,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
             MMSIProperties *props =  g_MMSI_Props_Array[i];
             if(td->MMSI == props->MMSI){
-                if(props->m_bignore)
+                if(props->m_bignore) {
                     remove_array.push_back(td->MMSI);         //Add this target to removal list
+                    td->b_removed = true;
+                    SendJSONMsg(td);
+                }
                 break;
             }
         }
