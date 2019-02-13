@@ -111,7 +111,7 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
     MyFontDesc *pmfd;
     auto node = m_fontlist->GetFirst();
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
             if(pmfd->m_configstring.BeforeFirst('-') == s_locale)
                 return pmfd->m_color;
@@ -128,7 +128,7 @@ bool FontMgr::SetFontColor( const wxString &TextElement, const wxColour color ) 
   MyFontDesc *pmfd;
   auto node = m_fontlist->GetFirst();
   while( node ) {
-    pmfd = (MyFontDesc *) node->GetData();
+    pmfd = node->GetData();
     if( pmfd->m_dialogstring == TextElement ) {
       if(pmfd->m_configstring.BeforeFirst('-') == s_locale) {
         pmfd->m_color = color;
@@ -174,7 +174,7 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     MyFontDesc *pmfd;
     auto node = m_fontlist->GetFirst();
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
             if(pmfd->m_configstring.BeforeFirst('-') == s_locale)
                 return pmfd->m_font;
@@ -235,7 +235,7 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont, wxColour color
     MyFontDesc *pmfd;
     auto node = m_fontlist->GetFirst();
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
             if(pmfd->m_configstring.BeforeFirst('-') == s_locale) {
                 
@@ -267,25 +267,25 @@ int FontMgr::GetNumFonts( void ) const
 
 const wxString & FontMgr::GetConfigString( int i ) const
 {
-    MyFontDesc * pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
+    MyFontDesc * pfd = m_fontlist->Item( i )->GetData();
     return pfd->m_configstring;
 }
 
 const wxString & FontMgr::GetDialogString( int i ) const
 {
-    MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
+    MyFontDesc *pfd = m_fontlist->Item( i )->GetData();
     return pfd->m_dialogstring;
 }
 
 const wxString & FontMgr::GetNativeDesc( int i ) const
 {
-    MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
+    MyFontDesc *pfd = m_fontlist->Item( i )->GetData();
     return pfd->m_nativeInfo;
 }
 
 wxString FontMgr::GetFullConfigDesc( int i ) const
 {
-    MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
+    MyFontDesc *pfd = m_fontlist->Item( i )->GetData();
     wxString ret = pfd->m_dialogstring;
     ret.Append( _T ( ":" ) );
     ret.Append( pfd->m_nativeInfo );
@@ -305,7 +305,7 @@ MyFontDesc *FontMgr::FindFontByConfigString( wxString pConfigString )
     auto node = m_fontlist->GetFirst();
     
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_configstring == pConfigString ) {
             return pmfd;
         }
@@ -332,7 +332,7 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
     auto node = m_fontlist->GetFirst();
 
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_configstring == *pConfigString ) {
             if(pmfd->m_configstring.BeforeFirst('-') == g_locale) {
                 pmfd->m_nativeInfo = nativefont;
