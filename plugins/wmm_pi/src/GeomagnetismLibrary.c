@@ -2010,6 +2010,8 @@ void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel 
 
 void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)[1])
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
     int epochs = 1;
     int i, n, m, index, epochRange;
 	FILE *SHDF_file;
@@ -2060,6 +2062,7 @@ void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)
 			}
 		}
 	}
+#pragma GCC diagnostic pop
 } /*MAG_PrintSHDFFormat*/
 
 int MAG_readMagneticModel(char *filename, MAGtype_MagneticModel * MagneticModel)
