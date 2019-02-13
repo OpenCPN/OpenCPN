@@ -150,7 +150,8 @@ OPTION (USE_S57 "Enable S57 ENC support" ON)
 
 OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
-set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
+set (WXWIDGETS_FORCE_VERSION CACHE VERSION
+     "Force usage of a specific wxWidgets version.")
 
 IF(WIN32 AND NOT UNIX)
   OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
@@ -329,7 +330,8 @@ IF(OCPN_CI_BUILD)
   SET(VERSION_DATE "${DATE}")
 ENDIF(OCPN_CI_BUILD)
 
-SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}" )
+SET(PACKAGE_VERSION
+    "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}")
 
 include(GetArch)
 GetArch()
@@ -739,72 +741,7 @@ IF(OCPN_USE_SVG)
   IF(NOT QT_ANDROID)
 
     IF(NOT WIN32)
-      #Find Cairo
-      IF( CAIRO_INCLUDE_DIR )
-        # Already in cache, be silent
-        SET( CAIRO_FIND_QUIETLY TRUE )
-      ENDIF( CAIRO_INCLUDE_DIR )
-
-      SET(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include )
-
-      IF(APPLE)
-        IF(NOT APPLE_MODERN)
-            SET(CAIRO_INC_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/include)
-            SET(LOOK_OPTION NO_DEFAULT_PATH)
-        ENDIF(NOT APPLE_MODERN)
-      ENDIF(APPLE)
-
-      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
-                 PATHS ${CAIRO_INC_LOOK_PATHS}
-                 PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
-                 ${LOOK_OPTION} )
-      message(STATUS " Cairo include directory found: ${CAIRO_INCLUDE_DIR}")
-
-      SET(CAIRO_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
-      IF(APPLE)
-        IF(NOT APPLE_MODERN)
-            SET(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib)
-            SET(LOOK_OPTION NO_DEFAULT_PATH)
-        ENDIF(NOT APPLE_MODERN)
-      ENDIF(APPLE)
-
-      SET( CAIRO_NAMES libcairo cairo )
-
-      FIND_LIBRARY( CAIRO_LIBRARY
-              NAMES ${CAIRO_NAMES}
-              PATHS ${CAIRO_LIB_LOOK_PATHS}
-              ${LOOK_OPTION})
-
-      message(STATUS " Cairo library found: ${CAIRO_LIBRARY}")
-
-      GET_FILENAME_COMPONENT( CAIRO_LIBRARY_DIR ${CAIRO_LIBRARY} PATH )
-
-      # handle the QUIETLY and REQUIRED arguments and set CAIRO_FOUND to TRUE if
-      # all listed variables are TRUE
-      INCLUDE( "FindPackageHandleStandardArgs" )
-      FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO" DEFAULT_MSG CAIRO_INCLUDE_DIR CAIRO_LIBRARY )
-
-      MARK_AS_ADVANCED( CAIRO_INCLUDE_DIR CAIRO_LIBRARY )
-      IF ( NOT CAIRO_FOUND )
-        message(FATAL_ERROR "Cairo component required, but not found!")
-      ENDIF()
-
-      #  Some systems (e.g ARMHF RPI2) require some extra libraries
-      #  This is not exactly a general solution, but probably harmless where not needed.
-      IF(NOT APPLE)
-        FIND_LIBRARY( PANGOCAIRO_LIBRARY  NAMES pangocairo-1.0 PATHS /usr/lib /usr/local/lib)
-        FIND_LIBRARY( PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS /usr/lib /usr/local/lib)
-        FIND_LIBRARY( PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS /usr/lib /usr/local/lib)
-        FIND_LIBRARY( GDK_PIXBUF_LIBRARY NAMES gdk_pixbuf-2.0 PATHS /usr/lib /usr/local/lib)
-        FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
-                                              PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
-      ENDIF(NOT APPLE)
-
-      IF ( CAIRO_EXTRAS_FOUND )
-        SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
-        message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
-      ENDIF ( CAIRO_EXTRAS_FOUND )
-
+      include(OcpnFindCairo)
 
       # Find FFMPEG - we have it disabled in our wxSVG
       #set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
@@ -825,9 +762,9 @@ IF(OCPN_USE_SVG)
       SET(CAIRO_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
     ENDIF(NOT WIN32)
 
-    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
     IF(APPLE)
-      INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIR}/..)
+        INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS}/..)
     ENDIF(APPLE)
     #INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
 
@@ -842,13 +779,13 @@ IF(OCPN_USE_SVG)
       )
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
       INSTALL(FILES ${gtkdll_files} DESTINATION ".")
-      FILE(GLOB expatdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
+      FILE(GLOB expatdll_files 
+           "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
       INSTALL(FILES ${expatdll_files} DESTINATION ".")
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
     ELSE(WIN32)
       SET(SVG_LIBS
-        ${CAIRO_LIBRARY}
-        ${CAIRO_EXTRA_LIBRARIES}
+        ${CAIRO_LIBRARIES}
 #        ${FFMPEG_LIBRARIES}
         ${EXPAT_LIBRARIES}
         ${EXIF_LIBRARIES}
