@@ -83,6 +83,7 @@
 #include "Route.h"
 #include "OCPN_AUIManager.h"
 #include "chcanv.h"
+#include "canvasMenu.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -363,7 +364,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
     MyFrame *pFrame = GetParentFrame();
     if(pFrame)
     {
-        m_plugin_menu_item_id_next = pFrame->GetPrimaryCanvas()->GetNextContextMenuId();
+        m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
     #ifdef __OCPN_USE_CURL__
