@@ -360,8 +360,13 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
     try
     {
         // Open the MBTiles database file
-        SQLite::Database  db(name.mb_str());
-        
+        const char *name_UTF8;
+        wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
+        if ( utf8CB.data() )
+            name_UTF8 = utf8CB.data();
+
+        SQLite::Database  db(name_UTF8);
+       
         // Check if tiles with advertised min and max zoom level really exist, or correct the defaults
         // We can't blindly use what we find though - the DB often contains empty cells at very low zoom levels, so if we have some info from metadata, we will use that if more conservative...
         SQLite::Statement query(db, "SELECT min(zoom_level) AS min_zoom, max(zoom_level) AS max_zoom FROM tiles");
@@ -377,7 +382,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             m_maxZoom = wxMin(m_maxZoom, zoom);
         }
         
-        std::cout << name.c_str() << " zoom_min: " << m_minZoom << " zoom_max: " << m_maxZoom << std::endl;
+//        std::cout << name.c_str() << " zoom_min: " << m_minZoom << " zoom_max: " << m_maxZoom << std::endl;
  
         // Traversing the entire tile table can be expensive....
         //  Use declared bounds if present.
@@ -442,7 +447,12 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       try
       {
             // Open the MBTiles database file
-        SQLite::Database  db(name.mb_str());
+        const char *name_UTF8;
+        wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
+        if ( utf8CB.data() )
+            name_UTF8 = utf8CB.data();
+
+        SQLite::Database  db(name_UTF8);
         
         // Compile a SQL query, getting everything from the "metadata" table
         SQLite::Statement   query(db, "SELECT * FROM metadata ");
