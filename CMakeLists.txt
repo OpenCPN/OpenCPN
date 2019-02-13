@@ -611,6 +611,10 @@ IF( APPLE )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    add_compile_options(-Wno-unknown-pragmas)
+endif ()
+
 #Enable CrashReporting for Windows (visual studio) and Linux
 IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
     OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
