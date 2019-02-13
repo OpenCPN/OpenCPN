@@ -605,8 +605,13 @@ bool ChartMBTiles::tileIsPopulated(mbTileDescriptor *tile)
     try
     {
         // Open the MBTiles database file
-        SQLite::Database  db(m_FullPath.mb_str());
-        
+        const char *name_UTF8;
+        wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
+        if ( utf8CB.data() )
+            name_UTF8 = utf8CB.data();
+
+        SQLite::Database  db(name_UTF8);
+
         char qrs[100];
         sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
         
@@ -870,14 +875,19 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     // Do not render if significantly underzoomed
-    if( VPoint.chart_scale > (10 * m_Chart_Scale) )
+    if( VPoint.chart_scale > (20 * m_Chart_Scale) )
         return true;
     
     ViewPort vp = VPoint;
     
     // Open the MBTiles database file
-    SQLite::Database  db(m_FullPath.mb_str());
-    
+    const char *name_UTF8;
+    wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
+    if ( utf8CB.data() )
+        name_UTF8 = utf8CB.data();
+
+    SQLite::Database  db(name_UTF8);
+
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
