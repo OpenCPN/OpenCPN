@@ -642,7 +642,7 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
             }
             
             
-            max_rows = (GetParent()->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
+            max_rows = (GetParent()->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 2;
             
             max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
             max_cols -= 1;
@@ -2131,7 +2131,7 @@ bool ocpnToolBarSimple::Realize()
                         if( lastTool ) lastTool->lastInLine = true;
                         m_LineCount++;
                         m_currentRowsOrColumns = 0;
-                        m_lastX += toolSize.x ;//+ topMargin;
+                        m_lastX += toolSize.x + leftMargin;
                         m_lastY = topMargin;
                     }
                     tool->m_x = (wxCoord) m_lastX;
