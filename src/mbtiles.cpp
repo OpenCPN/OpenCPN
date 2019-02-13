@@ -360,7 +360,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
     try
     {
         // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -447,7 +447,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       try
       {
             // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -605,7 +605,7 @@ bool ChartMBTiles::tileIsPopulated(mbTileDescriptor *tile)
     try
     {
         // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -881,7 +881,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     ViewPort vp = VPoint;
     
     // Open the MBTiles database file
-    const char *name_UTF8;
+    const char *name_UTF8 = "";
     wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
     if ( utf8CB.data() )
         name_UTF8 = utf8CB.data();
