@@ -546,7 +546,7 @@ void FontMgr::ScrubList( )
         MyFontDesc *pmfd;
         auto node = m_fontlist->GetFirst();
         while( node ) {
-            pmfd = (MyFontDesc *) node->GetData();
+            pmfd = node->GetData();
             wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
             if( tlocale == now_locale) {
                 if(trans == pmfd->m_dialogstring){
@@ -565,7 +565,7 @@ void FontMgr::ScrubList( )
     MyFontDesc *pmfd;
     auto node = m_fontlist->GetFirst();
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
         if( tlocale == now_locale) {
             bool bfound = false;
@@ -587,7 +587,7 @@ void FontMgr::ScrubList( )
     //  Remove the marked list items
     node = m_fontlist->GetFirst();
     while( node ) {
-        pmfd = (MyFontDesc *) node->GetData();
+        pmfd = node->GetData();
         if( pmfd->m_dialogstring == _T("") ) {
             bool bd = m_fontlist->DeleteObject(pmfd);
             if(bd)
