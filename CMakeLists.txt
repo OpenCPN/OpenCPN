@@ -589,9 +589,6 @@ IF(NOT WIN32 AND NOT APPLE )
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
   ADD_DEFINITIONS(" -Wno-deprecated-declarations ")
   # TODO: For libtess2, needs better handling after 5.0.0 cycle.
-  IF (CMAKE_COMPILER_IS_GNUCXX)
-    ADD_DEFINITIONS(" -Wno-delete-incomplete ")
-  ENDIF ()
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof

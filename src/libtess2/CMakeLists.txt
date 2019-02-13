@@ -16,12 +16,6 @@ IF(NOT WIN32 AND NOT APPLE )
 #  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
-# FIXME: Might need better handling after the 5.0.0 cycle
-IF (CMAKE_COMPILER_IS_GNUCXX)
-  ADD_DEFINITIONS(" -Wno-delete-incomplete ")
-ENDIF ()
-
-
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(Include)
 
