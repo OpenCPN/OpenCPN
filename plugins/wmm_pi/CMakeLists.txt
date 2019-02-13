@@ -67,6 +67,13 @@ ENDIF(WIN32)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        -Wno-unknown-pragmas
+        -Wno-overloaded-virtual
+    )
+endif ()
+
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
 IF (QT_ANDROID )

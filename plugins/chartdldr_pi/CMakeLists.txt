@@ -157,6 +157,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: This is to broad, needs better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
 endif ()
 IF (UNARR_LIBRARIES)
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${UNARR_LIBRARIES})

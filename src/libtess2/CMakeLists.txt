@@ -16,6 +16,13 @@ IF(NOT WIN32 AND NOT APPLE )
 #  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options("-Wno-format" "-Wno-unknown-pragmas")
+endif ()
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    add_compile_options("-Wno-format" "-Wno-unknown-pragmas")
+endif ()
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(Include)
 
