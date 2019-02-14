@@ -510,7 +510,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
  
       // set the chart scale parameters based on the minzoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
-      m_Chart_Scale = OSM_zoomScale[m_minZoom];
+      m_Chart_Scale = OSM_zoomScale[m_maxZoom];
       
 
       // Create the coverage area
