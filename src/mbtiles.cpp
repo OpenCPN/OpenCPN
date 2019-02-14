@@ -222,7 +222,7 @@ double tiley2lat(int y, int z)
 class mbTileDescriptor
 {
 public:
-    mbTileDescriptor() {  glTextureName = 0; m_bNotAvailable = false; m_bgeomSet = false;}
+    mbTileDescriptor() {  glTextureName = 0; m_bAvailable = false; m_bgeomSet = false;}
     
     virtual ~mbTileDescriptor() { }
     
@@ -232,7 +232,7 @@ public:
     LLBBox box;
     
     GLuint glTextureName;
-    bool m_bNotAvailable;
+    bool m_bAvailable;
     bool m_bgeomSet;
     
 };
@@ -507,8 +507,6 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       // Fix the missing/wrong metadata values
       InitFromTiles(name);
  
-      // Bound the max zoom reasonably
-      m_maxZoom = wxMin(m_maxZoom, 16);
  
       // set the chart scale parameters based on the minzoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
@@ -523,11 +521,13 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       
       LLRegion covrRegion;
       
+
       LLBBox extentBox;
       extentBox.Set(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
       
       int zoomFactor = m_minZoom;
       mbTileZoomDescriptor *tzd = m_tileArray[zoomFactor - m_minZoom];
+      
       
       int numtiles = tzd->nx_tile * tzd->ny_tile;
       
@@ -538,7 +538,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
               
               // Does this tile contain data?
               // If so, add to the region.
-              if(tileIsPopulated(tile)){
+              if(tile->m_bAvailable){
                 LLBBox box = tile->box;
                 
                 // Grow the tile lat/lon extents by nominally 1 meter to avoid LLRegion precision difficulties
@@ -622,9 +622,8 @@ bool ChartMBTiles::tileIsPopulated(mbTileDescriptor *tile)
         if(SQLITE_DONE == queryResult){
             return false;                           // requested ROW not found
         }
-        else{
+        else
             return true;
-        }
     }
     catch (std::exception& e)
     {
@@ -700,12 +699,12 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
            
             tzd->m_tileDesc[i*tzd->nx_tile + j] = NULL;
             
-            if(bset_geom){
-                mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j] = new mbTileDescriptor;
-                tile->tile_x = tile_x;
-                tile->tile_y = tile_y;
-                tile->m_zoomLevel = zoomFactor;
+            mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j] = new mbTileDescriptor;
+            tile->tile_x = tile_x;
+            tile->tile_y = tile_y;
+            tile->m_zoomLevel = zoomFactor;
             
+            if(bset_geom){
             //  If directed, defer expensize geometry computation until actually needed for drawing.
                 const double eps = 6e-6;  // about 1cm on earth's surface at equator
                 
@@ -720,6 +719,42 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
             tile_x++;
         }
         tile_y++;
+    }
+    
+    // Check the db for which tiles are actually populated
+    // Open the MBTiles database file
+    const char *name_UTF8;
+    wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
+    if ( utf8CB.data() )
+        name_UTF8 = utf8CB.data();
+
+    SQLite::Database  db(name_UTF8);
+
+    tile_y = tzd->tile_y_min;
+    
+    for( int i = 0; i < tzd->ny_tile; i++ ) {
+    
+        // query the database
+ 
+        char qrs[100];
+        sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_row=%d ", zoomFactor, tile_y + i);
+        
+        // Compile a SQL query, getting the specific  data
+        SQLite::Statement query(db, qrs);
+        
+        while (query.executeStep())
+        {
+                const char* colName = query.getColumn(0);
+                const char* colValue = query.getColumn(1);
+                int tile_x_found = atoi(colValue);
+                int tile_y_found = tile_y + i;
+                int index = (tile_y_found - tzd->tile_y_min) * tzd->nx_tile;
+                index += (tile_x_found - tzd->tile_x_min);
+                mbTileDescriptor *tile = tzd->m_tileDesc[index];
+
+                tile->m_bAvailable = true;
+        }
+ 
     }
 }
 
@@ -792,7 +827,7 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
         return true;
     }
     else{
-        if(tile->m_bNotAvailable)
+        if(!tile->m_bAvailable)
             return false;
         // fetch the tile data from the mbtile database
         try
@@ -806,8 +841,8 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
             
             int queryResult = query.tryExecuteStep();
             if(SQLITE_DONE == queryResult){
-                tile->m_bNotAvailable = true;
-                return false;                           // requested ROW not found
+                tile->m_bAvailable = false;
+                return false;                           // requested ROW not found, should never happen
             }
             else{
                 SQLite::Column blobColumn = query.getColumn(3);         // Get the blob
@@ -895,10 +930,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
-    int viewZoom = m_minZoom;
+    int viewZoom = m_maxZoom;
     double zoomMod = 2.0;              // decrease to get more detail, nominal 4?, 2 works OK for NOAA.
     
-    for(int kz=m_minZoom ; kz < 19 ; kz++){
+    for(int kz=m_minZoom ; kz <= 19 ; kz++){
         double db_mpp = OSM_zoomMPP[kz];
         double vp_mpp = 1. / VPoint.view_scale_ppm;
         
@@ -909,6 +944,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     }
     
     viewZoom = wxMin(viewZoom, m_maxZoom);
+    //printf("viewZoomCalc: %d  %g   %g\n",  viewZoom, VPoint.view_scale_ppm,  1. / VPoint.view_scale_ppm);
+
     int zoomFactor = m_minZoom;
     
     // DEBUG TODO   Show single zoom
@@ -919,7 +956,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
     
     while(zoomFactor <= viewZoom){
-        //printf("zoomFactor: %d\n", zoomFactor);
+        //printf("zoomFactor: %d viewZoom: %d\n", zoomFactor, viewZoom);
         mbTileZoomDescriptor *tzd = m_tileArray[zoomFactor - m_minZoom];
 
         LLBBox box = Region.GetBox();
@@ -961,10 +998,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                 if(!Region.IntersectOut(tile->box)) {
                     
                     bool btexture = getTileTexture(db, tile);
-                    if(!btexture) { // failed to load, draw red
+                    if(!btexture) { // failed to load, draw NODTA
                         glDisable(GL_TEXTURE_2D);
-                        glColor3f(1, 0, 0);
-                        continue;
+                        glColor4ub( 163, 180, 183, 128 );
                     }
                     else{
                         glEnable(GL_TEXTURE_2D);
