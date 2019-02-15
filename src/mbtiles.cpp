@@ -703,6 +703,7 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
             tile->tile_x = tile_x;
             tile->tile_y = tile_y;
             tile->m_zoomLevel = zoomFactor;
+            tile->m_bAvailable = true;
             
             if(bset_geom){
             //  If directed, defer expensize geometry computation until actually needed for drawing.
@@ -720,6 +721,8 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
         }
         tile_y++;
     }
+    
+    return;
     
     // Check the db for which tiles are actually populated
     // Open the MBTiles database file
@@ -748,11 +751,15 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
                 const char* colValue = query.getColumn(1);
                 int tile_x_found = atoi(colValue);
                 int tile_y_found = tile_y + i;
-                int index = (tile_y_found - tzd->tile_y_min) * tzd->nx_tile;
-                index += (tile_x_found - tzd->tile_x_min);
-                mbTileDescriptor *tile = tzd->m_tileDesc[index];
+                if(  (tile_x_found >= tzd->tile_x_min) && (tile_x_found <= tzd->tile_x_max)
+                    && (tile_y_found >= tzd->tile_y_min) && (tile_y_found <= tzd->tile_y_max) ){
+                    
+                    int index = (tile_y_found - tzd->tile_y_min) * tzd->nx_tile;
+                    index += (tile_x_found - tzd->tile_x_min);
+                    mbTileDescriptor *tile = tzd->m_tileDesc[index];
 
-                tile->m_bAvailable = true;
+                    tile->m_bAvailable = true;
+                }
         }
  
     }
