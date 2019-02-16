@@ -2126,7 +2126,7 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
 /* -------------------------------------------------------------------- */
 /*      Update the target version.                                      */
 /* -------------------------------------------------------------------- */
-    unsigned char       *pnRVER;
+    unsigned int       *pnRVER;
     DDFField    *poKey = poTarget->FindField( pszKey );
     DDFSubfieldDefn *poRVER_SFD;
 
@@ -2140,7 +2140,7 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
     if( poRVER_SFD == NULL )
         return FALSE;
 
-    pnRVER = (unsigned char *) poKey->GetSubfieldData( poRVER_SFD, NULL, 0 );
+    pnRVER = (unsigned int *) poKey->GetSubfieldData( poRVER_SFD, NULL, 0 );
 
     *pnRVER += 1;
 
