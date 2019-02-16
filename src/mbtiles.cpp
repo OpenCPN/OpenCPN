@@ -1081,7 +1081,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     glDisableClientState(GL_VERTEX_ARRAY);
 
     m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm;
-    printf("%g \n", m_zoomScaleFactor);
  
     
     return true;
