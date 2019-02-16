@@ -93,6 +93,7 @@
 #include "MUIBar.h"
 #include "CanvasConfig.h"
 #include "CanvasOptions.h"
+#include "mbtiles.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -10609,6 +10610,21 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
     double zoom_factor = GetVP().ref_scale / GetVP().chart_scale;
     
     if( GetQuiltMode() ) {
+
+        // disable Overzoom indicator for MBTiles
+        int refIndex = GetQuiltRefChartdbIndex();
+        if(refIndex >= 0){
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( refIndex );
+            ChartTypeEnum current_type = (ChartTypeEnum) cte.GetChartType();
+            if( current_type == CHART_TYPE_MBTILES){
+                ChartBase *pChart = m_pQuilt->GetRefChart();
+                ChartMBTiles *ptc = dynamic_cast<ChartMBTiles *>( pChart );
+                if(ptc){
+                    zoom_factor = ptc->GetZoomFactor();
+                }
+            }
+        }
+        
         if( zoom_factor <= 3.9 )
             return NULL;
     } else {
