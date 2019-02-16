@@ -54,6 +54,8 @@
 #include <wx/mstream.h>
 #include <sys/stat.h>
 #include <sstream>
+#include <map>
+#include <unordered_map>
 
 #include <sqlite3.h> //We need some defines
 
@@ -249,8 +251,8 @@ public:
     
     int nx_tile, ny_tile;
     
-    mbTileDescriptor **m_tileDesc;
-
+    //std::map<unsigned int, mbTileDescriptor *> tileMap;
+    std::unordered_map<unsigned int, mbTileDescriptor *> tileMap;
 };    
 
 
@@ -337,7 +339,7 @@ bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom)
 {
 //      if(b_allow_overzoom)
-            return (canvas_scale_factor / m_ppm_avg) / 32;         // allow wide range overzoom overscale
+            return (canvas_scale_factor / m_ppm_avg) / 132;         // allow wide range overzoom overscale
 //      else
 //            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't suggest too much overscale
 
@@ -345,7 +347,7 @@ double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_
 
 double ChartMBTiles::GetNormalScaleMax(double canvas_scale_factor, int canvas_width)
 {
-      return (canvas_scale_factor / m_ppm_avg) * 4.0;        // excessive underscale is slow, and unreadable
+      return (canvas_scale_factor / m_ppm_avg) * 40.0;        // excessive underscale is slow, and unreadable
 }
 
 
@@ -360,7 +362,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
     try
     {
         // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -447,7 +449,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       try
       {
             // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -510,7 +512,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
  
       // set the chart scale parameters based on the minzoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
-      m_Chart_Scale = OSM_zoomScale[m_maxZoom];
+      m_Chart_Scale = OSM_zoomScale[m_minZoom];
       
 
       // Create the coverage area
@@ -519,8 +521,8 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       
       PrepareTiles();           // Initialize the tile data structures
       
-      LLRegion covrRegion;
-      
+      LLRegion covrRegion(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
+#if 0      
 
       LLBBox extentBox;
       extentBox.Set(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
@@ -552,6 +554,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       //  The coverage region must be reduced if necessary to include only the db specified bounds.
       covrRegion.Intersect(extentBox);
+#endif
 
       m_minZoomRegion = covrRegion;
       
@@ -605,7 +608,7 @@ bool ChartMBTiles::tileIsPopulated(mbTileDescriptor *tile)
     try
     {
         // Open the MBTiles database file
-        const char *name_UTF8;
+        const char *name_UTF8 = "";
         wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
         if ( utf8CB.data() )
             name_UTF8 = utf8CB.data();
@@ -651,20 +654,20 @@ void ChartMBTiles::FlushTiles( void )
 {
     if(!bReadyToRender)
         return;
-    
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
-        
-        for( int i = 0; i < tzd->ny_tile; i++ ) {
-            for( int j = 0; j < tzd->nx_tile; j++ ) {
-                mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j];
-                if( tile ){
-                    glDeleteTextures(1, &tile->glTextureName);
-                    delete tile;
-                }
+
+        std::unordered_map<unsigned int, mbTileDescriptor *>::iterator it = tzd->tileMap.begin();
+        while(it != tzd->tileMap.end())
+        {
+            mbTileDescriptor *tile = it->second;
+            if( tile ){
+                glDeleteTextures(1, &tile->glTextureName);
+                delete tile;
             }
+            it++;
         }
-        delete tzd;
+         delete tzd;
     }
 }
 
@@ -682,7 +685,9 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
     
     tzd->nx_tile = tzd->tile_x_max - tzd->tile_x_min + 1;
     tzd->ny_tile = tzd->tile_y_max - tzd->tile_y_min + 1;
- 
+
+    return;
+#if 0    
     // Build the required tileDescriptor pointers
     tzd->m_tileDesc = new mbTileDescriptor*[tzd->nx_tile * tzd->ny_tile];
     
@@ -721,19 +726,18 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
         }
         tile_y++;
     }
-    
-    return;
+#endif    
     
     // Check the db for which tiles are actually populated
     // Open the MBTiles database file
-    const char *name_UTF8;
+    const char *name_UTF8 = "";
     wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
     if ( utf8CB.data() )
         name_UTF8 = utf8CB.data();
 
     SQLite::Database  db(name_UTF8);
 
-    tile_y = tzd->tile_y_min;
+    int tile_y = tzd->tile_y_min;
     
     for( int i = 0; i < tzd->ny_tile; i++ ) {
     
@@ -756,12 +760,31 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
                     
                     int index = (tile_y_found - tzd->tile_y_min) * tzd->nx_tile;
                     index += (tile_x_found - tzd->tile_x_min);
-                    mbTileDescriptor *tile = tzd->m_tileDesc[index];
+                
+                    if(tzd->tileMap.find(index) == tzd->tileMap.end()){
+                        mbTileDescriptor *tile = new mbTileDescriptor;
+                        tile->tile_x = tile_x_found;
+                        tile->tile_y = tile_y_found;
+                        tile->m_zoomLevel = zoomFactor;
+                        tile->m_bAvailable = true;
+            
+                        if(bset_geom){
+                        //  If directed, defer expensize geometry computation until actually needed for drawing.
+                            const double eps = 6e-6;  // about 1cm on earth's surface at equator
+                
+                            tile->lonmin = round(tilex2long(tile_x_found, zoomFactor)/eps)*eps;
+                            tile->lonmax = round(tilex2long(tile_x_found + 1, zoomFactor)/eps)*eps;
+                            tile->latmin = round(tiley2lat(tile_y_found - 1, zoomFactor)/eps)*eps;
+                            tile->latmax = round(tiley2lat(tile_y_found, zoomFactor)/eps)*eps;
 
-                    tile->m_bAvailable = true;
+                            tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
+                            tile->m_bgeomSet = true;
+                        }
+                        
+                        tzd->tileMap[index] = tile;
+                    }
                 }
-        }
- 
+          }
     }
 }
 
@@ -840,7 +863,7 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
         try
         {
           
-            char qrs[100];
+            char qrs[2100];
             sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
             
             // Compile a SQL query, getting the specific  blob
@@ -892,6 +915,7 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
                 //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
                 
                 glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, teximage );
@@ -917,13 +941,13 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     // Do not render if significantly underzoomed
-    if( VPoint.chart_scale > (20 * m_Chart_Scale) )
-        return true;
+//    if( VPoint.chart_scale > (20 * m_Chart_Scale) )
+//        return true;
     
     ViewPort vp = VPoint;
     
     // Open the MBTiles database file
-    const char *name_UTF8;
+    const char *name_UTF8 = "";
     wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
     if ( utf8CB.data() )
         name_UTF8 = utf8CB.data();
@@ -956,9 +980,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     int zoomFactor = m_minZoom;
     
     // DEBUG TODO   Show single zoom
-    //zoomFactor = m_minZoom;
+    //zoomFactor = 13; //m_minZoom;
     //viewZoom = zoomFactor;
     
+    //viewZoom = 11;
     float coords[8];
     float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
     
@@ -973,21 +998,28 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
         int botTile =   wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
         int leftTile =  wxMax(tzd->tile_x_min, long2tilex(box.GetMinLon(), zoomFactor));
         int rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+
+        botTile -= 1;
+        topTile += 1;
         
+        //printf("limits: {%d %d}    {%d %d}\n", botTile, topTile, leftTile, rightTile);
 
-        mbTileDescriptor **tiles = tzd->m_tileDesc;
-
-        for(int i=botTile ; i < topTile+1 ; i++){
+        for(int i=botTile ; i < topTile ; i++){
             for(int j = leftTile ; j < rightTile+1 ; j++){
-                int index = (i - tzd->tile_y_min) * tzd->nx_tile;
-                index += (j - tzd->tile_x_min);
+                unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
                 
-                mbTileDescriptor *tile = tiles[index];
+                mbTileDescriptor *tile = NULL;
+
+                if(tzd->tileMap.find(index) != tzd->tileMap.end())
+                    tile = tzd->tileMap[index];
                 if(NULL == tile){
-                    tile = tiles[index] = new mbTileDescriptor;
+                    tile = new mbTileDescriptor;
                     tile->tile_x = j;
                     tile->tile_y = i;
                     tile->m_zoomLevel = zoomFactor;
+                    tile->m_bAvailable = true;
+           
+                    tzd->tileMap[index] = tile;
                 }
                 
                 if(!tile->m_bgeomSet){
@@ -1002,12 +1034,18 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                     tile->m_bgeomSet = true;
                 }
                 
-                if(!Region.IntersectOut(tile->box)) {
-                    
+                
+                //printf("Tile: %d  %d\n", tile->tile_x, tile->tile_y);
+                
+                if(!Region.IntersectOut(tile->box))
+                {
                     bool btexture = getTileTexture(db, tile);
-                    if(!btexture) { // failed to load, draw NODTA
+                    if(!btexture) { // failed to load, draw NODTA on the minimum zoom
                         glDisable(GL_TEXTURE_2D);
-                        glColor4ub( 163, 180, 183, 128 );
+                        if(zoomFactor == m_minZoom)
+                            glColor4ub( 163, 180, 183, 128 );
+                        else
+                            continue;
                     }
                     else{
                         glEnable(GL_TEXTURE_2D);
