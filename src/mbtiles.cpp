@@ -983,9 +983,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     //zoomFactor = 13; //m_minZoom;
     //viewZoom = zoomFactor;
     
-    //viewZoom = 11;
     float coords[8];
     float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
+    int maxrenZoom = m_minZoom;
     
     while(zoomFactor <= viewZoom){
         //printf("zoomFactor: %d viewZoom: %d\n", zoomFactor, viewZoom);
@@ -1048,6 +1048,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                             continue;
                     }
                     else{
+                        maxrenZoom = zoomFactor;
                         glEnable(GL_TEXTURE_2D);
                         glColor4f(1, 1, 1, 1);
                     }
@@ -1079,6 +1080,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 
+    m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm;
+    printf("%g \n", m_zoomScaleFactor);
+ 
     
     return true;
 }

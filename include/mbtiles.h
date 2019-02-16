@@ -105,7 +105,8 @@ class  ChartMBTiles     :public ChartBase
       void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
       double GetPPM(){ return m_ppm_avg;}
-
+      double GetZoomFactor(){ return m_zoomScaleFactor; }
+      
 protected:
 //    Methods
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
@@ -133,6 +134,8 @@ protected:
       mbTileZoomDescriptor      **m_tileArray;
       LLRegion  m_minZoomRegion;
       wxBitmapType m_imageType;
+      
+      double m_zoomScaleFactor;
 
 private:
       void InitFromTiles( const wxString& name );
