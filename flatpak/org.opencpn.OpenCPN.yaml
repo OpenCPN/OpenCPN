@@ -73,24 +73,8 @@ modules:
       sources:
           - type: git
             url: https://github.com/OpenCPN/OpenCPN.git
-            tag: v4.8.4
-          - type: patch
-            path: src/0001-linux-gnome-Add-appdata-info.patch
-            use-git: true
-          - type: patch
-            path: src/0002-INSTALL-Update-linux-device-permissions-info.patch
-          - type: patch
-            path: src/0003-linux-Check-permissions-for-selected-connection-devi.patch
-          - type: patch
-            path: src/0004-Linux-plugin-loading-Support-multiple-plugin-directo.patch
-          - type: patch
-            path: src/0005-Linux-plugin-loading-Support-shell-expansions-clarif.patch
-          - type: patch
-            path: src/0006-Linux-plugin-loading-Support-data-dirs-in-different-.patch
+            tag: Beta_4.99.1408
           - type: patch
             path: src/0008-flatpak-Add-a-shell-wrapper.patch
           - type: patch
             path: src/0009-flatpak-Patch-locale-lookup-paths.patch
-          - type: patch
-            path: src/0010-Linux-Disable-file-access-dialog-on-flatpak.patch
-
