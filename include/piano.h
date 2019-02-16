@@ -104,11 +104,10 @@ private:
       int         m_hover_last;
 
       wxBrush     m_backBrush;
-      wxBrush     m_tBrush;
-      wxBrush     m_vBrush;
-      wxBrush     m_svBrush;
-      wxBrush     m_uvBrush;
-      wxBrush     m_slBrush;
+      wxBrush     m_srBrush, m_rBrush;
+      wxBrush     m_svBrush, m_vBrush;
+      wxBrush     m_unavailableBrush;
+      wxBrush     m_utileBrush, m_tileBrush;
 
       wxBrush     m_cBrush;
       wxBrush     m_scBrush;
