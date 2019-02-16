@@ -7,6 +7,11 @@
 #include <assert.h>
 #include "GeomagnetismHeader.h"
 
+#ifndef OPENCPN
+#define OPENCPN 1
+#endif
+
+
 /* $Id: GeomagnetismLibrary.c 1521 2017-01-24 17:52:41Z awoods $
  *
  * ABSTRACT
@@ -1071,6 +1076,7 @@ CALLS : none
     return TRUE;
 }
 
+#ifndef OPENCPN
 int MAG_GetUserInput(MAGtype_MagneticModel *MagneticModel, MAGtype_Geoid *Geoid, MAGtype_CoordGeodetic *CoordGeodetic, MAGtype_Date *MagneticDate)
 
 /*
@@ -1210,6 +1216,8 @@ CALLS: 	MAG_DMSstringToDegree(buffer, &CoordGeodetic->lambda); (The program uses
     free(Qstring);
     return TRUE;
 } /*MAG_GetUserInput*/
+
+#endif
 
 void MAG_PrintGradient(MAGtype_Gradient Gradient)
 {
@@ -1942,6 +1950,7 @@ INPUT : LegendreFunction Pointer to data structure with the following elements
     return TRUE;
 } /*MAG_FreeSphVarMemory*/
 
+#ifndef OPENCPN
 void MAG_PrintWMMFormat(char *filename, MAGtype_MagneticModel *MagneticModel)
 {
     int index, n, m;
@@ -1967,7 +1976,9 @@ void MAG_PrintWMMFormat(char *filename, MAGtype_MagneticModel *MagneticModel)
     }
     fclose(OUT);
 } /*MAG_PrintWMMFormat*/
+#endif
 
+#ifndef OPENCPN
 void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel *MagneticModel)
 {
     int index, n, m;
@@ -2007,6 +2018,10 @@ void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel 
     fclose(OUT);
     return;
 } /*MAG_PrintEMMFormat*/
+
+#endif
+
+#ifndef OPENCPN
 
 void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)[1])
 {
@@ -2064,6 +2079,8 @@ void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)
 	}
 #pragma GCC diagnostic pop
 } /*MAG_PrintSHDFFormat*/
+
+#endif
 
 int MAG_readMagneticModel(char *filename, MAGtype_MagneticModel * MagneticModel)
 {
@@ -3323,6 +3340,8 @@ void MAG_TMfwd4(double Eps, double Epssq, double K0R4, double K0R4oa,
     }
 } /*MAG_TMfwd4*/
 
+#ifndef OPENCPN
+
 int MAG_YearToDate(MAGtype_Date *CalendarDate)
 
 /* Converts a given Decimal year into a Year, Month and Date
@@ -3397,7 +3416,7 @@ CALLS : none
 
 } /*MAG_YearToDate*/
 
-
+#endif
 
 /******************************************************************************
  ********************************Spherical Harmonics***************************
@@ -4454,6 +4473,7 @@ void MAG_PrintUserDataWithUncertainty(MAGtype_GeoMagneticElements GeomagElements
     }
 
 }/*MAG_PrintUserDataWithUncertainty*/
+#ifndef OPENCPN
 
 void MAG_GetDeg(char* Query_String, double* latitude, double bounds[2]) {
 	/*Gets a degree value from the user using the standard input*/
@@ -4513,7 +4533,7 @@ void MAG_GetDeg(char* Query_String, double* latitude, double bounds[2]) {
         }
     }
 }
-
+#endif
 int MAG_GetAltitude(char* Query_String, MAGtype_Geoid *Geoid, MAGtype_CoordGeodetic* coords, int bounds[2], int AltitudeSetting){
 	int done, j, UpBoundOn;
 	char tmp;
