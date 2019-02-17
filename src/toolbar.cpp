@@ -2513,6 +2513,8 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     wxPoint drawAt( tool->m_x, tool->m_y );
     wxBitmap bmp = wxNullBitmap;
 
+    bool bNeedClear = !tool->bitmapOK;
+    
     if( tool->bitmapOK ) {
         if( tool->IsEnabled() ) {
             bmp = tool->GetNormalBitmap();
@@ -2638,8 +2640,9 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     }
 
     //      Clear the last drawn tool if necessary
-    if( tool->last_rect.width && ((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)) ){
-        wxBrush bb(GetGlobalColor( _T("GREY2") ));
+    if( tool->last_rect.width && ((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)) || bNeedClear )
+    {
+        wxBrush bb(GetGlobalColor( _T("GREY3") ));
         dc.SetBrush(bb);
         dc.SetPen( *wxTRANSPARENT_PEN );
         dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y, tool->last_rect.width, tool->last_rect.height);
