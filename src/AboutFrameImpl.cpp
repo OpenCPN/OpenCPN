@@ -54,7 +54,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
 
 #if !defined(__WXMSW__) && !defined(__WXOSX__)    
-    dwxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
+    wxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
     if( ::wxFileExists(testFile)){
         m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
         m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
