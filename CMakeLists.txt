@@ -402,46 +402,12 @@ IF (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
+message(STATUS "Using sources: ${SRCS} ${HDRS}")
 
 #set a build flag for arm architecture, to catch any rPI runtime changes required
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     ADD_DEFINITIONS(-DocpnARM)
 ENDIF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
-
-
-# Search for opengles, short of running a program to test the speed
-# of acceleration, I simply use gles on "native linux" arm systems
-IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Linux" )
-  find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
-  IF (OPENGLESv1_INCLUDE_DIR)
-    MESSAGE (STATUS "Found OpenGLESv1")
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
-
-    SET(OPENGLES_FOUND "YES")
-    SET(OPENGL_FOUND "YES")
-
-    add_subdirectory(libs/glshim)
-
-    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
-  ENDIF()
-ENDIF()
-
-#  Building for QT_ANDROID involves a cross-building environment,
-#  So the include directories, flags, etc must be stated explicitly
-#  without trying to locate them on the host build system.
-IF(QT_ANDROID)
-  MESSAGE (STATUS "Using GLESv1 for Android")
-  ADD_DEFINITIONS(-DocpnUSE_GLES)
-  ADD_DEFINITIONS(-DocpnUSE_GL)
-  ADD_DEFINITIONS(-DARMHF)
-
-  SET(OPENGLES_FOUND "YES")
-  SET(OPENGL_FOUND "YES")
-
-  add_subdirectory(libs/glshim)
-ENDIF(QT_ANDROID)
-
 
 
 IF(DEFINED _wx_selected_config)
@@ -498,21 +464,6 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   ENDIF(OPENGL_FOUND)
 
 ENDIF()
-
-MESSAGE (STATUS "    Adding local GLU" )
-add_subdirectory(libs/glu)
-SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
-MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
-
-MESSAGE (STATUS "    Adding local LIBTESS2" )
-add_subdirectory(libs/libtess2)
-
-# TODO: check this... is it required on both places, really?
-SET(OPENGL_LIBRARIES TESS2 ${OPENGL_LIBRARIES})
-SET(EXTRA_LIBS ${EXTRA_LIBS} TESS2)
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/libtess2/Include)
-MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
 
 IF(NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -677,143 +628,6 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 ENDIF(QT_ANDROID)
 
-IF(OCPN_USE_CURL)
-  IF(WIN32)
-    INSTALL(FILES
-        "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
-        "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
-        "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll"
-        DESTINATION ".")
-    IF(MSVC)
-        SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
-        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
-        INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
-    ELSE(MSVC) ## mingw
-        SET(CURL_LIBRARIES "curl.dll")
-        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
-    ENDIF(MSVC)
-  ELSE(WIN32)
-    SET(OCPN_USE_EXTERN_CURL ON)
-  ENDIF(WIN32)
-
-  IF(NOT QT_ANDROID)
-    IF(OCPN_USE_EXTERN_CURL)
-      FIND_PACKAGE(CURL REQUIRED)
-      INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
-    ELSE(OCPN_USE_EXTERN_CURL)
-      INCLUDE("Curl")
-      MESSAGE (STATUS "Using bundled curl library...")
-    ENDIF(OCPN_USE_EXTERN_CURL)
-
-    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
-    PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
-    IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-      message (STATUS "Building with system wxcurl")
-      INCLUDE_DIRECTORIES(${SYS_WXCURL_INCLUDE_DIR})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
-    ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-      message (STATUS "Building with bundled wxcurl")
-      include("Curl")
-      add_subdirectory("libs/wxcurl")
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxcurl/include)
-      set(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
-    ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
-
-    IF(WIN32 AND OCPN_USE_EXTERN_CURL)
-      FIND_LIBRARY(CURL_LIBRARY_DLL NAMES
-          curl
-          curllib
-          libcurl_imp
-          curllib_static
-          libcurl
-          PATH_SUFFIXES dll
-      )
-      INSTALL(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
-    ENDIF(WIN32 AND OCPN_USE_EXTERN_CURL)
-  ENDIF(NOT QT_ANDROID)
-ENDIF(OCPN_USE_CURL)
-
-
-IF(OCPN_USE_SVG)
-  MESSAGE(STATUS "SVG support enabled...")
-  IF(NOT QT_ANDROID)
-
-    IF(NOT WIN32)
-      include(OcpnFindCairo)
-
-      # Find FFMPEG - we have it disabled in our wxSVG
-      #set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
-      #unset(FFMPEG_LIBRARIES CACHE)
-      #find_package(FFmpeg)
-      #if ( NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND )
-      #  message(FATAL_ERROR "FFmpeg component required, but not found!")
-      #endif()
-      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
-
-      FIND_PACKAGE(EXPAT REQUIRED)
-      INCLUDE(${CMAKE_SOURCE_DIR}/cmake/FindEXIF.cmake)
-    ELSE(NOT WIN32)
-      #On Windows, we have our own expat
-      SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
-      INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
-      #And cairo
-      SET(CAIRO_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
-    ENDIF(NOT WIN32)
-
-    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
-    IF(APPLE)
-        INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS}/..)
-    ENDIF(APPLE)
-    #INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
-
-    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
-
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
-    IF(WIN32)
-      SET(SVG_LIBS
-        ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
-        ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
-        ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
-      )
-      FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
-      INSTALL(FILES ${gtkdll_files} DESTINATION ".")
-      FILE(GLOB expatdll_files 
-           "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
-      INSTALL(FILES ${expatdll_files} DESTINATION ".")
-      MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
-    ELSE(WIN32)
-      SET(SVG_LIBS
-        ${CAIRO_LIBRARIES}
-#        ${FFMPEG_LIBRARIES}
-        ${EXPAT_LIBRARIES}
-        ${EXIF_LIBRARIES}
-        ${GTK_LIBRARIES}
-      )
-    ENDIF(WIN32)
-    set(LATE_LIBS ${LATE_LIBS} ${SVG_LIBS})
-
-    PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
-    IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-      message (STATUS "Building with system wxsvg includes")
-      INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
-      SET(LATE_LIBS ${LATE_LIBS} ${WXSVG_LIBRARIES})
-    ELSE ()
-      add_subdirectory("libs/wxsvg")
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
-      set(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
-    ENDIF ()
-  ENDIF(NOT QT_ANDROID)
-ENDIF(OCPN_USE_SVG)
-
-
-#
-# SQLite3
-#
-add_subdirectory("libs/SQLiteCpp")
-include_directories(libs/SQLiteCpp/include )
-SET(EXTRA_LIBS ${EXTRA_LIBS} SQLITE_CPP)
 
 IF(UNIX AND NOT APPLE)
   SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
@@ -890,12 +704,6 @@ IF(OCPN_USE_LZMA)
     message (STATUS "lzma library not found")
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
-
-Include("SoundConfig")
-
-add_subdirectory("libs/nmea0183")
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
-set(EXTRA_LIBS ${EXTRA_LIBS} NMEA0183)
 
 
 #IF(NOT WIN32)
@@ -1180,6 +988,216 @@ IF(OPENGL_FOUND)
   )
 ENDIF(OPENGL_FOUND)
 
+if (APPLE)
+    ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
+elseif (WIN32)
+    ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+else ()
+    ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
+endif ()
+
+
+add_subdirectory("libs/nmea0183")
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
+set(EXTRA_LIBS ${EXTRA_LIBS} NMEA0183)
+
+#
+# SQLite3
+#
+add_subdirectory("libs/SQLiteCpp")
+include_directories(libs/SQLiteCpp/include )
+SET(EXTRA_LIBS ${EXTRA_LIBS} SQLITE_CPP)
+
+
+IF(OCPN_USE_CURL)
+  IF(WIN32)
+    INSTALL(FILES
+        "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
+        "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
+        "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll"
+        DESTINATION ".")
+    IF(MSVC)
+        SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+        INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
+    ELSE(MSVC) ## mingw
+        SET(CURL_LIBRARIES "curl.dll")
+        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
+    ENDIF(MSVC)
+  ELSE(WIN32)
+    SET(OCPN_USE_EXTERN_CURL ON)
+  ENDIF(WIN32)
+
+  IF(NOT QT_ANDROID)
+    IF(OCPN_USE_EXTERN_CURL)
+      FIND_PACKAGE(CURL REQUIRED)
+      INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
+    ELSE(OCPN_USE_EXTERN_CURL)
+      INCLUDE("Curl")
+      MESSAGE (STATUS "Using bundled curl library...")
+    ENDIF(OCPN_USE_EXTERN_CURL)
+
+    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
+    PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
+    IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      message (STATUS "Building with system wxcurl")
+      INCLUDE_DIRECTORIES(${SYS_WXCURL_INCLUDE_DIR})
+      SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
+    ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      message (STATUS "Building with bundled wxcurl")
+      include("Curl")
+      add_subdirectory("libs/wxcurl")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxcurl/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
+    ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+
+    IF(WIN32 AND OCPN_USE_EXTERN_CURL)
+      FIND_LIBRARY(CURL_LIBRARY_DLL NAMES
+          curl
+          curllib
+          libcurl_imp
+          curllib_static
+          libcurl
+          PATH_SUFFIXES dll
+      )
+      INSTALL(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
+    ENDIF(WIN32 AND OCPN_USE_EXTERN_CURL)
+  ENDIF(NOT QT_ANDROID)
+ENDIF(OCPN_USE_CURL)
+
+IF(OCPN_USE_SVG)
+  MESSAGE(STATUS "SVG support enabled...")
+  IF(NOT QT_ANDROID)
+
+    IF(NOT WIN32)
+      include(OcpnFindCairo)
+
+      # Find FFMPEG - we have it disabled in our wxSVG
+      #set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
+      #unset(FFMPEG_LIBRARIES CACHE)
+      #find_package(FFmpeg)
+      #if ( NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND )
+      #  message(FATAL_ERROR "FFmpeg component required, but not found!")
+      #endif()
+      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
+
+      FIND_PACKAGE(EXPAT REQUIRED)
+      INCLUDE(${CMAKE_SOURCE_DIR}/cmake/FindEXIF.cmake)
+    ELSE(NOT WIN32)
+      #On Windows, we have our own expat
+      SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
+      INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
+      #And cairo
+      SET(CAIRO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
+    ENDIF(NOT WIN32)
+
+    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
+    IF(APPLE)
+        INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS}/..)
+    ENDIF(APPLE)
+    #INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
+
+    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
+
+    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    IF(WIN32)
+      SET(SVG_LIBS
+        ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
+        ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
+        ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
+      )
+      FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
+      INSTALL(FILES ${gtkdll_files} DESTINATION ".")
+      FILE(GLOB expatdll_files 
+           "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
+      INSTALL(FILES ${expatdll_files} DESTINATION ".")
+      MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
+    ELSE(WIN32)
+      SET(SVG_LIBS
+        ${CAIRO_LIBRARIES}
+#        ${FFMPEG_LIBRARIES}
+        ${EXPAT_LIBRARIES}
+        ${EXIF_LIBRARIES}
+        ${GTK_LIBRARIES}
+      )
+    ENDIF(WIN32)
+    set(LATE_LIBS ${LATE_LIBS} ${SVG_LIBS})
+
+    PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
+    IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      message (STATUS "Building with system wxsvg includes")
+      INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
+      SET(LATE_LIBS ${LATE_LIBS} ${WXSVG_LIBRARIES})
+    ELSE ()
+      add_subdirectory("libs/wxsvg")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
+    ENDIF ()
+  ENDIF(NOT QT_ANDROID)
+ENDIF(OCPN_USE_SVG)
+
+IF(OCPN_NEW_SERIAL)
+  add_subdirectory("libs/serial")
+  SET(EXTRA_LIBS ${EXTRA_LIBS} SERIAL)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/serial/include)
+  message(STATUS "Using new serial library...")
+ENDIF(OCPN_NEW_SERIAL)
+
+
+# Search for opengles, short of running a program to test the speed
+# of acceleration, I simply use gles on "native linux" arm systems
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+  find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+  IF (OPENGLESv1_INCLUDE_DIR)
+    MESSAGE (STATUS "Found OpenGLESv1")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+
+    SET(OPENGLES_FOUND "YES")
+    SET(OPENGL_FOUND "YES")
+
+    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    add_subdirectory(libs/glshim)
+
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
+  ENDIF()
+ENDIF()
+
+#  Building for QT_ANDROID involves a cross-building environment,
+#  So the include directories, flags, etc must be stated explicitly
+#  without trying to locate them on the host build system.
+IF(QT_ANDROID)
+  MESSAGE (STATUS "Using GLESv1 for Android")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+  ADD_DEFINITIONS(-DocpnUSE_GL)
+  ADD_DEFINITIONS(-DARMHF)
+
+  SET(OPENGLES_FOUND "YES")
+  SET(OPENGL_FOUND "YES")
+
+  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  add_subdirectory(libs/glshim)
+ENDIF(QT_ANDROID)
+
+MESSAGE (STATUS "    Adding local GLU" )
+add_subdirectory(libs/glu)
+SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
+MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
+
+MESSAGE (STATUS "    Adding local LIBTESS2" )
+add_subdirectory(libs/libtess2)
+
+# TODO: check this... is it required on both places, really?
+SET(OPENGL_LIBRARIES TESS2 ${OPENGL_LIBRARIES})
+SET(EXTRA_LIBS ${EXTRA_LIBS} TESS2)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/libtess2/Include)
+MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
+
+
+Include("SoundConfig")
 add_subdirectory(libs/sound)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/sound/include)
 SET(EXTRA_LIBS ${EXTRA_LIBS} SOUND)
@@ -1194,7 +1212,7 @@ IF(TINYXML_FOUND)
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ELSE(TINYXML_FOUND)
   message (STATUS "Building with bundled tinyxml")
-  SET(SRCS ${SRCS} ${SRC_TINYXML})
+  target_sources(${PACKAGE_NAME} PRIVATE ${SRC_TINYXML})
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
@@ -1325,8 +1343,8 @@ INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
 # If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
 IF(MSVC)
-  SET(SRCS ${SRCS} src/opencpn.rc)
-ENDIF(MSVC)
+    target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
+ENDIF()
 
 SET(gshhs_MIN
         data/gshhs/poly-c-1.dat
@@ -1452,10 +1470,7 @@ IF(APPLE)
   SET(CMAKE_EXE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   SET(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   SET(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(SRCS ${SRCS}
-    include/macutils.h
-    src/macutils.c
-  )
+  target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
 ENDIF(APPLE)
 
 #  Mac has trouble finding libgobject-2.0.dylib
@@ -1471,7 +1486,6 @@ ENDIF(xAPPLE)
 
 
 IF(WIN32)
- ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 
@@ -1600,9 +1614,7 @@ IF(APPLE)
     SET(DOC_FILES data/doc/help_web.html)
   ENDIF(BUNDLE_DOCS MATCHES "ON")
 
-  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
-        ${HDRS}
-        ${SRCS}
+  target_sources(${PACKAGE_NAME} PRIVATE
         ${gshhs}
         ${uiData}
         ${s57data}
@@ -1634,9 +1646,6 @@ IF(APPLE)
 
 ENDIF(APPLE)
 
-IF(UNIX AND NOT APPLE)
-ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
-ENDIF(UNIX AND NOT APPLE)
 
 IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
