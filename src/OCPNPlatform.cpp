@@ -637,6 +637,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     gFrame->Show();
     glTestCanvas *tcanvas = new glTestCanvas(gFrame);
     tcanvas->Show();
+    wxYield();
     wxGLContext *pctx = new wxGLContext(tcanvas);
     tcanvas->SetCurrent(*pctx);
     
