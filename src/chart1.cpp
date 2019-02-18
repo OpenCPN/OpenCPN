@@ -10394,7 +10394,8 @@ wxArrayString *EnumerateSerialPorts( void )
         wxString port((*it).port);
         if( (*it).description.length() > 0 && (*it).description != "n/a" ) {
             port.Append(_T(" - "));
-            port.Append((*it).description);
+            wxString s_description = wxString::FromUTF8( ((*it).description).c_str());
+            port.Append( s_description );
         }
         preturn->Add(port);
     }
