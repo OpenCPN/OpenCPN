@@ -391,7 +391,7 @@ void RouteManagerDialog::Create()
     fgSizerFilterRte->SetFlexibleDirection( wxBOTH );
     fgSizerFilterRte->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
-    m_stFilterRte = new wxStaticText( m_pPanelRte, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterRte = new wxStaticText( m_pPanelRte, wxID_ANY, _("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stFilterRte->Wrap( -1 );
     fgSizerFilterRte->Add( m_stFilterRte, 0, wxALL, 5 );
     
@@ -503,7 +503,7 @@ void RouteManagerDialog::Create()
     fgSizerFilterTrk->SetFlexibleDirection( wxBOTH );
     fgSizerFilterTrk->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
-    m_stFilterTrk = new wxStaticText( m_pPanelTrk, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterTrk = new wxStaticText( m_pPanelTrk, wxID_ANY, _("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stFilterTrk->Wrap( -1 );
     fgSizerFilterTrk->Add( m_stFilterTrk, 0, wxALL, 5 );
     
@@ -602,7 +602,7 @@ void RouteManagerDialog::Create()
 	fgSizerFilterWpt->SetFlexibleDirection( wxBOTH );
 	fgSizerFilterWpt->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_stFilterWpt = new wxStaticText( m_pPanelWpt, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stFilterWpt = new wxStaticText( m_pPanelWpt, wxID_ANY, _("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stFilterWpt->Wrap( -1 );
 	fgSizerFilterWpt->Add( m_stFilterWpt, 0, wxALL, 5 );
 	
@@ -731,7 +731,7 @@ void RouteManagerDialog::Create()
     fgSizerFilterLay->SetFlexibleDirection( wxBOTH );
     fgSizerFilterLay->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
-    m_stFilterLay = new wxStaticText( m_pPanelLay, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterLay = new wxStaticText( m_pPanelLay, wxID_ANY, _("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stFilterLay->Wrap( -1 );
     fgSizerFilterLay->Add( m_stFilterLay, 0, wxALL, 5 );
     
