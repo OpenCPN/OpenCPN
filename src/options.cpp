@@ -325,6 +325,7 @@ extern bool     g_bUseWptScaMin;
 bool            g_bOverruleScaMin;
 
 extern "C" bool CheckSerialAccess(void);
+extern  wxString GetShipNameFromFile(int);
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -706,7 +707,6 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
             m_props->m_ShipName = s;
         }
         else {
-            wxString GetShipNameFromFile(int);
             m_props->m_ShipName = GetShipNameFromFile(nmmsi);
         }
     }
@@ -842,6 +842,7 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
       if (pd->ShowModal() == wxID_OK) {
         g_MMSI_Props_Array.RemoveAt(context_item);
         delete props;
+        props_new->m_ShipName = GetShipNameFromFile(props_new->MMSI);
         g_MMSI_Props_Array.Insert(props_new, context_item);
       }
       else {
