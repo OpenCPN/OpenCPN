@@ -163,6 +163,7 @@ private:
 
       bool        m_bShowGrib;
       PlugIn_ViewPort  m_current_vp;
+      wxBitmap         m_panelBitmap;
 };
 
 //----------------------------------------------------------------------------------------

@@ -77,6 +77,17 @@ grib_pi::grib_pi(void *ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
+      
+      wxString shareLocn = *GetpSharedDataLocation() +
+                          _T("plugins") + wxFileName::GetPathSeparator() +
+                          _T("grib_pi") + wxFileName::GetPathSeparator()
+                          + _T("data") + wxFileName::GetPathSeparator();
+      wxImage panelIcon(  shareLocn + _T("grib_panel_icon.png"));
+      if(panelIcon.IsOk())
+        m_panelBitmap = wxBitmap(panelIcon);
+      else
+        wxLogMessage(_T("    GRIB panel icon NOT loaded"));
+
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       m_GUIScaleFactor = -1.;
@@ -135,6 +146,8 @@ int grib_pi::Init(void)
 		  wxLogMessage(normalIcon);
 		  m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
 			  _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+                  
+
 	  }
 
       if( !QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy ) ) {
@@ -191,7 +204,7 @@ int grib_pi::GetPlugInVersionMinor()
 
 wxBitmap *grib_pi::GetPlugInBitmap()
 {
-      return _img_grib_pi;
+      return &m_panelBitmap;
 }
 
 wxString grib_pi::GetCommonName()
