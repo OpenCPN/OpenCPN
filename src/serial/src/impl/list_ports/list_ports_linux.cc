@@ -301,8 +301,9 @@ serial::list_ports()
 
     vector<string> search_globs;
     search_globs.push_back("/dev/ttyACM*");
-    search_globs.push_back("/dev/ttyS*");
     search_globs.push_back("/dev/ttyUSB*");
+    search_globs.push_back("/dev/ttyS0");
+    search_globs.push_back("/dev/ttyS1");
     search_globs.push_back("/dev/tty.*");
     search_globs.push_back("/dev/cu.*");
 
