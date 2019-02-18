@@ -359,6 +359,8 @@ public:
       void SetCanvasToolbarItemState( int tool_id, bool state );
       bool DoCanvasCOGSet( void );
       void UpdateFollowButtonState( void );
+      void ApplyGlobalSettings();
+      void SetShowGPSCompassWindow( bool bshow );
 
       
       //Todo build more accessors
@@ -881,6 +883,7 @@ private:
 
       wxString     m_alertString;
       wxRect       m_scaleBarRect;
+      bool         m_bShowCompassWin;
 
 DECLARE_EVENT_TABLE()
 };

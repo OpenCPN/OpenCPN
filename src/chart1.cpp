@@ -6315,6 +6315,14 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
         g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
     }
+    
+    // Apply any needed updates to each canvas
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->ApplyGlobalSettings();
+    }
+
 
     //    Do a full Refresh, trying to open the last open chart
 //TODO  This got move up a level.  FIX ANDROID codepath    

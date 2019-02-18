@@ -893,8 +893,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     m_Piano = new Piano(this);
 
+    m_bShowCompassWin = g_bShowCompassWin;
+
     m_Compass = new ocpnCompass(this);
-    m_Compass->Show(g_bShowCompassWin);
+    m_Compass->Show(m_bShowCompassWin);
 
     m_bToolbarEnable = false;
 }
@@ -1081,6 +1083,15 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 
 }
 
+void ChartCanvas::ApplyGlobalSettings()
+{
+    // GPS compas window
+    m_bShowCompassWin = g_bShowCompassWin;
+    if(m_Compass)
+        m_Compass->Show(m_bShowCompassWin);
+}
+
+
 void ChartCanvas::CheckGroupValid( bool showMessage, bool switchGroup0)
 {
     bool groupOK = CheckGroup( m_groupIndex );
@@ -1096,11 +1107,22 @@ void ChartCanvas::SetShowGPS( bool bshow )
     if(m_bShowGPS != bshow){
         delete m_Compass;
         m_Compass = new ocpnCompass( this, bshow );
-        m_Compass->Show(g_bShowCompassWin);
+        m_Compass->Show(m_bShowCompassWin);
     }
     m_bShowGPS = bshow;
     
 }
+
+void ChartCanvas::SetShowGPSCompassWindow( bool bshow )
+{
+    if(m_Compass){
+        m_Compass->Show(m_bShowCompassWin);
+        if(m_bShowCompassWin)
+            m_Compass->UpdateStatus();
+    }
+
+}
+
 
 void ChartCanvas::SetToolbarEnable( bool bShow )
 {
@@ -3140,6 +3162,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
+           m_bShowCompassWin = !m_bShowCompassWin;
+           SetShowGPSCompassWindow(m_bShowCompassWin);
+           Refresh( false );
+           break;
+
+
 //             if (m_Compass) {
 //                 m_Compass->Show(!m_Compass->IsShown());
 //                 if (m_Compass->IsShown())
@@ -3147,7 +3175,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 //                 m_brepaint_piano = true;
 //                 Refresh( false );
 //             }
-            break;
 
         default:
             break;
@@ -10755,7 +10782,7 @@ emboss_data *ChartCanvas::EmbossDepthScale()
 
     ped->x = ( GetVP().pix_width - ped->width );
 
-    if(m_Compass && g_bShowCompassWin){
+    if(m_Compass && m_bShowCompassWin){
         wxRect r = m_Compass->GetRect();
         ped->y = r.y + r.height;
      }
