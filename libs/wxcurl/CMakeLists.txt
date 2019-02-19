@@ -45,9 +45,9 @@ add_library(wxcurl::wxcurl ALIAS WXCURL)
 set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXCURL 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE ${CURL_INCLUDE_DIRS}
+    PUBLIC ${CURL_INCLUDE_DIRS}
 )
+target_link_libraries(WXCURL ${CURL_LIBRARIES})
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(WXCURL PRIVATE "-Wno-varargs") 
 endif()
-target_link_libraries(WXCURL ${CURL_LIBRARIES})

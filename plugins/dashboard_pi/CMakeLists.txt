@@ -115,7 +115,10 @@ SET(SRC_DASHBOARD
     src/from_ownship.h
     src/wxJSON/jsonval.cpp
     src/wxJSON/jsonreader.cpp
-
+    include/wx/json_defs.h
+    include/wx/jsonreader.h
+    include/wx/jsonval.h
+    include/wx/jsonwriter.h
 )
 
 SET(SRC_NMEA0183
@@ -166,6 +169,8 @@ SET(SRC_NMEA0183
     src/nmea0183/vhw.cpp
     src/nmea0183/vwr.cpp
     src/nmea0183/vwr.hpp
+    src/nmea0183/xte.cpp
+    src/nmea0183/xte.hpp
     src/nmea0183/zda.cpp
     src/nmea0183/zda.hpp
     src/nmea0183/rsa.hpp
@@ -184,13 +189,18 @@ SET(SRC_NMEA0183
     src/nmea0183/xdr.cpp
     src/nmea0183/xdr.hpp
 )
-INCLUDE_DIRECTORIES(src/nmea0183)
+##INCLUDE_DIRECTORIES(src/nmea0183)
 
 
 SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 SET(BUILD_SHARED_LIBS "ON")
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
-
+target_include_directories(${PACKAGE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/wx
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/nmea0183
+)
 
 IF(WIN32)
   IF(MSVC)
@@ -238,6 +248,9 @@ ENDIF(QT_ANDROID)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+if (TARGET wxsvg::wxsvg)
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} wxsvg::wxsvg )
+endif()
 
 
 IF(APPLE)

@@ -32,15 +32,12 @@ if (APPLE)
   endif (NOT APPLE_MODERN)
 endif (APPLE)
 
-set( CAIRO_NAMES libcairo cairo )
 find_library(CAIRO_LIBRARIES
-    NAMES ${CAIRO_NAMES}
+    NAMES libcairo cairo 
     PATHS ${CAIRO_LIB_LOOK_PATHS}
     ${LOOK_OPTION}
 )
 message(STATUS " Cairo library found: ${CAIRO_LIBRARIES}")
-
-get_filename_component(CAIRO_LIBRARY_DIR ${CAIRO_LIBRARIES} PATH)
 
 # handle the QUIETLY and REQUIRED arguments and set CAIRO_FOUND to TRUE if
 # all listed variables are TRUE
@@ -84,3 +81,12 @@ if (CAIRO_EXTRAS_FOUND)
     message(STATUS "Cairo Extra Libraries: ${CAIRO_EXTRA_LIBRARIES}")
 endif ()
 set(CAIRO_LIBRARIES ${CAIRO_LIBRARIES} ${CAIRO_EXTRA_LIBRARIES})
+add_library(_CAIRO INTERFACE)
+target_link_libraries(_CAIRO INTERFACE
+    ${CAIRO_LIBRARIES} ${CAIRO_EXTRA_LIBRARIES}
+)
+target_include_directories(_CAIRO INTERFACE ${CAIRO_INCLUDE_DIRS})
+add_library(ocpn::cairo ALIAS _CAIRO)
+if (APPLE)
+    target_include_directories(_CAIRO INTERFACE ${CAIRO_INCLUDE_DIRS}/..)
+endif ()

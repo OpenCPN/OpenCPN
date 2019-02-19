@@ -126,7 +126,7 @@ MACRO(BUNDLE_TCDATA_OPT onoff)
 ENDMACRO(BUNDLE_TCDATA_OPT)
 
 MACRO(BUNDLE_GSHHS_OPT value)
-  SET(BUNDLE_GSHHS "${value}" CACHE STRING 
+  SET(BUNDLE_GSHHS "${value}" CACHE STRING
       "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
 ENDMACRO(BUNDLE_GSHHS_OPT)
 
@@ -225,9 +225,9 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
 endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
-  # Add support for address etc sanitizers, part 1/2 
+  # Add support for address etc sanitizers, part 1/2
   # (other half after ADD_EXECUTABLE)
-  set_property(CACHE ENABLE_SANITIZER PROPERTY 
+  set_property(CACHE ENABLE_SANITIZER PROPERTY
                STRINGS none address memory thread undefined)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
     add_compile_options(-fsanitize=${ENABLE_SANITIZER})
@@ -246,9 +246,9 @@ endif()
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_COMPILE_OPTIONS( "-Wall"  "-g"
-      "-Wno-unused" 
+      "-Wno-unused"
       "-fexceptions"
-      "-rdynamic" 
+      "-rdynamic"
       "-fno-strict-aliasing"
   )
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -279,12 +279,12 @@ IF( APPLE )
     ADD_COMPILE_OPTIONS( "-Wall" "-g"
         "-Wno-unused"
         "-fexceptions"
-        "-Wno-overloaded-virtual" 
+        "-Wno-overloaded-virtual"
         "-fno-strict-aliasing"
         "-Wno-deprecated"
         "-Wno-deprecated-declarations"
-        "-Wno-unknown-pragmas" 
-        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" 
+        "-Wno-unknown-pragmas"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
 
@@ -296,7 +296,7 @@ IF(MSVC)
 ENDIF(MSVC)
 SET(ENV{XPDeprecationWarning} "false")
 
-IF(MSVC) 
+IF(MSVC)
   SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
   SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
   SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd8051 /wd4068")
@@ -307,7 +307,7 @@ IF(MSVC)
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
   SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
 ENDIF(MSVC)
- 
+
 SET(LINUX_LIB_PATHS
     /usr/local/lib
     /usr/local/lib64
@@ -399,7 +399,6 @@ IF (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 message(STATUS "Using sources: ${SRCS} ${HDRS}")
@@ -501,11 +500,11 @@ IF(NOT QT_ANDROID)
   endif ()
   IF(MSYS)
     # Convert msys to windows paths, and handle the missing /usr
-    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" 
+    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
            wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
   ENDIF(MSYS)
   INCLUDE(${wxWidgets_USE_FILE})
-  
+
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
   MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -537,69 +536,6 @@ SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 
-# require proper c++
-#ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
-#TODO: Should we use  -fno-stack-protector
-#  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
-IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-unknown-pragmas")
-  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-    ADD_DEFINITIONS( " -O0")
-  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
-  ADD_DEFINITIONS(" -Wno-deprecated-declarations ")
-  # TODO: For libtess2, needs better handling after 5.0.0 cycle.
-
-  ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
-  # profiling with gprof
-  #   ADD_DEFINITIONS( -pg )
-  #   SET(CMAKE_EXE_LINKER_FLAGS -pg)
-  # profiling with gcov
-  #   ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
-  #   SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
-ENDIF(NOT WIN32 AND NOT APPLE)
-
-IF(MINGW)
-  ADD_DEFINITIONS( "-Wall -Wno-unused -Wno-cpp -fexceptions" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-ENDIF(MINGW)
-
-IF( APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
-  ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
-ENDIF(APPLE)
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
-    add_compile_options(-Wno-unknown-pragmas)
-    add_compile_options(-Wno-overloaded-virtual)
-endif ()
-
-#Enable CrashReporting for Windows (visual studio) and Linux
-IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
-    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" OFF)
-ELSE()
-    SET(OCPN_USE_CRASHREPORT FALSE)
-ENDIF()
-IF(OCPN_USE_CRASHREPORT)
-  MESSAGE (STATUS "Crash reporting enabled")
-  IF(MSVC)
-    MESSAGE (STATUS "Using Windows CrashRpt")
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib)
-    SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
-  ELSE(MSVC)
-    IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
-      IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
-        MESSAGE (STATUS "Using Linux crash reporting")
-      ENDIF()
-    ENDIF()
-  ENDIF(MSVC)
-ENDIF(OCPN_USE_CRASHREPORT)
-
 IF(QT_ANDROID)
   SET(CMAKE_BUILD_TYPE Debug)
   ADD_DEFINITIONS(-D__WXQT__)
@@ -627,83 +563,6 @@ IF(QT_ANDROID)
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 ENDIF(QT_ANDROID)
-
-
-IF(UNIX AND NOT APPLE)
-  SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
-  FIND_PATH( SQLITE3_INCLUDE_DIR sqlite3.h
-            PATHS ${SQLITE3_INC_LOOK_PATHS})
-
-  message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
-  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${LINUX_LIB_PATHS}
-               NAMES sqlite3 libsqlite3)
-  message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
-
-  IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
-    MESSAGE(STATUS "Found SQLite3 dev environment.")
-    INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
-
-    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE 
-          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
-    string(REGEX REPLACE
-           "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1"
-           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
-    MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
-    IF( ${SQLITE3_VERSION} LESS "3019000" )
-      add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
-    ENDIF( ${SQLITE3_VERSION} LESS "3019000" )
-
-  ELSE(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-    MESSAGE(STATUS "Could not find SQLite3 dev environment.")
-    MESSAGE(STATUS "Building local SQLite3 library.")
-    ADD_LIBRARY(sqlite3 STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
-    SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
-  ENDIF(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-ENDIF(UNIX AND NOT APPLE)
-
-IF(WIN32 OR APPLE)
-  ADD_LIBRARY(sqlite3 STATIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
-  )
-  include_directories(
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3
-  )
-  SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
-ENDIF(WIN32 OR APPLE)
-
-FIND_PACKAGE(Gettext REQUIRED)
-
-IF(UNIX)
-  IF(NOT QT_ANDROID) # this should be detected by the grib plugin
-    FIND_PACKAGE(BZip2 REQUIRED)
-    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
-    FIND_PACKAGE(ZLIB REQUIRED)
-    FIND_PACKAGE(X11)
-    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-    IF(NOT APPLE)
-      #TinyXML from Homebrew is not good enough for our GpxDocument needs
-      #We should probably replace it with pugixml completely anyway...
-      FIND_PACKAGE(TinyXML)
-    ENDIF(NOT APPLE)
-  ENDIF(NOT QT_ANDROID)
-ENDIF(UNIX)
-
-# check for lzma support for reading compressed charts
-IF(WIN32)
-  LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
-  LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
-ENDIF(WIN32)
-IF(OCPN_USE_LZMA)
-  FIND_PACKAGE(LibLZMA)
-  IF(LIBLZMA_FOUND)
-    message (STATUS "Building with lzma support")
-    INCLUDE_DIRECTORIES(${LIBLZMA_INCLUDE_DIR})
-  ELSE(LIBLZMA_FOUND)
-    message (STATUS "lzma library not found")
-  ENDIF(LIBLZMA_FOUND)
-ENDIF(OCPN_USE_LZMA)
 
 
 #IF(NOT WIN32)
@@ -937,7 +796,7 @@ ENDIF()
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
         message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
-    ELSE()
+    ELSE ()
         SET(SRCS ${SRCS}
             src/DarkMode.mm
             src/DarkMode.h
@@ -956,37 +815,13 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(SRCS ${SRCS} src/crashprint.cpp)
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
-#  Search for wxWidgets 2.9 or newer
-STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
-IF(wx_Version_2.9+)
-ELSE(wx_Version_2.9+)
-  #  SET(HDRS ${HDRS} include/scrollingdialog.h )
-  #  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
-ENDIF(wx_Version_2.9+)
-
-SET( PACKAGE_HEADERS "" )
-
 SET(SRC_TINYXML
-            src/tinyxml.cpp
-            src/tinyxmlerror.cpp
-            src/tinyxmlparser.cpp
-            include/tinyxml.h
+    src/tinyxml.cpp
+    src/tinyxmlerror.cpp
+    src/tinyxmlparser.cpp
+    include/tinyxml.h
 )
 
-IF(OPENGL_FOUND)
-  SET(HDRS ${HDRS} include/glChartCanvas.h
-                   include/glTextureDescriptor.h
-                   include/glTexCache.h
-                   include/glTextureManager.h
-                   include/TexFont.h
-  )
-  SET(SRCS ${SRCS} src/glChartCanvas.cpp
-                   src/glTextureDescriptor.cpp
-                   src/glTexCache.cpp
-                   src/glTextureManager.cpp
-                   src/TexFont.cpp
-  )
-ENDIF(OPENGL_FOUND)
 
 if (APPLE)
     ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
@@ -997,17 +832,108 @@ else ()
 endif ()
 
 
-add_subdirectory("libs/nmea0183")
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
-set(EXTRA_LIBS ${EXTRA_LIBS} NMEA0183)
+FIND_PACKAGE(Gettext REQUIRED)
 
-#
-# SQLite3
-#
+IF(OCPN_USE_CRASHREPORT)
+  MESSAGE (STATUS "Crash reporting enabled")
+  IF(MSVC)
+    MESSAGE (STATUS "Using Windows CrashRpt")
+    target_include_directories(${PACKAGE_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE
+       ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib)
+    SET(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} /DEBUG)
+  ELSE(MSVC)
+    IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
+      IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
+        MESSAGE (STATUS "Using Linux crash reporting")
+      ENDIF()
+    ENDIF()
+  ENDIF(MSVC)
+ENDIF(OCPN_USE_CRASHREPORT)
+
+IF(UNIX AND NOT APPLE)
+  SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
+  FIND_PATH(SQLITE3_INCLUDE_DIR sqlite3.h PATHS ${SQLITE3_INC_LOOK_PATHS})
+  message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
+
+  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${LINUX_LIB_PATHS}
+               NAMES sqlite3 libsqlite3)
+  message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
+
+  IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
+    MESSAGE(STATUS "Found SQLite3 dev environment.")
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${SQLITE3_INCLUDE_DIR})
+
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE
+          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
+    string(REGEX REPLACE
+           "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1"
+           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
+    MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
+    IF( ${SQLITE3_VERSION} LESS "3019000" )
+      target_compile_definitions(${PACKAGE_NAME} PRIVATE
+          -DSQLITE_USE_LEGACY_STRUCT)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ${SQLITE3_LIBRARY})
+
+    ENDIF ()
+
+  ELSE(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
+    MESSAGE(STATUS "Could not find SQLite3 dev environment.")
+    MESSAGE(STATUS "Building local SQLite3 library.")
+    add_library(SQLITE3 STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h
+    )
+    target_link_libraries(${PACKAGE_NAME} PRIVATE  SQLITE3)
+  ENDIF(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
+ENDIF(UNIX AND NOT APPLE)
+
+
+IF(UNIX)
+  IF(NOT QT_ANDROID) # this should be detected by the grib plugin
+    FIND_PACKAGE(BZip2 REQUIRED)
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${BZIP2_INCLUDE_DIR})
+    FIND_PACKAGE(ZLIB REQUIRED)
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${ZLIB_INCLUDE_DIR})
+    FIND_PACKAGE(X11)
+    IF(NOT APPLE)
+      #TinyXML from Homebrew is not good enough for our GpxDocument needs
+      #We should probably replace it with pugixml completely anyway...
+      FIND_PACKAGE(TinyXML)
+    ENDIF(NOT APPLE)
+  ENDIF(NOT QT_ANDROID)
+ENDIF(UNIX)
+
+IF(WIN32 OR APPLE)
+  ADD_LIBRARY(SQLITE3 STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
+  )
+  target_include_directories(${PACKAGE_NAME} PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3
+  )
+  target_link_libraries(${PACKAGE_NAME} PRIVATE SQLITE3)
+ENDIF(WIN32 OR APPLE)
+
+# check for lzma support for reading compressed charts
+IF(WIN32)
+  LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
+  LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
+ENDIF(WIN32)
+IF(OCPN_USE_LZMA)
+  FIND_PACKAGE(LibLZMA)
+  IF(LIBLZMA_FOUND)
+    message (STATUS "Building with lzma support")
+    target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIR})
+  ELSE(LIBLZMA_FOUND)
+    message (STATUS "lzma library not found")
+  ENDIF(LIBLZMA_FOUND)
+ENDIF(OCPN_USE_LZMA)
+
 add_subdirectory("libs/SQLiteCpp")
-include_directories(libs/SQLiteCpp/include )
-SET(EXTRA_LIBS ${EXTRA_LIBS} SQLITE_CPP)
-
+target_link_libraries(${PACKAGE_NAME} PRIVATE sqlite_cpp::sqlite_cpp)
 
 IF(OCPN_USE_CURL)
   IF(WIN32)
@@ -1031,27 +957,26 @@ IF(OCPN_USE_CURL)
   IF(NOT QT_ANDROID)
     IF(OCPN_USE_EXTERN_CURL)
       FIND_PACKAGE(CURL REQUIRED)
-      INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
+      target_include_directories(${PACKAGE_NAME} PRIVATE ${CURL_INCLUDE_DIRS})
     ELSE(OCPN_USE_EXTERN_CURL)
       INCLUDE("Curl")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
 
-    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
     PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
     IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxcurl")
-      INCLUDE_DIRECTORIES(${SYS_WXCURL_INCLUDE_DIR})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
-    ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      target_include_directories(${PACKAGE_NAME} PRIVATE
+          ${CURL_INCLUDE_DIRS} ${SYS_WXCURL_INCLUDE_DIR})
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ${SYS_WXCURL_LIBRARIES})
+    ELSE ()
       message (STATUS "Building with bundled wxcurl")
       include("Curl")
       add_subdirectory("libs/wxcurl")
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxcurl/include)
-      set(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
-    ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      target_link_libraries(${PACKAGE_NAME} PRIVATE WXCURL)
+    ENDIF ()
 
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CURL_LIBRARIES})
 
     IF(WIN32 AND OCPN_USE_EXTERN_CURL)
       FIND_LIBRARY(CURL_LIBRARY_DLL NAMES
@@ -1070,78 +995,88 @@ ENDIF(OCPN_USE_CURL)
 IF(OCPN_USE_SVG)
   MESSAGE(STATUS "SVG support enabled...")
   IF(NOT QT_ANDROID)
-
-    IF(NOT WIN32)
-      include(OcpnFindCairo)
-
-      # Find FFMPEG - we have it disabled in our wxSVG
-      #set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
-      #unset(FFMPEG_LIBRARIES CACHE)
-      #find_package(FFmpeg)
-      #if ( NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND )
-      #  message(FATAL_ERROR "FFmpeg component required, but not found!")
-      #endif()
-      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
-
-      FIND_PACKAGE(EXPAT REQUIRED)
-      INCLUDE(${CMAKE_SOURCE_DIR}/cmake/FindEXIF.cmake)
-    ELSE(NOT WIN32)
-      #On Windows, we have our own expat
-      SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include)
-      INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
-      #And cairo
-      SET(CAIRO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
-    ENDIF(NOT WIN32)
-
-    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
-    IF(APPLE)
-        INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS}/..)
-    ENDIF(APPLE)
-    #INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
-
-    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
-
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
-    IF(WIN32)
-      SET(SVG_LIBS
-        ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
-        ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
-        ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
+    IF (WIN32)
+      #On Windows, we have our own expat and cairo
+      add_library(_EXPAT INTERFACE)
+      target_include_directories(_EXPAT INTERFACE
+          ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include
       )
+      target_link_libraries(_EXPAT INTERFACE
+          ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
+      )
+      add_library(ocpn::expat ALIAS _EXPAT)
+
+      add_library(_CAIRO INTERFACE)
+      target_include_directories(_CAIRO INTERFACE
+          ${CMAKE_SOURCE_DIR}/buildwin/gtk/include
+      )
+      target_link_libraries(_CAIRO INTERFACE
+          ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
+          ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
+      )
+      add_library(ocpn::cairo ALIAS _CAIRO)
+
+      target_link_libraries(${PACKAGE_NAME} PRIVATE _EXPAT _CAIRO)
+
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
       INSTALL(FILES ${gtkdll_files} DESTINATION ".")
-      FILE(GLOB expatdll_files 
+      FILE(GLOB expatdll_files
            "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
       INSTALL(FILES ${expatdll_files} DESTINATION ".")
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
-    ELSE(WIN32)
-      SET(SVG_LIBS
-        ${CAIRO_LIBRARIES}
-#        ${FFMPEG_LIBRARIES}
-        ${EXPAT_LIBRARIES}
-        ${EXIF_LIBRARIES}
-        ${GTK_LIBRARIES}
+   ELSE (WIN32)
+      # Find FFMPEG - we have it disabled in our wxSVG
+      #set(FFmpeg_FIND_COMPONENTS 
+      #        AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
+      #unset(FFMPEG_LIBRARIES CACHE)
+      #find_package(FFmpeg)
+      #if (NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND
+      #    OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND
+      #)
+      #    message(FATAL_ERROR "FFmpeg component required, but not found!")
+      #endif()
+      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
+      FIND_PACKAGE(EXPAT REQUIRED)
+      add_library(_EXPAT INTERFACE)
+      target_include_directories(_EXPAT INTERFACE ${EXPAT_INCLUDE_DIRS})
+      target_link_libraries(_EXPAT INTERFACE ${EXPAT_LIBRARIES})
+      add_library(ocpn::expat ALIAS _EXPAT)
+ 
+      include(OcpnFindCairo)
+      INCLUDE(FindEXIF)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE
+          ocpn::cairo
+          ocpn::expat
+          ${EXIF_LIBRARIES}
+#         ${FFMPEG_LIBRARIES}
+          ${GTK_LIBRARIES}
       )
-    ENDIF(WIN32)
-    set(LATE_LIBS ${LATE_LIBS} ${SVG_LIBS})
+      target_include_directories(${PACKAGE_NAME} PRIVATE
+          ${EXIF_INCLUDE_DIRS}
+      )
+#         ${FFMPEG_INCLUDE_DIRS}
+    ENDIF (WIN32)
+
+    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
+    ADD_DEFINITIONS(-DocpnUSE_SVG)
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxsvg includes")
-      INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
-      SET(LATE_LIBS ${LATE_LIBS} ${WXSVG_LIBRARIES})
+      add_library(WXSVG INTERFACE)
+      add_library(wxsvg::wxsvg ALIAS WXSVG)
+      target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
+      target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
     ELSE ()
       add_subdirectory("libs/wxsvg")
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
-      set(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
     ENDIF ()
+    target_link_libraries(${PACKAGE_NAME} PRIVATE wxsvg::wxsvg)
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
 IF(OCPN_NEW_SERIAL)
   add_subdirectory("libs/serial")
-  SET(EXTRA_LIBS ${EXTRA_LIBS} SERIAL)
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/serial/include)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE serial::serial)
   message(STATUS "Using new serial library...")
 ENDIF(OCPN_NEW_SERIAL)
 
@@ -1164,6 +1099,22 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
 ENDIF()
+
+IF(OPENGL_FOUND)
+    target_sources(${PACKAGE_NAME} PRIVATE
+        include/glChartCanvas.h
+        include/glTextureDescriptor.h
+        include/glTexCache.h
+        include/glTextureManager.h
+        include/TexFont.h
+        src/glTextureDescriptor.cpp
+        src/glTexCache.cpp
+        src/glChartCanvas.cpp
+        src/glTextureManager.cpp
+        src/TexFont.cpp
+    )
+ENDIF ()
+
 
 #  Building for QT_ANDROID involves a cross-building environment,
 #  So the include directories, flags, etc must be stated explicitly
@@ -1188,23 +1139,14 @@ MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
 MESSAGE (STATUS "    Adding local LIBTESS2" )
 add_subdirectory(libs/libtess2)
-
-# TODO: check this... is it required on both places, really?
-SET(OPENGL_LIBRARIES TESS2 ${OPENGL_LIBRARIES})
-SET(EXTRA_LIBS ${EXTRA_LIBS} TESS2)
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/libtess2/Include)
-MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
-
+target_link_libraries(${PACKAGE_NAME} PRIVATE tess2::tess2)
 
 Include("SoundConfig")
 add_subdirectory(libs/sound)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/sound/include)
-SET(EXTRA_LIBS ${EXTRA_LIBS} SOUND)
+target_link_libraries(${PACKAGE_NAME} PRIVATE sound::sound)
 
 add_subdirectory(libs/wxJSON)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxJSON/include)
-SET(EXTRA_LIBS ${EXTRA_LIBS} WXJSON)
+target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
@@ -1247,17 +1189,24 @@ IF (USE_S57)
         src/TexFont.cpp
   )
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
-  INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
+  target_link_libraries(S57ENC
+      PUBLIC nmea0183::nmea0183 tess2::tess2 iso8211::iso8211)
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-  SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
+  target_link_libraries(S57ENC PUBLIC WXCURL)
+
+  if (TARGET wxsvg::wxsvg)
+      target_link_libraries(S57ENC PRIVATE wxsvg::wxsvg)
+  else ()
+      target_include_directories(S57ENC PRIVATE ${WXSVG_INCLUDE_DIR})
+  endif()
 
   add_subdirectory(libs/iso8211)
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/iso8211/include)
-  SET(EXTRA_LIBS ${EXTRA_LIBS} ISO8211)
+  target_link_libraries(S57ENC PRIVATE iso8211::iso8211)
 
   add_subdirectory(libs/gdal)
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/gdal/include)
-  SET(EXTRA_LIBS ${EXTRA_LIBS} GDAL)
+  target_link_libraries(S57ENC PUBLIC gdal::gdal sound::sound wxjson::wxjson)
+
+  target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
 
 ELSE (USE_S57)
   message (STATUS "S57 ENC support: disabled")
@@ -1265,8 +1214,7 @@ ENDIF (USE_S57)
 
 IF (USE_GARMINHOST)
   add_subdirectory("libs/garmin")
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/garmin/jeeps)
-  SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC garminhost::garminhost)
   message(STATUS "Garmin Host Mode support: enabled")
 ELSE (USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: disabled")
@@ -1280,19 +1228,15 @@ SET(SRC_SYMBOLS
 
 ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
 set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
-
+target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
   add_subdirectory("libs/texcmp")
-  include_directories(${CMAKE_SOURCE_DIR}/libs/texcmp/squish)
-  set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE texcmp::texcmp)
 
   add_subdirectory("libs/mipmap")
-  include_directories(${CMAKE_SOURCE_DIR}/libs/mipmap/include)
-  set(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
-
+  target_link_libraries(${PACKAGE_NAME} PRIVATE mipmap::mipmap)
 ENDIF (OPENGL_FOUND)
 
 pkg_search_module(LZ4 liblz4 lz4)
@@ -1304,12 +1248,11 @@ if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
     else ()
       link_directories(${LZ4_LIBRARY_DIRS})
     endif ()
-
-    set(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${LZ4_LIBRARIES})
 else ()
     message(STATUS "Building with bundled lz4")
     add_subdirectory("libs/lz4")
-    set(EXTRA_LIBS ${EXTRA_LIBS} LZ4)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE LZ4)
 endif ()
 
 
@@ -1489,6 +1432,9 @@ IF(WIN32)
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 
+add_subdirectory("libs/nmea0183")
+target_link_libraries(${PACKAGE_NAME} PUBLIC nmea0183::nmea0183)
+
 
 IF(APPLE)
 
@@ -1647,6 +1593,7 @@ IF(APPLE)
 ENDIF(APPLE)
 
 
+
 IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
           ${SRC_S57ENC}
@@ -1654,7 +1601,7 @@ IF(QT_ANDROID)
           ${SRC_MIPMAP}
           ${SRC_SYMBOLS}
   )
-  TARGET_LINK_LIBRARIES( gorp NMEA0183 ${wxWidgets_LIBRARIES} )
+  TARGET_LINK_LIBRARIES( gorp PRIVATE NMEA0183 ${wxWidgets_LIBRARIES} )
 ENDIF()
 
 # Sanitizers, part 2/2
@@ -1665,7 +1612,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
 endif()
 
 If(NOT APPLE AND NOT QT_ANDROID)
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
       ${EXTRA_LIBS}
       ${wxWidgets_LIBRARIES}
       ${LATE_LIBS}
@@ -1673,7 +1620,7 @@ If(NOT APPLE AND NOT QT_ANDROID)
 ENDIF()
 
 IF(WIN32)
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
           setupapi.lib
   #       glu32.lib
           "GLU_static"
@@ -1682,7 +1629,7 @@ IF(WIN32)
 
   # use gdi plus only on MSVC, it is not a free library
   IF(MSVC)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} gdiplus.lib)
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE gdiplus.lib)
   ENDIF()
 
   IF(MINGW)
@@ -1699,7 +1646,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 IF(UNIX)
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
         ${OPENGL_LIBRARIES}
         ${GETTEXT_LIBRARY}
         ${BZIP2_LIBRARIES}
@@ -1709,7 +1656,7 @@ IF(UNIX)
   )
 
   IF(X11_FOUND AND NOT APPLE)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${X11_LIBRARIES} )
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} )
   ENDIF()
 
   IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
@@ -1717,19 +1664,19 @@ IF(UNIX)
   ENDIF()
 
   IF(TINYXML_FOUND)
-     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES} )
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${TINYXML_LIBRARIES} )
   ENDIF()
 ENDIF(UNIX)
 
 IF(LIBLZMA_FOUND)
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBLZMA_LIBRARY} )
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${LIBLZMA_LIBRARY} )
 ENDIF(LIBLZMA_FOUND)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.  These declarations may be redundant in some architectures, but do no harm.
-IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
-ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+IF(UNIX)
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE dl )
+ENDIF ()
 
 
 IF( UNIX AND NOT APPLE )
@@ -1740,7 +1687,7 @@ IF( UNIX AND NOT APPLE )
     MESSAGE( STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}" )
     MESSAGE( STATUS "    ELF Include: ${LIBELF_LIBRARY}" )
     TARGET_INCLUDE_DIRECTORIES( ${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}" )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "${LIBELF_LIBRARY}" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}" )
   ELSE()
     MESSAGE( WARNING "Did not found LibELF, plugin compatibility check will be simplified." )
   ENDIF ()
@@ -1889,7 +1836,7 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
   ADD_CUSTOM_COMMAND(
      OUTPUT ${_gmoFile}
      COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
-     COMMAND ${CMAKE_COMMAND} -E copy  ${_gmoFile}  
+     COMMAND ${CMAKE_COMMAND} -E copy  ${_gmoFile}
          ${CMAKE_CURRENT_BINARY_DIR}/Resources/${PACKAGE_NAME}_${_lang}.lproj/${PACKAGE_NAME}.mo
      DEPENDS ${_absFile}
      COMMENT "i18n [${_poBasename}]: Created mo file."

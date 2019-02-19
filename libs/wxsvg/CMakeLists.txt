@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 #
 # Build wxsvg library. Primarely intended to be invoked fror the main
-# CMakeLists. The alternative uses a simplified configuration 
+# CMakeLists. The alternative uses a simplified configuration
 # requiring proper pkg-config setup and just using standard wxWidgets
 # options. It has only been tested on linux.
 
@@ -80,51 +80,57 @@ set(SRC
     src/svgxml/svgxmlhelpr.cpp
 )
 
+add_library(WXSVG STATIC ${SRC})
+add_library(wxsvg::wxsvg ALIAS WXSVG)
+set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
+include(FindEXIF)
 if (EXIF_FOUND)
-    set(SRC ${SRC} src/ExifHandler.cpp)
-    add_definitions(-DwxsvgUSE_EXIF)
+    target_sources(WXSVG PRIVATE src/ExifHandler.cpp)
+    target_compile_definitions(WXSVG PRIVATE -DwxsvgUSE_EXIF)
+    target_include_directories(WXSVG PRIVATE ${EXIF_INCLUDE_DIRS})
+    target_link_libraries(WXSVG PRIVATE ${EXIF_LIBRARIES})
 endif ()
 
-add_definitions(-DUSE_RENDER_CAIRO)
+target_compile_definitions(WXSVG PRIVATE -DUSE_RENDER_CAIRO)
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)
     SimpleWxConfig()
-    
+
     include(FindPkgConfig)
     pkg_search_module(GLIB2 glib-2.0)
     pkg_search_module(EXPAT expat)
-    pkg_search_module(EXIF libexif exif)
     pkg_search_module(CAIRO cairo libcairo)
     pkg_search_module(PANGO pango libpango)
+    add_library(WXSVG_CAIRO INTERFACE)
+    target_include_directories(WXSVG_CAIRO PRIVATE
+        ${CAIRO_INCLUDE_DIRS}
+        ${EXPAT_INCLUDE_DIRS}
+        ${PANGO_INCLUDE_DIRS}
+        ${GLIB2_INCLUDE_DIRS}
+    )
+    target_link_libraries(WXSVG_CAIRO PRIVATE
+        ${CAIRO_LIBRARIES}
+        ${EXPAT_LIBRARIES}
+        ${PANGO_LIBRARIES}
+        ${GLIB2_LIBRARIES}
+    )
+    add_library(ocpn::cairo ALIAS WXSVG_CAIRO)    
 endif (NOT wxWidgets_INCLUDE_DIRS)
-    
-add_library(WXSVG STATIC ${SRC})
-add_library(wxsvg::wxsvg ALIAS WXSVG)
 
-set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(WXSVG 
+target_include_directories(WXSVG
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVG
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVGXML
-        ${CAIRO_INCLUDE_DIRS}
-        ${PANGO_INCLUDE_DIRS}
-        ${EXPAT_INCLUDE_DIRS}
-        ${EXIF_INCLUDE_DIRS}
-        ${GLIB2_INCLUDE_DIRS}
         ${wxWidgets_INCLUDE_DIRS}
 )
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
-    target_compile_options(WXSVG PRIVATE 
-        "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual")
+    target_compile_options(WXSVG PRIVATE
+        "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual"
+    )
 endif()
-if (${bundled_expatdll_libs})
-    target_link_libraries(WXSVG ${EXPAT_LIBS} ${CAIRO_LIBS} ${PANGO_LIBS} ${EXIF_LIBS})      
-endif()
-if (EXIF_FOUND)
-    target_include_directories(WXSVG PRIVATE ${EXIF_INCLUDE_DIR})
-    target_compile_definitions(WXSVG PRIVATE wxsvgUSE_EXIF)
-    target_link_libraries(WXSVG ${EXIF_LIBRARIES} ${EXPAT_LIBRARIES})      
-endif ()
+target_link_libraries(WXSVG PRIVATE ocpn::expat ocpn::cairo)

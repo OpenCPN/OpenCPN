@@ -72,8 +72,8 @@
 #undef MAX
 #endif
 
-#include "wx/json_defs.h"
-#include "wx/jsonwriter.h"
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
 
 //    Assorted static helper routines
 
