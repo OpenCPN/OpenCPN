@@ -448,6 +448,7 @@ extern arrayofCanvasConfigPtr g_canvasConfigArray;
 extern wxString         g_lastAppliedTemplateGUID;
 
 wxString                g_gpx_path;
+bool                    g_bLayersLoaded;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1702,6 +1703,7 @@ bool MyConfig::LoadLayers(wxString &path)
             cont = dir.GetNext( &filename );
         }
     }
+    g_bLayersLoaded = true;
 
     return true;
 }
@@ -2394,24 +2396,25 @@ void MyConfig::UpdateSettings()
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
 
-    wxString vis, invis, visnames, invisnames;
-    LayerList::iterator it;
-    int index = 0;
-    for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
-        Layer *lay = (Layer *) ( *it );
-        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
-        else
-            invis += ( lay->m_LayerName ) + _T(";");
+    if(g_bLayersLoaded){
+        wxString vis, invis, visnames, invisnames;
+        LayerList::iterator it;
+        int index = 0;
+        for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
+            Layer *lay = (Layer *) ( *it );
+            if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
+            else
+                invis += ( lay->m_LayerName ) + _T(";");
 
-        if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
-        else
-            invisnames += ( lay->m_LayerName) + _T(";");
+            if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
+            else
+                invisnames += ( lay->m_LayerName) + _T(";");
+        }
+        Write( _T ( "VisibleLayers" ), vis );
+        Write( _T ( "InvisibleLayers" ), invis );
+        Write( _T ( "VisNameInLayers" ), visnames);
+        Write( _T ( "InvisNameInLayers" ), invisnames);
     }
-    Write( _T ( "VisibleLayers" ), vis );
-    Write( _T ( "InvisibleLayers" ), invis );
-    Write( _T ( "VisNameInLayers" ), visnames);
-    Write( _T ( "InvisNameInLayers" ), invisnames);
-
     Write( _T ( "Locale" ), g_locale );
     Write( _T ( "LocaleOverride" ), g_localeOverride );
     
