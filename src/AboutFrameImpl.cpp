@@ -26,6 +26,7 @@
 #include "AboutFrameImpl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
+#include "chart1.h"
 
 #ifdef __WXMSW__
 #define EXTEND_WIDTH 70
@@ -53,21 +54,8 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
 
-#if !defined(__WXMSW__) && !defined(__WXOSX__)    
-    wxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
-    if( ::wxFileExists(testFile)){
-        m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
-        m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
-    }
-    else{
-        m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_web.html", g_Platform->GetSharedDataDir().c_str()));
-        m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_web.html", g_Platform->GetSharedDataDir().c_str()));
-    }
-#else
     m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
-
-#endif
 
     m_bitmapLogo->SetBitmap(logo);
     
@@ -82,14 +70,29 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
 
 void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
 {
-    m_htmlWinAuthors->Hide();
-    m_htmlWinLicense->Hide();
-    m_htmlWinHelp->Show();
-    m_scrolledWindowAbout->Hide();
-    m_btnBack->Show();
-    m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
-    SetSize(m_parent->GetSize());
-    Centre();
+#ifdef __WXGTK__   
+    wxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
+    if( !::wxFileExists(testFile)){
+        wxString msg = _("OpenCPN Help documentation is not available locally.");  msg += _T("\n");
+        msg += _("Would you like to visit the opencpn.org website for more information?");
+        
+        if( wxID_YES == OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
+        {
+            wxLaunchDefaultBrowser(_T("https://opencpn.org"));
+        }
+    }
+    else
+#endif        
+    {
+        m_htmlWinAuthors->Hide();
+        m_htmlWinLicense->Hide();
+        m_htmlWinHelp->Show();
+        m_scrolledWindowAbout->Hide();
+        m_btnBack->Show();
+        m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
+        SetSize(m_parent->GetSize());
+        Centre();
+    }
 }
 
 void AboutFrameImpl::OnLinkLicense( wxHyperlinkEvent& event )
