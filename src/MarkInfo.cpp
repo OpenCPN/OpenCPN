@@ -894,6 +894,8 @@ void MarkInfoDlg::OnRightClickLatLon( wxCommandEvent& event )
     popup->Append( ID_RCLK_MENU_PASTE, _("Paste") );
     popup->Append( ID_RCLK_MENU_PASTE_LL, _("Paste lat/long") );
     m_contextObject = event.GetEventObject();
+    popup->Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MarkInfoDlg::OnCopyPasteLatLon), NULL, this);
+
     PopupMenu( popup );
     delete popup;
 }
