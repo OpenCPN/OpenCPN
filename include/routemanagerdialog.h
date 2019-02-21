@@ -29,6 +29,7 @@
 #include <wx/notebook.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
 
 #define NAME_COLUMN 2
 #define DISTANCE_COLUMN 3
@@ -191,9 +192,9 @@ class RouteManagerDialog : public wxFrame {
             wxButton *btnLayNew;
             wxButton *btnPerLayNew;
             //wxButton *btnLayProperties;
-            wxButton *btnLayToggleChart;
-            wxButton *btnLayToggleListing;
-            wxButton *btnLayToggleNames;
+            wxCheckBox *cbLayToggleChart;
+            wxCheckBox *cbLayToggleListing;
+            wxCheckBox *cbLayToggleNames;
             wxButton *btnLayDelete;
             wxButton *btnImport;
             wxButton *btnExport;

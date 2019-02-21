@@ -253,6 +253,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetPlannedSpeed(plan_speed);
     pWP->SetETD(etd);
 
+    pWP->m_bShowNameData = bviz_name;
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
     else
@@ -260,7 +261,7 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
             pWP->m_bShowName = true;
         else
             pWP->m_bShowName = false;
-
+    
     if( b_propviz )
         pWP->m_bIsVisible = bviz;
     else
@@ -1453,7 +1454,7 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
     return true;
 }
 
-int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, bool b_namesviz)
+int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, wxCheckBoxState b_namesviz)
 {
     if(!pWayPointMan)
         return 0;
@@ -1464,8 +1465,10 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
-            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), true, true, b_layerviz, layer_id );
-            pWp->SetNameShown( b_namesviz );
+            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), b_namesviz != wxCHK_UNDETERMINED, true, b_layerviz, layer_id );
+            if( b_namesviz != wxCHK_UNDETERMINED ) {
+                pWp->SetNameShown( b_namesviz == wxCHK_CHECKED );
+            }
             pWp->m_bIsolatedMark = true;      // This is an isolated mark
             pWayPointMan->AddRoutePoint( pWp );
             pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );

@@ -793,20 +793,18 @@ void RouteManagerDialog::Create()
     btnLayDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(RouteManagerDialog::OnLayDeleteClick), NULL, this );
     
-    btnLayToggleChart = new wxButton( winl, -1, _("Show on chart") );
-    bsLayButtonsInner->Add( btnLayToggleChart, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
-    btnLayToggleChart->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-                                wxCommandEventHandler(RouteManagerDialog::OnLayToggleChartClick), NULL, this );
+    cbLayToggleChart = new wxCheckBox( winl, -1, _("Show on chart") );
+    bsLayButtonsInner->Add( cbLayToggleChart, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    cbLayToggleChart->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(RouteManagerDialog::OnLayToggleChartClick), NULL, this );
     
-    btnLayToggleNames = new wxButton( winl, -1, _("Show WPT names") );
-    bsLayButtonsInner->Add( btnLayToggleNames, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
-    btnLayToggleNames->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-                                wxCommandEventHandler(RouteManagerDialog::OnLayToggleNamesClick), NULL, this );
+    cbLayToggleNames = new wxCheckBox( winl, -1, _("Show WPT names"), wxDefaultPosition, wxDefaultSize, wxCHK_3STATE|wxCHK_ALLOW_3RD_STATE_FOR_USER );
+
+    bsLayButtonsInner->Add( cbLayToggleNames, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    cbLayToggleNames->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(RouteManagerDialog::OnLayToggleNamesClick), NULL, this );
     
-    btnLayToggleListing = new wxButton( winl, -1, _("List contents") );
-    bsLayButtonsInner->Add( btnLayToggleListing, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
-    btnLayToggleListing->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-                                  wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this );
+    cbLayToggleListing = new wxCheckBox( winl, -1, _("List contents") );
+    bsLayButtonsInner->Add( cbLayToggleListing, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    cbLayToggleListing->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(RouteManagerDialog::OnLayToggleListingClick), NULL, this );
     
     RecalculateSize();
 
@@ -875,9 +873,9 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnWptDeleteAll;
     delete btnLayNew;
     //delete btnLayProperties;
-    delete btnLayToggleChart;
-    delete btnLayToggleListing;
-    delete btnLayToggleNames;
+    delete cbLayToggleChart;
+    delete cbLayToggleListing;
+    delete cbLayToggleNames;
     delete btnLayDelete;
     delete btnImport;
     delete btnExport;
@@ -2439,29 +2437,21 @@ void RouteManagerDialog::UpdateLayButtons()
 
     //btnLayProperties->Enable(false);
     btnLayDelete->Enable( enable );
-    btnLayToggleChart->Enable( enable );
-    btnLayToggleListing->Enable( enable );
-    btnLayToggleNames->Enable( enable );
+    cbLayToggleChart->Enable( enable );
+    cbLayToggleListing->Enable( enable );
+    cbLayToggleNames->Enable( enable );
 
     if( item >= 0 ) {
-        if( pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->IsVisibleOnChart() ) btnLayToggleChart->SetLabel(
-                _("Hide from chart") );
-        else
-            btnLayToggleChart->SetLabel( _("Show on chart") );
+        cbLayToggleChart->SetValue(pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->IsVisibleOnChart());
 
-        if( pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->HasVisibleNames() ) btnLayToggleNames->SetLabel(
-                _("Hide WPT names") );
-        else
-            btnLayToggleNames->SetLabel( _("Show WPT names") );
+        cbLayToggleNames->Set3StateValue( pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->HasVisibleNames() );
+        
+        cbLayToggleListing->SetValue( pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->IsVisibleOnListing() );
 
-        if( pLayerList->Item( m_pLayListCtrl->GetItemData( item ) )->GetData()->IsVisibleOnListing() ) btnLayToggleListing->SetLabel(
-                _("Unlist contents") );
-        else
-            btnLayToggleListing->SetLabel( _("List contents") );
     } else {
-        btnLayToggleChart->SetLabel( _("Show on chart") );
-        btnLayToggleNames->SetLabel( _("Show WPT names") );
-        btnLayToggleListing->SetLabel( _("List contents") );
+        cbLayToggleChart->SetValue(true);
+        cbLayToggleNames->Set3StateValue( wxCHK_UNDETERMINED );
+        cbLayToggleListing->SetValue( true );
     }
 }
 
@@ -2692,7 +2682,7 @@ void RouteManagerDialog::OnLayToggleNamesClick( wxCommandEvent &event )
 
     if( !layer ) return;
 
-    layer->SetVisibleNames( !layer->HasVisibleNames() );
+    layer->SetVisibleNames( cbLayToggleNames->Get3StateValue() );
 
     ToggleLayerContentsNames( layer );
 }
@@ -2707,7 +2697,11 @@ void RouteManagerDialog::ToggleLayerContentsNames( Layer *layer )
             wxRoutePointListNode *node = pRoute->pRoutePointList->GetFirst();
             RoutePoint *prp1 = node->GetData();
             while( node ) {
-                prp1->m_bShowName = layer->HasVisibleNames();
+                if( layer->HasVisibleNames() == wxCHK_UNDETERMINED ) {
+                    prp1->m_bShowName = prp1->m_bShowNameData;
+                } else {
+                    prp1->m_bShowName = (layer->HasVisibleNames() == wxCHK_CHECKED);
+                }
                 node = node->GetNext();
             }
         }
@@ -2720,7 +2714,7 @@ void RouteManagerDialog::ToggleLayerContentsNames( Layer *layer )
     while( node ) {
         RoutePoint *rp = node->GetData();
         if( rp && ( rp->m_LayerID == layer->m_LayerID ) ) {
-            rp->SetNameShown( layer->HasVisibleNames() );
+            rp->SetNameShown( layer->HasVisibleNames() == wxCHK_CHECKED || (rp->m_bShowNameData && layer->HasVisibleNames() == wxCHK_UNDETERMINED) );
         }
 
         node = node->GetNext();

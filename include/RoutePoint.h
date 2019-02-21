@@ -162,7 +162,7 @@ public:
 
       bool              m_bBlink;
       bool              m_bDynamicName;
-      bool              m_bShowName;
+      bool              m_bShowName, m_bShowNameData;
       wxRect            CurrentRect_in_DC;
       int               m_NameLocationOffsetX;
       int               m_NameLocationOffsetY;
