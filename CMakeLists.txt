@@ -56,11 +56,18 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
+# - Clean up global ADD_DEFINITIONS used for configuration
+# - Fix -g antipattern, default build target mess.
+# - Build profiles
 # - cross platform compiling
+# - Better USE_BUNDLED_LIBS option
 # - test with Win & OSX
 # USE_GLU_TESS
 # USE_GLU_DLL
-# I also find it deficient in some areas. For instance, I cannot make it output a VS project with certain compile switches set as desired, namely /MT vs /MD. This means I must manually set this and other compiler options after the CMake step. Sometimes I forget. Grrr...
+# I also find it deficient in some areas. For instance, I cannot make it
+# output a VS project with certain compile switches set as desired,
+# namely /MT vs /MD. This means I must manually set this and other compiler
+# options after the CMake step. Sometimes I forget. Grrr...
 # set /MT for Release build, and /MTd for debug.
 
 
@@ -71,6 +78,9 @@ IF (COMMAND cmake_policy)
   endif (POLICY CMP0043)
   if (POLICY CMP0025)
     CMAKE_POLICY(SET CMP0025 NEW)
+  endif ()
+  if (POLICY CMP0077)
+      CMAKE_POLICY(SET CMP0077 NEW)
   endif ()
 ENDIF (COMMAND cmake_policy)
 
@@ -95,19 +105,8 @@ SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-macro(SET_COND OUT_VAR)
-    if (${ARGN})
-        set(OUT_VAR 1)
-    else ()
-        set(OUT_VAR 0)
-    endif ()
-endmacro(SET_COND)
-
-SET_COND(IS_NOT_UNIX NOT UNIX)
-SET_COND(IS_NOT_WIN32 NOT WIN32)
-SET_COND(IS_LINUX NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-
 INCLUDE( FindPkgConfig )
+INCLUDE( CMakeDependentOption )
 
 #
 # Options
@@ -140,11 +139,17 @@ ELSE()
     SET(OCPN_USE_CRASHREPORT FALSE)
 ENDIF()
 
+if (NOT WIN32)
+  set(PA_DEFAULT "ON")
+endif ()
 OPTION(ENABLE_PORTAUDIO
-       "Use portaudio(3) to play sounds if available" ${IS_NOT_WIN32})
+  "Use portaudio(3) to play sounds if available"  ${PA_DEFAULT}
+)
 
-OPTION(ENABLE_SNDFILE
-       "Use libsndfile for portaudio if available." ${IS_NOT_WIN32})
+CMAKE_DEPENDENT_OPTION(ENABLE_SNDFILE
+    "Use libsndfile for portaudio if available." ON 
+    "ENABLE_PORTAUDIO" ON
+)
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
 
@@ -182,7 +187,13 @@ IF (NOT CMAKE_INSTALL_PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
 ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
-OPTION(USE_BUNDLED_LIBS "Use bundled libraries instead of system's" ${IS_NOT_UNIX} )
+if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+  set(BUNDLED_LIBS_DEFAULT "ON")
+endif ()
+OPTION(USE_BUNDLED_LIBS "Use bundled libraries instead of system's"
+   ${BUNDLED_LIBS_DEFAULT}
+)
+
 OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
 OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
 OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
@@ -191,10 +202,6 @@ OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
 OPTION(ENABLE_SYSTEM_CMD_SOUND
        "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
-MACRO(ENABLE_PORTAUDIO_OPT onoff)
-    OPTION(ENABLE_PORTAUDIO
-           "Use portaudio(3) to play sounds if available" ${onoff})
-ENDMACRO(ENABLE_PORTAUDIO_OPT)
 
 
 #
@@ -251,9 +258,9 @@ IF(NOT WIN32 AND NOT APPLE )
       "-rdynamic"
       "-fno-strict-aliasing"
   )
-  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-    ADD_DEFINITIONS( " -O0")
-  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  IF (CMAKE_BUILD_TYPE MATCHES "Debug")
+    ADD_COMPILE_OPTIONS("-O0")
+  ENDIF ()
   ADD_COMPILE_OPTIONS("-Wno-deprecated-declarations")
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
@@ -294,7 +301,6 @@ IF(MSVC)
   ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
   ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(MSVC)
-SET(ENV{XPDeprecationWarning} "false")
 
 IF(MSVC)
   SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
@@ -308,6 +314,16 @@ IF(MSVC)
   SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
 ENDIF(MSVC)
 
+IF(QT_ANDROID)
+  SET(CMAKE_BUILD_TYPE Debug)
+  ADD_DEFINITIONS(-D__WXQT__)
+  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+  ADD_DEFINITIONS(-DANDROID)
+  SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+ENDIF(QT_ANDROID)
+
+
 SET(LINUX_LIB_PATHS
     /usr/local/lib
     /usr/local/lib64
@@ -316,6 +332,12 @@ SET(LINUX_LIB_PATHS
     /usr/lib
     /usr/lib64
 )
+
+SET(PREFIX_BIN bin)
+SET(PREFIX_INCLUDE include)
+SET(PREFIX_DATA share)
+SET(PREFIX_PKGDATA ${PREFIX_DATA}/${PACKAGE_NAME})
+SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 
 #
 # Version handling
@@ -363,11 +385,9 @@ ELSE(APPLE OR WIN32)
   BUNDLE_GSHHS_OPT("NONE")
 ENDIF(APPLE OR WIN32)
 
-IF(IS_LINUX)
+IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 ENDIF ()
-
-ENABLE_PORTAUDIO_OPT(NOT WIN32)
 
 IF(BUNDLE_DOCS MATCHES "ON")
   MESSAGE (STATUS "*** Package will include documentation ***")
@@ -528,29 +548,13 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 MESSAGE (STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 MESSAGE (STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-SET(PREFIX_BIN bin)
-SET(PREFIX_INCLUDE include)
-SET(PREFIX_DATA share)
-SET(PREFIX_PKGDATA ${PREFIX_DATA}/${PACKAGE_NAME})
-SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
-
-IF(QT_ANDROID)
-  SET(CMAKE_BUILD_TYPE Debug)
-  ADD_DEFINITIONS(-D__WXQT__)
-  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
-  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
-  ADD_DEFINITIONS(-DANDROID)
-
-  SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
-
   ## Compiler flags
   #  if(CMAKE_COMPILER_IS_GNUCXX)
   #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
   #  endif()
   set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 
+IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
@@ -558,12 +562,12 @@ IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
-  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES(
+      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
   INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 ENDIF(QT_ANDROID)
-
 
 #IF(NOT WIN32)
 #OPTION (USE_GPSD "Enable GPSD Library" ON)
@@ -584,7 +588,6 @@ ENDIF(QT_ANDROID)
 #      ENDIF (GPS_FOUND)
 #ENDIF (USE_GPSD)
 #ENDIF (NOT WIN32)
-
 
 SET(HDRS
     include/ocpn_types.h
@@ -774,7 +777,6 @@ SET(SRCS
     src/LLRegion.cpp
     src/TrackPropDlg.cpp
     src/LinkPropDlg.cpp
-    src/ssl/sha1.c
     src/viewport.cpp
     src/canvasMenu.cpp
     src/OCPNPlatform.cpp
@@ -795,7 +797,8 @@ ENDIF()
 
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
-        message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
+        message(STATUS
+            "DarkMode not included, requires Mac build host Darwin >= 16")
     ELSE ()
         SET(SRCS ${SRCS}
             src/DarkMode.mm
@@ -815,14 +818,6 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(SRCS ${SRCS} src/crashprint.cpp)
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
-SET(SRC_TINYXML
-    src/tinyxml.cpp
-    src/tinyxmlerror.cpp
-    src/tinyxmlparser.cpp
-    include/tinyxml.h
-)
-
-
 if (APPLE)
     ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
@@ -830,9 +825,146 @@ elseif (WIN32)
 else ()
     ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
-
+target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 FIND_PACKAGE(Gettext REQUIRED)
+
+add_subdirectory(libs/ssl_sha1)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
+
+#
+# Linux: set up GTK
+#
+IF (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  include(OcpnFindGtk)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+ENDIF (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
+# Search for opengles, short of running a program to test the speed
+# of acceleration, I simply use gles on "native linux" arm systems
+IF(DEFINED _wx_selected_config)
+  MESSAGE (STATUS "selected config ${_wx_selected_config}")
+  IF(_wx_selected_config MATCHES "androideabi-qt")
+    MESSAGE (STATUS "Building for wxQt-Android")
+    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
+    SET(QT_ANDROID "ON")
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
+ENDIF(DEFINED _wx_selected_config)
+
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+ELSE()
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+ENDIF()
+
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+  find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+  IF (OPENGLESv1_INCLUDE_DIR)
+    MESSAGE (STATUS "Found OpenGLESv1")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+
+    SET(OPENGLES_FOUND "YES")
+    SET(OPENGL_FOUND "YES")
+
+    add_subdirectory(libs/glshim)
+
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
+  ENDIF()
+ENDIF()
+
+IF (OPENGLES_FOUND)
+  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+ENDIF ()
+
+IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
+  IF(USE_GL)
+    FIND_PACKAGE(OpenGL)
+  ELSE(USE_GL)
+    MESSAGE (STATUS "OpenGL disabled by option USE_GL..." )
+  ENDIF(USE_GL)
+
+  IF(OPENGL_FOUND)
+    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
+
+    MESSAGE (STATUS "Found OpenGL...." )
+    MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+
+    # We need to remove GLU from the OPENGL_LIBRARIES list
+    FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
+      #MESSAGE (STATUS "    Lib File: " ${_currentLibFile})
+      SET(UCNAME ${_currentLibFile})
+      string(TOUPPER ${UCNAME} UCNAME)
+      IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+        SET(REVISED_OPENGL_LIBRARIES
+            ${_currentLibFile} ${REVISED_OPENGL_LIBRARIES})
+      ENDIF()
+    ENDFOREACH (_currentLibFile )
+
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${REVISED_OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    Revised GL Lib: " ${REVISED_OPENGL_LIBRARIES})
+
+  ELSE(OPENGL_FOUND)
+    MESSAGE (STATUS "OpenGL not found..." )
+  ENDIF(OPENGL_FOUND)
+
+ENDIF()
+
+IF(NOT QT_ANDROID)
+  # Find wxWidgets here, and the setting get inherited by all plugins.
+  # These options can be used to set the linux widgets build type
+  SET( wxWidgets_USE_DEBUG OFF)
+  SET( wxWidgets_USE_UNICODE ON)
+  SET( wxWidgets_USE_UNIVERSAL OFF)
+  SET( wxWidgets_USE_STATIC OFF)
+
+  if(WXWIDGETS_FORCE_VERSION)
+    set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
+  endif()
+
+  IF(MSVC)
+    # Exclude wxexpat.lib, since we use our own version.
+    # Other things are excluded as well, but we don't need them
+    SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+  ENDIF(MSVC)
+
+  IF(GTK2_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+  ELSEIF(GTK3_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+  ENDIF ()
+
+  FIND_PACKAGE(wxWidgets REQUIRED)
+  IF(MSYS)
+    # Convert msys to windows paths, and handle the missing /usr
+    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
+           wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+  ENDIF(MSYS)
+  INCLUDE(${wxWidgets_USE_FILE})
+
+  MESSAGE (STATUS "Found wxWidgets..." )
+  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+
+  # We need to remove GLU from the wxWidgets_LIBRARIES list
+  # It only appears to get on the list for MSW...
+  FOREACH (_currentLibFile ${wxWidgets_LIBRARIES})
+    SET(UCNAME ${_currentLibFile})
+    string(TOUPPER ${UCNAME} UCNAME)
+    IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+      SET( REVISED_wxWidgets_LIBRARIES  ${REVISED_wxWidgets_LIBRARIES} ${_currentLibFile})
+    ENDIF()
+  ENDFOREACH (_currentLibFile )
+  SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES})
+
+  MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+ENDIF(NOT QT_ANDROID)
+
 
 IF(OCPN_USE_CRASHREPORT)
   MESSAGE (STATUS "Crash reporting enabled")
@@ -995,29 +1127,10 @@ ENDIF(OCPN_USE_CURL)
 IF(OCPN_USE_SVG)
   MESSAGE(STATUS "SVG support enabled...")
   IF(NOT QT_ANDROID)
+    include(OcpnFindCairo)
+    include(OcpnFindExpat)
     IF (WIN32)
       #On Windows, we have our own expat and cairo
-      add_library(_EXPAT INTERFACE)
-      target_include_directories(_EXPAT INTERFACE
-          ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include
-      )
-      target_link_libraries(_EXPAT INTERFACE
-          ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
-      )
-      add_library(ocpn::expat ALIAS _EXPAT)
-
-      add_library(_CAIRO INTERFACE)
-      target_include_directories(_CAIRO INTERFACE
-          ${CMAKE_SOURCE_DIR}/buildwin/gtk/include
-      )
-      target_link_libraries(_CAIRO INTERFACE
-          ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
-          ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
-      )
-      add_library(ocpn::cairo ALIAS _CAIRO)
-
-      target_link_libraries(${PACKAGE_NAME} PRIVATE _EXPAT _CAIRO)
-
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
       INSTALL(FILES ${gtkdll_files} DESTINATION ".")
       FILE(GLOB expatdll_files
@@ -1026,7 +1139,7 @@ IF(OCPN_USE_SVG)
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
    ELSE (WIN32)
       # Find FFMPEG - we have it disabled in our wxSVG
-      #set(FFmpeg_FIND_COMPONENTS 
+      #set(FFmpeg_FIND_COMPONENTS
       #        AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
       #unset(FFMPEG_LIBRARIES CACHE)
       #find_package(FFmpeg)
@@ -1036,27 +1149,20 @@ IF(OCPN_USE_SVG)
       #    message(FATAL_ERROR "FFmpeg component required, but not found!")
       #endif()
       #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
-      FIND_PACKAGE(EXPAT REQUIRED)
-      add_library(_EXPAT INTERFACE)
-      target_include_directories(_EXPAT INTERFACE ${EXPAT_INCLUDE_DIRS})
-      target_link_libraries(_EXPAT INTERFACE ${EXPAT_LIBRARIES})
-      add_library(ocpn::expat ALIAS _EXPAT)
- 
-      include(OcpnFindCairo)
+
       INCLUDE(FindEXIF)
       target_link_libraries(${PACKAGE_NAME} PRIVATE
-          ocpn::cairo
-          ocpn::expat
           ${EXIF_LIBRARIES}
-#         ${FFMPEG_LIBRARIES}
           ${GTK_LIBRARIES}
+#         ${FFMPEG_LIBRARIES}
       )
       target_include_directories(${PACKAGE_NAME} PRIVATE
           ${EXIF_INCLUDE_DIRS}
-      )
 #         ${FFMPEG_INCLUDE_DIRS}
+      )
     ENDIF (WIN32)
-
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
+ 
     ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
     ADD_DEFINITIONS(-DocpnUSE_SVG)
 
@@ -1150,13 +1256,17 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
-  INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
-  ADD_DEFINITIONS(-DTIXML_USE_STL)
+  # FIXME: Add interface lib, use in garmin...
+  add_library(TINYXML INTERFACE)
+  target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
+  target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
+  add_library(tinyxml::tinyxml ALIAS TINYXML)
 ELSE(TINYXML_FOUND)
+  add_subdirectory(libs/tinyxml)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE tinyxml::tinyxml)
   message (STATUS "Building with bundled tinyxml")
-  target_sources(${PACKAGE_NAME} PRIVATE ${SRC_TINYXML})
-  ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
+set(TIXML_USE_STL 1)    # -> config.h
 
 IF (USE_S57)
   message (STATUS "S57 ENC support: enabled")
@@ -1189,23 +1299,25 @@ IF (USE_S57)
         src/TexFont.cpp
   )
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
-  target_link_libraries(S57ENC
-      PUBLIC nmea0183::nmea0183 tess2::tess2 iso8211::iso8211)
-  set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-  target_link_libraries(S57ENC PUBLIC WXCURL)
-
-  if (TARGET wxsvg::wxsvg)
-      target_link_libraries(S57ENC PRIVATE wxsvg::wxsvg)
-  else ()
-      target_include_directories(S57ENC PRIVATE ${WXSVG_INCLUDE_DIR})
-  endif()
-
+  target_link_libraries(S57ENC PUBLIC
+      nmea0183::nmea0183
+      tess2::tess2
+      wxsvg::wxsvg
+      sound::sound
+      wxjson::wxjson
+      ssl::sha1
+      tinyxml::tinyxml
+      WXCURL
+  )
   add_subdirectory(libs/iso8211)
-  target_link_libraries(S57ENC PRIVATE iso8211::iso8211)
+  target_link_libraries(S57ENC PUBLIC iso8211::iso8211)
 
   add_subdirectory(libs/gdal)
-  target_link_libraries(S57ENC PUBLIC gdal::gdal sound::sound wxjson::wxjson)
+  target_link_libraries(S57ENC PUBLIC gdal::gdal)
 
+  target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+  set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
 
 ELSE (USE_S57)
@@ -1228,6 +1340,8 @@ SET(SRC_SYMBOLS
 
 ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
 set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+target_link_libraries(SYMBOLS PRIVATE tinyxml::tinyxml)
+target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
 
 # Compile texcompression support library
@@ -1384,11 +1498,11 @@ IF (USE_S57)
 ENDIF (USE_S57)
 
 IF(BUNDLE_TCDATA MATCHES "ON")
-SET(tcData
-  data/tcdata/HARMONIC
-  data/tcdata/HARMONIC.IDX
-  data/tcdata/README.harmonics
-)
+  SET(tcData
+    data/tcdata/HARMONIC
+    data/tcdata/HARMONIC.IDX
+    data/tcdata/README.harmonics
+  )
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
@@ -1423,10 +1537,9 @@ IF(xAPPLE)
   PKG_SEARCH_MODULE( GOBJECT REQUIRED gobject-2.0 )
   # MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
 
-  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GOBJECT_LDFLAGS})
-  SET(LATE_LIBS ${LATE_LIBS} "iconv")
+  target_compile_definitions(${PACKAGE_NAME} PRIVATE ${GOBJECT_LDFLAGS})
+  target_link_libraries(${PACKAGE_NAME} PUBLIC "iconv")
 ENDIF(xAPPLE)
-
 
 IF(WIN32)
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
@@ -1435,9 +1548,7 @@ ENDIF(WIN32)
 add_subdirectory("libs/nmea0183")
 target_link_libraries(${PACKAGE_NAME} PUBLIC nmea0183::nmea0183)
 
-
 IF(APPLE)
-
   IF(NOT BUNDLE_GSHHS MATCHES "NONE")
     SET_SOURCE_FILES_PROPERTIES(
              ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
@@ -1582,17 +1693,10 @@ IF(APPLE)
   )
   INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${PREFIX_BIN} )
 
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-        ${EXTRA_LIBS}
-        ${wxWidgets_LIBRARIES}
-        ${LATE_LIBS}
-  )
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
   set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
-                         "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
-
+                        "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 ENDIF(APPLE)
-
-
 
 IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
@@ -1612,11 +1716,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
 endif()
 
 If(NOT APPLE AND NOT QT_ANDROID)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
-      ${EXTRA_LIBS}
-      ${wxWidgets_LIBRARIES}
-      ${LATE_LIBS}
-  )
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
 ENDIF()
 
 IF(WIN32)
@@ -1663,9 +1763,6 @@ IF(UNIX)
     MESSAGE(STATUS "Did not find x11 libraries, support for transparent toolbar in opengl mode cannot be detected")
   ENDIF()
 
-  IF(TINYXML_FOUND)
-      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${TINYXML_LIBRARIES} )
-  ENDIF()
 ENDIF(UNIX)
 
 IF(LIBLZMA_FOUND)

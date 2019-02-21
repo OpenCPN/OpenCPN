@@ -30,6 +30,8 @@ IF( NOT CMAKE_BUILD_TYPE )
        FORCE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #SET(CMAKE_BUILD_TYPE Debug)
@@ -159,6 +161,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
 endif ()
+
 IF (UNARR_LIBRARIES)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${UNARR_LIBRARIES})
 ENDIF()

@@ -20,6 +20,10 @@
 
 #cmakedefine ocpnUSE_NEWSERIAL
 
+#ifndef TIXML_USE_STL
+#cmakedefine TIXML_USE_STL
+#endif
+
 
 #cmakedefine OPENGL_FOUND
 #cmakedefine HAVE_PORTAUDIO

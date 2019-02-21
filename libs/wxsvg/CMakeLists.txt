@@ -103,21 +103,21 @@ if (NOT wxWidgets_INCLUDE_DIRS)
     pkg_search_module(EXPAT expat)
     pkg_search_module(CAIRO cairo libcairo)
     pkg_search_module(PANGO pango libpango)
-    add_library(WXSVG_CAIRO INTERFACE)
-    target_include_directories(WXSVG_CAIRO PRIVATE
-        ${CAIRO_INCLUDE_DIRS}
-        ${EXPAT_INCLUDE_DIRS}
-        ${PANGO_INCLUDE_DIRS}
-        ${GLIB2_INCLUDE_DIRS}
-    )
-    target_link_libraries(WXSVG_CAIRO PRIVATE
-        ${CAIRO_LIBRARIES}
-        ${EXPAT_LIBRARIES}
-        ${PANGO_LIBRARIES}
-        ${GLIB2_LIBRARIES}
-    )
-    add_library(ocpn::cairo ALIAS WXSVG_CAIRO)    
 endif (NOT wxWidgets_INCLUDE_DIRS)
+add_library(WXSVG_CAIRO INTERFACE)
+target_include_directories(WXSVG_CAIRO INTERFACE
+    ${CAIRO_INCLUDE_DIRS}
+    ${EXPAT_INCLUDE_DIRS}
+    ${PANGO_INCLUDE_DIRS}
+    ${GLIB2_INCLUDE_DIRS}
+)
+target_link_libraries(WXSVG_CAIRO INTERFACE
+    ${CAIRO_LIBRARIES}
+    ${EXPAT_LIBRARIES}
+    ${PANGO_LIBRARIES}
+    ${GLIB2_LIBRARIES}
+)
+add_library(ocpn::cairo ALIAS WXSVG_CAIRO)    
 
 target_include_directories(WXSVG
     PUBLIC
@@ -134,3 +134,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     )
 endif()
 target_link_libraries(WXSVG PRIVATE ocpn::expat ocpn::cairo)
+if (TARGET ocpn::gtk)
+  target_link_libraries(WXSVG PRIVATE ocpn::gtk)
+endif ()

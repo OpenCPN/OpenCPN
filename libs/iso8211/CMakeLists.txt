@@ -10,7 +10,7 @@ SET(SRC
     src/ddffielddefn.cpp	
     src/ddfmodule.cpp  
     src/ddfrecord.cpp  
-    src/ddfrecordindex.cpp  
+    src/ddfrecordindex.cpp
     src/ddfsubfielddefn.cpp  
     src/ddfutils.cpp
 )
@@ -19,4 +19,5 @@ add_library(ISO8211 STATIC ${SRC})
 add_library(iso8211::iso8211 ALIAS ISO8211)
 set_property(TARGET ISO8211 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../gdal/include)
