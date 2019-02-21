@@ -424,9 +424,6 @@ int                       g_own_ship_sog_cog_calc_damp_sec;
 wxDateTime                last_own_ship_sog_cog_calc_ts;
 double                    last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 
-int                       g_current_arrow_scale;
-int                       g_tide_rectangle_scale;
-
 Multiplexer               *g_pMUX;
 
 AIS_Decoder               *g_pAIS;

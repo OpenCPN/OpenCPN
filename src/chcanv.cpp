@@ -293,9 +293,6 @@ extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
 extern wxString         g_default_routepoint_icon;
 
-extern int              g_current_arrow_scale;
-extern int              g_tide_rectangle_scale;
-
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
@@ -2279,15 +2276,6 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
     m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
-    // set values of tide_draw_scaler, current_draw_scaler
-    // each "scaler" is intended to be about unity on a 100 dpi display,
-    // when its respective scale parameter is 100
-    // parameter g_tide_rectangle_scale is set in config file as value of TideRectangleScale
-    // parameter g_current_arrow_scale is set in config file as value of CurrentArrowScale
-    g_tide_rectangle_scale = wxMax(g_tide_rectangle_scale,0);
-    tide_draw_scaler = m_pix_per_mm * 0.254 * g_tide_rectangle_scale / 100.0;
-    g_current_arrow_scale = wxMax(g_current_arrow_scale,0);
-    current_draw_scaler = m_pix_per_mm * 0.254 * g_current_arrow_scale / 100.0;
     
 #ifdef USE_S57
     if( ps52plib )
@@ -11265,13 +11253,31 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                     }
 //draw "extended" icons
                     else {
-//set rectangle size and position (max text lengh)
-                        int wx, hx;
+                        float scale_factor = 1.0;
+    
+                        //  Set the onscreen size of the symbol
+                        //  Compensate for various display resolutions
+                        //  Develop empirically, making a "diamond ATON" symbol about 4 mm square
+
+                        float nominal_icon_size_mm = 15; // Intended physical rendered size onscreen
+                        float icon_pixelRefDim = 45;
+                        
+                        float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
+                        float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+    
+                        scale_factor *= pix_factor;
+    
+                        float user_scale_factor = g_ChartScaleFactorExp;
+                        if( g_ChartScaleFactorExp > 1.0 )
+                            user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        
+                        scale_factor *= user_scale_factor;
+
+                        
+                        
+                        
                         dc.SetFont( *plabelFont );
-                        dc.GetTextExtent( _T("99.9ft "), &wx, &hx );
-                        int w = r.x - 6;
-                        int h = r.y - 22;
-                        {
+                         {
                             {
                                 float val, nowlev;
                                 float ltleve = 0.;
@@ -11319,18 +11325,17 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 				    // draw the tide rectangle:
 				    
 				    // tide icon rectangle has default pre-scaled width = 12 , height = 45
-				    // scale default size by tide_draw_scaler factor
-				    int width = (int) (12 * tide_draw_scaler + 0.5);
-				    int height = (int) (45 * tide_draw_scaler + 0.5);
-				    int linew = wxMax(1, (int) (tide_draw_scaler));
+				    int width = (int) (12 * scale_factor + 0.5);
+				    int height = (int) (45 * scale_factor + 0.5);
+				    int linew = wxMax(1, (int) (scale_factor));
+                                    int xDraw = r.x - (width / 2);
+                                    int yDraw = r.y - (height / 2);
 
-				    //std::cerr << "tide icon w=" << width << ", h=" << height;
-				    //std::cerr << ", linew=" << linew << ", scale=" << tide_draw_scaler << std::endl;
 
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
                                     int hs = ( httime > lttime ) ? -4 : 4;
-				    hs *= (int) (tide_draw_scaler + 0.5); 
+				    hs *= (int) (scale_factor + 0.5); 
                                     if( ts > 0.995 || ts < 0.005 ) hs = 0;
                                     int ht_y = (int) ( height * ts );
 
@@ -11338,25 +11343,25 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 				    pblack_pen->SetWidth(linew);
                                     dc.SetPen( *pblack_pen );
                                     dc.SetBrush( *pyelo_brush );
-                                    dc.DrawRectangle( w, h, width, height );
+                                    dc.DrawRectangle( xDraw, yDraw, width, height );
 
                                     //draw blue rectangle as water height, smaller in width than yellow rectangle
                                     dc.SetPen( *pblue_pen );
                                     dc.SetBrush( *pblue_brush );
-                                    dc.DrawRectangle( (w + 2*linew), h + ht_y, 
+                                    dc.DrawRectangle( (xDraw + 2*linew), yDraw + ht_y, 
 						      (width - (4*linew)), height - ht_y );
 
                                     //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
                                     int hl;
                                     wxPoint arrow[3];
-                                    arrow[0].x = w + 2*linew;
-                                    arrow[1].x = w + width / 2;
-                                    arrow[2].x = w + width - 2*linew;
+                                    arrow[0].x = xDraw + 2*linew;
+                                    arrow[1].x = xDraw + width / 2;
+                                    arrow[2].x = xDraw + width - 2*linew;
 				    pyelo_pen->SetWidth(linew);
 				    pblue_pen->SetWidth(linew);
                                     if( ts > 0.35 || ts < 0.15 )      // one arrow at 3/4 hight tide
                                     {
-                                        hl = (int) ( height * 0.25 ) + h;
+                                        hl = (int) ( height * 0.25 ) + yDraw;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -11368,7 +11373,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     }
                                     if( ts > 0.60 || ts < 0.40 )       //one arrow at 1/2 hight tide
                                     {
-                                        hl = (int) ( height * 0.5 ) + h;
+                                        hl = (int) ( height * 0.5 ) + yDraw;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -11380,7 +11385,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     }
                                     if( ts < 0.65 || ts > 0.85 )       //one arrow at 1/4 Hight tide
                                     {
-                                        hl = (int) ( height * 0.75 ) + h;
+                                        hl = (int) ( height * 0.75 ) + yDraw;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -11398,7 +11403,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                             wxString( pmsd->units_abbrv, wxConvUTF8 ) );
                                     int wx1;
                                     dc.GetTextExtent( s, &wx1, NULL );
-                                    dc.DrawText( s, r.x - ( wx1 / 2 ), h + height );
+                                    dc.DrawText( s, r.x - ( wx1 / 2 ), yDraw + height );
                                 }
                             }
                         }
@@ -11484,6 +11489,26 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     
+    float scale_factor = 1.0;
+    
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+
+    float nominal_icon_size_mm = 2; // Intended physical rendered size onscreen
+    float icon_pixelRefDim = 5;
+                        
+    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
+    float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+    
+    scale_factor *= pix_factor;
+    
+    float user_scale_factor = g_ChartScaleFactorExp;
+    if( g_ChartScaleFactorExp > 1.0 )
+        user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        
+    scale_factor *= user_scale_factor;
+
+    
     {
 
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -11498,7 +11523,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 //  try to avoid double current arrows.  Select the first in the list only
 //  Proper fix is to correct the TCDATA index file for depth indication
                 bool b_dup = false;
-                if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) ) b_dup = true;
+                if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) )
+                    b_dup = true;
 
                 if( !b_dup && ( BBox.ContainsMarge( lat, lon, marge ) ) ) {
 
@@ -11506,7 +11532,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     GetCanvasPointPix( lat, lon, &r );
 
                     wxPoint d[4]; // points of a diamond at the current station location
-                    int dd = (int) (5.0 * current_draw_scaler + 0.5);  
+                    int dd = (int) (5.0 * scale_factor + 0.5);  
                     d[0].x = r.x;
                     d[0].y = r.y + dd;
                     d[1].x = r.x + dd;
@@ -11518,14 +11544,14 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
                     
                     if( 1 ) {
-		        pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
+		        pblack_pen->SetWidth( wxMax(2, (int) (scale_factor + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );
 
                         if( type == 'C' ) {
                             dc.SetBrush( *pblack_brush );
-                            dc.DrawCircle( r.x, r.y, (int)(2*current_draw_scaler) ); 
+                            dc.DrawCircle( r.x, r.y, (int)(2*scale_factor) ); 
                         }
 
                         if( GetVP().chart_scale < 1000000 ){
@@ -11541,10 +11567,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
 //    Get the display pixel location of the current station
                                 int pixxc, pixyc;
-                                wxPoint cpoint;
-                                GetCanvasPointPix( lat, lon, &cpoint ); // called above; why do this again?
-                                pixxc = cpoint.x;
-                                pixyc = cpoint.y;
+                                pixxc = r.x;
+                                pixyc = r.y;
 
 //    Adjust drawing size using logarithmic scale. tcvalue is current in knots
                                 double a1 = fabs( tcvalue ) * 10.;
@@ -11552,11 +11576,9 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                                 a1 = wxMax(1.0, a1);      
                                 double a2 = log10( a1 );
 
-				// scale to pass to DrawArrow. 0.4 is a reasonable factor here.
-				// users can adjust value of CurrentArrowScale in config file as needed
-                                float cscale = current_draw_scaler * a2 * 0.4;
+                                float cscale = scale_factor * a2 * 0.4;
 
-                                porange_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
+                                porange_pen->SetWidth( wxMax(2, (int) (scale_factor + 0.5)) );
                                 dc.SetPen( *porange_pen );
                                 DrawArrow( dc, pixxc, pixyc,
                                            dir - 90 + ( skew_angle * 180. / PI ), cscale );

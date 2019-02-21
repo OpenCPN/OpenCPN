@@ -679,10 +679,6 @@ private:
       bool        warp_flag;
 
 
-      float       current_draw_scaler; // Affect displayed size of current arrows
-      float       tide_draw_scaler;    // Affect displayed size of tide rectangles
-
-
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
       wxTimer     *pMovementTimer;       // This timer used for smooth movement in non-opengl mode
       wxTimer     *pMovementStopTimer; // This timer used to stop movement if a keyup event is lost

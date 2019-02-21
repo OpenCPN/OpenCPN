@@ -376,8 +376,6 @@ extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
-extern int              g_current_arrow_scale;
-extern int              g_tide_rectangle_scale;
 extern int              g_tcwin_scale;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
@@ -660,8 +658,6 @@ int MyConfig::LoadMyConfig()
     g_track_line_width = 2;
     g_colourTrackLineColour = wxColour( 243, 229, 47 );
     
-    g_current_arrow_scale = 100;
-    g_tide_rectangle_scale = 100;
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
     g_default_routepoint_icon = _T("diamond");
@@ -1433,8 +1429,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     if(Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour ))
         g_colourTrackLineColour.Set( l_wxsTrackLineColour );
 
-    Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale );
-    Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
     Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
