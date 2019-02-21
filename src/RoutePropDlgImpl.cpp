@@ -811,8 +811,9 @@ void RoutePropDlgImpl::BtnsOnOKButtonClick( wxCommandEvent& event )
 {
     SaveChanges();
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-        pRouteManagerDialog->UpdateRouteListCtrl();Hide();
+        pRouteManagerDialog->UpdateRouteListCtrl();
     }
+    Hide();
 }
 
 void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
