@@ -494,9 +494,6 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
             else if(!strncmp(colName, "description", 11)){
                 m_Description = wxString(colValue,  wxConvUTF8);
             }
-            
-            
-                
         }
       }
       catch (std::exception& e)
@@ -517,13 +514,10 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       PrepareTiles();           // Initialize the tile data structures
 
-      if(init_flags == HEADER_ONLY){
 
-          LLRegion covrRegion;
+      LLRegion covrRegion;
       
       const double eps = 6e-6;  // about 1cm on earth's surface at equator
-
-#if 1      
 
       LLBBox extentBox;
       extentBox.Set(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
@@ -557,80 +551,28 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
                 const char* c2 = query.getColumn(2);
                 int tile_x_found = atoi(colValue);      // tile_x
                 int tile_y_found = atoi(c2);    // tile_y
-                //if(  (tile_x_found >= tzd->tile_x_min) && (tile_x_found <= tzd->tile_x_max)
-                    //&& (tile_y_found >= tzd->tile_y_min) && (tile_y_found <= tzd->tile_y_max) ){
                 
                 regionZoom.Union(tile_x_found, tile_y_found-1, 1, 1);
  
-#if 1                
-                if(1){
-                    //unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
-                    //int index = (tile_y_found - tzd->tile_y_min) * (tzd->nx_tile + 1);
-                    //index += (tile_x_found - tzd->tile_x_min);
- 
-
-                    double lonmin = round(tilex2long(tile_x_found, zoomFactor)/eps)*eps;
-                    double lonmax = round(tilex2long(tile_x_found + 1, zoomFactor)/eps)*eps;
-                    double latmin = round(tiley2lat(tile_y_found - 1, zoomFactor)/eps)*eps;
-                    double latmax = round(tiley2lat(tile_y_found, zoomFactor)/eps)*eps;
-
-                    LLBBox box;
-                    box.Set(latmin, lonmin, latmax, lonmax);
-                
-                // Grow the tile lat/lon extents by nominally 1 meter to avoid LLRegion precision difficulties
-                    double factor = 1.0 / (1852. * 60.);
-                    //box.EnLarge(factor);
-                    LLRegion tileRegion(box);
-                    //covrRegionZoom.Union(tileRegion);
-
-#if 0                    
-                    if(tzd->tileMap.find(index) == tzd->tileMap.end()){
-                        mbTileDescriptor *tile = new mbTileDescriptor;
-                        tile->tile_x = tile_x_found;
-                        tile->tile_y = tile_y_found;
-                        tile->m_zoomLevel = zoomFactor;
-                        tile->m_bAvailable = true;
-            
-                        if(bset_geom){
-                        //  If directed, defer expensize geometry computation until actually needed for drawing.
-                            const double eps = 6e-6;  // about 1cm on earth's surface at equator
-                
-                            tile->lonmin = round(tilex2long(tile_x_found, zoomFactor)/eps)*eps;
-                            tile->lonmax = round(tilex2long(tile_x_found + 1, zoomFactor)/eps)*eps;
-                            tile->latmin = round(tiley2lat(tile_y_found - 1, zoomFactor)/eps)*eps;
-                            tile->latmax = round(tiley2lat(tile_y_found, zoomFactor)/eps)*eps;
-
-                            tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
-                            tile->m_bgeomSet = true;
-                        }
-                        
-                        tzd->tileMap[index] = tile;
-                    }
-#endif                    
-                }       // if (1)
-#endif                
-          }     // inner while
+         }     // inner while
       
-          wxRegionIterator upd( regionZoom ); // get the  rect list
-          while( upd ) {
-                    wxRect rect = upd.GetRect();
+         wxRegionIterator upd( regionZoom ); // get the  rect list
+         while( upd ) {
+            wxRect rect = upd.GetRect();
 
-                    double lonmin = round(tilex2long(rect.x, zoomFactor)/eps)*eps;
-                    double lonmax = round(tilex2long(rect.x + rect.width, zoomFactor)/eps)*eps;
-                    double latmin = round(tiley2lat(rect.y, zoomFactor)/eps)*eps;
-                    double latmax = round(tiley2lat(rect.y + rect.height, zoomFactor)/eps)*eps;
+            double lonmin = round(tilex2long(rect.x, zoomFactor)/eps)*eps;
+            double lonmax = round(tilex2long(rect.x + rect.width, zoomFactor)/eps)*eps;
+            double latmin = round(tiley2lat(rect.y, zoomFactor)/eps)*eps;
+            double latmax = round(tiley2lat(rect.y + rect.height, zoomFactor)/eps)*eps;
 
-                    LLBBox box;
-                    box.Set(latmin, lonmin, latmax, lonmax);
+            LLBBox box;
+            box.Set(latmin, lonmin, latmax, lonmax);
                 
-                    // Grow the tile lat/lon extents by nominally 1 meter to avoid LLRegion precision difficulties
-                    double factor = 1.0 / (1852. * 60.);
-                    //box.EnLarge(factor);
-                    LLRegion tileRegion(box);
-                    covrRegionZoom.Union(tileRegion);
+            LLRegion tileRegion(box);
+            covrRegionZoom.Union(tileRegion);
 
-                    upd++;
-                    minRegionZoom = zoomFactor;         // We take the first populated (lowest) zoom level
+            upd++;
+            minRegionZoom = zoomFactor;         // We take the first populated (lowest) zoom level
                                                         // region as the final chart region
           }
 
@@ -640,43 +582,10 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
           
     } // while
 
-      
-      
-      
-      
-#if 0      
-      
-      mbTileZoomDescriptor *tzd = m_tileArray[zoomFactor - m_minZoom];
-      
-      
-      int numtiles = tzd->nx_tile * tzd->ny_tile;
-      
-      mbTileDescriptor **tiles = tzd->m_tileDesc;
-      for(int i = 0; i<numtiles; i++) {
-          mbTileDescriptor *tile = tiles[i];
-          if(!extentBox.IntersectOut(tile->box)) {
-              
-              // Does this tile contain data?
-              // If so, add to the region.
-              if(tile->m_bAvailable){
-                LLBBox box = tile->box;
-                
-                // Grow the tile lat/lon extents by nominally 1 meter to avoid LLRegion precision difficulties
-                double factor = 1.0 / (1852. * 60.);
-                box.EnLarge(factor);
-                LLRegion tileRegion(box);
-                covrRegion.Union(tileRegion);
-              }
-          } 
-      }
-#endif
 
       //  The coverage region must be reduced if necessary to include only the db specified bounds.
       covrRegion.Intersect(extentBox);
-#endif
 
-      
-      
       m_minZoomRegion = covrRegion;
       
       //  Populate M_COVR entries for the OCPN chart database
@@ -697,9 +606,6 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
             it++;
          }
       }
-      
-      }   //if(init_flags == HEADER_ONLY){
-
       
       if(init_flags == HEADER_ONLY)
           return INIT_OK;
