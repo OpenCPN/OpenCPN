@@ -1155,6 +1155,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             if( !m_textDescription->IsEmpty() ){
                 m_notebookProperties->SetSelection(1); //Show Description page
             }
+            m_comboBoxTideStation->Enable(false);
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
@@ -1178,6 +1179,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_EtaTimePickerCtrl->Enable(true);
             m_cbEtaPresent->Enable(true);
             m_notebookProperties->SetSelection(0);
+            m_comboBoxTideStation->Enable(true);
         }
                
  
