@@ -586,6 +586,7 @@ void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event )
     } else {
         m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
     }
+    event.Skip();
 }
 
 int ev_col;
