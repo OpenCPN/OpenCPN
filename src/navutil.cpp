@@ -1660,10 +1660,11 @@ bool MyConfig::LoadLayers(wxString &path)
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
 
+                l->m_bHasVisibleNames = wxCHK_UNDETERMINED;
                 if (g_VisiNameinLayers.Contains(l->m_LayerName))
-                    l->m_bHasVisibleNames = true;
+                    l->m_bHasVisibleNames = wxCHK_CHECKED;
                 if (g_InVisiNameinLayers.Contains(l->m_LayerName))
-                    l->m_bHasVisibleNames = false;
+                    l->m_bHasVisibleNames = wxCHK_UNCHECKED;
 
                 l->m_bIsVisibleOnChart = bLayerViz;
                 
@@ -2400,9 +2401,11 @@ void MyConfig::UpdateSettings()
             else
                 invis += ( lay->m_LayerName ) + _T(";");
 
-            if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
-            else
+            if( lay->HasVisibleNames() == wxCHK_CHECKED ) {
+                visnames += ( lay->m_LayerName) + _T(";");
+            } else if( lay->HasVisibleNames() == wxCHK_UNCHECKED ) {
                 invisnames += ( lay->m_LayerName) + _T(";");
+            }
         }
         Write( _T ( "VisibleLayers" ), vis );
         Write( _T ( "InvisibleLayers" ), invis );

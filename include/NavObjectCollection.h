@@ -27,6 +27,7 @@
 
 #include "pugixml.hpp"
 #include <wx/string.h>
+#include <wx/checkbox.h>
 
 class Track;
 class TrackList;
@@ -105,7 +106,7 @@ public:
     
     bool CreateAllGPXObjects();
     bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates );
-    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, bool b_namesviz);
+    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, wxCheckBoxState b_namesviz);
     
     bool SaveFile( const wxString filename );
 
