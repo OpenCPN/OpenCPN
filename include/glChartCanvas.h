@@ -47,7 +47,8 @@ class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
 
-typedef struct{
+typedef class{
+  public:
     wxString Renderer;
     GLenum TextureRectangleFormat;
     
