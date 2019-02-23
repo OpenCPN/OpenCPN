@@ -202,6 +202,7 @@ extern bool             g_bTrackDaily;
 extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
+extern double           g_AISShowTracks_Limit;
 extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
@@ -611,6 +612,7 @@ int MyConfig::LoadMyConfig()
     g_n_arrival_circle_radius = 0.05;
     
     g_AISShowTracks_Mins = 20;
+    g_AISShowTracks_Limit = 300.0;
     g_ShowScaled_Num = 10;
     g_ScaledNumWeightSOG = 50;
     g_ScaledNumWeightCPA = 60;
@@ -1071,10 +1073,15 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
 
+    
+    if( Read( _T ( "TargetTracksLimit" ), &s ) ) {
+        s.ToDouble( &g_AISShowTracks_Limit );
+        g_AISShowTracks_Limit = wxMax(300.0, g_AISShowTracks_Limit);
+    }
     if( Read( _T ( "TargetTracksMinutes" ), &s ) ) {
         s.ToDouble( &g_AISShowTracks_Mins );
         g_AISShowTracks_Mins = wxMax(1.0, g_AISShowTracks_Mins);
-        g_AISShowTracks_Mins = wxMin(300.0, g_AISShowTracks_Mins);
+        g_AISShowTracks_Mins = wxMin(g_AISShowTracks_Limit, g_AISShowTracks_Mins);
     }
 
     Read( _T ( "bHideMooredTargets" ), &g_bHideMoored );

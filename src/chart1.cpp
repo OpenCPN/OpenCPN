@@ -576,6 +576,7 @@ bool                      g_bShowCOG;
 double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
+double                    g_AISShowTracks_Limit;
 bool                      g_bHideMoored;
 bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
