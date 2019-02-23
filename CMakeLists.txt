@@ -179,7 +179,7 @@ IF( NOT CMAKE_BUILD_TYPE )
   )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
-OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
+OPTION(OCPN_USE_LIBCPP "Use libc++ instead of libstdc++ on macOS" ON)
 
 OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
 
@@ -295,7 +295,28 @@ IF( APPLE )
     )
 ENDIF(APPLE)
 
-# Add some definitions to satisfy MS
+IF(APPLE)
+  SET(CMAKE_C_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_DEBUG "-g -O0 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_RELEASE "-O3 -arch ${ARCH}")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
+
+  IF(OCPN_USE_LIBCPP)
+    SET(OCPN_LIBCPP "-stdlib=libc++")
+  ENDIF(OCPN_USE_LIBCPP)
+  SET(CMAKE_CXX_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
+
+  SET(CMAKE_EXE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+ENDIF(APPLE)
+
+
 IF(MSVC)
   ADD_DEFINITIONS(-D__MSVC__)
   ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
@@ -826,6 +847,12 @@ else ()
     ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+IF(APPLE)
+  target_include_directories(${PACKAGE_NAME} 
+      PRIVATE /usr/X11/include /usr/X11/include/GL
+  )
+ENDIF ()
+
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -863,8 +890,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
   IF (OPENGLESv1_INCLUDE_DIR)
     MESSAGE (STATUS "Found OpenGLESv1")
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DocpnUSE_GL)   # ocpnUSE_GLES is in config.h
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
@@ -1163,8 +1189,7 @@ IF(OCPN_USE_SVG)
     ENDIF (WIN32)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
  
-    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    ADD_DEFINITIONS(-DocpnUSE_SVG)   # Goes into config.h, leave as global
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
@@ -1507,28 +1532,8 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
 IF(APPLE)
-  INCLUDE_DIRECTORIES(/usr/X11/include /usr/X11/include/GL)
-
-  SET(CMAKE_C_FLAGS "-O2 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_DEBUG "-g -O0 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_RELEASE "-O3 -arch ${ARCH}")
-  SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
-
-  IF(OCPN_USE_LIBCPP)
-    SET(OCPN_LIBCPP "-std=c++11 -stdlib=libc++")
-  ENDIF(OCPN_USE_LIBCPP)
-  SET(CMAKE_CXX_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
-
-  SET(CMAKE_EXE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  SET(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
-ENDIF(APPLE)
+ENDIF ()
 
 #  Mac has trouble finding libgobject-2.0.dylib
 #  We look for it explicitely
@@ -1735,8 +1740,6 @@ IF(WIN32)
   IF(MINGW)
     # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
     ADD_DEFINITIONS( " -DUNICODE" )
-    # this is needed for garmin jeeps code
-    ADD_DEFINITIONS( " -D_UNICODE" )
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${OPENGL_LIBRARIES}
       wsock32.lib

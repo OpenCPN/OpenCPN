@@ -28,6 +28,7 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+#include "config.h"
 #include "ocpn_types.h"
 #include "compass.h"
 #include "chcanv.h"

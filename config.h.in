@@ -20,6 +20,12 @@
 
 #cmakedefine ocpnUSE_NEWSERIAL
 
+// Enable dark mode on modern MacOS.
+#cmakedefine OCPN_USE_DARKMODE
+
+#cmakedefine ocpnUSE_GLES
+
+
 #ifndef TIXML_USE_STL
 #cmakedefine TIXML_USE_STL
 #endif

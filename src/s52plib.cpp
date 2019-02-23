@@ -34,6 +34,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #include "georef.h"
 #include "viewport.h"
 

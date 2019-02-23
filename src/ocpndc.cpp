@@ -31,6 +31,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "config.h"
+
 #include "dychart.h"
 #include "ocpn_plugin.h"
 
