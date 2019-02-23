@@ -494,9 +494,15 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
             else if(!strncmp(colName, "description", 11)){
                 m_Description = wxString(colValue,  wxConvUTF8);
             }
-            
-            
-                
+            else if(!strncmp(colName, "name", 11)){
+                m_Name = wxString(colValue,  wxConvUTF8);
+            }
+            else if(!strncmp(colName, "type", 11)){
+                m_Type = wxString(colValue,  wxConvUTF8).Upper().IsSameAs("OVERLAY") ? MBTilesType::OVERLAY : MBTilesType::BASE;
+            }
+            else if(!strncmp(colName, "scheme", 11)){
+                m_Scheme = wxString(colValue,  wxConvUTF8).Upper().IsSameAs("XYZ") ? MBTilesScheme::XYZ : MBTilesScheme::TMS;
+            }
         }
       }
       catch (std::exception& e)

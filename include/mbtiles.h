@@ -36,9 +36,10 @@
 #include "OCPNRegion.h"
 #include "viewport.h"
 #include <SQLiteCpp/SQLiteCpp.h>
-//#include <sqlite3.h>
+#include <cstdint>
 
-
+enum class MBTilesType : std::int8_t {BASE, OVERLAY};
+enum class MBTilesScheme : std::int8_t {XYZ, TMS};
 
 class WXDLLEXPORT ChartMbTiles;
 
@@ -136,6 +137,9 @@ protected:
       wxBitmapType m_imageType;
       
       double m_zoomScaleFactor;
+    
+      MBTilesType m_Type;
+      MBTilesScheme m_Scheme;
 
 private:
       void InitFromTiles( const wxString& name );
