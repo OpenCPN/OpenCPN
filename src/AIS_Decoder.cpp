@@ -1009,7 +1009,13 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             else{ 
                 //set  mmsi-props to default values
                 pTargetData->b_OwnShip = false;
-                pTargetData->b_PersistTrack = false;
+                if ( 0 == m_persistent_tracks.count( mmsi ) ) {
+                    //Normal target
+                    pTargetData->b_PersistTrack = false;
+                } else {
+                    // The track persistency enabled in the query window
+                    pTargetData->b_PersistTrack = true;
+                }
                 pTargetData->b_NoTrack = false;
                 // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
                 for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
