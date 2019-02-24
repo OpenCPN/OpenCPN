@@ -974,6 +974,12 @@ ChartCanvas::~ChartCanvas()
     delete muiBar;
 }
 
+void ChartCanvas::CanvasApplyLocale()
+{
+    CreateDepthUnitEmbossMaps( m_cs );
+    CreateOZEmbossMapData( m_cs );
+}
+
 void ChartCanvas::SetupGlCanvas( )
 {
 #ifdef ocpnUSE_GL

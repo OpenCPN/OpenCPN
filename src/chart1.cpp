@@ -12342,6 +12342,13 @@ void ApplyLocale()
     }
     gFrame->BuildMenuBar();
     
+    //  Give all canvas a chance to update, if needed
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->CanvasApplyLocale();
+    }
+
     // Capture a copy of the current perspective
     //  So that we may restore PlugIn window sizes, position, visibility, etc.
     wxString perspective;

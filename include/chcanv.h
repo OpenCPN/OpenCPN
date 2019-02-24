@@ -251,6 +251,8 @@ public:
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
+      void CanvasApplyLocale();
+
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
       int GetCanvasHeight(){ return m_canvas_height;}
