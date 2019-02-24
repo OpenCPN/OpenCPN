@@ -1322,10 +1322,10 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         m_ptentative_dsctarget->Class = AIS_DSC;
         m_ptentative_dsctarget->b_nameValid = true;
         if( dsc_fmt == 12 ) {
-            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d", mmsi);
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d", std::abs(mmsi));
         }
         else {
-            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d", mmsi);
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d", std::abs(mmsi));
         }
         
         m_ptentative_dsctarget->b_active = true;
