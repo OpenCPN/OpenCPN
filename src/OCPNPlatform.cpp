@@ -443,31 +443,32 @@ void OCPNPlatform::Initialize_1( void )
     if(nResult!=0) {
         TCHAR buff[256];
         crGetLastErrorMsg(buff, 256);
-        MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
+        //MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
     }
     
-    // Establish the crash callback function
-    crSetCrashCallback( CrashCallback, NULL );
-    
-    // Take screenshot of the app window at the moment of crash
-    crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
-    
-    //  Mark some files to add to the crash report
-    wxString home_data_crash = crash_std_path.GetConfigDir();
-    if( g_bportable ) {
-        wxFileName f( crash_std_path.GetExecutablePath() );
-        home_data_crash = f.GetPath();
+    if(nResult == 0){           // Complete the installation
+        // Establish the crash callback function
+        crSetCrashCallback( CrashCallback, NULL );
+        
+        // Take screenshot of the app window at the moment of crash
+        crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
+        
+        //  Mark some files to add to the crash report
+        wxString home_data_crash = crash_std_path.GetConfigDir();
+        if( g_bportable ) {
+            wxFileName f( crash_std_path.GetExecutablePath() );
+            home_data_crash = f.GetPath();
+        }
+        appendOSDirSlash( &home_data_crash );
+        
+        wxString config_crash = _T("opencpn.ini");
+        config_crash.Prepend( home_data_crash );
+        crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
+        
+        wxString log_crash = _T("opencpn.log");
+        log_crash.Prepend( home_data_crash );
+        crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
     }
-    appendOSDirSlash( &home_data_crash );
-    
-    wxString config_crash = _T("opencpn.ini");
-    config_crash.Prepend( home_data_crash );
-    crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
-    wxString log_crash = _T("opencpn.log");
-    log_crash.Prepend( home_data_crash );
-    crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
 #endif
 #endif
 
