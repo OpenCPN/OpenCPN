@@ -63,6 +63,9 @@ artifacts:
   - path: 'build\Release\opencpn.lib'
     name: lib
 
+  - path: 'build\Release\opencpn.pdb'
+    name: pdb
+
 deploy:
   description: 'release created by AppVeyor CI'
   provider: GitHub
