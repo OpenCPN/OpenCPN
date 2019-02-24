@@ -116,10 +116,11 @@ protected:
 
       void PrepareTiles();
       void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
-      bool getTileTexture(SQLite::Database &db, mbTileDescriptor *tile);
-      bool tileIsPopulated(mbTileDescriptor *tile);
+      bool getTileTexture( mbTileDescriptor *tile);
+      bool tileIsPopulated( mbTileDescriptor *tile);
       void FlushTiles( void );
-      
+      bool RenderTile( mbTileDescriptor *tile, int zoomLevel, const ViewPort& VPoint);
+
 
 //    Protected Data
 
@@ -140,9 +141,13 @@ protected:
     
       MBTilesType m_Type;
       MBTilesScheme m_Scheme;
+      
+      SQLite::Database  *m_pDB; 
 
 private:
       void InitFromTiles( const wxString& name );
+      wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );
+
 };
 
 
