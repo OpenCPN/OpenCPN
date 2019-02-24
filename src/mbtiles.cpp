@@ -161,6 +161,7 @@ double OSM_zoomMPP[] = { 156412,
                             0.298 };
                             
                             
+const double eps = 6e-6;  // about 1cm on earth's surface at equator
 
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -188,6 +189,9 @@ private:
 // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#C.2FC.2B.2B
 int long2tilex(double lon, int z)
 {
+    if(lon < -180)
+        lon += 360;
+    
     return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z)));
 }
 
@@ -299,12 +303,16 @@ ChartMBTiles::ChartMBTiles()
       pfc->SetPath ( _T ( "/Settings" ) );
       pfc->Read ( _T ( "DebugMBTiles" ),  &m_b_cdebug, 0 );
 #endif
+      m_pDB = NULL;
 
 }
 
 ChartMBTiles::~ChartMBTiles()
 {
     FlushTiles();
+    if(m_pDB){
+        delete m_pDB;
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -517,8 +525,6 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       LLRegion covrRegion;
       
-      const double eps = 6e-6;  // about 1cm on earth's surface at equator
-
       LLBBox extentBox;
       extentBox.Set(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
       
@@ -627,7 +633,14 @@ InitReturn ChartMBTiles::PreInit( const wxString& name, ChartInitFlag init_flags
 
 InitReturn ChartMBTiles::PostInit(void)
 {
-    
+      // Create the persistent MBTiles database file
+      const char *name_UTF8 = "";
+      wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
+      if ( utf8CB.data() )
+          name_UTF8 = utf8CB.data();
+
+      m_pDB = new SQLite::Database(name_UTF8);
+  
       bReadyToRender = true;
       return INIT_OK;
 }
@@ -707,16 +720,16 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
     m_tileArray[zoomFactor - m_minZoom] = tzd;
     
     // Calculate the tile counts in x and y, based on zoomfactor and chart extents
-    tzd->tile_x_min = long2tilex(m_LonMin, zoomFactor);
-    tzd->tile_x_max = long2tilex(m_LonMax, zoomFactor);
-    tzd->tile_y_min = lat2tiley(m_LatMin, zoomFactor);
-    tzd->tile_y_max = lat2tiley(m_LatMax, zoomFactor);
+    tzd->tile_x_min = long2tilex(m_LonMin + eps, zoomFactor);
+    tzd->tile_x_max = long2tilex(m_LonMax- eps, zoomFactor);
+    tzd->tile_y_min = lat2tiley(m_LatMin + eps, zoomFactor);
+    tzd->tile_y_max = lat2tiley(m_LatMax - eps, zoomFactor);
     
     tzd->nx_tile = tzd->tile_x_max - tzd->tile_x_min + 1;
     tzd->ny_tile = tzd->tile_y_max - tzd->tile_y_min + 1;
 
     return;
-    
+#if 0    
     // Check the db for which tiles are actually populated
     // Open the MBTiles database file
     const char *name_UTF8 = "";
@@ -762,7 +775,6 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
             
                         if(bset_geom){
                         //  If directed, defer expensize geometry computation until actually needed for drawing.
-                            const double eps = 6e-6;  // about 1cm on earth's surface at equator
                 
                             tile->lonmin = round(tilex2long(tile_x_found, zoomFactor)/eps)*eps;
                             tile->lonmax = round(tilex2long(tile_x_found + 1, zoomFactor)/eps)*eps;
@@ -778,6 +790,7 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
                 }
           }
     }
+#endif    
 }
 
 
@@ -840,8 +853,11 @@ bool ChartMBTiles::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 #endif
 }
 
-bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
+bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
 {
+    if(!m_pDB)
+        return false;
+    
     // Is the texture ready?
     if(tile->glTextureName > 0){
         glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
@@ -859,7 +875,7 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
             sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
             
             // Compile a SQL query, getting the specific  blob
-            SQLite::Statement query(db, qrs);
+            SQLite::Statement query(*m_pDB, qrs);
             
             int queryResult = query.tryExecuteStep();
             if(SQLITE_DONE == queryResult){
@@ -871,7 +887,7 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
                 const void* blob = blobColumn.getBlob();
                 
                 sprintf(qrs, "select length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-                SQLite::Statement lquery(db, qrs);
+                SQLite::Statement lquery(*m_pDB, qrs);
                 int queryResult = lquery.tryExecuteStep();
                 int length = lquery.getColumn(0);         // Get the length
                 
@@ -930,6 +946,103 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
     return false;
 }
 
+class wxPoint2DDouble;
+
+wxPoint2DDouble ChartMBTiles::GetDoublePixFromLL( ViewPort& vp, double lat, double lon )
+{
+    double easting = 0;
+    double northing = 0;
+    double xlon = lon - eps;
+    
+       /*  Make sure lon and lon0 are same phase */
+//      if( xlon * vp.clon < 0. ) {
+//          if( xlon < 0. ) xlon += 360.;
+//          else
+//              xlon -= 360.;
+//      }
+
+
+    switch( vp.m_projection_type ) {
+        case PROJECTION_MERCATOR:
+        case PROJECTION_WEB_MERCATOR:
+        default:
+            const double z = WGS84_semimajor_axis_meters * mercator_k0;
+
+            easting = (xlon - vp.clon) * DEGREE * z;
+
+            // y =.5 ln( (1 + sin t) / (1 - sin t) )
+            const double s = sin(lat * DEGREE);
+            const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+
+            const double s0 = sin(vp.clat * DEGREE);
+            const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+            northing = y3 - y30;
+
+            break;
+    }
+
+    double epix = easting * vp.view_scale_ppm;
+    double npix = northing * vp.view_scale_ppm;
+    double dxr = epix;
+    double dyr = npix;
+
+    //    Apply VP Rotation
+    double angle = vp.rotation;
+
+    if( angle ) {
+        dxr = epix * cos( angle ) + npix * sin( angle );
+        dyr = npix * cos( angle ) - epix * sin( angle );
+    }
+
+    //printf("  gdpll:  %g  %g  %g\n", vp.clon, (vp.pix_width / 2.0 ) + dxr, ( vp.pix_height / 2.0 ) - dyr);
+    
+    return wxPoint2DDouble(( vp.pix_width / 2.0 ) + dxr, ( vp.pix_height / 2.0 ) - dyr);
+}
+
+bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const ViewPort& VPoint)
+{
+    ViewPort vp = VPoint;
+
+    bool btexture = getTileTexture(tile);
+    if(!btexture) { // failed to load, draw NODTA on the minimum zoom
+        glDisable(GL_TEXTURE_2D);
+        if(zoomLevel == m_minZoom)
+            glColor4ub( 163, 180, 183, 128 );
+        else
+            return false;
+    }
+    else{
+        glEnable(GL_TEXTURE_2D);
+        glColor4f(1, 1, 1, 1);
+    }
+ 
+    float coords[8];
+    float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
+
+    ViewPort mvp = vp;
+    
+//     if( ((tile->lonmin + eps) * vp.clon) < 0){
+//         if(tile->lonmin > vp.clon)
+//             mvp.clon = vp.clon + 360.;
+//             
+//     }        
+    wxPoint2DDouble p;
+    
+    {
+        p = GetDoublePixFromLL(mvp, tile->latmin, tile->lonmin); coords[0] = p.m_x;  coords[1] = p.m_y;
+        p = GetDoublePixFromLL(mvp, tile->latmax, tile->lonmin); coords[2] = p.m_x;  coords[3] = p.m_y;
+        p = GetDoublePixFromLL(mvp, tile->latmax, tile->lonmax); coords[4] = p.m_x;  coords[5] = p.m_y;
+        p = GetDoublePixFromLL(mvp, tile->latmin, tile->lonmax); coords[6] = p.m_x;  coords[7] = p.m_y;
+    }
+      
+    glTexCoordPointer(2, GL_FLOAT, 2*sizeof(GLfloat), texcoords);
+    glVertexPointer(2, GL_FLOAT, 2*sizeof(GLfloat), coords);
+    glDrawArrays(GL_QUADS, 0, 4);
+
+    return true;
+}
+
+
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     // Do not render if significantly underzoomed
@@ -972,7 +1085,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     int zoomFactor = m_minZoom;
     
     // DEBUG TODO   Show single zoom
-    //zoomFactor = 16; //m_minZoom;
+    //zoomFactor = 1; //m_minZoom;
     //viewZoom = zoomFactor;
     
     float coords[8];
@@ -985,21 +1098,46 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
 
         LLBBox box = Region.GetBox();
         
+        // if the box spans IDL, we need two passes.
+        bool btwoPass = false;
+        if( ((box.GetMinLon() < -180) && (box.GetMaxLon()  > -180)) ||
+            ((box.GetMinLon() < 180) && (box.GetMaxLon()  > 180)) ){
+            //printf("\nTwoPass\n");
+            btwoPass = true;
+        }
         // Get the tile numbers of the box corners of this render region, at this zoom level
         int topTile =   wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
         int botTile =   wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
         int leftTile =  wxMax(tzd->tile_x_min, long2tilex(box.GetMinLon(), zoomFactor));
         int rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
 
-        botTile -= 1;
+        if(btwoPass){
+            leftTile =  wxMax(tzd->tile_x_min, long2tilex(-180, zoomFactor));
+            rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+            vp = VPoint;
+             if(vp.clon > 0)
+                 vp.clon -= 360;
+
+        }
+        else
+            vp = VPoint;
+
+        //botTile -= 1;
         topTile += 1;
         
         //printf("limits: {%d %d}    {%d %d}\n", botTile, topTile, leftTile, rightTile);
 
         for(int i=botTile ; i < topTile ; i++){
+            if( (i > tzd->tile_y_max) || (i < tzd->tile_y_min) )
+                continue;
+            
             for(int j = leftTile ; j < rightTile+1 ; j++){
-                unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
                 
+                if( (j > tzd->tile_x_max) || (j < tzd->tile_x_min) )
+                    continue;
+                
+                unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
+                //printf("pass 1:  %d  %d\n", i, j);
                 mbTileDescriptor *tile = NULL;
 
                 if(tzd->tileMap.find(index) != tzd->tileMap.end())
@@ -1015,7 +1153,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                 }
                 
                 if(!tile->m_bgeomSet){
-                    const double eps = 6e-6;  // about 1cm on earth's surface at equator
                     
                     tile->lonmin = round(tilex2long(tile->tile_x, zoomFactor)/eps)*eps;
                     tile->lonmax = round(tilex2long(tile->tile_x + 1, zoomFactor)/eps)*eps;
@@ -1026,45 +1163,73 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                     tile->m_bgeomSet = true;
                 }
                 
-                
-                //printf("Tile: %d  %d\n", tile->tile_x, tile->tile_y);
-                
                 if(!Region.IntersectOut(tile->box))
                 {
-                    bool btexture = getTileTexture(db, tile);
-                    if(!btexture) { // failed to load, draw NODTA on the minimum zoom
-                        glDisable(GL_TEXTURE_2D);
-                        if(zoomFactor == m_minZoom)
-                            glColor4ub( 163, 180, 183, 128 );
-                        else
-                            continue;
-                    }
-                    else{
+                    if(RenderTile(tile, zoomFactor, vp))
                         maxrenZoom = zoomFactor;
-                        glEnable(GL_TEXTURE_2D);
-                        glColor4f(1, 1, 1, 1);
-                    }
-                
-                    wxPoint2DDouble p;
-                    p = vp.GetDoublePixFromLL(tile->latmin, tile->lonmin); coords[0] = p.m_x;  coords[1] = p.m_y;
-                    p = vp.GetDoublePixFromLL(tile->latmax, tile->lonmin); coords[2] = p.m_x;  coords[3] = p.m_y;
-                    p = vp.GetDoublePixFromLL(tile->latmax, tile->lonmax); coords[4] = p.m_x;  coords[5] = p.m_y;
-                    p = vp.GetDoublePixFromLL(tile->latmin, tile->lonmax); coords[6] = p.m_x;  coords[7] = p.m_y;
-                
-                
-                    glTexCoordPointer(2, GL_FLOAT, 2*sizeof(GLfloat), texcoords);
-                    glVertexPointer(2, GL_FLOAT, 2*sizeof(GLfloat), coords);
-                    glDrawArrays(GL_QUADS, 0, 4);
-                
-                
                 }
-                
             }
+        }       // for
+        
+        // second pass
+        if(btwoPass){
+            vp = VPoint;
+            if(vp.clon < 0)
+                vp.clon += 360;
+            
+            // Get the tile numbers of the box corners of this render region, at this zoom level
+            int topTile =   wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
+            int botTile =   wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
+            int leftTile =  wxMax(tzd->tile_x_min, long2tilex(box.GetMinLon(), zoomFactor));
+            int rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+
+            if(rightTile < leftTile)
+                rightTile = leftTile;
+            topTile += 1;
+            
+
+            for(int i=botTile ; i < topTile ; i++){
+                for(int j = leftTile ; j < rightTile+1 ; j++){
+                    unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
+                    
+                    mbTileDescriptor *tile = NULL;
+
+                    //printf("pass 2:  %d  %d\n", i, j);
+
+                    if(tzd->tileMap.find(index) != tzd->tileMap.end())
+                        tile = tzd->tileMap[index];
+                    if(NULL == tile){
+                        tile = new mbTileDescriptor;
+                        tile->tile_x = j;
+                        tile->tile_y = i;
+                        tile->m_zoomLevel = zoomFactor;
+                        tile->m_bAvailable = true;
+            
+                        tzd->tileMap[index] = tile;
+                    }
+                    
+                    if(!tile->m_bgeomSet){
+                        
+                        tile->lonmin = round(tilex2long(tile->tile_x, zoomFactor)/eps)*eps;
+                        tile->lonmax = round(tilex2long(tile->tile_x + 1, zoomFactor)/eps)*eps;
+                        tile->latmin = round(tiley2lat(tile->tile_y - 1, zoomFactor)/eps)*eps;
+                        tile->latmax = round(tiley2lat(tile->tile_y, zoomFactor)/eps)*eps;
+                        
+                        tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
+                        tile->m_bgeomSet = true;
+                    }
+                    
+                    
+                    if(!Region.IntersectOut(tile->box))
+                        RenderTile(tile, zoomFactor, vp);
+                }
+            }       // for
         }
+        
+        
         
                 
         zoomFactor++;
-        //printf("\n");
     }
     
     glDisable(GL_TEXTURE_2D);
