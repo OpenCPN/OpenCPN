@@ -2082,7 +2082,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   wxBoxSizer *boxSizercPanel = new wxBoxSizer(wxVERTICAL);
   cPanel->SetSizer(boxSizercPanel);
     
-  m_scrollWinConnections = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,100)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
+  m_scrollWinConnections = new wxScrolledWindow(cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,80)), wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE );
   m_scrollWinConnections->SetScrollRate(5, 5);
   boxSizercPanel->Add(m_scrollWinConnections, 0, wxALL|wxEXPAND, 5);
     
@@ -9265,6 +9265,7 @@ void options::FillSourceList(void) {
   
   mSelectedConnection = NULL;
   m_buttonAdd->Enable( true );
+  m_buttonAdd->Show();
 
 }
 
@@ -9294,10 +9295,14 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
   SetDefaultConnectionParams();
   m_sbConnEdit->SetLabel(_("Configure new connection"));
 
-  m_buttonRemove->Disable();
-  m_buttonAdd->Disable();
+  m_buttonRemove->Hide();//Disable();
+  m_buttonAdd->Hide(); //Disable();
 
   RecalculateSize();
+  
+  //  Scroll the panel to allow the user to see more of the NMEA parameter settings area
+  wxPoint buttonPosition  = m_buttonAdd->GetPosition();
+  m_pNMEAForm->Scroll(-1, buttonPosition.y / m_scrollRate);
 }
 
 
@@ -9339,6 +9344,7 @@ void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
 void options::OnSelectDatasource(wxListEvent& event) {
   SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
   m_buttonRemove->Enable();
+  m_buttonRemove->Show();
   event.Skip();
 }
 
@@ -9354,6 +9360,7 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     panel->SetSelected( true );  
     SetConnectionParams(mSelectedConnection);
     m_buttonRemove->Enable();
+    m_buttonRemove->Show();
     m_buttonAdd->Disable();
     m_sbConnEdit->SetLabel(_("Edit Selected Connection"));
 
@@ -9362,6 +9369,7 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     mSelectedConnection = NULL;
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
+    m_buttonAdd->Show();
     m_sbConnEdit->SetLabel(_T(""));
     ClearNMEAForm();
   }
