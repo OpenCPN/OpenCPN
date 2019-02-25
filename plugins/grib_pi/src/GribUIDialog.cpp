@@ -1424,10 +1424,10 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues( double &M, double &A, int idx1, i
     }
     // time_t wxDateTime::GetTicks();
     if(!beforeX || !afterX)
-        return GRIB_NOTDEF;
+        return false;
 
     if(!beforeY || !afterY)
-        return GRIB_NOTDEF;
+        return false;
 
     time_t t1 = beforeX->getRecordCurrentDate();
     time_t t2 = afterX->getRecordCurrentDate();

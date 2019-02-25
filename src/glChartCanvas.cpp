@@ -1861,9 +1861,9 @@ void glChartCanvas::DrawEmboss( emboss_data *emboss  )
             for( int j = 0; j < emboss->glwidth; j++ ) {
                 if( j < w ) {
                     data[2 * ( ( i * emboss->glwidth ) + j )] =
-                        emboss->pmap[( i * w ) + j] > 0 ? 0 : 255;
-                    data[2 * ( ( i * emboss->glwidth ) + j ) + 1] = abs(
-                        emboss->pmap[( i * w ) + j] );
+                        (char) (emboss->pmap[( i * w ) + j] > 0 ? 0 : 255);
+                    data[2 * ( ( i * emboss->glwidth ) + j ) + 1] = 
+                        (char) abs( (emboss->pmap[( i * w ) + j]) );
                 }
             }
         }
