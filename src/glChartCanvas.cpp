@@ -3279,19 +3279,6 @@ void glChartCanvas::DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp)
 
     DrawStaticRoutesTracksAndWaypoints( vp );
 
-    if( m_pParentCanvas->m_bShowTide ) {
-        LLBBox bbox = vp.GetBBox();
-
-        // enlarge the bbox by half the width of the tide bitmap so that accelerated panning works
-        if(CanClipViewport(vp))
-            bbox.EnLarge(m_pParentCanvas->m_bmTideDay.GetWidth()/2 / vp.view_scale_ppm / 111274.96299695624);
-
-        DrawGLTidesInBBox( dc, bbox );
-    }
-    
-    if( m_pParentCanvas->m_bShowCurrent )
-        DrawGLCurrentsInBBox( dc, vp.GetBBox() );
-
     DisableClipRegion();
 }
 
@@ -3403,13 +3390,11 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
     }
     else
         m_pParentCanvas->DrawAllTidesInBBox( dc, BBox );
-    m_pParentCanvas->RebuildTideSelectList(BBox);
 }
 
 void glChartCanvas::DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox)
 {
     m_pParentCanvas->DrawAllCurrentsInBBox(dc, BBox);
-    m_pParentCanvas->RebuildCurrentSelectList(BBox);
 }
 
 
@@ -3845,6 +3830,25 @@ void glChartCanvas::Render()
             }
         }
     }
+
+    if( m_pParentCanvas->m_bShowTide  || m_pParentCanvas->m_bShowCurrent ){
+        LLRegion screenLLRegion = VPoint.GetLLRegion( screen_region );
+        LLBBox screenBox = screenLLRegion.GetBox();
+        // Enlarge the box a bit
+        screenBox.EnLarge(screenBox.GetLonRange()* 0.05);
+        
+        // update the tide/current select points, if necessary
+        if( m_pParentCanvas->m_bShowTide ) {
+            m_pParentCanvas->RebuildTideSelectList(screenBox);          // full screen
+            DrawGLTidesInBBox( gldc, VPoint.GetBBox() );
+        }
+        
+        if( m_pParentCanvas->m_bShowCurrent ){
+            m_pParentCanvas->RebuildCurrentSelectList(screenBox);
+            DrawGLCurrentsInBBox( gldc, VPoint.GetBBox() );
+        }
+    }
+
 
     // If multi-canvas, indicate which canvas has keyboard focus
     // by drawing a simple blue bar at the top.
