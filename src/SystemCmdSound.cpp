@@ -48,6 +48,7 @@ static int do_play(const char* cmd, const char* path)
 #endif /* _WIN32 */
 
 #ifdef __WXGTK__
+#include <sys/wait.h> // for WEXITSTATUS & friends
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
