@@ -721,7 +721,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
 
 bool OCPNPlatform::IsGLCapable()
 {
-    OCPN_GLCaps *pcaps = (OCPN_GLCaps * )calloc( 1, sizeof(OCPN_GLCaps));
+    OCPN_GLCaps *pcaps = new OCPN_GLCaps;
     
     BuildGLCaps(pcaps);
 
