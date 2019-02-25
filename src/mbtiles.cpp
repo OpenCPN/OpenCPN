@@ -58,12 +58,12 @@
 #include <unordered_map>
 
 #include <sqlite3.h> //We need some defines
+#include <SQLiteCpp/SQLiteCpp.h>
 
 #include "mbtiles.h"
 #include "ocpn_pixel.h"
 #include "ChartDataInputStream.h"
 
-#include <SQLiteCpp/SQLiteCpp.h>
 
 //  Missing from MSW include files
 #ifdef _MSC_VER

@@ -35,8 +35,7 @@
 #include "georef.h"                 // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
-#include <SQLiteCpp/SQLiteCpp.h>
-#include <cstdint>
+
 
 enum class MBTilesType : std::int8_t {BASE, OVERLAY};
 enum class MBTilesScheme : std::int8_t {XYZ, TMS};
@@ -59,7 +58,10 @@ class ocpnBitmap;
 class mbTileZoomDescriptor;
 class mbTileDescriptor;
 
-
+ namespace SQLite {
+   class Database;
+ }
+ 
 //-----------------------------------------------------------------------------
 //    Helper classes
 //-----------------------------------------------------------------------------
