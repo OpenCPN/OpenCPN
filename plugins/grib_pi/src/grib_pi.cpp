@@ -534,16 +534,21 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
 {
     // If multicanvas are active, render the overlay on the right canvas only
-    
-    if(GetCanvasCount() > 1){            // multi?
-        if(canvasIndex == 1){
-            return RenderGLOverlay( pcontext, vp);
-        }
-        else
-            return false;
+    if(GetCanvasCount() > 1 && canvasIndex != 1){            // multi?
+        return false;
     }
 
     return RenderGLOverlay( pcontext, vp);
+}
+
+bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1 && canvasIndex != 1) {            // multi?
+        return false;
+    }
+
+    return RenderOverlay( dc, vp);
 }
 
 void grib_pi::SetCursorLatLon(double lat, double lon)

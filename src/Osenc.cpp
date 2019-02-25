@@ -260,7 +260,7 @@ Osenc::~Osenc()
     free( m_pCOVRTable );
     free( m_pNoCOVRTablePoints );
     free( m_pNoCOVRTable );
-    
+    delete m_UpFiles;
     CPLPopErrorHandler();
     
     
@@ -291,7 +291,8 @@ void Osenc::init( void )
     m_pauxInstream = NULL;
     m_pOutstream = NULL;
     m_pInstream = NULL;
-    
+    m_UpFiles = nullptr;
+
     m_bVerbose = true;
     g_OsencVerbose = true;
     m_NoErrDialog = false;
@@ -1515,8 +1516,8 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
         return ERROR_BASEFILE_ATTRIBUTES;
     }
     
-    
-    OGRS57DataSource *poS57DS = new OGRS57DataSource;
+    OGRS57DataSource S57DS;
+    OGRS57DataSource *poS57DS = &S57DS;
     poS57DS->SetS57Registrar( m_poRegistrar );
     
 
@@ -1761,8 +1762,6 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     delete m_ProgDialog;
 #endif    
     
-    delete poS57DS;
-
     lockCR.unlock();
    
     return ret_code;
@@ -3647,8 +3646,8 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
         return ERROR_BASEFILE_ATTRIBUTES;
     }
     
-    OGRS57DataSource *poS57DS = new OGRS57DataSource;
-    poS57DS->SetS57Registrar( m_poRegistrar );
+    OGRS57DataSource oS57DS;
+    oS57DS.SetS57Registrar( m_poRegistrar );
 
     bool b_current_debug = g_bGDAL_Debug;
     g_bGDAL_Debug = false;
@@ -3656,13 +3655,13 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
     
     //  Ingest the .000 cell, with updates applied
     
-    if(ingestCell( poS57DS, FullPath000, SENCfile.GetPath())){
+    if(ingestCell( &oS57DS, FullPath000, SENCfile.GetPath())){
         errorMessage = _T("Error ingesting: ") + FullPath000;
         return ERROR_INGESTING000;
     }
 
     
-    S57Reader *poReader = poS57DS->GetModule( 0 );
+    S57Reader *poReader = oS57DS.GetModule( 0 );
     
     CalculateExtent( poReader, m_poRegistrar );
     
@@ -3670,7 +3669,6 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
     g_bGDAL_Debug = b_current_debug;
     
     //    delete poReader;
-    delete poS57DS;
     
     return SENC_NO_ERROR;
     

@@ -637,6 +637,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     gFrame->Show();
     glTestCanvas *tcanvas = new glTestCanvas(gFrame);
     tcanvas->Show();
+    wxYield();
     wxGLContext *pctx = new wxGLContext(tcanvas);
     tcanvas->SetCurrent(*pctx);
     
@@ -645,6 +646,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     char *str = (char *) glGetString( GL_RENDERER );
     if (str == NULL){
         delete tcanvas;
+        delete pctx;
         return false;
     }
     
@@ -712,6 +714,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
 
 
     delete tcanvas;
+    delete pctx;
     
     return true;
 }

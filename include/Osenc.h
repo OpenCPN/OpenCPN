@@ -545,7 +545,6 @@ private:
     int                 m_read_last_applied_update;
     
     S57Reader           *poReader;
-    OGRS57DataSource    *poS57DS;
     
     wxDateTime          m_date000;
     wxString            m_sdate000;
