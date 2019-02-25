@@ -8738,11 +8738,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         wxString face = dFont->GetFaceName();
 
         if( NULL == g_pObjectQueryDialog ) {
-            g_pObjectQueryDialog = new S57QueryDialog();
-
-            g_pObjectQueryDialog->Create( this, -1, _( "Object Query" ), wxDefaultPosition,
-                                          wxSize( g_S57_dialog_sx, g_S57_dialog_sy ) );
-            g_pObjectQueryDialog->Centre();
+            g_pObjectQueryDialog = new S57QueryDialog(this, -1, _( "Object Query" ), wxDefaultPosition, wxSize( g_S57_dialog_sx, g_S57_dialog_sy ));
         }
 
         wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();

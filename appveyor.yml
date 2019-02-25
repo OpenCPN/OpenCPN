@@ -63,7 +63,7 @@ artifacts:
   - path: 'build\Release\opencpn.lib'
     name: lib
 
-  - path: 'build\Release\opencpn.pdb'
+  - path: 'build\Release\opencpn*.pdb'
     name: pdb
 
 deploy:
