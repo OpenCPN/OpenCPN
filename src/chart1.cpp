@@ -7974,7 +7974,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
     return androidGetMemoryStatus( mem_total, mem_used );
 #endif
 
-#ifdef __WXGTK__
+#if defined(__linux__)
 
 //      Use filesystem /proc/self/statm to determine memory status
 //	Provides information about memory usage, measured in pages.  The columns are:
@@ -8069,9 +8069,8 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
                *mem_used = mi.uordblks / 1024;
 
            printf("mem_used (Mb):  %d\n", *mem_used / 1024);
-
-
-#endif
+	   return true;
+#endif /* linux */
 
 #ifdef __WXMSW__
     HANDLE hProcess;
@@ -8131,6 +8130,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
         *mem_total = statex.ullTotalPhys / 1024;
     }
+    return true;
 #endif
 
 #ifdef __WXMAC__
@@ -8163,12 +8163,14 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
     if(mem_total)
        *mem_total = 4000;
 
-      
-
+    return true;
 #endif
 
-    return true;
-
+    if (mem_used)
+	*mem_used = 0;
+    if (mem_total)
+	*mem_total = 0;
+    return false;
 }
 
 void MyFrame::DoPrint( void )
@@ -10297,7 +10299,9 @@ extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
 #include <sys/ioctl.h>
+#ifdef __linux__
 #include <linux/serial.h>
+#endif
 
 #endif
 
@@ -10363,6 +10367,15 @@ int paternFilter (const struct dirent * dir) {
 
 int isTTYreal(const char *dev)
 {
+#ifdef __NetBSD__
+    if (strncmp("/dev/tty0", dev, 9) == 0)
+	return 1;
+    if (strncmp("/dev/ttyU", dev, 9) == 0)
+	return 1;
+    if (strcmp("/dev/gps", dev) == 0)
+	return 1;
+    return 0;
+#else /* !NetBSD */
     struct serial_struct serinfo;
     int ret = 0;
 
@@ -10379,6 +10392,7 @@ int isTTYreal(const char *dev)
     }
 
     return ret;
+#endif /* !NetBSD */
 }
 
 
@@ -10450,11 +10464,13 @@ wxArrayString *EnumerateSerialPorts( void )
 
 //        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
 
+#ifdef __linux__
     if( isTTYreal("/dev/ttyS0") )
         preturn->Add( _T("/dev/ttyS0") );
 
     if( isTTYreal("/dev/ttyS1") )
         preturn->Add( _T("/dev/ttyS1") );
+#endif /* linux */
 
 
 #endif
