@@ -189,6 +189,7 @@ extern bool             g_bTrackDaily;
 extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
+extern double           g_AISShowTracks_Limit;
 extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
@@ -1626,6 +1627,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_FLT( _T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1 );
     CHECK_INT( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
     CHECK_FLT( _T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1 )
+    CHECK_FLT( _T ( "TargetTracksLimit" ), &g_AISShowTracks_Limit, 300 )
     CHECK_INT( _T ( "bHideMooredTargets" ), &g_bHideMoored )
     CHECK_FLT( _T ( "MooredTargetMaxSpeedKnots" ), &g_ShowMoored_Kts, .1 )
     CHECK_INT( _T ( "bShowScaledTargets"), &g_bAllowShowScaled );
