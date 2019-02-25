@@ -566,8 +566,72 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
                 const char* c2 = query.getColumn(2);
                 int tile_x_found = atoi(colValue);      // tile_x
                 int tile_y_found = atoi(c2);    // tile_y
+
+#if 0                
+                // Fetch the tile
+                char qrs[2100];
+            sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", zoomFactor, tile_x_found, tile_y_found);
+            
+            // Compile a SQL query, getting the specific  blob
+            SQLite::Statement blobquery(db, qrs);
+
+            bool bliveData = false;
+            
+            int queryResult = blobquery.tryExecuteStep();
+            if(SQLITE_DONE == queryResult){
+                int yyp = 4;//return false;                           // requested ROW not found, should never happen
+            }
+            else{
+                SQLite::Column blobColumn = blobquery.getColumn(3);         // Get the blob
+                const void* blob = blobColumn.getBlob();
                 
-                regionZoom.Union(tile_x_found, tile_y_found-1, 1, 1);
+                sprintf(qrs, "select length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", zoomFactor, tile_x_found, tile_y_found);
+                SQLite::Statement lquery(db, qrs);
+                int queryResult = lquery.tryExecuteStep();
+                int length = lquery.getColumn(0);         // Get the length
+                
+                
+                wxMemoryInputStream blobStream(blob, length);
+                wxImage blobImage;
+
+                blobImage = wxImage(blobStream, m_imageType);
+                
+                int blobWidth = blobImage.GetWidth();
+                int blobHeight = blobImage.GetHeight();
+                
+                int stride = 4;
+                int tex_w = 256;
+                int tex_h = 256;
+                unsigned char *imgdata = blobImage.GetData();
+                if( !imgdata )
+                    int yyp = 4;
+                unsigned char *imgAlpha = blobImage.GetAlpha();
+                if( !imgAlpha )
+                    int yyp = 4;
+                
+                m_imageType = blobImage.GetType();
+                unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
+                
+                for( int j = 0; j < tex_w*tex_h; j++ ){
+                    for( int k = 0; k < 3; k++ ){
+                        unsigned char data = imgdata[3*j + k];
+                        if(data > 1 )
+                            bliveData = true;
+                        teximage[j * stride + k] = imgdata[3*j + k];
+                        if(imgAlpha){
+                            unsigned char alpha = imgAlpha[3*j + k];
+                            teximage[j * stride + 3] = imgAlpha[3*j + k];
+                        }
+                        else
+                            teximage[j * stride + 3] = 255;
+                    }
+                }
+            }
+
+                
+                if(bliveData)
+#endif                    
+                    regionZoom.Union(tile_x_found, tile_y_found-1, 1, 1);
  
          }     // inner while
       
@@ -734,7 +798,7 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
     tzd->tile_y_min = lat2tiley(m_LatMin + eps, zoomFactor);
     tzd->tile_y_max = lat2tiley(m_LatMax - eps, zoomFactor);
     
-    tzd->nx_tile = tzd->tile_x_max - tzd->tile_x_min + 1;
+    tzd->nx_tile = abs(tzd->tile_x_max - tzd->tile_x_min) + 1;
     tzd->ny_tile = tzd->tile_y_max - tzd->tile_y_min + 1;
 
     return;
@@ -1057,17 +1121,13 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     // Do not render if significantly underzoomed
 //    if( VPoint.chart_scale > (20 * m_Chart_Scale) )
 //        return true;
-    
     ViewPort vp = VPoint;
+
+    OCPNRegion screen_region(wxRect(0, 0, vp.pix_width, vp.pix_height));
+    LLRegion screenLLRegion = vp.GetLLRegion( screen_region );
+    LLBBox screenBox = screenLLRegion.GetBox();
+
     
-    // Open the MBTiles database file
-    const char *name_UTF8 = "";
-    wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
-    if ( utf8CB.data() )
-        name_UTF8 = utf8CB.data();
-
-    SQLite::Database  db(name_UTF8);
-
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
@@ -1080,7 +1140,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     
     for(int kz=m_minZoom ; kz <= 19 ; kz++){
         double db_mpp = OSM_zoomMPP[kz];
-        double vp_mpp = 1. / VPoint.view_scale_ppm;
+        double vp_mpp = 1. / vp.view_scale_ppm;
         
         if(db_mpp < vp_mpp * zoomMod){
             viewZoom = kz;
@@ -1094,35 +1154,40 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     int zoomFactor = m_minZoom;
     
     // DEBUG TODO   Show single zoom
-    //zoomFactor = 1; //m_minZoom;
+    //zoomFactor = 5; //m_minZoom;
     //viewZoom = zoomFactor;
     
     float coords[8];
     float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
     int maxrenZoom = m_minZoom;
+
+    LLBBox box = Region.GetBox();
+
+    // if the full screen box spans IDL,
+    // we need to render the entire screen in two passes.
+    bool btwoPass = false;
+    if( ((screenBox.GetMinLon() < -180) && (screenBox.GetMaxLon()  > -180)) ||
+        ((screenBox.GetMinLon() < 180) && (screenBox.GetMaxLon()  > 180)) ){
+        //printf("\nTwoPass\n");
+        btwoPass = true;
+        box = screenBox;
+    }
+    
     
     while(zoomFactor <= viewZoom){
         //printf("zoomFactor: %d viewZoom: %d\n", zoomFactor, viewZoom);
         mbTileZoomDescriptor *tzd = m_tileArray[zoomFactor - m_minZoom];
 
-        LLBBox box = Region.GetBox();
         
-        // if the box spans IDL, we need two passes.
-        bool btwoPass = false;
-        if( ((box.GetMinLon() < -180) && (box.GetMaxLon()  > -180)) ||
-            ((box.GetMinLon() < 180) && (box.GetMaxLon()  > 180)) ){
-            //printf("\nTwoPass\n");
-            btwoPass = true;
-        }
         // Get the tile numbers of the box corners of this render region, at this zoom level
         int topTile =   wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
         int botTile =   wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
-        int leftTile =  wxMax(tzd->tile_x_min, long2tilex(box.GetMinLon(), zoomFactor));
-        int rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+        int leftTile =  long2tilex(box.GetMinLon(), zoomFactor);
+        int rightTile = long2tilex(box.GetMaxLon(), zoomFactor);
 
         if(btwoPass){
-            leftTile =  wxMax(tzd->tile_x_min, long2tilex(-180, zoomFactor));
-            rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+            leftTile =  long2tilex(-180+eps, zoomFactor);
+            rightTile = long2tilex(box.GetMaxLon(), zoomFactor);
             vp = VPoint;
              if(vp.clon > 0)
                  vp.clon -= 360;
@@ -1142,11 +1207,11 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
             
             for(int j = leftTile ; j < rightTile+1 ; j++){
                 
-                if( (j > tzd->tile_x_max) || (j < tzd->tile_x_min) )
-                    continue;
+//                if( (j > tzd->tile_x_max) || (j < tzd->tile_x_min) )
+//                    continue;
                 
                 unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
-                //printf("pass 1:  %d  %d\n", i, j);
+                //printf("pass 1:  %d  %d  %d\n", zoomFactor, i, j);
                 mbTileDescriptor *tile = NULL;
 
                 if(tzd->tileMap.find(index) != tzd->tileMap.end())
@@ -1189,8 +1254,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
             // Get the tile numbers of the box corners of this render region, at this zoom level
             int topTile =   wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
             int botTile =   wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
-            int leftTile =  wxMax(tzd->tile_x_min, long2tilex(box.GetMinLon(), zoomFactor));
-            int rightTile = wxMin(tzd->tile_x_max, long2tilex(box.GetMaxLon(), zoomFactor));
+            int leftTile =  long2tilex(box.GetMinLon(), zoomFactor);
+            int rightTile = long2tilex(-180-eps/*box.GetMaxLon()*/, zoomFactor);
 
             if(rightTile < leftTile)
                 rightTile = leftTile;
@@ -1203,7 +1268,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                     
                     mbTileDescriptor *tile = NULL;
 
-                    //printf("pass 2:  %d  %d\n", i, j);
+                    //printf("pass 2:  %d  %d  %d\n", zoomFactor, i, j);
 
                     if(tzd->tileMap.find(index) != tzd->tileMap.end())
                         tile = tzd->tileMap[index];
