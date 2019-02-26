@@ -4342,6 +4342,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     if(!m_pCurrentStack)
         return;
 
+    m_bShowCompassWin = true;
+    SetShowGPSCompassWindow( true );    // Cancel effects of Ctrl-I
+
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
 
