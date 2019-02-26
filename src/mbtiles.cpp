@@ -61,9 +61,8 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include "mbtiles.h"
-#include "ocpn_pixel.h"
-#include "ChartDataInputStream.h"
-
+#include "chart1.h"
+#include "chcanv.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -162,7 +161,7 @@ double OSM_zoomMPP[] = { 156412,
                             
                             
 const double eps = 6e-6;  // about 1cm on earth's surface at equator
-
+extern MyFrame *gFrame;
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
@@ -1320,185 +1319,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
 
 bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
+    gFrame->GetPrimaryCanvas()->SetAlertString( _("MBTile requires OpenGL to be enabled"));
+
     return true;
-#if 0    
-      SetVPRasterParms(VPoint);
-
-      wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
-//      double factor = ((double)Rsrc.width)/((double)dest.width);
-      double factor = GetRasterScaleFactor(VPoint);
-      if(m_b_cdebug)
-      {
-            printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );
-            printf("Rect list:\n");
-            OCPNRegionIterator upd ( Region ); // get the requested rect list
-            while ( upd.HaveRects() )
-            {
-                  wxRect rect = upd.GetRect();
-                  printf("   %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-                  upd.NextRect() ;
-            }
-      }
-
-            //    Invalidate the cache if the scale has changed or the viewport size has changed....
-      if((fabs(m_cached_scale_ppm - VPoint.view_scale_ppm) > 1e-9) || (m_last_vprect != dest))
-      {
-            cached_image_ok = false;
-            m_vp_render_last.Invalidate();
-      }
-/*
-      if(pPixCache)
-      {
-            if((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height))
-            {
-                  delete pPixCache;
-                  pPixCache = new PixelCache(dest.width, dest.height, BPP);
-            }
-      }
-      else
-            pPixCache = new PixelCache(dest.width, dest.height, BPP);
-*/
-
-      m_cached_scale_ppm = VPoint.view_scale_ppm;
-      m_last_vprect = dest;
-
-
-      if(cached_image_ok)
-      {
-            //    Anything to do?
-           bool bsame_region = (Region == m_last_region);          // only want to do this once
-
-           if((bsame_region) && (Rsrc == cache_rect)  )
-           {
-              pPixCache->SelectIntoDC(dc);
-              if(m_b_cdebug)printf("  Using Current PixelCache\n");
-              return false;
-           }
-      }
-
-     m_last_region = Region;
-
-
-     //     Analyze the region requested
-     //     When rendering complex regions, (more than say 4 rectangles)
-     //     .OR. small proportions, then rectangle rendering may be faster
-     //     Also true  if the scale is less than near unity, or overzoom.
-     //     This will be the case for backgrounds of the quilt.
-
-
-     /*  Update for Version 2.4.0
-     This logic seems flawed, at least for quilts which contain charts having non-rectangular coverage areas.
-     These quilt regions decompose to ...LOTS... of rectangles, most of which are 1 pixel in height.
-     This is very slow, due to the overhead of GetAndScaleData().
-     However, remember that overzoom never uses the cache, nor does non-binary scale factors..
-     So, we check to see if this is a cacheable render, and that the number of rectangles is "reasonable"
-     */
-
-     //     Get the region rectangle count
-
-     int n_rect =0;
-     OCPNRegionIterator upd ( Region ); // get the requested rect list
-     while ( upd.HaveRects() )
-     {
-           n_rect++;
-           upd.NextRect();
-     }
-
-     if((!IsRenderCacheable( Rsrc, dest ) && ( n_rect > 4 ) && (n_rect < 20)) || ( factor < 1))
-     {
-         if(m_b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
-                              
-           // Verify that the persistent pixel cache is at least as large as the largest rectangle in the region
-           wxRect dest_check_rect = dest;
-           OCPNRegionIterator upd_check ( Region ); // get the requested rect list
-           while ( upd_check.HaveRects() )
-           {
-               wxRect rect = upd_check.GetRect();
-               dest_check_rect.Union(rect);
-               upd_check.NextRect();
-           }
- 
-            if(pPixCache)
-            {
-                if((pPixCache->GetWidth() != dest_check_rect.width) || (pPixCache->GetHeight() != dest_check_rect.height))
-                {
-                    delete pPixCache;
-                    pPixCache = new PixelCache(dest_check_rect.width, dest_check_rect.height, BPP);
-                }
-            }
-            else
-                pPixCache = new PixelCache(dest_check_rect.width, dest_check_rect.height, BPP);
-
-           
-           ScaleTypeEnum ren_type = RENDER_LODEF;
-
-
-
-      //    Decompose the region into rectangles, and fetch them into the target dc
-           OCPNRegionIterator upd ( Region ); // get the requested rect list
-           int ir = 0;
-           while ( upd.HaveRects() )
-           {
-                 wxRect rect = upd.GetRect();
-                 
-                 //  Floating point math can lead to negative rectangle origin.
-                 //  If this happens, we arbitrarily shift the rectangle to be positive semidefinite.
-                 //  This will cause at most a 1 pixlel error onscreen.
-                 if(rect.y < 0) rect.Offset(0, -rect.y);
-                 if(rect.x < 0) rect.Offset(-rect.x, 0);
-           
-                 
-                 GetAndScaleData(pPixCache->GetpData(), pPixCache->GetLength(),
-                        Rsrc, Rsrc.width, rect, pPixCache->GetWidth(), factor, ren_type);
-                 
-                 ir++;
-                 upd.NextRect();;
-           }
-
-           pPixCache->Update();
-
-      //    Update cache parameters
-           cache_rect = Rsrc;
-           cache_scale_method = ren_type;
-           cached_image_ok = false;            // Never cache this type of render
-
-      //    Select the data into the dc
-           pPixCache->SelectIntoDC(dc);
-
-           return true;
-     }
-
-
-     //     Default is to try using the cache
-     
-     if(pPixCache)
-     {
-         if((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height))
-         {
-             delete pPixCache;
-             pPixCache = new PixelCache(dest.width, dest.height, BPP);
-         }
-     }
-     else
-         pPixCache = new PixelCache(dest.width, dest.height, BPP);
-     
-     
-
-     if(m_b_cdebug)printf("  Render Region By GVUC\n");
-
-     //     A performance enhancement.....
-     ScaleTypeEnum scale_type_zoom = RENDER_HIDEF;
-     double binary_scale_factor = VPoint.view_scale_ppm / GetPPM();
-     if(binary_scale_factor < .20)
-           scale_type_zoom = RENDER_LODEF;
-
-     bool bnewview = GetViewUsingCache(Rsrc, dest, Region, scale_type_zoom);
-
-     //    Select the data into the dc
-     pPixCache->SelectIntoDC(dc);
-
-     return bnewview;
-#endif
 }
 
 

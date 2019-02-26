@@ -531,7 +531,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encShowDataQual = false;
     m_bShowGPS = true;
     SetQuiltMode(true);
- 
+    SetAlertString(_T(""));
+    
     SetupGlCanvas( );
 /*
 #ifdef ocpnUSE_GL
@@ -3492,6 +3493,8 @@ void ChartCanvas::DoMovement( long dt )
 
 void ChartCanvas::SetColorScheme( ColorScheme cs )
 {
+    SetAlertString(_T(""));
+
     //    Setup ownship image pointers
     switch( cs ) {
     case GLOBAL_COLOR_SCHEME_DAY:
