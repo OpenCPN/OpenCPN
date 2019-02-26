@@ -1270,6 +1270,8 @@ void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
 #ifndef __linux__
    return;
 #else
+   if(path.IsEmpty())
+       return;
    int r = access(path.mb_str(), R_OK | W_OK);
    if (r == 0)
       return;
