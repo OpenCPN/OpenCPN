@@ -23,6 +23,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     add_compile_options("-Wno-format" "-Wno-unknown-pragmas")
 endif ()
 
+#FIXME: Might need better handling after the 5.0.0 cycle
+IF (CMAKE_COMPILER_IS_GNUCXX)
+  ADD_DEFINITIONS(" -Wno-delete-incomplete ")
+ENDIF ()
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(Include)
 
