@@ -8494,6 +8494,12 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
     }
 
     if( event.LeftDown() ) {
+        // Skip the first left click if it will cause a canvas focus shift
+        if( (GetCanvasCount() > 1) &&  (this != g_focusCanvas) ){
+            //printf("focus shift\n");
+            return false;
+        }
+        
         last_drag.x = x, last_drag.y = y;
         panleftIsDown = true;
     }
