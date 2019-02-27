@@ -104,7 +104,7 @@ extern GLuint g_raster_format;
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
 
-#if !defined(__WXOSX__) || wxCHECK_VERSION(3, 1, 0) 
+#if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #else
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS
