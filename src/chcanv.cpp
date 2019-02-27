@@ -3157,19 +3157,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-           m_bShowCompassWin = !m_bShowCompassWin;
-           SetShowGPSCompassWindow(m_bShowCompassWin);
-           Refresh( false );
+           if(event.ControlDown()){
+                m_bShowCompassWin = !m_bShowCompassWin;
+                SetShowGPSCompassWindow(m_bShowCompassWin);
+                Refresh( false );
+           }
            break;
-
-
-//             if (m_Compass) {
-//                 m_Compass->Show(!m_Compass->IsShown());
-//                 if (m_Compass->IsShown())
-//                     m_Compass->UpdateStatus();
-//                 m_brepaint_piano = true;
-//                 Refresh( false );
-//             }
 
         default:
             break;
