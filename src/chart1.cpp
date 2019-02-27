@@ -3095,12 +3095,24 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if(g_MainToolbar){
         if(g_MainToolbar->GetColorScheme() != cs){
+            
+            // capture the current toolbar collapse state
+            bool btoolbarFull = g_bmasterToolbarFull;
+            
             g_MainToolbar->SetColorScheme( cs );
             //g_MainToolbar->DestroyToolBar();
             //CreateMasterToolbar();
-            RequestNewMasterToolbar();
-            g_MainToolbar->SetColorScheme( cs );
 
+            if(!btoolbarFull){
+                g_MainToolbar->Hide();
+                RequestNewMasterToolbar();
+                g_MainToolbar->SetColorScheme( cs );
+                SetGlobalToolbarViz( false );
+            }
+            else{
+                RequestNewMasterToolbar();
+                g_MainToolbar->SetColorScheme( cs );
+            }            
         }
     }
     
@@ -4801,6 +4813,7 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             //  One last "Realize()" to establish the final toolbar shape
             g_MainToolbar->GetToolbar()->InvalidateBitmaps();
             g_MainToolbar->Realize();
+            g_MainToolbar->Show();
         }            
     }
     else{
@@ -4813,8 +4826,10 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
         else{
             g_MainToolbar->GetToolbar()->InvalidateBitmaps();
             g_MainToolbar->Realize();
+            g_MainToolbar->Show();
         }
     }
+
 }
 
 
