@@ -156,6 +156,9 @@ OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 set (WXWIDGETS_FORCE_VERSION CACHE VERSION
      "Force usage of a specific wxWidgets version.")
 
+set (WXWIDGETS_OPTIONS CACHE STRING
+    "Additional flags to wxWidgets_CONFIG_OPTIONS")
+
 IF(WIN32 AND NOT UNIX)
   OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
   OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
@@ -956,6 +959,9 @@ IF(NOT QT_ANDROID)
   if(WXWIDGETS_FORCE_VERSION)
     set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
   endif()
+  set(wxWidgets_CONFIG_OPTIONS
+      ${wxWidgets_CONFIG_OPTIONS} ${WXWIDGETS_OPTIONS})
+
 
   IF(MSVC)
     # Exclude wxexpat.lib, since we use our own version.
@@ -1744,7 +1750,7 @@ IF(WIN32)
   IF(MINGW)
     # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
     ADD_DEFINITIONS( " -DUNICODE" )
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
       ${OPENGL_LIBRARIES}
       wsock32.lib
     )
