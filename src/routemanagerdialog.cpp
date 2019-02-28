@@ -1869,19 +1869,18 @@ void RouteManagerDialog::TrackToRoute( Track *track )
     if( !track ) return;
     if( track->m_bIsInLayer ) return;
 
-    wxProgressDialog *pprog = new wxProgressDialog( _("OpenCPN Converting Track to Route...."),
+    wxGenericProgressDialog pprog( _("OpenCPN Converting Track to Route...."),
             _("Processing Waypoints..."), 101, NULL,
             wxPD_AUTO_HIDE | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME
                     | wxPD_REMAINING_TIME );
 
     ::wxBeginBusyCursor();
 
-    Route *route = track->RouteFromTrack( pprog );
+    Route *route = track->RouteFromTrack( &pprog );
 
     pRouteList->Append( route );
 
-    pprog->Update( 101, _("Done.") );
-    delete pprog;
+    pprog.Update( 101, _("Done.") );
 
     gFrame->RefreshAllCanvas();
     
