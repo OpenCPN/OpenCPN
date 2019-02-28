@@ -37,6 +37,7 @@
 #include "Track.h"
 #include <multiplexer.h>
 #include "config.h"
+#include <cstdio>
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -1009,7 +1010,13 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             else{ 
                 //set  mmsi-props to default values
                 pTargetData->b_OwnShip = false;
-                pTargetData->b_PersistTrack = false;
+                if ( 0 == m_persistent_tracks.count( mmsi ) ) {
+                    //Normal target
+                    pTargetData->b_PersistTrack = false;
+                } else {
+                    // The track persistency enabled in the query window
+                    pTargetData->b_PersistTrack = true;
+                }
                 pTargetData->b_NoTrack = false;
                 // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
                 for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
@@ -1125,7 +1132,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 ( *AISTargetNamesNC )[mmsi] = ship_name;
                             }
                             if ( g_bUseOnlyConfirmedAISName ){ //copy back previous name
-                                strncpy(pTargetData->ShipName, "Unknown             ", 21);
+                                strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN);
                             }
                         }
                     }
@@ -1315,10 +1322,11 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         m_ptentative_dsctarget->Class = AIS_DSC;
         m_ptentative_dsctarget->b_nameValid = true;
         if( dsc_fmt == 12 ) {
-            strncpy( m_ptentative_dsctarget->ShipName, "DISTRESS            ", 21 );
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d", std::abs(mmsi));
         }
-        else
-            strncpy( m_ptentative_dsctarget->ShipName, "POSITION REPORT     ", 21 );
+        else {
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d", std::abs(mmsi));
+        }
         
         m_ptentative_dsctarget->b_active = true;
         m_ptentative_dsctarget->b_lost = false;
@@ -1385,7 +1393,6 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
            //    Update this target's track
             if( pTargetData->b_show_track )
                 UpdateOneTrack( pTargetData );
-                    
         }
         
     }

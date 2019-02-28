@@ -1617,9 +1617,11 @@ GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 //-------------------------------------------------------------------------------
 // Constructeur de recopie
 //-------------------------------------------------------------------------------
+#pragma warning(disable: 4717)
 GribV2Record::GribV2Record(const GribRecord &rec) : GribRecord(rec)
 {
     *this = rec;
+    #pragma warning(default: 4717)
 }
 
 GribV2Record::~GribV2Record()
@@ -1637,7 +1639,7 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
 {
   unsigned char temp[16];
   int status;
-  size_t n,num;
+  size_t num;
 
   if (grib_msg->buffer != NULL) {
     delete [] grib_msg->buffer;

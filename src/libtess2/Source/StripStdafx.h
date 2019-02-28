@@ -25,8 +25,10 @@
 	typedef float				sfloat;
 
 	#define	null	NULL
-	#define RELEASE(x)		{ if (x != null) delete x;		x = null; }
-	#define RELEASEARRAY(x)	{ if (x != null) delete []x;	x = null; }
+// FIXME: The (char*) is a too dirty cludge to hide compiler warnings, code
+// should be fixed in a more consistent way.
+	#define RELEASE(x)	{ if (x != null) delete (char*) x; x = null; }
+	#define RELEASEARRAY(x)	{ if (x != null) delete [] (char*) x; x = null; }
 
 
 #include "RevisitedRadix.h"

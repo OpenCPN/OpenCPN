@@ -51,10 +51,6 @@
 #include "lz4.h"
 #include "lz4hc.h"
 
-#ifdef __WXOSX__
-#include "GL/gl_private.h"
-#endif
-
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(JobList);
 WX_DEFINE_LIST(ProgressInfoList);

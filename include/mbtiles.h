@@ -35,10 +35,10 @@
 #include "georef.h"                 // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
-#include <SQLiteCpp/SQLiteCpp.h>
-//#include <sqlite3.h>
 
 
+enum class MBTilesType : std::int8_t {BASE, OVERLAY};
+enum class MBTilesScheme : std::int8_t {XYZ, TMS};
 
 class WXDLLEXPORT ChartMbTiles;
 
@@ -58,7 +58,10 @@ class ocpnBitmap;
 class mbTileZoomDescriptor;
 class mbTileDescriptor;
 
-
+ namespace SQLite {
+   class Database;
+ }
+ 
 //-----------------------------------------------------------------------------
 //    Helper classes
 //-----------------------------------------------------------------------------
@@ -115,10 +118,11 @@ protected:
 
       void PrepareTiles();
       void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
-      bool getTileTexture(SQLite::Database &db, mbTileDescriptor *tile);
-      bool tileIsPopulated(mbTileDescriptor *tile);
+      bool getTileTexture( mbTileDescriptor *tile);
+      bool tileIsPopulated( mbTileDescriptor *tile);
       void FlushTiles( void );
-      
+      bool RenderTile( mbTileDescriptor *tile, int zoomLevel, const ViewPort& VPoint);
+
 
 //    Protected Data
 
@@ -136,9 +140,16 @@ protected:
       wxBitmapType m_imageType;
       
       double m_zoomScaleFactor;
+    
+      MBTilesType m_Type;
+      MBTilesScheme m_Scheme;
+      
+      SQLite::Database  *m_pDB; 
 
 private:
       void InitFromTiles( const wxString& name );
+      wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );
+
 };
 
 

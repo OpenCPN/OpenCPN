@@ -214,6 +214,12 @@ ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    # FIXME: Need better handling after 5.0.0
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
+endif ()
+
+
 IF(WIN32)
   IF(MSVC)
     SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")

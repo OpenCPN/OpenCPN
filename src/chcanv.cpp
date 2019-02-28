@@ -531,7 +531,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encShowDataQual = false;
     m_bShowGPS = true;
     SetQuiltMode(true);
- 
+    SetAlertString(_T(""));
+    
     SetupGlCanvas( );
 /*
 #ifdef ocpnUSE_GL
@@ -972,6 +973,12 @@ ChartCanvas::~ChartCanvas()
     MUIBar *muiBar = m_muiBar;
     m_muiBar = 0;
     delete muiBar;
+}
+
+void ChartCanvas::CanvasApplyLocale()
+{
+    CreateDepthUnitEmbossMaps( m_cs );
+    CreateOZEmbossMapData( m_cs );
 }
 
 void ChartCanvas::SetupGlCanvas( )
@@ -2792,7 +2799,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     case WXK_F12: {
         if( m_modkeys == wxMOD_ALT )
-            m_nMeasureState = *(int *)(0);          // generate a fault for testing
+            m_nMeasureState = *(volatile int *)(0);     // generate a fault for testing
 
         ToggleChartOutlines();
         break;
@@ -3150,19 +3157,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-           m_bShowCompassWin = !m_bShowCompassWin;
-           SetShowGPSCompassWindow(m_bShowCompassWin);
-           Refresh( false );
+           if(event.ControlDown()){
+                m_bShowCompassWin = !m_bShowCompassWin;
+                SetShowGPSCompassWindow(m_bShowCompassWin);
+                Refresh( false );
+           }
            break;
-
-
-//             if (m_Compass) {
-//                 m_Compass->Show(!m_Compass->IsShown());
-//                 if (m_Compass->IsShown())
-//                     m_Compass->UpdateStatus();
-//                 m_brepaint_piano = true;
-//                 Refresh( false );
-//             }
 
         default:
             break;
@@ -3314,6 +3314,9 @@ void ChartCanvas::ToggleCourseUp( )
     }
     
     
+    if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
+        GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
+
     //DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     gFrame->DoChartUpdate();
@@ -3486,6 +3489,8 @@ void ChartCanvas::DoMovement( long dt )
 
 void ChartCanvas::SetColorScheme( ColorScheme cs )
 {
+    SetAlertString(_T(""));
+
     //    Setup ownship image pointers
     switch( cs ) {
     case GLOBAL_COLOR_SCHEME_DAY:
@@ -4332,6 +4337,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         return;
     if(!m_pCurrentStack)
         return;
+
+    m_bShowCompassWin = true;
+    SetShowGPSCompassWindow( true );    // Cancel effects of Ctrl-I
 
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
@@ -8485,6 +8493,12 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
     }
 
     if( event.LeftDown() ) {
+        // Skip the first left click if it will cause a canvas focus shift
+        if( (GetCanvasCount() > 1) &&  (this != g_focusCanvas) ){
+            //printf("focus shift\n");
+            return false;
+        }
+        
         last_drag.x = x, last_drag.y = y;
         panleftIsDown = true;
     }
@@ -8732,11 +8746,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         wxString face = dFont->GetFaceName();
 
         if( NULL == g_pObjectQueryDialog ) {
-            g_pObjectQueryDialog = new S57QueryDialog();
-
-            g_pObjectQueryDialog->Create( this, -1, _( "Object Query" ), wxDefaultPosition,
-                                          wxSize( g_S57_dialog_sx, g_S57_dialog_sy ) );
-            g_pObjectQueryDialog->Centre();
+            g_pObjectQueryDialog = new S57QueryDialog(this, -1, _( "Object Query" ), wxDefaultPosition, wxSize( g_S57_dialog_sx, g_S57_dialog_sy ));
         }
 
         wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
@@ -11226,6 +11236,29 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     int bmw = bm.GetWidth();
     int bmh = bm.GetHeight();
 
+    float scale_factor = 1.0;
+    
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+
+    float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *25 / 1000; // Intended physical rendered size onscreen
+    nominal_icon_size_mm = wxMax(nominal_icon_size_mm, 8);
+    nominal_icon_size_mm = wxMin(nominal_icon_size_mm, 15);
+
+    float icon_pixelRefDim = 45;
+                        
+    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
+    float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+    
+    scale_factor *= pix_factor;
+    
+    float user_scale_factor = g_ChartScaleFactorExp;
+    if( g_ChartScaleFactorExp > 1.0 )
+        user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        
+    scale_factor *= user_scale_factor;
+
+
 
     {
 
@@ -11253,29 +11286,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                     }
 //draw "extended" icons
                     else {
-                        float scale_factor = 1.0;
-    
-                        //  Set the onscreen size of the symbol
-                        //  Compensate for various display resolutions
-                        //  Develop empirically, making a "diamond ATON" symbol about 4 mm square
-
-                        float nominal_icon_size_mm = 15; // Intended physical rendered size onscreen
-                        float icon_pixelRefDim = 45;
-                        
-                        float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
-                        float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
-    
-                        scale_factor *= pix_factor;
-    
-                        float user_scale_factor = g_ChartScaleFactorExp;
-                        if( g_ChartScaleFactorExp > 1.0 )
-                            user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
-        
-                        scale_factor *= user_scale_factor;
-
-                        
-                        
-                        
                         dc.SetFont( *plabelFont );
                          {
                             {
@@ -11494,7 +11504,11 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
 
-    float nominal_icon_size_mm = 2; // Intended physical rendered size onscreen
+    float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *3 / 1000; // Intended physical rendered size onscreen
+    nominal_icon_size_mm = wxMax(nominal_icon_size_mm, 2);
+    nominal_icon_size_mm = wxMin(nominal_icon_size_mm, 4);
+
+    //float nominal_icon_size_mm = 2; // Intended physical rendered size onscreen
     float icon_pixelRefDim = 5;
                         
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel

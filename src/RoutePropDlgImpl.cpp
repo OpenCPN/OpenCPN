@@ -237,6 +237,7 @@ RoutePropDlgImpl::~RoutePropDlgImpl()
 {
     Disconnect( wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
+    instanceFlag = false;
 }
 
 bool RoutePropDlgImpl::instanceFlag = false;

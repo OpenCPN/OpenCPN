@@ -67,7 +67,7 @@ void *CPLCalloc( size_t nCount, size_t nSize )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
                   "CPLCalloc(): Out of memory allocating %d bytes.\n",
-                  nSize * nCount );
+                  (int) (nSize * nCount) );
     }
 
     return pReturn;
@@ -107,7 +107,7 @@ void *CPLMalloc( size_t nSize )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
                   "CPLMalloc(): Out of memory allocating %d bytes.\n",
-                  nSize );
+                  (int) nSize );
     }
 
     return pReturn;
@@ -157,7 +157,7 @@ void * CPLRealloc( void * pData, size_t nNewSize )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
                   "CPLRealloc(): Out of memory allocating %d bytes.\n",
-                  nNewSize );
+                  (int) nNewSize );
     }
 
     return pReturn;
@@ -199,7 +199,7 @@ char *CPLStrdup( const char * pszString )
     {
         CPLError( CE_Fatal, CPLE_OutOfMemory,
                   "CPLStrdup(): Out of memory allocating %d bytes.\n",
-                  strlen(pszString) );
+                  (int) strlen(pszString) );
 
     }
 

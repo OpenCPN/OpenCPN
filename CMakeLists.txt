@@ -583,15 +583,13 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -Wno-unknown-pragmas")
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
   ADD_DEFINITIONS(" -Wno-deprecated-declarations ")
   # TODO: For libtess2, needs better handling after 5.0.0 cycle.
-  IF (CMAKE_COMPILER_IS_GNUCXX)
-    ADD_DEFINITIONS(" -Wno-delete-incomplete ")
-  ENDIF ()
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
@@ -613,6 +611,11 @@ IF( APPLE )
   ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    add_compile_options(-Wno-unknown-pragmas)
+    add_compile_options(-Wno-overloaded-virtual)
+endif ()
 
 #Enable CrashReporting for Windows (visual studio) and Linux
 IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
@@ -643,6 +646,7 @@ IF(MSVC)
   ADD_DEFINITIONS(-D__MSVC__)
   ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
   ADD_DEFINITIONS(-DPSAPI_VERSION=1)
+  add_compile_options("-wd4068")
 ENDIF(MSVC)
 
 IF (NOT WIN32 AND NOT APPLE)
@@ -2778,5 +2782,12 @@ COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --
 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
   )
 ENDIF(APPLE)
+
+
+IF(MSVC)
+  ADD_CUSTOM_COMMAND(TARGET ${PACKAGE_NAME}
+    POST_BUILD
+    COMMAND cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb" "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb")
+ENDIF(MSVC)
 
 MESSAGE(STATUS "Writing spec file...")

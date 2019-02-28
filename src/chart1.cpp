@@ -576,6 +576,7 @@ bool                      g_bShowCOG;
 double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
+double                    g_AISShowTracks_Limit;
 bool                      g_bHideMoored;
 bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
@@ -3094,12 +3095,24 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if(g_MainToolbar){
         if(g_MainToolbar->GetColorScheme() != cs){
+            
+            // capture the current toolbar collapse state
+            bool btoolbarFull = g_bmasterToolbarFull;
+            
             g_MainToolbar->SetColorScheme( cs );
             //g_MainToolbar->DestroyToolBar();
             //CreateMasterToolbar();
-            RequestNewMasterToolbar();
-            g_MainToolbar->SetColorScheme( cs );
 
+            if(!btoolbarFull){
+                g_MainToolbar->Hide();
+                RequestNewMasterToolbar();
+                g_MainToolbar->SetColorScheme( cs );
+                SetGlobalToolbarViz( false );
+            }
+            else{
+                RequestNewMasterToolbar();
+                g_MainToolbar->SetColorScheme( cs );
+            }            
         }
     }
     
@@ -4800,6 +4813,7 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             //  One last "Realize()" to establish the final toolbar shape
             g_MainToolbar->GetToolbar()->InvalidateBitmaps();
             g_MainToolbar->Realize();
+            g_MainToolbar->Show();
         }            
     }
     else{
@@ -4812,8 +4826,10 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
         else{
             g_MainToolbar->GetToolbar()->InvalidateBitmaps();
             g_MainToolbar->Realize();
+            g_MainToolbar->Show();
         }
     }
+
 }
 
 
@@ -6614,6 +6630,8 @@ void MyFrame::DoStackDelta( ChartCanvas *cc, int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
+    InitTimer.Stop();
+    
     switch(m_iInitCount++) {
         case 0:
         {
@@ -6871,7 +6889,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         {
             // Last call....
 
-            InitTimer.Stop(); // Initialization complete
             g_bDeferredInitDone = true;
             
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -6895,6 +6912,10 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             break;
         }
     }   // switch
+    
+    if(!g_bDeferredInitDone)
+        InitTimer.Start( 100, wxTIMER_ONE_SHOT );
+
     RefreshAllCanvas( true );
 }
 
@@ -12358,6 +12379,13 @@ void ApplyLocale()
     }
     gFrame->BuildMenuBar();
     
+    //  Give all canvas a chance to update, if needed
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->CanvasApplyLocale();
+    }
+
     // Capture a copy of the current perspective
     //  So that we may restore PlugIn window sizes, position, visibility, etc.
     wxString perspective;
