@@ -6630,6 +6630,8 @@ void MyFrame::DoStackDelta( ChartCanvas *cc, int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
+    InitTimer.Stop();
+    
     switch(m_iInitCount++) {
         case 0:
         {
@@ -6887,7 +6889,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         {
             // Last call....
 
-            InitTimer.Stop(); // Initialization complete
             g_bDeferredInitDone = true;
             
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -6911,6 +6912,10 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             break;
         }
     }   // switch
+    
+    if(!g_bDeferredInitDone)
+        InitTimer.Start( 100, wxTIMER_ONE_SHOT );
+
     RefreshAllCanvas( true );
 }
 
