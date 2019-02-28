@@ -7706,7 +7706,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     filespecs.Add("*.A"), filespecs.Add("*.B"), filespecs.Add("*.C"), filespecs.Add("*.D");
     filespecs.Add("*.E"), filespecs.Add("*.F"), filespecs.Add("*.G"), filespecs.Add("*.Z");
 
-    wxProgressDialog prog1(_("OpenCPN Compress Charts"), wxEmptyString,
+    wxGenericProgressDialog prog1(_("OpenCPN Compress Charts"), wxEmptyString,
                            filespecs.GetCount()*pListBoxSelections.GetCount()+1, this,
                           wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
                           wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
@@ -7757,7 +7757,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     
   // TODO: make this use threads
   unsigned long total_size = 0, total_compressed_size = 0, count = 0;
-  wxProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
+  wxGenericProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
                         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
                         wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
 

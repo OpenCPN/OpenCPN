@@ -1425,7 +1425,7 @@ void ParseAllENC(wxWindow* parent)
         workers[t] = NULL;
     #endif
     
-    wxGenericProgressDialog *prog = NULL;
+    wxGenericProgressDialog *prog = nullptr;
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     
     if(1){    
@@ -6416,7 +6416,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     OCPNPlatform::ShowBusySpinner();
 
-    wxGenericProgressDialog *pprog = NULL;
+    wxGenericProgressDialog *pprog = nullptr;
     if( b_prog ) {
         wxString longmsg = _("OpenCPN Chart Update");
         longmsg += _T("..........................................................................");

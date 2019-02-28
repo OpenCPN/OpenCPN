@@ -353,7 +353,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
     /* clear out old data */
   ClearMap();
 
-  wxGenericProgressDialog *progressdialog = new wxGenericProgressDialog(
+  wxGenericProgressDialog progressdialog(
       _("Building Magnetic Map"),
       m_type==DECLINATION_PLOT?_("Variation"):
       m_type==INCLINATION_PLOT?_("Inclination"):_("Field Strength"), 180, NULL,
@@ -366,8 +366,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
   BuildParamCache(m_Cache[cachepage], -MAX_LAT);
 
   for(double lat = -MAX_LAT; lat + m_Step <= MAX_LAT; lat += m_Step) {
-      if(!progressdialog->Update(lat + 90)) {
-          delete progressdialog;
+      if(!progressdialog.Update(lat + 90)) {
           return false;
       }
 
@@ -383,7 +382,6 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
       }
   }
 
-  delete progressdialog;
   return true;
 }
 
