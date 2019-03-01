@@ -7,7 +7,7 @@ if (TARGET ocpn::expat)
 endif ()
 
 add_library(_EXPAT INTERFACE)
-if (WIN32)
+if (CMAKE_HOST_WIN32)
   target_include_directories(_EXPAT
       INTERFACE ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/include
   )
