@@ -603,6 +603,7 @@ void OCPNPlatform::Initialize_3( void )
 
     }
     
+    gFrame->SetGPSCompassScale();
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()

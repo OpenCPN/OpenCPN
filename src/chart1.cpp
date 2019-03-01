@@ -2116,6 +2116,7 @@ bool MyApp::OnInit()
     
     //  Do those platform specific initialization things that need gFrame
     g_Platform->Initialize_3();
+    
 
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
@@ -2157,7 +2158,6 @@ bool MyApp::OnInit()
 
 
     gFrame->SetAllToolbarScale();
-    gFrame->SetGPSCompassScale();
 
      
 // Show the frame
@@ -3112,6 +3112,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
 //            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             cc->ConfigureChartBar();
             cc->SetColorScheme( global_color_scheme );
+            cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
             cc->SetShowGPS( true );
 
             g_pauimgr->AddPane( cc );
@@ -3144,6 +3145,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->SetDisplaySizeMM(g_display_size_mm);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
+           cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
            cc->SetShowGPS( false );
            
            g_pauimgr->AddPane( cc );
