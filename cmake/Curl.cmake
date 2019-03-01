@@ -18,7 +18,7 @@ IF (CURL_FOUND)
     return()
 ENDIF ()
 
-IF(WIN32)
+IF(CMAKE_HOST_WIN32)
   if (NOT EXISTS ${PROJECT_SOURCE_DIR}/buildwin/libcurl.lib)
       message(FATAL_ERROR "Cannot find bundled windows files.")
   endif ()
@@ -47,7 +47,7 @@ IF(WIN32)
     
   set(CURL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/buildwin/include)
   SET(CURL_FOUND 1)
-ENDIF(WIN32)
+ENDIF(CMAKE_HOST_WIN32)
 
 IF(UNIX)
     FIND_PACKAGE(CURL REQUIRED)
