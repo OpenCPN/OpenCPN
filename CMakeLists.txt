@@ -1086,10 +1086,10 @@ IF(WIN32 OR APPLE)
 ENDIF(WIN32 OR APPLE)
 
 # check for lzma support for reading compressed charts
-IF(WIN32)
+IF(CMAKE_HOST_WIN32)
   LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
   LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
-ENDIF(WIN32)
+ENDIF(CMAKE_HOST_WIN32)
 IF(OCPN_USE_LZMA)
   FIND_PACKAGE(LibLZMA)
   IF(LIBLZMA_FOUND)
@@ -1104,7 +1104,7 @@ add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE sqlite_cpp::sqlite_cpp)
 
 IF(OCPN_USE_CURL)
-  IF(WIN32)
+  IF(CMAKE_HOST_WIN32)
     INSTALL(FILES
         "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
         "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
@@ -1114,13 +1114,10 @@ IF(OCPN_USE_CURL)
         SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
         INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
         INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
-    ELSE(MSVC) ## mingw
-        SET(CURL_LIBRARIES "curl.dll")
-        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
     ENDIF(MSVC)
-  ELSE(WIN32)
+  ELSE(CMAKE_HOST_WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
-  ENDIF(WIN32)
+  ENDIF(CMAKE_HOST_WIN32)
 
   IF(NOT QT_ANDROID)
     IF(OCPN_USE_EXTERN_CURL)
@@ -1165,7 +1162,7 @@ IF(OCPN_USE_SVG)
   IF(NOT QT_ANDROID)
     include(OcpnFindCairo)
     include(OcpnFindExpat)
-    IF (WIN32)
+    IF (CMAKE_HOST_WIN32)
       #On Windows, we have our own expat and cairo
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
       INSTALL(FILES ${gtkdll_files} DESTINATION ".")
@@ -1173,7 +1170,7 @@ IF(OCPN_USE_SVG)
            "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
       INSTALL(FILES ${expatdll_files} DESTINATION ".")
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
-   ELSE (WIN32)
+    ELSE (CMAKE_HOST_WIN32)
       # Find FFMPEG - we have it disabled in our wxSVG
       #set(FFmpeg_FIND_COMPONENTS
       #        AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
@@ -1196,7 +1193,7 @@ IF(OCPN_USE_SVG)
           ${EXIF_INCLUDE_DIRS}
 #         ${FFMPEG_INCLUDE_DIRS}
       )
-    ENDIF (WIN32)
+    ENDIF (CMAKE_HOST_WIN32)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
  
     ADD_DEFINITIONS(-DocpnUSE_SVG)   # Goes into config.h, leave as global
@@ -1734,7 +1731,7 @@ If(NOT APPLE AND NOT QT_ANDROID)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
 ENDIF()
 
-IF(WIN32)
+IF(CMAKE_HOST_WIN32)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
           setupapi.lib
   #       glu32.lib
@@ -1747,16 +1744,17 @@ IF(WIN32)
       TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE gdiplus.lib)
   ENDIF()
 
-  IF(MINGW)
-    # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
-    ADD_DEFINITIONS( " -DUNICODE" )
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
-      ${OPENGL_LIBRARIES}
-      wsock32.lib
-    )
-  ENDIF(MINGW)
+ENDIF(CMAKE_HOST_WIN32)
 
-ENDIF(WIN32)
+IF(MINGW)
+  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
+  ADD_DEFINITIONS( " -DUNICODE" )
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
+    ${OPENGL_LIBRARIES}
+    wsock32.lib
+  )
+ENDIF(MINGW)
+
 
 IF(UNIX)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
