@@ -41,7 +41,7 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
