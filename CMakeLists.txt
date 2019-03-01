@@ -410,9 +410,9 @@ IF((_wx_selected_config MATCHES "qt-armv7"))
 ENDIF()
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+  SET(wxWidgets_USE_LIBS base core xml html adv aui webview)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)

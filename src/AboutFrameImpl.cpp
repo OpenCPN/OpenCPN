@@ -55,7 +55,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
 
     m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
-    m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinHelp->LoadURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 
     m_bitmapLogo->SetBitmap(logo);
     
@@ -89,7 +89,7 @@ void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
         m_htmlWinHelp->Show();
         m_scrolledWindowAbout->Hide();
         m_btnBack->Show();
-        m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
+        m_btnBack->Enable(m_htmlWinHelp->CanGoBack());
         SetSize(m_parent->GetSize());
         Centre();
     }

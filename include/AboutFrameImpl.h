@@ -40,7 +40,7 @@ protected:
     void OnLinkLicense( wxHyperlinkEvent& event );
     void OnLinkAuthors( wxHyperlinkEvent& event );
     void AboutFrameOnActivate( wxActivateEvent& event );
-    void m_btnBackOnButtonClick( wxCommandEvent& event ) { m_htmlWinHelp->HistoryBack(); m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack()); }
+    void m_btnBackOnButtonClick( wxCommandEvent& event ) { m_htmlWinHelp->GoBack(); m_btnBack->Enable(m_htmlWinHelp->CanGoBack()); }
     void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { m_btnBack->Enable(); event.Skip(); }
 
     

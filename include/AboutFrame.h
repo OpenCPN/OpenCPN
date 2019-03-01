@@ -25,6 +25,7 @@
 #include <wx/hyperlink.h>
 #include <wx/scrolwin.h>
 #include <wx/html/htmlwin.h>
+#include <wx/webview.h>
 #include <wx/panel.h>
 #include <wx/frame.h>
 
@@ -57,7 +58,7 @@ class AboutFrame : public wxFrame
 		wxHyperlinkCtrl* m_hyperlinkIniFile;
 		wxHtmlWindow* m_htmlWinAuthors;
 		wxHtmlWindow* m_htmlWinLicense;
-		wxHtmlWindow* m_htmlWinHelp;
+		wxWebView* m_htmlWinHelp;
 		wxPanel* m_panelMainLinks;
 		wxHyperlinkCtrl* m_hyperlinkWebsite;
 		wxHyperlinkCtrl* m_hyperlinkHelp;
