@@ -327,7 +327,6 @@ class MyFrame: public wxFrame
     int GetApplicationMemoryUse(void);
 
     void OnEraseBackground(wxEraseEvent& event);
-    void OnActivate(wxActivateEvent& event);
     void OnMaximize(wxMaximizeEvent& event);
     void OnCloseWindow(wxCloseEvent& event);
     void OnExit(wxCommandEvent& event);

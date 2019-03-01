@@ -197,7 +197,6 @@ bool                      g_parse_all_enc;
 MyFrame                   *gFrame;
 
 ConsoleCanvas             *console;
-wxWindowList              AppActivateList;
 
 MyConfig                  *pConfig;
 
@@ -1028,83 +1027,6 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 //    Code carefully in this method.
 //    It is called in some unexpected places,
 //    such as on closure of dialogs, etc.
-
-//      Activating?
-
-#ifdef __WXOSX__
-
-//      On the Mac, this method gets hit when...
-//      a) switching between apps by clicking title bars, coming and going
-//      b) un-iconizing, activeate only/
-//      It does NOT get hit on iconizing the app
-    if(!event.GetActive())
-    {
-//        printf("App de-activate\n");
-        gFrame->SubmergeAllCanvasToolbars();
-
-        if(g_MainToolbar){
-            g_MainToolbar->Submerge();
-        }            
-
-        AppActivateList.Clear();
-        // ..For each canvas...
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc){
-                for ( wxWindowList::iterator it = cc->GetChildren().begin(); it != cc->GetChildren().end(); ++it ) {
-                    if( (*it)->IsShown() ) {
-                        (*it)->Hide();
-                        AppActivateList.Append(*it);
-                    }
-                }
-            }
-        }
-        
-        if(gFrame){
-            for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
-                if( (*it)->IsShown() ) {
-                    if( !(*it)->IsKindOf( CLASSINFO(ChartCanvas) ) ) {
-                        (*it)->Hide();
-                        AppActivateList.Append(*it);
-                    }
-                }
-            }
-        }
-    }
-    else
-    {
-        if(gFrame){
-//        printf("App Activate\n");
-            gFrame->SubmergeAllCanvasToolbars();          // This is needed to reset internal wxWidgets logic
-                                                    // Also required for other TopLevelWindows here
-                                                    // reportedly not required for wx 2.9
-            gFrame->SurfaceAllCanvasToolbars();
-
-            wxWindow *pOptions = NULL;
-
-            wxWindowListNode *node = AppActivateList.GetFirst();
-            while (node) {
-                wxWindow *win = node->GetData();
-                win->Show();
-                if( win->IsKindOf( CLASSINFO(options) ) )
-                    pOptions = win;
-
-                node = node->GetNext();
-            }
-
-            if( pOptions )
-                pOptions->Raise();
-            else
-                gFrame->Raise();
-            
-            if(g_MainToolbar){
-                g_MainToolbar->Surface();
-                g_MainToolbar->Raise();
-                //g_MainToolbar->Show();
-            }
-        }
-    }
-#endif
 
     if( !event.GetActive() ) {
 
@@ -2695,7 +2617,6 @@ EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
 EVT_TIMER(BELLS_TIMER, MyFrame::OnBellsTimer)
-EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
@@ -2895,40 +2816,6 @@ void MyFrame::OnMaximize( wxMaximizeEvent& event )
 #ifdef __WXOSX__
     event.Skip();
 #endif
-}
-
-void MyFrame::OnActivate( wxActivateEvent& event )
-{
-//    Code carefully in this method.
-//    It is called in some unexpected places,
-//    such as on closure of dialogs, closure of context menu, etc.
-
-//      if( GetFocusCanvas() )
-//          GetFocusCanvas()->SetFocus();       // This seems to be needed for MSW, to get key and wheel events
-                                                // after minimize/maximize.
-                                                // But was removed for O5MUI
-
-#ifdef __WXOSX__
-    if(event.GetActive()){
-        SurfaceAllCanvasToolbars();
-    
-        if(g_MainToolbar)
-            g_MainToolbar->Surface();
-        
-               // ..For each canvas...
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc && cc->GetMUIBar())
-                cc->GetMUIBar()->Show();  
-        }
-        
-        if( GetFocusCanvas() )
-            GetFocusCanvas()->TriggerDeferredFocus();
-
-    }
-#endif
-
-    event.Skip();
 }
 
 ColorScheme GetColorScheme()
@@ -7094,44 +6981,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
     }
     g_tick++;
-
-#ifdef __WXOSX__
-    //    To fix an ugly bug ?? in wxWidgets for Carbon.....
-    //    Or, maybe this is the way Macs work....
-    //    Hide some non-UI Dialogs if the application is minimized....
-    //    They will be re-Show()-n in MyFrame::OnActivate()
-    if(IsIconized())
-    {
-         if(g_MainToolbar) {
-             if(g_MainToolbar->IsShown())
-             g_MainToolbar->Submerge();
-         }
-
-        AppActivateList.Clear();
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc){
-                for ( wxWindowList::iterator it = cc->GetChildren().begin(); it != cc->GetChildren().end(); ++it ) {
-                    if( (*it)->IsShown() ) {
-                        (*it)->Hide();
-                        AppActivateList.Append(*it);
-                    }
-                }
-            }
-        }
-
-        if(gFrame){
-            for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
-                if( (*it)->IsShown() ) {
-                    if( !(*it)->IsKindOf( CLASSINFO(ChartCanvas) ) ) {
-                        (*it)->Hide();
-                        AppActivateList.Append(*it);
-                    }
-                }
-            }
-        }
-    }
-#endif
 
 //      Listen for quitflag to be set, requesting application close
     if( quitflag ) {
