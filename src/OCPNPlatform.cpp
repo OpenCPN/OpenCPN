@@ -2061,7 +2061,7 @@ float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
 {
     double factor = 1.0;
 #ifndef __OCPN__ANDROID__
-    factor =  exp( scale_linear * (0.693 / 5.0) );       //  exp(2)
+    factor =  exp( scale_linear * (log(3.0) / 5.0) );       
 
 #else
     // the idea here is to amplify the scale factor for higher density displays, in a measured way....
