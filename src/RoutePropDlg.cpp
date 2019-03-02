@@ -352,6 +352,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_ntbRteProp->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+        m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
@@ -380,6 +381,7 @@ RoutePropDlg::~RoutePropDlg()
 	m_ntbRteProp->Disconnect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+        m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
