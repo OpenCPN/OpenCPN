@@ -857,10 +857,9 @@ endif ()
 set_target_properties(${PACKAGE_NAME} PROPERTIES
     ENABLE_EXPORTS 1
     OUTPUT_NAME opencpn
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 IF(APPLE)
   target_include_directories(${PACKAGE_NAME} 
       PRIVATE /usr/X11/include /usr/X11/include/GL
@@ -1027,43 +1026,10 @@ IF(OCPN_USE_CRASHREPORT)
   ENDIF(MSVC)
 ENDIF(OCPN_USE_CRASHREPORT)
 
-IF(UNIX AND NOT APPLE)
-  SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
-  FIND_PATH(SQLITE3_INCLUDE_DIR sqlite3.h PATHS ${SQLITE3_INC_LOOK_PATHS})
-  message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
-
-  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${LINUX_LIB_PATHS}
-               NAMES sqlite3 libsqlite3)
-  message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
-
-  IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
-    MESSAGE(STATUS "Found SQLite3 dev environment.")
-    target_include_directories(${PACKAGE_NAME} PRIVATE ${SQLITE3_INCLUDE_DIR})
-
-    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE
-          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
-    string(REGEX REPLACE
-           "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1"
-           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
-    MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
-    IF( ${SQLITE3_VERSION} LESS "3019000" )
-      target_compile_definitions(${PACKAGE_NAME} PRIVATE
-          -DSQLITE_USE_LEGACY_STRUCT)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${SQLITE3_LIBRARY})
-
-    ENDIF ()
-
-  ELSE(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-    MESSAGE(STATUS "Could not find SQLite3 dev environment.")
-    MESSAGE(STATUS "Building local SQLite3 library.")
-    add_library(SQLITE3 STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h
-    )
-    target_link_libraries(${PACKAGE_NAME} PRIVATE  SQLITE3)
-  ENDIF(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-ENDIF(UNIX AND NOT APPLE)
-
+add_subdirectory("libs/sqlite")
+add_subdirectory("libs/SQLiteCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 IF(UNIX)
   IF(NOT QT_ANDROID) # this should be detected by the grib plugin
@@ -1080,17 +1046,6 @@ IF(UNIX)
   ENDIF(NOT QT_ANDROID)
 ENDIF(UNIX)
 
-IF(WIN32 OR APPLE)
-  ADD_LIBRARY(SQLITE3 STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
-  )
-  target_include_directories(${PACKAGE_NAME} PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3
-  )
-  target_link_libraries(${PACKAGE_NAME} PRIVATE SQLITE3)
-ENDIF(WIN32 OR APPLE)
 
 # check for lzma support for reading compressed charts
 IF(CMAKE_HOST_WIN32)
@@ -1106,9 +1061,6 @@ IF(OCPN_USE_LZMA)
     message (STATUS "lzma library not found")
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
-
-add_subdirectory("libs/SQLiteCpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE sqlite_cpp::sqlite_cpp)
 
 IF(OCPN_USE_CURL)
   IF(CMAKE_HOST_WIN32)
