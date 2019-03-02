@@ -410,9 +410,26 @@ IF((_wx_selected_config MATCHES "qt-armv7"))
 ENDIF()
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui webview)
+  SET(wxWidgets_USE_LIBS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+ENDIF()
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  execute_process(COMMAND lsb_release -cs
+    OUTPUT_VARIABLE RELEASE_CODENAME
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+ELSE()
+  SET(RELEASE_CODENAME "unknown")
+ENDIF()
+
+
+IF(RELEASE_CODENAME MATCHES "trusty")
+  MESSAGE(STATUS "Not using wxWebView")
+ELSE()
+  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} webview)
+  ADD_DEFINITIONS(-DOCPN_USE_WEBVIEW)
+  MESSAGE(STATUS "Using wxWebView")
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
