@@ -415,16 +415,9 @@ ELSE()
   SET(wxWidgets_USE_LIBS net xml html adv aui core base)
 ENDIF()
 
-IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-  execute_process(COMMAND lsb_release -cs
-    OUTPUT_VARIABLE RELEASE_CODENAME
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-ELSE()
-  SET(RELEASE_CODENAME "unknown")
-ENDIF()
+OPTION(USE_WEBVIEW "Use wxWebView for help display" ON)
 
-
-IF(RELEASE_CODENAME MATCHES "trusty")
+IF(USE_WEBVIEW)
   MESSAGE(STATUS "Not using wxWebView")
 ELSE()
   SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} webview)
