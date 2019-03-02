@@ -4340,8 +4340,8 @@ wxString formatTimeDelta(wxTimeSpan span)
     int seconds = (double)span.GetSeconds().ToLong();
     
     timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
-    (hours || days ? wxString::Format(_T("%02d:%02d"), hours, (int)round(minutes)) :
-     wxString::Format(_T("%02d %02d"), (int)floor(minutes), seconds));
+    (hours || days ? wxString::Format(_T("%2dH %2dM"), hours, (int)round(minutes)) :
+     wxString::Format(_T("%2dM %2dS"), (int)floor(minutes), seconds));
     
     return timeStr;
 }
