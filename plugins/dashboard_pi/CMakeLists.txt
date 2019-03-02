@@ -210,9 +210,10 @@ IF(WIN32)
     SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )
   ENDIF(MSVC)
 
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
+
+target_link_libraries(${PACKAGE_NAME} ${OPENCPN_LINK_TARGET} )
 
 
 # On Android, PlugIns need a specific linkage set....

@@ -27,6 +27,7 @@ BuildRequires: mingw32-headers
 BuildRequires: mingw32-glib2
 BuildRequires: mingw32-gtk2
 BuildRequires: mingw32-libarchive
+BuildRequires: mingw32-libexif
 BuildRequires: mingw32-libffi
 BuildRequires: mingw32-libpng
 BuildRequires: mingw32-libtiff

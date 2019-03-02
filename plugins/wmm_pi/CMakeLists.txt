@@ -100,6 +100,9 @@ IF( APPLE )
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+target_link_libraries(${PACKAGE_NAME} ${OPENCPN_LINK_TARGET} )
+
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")
