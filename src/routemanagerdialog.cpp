@@ -340,7 +340,8 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
-
+    sort_wp_key = SORT_ON_NAME;
+    
     btnImport = NULL;
     btnExport = NULL;
     btnExportViz = NULL;
