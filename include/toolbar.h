@@ -390,7 +390,7 @@ DECLARE_EVENT_TABLE()
 #define FADE_TIMER 2
 #define DESTROY_TIMER 3
 
-class ocpnFloatingToolbarDialog: public wxDialog {
+class ocpnFloatingToolbarDialog: public wxFrame {
 DECLARE_EVENT_TABLE()
 
 public:

@@ -111,7 +111,7 @@ DECLARE_EVENT_TABLE()
 //----------------------------------------------------------------------------
 // ConsoleCanvas
 //----------------------------------------------------------------------------
-class ConsoleCanvas: public wxDialog
+class ConsoleCanvas: public wxFrame
 {
 public:
       ConsoleCanvas(wxWindow *frame);

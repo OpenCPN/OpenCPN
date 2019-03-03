@@ -33,18 +33,19 @@
 #endif
 
 
-#include "wx/print.h"
-#include "wx/printdlg.h"
-#include "wx/artprov.h"
-#include "wx/stdpaths.h"
+#include <wx/settings.h>
+#include <wx/print.h>
+#include <wx/printdlg.h>
+#include <wx/artprov.h>
+#include <wx/stdpaths.h>
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
 #include <wx/clrpicker.h>
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
+#include <wx/tokenzr.h>
+#include <wx/dir.h>
 #include <wx/dialog.h>
 
 #include "dychart.h"
@@ -919,9 +920,9 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
 //    wxMessageDialog odlg( gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
 
 //    return ( odlg.ShowModal() );
-        
+        wxColor fg = wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOWTEXT );
         wxString msg1;
-        msg1 << _T("<html><body><hr />");
+        msg1.Printf(_T("<html><body><font color=#%02x%02x%02x><hr />"), fg.Red(), fg.Green(), fg.Blue());
         
         for(unsigned int i=0 ; i < msg0.Length() ; i++){
             if(msg0[i] == '\n')
@@ -930,7 +931,7 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
                 msg1 += msg0[i];
         }
         
-        msg1 <<  _T("<hr /></body></html>");
+        msg1 <<  _T("<hr /></font></body></html>");
         
         OCPN_TimedHTMLMessageDialog infoDlg( gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
         
@@ -1024,6 +1025,7 @@ bool MyApp::OnExceptionInMainLoop()
 
 void MyApp::OnActivateApp( wxActivateEvent& event )
 {
+    return;
 //    Code carefully in this method.
 //    It is called in some unexpected places,
 //    such as on closure of dialogs, etc.
@@ -1355,7 +1357,7 @@ WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 #include <wx/arrimpl.cpp> 
 // end duplicated code
 
-void ParseAllENC()
+void ParseAllENC(wxWindow* parent)
 {
     MySortedArrayInt idx_sorted_by_distance(CompareInts);
     
@@ -1423,31 +1425,25 @@ void ParseAllENC()
         workers[t] = NULL;
     #endif
     
-    wxGenericProgressDialog *prog = 0;
+    wxGenericProgressDialog *prog = NULL;
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     
     if(1){    
         long style =  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
         
-        style |= wxSTAY_ON_TOP;
-        
         prog = new wxGenericProgressDialog();
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
         prog->SetFont( *qFont );
         
-        prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggggggggggg"), count+1, NULL, style );
+        prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggggggggggg"), count+1, parent, style );
         
         // make wider to show long filenames
-        wxSize sz = prog->GetSize();
-        sz.x = csz.x * 8 / 10;
-        prog->SetSize( sz );
-        prog->Centre();
-        prog->Show();
-        prog->Raise();
+        //wxSize sz = prog->GetSize();
+        //sz.x = csz.x * 8 / 10;
+        //prog->SetSize( sz );
         
-        //  Move the Progress dialog out of the center of the screen, so that the SENC creation dialog has a place to be seen.
-        int yp = wxMax(0, prog->GetPosition().y - prog->GetSize().y);
-        prog->Move( -1, yp );
+        DimeControl( prog );
+        prog->Show();
     }
     
         // parse targets
@@ -2347,7 +2343,7 @@ extern ocpnGLOptions g_GLOptions;
 #endif
 
     if(g_parse_all_enc )
-        ParseAllENC();
+        ParseAllENC(gFrame);
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -6185,7 +6181,7 @@ bool MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
 #ifdef ocpnUSE_GL
     if(rr & REBUILD_RASTER_CACHE){
-        if(g_glTextureManager){
+        if(g_glTextureManager) {
             GetPrimaryCanvas()->Disable();
             g_glTextureManager->BuildCompressedCache();
             GetPrimaryCanvas()->Enable();
@@ -6413,11 +6409,11 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
         pprog->SetFont( *qFont );
         
         pprog->Create( _("OpenCPN Chart Update"), longmsg, 100,
-                                          NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+                                          gFrame, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
         
         
+        DimeControl( pprog );
         pprog->Show();
-        pprog->Raise();
     }
     
     wxLogMessage( _T("   ") );
@@ -11273,24 +11269,6 @@ wxColor GetDimColor(wxColor c)
 
     return wxColor( nrgb.red, nrgb.green, nrgb.blue );
 }
-
-class  OCPNMessageDialog: public wxDialog
-{
-
-public:
-    OCPNMessageDialog(wxWindow *parent, const wxString& message,
-                           const wxString& caption = wxMessageBoxCaptionStr,
-                           long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
-
-    void OnYes(wxCommandEvent& event);
-    void OnNo(wxCommandEvent& event);
-    void OnCancel(wxCommandEvent& event);
-    void OnClose( wxCloseEvent& event );
-
-private:
-    int m_style;
-    DECLARE_EVENT_TABLE()
-};
 
 BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
 EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
