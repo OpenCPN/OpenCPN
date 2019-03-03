@@ -545,92 +545,46 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       int zoomFactor = m_minZoom;
       int minRegionZoom = -1;
+      bool covr_populated = false;
 
       while( (zoomFactor <= m_maxZoom) && (minRegionZoom < 0) )
       {
+
         LLRegion covrRegionZoom;
         wxRegion regionZoom;
-        
+          char qrs[100];
+          
+          // Protect against trying to create the exact coverage for the brutal large scale layers contianing tens of thousand tiles.
+          sprintf(qrs, "select count(*) from tiles where zoom_level = %d ", zoomFactor);
+          SQLite::Statement query_size(db, qrs);
+          
+          if(query_size.executeStep())
+          {
+              const char* colValue = query_size.getColumn(0);
+              int tile_at_zoom = atoi(colValue);
+              if (tile_at_zoom > 1000) {
+                  zoomFactor++;
+                  if(!covr_populated) {
+                      covr_populated = true;
+                      covrRegion = extentBox;
+                  }
+                  continue;
+              }
+          }
         // query the database
-        char qrs[100];
-        sprintf(qrs, "select * from tiles where zoom_level = %d ", zoomFactor);
+        sprintf(qrs, "select tile_column, tile_row from tiles where zoom_level = %d ", zoomFactor);
         
         // Compile a SQL query, getting the specific  data
         SQLite::Statement query(db, qrs);
-        
+        covr_populated = true;
         while (query.executeStep())
         {
-                const char* colName = query.getColumn(0);
-                const char* colValue = query.getColumn(1);
-                const char* c2 = query.getColumn(2);
+                const char* colValue = query.getColumn(0);
+                const char* c2 = query.getColumn(1);
                 int tile_x_found = atoi(colValue);      // tile_x
                 int tile_y_found = atoi(c2);    // tile_y
-
-#if 0                
-                // Fetch the tile
-                char qrs[2100];
-            sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", zoomFactor, tile_x_found, tile_y_found);
-            
-            // Compile a SQL query, getting the specific  blob
-            SQLite::Statement blobquery(db, qrs);
-
-            bool bliveData = false;
-            
-            int queryResult = blobquery.tryExecuteStep();
-            if(SQLITE_DONE == queryResult){
-                int yyp = 4;//return false;                           // requested ROW not found, should never happen
-            }
-            else{
-                SQLite::Column blobColumn = blobquery.getColumn(3);         // Get the blob
-                const void* blob = blobColumn.getBlob();
-                
-                sprintf(qrs, "select length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", zoomFactor, tile_x_found, tile_y_found);
-                SQLite::Statement lquery(db, qrs);
-                int queryResult = lquery.tryExecuteStep();
-                int length = lquery.getColumn(0);         // Get the length
-                
-                
-                wxMemoryInputStream blobStream(blob, length);
-                wxImage blobImage;
-
-                blobImage = wxImage(blobStream, m_imageType);
-                
-                int blobWidth = blobImage.GetWidth();
-                int blobHeight = blobImage.GetHeight();
-                
-                int stride = 4;
-                int tex_w = 256;
-                int tex_h = 256;
-                unsigned char *imgdata = blobImage.GetData();
-                if( !imgdata )
-                    int yyp = 4;
-                unsigned char *imgAlpha = blobImage.GetAlpha();
-                if( !imgAlpha )
-                    int yyp = 4;
-                
-                m_imageType = blobImage.GetType();
-                unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
-                
-                for( int j = 0; j < tex_w*tex_h; j++ ){
-                    for( int k = 0; k < 3; k++ ){
-                        unsigned char data = imgdata[3*j + k];
-                        if(data > 1 )
-                            bliveData = true;
-                        teximage[j * stride + k] = imgdata[3*j + k];
-                        if(imgAlpha){
-                            unsigned char alpha = imgAlpha[3*j + k];
-                            teximage[j * stride + 3] = imgAlpha[3*j + k];
-                        }
-                        else
-                            teximage[j * stride + 3] = 255;
-                    }
-                }
-            }
-
-                
-                if(bliveData)
-#endif                    
-                    regionZoom.Union(tile_x_found, tile_y_found-1, 1, 1);
+       
+                regionZoom.Union(tile_x_found, tile_y_found-1, 1, 1);
  
          }     // inner while
       
@@ -712,6 +666,8 @@ InitReturn ChartMBTiles::PostInit(void)
           name_UTF8 = utf8CB.data();
 
       m_pDB = new SQLite::Database(name_UTF8);
+      m_pDB->exec("PRAGMA locking_mode=EXCLUSIVE");
+      m_pDB->exec("PRAGMA cache_size=-50000");
   
       bReadyToRender = true;
       return INIT_OK;
@@ -730,17 +686,17 @@ bool ChartMBTiles::tileIsPopulated(mbTileDescriptor *tile)
         SQLite::Database  db(name_UTF8);
 
         char qrs[100];
-        sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
+        sprintf(qrs, "select count(*) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
         
         // Compile a SQL query, getting the specific  blob
         SQLite::Statement query(db, qrs);
         
-        int queryResult = query.tryExecuteStep();
-        if(SQLITE_DONE == queryResult){
-            return false;                           // requested ROW not found
+        if(query.executeStep())
+        {
+            const char* colValue = query.getColumn(0);
+            return atoi(colValue) == 1;
         }
-        else
-            return true;
+        return false;
     }
     catch (std::exception& e)
     {
@@ -801,68 +757,6 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
     tzd->ny_tile = tzd->tile_y_max - tzd->tile_y_min + 1;
 
     return;
-#if 0    
-    // Check the db for which tiles are actually populated
-    // Open the MBTiles database file
-    const char *name_UTF8 = "";
-    wxCharBuffer utf8CB = m_FullPath.ToUTF8();        // the UTF-8 buffer
-    if ( utf8CB.data() )
-        name_UTF8 = utf8CB.data();
-
-    SQLite::Database  db(name_UTF8);
-
-    int tile_y = tzd->tile_y_min;
-    
-    //for( int i = 0; i < tzd->ny_tile; i++ )
-    {
-    
-        // query the database
- 
-        char qrs[100];
-        sprintf(qrs, "select * from tiles where zoom_level = %d ", zoomFactor);
-        
-        // Compile a SQL query, getting the specific  data
-        SQLite::Statement query(db, qrs);
-        
-        while (query.executeStep())
-        {
-                const char* colName = query.getColumn(0);
-                const char* colValue = query.getColumn(1);
-                const char* c2 = query.getColumn(2);
-                int tile_x_found = atoi(colValue);      // tile_x
-                int tile_y_found = atoi(c2);    // tile_y
-                if(  (tile_x_found >= tzd->tile_x_min) && (tile_x_found <= tzd->tile_x_max)
-                    && (tile_y_found >= tzd->tile_y_min) && (tile_y_found <= tzd->tile_y_max) ){
-                    
-                    //unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
-                    int index = (tile_y_found - tzd->tile_y_min) * (tzd->nx_tile + 1);
-                    index += (tile_x_found - tzd->tile_x_min);
-                
-                    if(tzd->tileMap.find(index) == tzd->tileMap.end()){
-                        mbTileDescriptor *tile = new mbTileDescriptor;
-                        tile->tile_x = tile_x_found;
-                        tile->tile_y = tile_y_found;
-                        tile->m_zoomLevel = zoomFactor;
-                        tile->m_bAvailable = true;
-            
-                        if(bset_geom){
-                        //  If directed, defer expensize geometry computation until actually needed for drawing.
-                
-                            tile->lonmin = round(tilex2long(tile_x_found, zoomFactor)/eps)*eps;
-                            tile->lonmax = round(tilex2long(tile_x_found + 1, zoomFactor)/eps)*eps;
-                            tile->latmin = round(tiley2lat(tile_y_found - 1, zoomFactor)/eps)*eps;
-                            tile->latmax = round(tiley2lat(tile_y_found, zoomFactor)/eps)*eps;
-
-                            tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
-                            tile->m_bgeomSet = true;
-                        }
-                        
-                        tzd->tileMap[index] = tile;
-                    }
-                }
-          }
-    }
-#endif    
 }
 
 
@@ -908,21 +802,6 @@ LLRegion ChartMBTiles::GetValidRegion()
 bool ChartMBTiles::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
     return true;
-#if 0    
-      SetVPRasterParms(VPoint);
-
-      OCPNRegion rgn(0,0,VPoint.pix_width, VPoint.pix_height);
-
-      bool bsame_region = (rgn == m_last_region);          // only want to do this once
-
-
-      if(!bsame_region)
-            cached_image_ok = false;
-
-      m_last_region = rgn;
-
-      return RenderRegionViewOnDC(dc, VPoint, rgn);
-#endif
 }
 
 bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
@@ -944,7 +823,7 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
         {
           
             char qrs[2100];
-            sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
+            sprintf(qrs, "select tile_data, length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
             
             // Compile a SQL query, getting the specific  blob
             SQLite::Statement query(*m_pDB, qrs);
@@ -955,14 +834,9 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
                 return false;                           // requested ROW not found, should never happen
             }
             else{
-                SQLite::Column blobColumn = query.getColumn(3);         // Get the blob
+                SQLite::Column blobColumn = query.getColumn(0);         // Get the blob
                 const void* blob = blobColumn.getBlob();
-                
-                sprintf(qrs, "select length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-                SQLite::Statement lquery(*m_pDB, qrs);
-                int queryResult = lquery.tryExecuteStep();
-                int length = lquery.getColumn(0);         // Get the length
-                
+                int length = query.getColumn(1);
                 
                 wxMemoryInputStream blobStream(blob, length);
                 wxImage blobImage;
