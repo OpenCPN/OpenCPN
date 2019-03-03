@@ -6728,7 +6728,7 @@ void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdit
                 m_bRouteEditing = setBeingEdited;
             } else                                      // editing Mark
             {
-                frp->m_bIsBeingEdited = setBeingEdited;
+                frp->m_bRPIsBeingEdited = setBeingEdited;
                 m_bMarkEditing = setBeingEdited;
             }
 
@@ -7044,7 +7044,7 @@ void ChartCanvas::CallPopupMenu(int x, int y)
 
 	/**in touch mode a route point could have been selected and draghandle icon shown so clear the selection*/
 	if (g_btouch && m_pRoutePointEditTarget) {
-		m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+		m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
 		m_pRoutePointEditTarget->m_bPtIsSelected = false;
 		m_pRoutePointEditTarget->EnableDragHandle(false);
 	}
@@ -7382,7 +7382,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 return true;
             }
             else {
-                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
 				if (g_btouch)
 					m_pRoutePointEditTarget->EnableDragHandle(false);
@@ -7940,7 +7940,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 rlon = m_cursor_lon;
                 
                 if( m_pRoutePointEditTarget) {
-                    m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                    m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
                     m_pRoutePointEditTarget->m_bPtIsSelected = false;
                     wxRect wp_rect;
                     m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, this, &wp_rect );
@@ -8179,7 +8179,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     
                     if(b_was_editing_mark || b_was_editing_route) {            // kill previous hilight
                         if( m_lastRoutePointEditTarget) {
-                            m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
+                            m_lastRoutePointEditTarget->m_bRPIsBeingEdited = false;
                             m_lastRoutePointEditTarget->m_bPtIsSelected = false;
                             m_lastRoutePointEditTarget->EnableDragHandle( false );
                             pSelect->DeleteSelectablePoint( m_lastRoutePointEditTarget, SELTYPE_DRAGHANDLE );
@@ -8188,7 +8188,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     }
                     
                     if( m_pRoutePointEditTarget) {
-                        m_pRoutePointEditTarget->m_bIsBeingEdited = true;
+                        m_pRoutePointEditTarget->m_bRPIsBeingEdited = true;
                         m_pRoutePointEditTarget->m_bPtIsSelected = true;
                         m_pRoutePointEditTarget->EnableDragHandle( true );
                         wxPoint2DDouble dragHandlePoint = m_pRoutePointEditTarget->GetDragHandlePoint(this);
@@ -8198,7 +8198,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 else {                  // Deselect everything
                     if( m_lastRoutePointEditTarget) {
-                        m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
+                        m_lastRoutePointEditTarget->m_bRPIsBeingEdited = false;
                         m_lastRoutePointEditTarget->m_bPtIsSelected = false;
                         m_lastRoutePointEditTarget->EnableDragHandle( false );
                         pSelect->DeleteSelectablePoint( m_lastRoutePointEditTarget, SELTYPE_DRAGHANDLE );
@@ -8373,7 +8373,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
-                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
                 
                 delete m_pEditRouteArray;
                 m_pEditRouteArray = NULL;
@@ -8393,7 +8393,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             if( m_pRoutePointEditTarget ) {
                 if( m_bRoutePoinDragging ) pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
-                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
                 wxRect wp_rect;
                 m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, this, &wp_rect );
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;

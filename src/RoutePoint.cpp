@@ -77,7 +77,7 @@ RoutePoint::RoutePoint()
     m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -142,7 +142,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_seg_etd = orig->m_seg_etd;
     m_bDynamicName = orig->m_bDynamicName;
     m_bPtIsSelected = orig->m_bPtIsSelected;
-    m_bIsBeingEdited = orig->m_bIsBeingEdited;
+    m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
     m_bIsActive = orig->m_bIsActive;
     m_bBlink = orig->m_bBlink;
     m_bIsInRoute = orig->m_bIsInRoute;
@@ -207,7 +207,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_seg_etd = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -606,14 +606,14 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 
     wxColour hi_colour = pen->GetColour();
     unsigned char transparency = 100;
-    if( m_bIsBeingEdited ){
+    if( m_bRPIsBeingEdited ){
         hi_colour = GetGlobalColor( _T ( "YELO1" ) );
         transparency = 150;
     }
     
         
     //  Highlite any selected point
-    if( m_bPtIsSelected || m_bIsBeingEdited) {
+    if( m_bPtIsSelected || m_bRPIsBeingEdited) {
         AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, radius,
                 hi_colour, transparency );
     }

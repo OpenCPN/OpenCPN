@@ -1371,7 +1371,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
     if( vp.GetBBox().GetValid() && pWayPointMan) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
+            if( pWP && (!pWP->m_bRPIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
                 if(vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
                     pWP->DrawGL( vp, m_pParentCanvas );
         }
@@ -1422,7 +1422,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
         
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && pWP->m_bIsBeingEdited && !pWP->m_bIsInRoute )
+            if( pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute )
                 pWP->DrawGL( vp, m_pParentCanvas );
         }
     }
