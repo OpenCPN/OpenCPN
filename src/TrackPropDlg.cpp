@@ -1227,9 +1227,13 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
 }
 
 void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
-{        
-    TrackPrintSelection dlg( this, m_pTrack, m_lcPoints );
-    dlg.ShowModal();
+{
+    TrackPrintSelection* dlg = new TrackPrintSelection( this, m_pTrack, m_lcPoints );
+    DimeControl( dlg );
+    dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+        if ( retcode == wxID_OK ) {
+        }
+    });
 }
 
 void TrackPropDlg::OnTrackPropRightClick( wxListEvent &event )

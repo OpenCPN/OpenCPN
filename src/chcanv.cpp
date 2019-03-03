@@ -2943,11 +2943,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                             wxPoint( g_detailslider_dialog_x, g_detailslider_dialog_y ),
                             wxDefaultSize, wxSIMPLE_BORDER, _T("") );
                         if (pPopupDetailSlider)
-#ifdef __WXOSX__
                             pPopupDetailSlider->Show();
-#else
-                            pPopupDetailSlider->ShowModal();
-#endif
                     }
                 }
             else //( !pPopupDetailSlider ) close popupslider
@@ -8753,7 +8749,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         wxColor fg = FontMgr::Get().GetFontColor( _("ObjectQuery") );
 
         objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
-                       bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
+                       bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
 
 #ifdef __WXOSX__
         int points = dFont->GetPointSize();

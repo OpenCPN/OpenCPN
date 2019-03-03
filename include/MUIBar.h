@@ -58,7 +58,7 @@ class CanvasOptions;
 //----------------------------------------------------------------------------
 // MUIBar
 //----------------------------------------------------------------------------
-class MUIBar : public wxDialog
+class MUIBar : public wxFrame
 {
 public:
     MUIBar();

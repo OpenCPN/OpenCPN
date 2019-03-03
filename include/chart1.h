@@ -261,6 +261,24 @@ class OCPN_DataStreamEvent;
 class DataStream;
 class AIS_Target_Data;
 
+class  OCPNMessageDialog: public wxDialog
+{
+    
+public:
+    OCPNMessageDialog(wxWindow *parent, const wxString& message,
+                      const wxString& caption = wxMessageBoxCaptionStr,
+                      long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
+    
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
+    void OnCancel(wxCommandEvent& event);
+    void OnClose( wxCloseEvent& event );
+    
+private:
+    int m_style;
+    DECLARE_EVENT_TABLE()
+};
+
 //      A class to contain NMEA messages, their receipt time, and their source priority
 class NMEA_Msg_Container
 {

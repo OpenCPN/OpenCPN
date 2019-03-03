@@ -39,7 +39,7 @@
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #else
 #include "scrollingdialog.h"
 #endif
@@ -946,6 +946,9 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;
   wxButton *m_CancelButton, *m_OKButton;
+
+private:
+    void Persist();
 
   DECLARE_EVENT_TABLE()
 };

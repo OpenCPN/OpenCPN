@@ -87,12 +87,9 @@ ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
     pbackBrush = NULL;
     m_bNeedClear = false;
 
-long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
-    wxDialog::Create( frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
+    wxFrame::Create( frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
     
     m_pParent = frame;
 

@@ -31,9 +31,6 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
         const wxPoint& pos, const wxSize& size, long style )
 {
     long wstyle = style; // wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
     
     wxDialog::Create( parent, id, title, pos, size, wstyle );
 
