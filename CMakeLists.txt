@@ -862,6 +862,10 @@ set_target_properties(${PACKAGE_NAME} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+target_include_directories(${PACKAGE_NAME}
+      PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 IF(APPLE)
   target_include_directories(${PACKAGE_NAME} 
       PRIVATE /usr/X11/include /usr/X11/include/GL
