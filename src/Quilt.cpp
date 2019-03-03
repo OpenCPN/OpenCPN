@@ -1612,18 +1612,23 @@ bool Quilt::Compose( const ViewPort &vp_in )
         //LLRegion chart_region = pqc_ref->GetCandidateRegion();
         LLRegion &chart_region = pqc_ref->GetReducedCandidateRegion(factor);
         
-        if( !chart_region.Empty() ){
-            vpu_region.Intersect( chart_region );
+        if(cte_ref.GetChartType() != CHART_TYPE_MBTILES){
+            if( !chart_region.Empty() ){
+                vpu_region.Intersect( chart_region );
 
-            if( vpu_region.Empty() )
-                pqc_ref->b_include = false;   // skip this chart, no true overlap
-            else {
-                pqc_ref->b_include = true;
-                vp_region.Subtract( chart_region );          // adding this chart
+                if( vpu_region.Empty() )
+                    pqc_ref->b_include = false;   // skip this chart, no true overlap
+                else {
+                    pqc_ref->b_include = true;
+                    vp_region.Subtract( chart_region );          // adding this chart
+                }
             }
+            else
+                pqc_ref->b_include = false;   // skip this chart, empty region
         }
-        else
-            pqc_ref->b_include = false;   // skip this chart, empty region
+        else{
+                pqc_ref->b_include = false;   // skip this chart, mbtiles
+        }
     }
 
     //    Now the rest of the candidates
@@ -1646,7 +1651,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 }
             }
 #endif
-            
+
+            // Skip MBTiles
+            if(  CHART_TYPE_MBTILES == cte.GetChartType() ) {
+                pqc->b_include = false;   // skip this chart, mbtiles
+                continue;
+            }
+
             if( cte.Scale_ge(m_reference_scale)  ) {
                 //  If this chart appears in the no-show array, then simply include it, but
                 //  don't subtract its region when determining the smaller scale charts to include.....
@@ -1754,7 +1765,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         if( !pqc->b_include ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
-            if( cte.Scale_ge( m_reference_scale) ) {
+            if( cte.Scale_ge( m_reference_scale) && (cte.GetChartType() != CHART_TYPE_MBTILES) ) {
                 m_eclipsed_stack_array.push_back( pqc->dbIndex );
                 pqc->b_eclipsed = true;
             }
@@ -1816,6 +1827,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //    Don't add cm93 yet, it is always covering the quilt...
             if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
+            //    Don't add MBTiles
+            if( cte.GetChartType() == CHART_TYPE_MBTILES ) continue;
+
             //    Check intersection
             LLRegion vpck_region( vp_local.GetBBox() );
 
@@ -1826,9 +1840,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
             if( !vpck_region.Empty() ) {
                 if( add_scale ) {
-                    if( cte.Scale_eq(add_scale) ) 
+                    if( cte.Scale_eq(add_scale) ) {
                         pqc->b_include = true;
-                    ;
+                    }
                 } else {
                     pqc->b_include = true;
                     add_scale = cte.GetScale();

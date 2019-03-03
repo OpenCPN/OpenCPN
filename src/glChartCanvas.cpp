@@ -87,6 +87,7 @@ private:
 #include "chartimg.h"
 #include "Track.h"
 #include "Route.h"
+#include "mbtiles.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -3806,6 +3807,34 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+    // Render MBTiles as overlay
+    std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
+    unsigned int im = stackIndexArray.size();
+    if( im > 0 ) {
+        OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+        LLRegion screenLLRegion = VPoint.GetLLRegion( screen_region );
+        LLBBox screenBox = screenLLRegion.GetBox();
+
+        ViewPort vp = VPoint;
+        wxPoint p;
+        p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
+        VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
+
+        
+        for( unsigned int is = 0; is < im; is++ ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                ChartBase *chart = ChartData->OpenChartFromDBAndLock(stackIndexArray[is], FULL_INIT);
+                ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
+                if(pcmbt){
+                    pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
+                }
+            }
+        }
+    }
+ 
+
+    
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
     if( VPoint.b_quilt ) {
         if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){

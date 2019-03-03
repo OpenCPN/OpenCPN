@@ -530,11 +530,13 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       PrepareTiles();           // Initialize the tile data structures
 
-
-      LLRegion covrRegion;
-      
       LLBBox extentBox;
       extentBox.Set(m_LatMin, m_LonMin, m_LatMax, m_LonMax);
+
+      LLRegion covrRegion( m_LatMin, m_LonMin, m_LatMax, m_LonMax);
+#if 0
+      LLRegion covrRegion;
+      
       
       const char *name_UTF8 = "";
       wxCharBuffer utf8CB = name.ToUTF8();        // the UTF-8 buffer
@@ -660,7 +662,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
           
     } // while
 
-
+#endif
       //  The coverage region must be reduced if necessary to include only the db specified bounds.
       covrRegion.Intersect(extentBox);
 
@@ -1078,6 +1080,8 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
     bool btexture = getTileTexture(tile);
     if(!btexture) { // failed to load, draw NODTA on the minimum zoom
         glDisable(GL_TEXTURE_2D);
+        return false;
+        
         if(zoomLevel == m_minZoom)
             glColor4ub( 163, 180, 183, 128 );
         else
@@ -1206,8 +1210,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
             
             for(int j = leftTile ; j < rightTile+1 ; j++){
                 
-//                if( (j > tzd->tile_x_max) || (j < tzd->tile_x_min) )
-//                    continue;
+                if( (j > tzd->tile_x_max) || (j < tzd->tile_x_min) )
+                    continue;
                 
                 unsigned int index = ((i- tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
                 //printf("pass 1:  %d  %d  %d\n", zoomFactor, i, j);
