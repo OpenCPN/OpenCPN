@@ -2606,6 +2606,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
 EVT_MOVE(MyFrame::OnMove)
+EVT_ICONIZE(MyFrame::OnIconize)
 EVT_MENU(-1, MyFrame::OnToolLeftClick)
 EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
 EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
@@ -4008,6 +4009,23 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
     
 }
 
+void MyFrame::OnIconize( wxIconizeEvent& event )
+{
+#ifdef __WXOSX__
+    if(g_MainToolbar) {
+        g_MainToolbar->Show(!event.IsIconized());
+    }
+    if(g_iENCToolbar) {
+        g_iENCToolbar->Show(!event.IsIconized());
+    }
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc && cc->GetMUIBar()) {
+            cc->GetMUIBar()->Show(!event.IsIconized());
+        }
+    }
+#endif
+}
 
 void MyFrame::OnSize( wxSizeEvent& event )
 {

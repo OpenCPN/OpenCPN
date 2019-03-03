@@ -360,6 +360,7 @@ class MyFrame: public wxFrame
     void OnBellsTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
     void OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event);
+    void OnIconize(wxIconizeEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS
     void OnSuspending(wxPowerEvent &event);
