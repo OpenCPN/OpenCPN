@@ -1003,12 +1003,13 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     }
 
     wxMailMessage *message = new wxMailMessage(
-    wxT("gribauto"),                                                                            //requested subject
-    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
-        : m_MailToAddresses.AfterFirst(_T(';')),
-    WriteMail(),                                                                                 //message image
-    m_pSenderAddress->GetValue()
-    );
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? _T("grib-request") : wxT("gribauto"),  //requested subject
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
+            : m_MailToAddresses.AfterFirst(_T(';')),
+        WriteMail(),                                                                                 //message image
+        m_pSenderAddress->GetValue()
+        );
+    
     wxEmail mail ;
     if(mail.Send( *message, m_SendMethod)) {
 #ifdef __WXMSW__

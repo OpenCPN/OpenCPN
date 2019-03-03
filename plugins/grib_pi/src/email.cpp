@@ -43,11 +43,20 @@
 bool wxEmail::Send(wxMailMessage& message,  int sendMethod, const wxString& profileName,
     const wxString& sendMail2, const wxString& sendMail1, const wxString& sendMail0)
 {
+    wxString mailURL = _T("mailto:");
+    mailURL += message.m_to[0] + _T("&subject=") + message.m_subject + _T("&body=");
+    wxString msgBody =  message.m_body;
+    msgBody.Replace(" ", "%20");
+    mailURL += msgBody;
+
+//     wxLaunchDefaultBrowser(mailURL);
+//     return true;
+    
    // wxASSERT (message.m_to.GetCount() > 0) ;
     wxASSERT (!message.m_to.IsEmpty()) ;
     wxString profile(profileName);
-    if (profile.IsEmpty())
-        profile = wxGetUserName();
+    //if (profile.IsEmpty())
+      //  profile = wxGetUserName();
 
     wxMapiSession session;
 
