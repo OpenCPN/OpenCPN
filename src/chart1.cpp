@@ -10933,8 +10933,9 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
         "BLUE4; 100;100;200;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01; 171; 33;141;",
+        "VIO02; 209;115;213;",
+
         
         
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
@@ -10986,8 +10987,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
 
         "GREY3;  20; 20; 20;",              // MUIBar/TB background
         "BLUE4;  80; 80;160;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01; 128; 25;108;",
+        "VIO02; 171; 33;141;",
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -11037,8 +11038,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         
         "GREY3;  10; 10; 10;",              // MUIBar/TB background
         "BLUE4;  70; 70;140;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01;  85; 16; 72;",
+        "VIO02; 128; 25;108;",
         
         "*****" };
 
