@@ -2195,7 +2195,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float cx = lGPSPoint.x, cy = lGPSPoint.y;
         wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UWHIT" ) ) ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "CHWHT" ) ) ) );
 
         dc.StrokeCircle(cx, cy, gps_circle_radius);
 
