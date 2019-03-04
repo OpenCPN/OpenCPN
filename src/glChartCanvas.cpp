@@ -3131,11 +3131,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         } 
     }
         
-     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-         LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
-         ViewPort cvp = ClippedViewport(vp, region);
-         DrawGroundedOverlayObjects(dc, cvp);
-     }
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency)
@@ -3807,6 +3802,7 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+    
     // Render MBTiles as overlay
     std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
     unsigned int im = stackIndexArray.size();
@@ -3859,6 +3855,15 @@ void glChartCanvas::Render()
             }
         }
     }
+
+    
+    // Render static overlay objects
+    for(OCPNRegionIterator upd ( screen_region ); upd.HaveRects(); upd.NextRect()) {
+         LLRegion region = VPoint.GetLLRegion(upd.GetRect());
+         ViewPort cvp = ClippedViewport(VPoint, region);
+         DrawGroundedOverlayObjects(gldc, cvp);
+    }
+
 
     if( m_pParentCanvas->m_bShowTide  || m_pParentCanvas->m_bShowCurrent ){
         LLRegion screenLLRegion = VPoint.GetLLRegion( screen_region );
