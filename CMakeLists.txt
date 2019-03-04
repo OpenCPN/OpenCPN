@@ -853,11 +853,6 @@ IF(APPLE)
     ENDIF()
 ENDIF(APPLE)
 
-IF (WIN32)
-    list(APPEND SRCS src/MswSound.cpp)
-    list(APPEND HDRS include/MswSound.h)
-ENDIF ()
-
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
   SET(SRCS ${SRCS} src/crashprint.cpp)
