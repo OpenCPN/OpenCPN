@@ -894,6 +894,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bShowCompassWin = g_bShowCompassWin;
 
     m_Compass = new ocpnCompass(this);
+    m_Compass->SetScaleFactor(g_compass_scalefactor);
     m_Compass->Show(m_bShowCompassWin);
 
     m_bToolbarEnable = false;
@@ -1111,6 +1112,7 @@ void ChartCanvas::SetShowGPS( bool bshow )
     if(m_bShowGPS != bshow){
         delete m_Compass;
         m_Compass = new ocpnCompass( this, bshow );
+        m_Compass->SetScaleFactor(g_compass_scalefactor);
         m_Compass->Show(m_bShowCompassWin);
     }
     m_bShowGPS = bshow;
