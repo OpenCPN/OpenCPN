@@ -147,8 +147,6 @@ static bool writeSynchronous(int deviceIx,
         }
     }
     Pa_CloseStream(stream);
-    soundLoader->Reset();
-    
     return pe == paNoError;
 }
 
