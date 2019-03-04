@@ -1665,7 +1665,7 @@ bool MyApp::OnInit()
     wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
     wxString os_name;
-#ifndef __OCPN_ANDROID__
+#ifndef __OCPN__ANDROID__
     os_name = platforminfo.GetOperatingSystemIdName();
 #else
     os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1688,7 +1688,7 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");

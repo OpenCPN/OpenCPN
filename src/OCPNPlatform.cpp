@@ -2286,7 +2286,7 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
     
 }
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)
