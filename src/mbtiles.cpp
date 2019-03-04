@@ -790,7 +790,7 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
         {
           
             char qrs[2100];
-            sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
+            sprintf(qrs, "select tile_data, length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
             
             // Compile a SQL query, getting the specific  blob
             SQLite::Statement query(*m_pDB, qrs);
@@ -801,14 +801,10 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
                 return false;                           // requested ROW not found, should never happen
             }
             else{
-                SQLite::Column blobColumn = query.getColumn(3);         // Get the blob
+                SQLite::Column blobColumn = query.getColumn(0);         // Get the blob
                 const void* blob = blobColumn.getBlob();
                 
-                sprintf(qrs, "select length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-                SQLite::Statement lquery(*m_pDB, qrs);
-                int queryResult = lquery.tryExecuteStep();
-                int length = lquery.getColumn(0);         // Get the length
-                
+                int length = query.getColumn(1);         // Get the length
                 
                 wxMemoryInputStream blobStream(blob, length);
                 wxImage blobImage;
