@@ -1081,7 +1081,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         LPSTR libname[256];
         size_t i = 0;
         // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
-        while (pImportDescriptor->Name != NULL)
+        while (pImportDescriptor->Name != 0)
         {
             //Get the name of each DLL
             libname[i] = (PCHAR)((DWORD_PTR)virtualpointer + Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));

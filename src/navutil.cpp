@@ -2861,10 +2861,10 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
 
-        wxProgressDialog *pprog = NULL;
+        wxGenericProgressDialog *pprog = nullptr;
         int count = pWayPointMan->GetWaypointList()->GetCount();
         if( count > 200) {
-            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
+            pprog = new wxGenericProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
                                           wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
             pprog->SetSize( 400, wxDefaultCoord );
@@ -2941,8 +2941,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         delete pgpx;
         ::wxEndBusyCursor();
 
-        if( pprog)
-            delete pprog;
+        delete pprog;
 
     }
 }

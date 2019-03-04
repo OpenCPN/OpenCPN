@@ -506,7 +506,7 @@ void MUIBar::SetColorScheme( ColorScheme cs )
             wxColour textbackColor = GetGlobalColor( _T("GREY1") );
             m_scaleTextBox->SetForegroundColour(textbackColor);
         }
-
+        Refresh();
         m_cs = cs;
     }
 }

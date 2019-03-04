@@ -1628,6 +1628,6 @@ void glTextureManager::BuildCompressedCache()
     m_timer.Start(500);
     
     delete m_progDialog;
-    m_progDialog = NULL;
+    m_progDialog = nullptr;
 }
 

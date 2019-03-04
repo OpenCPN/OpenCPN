@@ -1425,7 +1425,7 @@ void ParseAllENC(wxWindow* parent)
         workers[t] = NULL;
     #endif
     
-    wxGenericProgressDialog *prog = NULL;
+    wxGenericProgressDialog *prog = nullptr;
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     
     if(1){    
@@ -2606,6 +2606,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
 EVT_MOVE(MyFrame::OnMove)
+EVT_ICONIZE(MyFrame::OnIconize)
 EVT_MENU(-1, MyFrame::OnToolLeftClick)
 EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
 EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
@@ -3637,8 +3638,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->DeleteGroup( _T ( "/Marks" ) );
     pConfig->Flush();
 
-    delete pConfig;             // All done
-    pConfig = NULL;
 
     delete g_printData;
     delete g_pageSetupData;
@@ -3729,6 +3728,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         delete g_pi_manager;
         g_pi_manager = NULL;
     }
+
+    delete pConfig;             // All done
+    pConfig = NULL;
 
     if( g_pAIS ) {
         if(g_pMUX)
@@ -4008,6 +4010,23 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
     
 }
 
+void MyFrame::OnIconize( wxIconizeEvent& event )
+{
+#ifdef __WXOSX__
+    if(g_MainToolbar) {
+        g_MainToolbar->Show(!event.IsIconized());
+    }
+    if(g_iENCToolbar) {
+        g_iENCToolbar->Show(!event.IsIconized());
+    }
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc && cc->GetMUIBar()) {
+            cc->GetMUIBar()->Show(!event.IsIconized());
+        }
+    }
+#endif
+}
 
 void MyFrame::OnSize( wxSizeEvent& event )
 {
@@ -6398,7 +6417,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     OCPNPlatform::ShowBusySpinner();
 
-    wxGenericProgressDialog *pprog = NULL;
+    wxGenericProgressDialog *pprog = nullptr;
     if( b_prog ) {
         wxString longmsg = _("OpenCPN Chart Update");
         longmsg += _T("..........................................................................");
@@ -10933,8 +10952,9 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         
         "GREY3;  40; 40; 40;",              // MUIBar/TB background
         "BLUE4; 100;100;200;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01; 171; 33;141;",
+        "VIO02; 209;115;213;",
+
         
         
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
@@ -10986,8 +11006,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
 
         "GREY3;  20; 20; 20;",              // MUIBar/TB background
         "BLUE4;  80; 80;160;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01; 128; 25;108;",
+        "VIO02; 171; 33;141;",
         
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -11037,8 +11057,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         
         "GREY3;  10; 10; 10;",              // MUIBar/TB background
         "BLUE4;  70; 70;140;",              // Canvas Focus Bar
-        "VIO01; 233;168;236;", 
-        "VIO02; 181; 84;160;", 
+        "VIO01;  85; 16; 72;",
+        "VIO02; 128; 25;108;",
         
         "*****" };
 
