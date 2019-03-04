@@ -88,6 +88,8 @@ private:
 #include "Track.h"
 #include "Route.h"
 #include "mbtiles.h"
+#include <vector>
+#include <algorithm>
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -135,6 +137,7 @@ extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
+extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
@@ -3813,11 +3816,14 @@ void glChartCanvas::Render()
         LLBBox screenBox;
         ViewPort vp;
 
-        
+        std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
-
+                tiles_to_show.push_back(stackIndexArray[is]);
                 if(!regionVPBuilt){
                     screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
                     screenLLRegion = VPoint.GetLLRegion( screen_region );
@@ -3831,11 +3837,15 @@ void glChartCanvas::Render()
                     regionVPBuilt = true;
                 }
 
-                ChartBase *chart = ChartData->OpenChartFromDBAndLock(stackIndexArray[is], FULL_INIT);
-                ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
-                if(pcmbt){
-                    pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
-                }
+            }
+        }
+        // We need to show the tilesets in reverse order to have the largest scale on top
+        for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
+            rit != tiles_to_show.rend(); ++rit) {
+            ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+            ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
+            if(pcmbt){
+                pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
             }
         }
     }
