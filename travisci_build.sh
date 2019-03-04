@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# bailout on errror
+set -e
+
 mkdir build && cd build
 if [[ "$TRAVIS_OS_NAME" == "linux" ]];
   then cmake -DCMAKE_BUILD_TYPE=Debug ..
