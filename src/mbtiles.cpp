@@ -823,17 +823,23 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
                 m_imageType = blobImage.GetType();
 
                 unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
+                bool transparent = blobImage.HasAlpha();
                 
                 for( int j = 0; j < tex_w*tex_h; j++ ){
                     for( int k = 0; k < 3; k++ )
                         teximage[j * stride + k] = imgdata[3*j + k];
                     
-                    // NOAA Tilesets do not give transparent tiles, so we detect NOAA's idea of blank
+                    // Some NOAA Tilesets do not give transparent tiles, so we detect NOAA's idea of blank
                     // as RGB(1,0,0) and force  alpha = 0;
-                    if( (imgdata[3*j] == 1) && (imgdata[3*j + 1] == 0) && (imgdata[3*j+2] == 0))
+                    if( imgdata[3*j] == 1 && imgdata[3*j + 1] == 0 && imgdata[3*j+2] == 0) {
                         teximage[j * stride + 3] = 0;
-                    else
-                        teximage[j * stride + 3] = 255;
+                    } else {
+                        if( transparent ) {
+                            teximage[j * stride + 3] = blobImage.GetAlpha(j % tex_w, j / tex_w);
+                        } else {
+                            teximage[j * stride + 3] = 255;
+                        }
+                    }
                 }
                 
                     
