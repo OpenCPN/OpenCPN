@@ -8844,6 +8844,8 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         }
     }
 
+    markPoint->m_bRPIsBeingEdited = false;
+    
     g_pMarkInfoDialog->SetRoutePoint( markPoint );
     g_pMarkInfoDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
