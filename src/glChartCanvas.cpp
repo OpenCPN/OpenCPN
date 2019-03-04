@@ -88,6 +88,8 @@ private:
 #include "Track.h"
 #include "Route.h"
 #include "mbtiles.h"
+#include <vector>
+#include <algorithm>
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -135,6 +137,7 @@ extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
+extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
@@ -3816,6 +3819,9 @@ void glChartCanvas::Render()
         
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
 
                 if(!regionVPBuilt){
