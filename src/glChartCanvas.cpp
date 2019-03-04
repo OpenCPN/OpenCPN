@@ -3807,19 +3807,30 @@ void glChartCanvas::Render()
     std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
     unsigned int im = stackIndexArray.size();
     if( im > 0 ) {
-        OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-        LLRegion screenLLRegion = VPoint.GetLLRegion( screen_region );
-        LLBBox screenBox = screenLLRegion.GetBox();
-
-        ViewPort vp = VPoint;
-        wxPoint p;
-        p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
-        VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
+        bool regionVPBuilt = false;
+        OCPNRegion screen_region;
+        LLRegion screenLLRegion;
+        LLBBox screenBox;
+        ViewPort vp;
 
         
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
+
+                if(!regionVPBuilt){
+                    screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                    screenLLRegion = VPoint.GetLLRegion( screen_region );
+                    screenBox = screenLLRegion.GetBox();
+
+                    vp = VPoint;
+                    wxPoint p;
+                    p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
+                    VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
+                    
+                    regionVPBuilt = true;
+                }
+
                 ChartBase *chart = ChartData->OpenChartFromDBAndLock(stackIndexArray[is], FULL_INIT);
                 ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
                 if(pcmbt){
