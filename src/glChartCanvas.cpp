@@ -3816,14 +3816,14 @@ void glChartCanvas::Render()
         LLBBox screenBox;
         ViewPort vp;
 
-        
+        std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
             if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
                 continue;
             }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
-
+                tiles_to_show.push_back(stackIndexArray[is]);
                 if(!regionVPBuilt){
                     screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
                     screenLLRegion = VPoint.GetLLRegion( screen_region );
@@ -3837,11 +3837,15 @@ void glChartCanvas::Render()
                     regionVPBuilt = true;
                 }
 
-                ChartBase *chart = ChartData->OpenChartFromDBAndLock(stackIndexArray[is], FULL_INIT);
-                ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
-                if(pcmbt){
-                    pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
-                }
+            }
+        }
+        // We need to show the tilesets in reverse order to have the largest scale on top
+        for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
+            rit != tiles_to_show.rend(); ++rit) {
+            ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+            ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
+            if(pcmbt){
+                pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
             }
         }
     }
