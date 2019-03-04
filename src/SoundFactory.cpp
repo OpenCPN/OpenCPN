@@ -29,20 +29,30 @@
 #include "PortAudioSound.h"
 
 OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
+bool IsSoundFactorySynchronous( void ) { return true; }
 
 #elif defined(__OCPN__ANDROID__)
 #include "AndroidSound.h"
 
 OcpnSound* SoundFactory(void) { return new AndroidSound(); }
+bool IsSoundFactorySynchronous( void ) { return false; }
 
 #elif defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+#if defined(__WXMAC__)
+bool IsSoundFactorySynchronous( void ) { return false; }
+#elif defined(_WINDOWS)
+bool IsSoundFactorySynchronous( void ) { return true; }
+#else
+bool IsSoundFactorySynchronous( void ) { return false; }        // Probably rPI
+#endif
 
 #else
 #include  "OcpnWxSound.h"
 
 OcpnSound* SoundFactory(void) { return new OcpnWxSound(); }
+bool IsSoundFactorySynchronous( void ) { return true; }
 
 #endif

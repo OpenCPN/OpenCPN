@@ -33,5 +33,6 @@
  */
 
 OcpnSound* SoundFactory();
+bool IsSoundFactorySynchronous( void );
 
 #endif // SOUND_FACTORY_H
