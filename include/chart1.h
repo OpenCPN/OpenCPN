@@ -357,10 +357,10 @@ class MyFrame: public wxFrame
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
-    void OnBellsTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
     void OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event);
     void OnIconize(wxIconizeEvent& event);
+    void OnBellsFinished(wxCommandEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS
     void OnSuspending(wxPowerEvent &event);

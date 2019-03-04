@@ -2602,6 +2602,8 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 
 //      Frame implementation
+wxDEFINE_EVENT(BELLS_PLAYED_EVTYPE, wxCommandEvent);
+
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
@@ -2613,13 +2615,13 @@ EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
-EVT_TIMER(BELLS_TIMER, MyFrame::OnBellsTimer)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
 EVT_TIMER(RECAPTURE_TIMER, MyFrame::OnRecaptureTimer)
 EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
+EVT_COMMAND(wxID_ANY, BELLS_PLAYED_EVTYPE, MyFrame::OnBellsFinished)
 #ifdef wxHAS_POWER_EVENTS
 EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
 EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
@@ -2628,6 +2630,19 @@ EVT_POWER_RESUME(MyFrame::OnResume)
 #endif // wxHAS_POWER_EVENTS
 
 END_EVENT_TABLE()
+
+
+/*
+ * Direct callback from completed sound, possibly in an interrupt
+ * context. Just post an event to be processed in main thread.
+ */
+static void onBellsFinishedCB(void* ptr)
+{
+   auto framePtr  = static_cast<MyFrame*>(ptr);
+   wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
+   wxPostEvent(framePtr, ev);
+}
+
 
 // My frame constructor
 MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
@@ -2661,9 +2676,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //      Redirect the Memory Footprint Management timer to this frame
     MemFootTimer.SetOwner( this, MEMORY_FOOTPRINT_TIMER );
-
-    //      Redirect the Bells timer to this frame
-    BellsTimer.SetOwner( this, BELLS_TIMER );
 
     //      Direct the Toolbar Animation timer to this frame
     ToolbarAnimateTimer.SetOwner( this, TOOLBAR_ANIMATE_TIMER );
@@ -2800,6 +2812,31 @@ void MyFrame::OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event)
         default:
             break;
     }
+}
+
+// play an arbitrary number of bells by using 1 and 2 bell sounds
+void MyFrame::OnBellsFinished( wxCommandEvent& event )
+{
+    int bells = wxMin(m_BellsToPlay, 2);
+    if(bells <= 0)
+        return;
+
+    wxString soundfile = _T("sounds");
+    appendOSDirSlash( &soundfile );
+    soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
+    soundfile.Prepend( g_Platform->GetSharedDataDir() );
+    wxLogMessage( _T("Using bells sound file: ") + soundfile );
+
+    OcpnSound* sound = bells_sound[bells - 1];
+    sound->SetFinishedCallback(onBellsFinishedCB, this);
+    sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+    sound->Load( soundfile );
+    if( !sound->IsOk() ) {
+        wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
+        return;
+    }
+    sound->Play();
+    m_BellsToPlay -= bells;
 }
 
 
@@ -6891,36 +6928,6 @@ void MyFrame::OnMemFootTimer( wxTimerEvent& event )
     MemFootTimer.Start( 9000, wxTIMER_CONTINUOUS );
 }
 
-// play an arbitrary number of bells by using 1 and 2 bell sounds
-void MyFrame::OnBellsTimer(wxTimerEvent& event)
-{
-    int bells = wxMin(m_BellsToPlay, 2);
-
-    if(bells <= 0)
-        return;
-
-    if( !bells_sound[bells - 1]->IsOk() )            // load the bells sound
-    {
-        wxString soundfile = _T("sounds");
-        appendOSDirSlash( &soundfile );
-        soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
-        soundfile.Prepend( g_Platform->GetSharedDataDir() );
-        bells_sound[bells - 1]->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-        bells_sound[bells - 1]->Load( soundfile );
-        if( !bells_sound[bells - 1]->IsOk() ) {
-            wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
-            return;
-        }
-
-        wxLogMessage( _T("Using bells sound file: ") + soundfile );
-    }
-
-    bells_sound[bells - 1]->Play();
-    m_BellsToPlay -= bells;
-
-    BellsTimer.Start(2000, wxTIMER_ONE_SHOT);
-}
-
 int ut_index;
 
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
@@ -7185,7 +7192,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
             if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
-                BellsTimer.Start(5, wxTIMER_ONE_SHOT);
+                wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
+                wxPostEvent(this, ev);
             }
         }
     }
