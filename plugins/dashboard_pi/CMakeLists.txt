@@ -202,19 +202,9 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/nmea0183
 )
 
-IF(WIN32)
-  IF(MSVC)
-    SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
-  ELSE(MSVC)
-    SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
-    SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )
-  ENDIF(MSVC)
-
-  ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
-ENDIF(WIN32)
-
-target_link_libraries(${PACKAGE_NAME} ${OPENCPN_LINK_TARGET} )
-
+IF (WIN32 AND NOT MSVC)
+  SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )
+ENDIF()
 
 # On Android, PlugIns need a specific linkage set....
 IF (QT_ANDROID )
@@ -252,6 +242,7 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
 if (TARGET wxsvg::wxsvg)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} wxsvg::wxsvg )
 endif()
+target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 
 IF(APPLE)

@@ -101,7 +101,7 @@ IF( APPLE )
     )
 ENDIF(APPLE)
 
-target_link_libraries(${PACKAGE_NAME} ${OPENCPN_LINK_TARGET} )
+target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

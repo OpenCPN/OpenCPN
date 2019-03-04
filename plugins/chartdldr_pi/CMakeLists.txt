@@ -186,11 +186,12 @@ ELSE(LibArchive_FOUND)
   ENDIF(BZIP2_FOUND)
 ENDIF(LibArchive_FOUND)
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
-target_link_libraries( ${PACKAGE_NAME} PRIVATE wxsvg::wxsvg )
-
-target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+    ${wxWidgets_LIBRARIES}
+    wxjson::wxjson 
+    wxsvg::wxsvg 
+    ocpn::opencpn 
+)
 
 
 IF (QT_ANDROID )
