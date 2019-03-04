@@ -7545,7 +7545,7 @@ void MyFrame::UpdateGPSCompassStatusBoxes( bool b_force_new )
 int MyFrame::GetApplicationMemoryUse( void )
 {
     int memsize = -1;
-#ifdef __LINUX__
+#ifdef __linux__
 
     //    Use a contrived ps command to get the virtual memory size associated with this process
     wxWindow *fWin = wxWindow::FindFocus();
