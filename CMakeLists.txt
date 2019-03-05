@@ -1164,8 +1164,14 @@ ELSEIF (WIN32)
     "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
 ENDIF ()
 
+IF (APPLE)
+  SET (DEFAULT_SCS OFF)
+ELSE (APPLE)
+  SET (DEFAULT_SCS ON)
+ENDIF (APPLE)
+
 OPTION(ENABLE_SYSTEM_CMD_SOUND
-       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
+       "Use aplay(1), afplay(1) etc. to play sounds if available" ${DEFAULT_SCS})
 SET (HAVE_SYSTEM_CMD_SOUND "")
 IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   IF (APLAY OR AFPLAY OR WIN32)
@@ -1177,11 +1183,11 @@ IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   ENDIF()
 ENDIF()
 
-IF (WIN32)
+IF (WIN32 OR APPLE)
   SET (DEFAULT_PA OFF)
-ELSE (WIN32)
+ELSE (WIN32 OR APPLE)
   SET (DEFAULT_PA ON)
-ENDIF (WIN32)
+ENDIF (WIN32 OR APPLE)
 
 OPTION(ENABLE_PORTAUDIO
        "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
@@ -1221,7 +1227,6 @@ IF (NOT ENABLE_SNDFILE MATCHES OFF)
     MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
   ENDIF()
 ENDIF ()
-
 
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
