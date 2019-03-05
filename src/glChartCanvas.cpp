@@ -3841,11 +3841,25 @@ void glChartCanvas::Render()
         }
         // We need to show the tilesets in reverse order to have the largest scale on top
         for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
-            rit != tiles_to_show.rend(); ++rit) {
+                            rit != tiles_to_show.rend(); ++rit) {
             ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
             ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
             if(pcmbt){
                 pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
+                
+                //Light up the piano key if the chart was rendered
+                std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
+                bool bfound = false;
+            
+                if(std::find(piano_active_array_tiles.begin(), piano_active_array_tiles.end(), *rit) != piano_active_array_tiles.end()) {
+                    bfound = true;
+                    break;
+                }
+
+                if(!bfound){
+                    piano_active_array_tiles.push_back( *rit );
+                    m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
+                }
             }
         }
     }

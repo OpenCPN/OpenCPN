@@ -12531,52 +12531,71 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
             GetVP().SetProjectionType(m_singleChart->GetChartProjectionType());
         
     } else {
-        if( IsChartQuiltableRef( selected_dbIndex ) ){
+        
+        // Handle MBTiles overlays first
+        // Left click simply toggles the noshow array index entry
+        if( CHART_TYPE_MBTILES == ChartData->GetDBChartType( selected_dbIndex ) ){
+           bool bfound=false; 
+           for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
+                if( g_quilt_noshow_index_array[i] == selected_dbIndex ){ // chart is in the noshow list
+                    g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );  // erase it
+                    bfound = true;
+                    break;
+                }
+           }
+           if(!bfound){
+               g_quilt_noshow_index_array.push_back(selected_dbIndex);
+           }
+        }
+        
+        else{
+            if( IsChartQuiltableRef( selected_dbIndex ) ){
             //            if( ChartData ) ChartData->PurgeCache();
             
             
             //  If the chart is a vector chart, and of very large scale,
             //  then we had better set the new scale directly to avoid excessive underzoom
             //  on, eg, Inland ENCs
-            bool set_scale = false;
-            if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
-                if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
-                    set_scale = true;
+                bool set_scale = false;
+                if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
+                    if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
+                        set_scale = true;
+                    }
                 }
-            }
-            
-            if(!set_scale){
-                SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
+                
+                if(!set_scale){
+                    SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
+                }
+                else {
+                    SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
+                    
+                    
+                    //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
+                    ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
+                    if( pc ) {
+                        double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale();
+                        
+                        if(g_bPreserveScaleOnX){
+                            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                            100 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
+                        }
+                        else{
+                            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                            20 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
+                            
+                            proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
+                                                            pc->GetNormalScaleMin(GetCanvasScaleFactor(), g_b_overzoom_x));
+                        }
+                        
+                        SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+                    }
+                }
             }
             else {
-                SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
-                
-                
-                //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
-                ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
-                if( pc ) {
-                    double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale();
-                    
-                    if(g_bPreserveScaleOnX){
-                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                                        100 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
-                    }
-                    else{
-                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                                        20 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
-                        
-                        proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
-                                                        pc->GetNormalScaleMin(GetCanvasScaleFactor(), g_b_overzoom_x));
-                    }
-                    
-                    SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
-                }
+                //TODOToggleQuiltMode();
+                SelectdbChart( selected_dbIndex );
+                m_bpersistent_quilt = true;
             }
-        }
-        else {
-            //TODOToggleQuiltMode();
-            SelectdbChart( selected_dbIndex );
-            m_bpersistent_quilt = true;
         }
     }
     
