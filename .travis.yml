@@ -8,6 +8,7 @@ matrix:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get --allow-unauthenticated install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev libarchive-dev liblzma-dev libexif-dev libsqlite3-dev libelf-dev gettext; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif xz libarchive;
@@ -32,3 +33,16 @@ notifications:
   email: false
 git:
   depth: 10
+
+env:
+  - secure: "KC+tdCF5pSgrguqDcU3ZIzt6qxhu35aSGQYOJnsXFrC7XN7ACVCsb6kxjboAAoStvKuVy89OZLy6vdFpoZ+sHv0RtguV0RO70IX/A6m5PYAvnAXRSdCWoR4EfaV3UhN6hjTLGD2Wy6Hdkave9tt4IWeM8tAi/wvtbfE012ra4jU="
+
+addons:
+  coverity_scan:
+    project:
+      name: "OpenCPN/OpenCPN"
+      description: "OpenCPN"
+    notification_email: pavel@kalian.cz
+    build_command_prepend: "mkdir -p build; cd build; cmake ..; make clean"
+    build_command: "make"
+    branch_pattern: coverity_scan

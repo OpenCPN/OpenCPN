@@ -271,7 +271,6 @@ void RoutePropDlgImpl::UpdatePoints()
     m_pRoute->UpdateSegmentDistances( m_pRoute->m_PlannedSpeed );           // to fix ETA properties
     m_tcDistance->SetValue(wxString::Format(wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(m_pRoute->m_route_length)));
     m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
-    m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrDistance(m_pRoute->m_PlannedSpeed)));
     //  Iterate on Route Points, inserting blank fields starting with index 0
     wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
     int in = 0;
@@ -444,6 +443,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         }
         
         m_pRoute = pR;
+        
+        m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
         
         if(m_scrolledWindowLinks){
             wxWindowList kids = m_scrolledWindowLinks->GetChildren();
