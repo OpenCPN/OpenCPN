@@ -31,6 +31,9 @@ CMake variables
 	#CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup"
 
 ----------------------------------------------------------------------------------------------------------*/
+; Enabled on MINGW builds:
+;!define NSIS_PACKEDVERSION true
+ 
 ;# Set compression
 	SetCompressor /FINAL lzma
 !ifdef NSIS_PACKEDVERSION

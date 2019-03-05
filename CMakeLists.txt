@@ -2086,6 +2086,31 @@ IF(NOT SKIP_PLUGINS)
 ENDIF ()
 
 #
+# Prepare CPACK configuration
+#
+
+if (MINGW)
+  set(CMD 
+    "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//' \
+    NSIS.template.in.in >build/NSIS.template.in"
+  )
+  file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
+  add_custom_target(NSIS_config  ALL
+    COMMAND /bin/sh ${CMAKE_BINARY_DIR}/fix-NSIS.sh
+    DEPENDS NSIS.template.in.in
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  add_dependencies(${PACKAGE_NAME} NSIS_config)
+else ()
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in
+    COPYONLY
+  )
+endif ()
+
+
+#
 #  RPM package setup
 #
 IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
@@ -2193,7 +2218,7 @@ SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};AL
 SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
 #
-#  Windows package setup.
+#  Windows NSIS package setup.
 #
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
