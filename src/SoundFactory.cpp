@@ -30,15 +30,20 @@
 
 OcpnSound* SoundFactory(void) { return new PortAudioSound(); }
 
-#elif defined(__OCPN__ANDROID__)
-#include "AndroidSound.h"
-
-OcpnSound* SoundFactory(void) { return new AndroidSound(); }
-
 #elif defined(HAVE_SYSTEM_CMD_SOUND)
 #include "SystemCmdSound.h"
 
 OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
+
+#elif defined(__OCPN__ANDROID__)
+#include "AndroidSound.h"
+
+// TBD...
+
+#elif defined(__WXMSW__)
+#include "MswSound.h"
+
+OcpnSound* SoundFactory(void) { return new MswSound(); }
 
 #else
 #include  "OcpnWxSound.h"
