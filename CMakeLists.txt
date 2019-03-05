@@ -56,24 +56,24 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Build profiles
-# - cross platform compiling
-# - Better USE_BUNDLED_LIBS option
+# - Test (rework?) wxWidgets GLU handling.
+# - Fix 3.0 requirement overall
+# - Rework options, naming conventions.
+# - Better USE_BUNDLED_LIBS option (list)
+# - Fix link libraries name (tinyxml:: > ocpn::)
+# - Silent build mode.
+# - Unbundle jasper.
 # - test with Win & OSX
+# - Separate ffmpeg configuration
+# - Separate gpsd configuration
+# - Profiling opt
 # - GNU install paths
+# - Drop -s linker flag
 # - Use list() instead of set()
 # - Review TinyXML handling
-# - Remove unused PACKAGE_DEPS ?
-# - Better USE_BUNDLED_LIBS option (list)  OK
-# - Fix link libraries name (tinyxml:: > ocpn::) OK
-# - Fix 3.1 requirement overall OK
-# - Silent build mode. OK
-# - Move final linking ahead of install section. OK
-# - Separate gpsd configuration OK
-# - Separate ffmpeg configuration OK
-# - Review Mingw package generation. OK
-# - Drop -s linker flag OK
-# - Make missing sound libs info instead of warnings. OK
+# - Move final linking ahead of install section.
+# - Review Mingw package generation.
+# - Make missing sound libs info instead of warnings.
 # USE_GLU_TESS
 # USE_GLU_DLL
 # I also find it deficient in some areas. For instance, I cannot make it
@@ -235,14 +235,19 @@ ENDIF()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (ENABLE_CLANG_TIDY)
-    find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
+    find_program (CLANG_TIDY_EXE
+      NAMES "clang-tidy"
+      PATHS /usr/local/opt/llvm/bin
+    )
     if (CLANG_TIDY_EXE)
       message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
       #For more, see http://clang.llvm.org/extra/clang-tidy/
       #set(CLANG_TIDY_CHECKS "-*,modernize-*")
       set(CLANG_TIDY_CHECKS "-*,performance-*")
-      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
-        CACHE STRING "" FORCE)
+      set(CMAKE_CXX_CLANG_TIDY
+        "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
+        CACHE STRING "" FORCE
+      )
     else()
       message(AUTHOR_WARNING "clang-tidy not found!")
       set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # delete it
@@ -266,6 +271,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
+
 message(STATUS "Default compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -1050,8 +1056,9 @@ IF(OCPN_USE_CRASHREPORT)
 ENDIF(OCPN_USE_CRASHREPORT)
 
 add_subdirectory("libs/sqlite")
-add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
+
+add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 IF(UNIX)
@@ -1275,7 +1282,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
-  # FIXME: Add interface lib, use in garmin...
   add_library(TINYXML INTERFACE)
   target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
   target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
@@ -2033,14 +2039,14 @@ IF(WIN32 OR APPLE)
 
     IF(APPLE)
       INSTALL(FILES ${_current_wx_mofile} DESTINATION
-	${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
-	RENAME wxstd.mo
+      ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
+      RENAME wxstd.mo
     )
     ELSE(APPLE)
       INSTALL(FILES ${_current_wx_mofile} DESTINATION
-	${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
-       	RENAME wxstd.mo
-       	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+        ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
+        RENAME wxstd.mo
+        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
     ENDIF(APPLE)
 
@@ -2066,9 +2072,9 @@ IF(WIN32 AND NOT UNIX)
   OPTION (BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON)
   IF(BUNDLE_LIBARCHIVEDLLS)
     FILE(GLOB libarchivedll_files
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
     )
     INSTALL(FILES ${libarchivedll_files} DESTINATION ".")
     MESSAGE(STATUS "LibArchive DLLs bundled into the installer package...")
@@ -2101,9 +2107,8 @@ IF(NOT SKIP_PLUGINS)
 ENDIF ()
 
 #
-# Prepare CPACK configuration
+# Prepare CPACK configuration (MINGW)
 #
-
 if (MINGW)
   set(CMD 
     "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//' \
@@ -2123,6 +2128,73 @@ else ()
     COPYONLY
   )
 endif ()
+
+
+#
+# Build a CPack driven installer package
+#
+#include (InstallRequiredSystemLibraries)
+SET(CPACK_PACKAGE_NAME "OpenCPN")
+SET(CPACK_PACKAGE_VENDOR "opencpn.org")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
+SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
+SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
+SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
+SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
+
+SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
+SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
+
+IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
+    SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+    SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+ENDIF ()
+
+SET(CPACK_SOURCE_GENERATOR "TGZ")
+
+# The following components are regex's to match anywhere (unless anchored)
+# in absolute path + filename to find files or directories to be excluded
+# from source tarball.
+set(CPACK_SOURCE_IGNORE_FILES
+  "\\\\.git*"
+  "^${CMAKE_CURRENT_SOURCE_DIR}/build*"
+  "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
+)
+
+#
+#  Windows NSIS package setup.
+#
+IF(WIN32 AND NOT UNIX)
+  # There is a bug in NSI that does not handle full unix paths properly. Make
+  # sure there is at least one set of four (4) backlasshes.
+
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
+  SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
+
+  # These lines set the name of the Windows Start Menu shortcut and the
+  # icon that goes with it
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
+  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
+
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup" )
+
+  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt")
+
+  IF(MINGW)
+    SET(CPACK_STRIP_FILES "bin/opencpn")
+  ENDIF(MINGW)
+
+ELSE(WIN32 AND NOT UNIX)
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
+  SET(CPACK_STRIP_FILES "bin/opencpn")
+  SET(CPACK_SOURCE_STRIP_FILES "")
+  SET(CPACK_PACKAGE_FILE_NAME
+      "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
+  SET(CPACK_RESOURCE_FILE_LICENSE 
+      "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html")
+ENDIF(WIN32 AND NOT UNIX)
 
 
 #
@@ -2216,82 +2288,10 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
-
-#
-# build a CPack driven installer package
-#
-
-#include (InstallRequiredSystemLibraries)
-SET(CPACK_PACKAGE_NAME "OpenCPN")
-SET(CPACK_PACKAGE_VENDOR "opencpn.org")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
-SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
-SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
-SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
-SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
-
-#
-#  Windows NSIS package setup.
-#
-IF(WIN32 AND NOT UNIX)
-  # There is a bug in NSI that does not handle full unix paths properly. Make
-  # sure there is at least one set of four (4) backlasshes.
-
-  SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
-  SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
-
-#  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
-  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
-
-SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}_setup" )
-
-  SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
-  SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
-
-  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt")
-
-  IF(MINGW)
-    SET(CPACK_STRIP_FILES "bin/opencpn")
-  ENDIF(MINGW)
-
-ELSE(WIN32 AND NOT UNIX)
-  SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
-  SET(CPACK_STRIP_FILES "bin/opencpn")
-  SET(CPACK_SOURCE_STRIP_FILES "")
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
-  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html")
-
-ENDIF(WIN32 AND NOT UNIX)
-
-IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
-    SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-    SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
-ENDIF ()
-
-SET(CPACK_SOURCE_GENERATOR "TGZ")
-
-# The following components are regex's to match anywhere (unless anchored)
-# in absolute path + filename to find files or directories to be excluded
-# from source tarball.
-set(CPACK_SOURCE_IGNORE_FILES
-"\\\\.cvsignore$"
-"^${CMAKE_CURRENT_SOURCE_DIR}.*/CVS/"
-"^${CMAKE_CURRENT_SOURCE_DIR}/build*"
-"^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
-)
-
 #
 #  Debian package setup
 #
 IF(UNIX AND NOT APPLE)
-  #    INCLUDE(UseRPMTools)
-  #    IF(RPMTools_FOUND)
-  #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
-  #    ENDIF(RPMTools_FOUND)
-
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
@@ -2320,59 +2320,83 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 ENDIF(UNIX AND NOT APPLE)
 
-# this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
-# apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
-ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h)
-
-INCLUDE(CPack)
 
 #
 # Apple application bundle
 #
 IF(APPLE)
-# -- Run the BundleUtilities cmake code
+  # -- Run the BundleUtilities cmake code
   SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
 
 #INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-
-  SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib")
-
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  SET(LIBS
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib"
+  )
   INSTALL(CODE "
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
     " COMPONENT Runtime
   )
-
   ADD_CUSTOM_COMMAND(
-OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
-COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
+    COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg                      \
+      --volname "OpenCPN Installer"                                      \
+      --background ${CMAKE_SOURCE_DIR}/buildosx/background.png           \
+      --window-pos 200 120 --window-size 500 300                         \
+      --icon-size 80 --icon OpenCPN.app 120 150                          \
+      --hide-extension OpenCPN.app --app-drop-link 390 145               \
+      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg \
+      ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
   )
-
-  ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS
-${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
+  ADD_CUSTOM_TARGET(create-dmg
+    COMMENT "create-dmg: Done."
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
   )
 ENDIF(APPLE)
 
+INCLUDE(CPack)
+
+# Dummy target necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES
+# directive is executed. Apparently, the base CMakeLists.txt file must have
+# "some" target to activate all the clean steps.
+ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
+
+SET_DIRECTORY_PROPERTIES(dummy
+  ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h
+)
 
 IF(MSVC)
-  ADD_CUSTOM_COMMAND(TARGET ${PACKAGE_NAME}
+  ADD_CUSTOM_COMMAND(
+    TARGET ${PACKAGE_NAME}
     POST_BUILD
-    COMMAND cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb" "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb")
+    COMMAND cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb"
+         "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+  )
 ENDIF(MSVC)
 
 MESSAGE(STATUS "Writing spec file...")
