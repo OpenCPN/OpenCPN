@@ -1109,7 +1109,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             }
         }
         
-        if( m_pRoutePoint->GetPlannedSpeed() > .01f ) {
+        if( m_pRoutePoint->GetPlannedSpeed() > .01 ) {
             m_textCtrlPlSpeed->SetValue(wxString::Format("%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
         } else {
             m_textCtrlPlSpeed->SetValue(wxEmptyString);
@@ -1291,7 +1291,7 @@ bool MarkInfoDlg::SaveChanges()
         
         m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
         if( m_textCtrlPlSpeed->GetValue() == wxEmptyString ) {
-            m_pRoutePoint->SetPlannedSpeed(0.0f);
+            m_pRoutePoint->SetPlannedSpeed(0.0);
         } else {
             double spd;
             if( m_textCtrlPlSpeed->GetValue().ToDouble(&spd) ) {

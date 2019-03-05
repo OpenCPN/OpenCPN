@@ -799,9 +799,9 @@ static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flag
             child = child_ext.append_child("opencpn:tidestation");
             child.append_child(pugi::node_pcdata).set_value( pr->m_TideStation.mb_str() );
         }
-        if((flags & OUT_RTE_PROPERTIES) && (pr->GetPlannedSpeed() > 0.0001f || pr->m_manual_etd)) {
+        if((flags & OUT_RTE_PROPERTIES) && (pr->GetPlannedSpeed() > 0.0001 || pr->m_manual_etd)) {
             child = child_ext.append_child("opencpn:rte_properties");
-            if( pr->GetPlannedSpeed() > 0.0001f ) {
+            if( pr->GetPlannedSpeed() > 0.0001 ) {
                 pugi::xml_attribute use = child.append_attribute( "planned_speed" );
                 use.set_value( wxString::Format(_T("%.1lf"), pr->GetPlannedSpeed()).mb_str());
             }
