@@ -533,6 +533,8 @@ wxColour                  g_caption_color_default;
 wxColour                  g_sash_color_default;
 wxColour                  g_background_color_default;
 
+int                       osMajor, osMinor;
+
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 #ifdef __WXMSW__
@@ -1676,6 +1678,11 @@ bool MyApp::OnInit()
     platforminfo.GetPortIdName();
 
     wxLogMessage( wxver + _T(" ") + platform );
+    
+    ::wxGetOsVersion(&osMajor, &osMinor);
+    wxString osVersionMsg;
+    osVersionMsg.Printf(_T("OS Version reports as:  %d.%d"), osMajor, osMinor);
+    wxLogMessage(osVersionMsg);
 
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
@@ -3040,9 +3047,10 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
 
 #if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-
-    if( g_bDarkDecorations ) {
-        applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
+    if( (osMajor >= 10) && (osMinor >= 12) ){
+        if( g_bDarkDecorations ) {
+            applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
+        }
     }
 #endif
 }

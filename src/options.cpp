@@ -323,6 +323,7 @@ extern wxString g_default_routepoint_icon;
 extern int      g_iWpt_ScaMin;
 extern bool     g_bUseWptScaMin;
 bool            g_bOverruleScaMin;
+extern int      osMajor, osMinor;
 
 extern "C" bool CheckSerialAccess(void);
 extern  wxString GetShipNameFromFile(int);
@@ -5352,6 +5353,8 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pDarkDecorations = new wxCheckBox(itemPanelFont, ID_DARKDECORATIONSBOX,
                                   _("Use dark window decorations"));
   miscOptions->Add(pDarkDecorations, 0, wxALL, border_size);
+  pDarkDecorations->Enable( (osMajor >= 10) && (osMinor >= 12) );
+ 
 #endif
     
   miscOptions->AddSpacer(10);
