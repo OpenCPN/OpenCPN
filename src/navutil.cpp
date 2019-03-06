@@ -2727,8 +2727,9 @@ void MyConfig::UpdateNavObj( void )
 
 }
 
-bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
+static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName )
 {
+    wxFileName ret;
     wxString path;
     
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
@@ -2737,7 +2738,7 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
     );
-    
+
     if( response == wxID_OK ) {
         wxFileName fn(path);
         g_gpx_path = fn.GetPath();
@@ -2747,116 +2748,62 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
+            if( answer != wxID_YES )
+                return ret;
         }
 #endif
+        ret = fn;
+    }
+    return ret;
+}
 
+
+bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
+{
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString suggestedName )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     suggestedName,
-                                                     wxT ( "*.gpx" )
-    );
-    
-    if( response == wxID_OK ) {
-        wxFileName fn(path);
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     suggestedName,
-                                                     wxT ( "*.gpx" )
-                                                     );
-
-
-    if( response == wxID_OK ) {
-        wxFileName fn( path );
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     _T("userobjects.gpx"),
-                                                     wxT ( "*.gpx" )
-    );
-    
-    
-    
-    
-    if( response == wxID_OK ) {
-        wxFileName fn(path);
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, _T("userobjects.gpx"));
+    if (fn.IsOk()) {
         ::wxBeginBusyCursor();
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
