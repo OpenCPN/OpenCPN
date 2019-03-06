@@ -1193,11 +1193,6 @@ OPTION(ENABLE_PORTAUDIO
        "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 SET (HAVE_PORTAUDIO "")
 
-IF(ARCH MATCHES "arm*")
-    SET( ENABLE_PORTAUDIO OFF)
-    MESSAGE (WARNING "Disabling PORTAUDIO for arm* platform")
-ENDIF(ARCH MATCHES "arm*")
-
 IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
   INCLUDE("FindPortaudio")
   IF (PORTAUDIO_FOUND)
