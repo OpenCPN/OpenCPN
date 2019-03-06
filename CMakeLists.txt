@@ -925,7 +925,7 @@ ENDIF(DEFINED _wx_selected_config)
 IF((_wx_selected_config MATCHES "qt-armv7"))
   SET(wxWidgets_USE_LIBS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
 ENDIF()
 
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -1010,8 +1010,16 @@ IF(NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   ENDIF ()
 
-  FIND_PACKAGE(wxWidgets REQUIRED)
-  IF(MSYS)
+  FIND_PACKAGE(wxWidgets)
+  if (wxWidgets_FOUND)
+    message(STATUS "Found wxWidgets webview add-on")
+    target_compile_definitions(${PACKAGE_NAME} PRIVATE -DOCPN_USE_WEBVIEW)
+  else ()
+    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    message(STATUS "Could not find wxWidgets webview add-on")
+    FIND_PACKAGE(wxWidgets REQUIRED)
+  endif ()
+  IF (MSYS)
     # Convert msys to windows paths, and handle the missing /usr
     STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
            wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
@@ -2361,13 +2369,13 @@ IF(APPLE)
   )
   ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
-    COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg                      \
-      --volname "OpenCPN Installer"                                      \
-      --background ${CMAKE_SOURCE_DIR}/buildosx/background.png           \
-      --window-pos 200 120 --window-size 500 300                         \
-      --icon-size 80 --icon OpenCPN.app 120 150                          \
-      --hide-extension OpenCPN.app --app-drop-link 390 145               \
-      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg \
+    COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg                      
+      --volname "OpenCPN Installer"                                      
+      --background ${CMAKE_SOURCE_DIR}/buildosx/background.png           
+      --window-pos 200 120 --window-size 500 300                         
+      --icon-size 80 --icon OpenCPN.app 120 150                          
+      --hide-extension OpenCPN.app --app-drop-link 390 145               
+      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg 
       ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
