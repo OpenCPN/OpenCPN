@@ -712,6 +712,25 @@ void ChartMBTiles::FlushTiles( void )
     }
 }
 
+void ChartMBTiles::FlushTextures( void )
+{
+    for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
+        mbTileZoomDescriptor *tzd = m_tileArray[iz];
+
+        std::unordered_map<unsigned int, mbTileDescriptor *>::iterator it = tzd->tileMap.begin();
+        while(it != tzd->tileMap.end())
+        {
+            mbTileDescriptor *tile = it->second;
+            if( tile ){
+                glDeleteTextures(1, &tile->glTextureName);
+                tile->glTextureName = 0;
+            }
+            it++;
+        }
+    }
+}
+
+
 void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
 {
     mbTileZoomDescriptor *tzd = new mbTileZoomDescriptor;
@@ -746,6 +765,10 @@ bool ChartMBTiles::GetChartExtent(Extent *pext)
 
 void ChartMBTiles::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
+    if(m_global_color_scheme != cs){
+        m_global_color_scheme = cs;
+        FlushTextures();
+    }
 }
 
 
@@ -813,11 +836,50 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
                 
                 int blobWidth = blobImage.GetWidth();
                 int blobHeight = blobImage.GetHeight();
+                unsigned char *imgdata = blobImage.GetData();
+                
+                if( (m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) && (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) ){
+                    double dimLevel;
+                    switch( m_global_color_scheme ){
+                        case GLOBAL_COLOR_SCHEME_DUSK: {
+                            dimLevel = 0.8;
+                            break;
+                        }
+                        case GLOBAL_COLOR_SCHEME_NIGHT: {
+                            dimLevel = 0.3;
+                            break;
+                        }
+                        default: {
+                            dimLevel = 1.0;
+                            break;
+                        }
+                    }
+
+//                      for( int iy = 0; iy < blobHeight; iy++ ) {
+//                           for( int ix = 0; ix < blobWidth; ix++ ) {
+//                                  wxImage::RGBValue rgb( blobImage.GetRed( ix, iy ), blobImage.GetGreen( ix, iy ), blobImage.GetBlue( ix, iy ) );
+//                                  wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+//                                  hsv.value = hsv.value * dimLevel;
+//                                  wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+//                                  blobImage.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+//                           }
+//                      }
+                     
+                     for( int j = 0; j < blobHeight*blobWidth; j++ ){
+                         unsigned char *d = &imgdata[3*j];
+                         wxImage::RGBValue rgb( *d, *(d+1), *(d+2) );
+                         wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                         hsv.value = hsv.value * dimLevel;
+                         wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                         *d = nrgb.red; *(d+1) = nrgb.green; *(d+2) = nrgb.blue; 
+                     }
+ 
+                }
+                    
                 
                 int stride = 4;
                 int tex_w = 256;
                 int tex_h = 256;
-                unsigned char *imgdata = blobImage.GetData();
                 if( !imgdata )
                     return false;
                 m_imageType = blobImage.GetType();
