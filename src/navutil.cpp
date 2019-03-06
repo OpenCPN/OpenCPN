@@ -2731,11 +2731,15 @@ static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName 
 {
     wxFileName ret;
     wxString path;
-    
+    wxString validName{suggestedName};
+    // replace common date characters invalid in filename
+    // MS-DOS file systems have many more
+    validName.Replace(_T("/"), _T("-"));
+    validName.Replace(_T(":"), _T("_"));
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      g_gpx_path,
-                                                     suggestedName,
+                                                     validName,
                                                      wxT ( "*.gpx" )
     );
 
