@@ -563,9 +563,8 @@ class MyFrame: public wxFrame
 
     bool GetMasterToolItemShow( int toolid );
     void OnToolbarAnimateTimer( wxTimerEvent& event );
-    
-    
-    
+    bool CollapseGlobalToolbar();
+
     int                 m_StatusBarFieldCount;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads

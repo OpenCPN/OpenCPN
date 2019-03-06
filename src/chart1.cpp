@@ -3035,7 +3035,8 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
                 g_MainToolbar->Hide();
                 RequestNewMasterToolbar();
                 g_MainToolbar->SetColorScheme( cs );
-                SetGlobalToolbarViz( false );
+                CollapseGlobalToolbar();
+                g_MainToolbar->Show();
             }
             else{
                 RequestNewMasterToolbar();
@@ -3053,6 +3054,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 #endif
+
 }
 
 void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
@@ -4778,7 +4780,6 @@ void MyFrame::OnToolbarAnimateTimer( wxTimerEvent& event )
             g_MainToolbar->Show();
         }
     }
-
 }
 
 
@@ -9799,6 +9800,21 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         
     
 }
+
+bool MyFrame::CollapseGlobalToolbar()
+{
+    if(g_MainToolbar){
+        m_nMasterToolCountShown = 1;
+        g_MainToolbar->SetToolShowCount(m_nMasterToolCountShown);
+        g_MainToolbar->GetToolbar()->InvalidateBitmaps();
+        g_MainToolbar->Realize();
+        g_bmasterToolbarFull = false;
+        return true;
+    }
+    else
+        return false;
+}
+
 
 bool MyFrame::GetMasterToolItemShow( int toolid )
 {

@@ -2749,8 +2749,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     case WXK_F5:
         parent_frame->ToggleColorScheme();
-        SetFocus();             
-        gFrame->Raise();        
+        gFrame->Raise();
+        TriggerDeferredFocus(); 
         break;
 
     case WXK_F6: {
