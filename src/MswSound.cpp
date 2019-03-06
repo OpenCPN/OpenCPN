@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2018 by David S. Register                               *
+ *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,12 +21,56 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <thread>
 
-#import "MacSound.h"
+#include <windows.h>
 
-void MacSound:: playSound( const char *sndFile){
- NSString *soundFile = [NSString stringWithCString:sndFile encoding:[NSString defaultCStringEncoding]];
- NSSound *sound = [[NSSound alloc] initWithContentsOfFile:soundFile byReference:YES];
-   
- [sound play];
+#include <wx/string.h>
+#include <wx/log.h>
+
+#include "MswSound.h"
+
+
+bool MswSound::Load(const char* path, int deviceIndex)
+{
+    m_path = wxString(path).ToStdWstring();
+    m_isPlaying = false;
+    m_OK = true;
+    return m_OK;
+}
+
+
+bool MswSound::Stop(void)
+{
+    m_isPlaying = false;
+    return PlaySound(NULL, NULL, 0);
+}
+
+
+void MswSound::worker(void)
+{
+    wxLogInfo("mswSound::worker()");
+    m_isPlaying = true;
+    PlaySound(m_path.c_str(), NULL, SND_FILENAME);
+    if  (m_onFinished) {
+        m_onFinished(m_callbackData);
+        m_onFinished = 0;
+    }
+    m_isPlaying = false;
+}
+
+
+bool MswSound::Play()
+{
+    wxLogMessage("mswSound::Play()");
+    if( !m_OK || m_isPlaying) {
+        wxLogWarning("MswSound: cannot play: not loaded or busy playing.");
+        return false;
+    }
+    if  (m_onFinished) {
+        std::thread t([this]() { worker(); });
+        t.detach();
+        return true;
+    }
+    return PlaySound(m_path.c_str(), NULL, SND_FILENAME);
 }
