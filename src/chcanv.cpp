@@ -1092,8 +1092,11 @@ void ChartCanvas::ApplyGlobalSettings()
 {
     // GPS compas window
     m_bShowCompassWin = g_bShowCompassWin;
-    if(m_Compass)
+    if(m_Compass){
         m_Compass->Show(m_bShowCompassWin);
+        if(m_bShowCompassWin)
+            m_Compass->UpdateStatus();
+    }
 }
 
 
@@ -4336,8 +4339,10 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     if(!m_pCurrentStack)
         return;
 
-    m_bShowCompassWin = true;
-    SetShowGPSCompassWindow( true );    // Cancel effects of Ctrl-I
+    if(g_bShowCompassWin){
+        m_bShowCompassWin = true;
+        SetShowGPSCompassWindow( true );    // Cancel effects of Ctrl-I
+    }
 
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
