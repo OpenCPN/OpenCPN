@@ -88,6 +88,8 @@
 #include <gdk/gdk.h>
 #endif
 
+#include <cstdlib>
+
 DECLARE_APP(MyApp)
 
 void appendOSDirSlash( wxString* pString );
@@ -1751,7 +1753,15 @@ double  OCPNPlatform::GetDisplaySizeMM()
     
 #ifdef __WXGTK__
     GdkScreen *screen = gdk_screen_get_default();
-    double gdk_monitor_mm = gdk_screen_get_width_mm(screen);
+    wxSize resolution = getDisplaySize();
+    double gdk_monitor_mm;
+    double ratio = (double)resolution.GetWidth() / (double)resolution.GetHeight();
+    if( std::abs(ratio - 32.0/10.0) < std::abs(ratio - 16.0/10.0) ) {
+        // We suspect that when the resolution aspect ratio is closer to 32:10 than 16:10, there are likely 2 monitors side by side. This works nicely when they are landscape, but what if both are rotated 90 degrees...
+        gdk_monitor_mm = gdk_screen_get_width_mm(screen);
+    } else {
+        gdk_monitor_mm = gdk_screen_get_width_mm(screen, 0);
+    }
     if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
         ret = gdk_monitor_mm;
 #endif    
