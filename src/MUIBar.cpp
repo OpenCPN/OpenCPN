@@ -790,7 +790,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         default:
             break;
     }
-    event.Skip();
+    //event.Skip();
 }
 
 void MUIBar::CaptureCanvasOptionsBitmap()
