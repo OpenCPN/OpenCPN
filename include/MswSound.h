@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2018 by David S. Register                               *
+ *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,14 +22,31 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#ifndef __MSW_SOUND_H__
+#define __MSW_SOUND_H__
 
+#include "OCPN_Sound.h"
 
-#include "wx/osx/private.h"
+/**
+ * Sound backend on the windows PlaySound() API.
+ */
 
-class MacSound {
-public:
-    
-    void playSound( const char *sndFile);
+class MswSound: public OcpnSound
+{
+
+    public:
+        MswSound() {};
+        ~MswSound() { Stop(); };
+
+        bool Load(const char* path, int deviceIndex = -1) override;
+        bool Play() override;
+        bool Stop() override;
+
+    private:
+        void worker();
+        std::wstring m_path;
+        bool m_isPlaying;
 };
 
+
+#endif // __MSW_SOUND_H__

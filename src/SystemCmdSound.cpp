@@ -45,10 +45,10 @@ static int do_play(const char* cmd, const char* path)
 
     return 0;
 }
-#endif /* _WIN32 */
 
-#ifdef __WXGTK__
+#else /* _WIN32, i. e. POSIX */
 #include <sys/wait.h> // for WEXITSTATUS & friends
+
 static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
@@ -71,18 +71,6 @@ static int do_play(const char* cmd, const char* path)
     return status;
 }
 #endif
-
-#ifdef __WXMAC__
-#include "MacSound.h"
-static int do_play(const char* cmd, const char* path)
-{
-     MacSound snd;
-     snd.playSound( path );
-
-    return 0;
-}
-#endif
-
 
 bool SystemCmdSound::Load(const char* path, int deviceIndex)
 {
