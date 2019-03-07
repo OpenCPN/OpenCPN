@@ -741,7 +741,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEve
     wxMenu menu;
     
     if( ! m_pRoute->m_bIsInLayer ) {
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
         // add stuff
         wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));

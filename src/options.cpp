@@ -5377,7 +5377,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
   m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5391,7 +5391,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
-#ifdef __OCPN_ANDROID____
+#ifdef __OCPN__ANDROID__
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5405,7 +5405,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
   
-#ifdef __OCPN_ANDROID____
+#ifdef __OCPN__ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );

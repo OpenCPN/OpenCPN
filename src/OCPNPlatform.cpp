@@ -1045,7 +1045,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     }
 #endif
 
-#ifdef __LINUX__
+#ifdef __linux__
 //  Enable some default PlugIns, and their default options
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
@@ -2301,7 +2301,7 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
     
 }
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)

@@ -13077,7 +13077,7 @@ bool ocpnCurtain::ProcessEvent(wxEvent& event)
 }
 #endif
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 
 HMODULE hGDI32DLL;
@@ -13092,7 +13092,7 @@ WORD *g_pSavedGammaMap;
 
 int InitScreenBrightness( void )
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if( gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl ) {
         HDC hDC;
         BOOL bbr;
@@ -13189,7 +13189,7 @@ int InitScreenBrightness( void )
 
 int RestoreScreenBrightness( void )
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 
     if( g_pSavedGammaMap ) {
         HDC hDC = GetDC( NULL );                                 // Get the full screen DC
@@ -13229,7 +13229,7 @@ int RestoreScreenBrightness( void )
 //    Set brightness. [0..100]
 int SetScreenBrightness( int brightness )
 {
-#ifdef __WIN32__
+#ifdef _WIN32
 
     //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
     //    Load the required library dll, if not already in place
