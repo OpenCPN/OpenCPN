@@ -556,7 +556,10 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
     m_cursor_lon = lon;
     m_cursor_lat = lat;
 
-    UpdateTrackingControl();
+    if(m_vp && 
+        ((lat > m_vp->lat_min) && (lat < m_vp->lat_max))&&
+        ((lon > m_vp->lon_min) && (lon < m_vp->lon_max)) )
+        UpdateTrackingControl();
 }
 
 void GRIBUICtrlBar::UpdateTrackingControl()
