@@ -30,12 +30,17 @@
 #ifndef _CHARTMBTILES_H_
 #define _CHARTMBTILES_H_
 
+#include <queue>
+#include <map>
+#include <unordered_map>
+#include <atomic>
+#include <thread>
+#include <mutex>
 
 #include "chartbase.h"
 #include "georef.h"                 // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
-
 
 enum class MBTilesType : std::int8_t {BASE, OVERLAY};
 enum class MBTilesScheme : std::int8_t {XYZ, TMS};
@@ -66,12 +71,56 @@ class mbTileDescriptor;
 //    Helper classes
 //-----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
+// private classes
+// ----------------------------------------------------------------------------
+
+
+//  Per tile descriptor
+class mbTileDescriptor
+{
+public:
+    mbTileDescriptor() {  glTextureName = 0; m_bAvailable = false; m_bgeomSet = false; m_bProcessing = true; m_bProcessed = false; }
+    
+    virtual ~mbTileDescriptor() { }
+    
+    int tile_x, tile_y;
+    int m_zoomLevel;
+    float latmin, lonmin, latmax, lonmax;
+    LLBBox box;
+    
+    GLuint glTextureName;
+    bool m_bAvailable;
+    bool m_bgeomSet;
+    std::atomic<bool> m_bProcessing;
+    std::atomic<bool> m_bProcessed;
+    
+    unsigned char *m_teximage;
+};
+
+//  Per zoomlevel descriptor of tile array for that zoomlevel
+class mbTileZoomDescriptor
+{
+public:
+    mbTileZoomDescriptor(){}
+    virtual ~mbTileZoomDescriptor(){}
+    
+    int tile_x_min, tile_x_max;
+    int tile_y_min, tile_y_max;
+    
+    int nx_tile, ny_tile;
+    
+    //std::map<unsigned int, mbTileDescriptor *> tileMap;
+    std::unordered_map<unsigned int, mbTileDescriptor *> tileMap;
+};
+
+
 
 // ----------------------------------------------------------------------------
 // ChartMBTiles
 // ----------------------------------------------------------------------------
 
-class  ChartMBTiles     :public ChartBase
+class  ChartMBTiles : public ChartBase
 {
     public:
       //    Public methods
@@ -149,7 +198,11 @@ protected:
 private:
       void InitFromTiles( const wxString& name );
       wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );
-
+      std::queue<mbTileDescriptor*> m_renderQueue;
+      std::mutex m_queue_mutex;
+      void RenderTilesThread();
+      std::thread m_worker;
+      bool m_worker_needed = true;
 };
 
 

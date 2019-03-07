@@ -54,8 +54,6 @@
 #include <wx/mstream.h>
 #include <sys/stat.h>
 #include <sstream>
-#include <map>
-#include <unordered_map>
 
 #include <sqlite3.h> //We need some defines
 #include <SQLiteCpp/SQLiteCpp.h>
@@ -219,51 +217,6 @@ double tiley2lat(int y, int z)
 
 
 
-// ----------------------------------------------------------------------------
-// private classes
-// ----------------------------------------------------------------------------
-
-
-//  Per tile descriptor
-class mbTileDescriptor
-{
-public:
-    mbTileDescriptor() {  glTextureName = 0; m_bAvailable = false; m_bgeomSet = false;}
-    
-    virtual ~mbTileDescriptor() { }
-    
-    int tile_x, tile_y;
-    int m_zoomLevel;
-    float latmin, lonmin, latmax, lonmax;
-    LLBBox box;
-    
-    GLuint glTextureName;
-    bool m_bAvailable;
-    bool m_bgeomSet;
-    
-};
-
-//  Per zoomlevel descriptor of tile array for that zoomlevel
-class mbTileZoomDescriptor
-{
-public:
-    mbTileZoomDescriptor(){}
-    virtual ~mbTileZoomDescriptor(){}
-    
-    int tile_x_min, tile_x_max;
-    int tile_y_min, tile_y_max;
-    
-    int nx_tile, ny_tile;
-    
-    //std::map<unsigned int, mbTileDescriptor *> tileMap;
-    std::unordered_map<unsigned int, mbTileDescriptor *> tileMap;
-};    
-
-
-
-
-
-
 // ============================================================================
 // ChartMBTiles implementation
 // ============================================================================
@@ -304,14 +257,18 @@ ChartMBTiles::ChartMBTiles()
       pfc->Read ( _T ( "DebugMBTiles" ),  &m_b_cdebug, 0 );
 #endif
       m_pDB = NULL;
-
 }
 
 ChartMBTiles::~ChartMBTiles()
 {
+    std::cout << "closing tileset " << m_FullPath << std::endl;
+    m_worker_needed = false;
     FlushTiles();
     if(m_pDB){
         delete m_pDB;
+    }
+    if(m_worker.joinable()) {
+        m_worker.join();
     }
 }
 
@@ -430,7 +387,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             maxLat = wxMax(maxLat, tiley2lat(maxRow - 1, zoom));
             minLon = wxMin(minLon, tilex2long(minCol, zoom));
             maxLon = wxMax(maxLon, tilex2long(maxCol + 1, zoom));
-            std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
+//            std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
         }
 
         // ... and use what we found only in case we miss some of the values from metadata...
@@ -662,6 +619,116 @@ InitReturn ChartMBTiles::PreInit( const wxString& name, ChartInitFlag init_flags
       return INIT_OK;
 }
 
+void ChartMBTiles::RenderTilesThread()
+{
+    while(m_worker_needed) {
+        while(!m_renderQueue.empty() && m_worker_needed) {
+            std::unique_lock<std::mutex> lock(m_queue_mutex, std::adopt_lock);
+            mbTileDescriptor* tile = m_renderQueue.front();
+            m_renderQueue.pop();
+            lock.unlock();
+            //RENDER
+            try
+            {
+                if(tile == NULL) {
+                    continue;
+                }
+                char qrs[2100];
+                sprintf(qrs, "select tile_data, length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
+                
+                // Compile a SQL query, getting the specific  blob
+                SQLite::Statement query(*m_pDB, qrs);
+                
+                int queryResult = query.tryExecuteStep();
+                if(SQLITE_DONE == queryResult){
+                    tile->m_bAvailable = false;
+                }
+                else{
+                    SQLite::Column blobColumn = query.getColumn(0);         // Get the blob
+                    const void* blob = blobColumn.getBlob();
+                    
+                    int length = query.getColumn(1);         // Get the length
+
+                    wxMemoryInputStream blobStream(blob, length);
+                    wxImage blobImage;
+                    
+                    blobImage = wxImage(blobStream, m_imageType);
+                    query.tryReset();
+                    query.clearBindings();
+                    
+                    int blobWidth = blobImage.GetWidth();
+                    int blobHeight = blobImage.GetHeight();
+                    unsigned char *imgdata = blobImage.GetData();
+                    
+                    if( (m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) && (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) ){
+                        double dimLevel;
+                        switch( m_global_color_scheme ){
+                            case GLOBAL_COLOR_SCHEME_DUSK: {
+                                dimLevel = 0.8;
+                                break;
+                            }
+                            case GLOBAL_COLOR_SCHEME_NIGHT: {
+                                dimLevel = 0.3;
+                                break;
+                            }
+                            default: {
+                                dimLevel = 1.0;
+                                break;
+                            }
+                        }
+                        
+                        for( int j = 0; j < blobHeight*blobWidth; j++ ){
+                            unsigned char *d = &imgdata[3*j];
+                            wxImage::RGBValue rgb( *d, *(d+1), *(d+2) );
+                            wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                            hsv.value = hsv.value * dimLevel;
+                            wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                            *d = nrgb.red; *(d+1) = nrgb.green; *(d+2) = nrgb.blue;
+                        }
+                        
+                    }
+                    
+                    int stride = 4;
+                    int tex_w = 256;
+                    int tex_h = 256;
+                    if( !imgdata ) {
+                        tile->m_bAvailable = false;
+                    } else {
+                        m_imageType = blobImage.GetType();
+                        
+                        tile->m_teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
+                        bool transparent = blobImage.HasAlpha();
+                        
+                        for( int j = 0; j < tex_w*tex_h; j++ ){
+                            for( int k = 0; k < 3; k++ )
+                                tile->m_teximage[j * stride + k] = imgdata[3*j + k];
+                            
+                            // Some NOAA Tilesets do not give transparent tiles, so we detect NOAA's idea of blank
+                            // as RGB(1,0,0) and force  alpha = 0;
+                            if( imgdata[3*j] == 1 && imgdata[3*j + 1] == 0 && imgdata[3*j+2] == 0) {
+                                tile->m_teximage[j * stride + 3] = 0;
+                            } else {
+                                if( transparent ) {
+                                    tile->m_teximage[j * stride + 3] = blobImage.GetAlpha(j % tex_w, j / tex_w);
+                                } else {
+                                    tile->m_teximage[j * stride + 3] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (std::exception& e)
+            {
+                const char *t = e.what();
+                std::cout << "exception: " << e.what() << std::endl;
+            }
+            //RENDER
+            tile->m_bProcessing = false;
+        }
+        wxMilliSleep(100);
+    }
+}
 
 InitReturn ChartMBTiles::PostInit(void)
 {
@@ -671,9 +738,14 @@ InitReturn ChartMBTiles::PostInit(void)
       if ( utf8CB.data() )
           name_UTF8 = utf8CB.data();
 
-      m_pDB = new SQLite::Database(name_UTF8);
-      m_pDB->exec("PRAGMA locking_mode=EXCLUSIVE");
-      m_pDB->exec("PRAGMA cache_size=-50000");
+      m_pDB = new SQLite::Database(name_UTF8, SQLite::OPEN_READONLY);
+      m_pDB->exec("PRAGMA locking_mode = EXCLUSIVE");
+      m_pDB->exec("PRAGMA read_uncommitted = true;");
+      m_pDB->exec("PRAGMA cache_size = -50000");
+
+      m_worker = std::thread(&ChartMBTiles::RenderTilesThread, this);
+
+      std::cout << "opening tileset " << m_FullPath << std::endl;
 
       bReadyToRender = true;
       return INIT_OK;
@@ -796,140 +868,69 @@ bool ChartMBTiles::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 
 bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
 {
-    if(!m_pDB)
+    if(!m_pDB) {
         return false;
+    }
+    
+    if(!tile->m_bProcessing && !tile->m_bProcessed ) {
+        if(!tile->m_bAvailable) {
+            return false;
+        }
+        int tex_w = 256;
+        int tex_h = 256;
+        
+        if(tile->glTextureName > 0) {
+            glDeleteTextures(1, &tile->glTextureName);
+        }
+        glGenTextures( 1, &tile->glTextureName );
+        glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
+        
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tile->m_teximage );
+        
+        free(tile->m_teximage);
+        tile->m_bProcessed = true;
+    }
     
     // Is the texture ready?
     if(tile->glTextureName > 0){
         glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
         
         return true;
-    }
-    else{
-        if(!tile->m_bAvailable)
+    } else if(tile->m_bProcessing) {
+        // Display placeholder immediately, we will process the tile to texture in the background and serve when ready
+        if(!tile->m_bAvailable) {
             return false;
-        // fetch the tile data from the mbtile database
-        try
-        {
-          
-            char qrs[2100];
-            sprintf(qrs, "select tile_data, length(tile_data) from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-            
-            // Compile a SQL query, getting the specific  blob
-            SQLite::Statement query(*m_pDB, qrs);
-            
-            int queryResult = query.tryExecuteStep();
-            if(SQLITE_DONE == queryResult){
-                tile->m_bAvailable = false;
-                return false;                           // requested ROW not found, should never happen
-            }
-            else{
-                SQLite::Column blobColumn = query.getColumn(0);         // Get the blob
-                const void* blob = blobColumn.getBlob();
-                
-                int length = query.getColumn(1);         // Get the length
-                
-                wxMemoryInputStream blobStream(blob, length);
-                wxImage blobImage;
-
-                blobImage = wxImage(blobStream, m_imageType);
-                
-                int blobWidth = blobImage.GetWidth();
-                int blobHeight = blobImage.GetHeight();
-                unsigned char *imgdata = blobImage.GetData();
-                
-                if( (m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) && (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) ){
-                    double dimLevel;
-                    switch( m_global_color_scheme ){
-                        case GLOBAL_COLOR_SCHEME_DUSK: {
-                            dimLevel = 0.8;
-                            break;
-                        }
-                        case GLOBAL_COLOR_SCHEME_NIGHT: {
-                            dimLevel = 0.3;
-                            break;
-                        }
-                        default: {
-                            dimLevel = 1.0;
-                            break;
-                        }
-                    }
-
-//                      for( int iy = 0; iy < blobHeight; iy++ ) {
-//                           for( int ix = 0; ix < blobWidth; ix++ ) {
-//                                  wxImage::RGBValue rgb( blobImage.GetRed( ix, iy ), blobImage.GetGreen( ix, iy ), blobImage.GetBlue( ix, iy ) );
-//                                  wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-//                                  hsv.value = hsv.value * dimLevel;
-//                                  wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
-//                                  blobImage.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
-//                           }
-//                      }
-                     
-                     for( int j = 0; j < blobHeight*blobWidth; j++ ){
-                         unsigned char *d = &imgdata[3*j];
-                         wxImage::RGBValue rgb( *d, *(d+1), *(d+2) );
-                         wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-                         hsv.value = hsv.value * dimLevel;
-                         wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
-                         *d = nrgb.red; *(d+1) = nrgb.green; *(d+2) = nrgb.blue; 
-                     }
- 
-                }
-                    
-                
-                int stride = 4;
-                int tex_w = 256;
-                int tex_h = 256;
-                if( !imgdata )
-                    return false;
-                m_imageType = blobImage.GetType();
-
-                unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
-                bool transparent = blobImage.HasAlpha();
-                
-                for( int j = 0; j < tex_w*tex_h; j++ ){
-                    for( int k = 0; k < 3; k++ )
-                        teximage[j * stride + k] = imgdata[3*j + k];
-                    
-                    // Some NOAA Tilesets do not give transparent tiles, so we detect NOAA's idea of blank
-                    // as RGB(1,0,0) and force  alpha = 0;
-                    if( imgdata[3*j] == 1 && imgdata[3*j + 1] == 0 && imgdata[3*j+2] == 0) {
-                        teximage[j * stride + 3] = 0;
-                    } else {
-                        if( transparent ) {
-                            teximage[j * stride + 3] = blobImage.GetAlpha(j % tex_w, j / tex_w);
-                        } else {
-                            teximage[j * stride + 3] = 255;
-                        }
-                    }
-                }
-                
-                    
-                glGenTextures( 1, &tile->glTextureName );
-                glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
-                
-                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, teximage );
-                
-                free(teximage);
-                
-                return true;
-            }
-            
         }
-        catch (std::exception& e)
-        {
-            const char *t = e.what();
-            std::cout << "exception: " << e.what() << std::endl;
-        }     
+        std::unique_lock<std::mutex> lock(m_queue_mutex, std::adopt_lock);
+        m_renderQueue.push(tile);
+        lock.unlock();
+        int stride = 4;
+        int tex_w = 256;
+        int tex_h = 256;
+
+        unsigned char *teximage = (unsigned char *) calloc( stride * tex_w * tex_h, sizeof(char));
+        glGenTextures( 1, &tile->glTextureName );
+        glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
+        
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, teximage );
+        
+        free(teximage);
+        
+        glBindTexture( GL_TEXTURE_2D, tile->glTextureName );
+        
+        return true;
     }
-        
-        
-    
+
     return false;
 }
 
