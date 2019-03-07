@@ -82,7 +82,7 @@ class mbTileDescriptor
 public:
     mbTileDescriptor() {  glTextureName = 0; m_bAvailable = false; m_bgeomSet = false; m_bProcessing = true; m_bProcessed = false; }
     
-    virtual ~mbTileDescriptor() { }
+    virtual ~mbTileDescriptor() { free(m_teximage); }
     
     int tile_x, tile_y;
     int m_zoomLevel;

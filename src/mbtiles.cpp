@@ -623,10 +623,12 @@ void ChartMBTiles::RenderTilesThread()
 {
     while(m_worker_needed) {
         while(!m_renderQueue.empty() && m_worker_needed) {
-            std::unique_lock<std::mutex> lock(m_queue_mutex, std::adopt_lock);
-            mbTileDescriptor* tile = m_renderQueue.front();
-            m_renderQueue.pop();
-            lock.unlock();
+            mbTileDescriptor* tile;
+            {
+                std::lock_guard<std::mutex> lock(m_queue_mutex);
+                tile = m_renderQueue.front();
+                m_renderQueue.pop();
+            }
             //RENDER
             try
             {
@@ -906,9 +908,11 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
         if(!tile->m_bAvailable) {
             return false;
         }
-        std::unique_lock<std::mutex> lock(m_queue_mutex, std::adopt_lock);
-        m_renderQueue.push(tile);
-        lock.unlock();
+
+        {
+            std::lock_guard<std::mutex> lock(m_queue_mutex);
+            m_renderQueue.push(tile);
+        }
         int stride = 4;
         int tex_w = 256;
         int tex_h = 256;
