@@ -264,7 +264,7 @@ int                       user_user_id;
 int                       file_user_id;
 
 int                       quitflag;
-int                       g_tick;
+int                       g_tick = 0;
 int                       g_mem_total, g_mem_used, g_mem_initial;
 
 bool                      s_bSetSystemTime;
@@ -1968,11 +1968,6 @@ bool MyApp::OnInit()
 #ifdef __OCPN__ANDROID__
     g_memCacheLimit = 100 * 1024;
 #endif
-
-#ifdef __WXMAC__
-    g_memCacheLimit = 400 * 1024;
-    //g_nCacheLimit = 20;
-#endif    
 
 //      Establish location and name of chart database
     ChartListFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "chartlist.dat", "CHRTLIST.DAT");
@@ -7869,7 +7864,7 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #include <malloc.h>
 #endif
 
-int g_lastMemTick;
+int g_lastMemTick = -1;
 extern long g_tex_mem_used;
 
 bool GetMemoryStatus( int *mem_total, int *mem_used )
@@ -8064,8 +8059,19 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
     if(mem_used)
        *mem_used = g_memUsed;
-    if(mem_total)
-       *mem_total = 4000;
+    if(mem_total) {
+        *mem_total = 4000;
+        FILE * fpIn = popen("sysctl -n hw.memsize", "r");
+        if (fpIn)
+        {
+            double pagesUsed = 0.0, totalPages = 0.0;
+            char buf[64];
+            if(fgets(buf, sizeof(buf), fpIn) != NULL)
+            {
+                *mem_total = atol(buf) >> 20;
+            }
+        }
+    }
 
     return true;
 #endif
