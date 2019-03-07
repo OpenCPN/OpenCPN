@@ -1028,8 +1028,14 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     LLRegion screenLLRegion = vp.GetLLRegion( screen_region );
     LLBBox screenBox = screenLLRegion.GetBox();
 
-
-    glChartCanvas::SetClipRegion(vp, m_minZoomRegion);
+    if((m_LonMax - m_LonMin) > 180){     // big chart
+        LLRegion validRegion = m_minZoomRegion;
+        validRegion.Intersect(screenLLRegion);
+        glChartCanvas::SetClipRegion(vp, validRegion);
+    }
+    else
+        glChartCanvas::SetClipRegion(vp, m_minZoomRegion);
+        
     
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );

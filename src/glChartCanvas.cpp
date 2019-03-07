@@ -3853,7 +3853,6 @@ void glChartCanvas::Render()
             
                 if(std::find(piano_active_array_tiles.begin(), piano_active_array_tiles.end(), *rit) != piano_active_array_tiles.end()) {
                     bfound = true;
-                    break;
                 }
 
                 if(!bfound){
