@@ -129,6 +129,7 @@ RoutePoint::RoutePoint()
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
 // Copy Constructor
@@ -271,9 +272,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
-RoutePoint::~RoutePoint( void )
+RoutePoint::~RoutePoint( )
 {
 //  Remove this point from the global waypoint list
     if( NULL != pWayPointMan )
@@ -1151,11 +1153,11 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
 
 void RoutePoint::SetPlannedSpeed(double spd)
 {
-    if( spd >= 0.0f && spd <= 1000.0f ) m_PlannedSpeed = spd;
+    if( spd >= 0.0 && spd <= 1000.0 ) m_PlannedSpeed = spd;
 }
 
 double RoutePoint::GetPlannedSpeed() {
-    if( m_PlannedSpeed < 0.0001f && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+    if( m_PlannedSpeed < 0.0001 && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
         // In case there was speed encoded in the name of the waypoint, do the conversion here.
         wxString s_vmg = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
         double vmg;

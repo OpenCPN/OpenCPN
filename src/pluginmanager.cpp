@@ -3512,6 +3512,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
     PlugIn_Waypoint *pwp;
     RoutePoint *pWP_src;
     int ip = 0;
+    wxDateTime plannedDeparture;
 
     wxPlugin_WaypointListNode *pwpnode = proute->pWaypointList->GetFirst();
     while( pwpnode ) {
@@ -3535,11 +3536,15 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         if(ip > 0)
             pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
                                             pWP->m_lon, pWP_src, pWP, route );
+        else
+            plannedDeparture = pwp->m_CreateTime;
         ip++;
         pWP_src = pWP;
 
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
+
+    route->m_PlannedDeparture = plannedDeparture;
 
     route->m_RouteNameString = proute->m_NameString;
     route->m_RouteStartString = proute->m_StartString;
