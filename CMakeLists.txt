@@ -436,7 +436,7 @@ ENDIF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on "native linux" arm systems
-IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Linux" )
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
   IF (OPENGLESv1_INCLUDE_DIR)
     MESSAGE (STATUS "Found OpenGLESv1")
@@ -2323,9 +2323,9 @@ ENDIF(LIBLZMA_FOUND)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.  These declarations may be redundant in some architectures, but do no harm.
-IF(UNIX)
+IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
-ENDIF ()
+ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
 
 
 IF( UNIX AND NOT APPLE )

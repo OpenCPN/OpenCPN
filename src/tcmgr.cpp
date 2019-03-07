@@ -519,7 +519,7 @@ double blend_tide (time_t t, unsigned int deriv, int first_year, double blend, I
         f += fact * w[n] * (fr[deriv-n] - fl[deriv-n]);
         fact *= (double)(deriv - n)/(n+1) * (1.0/TIDE_BLEND_TIME);
     }
-    printf(" %ld  %g     %g %g %g\n", t, blend, fr[0], fl[0], f);
+    printf(" %ld  %g     %g %g %g\n", (long)t, blend, fr[0], fl[0], f);
     return f;
 }
 
