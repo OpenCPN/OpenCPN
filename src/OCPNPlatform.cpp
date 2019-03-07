@@ -585,10 +585,15 @@ void OCPNPlatform::Initialize_2( void )
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
 void OCPNPlatform::Initialize_3( void )
 {
+    
     bool bcapable = IsGLCapable();
+
+#ifdef ocpnARM         // Boot arm* platforms (meaning rPI) without OpenGL on first run
+    bcapable = false;
+#endif    
     
     // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade or fresh install
-    
+
     if( (g_bFirstRun || g_bUpgradeInProcess) && bcapable){
         g_bopengl = true;
         
@@ -604,7 +609,7 @@ void OCPNPlatform::Initialize_3( void )
         g_GLOptions.m_GLLineSmoothing = true;
 
     }
-    
+
     gFrame->SetGPSCompassScale();
 }
 

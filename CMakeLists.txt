@@ -418,6 +418,12 @@ OPTION (USE_GL "Enable OpenGL support" ON)
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set (OpenGL_GL_PREFERENCE  "LEGACY")
 
+#set a build flag for arm architecture, to catch any rPI runtime changes required
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+    ADD_DEFINITIONS(-DocpnARM)
+ENDIF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+
+
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on "native linux" arm systems
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
