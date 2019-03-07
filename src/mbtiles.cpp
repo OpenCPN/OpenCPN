@@ -263,12 +263,11 @@ ChartMBTiles::~ChartMBTiles()
 {
     std::cout << "closing tileset " << m_FullPath << std::endl;
     m_worker_needed = false;
-    FlushTiles();
     if(m_worker.joinable()) {
         m_worker.join();
     }
+    FlushTiles();
     if(m_pDB) {
-        wxMilliSleep(10);
         delete m_pDB;
     }
 }
