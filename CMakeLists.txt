@@ -61,14 +61,14 @@
 # - Rework options, naming conventions.
 # - Better USE_BUNDLED_LIBS option (list)
 # - Fix link libraries name (tinyxml:: > ocpn::)
-# - Silent build mode.
 # - Unbundle jasper.
 # - test with Win & OSX
 # - Profiling opt
 # - GNU install paths
 # - Use list() instead of set()
 # - Review TinyXML handling
-# - Move final linking ahead of install section.
+# - Silent build mode. OK
+# - Move final linking ahead of install section. OK
 # - Separate gpsd configuration OK
 # - Separate ffmpeg configuration OK
 # - Review Mingw package generation. OK
@@ -101,7 +101,10 @@ set (OpenGL_GL_PREFERENCE  "LEGACY")
 
 PROJECT(OpenCPN)
 
-SET(CMAKE_VERBOSE_MAKEFILE ON)
+if (OCPN_VERBOSE)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+endif ()
+
 message(STATUS "cmake version: ${CMAKE_VERSION}")
 
 IF(APPLE)
@@ -167,6 +170,8 @@ CMAKE_DEPENDENT_OPTION(ENABLE_SNDFILE
 OPTION (USE_S57 "Enable S57 ENC support" ON)
 
 OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+
+OPTION(OCPN_VERBOSE "Verbose build output" ON)
 
 set (WXWIDGETS_FORCE_VERSION CACHE VERSION
      "Force usage of a specific wxWidgets version.")
@@ -1036,8 +1041,9 @@ IF(NOT QT_ANDROID)
     ENDIF()
   ENDFOREACH (_currentLibFile )
   SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES})
-
-  MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+  if (OCPN_VERBOSE)
+    MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+  endif ()
 ENDIF(NOT QT_ANDROID)
 
 
@@ -1257,7 +1263,9 @@ ENDIF(QT_ANDROID)
 MESSAGE (STATUS "    Adding local GLU" )
 add_subdirectory(libs/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
-MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
+if (OCPN_VERBOSE)
+  MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
+endif ()
 
 MESSAGE (STATUS "    Adding local LIBTESS2" )
 add_subdirectory(libs/libtess2)
@@ -1419,6 +1427,47 @@ endif ()
 
 CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 INCLUDE_DIRECTORIES(BEFORE "${CMAKE_BINARY_DIR}/include")
+
+If(NOT APPLE AND NOT QT_ANDROID)
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
+ENDIF()
+
+IF(CMAKE_HOST_WIN32)
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
+          setupapi.lib
+  #       glu32.lib
+          "GLU_static"
+          psapi.lib
+          )
+
+  # use gdi plus only on MSVC, it is not a free library
+  IF(MSVC)
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE gdiplus.lib)
+  ENDIF()
+
+ENDIF(CMAKE_HOST_WIN32)
+
+IF(MINGW)
+  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
+    ${OPENGL_LIBRARIES}
+    wsock32.lib
+  )
+ENDIF(MINGW)
+
+
+IF(UNIX)
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
+    ${OPENGL_LIBRARIES}
+    ${GETTEXT_LIBRARY}
+    SQLITE_CPP
+  )
+  IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
+    MESSAGE(STATUS "Did not find x11 libraries")
+    MESSAGE(STATUS "support for transparent toolbar in opengl mode not detected")
+  ENDIF()
+ENDIF(UNIX)
+
 
 # If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
@@ -1718,47 +1767,6 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
   endif()
 endif()
 
-If(NOT APPLE AND NOT QT_ANDROID)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
-ENDIF()
-
-IF(CMAKE_HOST_WIN32)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
-          setupapi.lib
-  #       glu32.lib
-          "GLU_static"
-          psapi.lib
-          )
-
-  # use gdi plus only on MSVC, it is not a free library
-  IF(MSVC)
-      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE gdiplus.lib)
-  ENDIF()
-
-ENDIF(CMAKE_HOST_WIN32)
-
-IF(MINGW)
-  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
-    ${OPENGL_LIBRARIES}
-    wsock32.lib
-  )
-ENDIF(MINGW)
-
-
-IF(UNIX)
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
-        ${OPENGL_LIBRARIES}
-        ${GETTEXT_LIBRARY}
-        SQLITE_CPP
-  )
-
-  IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
-    MESSAGE(STATUS "Did not find x11 libraries, support for transparent toolbar in opengl mode cannot be detected")
-  ENDIF()
-
-ENDIF(UNIX)
-
 IF(LIBLZMA_FOUND)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${LIBLZMA_LIBRARY} )
 ENDIF(LIBLZMA_FOUND)
@@ -1890,7 +1898,10 @@ ADD_CUSTOM_COMMAND(
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
    COMMENT "pot-update [${PACKAGE_NAME}]: Generated pot file."
 )
-ADD_CUSTOM_TARGET(pot-update COMMENT "pot-update: Done." DEPENDS ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot.dummy)
+ADD_CUSTOM_TARGET(pot-update
+    COMMENT "pot-update: Done."
+    DEPENDS ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot.dummy
+)
 
 ENDIF(GETTEXT_XGETTEXT_EXECUTABLE )
 
