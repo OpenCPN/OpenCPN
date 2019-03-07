@@ -72,8 +72,8 @@
 # - Use list() instead of set()
 # - Review TinyXML handling
 # - Move final linking ahead of install section.
-# - Review Mingw package generation.
-# - Make missing sound libs info instead of warnings.
+# - Review Mingw package generation. OK
+# - Make missing sound libs info instead of warnings. OK
 # USE_GLU_TESS
 # USE_GLU_DLL
 # I also find it deficient in some areas. For instance, I cannot make it
@@ -345,7 +345,9 @@ IF(APPLE)
   SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${OCPN_LIBCPP} -arch ${ARCH}")
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
 
-  SET(CMAKE_EXE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
+  SET(CMAKE_EXE_LINKER_FLAGS 
+      "-O2 ${OCPN_LIBCPP} -arch ${ARCH} ${CMAKE_EXE_LINKER_FLAGS}"
+  §)
   SET(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   SET(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
 ENDIF(APPLE)
@@ -366,7 +368,7 @@ IF(MSVC)
   SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
   SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
-  SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+  SET(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
 ENDIF(MSVC)
 
 IF(QT_ANDROID)
@@ -610,12 +612,6 @@ MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 MESSAGE (STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 MESSAGE (STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
-
-  ## Compiler flags
-  #  if(CMAKE_COMPILER_IS_GNUCXX)
-  #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
-  #  endif()
-  set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 
 IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
