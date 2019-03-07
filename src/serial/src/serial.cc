@@ -1,11 +1,11 @@
 /* Copyright 2012 William Woodall and John Harrison */
 #include <algorithm>
 
-#if !defined(_WIN32) && !defined(__OpenBSD__) && !defined(__FreeBSD__)
+#if !defined(_WIN32) && !defined(__OpenBSD__) && !defined(__FreeBSD__) && !defined(__NetBSD__)
 # include <alloca.h>
 #endif
 
-#if defined (__MINGW32__)
+#if defined (__MINGW32__) || ( defined(__NetBSD__) && defined(__GNUC__) )
 # define alloca __builtin_alloca
 #endif
 

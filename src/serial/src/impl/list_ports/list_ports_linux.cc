@@ -1,4 +1,3 @@
-#if defined(__linux__)
 
 /*
  * Copyright (c) 2014 Craig Lilley <cralilley@gmail.com>
@@ -34,15 +33,6 @@ using std::cout;
 using std::endl;
 
 static vector<string> glob(const vector<string>& patterns);
-static string basename(const string& path);
-static string dirname(const string& path);
-static bool path_exists(const string& path);
-static string realpath(const string& path);
-static string usb_sysfs_friendly_name(const string& sys_usb_path);
-static vector<string> get_sysfs_info(const string& device_path);
-static string read_line(const string& file);
-static string usb_sysfs_hw_string(const string& sysfs_path);
-static string format(const char* format, ...);
 
 vector<string>
 glob(const vector<string>& patterns)
@@ -72,6 +62,17 @@ glob(const vector<string>& patterns)
 
     return paths_found;
 }
+
+#if defined(__linux__)
+static string basename(const string& path);
+static string dirname(const string& path);
+static bool path_exists(const string& path);
+static string realpath(const string& path);
+static string usb_sysfs_friendly_name(const string& sys_usb_path);
+static vector<string> get_sysfs_info(const string& device_path);
+static string read_line(const string& file);
+static string usb_sysfs_hw_string(const string& sysfs_path);
+static string format(const char* format, ...);
 
 string
 basename(const string& path)
@@ -334,3 +335,38 @@ serial::list_ports()
 }
 
 #endif // defined(__linux__)
+
+#if defined(__NetBSD__)
+vector<PortInfo>
+serial::list_ports()
+{
+    vector<PortInfo> results;
+
+    vector<string> search_globs;
+    search_globs.push_back("/dev/ttyU*");
+    search_globs.push_back("/dev/tty[0-9]*");
+
+    vector<string> devices_found = glob( search_globs );
+
+    vector<string>::iterator iter = devices_found.begin();
+
+    while( iter != devices_found.end() )
+    {
+        string device = *iter++;
+
+        string friendly_name = device;
+
+        string hardware_id = "n/a";
+
+        PortInfo device_entry;
+        device_entry.port = device;
+        device_entry.description = device;
+        device_entry.hardware_id;
+
+        results.push_back( device_entry );
+
+    }
+
+    return results;
+}
+#endif // __NetBSD
