@@ -4338,24 +4338,10 @@ wxString formatTimeDelta(wxTimeSpan span)
     span -= wxTimeSpan::Minutes(span.GetMinutes());
     int seconds = (double)span.GetSeconds().ToLong();
     
-    wxString dStr = _("d");
-    wxString HStr = _("H");
-    wxString MStr = _("M");
-    wxString SStr = _("S");
+    timeStr = (days ? wxString::Format(_("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes)) :
+     wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
     
-    if(days)
-        timeStr = wxString::Format(_T("%d"), days) + dStr + _T(" "); 
-    
-    if(hours || days)
-        timeStr += wxString::Format(_T("%2d"),hours) + HStr + _T(" ") + wxString::Format(_T("%2d"), (int) round(minutes)) + MStr;
-    else
-        timeStr += wxString::Format(_T("%2d"),(int)floor(minutes)) + MStr + _T(" ") + wxString::Format(_T("%2d"), seconds) + SStr;
-        
-/*        
-    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
-    (hours || days ? wxString::Format(_T("%2dH %2dM"), hours, (int)round(minutes)) :
-     wxString::Format(_T("%2dM %2dS"), (int)floor(minutes), seconds));
-*/    
     return timeStr;
 }
 
