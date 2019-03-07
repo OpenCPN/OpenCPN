@@ -48,6 +48,9 @@ target_include_directories(WXCURL
     PUBLIC ${CURL_INCLUDE_DIRS}
 )
 target_link_libraries(WXCURL ${CURL_LIBRARIES})
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+  target_compile_options(WXCURL  PRIVATE "-Wno-unknown-pragmas")
+endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(WXCURL PRIVATE "-Wno-varargs") 
 endif()

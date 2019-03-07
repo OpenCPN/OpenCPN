@@ -274,10 +274,14 @@ IF( APPLE )
         "-Wall" "-Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
-        "-Wno-unknown-pragmas"
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+    add_compile_options("-Wno-unknown-pragmas")
+endif ()
+
 
 IF(APPLE)
     INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION
