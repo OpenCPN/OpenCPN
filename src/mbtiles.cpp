@@ -895,6 +895,7 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tile->m_teximage );
         
         free(tile->m_teximage);
+        tile->m_teximage = NULL;
         tile->m_bProcessed = true;
     }
     
