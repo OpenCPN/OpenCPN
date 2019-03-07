@@ -64,15 +64,15 @@
 # - Silent build mode.
 # - Unbundle jasper.
 # - test with Win & OSX
-# - Separate ffmpeg configuration
-# - Separate gpsd configuration
 # - Profiling opt
 # - GNU install paths
-# - Drop -s linker flag
 # - Use list() instead of set()
 # - Review TinyXML handling
 # - Move final linking ahead of install section.
+# - Separate gpsd configuration OK
+# - Separate ffmpeg configuration OK
 # - Review Mingw package generation. OK
+# - Drop -s linker flag OK
 # - Make missing sound libs info instead of warnings. OK
 # USE_GLU_TESS
 # USE_GLU_DLL
@@ -628,26 +628,6 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 ENDIF(QT_ANDROID)
 
-#IF(NOT WIN32)
-#OPTION (USE_GPSD "Enable GPSD Library" ON)
-#IF (USE_GPSD)
-#      message (STATUS "GPSD Library support: enabled")
-#
-##     FIND_PACKAGE(gps QUIET)
-#     FIND_PACKAGE(gps)
-#      IF (GPS_FOUND)
-#            message (STATUS "Building with libgps includes")
-#            INCLUDE_DIRECTORIES(${GPS_INCLUDE_DIR})
-#            ADD_DEFINITIONS(${GPS_DEFINITIONS})
-#            ADD_DEFINITIONS(-DBUILD_WITH_LIBGPS)
-#            message (STATUS "GPS library include location is ${GPS_INCLUDE_DIR}")
-##            SET(EXTRA_LIBS ${EXTRA_LIBS} ${GPS_LIBRARY})
-#      ELSE (GPS_FOUND)
-#            message (STATUS "Gps library not found")
-#      ENDIF (GPS_FOUND)
-#ENDIF (USE_GPSD)
-#ENDIF (NOT WIN32)
-
 SET(HDRS
     include/ocpn_types.h
     include/ocpndc.h
@@ -903,6 +883,12 @@ IF(APPLE)
   )
 ENDIF ()
 
+#IF(NOT WIN32)
+#include(OcpnFindGpsd)
+#if (TARGET ocpn::gpsd)
+#  target_link_libraries(${PACKAGE_NAME} ocpn::gpsd)
+#endif ()
+#ENDIF (NOT WIN32)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -1183,28 +1169,14 @@ IF(OCPN_USE_SVG)
       INSTALL(FILES ${expatdll_files} DESTINATION ".")
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
     ELSE (CMAKE_HOST_WIN32)
-      # Find FFMPEG - we have it disabled in our wxSVG
-      #set(FFmpeg_FIND_COMPONENTS
-      #        AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
-      #unset(FFMPEG_LIBRARIES CACHE)
-      #find_package(FFmpeg)
-      #if (NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND
-      #    OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND
-      #)
-      #    message(FATAL_ERROR "FFmpeg component required, but not found!")
-      #endif()
-      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
-
+      # Include(OcpnFindFmpeg)  -- FFMPEG is not enabled currently.
+      # target_link_libraries(${PACKAGE_NAME} ocpn::ffmpeg)
       INCLUDE(FindEXIF)
       target_link_libraries(${PACKAGE_NAME} PRIVATE
           ${EXIF_LIBRARIES}
           ${GTK_LIBRARIES}
-#         ${FFMPEG_LIBRARIES}
       )
-      target_include_directories(${PACKAGE_NAME} PRIVATE
-          ${EXIF_INCLUDE_DIRS}
-#         ${FFMPEG_INCLUDE_DIRS}
-      )
+      target_include_directories(${PACKAGE_NAME} PRIVATE ${EXIF_INCLUDE_DIRS})
     ENDIF (CMAKE_HOST_WIN32)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
  
