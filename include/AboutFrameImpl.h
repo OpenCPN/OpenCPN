@@ -40,7 +40,11 @@ protected:
     void OnLinkLicense( wxHyperlinkEvent& event );
     void OnLinkAuthors( wxHyperlinkEvent& event );
     void AboutFrameOnActivate( wxActivateEvent& event );
+#ifdef OCPN_USE_WEBVIEW
+    void m_btnBackOnButtonClick( wxCommandEvent& event ) { m_htmlWinHelp->GoBack(); m_btnBack->Enable(m_htmlWinHelp->CanGoBack()); }
+#else
     void m_btnBackOnButtonClick( wxCommandEvent& event ) { m_htmlWinHelp->HistoryBack(); m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack()); }
+#endif
     void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { m_btnBack->Enable(); event.Skip(); }
 
     

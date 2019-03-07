@@ -408,9 +408,19 @@ IF((_wx_selected_config MATCHES "qt-armv7"))
 ENDIF()
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+  SET(wxWidgets_USE_LIBS base core xml html adv aui)
 ELSE()
   SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+ENDIF()
+
+OPTION(USE_WEBVIEW "Use wxWebView for help display" ON)
+
+IF(USE_WEBVIEW)
+  MESSAGE(STATUS "Not using wxWebView")
+ELSE()
+  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} webview)
+  ADD_DEFINITIONS(-DOCPN_USE_WEBVIEW)
+  MESSAGE(STATUS "Using wxWebView")
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)

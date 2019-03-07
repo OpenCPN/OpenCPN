@@ -3,6 +3,14 @@ matrix:
   include:
     - dist: trusty
       compiler: gcc
+      env:
+        - USE_WEBVIEW=OFF
+        - WX_PKG_NAME=libwxgtk3.0-0
+    - dist: xenial
+      compiler: gcc
+      env:
+        - USE_WEBVIEW=ON
+        - WX_PKG_NAME=libwxgtk3.0-0v5
     - os: osx
       compiler: clang
 
@@ -10,7 +18,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
   - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get --allow-unauthenticated install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev libarchive-dev liblzma-dev libexif-dev libsqlite3-dev libelf-dev gettext; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get --allow-unauthenticated install $WX_PKG_NAME libwxgtk3.0-dev libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev libarchive-dev liblzma-dev libexif-dev libsqlite3-dev libelf-dev gettext; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$USE_WEBVIEW" == "ON" ]]; then sudo apt-get --allow-unauthenticated install libwxgtk-webview3.0-dev libgtk-3-dev; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif xz libarchive;
     wget http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz; tar xJf
     wx312_opencpn50_macos109.tar.xz -C /tmp; export PATH="/usr/local/opt/gettext/bin:$PATH";  echo
