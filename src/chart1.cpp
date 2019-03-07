@@ -8055,7 +8055,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
         blocksInUse += stats.blocks_in_use;
         sizeAllocated += stats.size_allocated;
 
-        g_memUsed = bytesInUse / 1024;
+        g_memUsed = bytesInUse;
 
         //printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
         g_lastMemTick = g_tick;
@@ -8072,7 +8072,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
             char buf[64];
             if(fgets(buf, sizeof(buf), fpIn) != NULL)
             {
-                *mem_total = atol(buf) >> 20;
+                *mem_total = atol(buf) >> 10;
             }
         }
     }
