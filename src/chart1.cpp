@@ -8055,7 +8055,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
         blocksInUse += stats.blocks_in_use;
         sizeAllocated += stats.size_allocated;
 
-        g_memUsed = bytesInUse;
+        g_memUsed = sizeAllocated >> 10;
 
         //printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
         g_lastMemTick = g_tick;
