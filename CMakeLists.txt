@@ -37,7 +37,11 @@
 #
 #  Bundled libraries:
 #    - USE_BUNDLED_LIBS forces use of external/bundled libraries including
-#      wxsvg and liblz4.
+#      wxsvg and liblz4. It's either:
+#        - ON => use all bundled libraries.
+#        - OFF => Always use external (system) libraries if available.
+#        - A comma-separated list of libraries where the bundled variant
+#          should be used. For other libraries, system libs is preferred.
 #    - If found, the system tinyxml library is used unconditionally.
 
 #  Documentation:
@@ -58,14 +62,14 @@
 #TODO:
 # - Test (rework?) wxWidgets GLU handling.
 # - Rework options, naming conventions.
-# - Better USE_BUNDLED_LIBS option (list)
-# - Fix link libraries name (tinyxml:: > ocpn::)
+# - Profiling opt
 # - Unbundle jasper.
 # - test with Win & OSX
-# - Profiling opt
 # - GNU install paths
 # - Use list() instead of set()
 # - Review TinyXML handling
+# - Better USE_BUNDLED_LIBS option (list)  OK
+# - Fix link libraries name (tinyxml:: > ocpn::) OK
 # - Fix 3.1 requirement overall OK
 # - Silent build mode. OK
 # - Move final linking ahead of install section. OK
@@ -204,9 +208,11 @@ ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
 if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(BUNDLED_LIBS_DEFAULT "ON")
+else ()
+  set(BUNDLED_LIBS_DEFAULT "OFF")
 endif ()
-OPTION(USE_BUNDLED_LIBS "Use bundled libraries instead of system's"
-   ${BUNDLED_LIBS_DEFAULT}
+set(USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
+  "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
 
 OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
@@ -218,6 +224,21 @@ OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 OPTION(ENABLE_SYSTEM_CMD_SOUND
        "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
 
+# Check if a given library should use the bundled source
+macro(USE_BUNDLED_LIB _result library)
+  if ("${USE_BUNDLED_LIBS}"  STREQUAL "")
+    set(USE_BUNDLED_LIBS "ON")
+  endif ()
+  if (${USE_BUNDLED_LIBS} STREQUAL "OFF")
+    set(${_result} "OFF")
+  elseif (${USE_BUNDLED_LIBS} STREQUAL "ON")
+    set(${_result} "ON")
+  elseif (",${USE_BUNDLED_LIBS}," MATCHES  ",${library},")
+    set(${_result} "ON")
+  else ()
+    set(${_result} "OFF")
+  endif ()
+endmacro(USE_BUNDLED_LIB)
 
 #
 # Language, compiler and static checkers setup
@@ -226,6 +247,7 @@ OPTION(ENABLE_SYSTEM_CMD_SOUND
 include(GetArch)
 GetArch()
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
+
 
 set (CMAKE_CXX_STANDARD 11)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
@@ -1127,7 +1149,8 @@ IF(OCPN_USE_CURL)
     ENDIF(OCPN_USE_EXTERN_CURL)
 
     PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
-    IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    USE_BUNDLED_LIB(USE_BUNDLED_WXCURL wxcurl)
+    IF (SYS_WXCURL_FOUND AND NOT USE_BUNDLED_WXCURL)
       message (STATUS "Building with system wxcurl")
       target_include_directories(${PACKAGE_NAME} PRIVATE
           ${CURL_INCLUDE_DIRS} ${SYS_WXCURL_INCLUDE_DIR})
@@ -1183,7 +1206,8 @@ IF(OCPN_USE_SVG)
     ADD_DEFINITIONS(-DocpnUSE_SVG)   # Goes into config.h, leave as global
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
-    IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    USE_BUNDLED_LIB(USE_BUNDLED_WXSVG wxsvg)
+    IF (WXSVG_FOUND AND NOT USE_BUNDLED_WXSVG)
       message (STATUS "Building with system wxsvg includes")
       add_library(WXSVG INTERFACE)
       add_library(ocpn::wxsvg ALIAS WXSVG)
