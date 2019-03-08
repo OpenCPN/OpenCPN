@@ -4966,11 +4966,20 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
 
     // recompute cursor position
+    // and send to interested plugins if the mouse is actually in this window
 
-    GetCursorLatLon(&m_cursor_lat, &m_cursor_lon);
-
-    if(g_pi_manager) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
-
+    const wxPoint pt = wxGetMousePosition();
+    int mouseX = pt.x - GetScreenPosition().x;
+    int mouseY = pt.y - GetScreenPosition().y;
+    if( (mouseX > 0) && (mouseX < VPoint.pix_width) && (mouseY > 0) && (mouseY < VPoint.pix_height)){
+        double lat, lon;
+        GetCanvasPixPoint( mouseX, mouseY, lat, lon );
+        m_cursor_lat = lat;
+        m_cursor_lon = lon;
+        if(g_pi_manager)
+            g_pi_manager->SendCursorLatLonToAllPlugIns( lat,lon );
+    }
+    
     if( !VPoint.b_quilt && m_singleChart ) {
 
         VPoint.SetBoxes();
