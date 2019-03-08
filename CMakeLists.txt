@@ -143,10 +143,6 @@ INCLUDE( CMakeDependentOption )
 # Options
 #
 
-# If on Windows or Apple, build the monolithic package, to override use a
-# non-sense values from the commandline (due to cmake inability to
-# distinguish between not set and set to FALSE):
-#    cmake -DOCPN_BUNDLE_DOCS=BLAH -DOCPN_BUNDLE_TCDATA=BLAH -DOCPN_BUNDLE_GSHHS=BLAH ..
 MACRO(BUNDLE_DOCS_OPT onoff)
   OPTION(OCPN_BUNDLE_DOCS ${onoff} "Include documentation in package")
 ENDMACRO(BUNDLE_DOCS_OPT)
@@ -160,6 +156,10 @@ MACRO(BUNDLE_GSHHS_OPT value)
      "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
 ENDMACRO(BUNDLE_GSHHS_OPT)
 
+# If on Windows or Apple, build the monolithic package, to override use a
+# non-sense values from the commandline (due to cmake inability to
+# distinguish between not set and set to FALSE):
+#    cmake -DOCPN_BUNDLE_DOCS=BLAH -DOCPN_BUNDLE_TCDATA=BLAH -DOCPN_BUNDLE_GSHHS=BLAH ..
 IF(APPLE OR WIN32)
   BUNDLE_DOCS_OPT("ON")
   BUNDLE_TCDATA_OPT("ON")
@@ -169,7 +169,6 @@ ELSE(APPLE OR WIN32)
   BUNDLE_TCDATA_OPT("OFF")
   BUNDLE_GSHHS_OPT("NONE")
 ENDIF(APPLE OR WIN32)
-
 
 SET(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
@@ -225,7 +224,9 @@ IF (NOT CMAKE_BUILD_TYPE)
   )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
-OPTION(OCPN_USE_LIBCPP "Use libc++ instead of libstdc++ on macOS" ON)
+if (APPLE)
+  OPTION(OCPN_USE_LIBCPP "Use libc++ instead of libstdc++ on macOS" ON)
+endif ()
 
 OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
 
@@ -879,17 +880,14 @@ IF(APPLE)
         message(STATUS
             "DarkMode not included, requires Mac build host Darwin >= 16")
     ELSE ()
-        SET(SRCS ${SRCS}
-            src/DarkMode.mm
-            src/DarkMode.h
-            )
+	list(APPEND SRCS src/DarkMode.mm src/DarkMode.h)
         ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
     ENDIF()
 ENDIF(APPLE)
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
-  SET(HDRS ${HDRS} include/crashprint.h )
-  SET(SRCS ${SRCS} src/crashprint.cpp)
+  list(APPEND HDRS include/crashprint.h )
+  list(APPEND SRCS src/crashprint.cpp)
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
 if (APPLE)
@@ -1477,7 +1475,6 @@ IF(CMAKE_HOST_WIN32)
 ENDIF(CMAKE_HOST_WIN32)
 
 IF(MINGW)
-  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
     ${OPENGL_LIBRARIES}
     wsock32.lib
