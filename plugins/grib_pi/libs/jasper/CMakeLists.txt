@@ -86,7 +86,20 @@ SET(SRC
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 add_library(JASPER STATIC ${SRC})
 set_property(TARGET JASPER PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(JASPER BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/include)
+target_include_directories(JASPER
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+)
+target_compile_definitions(JASPER
+  PRIVATE
+    -DEXCLUDE_MIF_SUPPORT
+    -DEXCLUDE_PNM_SUPPORT
+    -DEXCLUDE_BMP_SUPPORT
+    -DEXCLUDE_RAS_SUPPORT
+    -DEXCLUDE_JPG_SUPPORT
+    -DEXCLUDE_PGX_SUPPORT
+  PUBLIC
+    -DJASPER
+)
 
 # FIXME: this hides some nasty warnings, some of which fixed upstream.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
