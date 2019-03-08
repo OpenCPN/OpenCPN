@@ -57,7 +57,6 @@
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
 # - Test (rework?) wxWidgets GLU handling.
-# - Fix 3.0 requirement overall
 # - Rework options, naming conventions.
 # - Better USE_BUNDLED_LIBS option (list)
 # - Fix link libraries name (tinyxml:: > ocpn::)
@@ -67,6 +66,7 @@
 # - GNU install paths
 # - Use list() instead of set()
 # - Review TinyXML handling
+# - Fix 3.1 requirement overall OK
 # - Silent build mode. OK
 # - Move final linking ahead of install section. OK
 # - Separate gpsd configuration OK
@@ -84,17 +84,11 @@
 
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
-IF (COMMAND cmake_policy)
-  if (POLICY CMP0043)
-    CMAKE_POLICY(SET CMP0043 NEW)
-  endif (POLICY CMP0043)
-  if (POLICY CMP0025)
-    CMAKE_POLICY(SET CMP0025 NEW)
-  endif ()
-  if (POLICY CMP0077)
-      CMAKE_POLICY(SET CMP0077 NEW)
-  endif ()
-ENDIF (COMMAND cmake_policy)
+CMAKE_POLICY(SET CMP0043 NEW)
+CMAKE_POLICY(SET CMP0025 NEW)
+if (POLICY CMP0077)
+    CMAKE_POLICY(SET CMP0077 NEW)
+endif ()
 
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set (OpenGL_GL_PREFERENCE  "LEGACY")
