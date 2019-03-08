@@ -972,24 +972,15 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL...." )
-    MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
+    if (OCPN_VERBOSE)
+      MESSAGE (STATUS "    GL Lib: " ${OPENGL_gl_LIBRARIES})
+      MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
+    endif ()
+
+    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
     ADD_DEFINITIONS(-DocpnUSE_GL)
-
-    # We need to remove GLU from the OPENGL_LIBRARIES list
-    FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
-      #MESSAGE (STATUS "    Lib File: " ${_currentLibFile})
-      SET(UCNAME ${_currentLibFile})
-      string(TOUPPER ${UCNAME} UCNAME)
-      IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
-        SET(REVISED_OPENGL_LIBRARIES
-            ${_currentLibFile} ${REVISED_OPENGL_LIBRARIES})
-      ENDIF()
-    ENDFOREACH (_currentLibFile )
-
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${REVISED_OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    Revised GL Lib: " ${REVISED_OPENGL_LIBRARIES})
-
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENGL_gl_LIBRARIES})
+    target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
   ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
   ENDIF(OPENGL_FOUND)
