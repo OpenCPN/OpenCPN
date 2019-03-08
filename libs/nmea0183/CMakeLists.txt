@@ -53,7 +53,7 @@ if (NOT wxWidgets_INCLUDE_DIRS)
 endif ()
 
 add_library(NMEA0183 STATIC ${SRC})
-add_library(nmea0183::nmea0183 ALIAS NMEA0183)
+add_library(ocpn::nmea0183 ALIAS NMEA0183)
 
 set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(NMEA0183 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

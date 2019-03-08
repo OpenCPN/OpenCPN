@@ -39,7 +39,7 @@ if (LIBSNDFILE_FOUND)
 endif ()
 
 add_library(SOUND STATIC ${SRC})
-add_library(sound::sound ALIAS SOUND)
+add_library(ocpn::sound ALIAS SOUND)
 
 set_property(TARGET SOUND PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(SOUND 

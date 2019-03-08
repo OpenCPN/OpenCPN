@@ -26,7 +26,7 @@ set(SRC
 )
 
 add_library(TEXCMP STATIC ${SRC})
-add_library(texcmp::texcmp  ALIAS TEXCMP)
+add_library(ocpn::texcmp  ALIAS TEXCMP)
 
 set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
 

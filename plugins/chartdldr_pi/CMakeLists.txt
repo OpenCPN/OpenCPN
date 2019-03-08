@@ -184,8 +184,8 @@ ENDIF(LibArchive_FOUND)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ${wxWidgets_LIBRARIES}
-    wxjson::wxjson 
-    wxsvg::wxsvg 
+    ocpn::wxjson
+    ocpn::wxsvg
     ocpn::opencpn 
 )
 

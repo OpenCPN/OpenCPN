@@ -54,7 +54,7 @@ SET(SRC
     Source/RevisitedRadix.cpp
 )
 add_library(TESS2 STATIC ${SRC})
-add_library(tess2::tess2 ALIAS TESS2)
+add_library(ocpn::tess2 ALIAS TESS2)
 
 set_target_properties(TESS2 PROPERTIES COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(TESS2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

@@ -1186,19 +1186,19 @@ IF(OCPN_USE_SVG)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxsvg includes")
       add_library(WXSVG INTERFACE)
-      add_library(wxsvg::wxsvg ALIAS WXSVG)
+      add_library(ocpn::wxsvg ALIAS WXSVG)
       target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
       target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
     ELSE ()
       add_subdirectory("libs/wxsvg")
     ENDIF ()
-    target_link_libraries(${PACKAGE_NAME} PRIVATE wxsvg::wxsvg)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
 IF(OCPN_NEW_SERIAL)
   add_subdirectory("libs/serial")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE serial::serial)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
   message(STATUS "Using new serial library...")
 ENDIF(OCPN_NEW_SERIAL)
 
@@ -1263,24 +1263,24 @@ endif ()
 
 MESSAGE (STATUS "    Adding local LIBTESS2" )
 add_subdirectory(libs/libtess2)
-target_link_libraries(${PACKAGE_NAME} PRIVATE tess2::tess2)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 
 Include("SoundConfig")
 add_subdirectory(libs/sound)
-target_link_libraries(${PACKAGE_NAME} PRIVATE sound::sound)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
 
 add_subdirectory(libs/wxJSON)
-target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
   add_library(TINYXML INTERFACE)
   target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
   target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
-  add_library(tinyxml::tinyxml ALIAS TINYXML)
+  add_library(ocpn::tinyxml ALIAS TINYXML)
 ELSE(TINYXML_FOUND)
   add_subdirectory(libs/tinyxml)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE tinyxml::tinyxml)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
   message (STATUS "Building with bundled tinyxml")
 ENDIF(TINYXML_FOUND)
 set(TIXML_USE_STL 1)    # -> config.h
@@ -1317,20 +1317,20 @@ IF (USE_S57)
   )
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
   target_link_libraries(S57ENC PUBLIC
-      nmea0183::nmea0183
-      tess2::tess2
-      wxsvg::wxsvg
-      sound::sound
-      wxjson::wxjson
+      ocpn::nmea0183
+      ocpn::tess2
+      ocpn::wxsvg
+      ocpn::sound
+      ocpn::wxjson
       ssl::sha1
-      tinyxml::tinyxml
+      ocpn::tinyxml
       WXCURL
   )
   add_subdirectory(libs/iso8211)
-  target_link_libraries(S57ENC PUBLIC iso8211::iso8211)
+  target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 
   add_subdirectory(libs/gdal)
-  target_link_libraries(S57ENC PUBLIC gdal::gdal)
+  target_link_libraries(S57ENC PUBLIC ocpn::gdal)
 
   target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
   if(OCPN_USE_LZMA AND LIBLZMA_FOUND)
@@ -1347,7 +1347,7 @@ ENDIF (USE_S57)
 
 IF (USE_GARMINHOST)
   add_subdirectory("libs/garmin")
-  target_link_libraries(${PACKAGE_NAME} PUBLIC garminhost::garminhost)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::garminhost)
   message(STATUS "Garmin Host Mode support: enabled")
 ELSE (USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: disabled")
@@ -1361,17 +1361,17 @@ SET(SRC_SYMBOLS
 
 ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
 set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(SYMBOLS PRIVATE tinyxml::tinyxml)
+target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
 target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
   add_subdirectory("libs/texcmp")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE texcmp::texcmp)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::texcmp)
 
   add_subdirectory("libs/mipmap")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE mipmap::mipmap)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::mipmap)
 ENDIF (OPENGL_FOUND)
 
 pkg_search_module(LZ4 liblz4 lz4)
@@ -1592,7 +1592,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 add_subdirectory("libs/nmea0183")
-target_link_libraries(${PACKAGE_NAME} PUBLIC nmea0183::nmea0183)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
 
 IF(APPLE)
   IF(NOT BUNDLE_GSHHS MATCHES "NONE")

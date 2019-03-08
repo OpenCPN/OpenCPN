@@ -234,8 +234,8 @@ ENDIF(QT_ANDROID)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
-if (TARGET wxsvg::wxsvg)
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} wxsvg::wxsvg )
+if (TARGET ocpn::wxsvg)
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ocpn::wxsvg )
 endif()
 target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 

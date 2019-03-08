@@ -72,12 +72,12 @@ endif ()
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
-if (TARGET wxjson::wxjson)
-    target_link_libraries(${PACKAGE_NAME} wxjson::wxjson)
+if (TARGET ocpn::wxjson)
+    target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
 endif() 
 
-if (TARGET wxsvg::wxsvg)
-    target_link_libraries(${PACKAGE_NAME} wxsvg::wxsvg)
+if (TARGET ocpn::wxsvg)
+    target_link_libraries(${PACKAGE_NAME} ocpn::wxsvg)
 endif()
 
 IF (QT_ANDROID )

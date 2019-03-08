@@ -50,7 +50,7 @@ endif ()
 
 
 add_library(GARMINHOST STATIC ${SRC})
-add_library(garminhost::garminhost ALIAS GARMINHOST)
+add_library(ocpn::garminhost ALIAS GARMINHOST)
 if (MINGW)
   target_compile_definitions(GARMINHOST PRIVATE "-D_UNICODE")
 endif ()

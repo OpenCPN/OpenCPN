@@ -18,7 +18,7 @@ set(SRC
 )
 
 add_library(MIPMAP STATIC ${SRC})
-add_library(mipmap::mipmap ALIAS MIPMAP)
+add_library(ocpn::mipmap ALIAS MIPMAP)
 target_include_directories(MIPMAP
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/mipmap
