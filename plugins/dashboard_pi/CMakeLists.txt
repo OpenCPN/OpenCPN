@@ -33,7 +33,6 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
@@ -196,6 +195,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/nmea0183
 )
+target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 IF (WIN32 AND NOT MSVC)
   SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

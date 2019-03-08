@@ -1,6 +1,6 @@
 #
-#  Using options ENABLE_SYSTEM_CMD_SOUND, ENABLE_PORTAUDIO and
-#  ENABLE_SNDFILE sets:
+#  Using options OCPN_ENABLE_SYSTEM_CMD_SOUND, OCPN_ENABLE_PORTAUDIO and
+#  OCPN_ENABLE_SNDFILE sets:
 #
 #     HAVE_SYSTEM_CMD_SOUND - build SystemCmdSound backend
 #     SYSTEM_SOUND_CMD      - CLI command used by SystemCmdSound.
@@ -20,18 +20,18 @@ elseif (WIN32)
 endif ()
 
 set(HAVE_SYSTEM_CMD_SOUND "")
-if (NOT ENABLE_SYSTEM_CMD_SOUND MATCHES OFF)
+if (NOT (OCPN_ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   if (APLAY OR AFPLAY OR WIN32)
     set(HAVE_SYSTEM_CMD_SOUND 1)
-  elseif (ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
-      message(STATUS "ENABLE_SYSTEM_CMD_SOUND is set"
-                     " but I cannot find aplay(1) or afplay(1)")
+  elseif (OCPN_ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
+    message(STATUS "OCPN_ENABLE_SYSTEM_CMD_SOUND is set"
+                   " but I cannot find aplay(1) or afplay(1)")
     set(HAVE_SYSTEM_CMD_SOUND "")
   endif ()
 endif ()
 
 set(HAVE_PORTAUDIO "")
-if (NOT ENABLE_PORTAUDIO MATCHES OFF)
+if (NOT OCPN_ENABLE_PORTAUDIO MATCHES OFF)
   include(FindPortaudio)
   if (PORTAUDIO_FOUND)
     message(STATUS "Portaudio Found")
@@ -39,21 +39,21 @@ if (NOT ENABLE_PORTAUDIO MATCHES OFF)
     set(SOUND_SUPPORT_LIBS ${SOUND_SUPPORT_LIBS} ${PORTAUDIO_LIBRARIES})
     add_definitions(${PORTAUDIO_DEFINITIONS})
     set(HAVE_PORTAUDIO 1)
-  elseif (ENABLE_PORTAUDIO MATCHES ON)
-      message(STATUS "ENABLE_PORTAUDIO is set but I cannot find portaudio")
+elseif (OCPN_ENABLE_PORTAUDIO MATCHES ON)
+    message(STATUS "OCPN_ENABLE_PORTAUDIO is set but I cannot find portaudio")
     set(HAVE_PORTAUDIO "")
   endif ()
 endif ()
 
 set(HAVE_SNDFILE "")
-if (NOT ENABLE_SNDFILE MATCHES OFF)
+if (NOT OCPN_ENABLE_SNDFILE MATCHES OFF)
   include(FindLibSndfile)
   if (LIBSNDFILE_FOUND)
     message(STATUS "libsndfile Found")
     include_directories(${LIBSNDFILE_INCLUDE_DIRS})
     set(SOUND_SUPPORT_LIBS ${SOUND_SUPPORT_LIBS} ${LIBSNDFILE_LIBRARIES})
     set(HAVE_SNDFILE 1)
-  elseif (ENABLE_SNDFILE MATCHES ON)
+elseif (OCPN_ENABLE_SNDFILE MATCHES ON)
       message(STATUS "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
   endif ()
 endif ()

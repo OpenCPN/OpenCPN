@@ -25,6 +25,22 @@
 #  Configuring opencpn
 #  ===================
 #
+#  Help:
+#      Opencpn configuration options can be listed using
+#          cmake -LH  | grep -B1 OCPN_
+#
+#  Renamed options:
+#      From version TBD all OpenCPN configuration options have a OCPN_ prefix
+#      Many older options are renamed, some examples:
+#
+#          ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
+#          USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
+#          BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
+#          BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
+#          BUNDLE_GSHHS ->OCPN_BUNDLE_GSHHS
+#          ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
+#          USE_GARMINHOST -> OCPN_USE_GARMINHOST
+#          ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
 #  Sound:
 #    - Without options, defaults to MswSound on Windows, PortAudioSound
 #      on Linux and WxSound on OSX.
@@ -32,25 +48,26 @@
 #      used on all platforms.
 #    - With  ENABLE_PORTAUDIO activated PortAudioSound can be used on all
 #      platforms if the necessary headers and libraries are available.
-#    - ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
+#    - OCPN_ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
 #      supports a wide range of audio formats instead of .wav only.
 #
 #  Bundled libraries:
-#    - USE_BUNDLED_LIBS forces use of external/bundled libraries including
+#    - OCPN_USE_BUNDLED_LIBS forces use of external/bundled libraries including
 #      wxsvg and liblz4. It's either:
 #        - ON => use all bundled libraries.
 #        - OFF => Always use external (system) libraries if available.
 #        - A comma-separated list of libraries where the bundled variant
 #          should be used. For other libraries, system libs is preferred.
 #    - If found, the system tinyxml library is used unconditionally.
-
+#
 #  Documentation:
-#    - BUNDLE_DOCS governs inclusion of docs in the package.
+#    - OCPN_BUNDLE_DOCS governs inclusion of docs in the package.
 #    - Note that documentation is available in a separate download from
 #      opencpn website.
 #
+#
 #  Tidal/current and GSHHS wallpaper
-#    - BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
+#    - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
 #    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
 #      wallpaper map used as last resort and world overview.
 #
@@ -60,12 +77,13 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Rework options, naming conventions.
 # - Profiling opt
 # - test with Win & OSX
 # - GNU install paths
 # - Use list() instead of set()
-# - Review TinyXML handling
+# - Rework options, naming conventions.
+# - Review TinyXML handling  - OK
+# - Drop PACKAGE_DEPS: - OK
 # - Test (rework?) wxWidgets GLU handling. OK
 # - Unbundle jasper.  OK
 # - Better USE_BUNDLED_LIBS option (list)  OK
@@ -128,24 +146,34 @@ INCLUDE( CMakeDependentOption )
 # If on Windows or Apple, build the monolithic package, to override use a
 # non-sense values from the commandline (due to cmake inability to
 # distinguish between not set and set to FALSE):
-#    cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+#    cmake -DOCPN_BUNDLE_DOCS=BLAH -DOCPN_BUNDLE_TCDATA=BLAH -DOCPN_BUNDLE_GSHHS=BLAH ..
 MACRO(BUNDLE_DOCS_OPT onoff)
-  MESSAGE(STATUS "DOCS: ${onoff}")
-  OPTION(BUNDLE_DOCS "Include documentation in package" ${onoff})
+  OPTION(OCPN_BUNDLE_DOCS ${onoff} "Include documentation in package")
 ENDMACRO(BUNDLE_DOCS_OPT)
 
 MACRO(BUNDLE_TCDATA_OPT onoff)
-  OPTION(BUNDLE_TCDATA "Include tide/current harmonics data in package" "${onoff}")
+  OPTION(OCPN_BUNDLE_TCDATA "${onoff}" "Include tide/current harmonics data in package")
 ENDMACRO(BUNDLE_TCDATA_OPT)
 
 MACRO(BUNDLE_GSHHS_OPT value)
-  SET(BUNDLE_GSHHS "${value}" CACHE STRING
-      "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+  SET(OCPN_BUNDLE_GSHHS "${value}" CACHE STRING
+     "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
 ENDMACRO(BUNDLE_GSHHS_OPT)
 
-SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
+IF(APPLE OR WIN32)
+  BUNDLE_DOCS_OPT("ON")
+  BUNDLE_TCDATA_OPT("ON")
+  BUNDLE_GSHHS_OPT("CRUDE")
+ELSE(APPLE OR WIN32)
+  BUNDLE_DOCS_OPT("OFF")
+  BUNDLE_TCDATA_OPT("OFF")
+  BUNDLE_GSHHS_OPT("NONE")
+ENDIF(APPLE OR WIN32)
 
-OPTION (USE_GL "Enable OpenGL support" ON)
+
+SET(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
+
+OPTION (OCPN_USE_GL "Enable OpenGL support" ON)
 
 IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
     OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -156,42 +184,41 @@ ENDIF()
 if (NOT WIN32 AND NOT APPLE)
   set(PA_DEFAULT "ON")
 endif ()
-OPTION(ENABLE_PORTAUDIO
+OPTION(OCPN_ENABLE_PORTAUDIO
   "Use portaudio(3) to play sounds if available"  ${PA_DEFAULT}
 )
-
-CMAKE_DEPENDENT_OPTION(ENABLE_SNDFILE
+CMAKE_DEPENDENT_OPTION(OCPN_ENABLE_SNDFILE
     "Use libsndfile for portaudio if available." ON 
-    "ENABLE_PORTAUDIO" OFF
+    "OCPN_ENABLE_PORTAUDIO" ON
 )
 
-OPTION (USE_S57 "Enable S57 ENC support" ON)
+OPTION(OCPN_USE_S57 "Enable S57 ENC support" ON)
 
-OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+OPTION(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
 OPTION(OCPN_VERBOSE "Verbose build output" ON)
 
-set (WXWIDGETS_FORCE_VERSION CACHE VERSION
+set(OCPN_WXWIDGETS_FORCE_VERSION CACHE VERSION
      "Force usage of a specific wxWidgets version.")
 
-set (WXWIDGETS_OPTIONS CACHE STRING
+set(OCPN_WXWIDGETS_OPTIONS CACHE STRING
     "Additional flags to wxWidgets_CONFIG_OPTIONS")
 
 IF(WIN32 AND NOT UNIX)
-  OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
-  OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
+  OPTION (OCPN_BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
+  OPTION (OCPN_BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
 ENDIF()
 
 if ( CMAKE_VERSION VERSION_GREATER 3.4 )
-  OPTION(ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
+  OPTION(OCPN_ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
   set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
 endif()
 
 if ( CMAKE_VERSION VERSION_GREATER 3.9 )
-    OPTION(ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
+  OPTION(OCPN_ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
 endif()
 
-IF( NOT CMAKE_BUILD_TYPE )
+IF (NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
       "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
       FORCE
@@ -211,7 +238,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 else ()
   set(BUNDLED_LIBS_DEFAULT "OFF")
 endif ()
-set(USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
+set(OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
   "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
 
@@ -221,19 +248,19 @@ OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
 OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
-OPTION(ENABLE_SYSTEM_CMD_SOUND
+OPTION(OCPN_ENABLE_SYSTEM_CMD_SOUND
        "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
 
 # Check if a given library should use the bundled source
 macro(USE_BUNDLED_LIB _result library)
-  if ("${USE_BUNDLED_LIBS}"  STREQUAL "")
-    set(USE_BUNDLED_LIBS "ON")
+  if ("${OCPN_USE_BUNDLED_LIBS}"  STREQUAL "")
+    set(OCPN_USE_BUNDLED_LIBS "ON")
   endif ()
-  if (${USE_BUNDLED_LIBS} STREQUAL "OFF")
+  if (${OCPN_USE_BUNDLED_LIBS} STREQUAL "OFF")
     set(${_result} "OFF")
-  elseif (${USE_BUNDLED_LIBS} STREQUAL "ON")
+  elseif (${OCPN_USE_BUNDLED_LIBS} STREQUAL "ON")
     set(${_result} "ON")
-  elseif (",${USE_BUNDLED_LIBS}," MATCHES  ",${library},")
+  elseif (",${OCPN_USE_BUNDLED_LIBS}," MATCHES  ",${library},")
     set(${_result} "ON")
   else ()
     set(${_result} "OFF")
@@ -256,7 +283,7 @@ IF(NOT MSVC)
 ENDIF()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
-  if (ENABLE_CLANG_TIDY)
+    if (OCPN_ENABLE_CLANG_TIDY)
     find_program (CLANG_TIDY_EXE
       NAMES "clang-tidy"
       PATHS /usr/local/opt/llvm/bin
@@ -288,7 +315,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
 endif()
 
 if ( CMAKE_VERSION VERSION_GREATER 3.9 )
-  if (ENABLE_CPPCHECK)
+    if (OCPN_ENABLE_CPPCHECK)
     find_program (CPPCHECK_EXECUTABLE NAMES "cppcheck" )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
@@ -450,31 +477,21 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #  Bundled data: docs, tcdata, gshhs
 #
 
-IF(APPLE OR WIN32)
-  BUNDLE_DOCS_OPT("ON")
-  BUNDLE_TCDATA_OPT("ON")
-  BUNDLE_GSHHS_OPT("CRUDE")
-ELSE(APPLE OR WIN32)
-  BUNDLE_DOCS_OPT("OFF")
-  BUNDLE_TCDATA_OPT("OFF")
-  BUNDLE_GSHHS_OPT("NONE")
-ENDIF(APPLE OR WIN32)
-
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 ENDIF ()
 
-IF(BUNDLE_DOCS MATCHES "ON")
+IF(OCPN_BUNDLE_DOCS MATCHES "ON")
   MESSAGE (STATUS "*** Package will include documentation ***")
   IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs ON")
   ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_DOCS MATCHES "ON")
+ELSE(OCPN_BUNDLE_DOCS MATCHES "ON")
   MESSAGE (STATUS "*** Package will NOT include documentation ***")
   IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs OFF")
   ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_DOCS MATCHES "ON")
+ENDIF(OCPN_BUNDLE_DOCS MATCHES "ON")
 
 #
 # Linux: set up GTK
@@ -525,11 +542,11 @@ IF (OPENGLES_FOUND)
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
-  IF(USE_GL)
+    IF(OCPN_USE_GL)
     FIND_PACKAGE(OpenGL)
-  ELSE(USE_GL)
+ELSE(OCPN_USE_GL)
     MESSAGE (STATUS "OpenGL disabled by option USE_GL..." )
-  ENDIF(USE_GL)
+ENDIF(OCPN_USE_GL)
 
   IF(OPENGL_FOUND)
     SET(wxWidgets_FIND_COMPONENTS gl ${wxWidgets_FIND_COMPONENTS} )
@@ -851,7 +868,9 @@ SET(SRCS
     src/garmin_wrapper.h
 )
 
-IF (USE_GARMINHOST)
+IF (OCPN_USE_GARMINHOST)
+    message(STATUS "GarminHost is enabled.")
+    set(USE_GARMINHOST 1)    # -> config.h
     SET(SRCS ${SRCS} src/garmin_wrapper.cpp)
 ENDIF()
 
@@ -961,11 +980,11 @@ IF (OPENGLES_FOUND)
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
-  IF(USE_GL)
+  IF(OCPN_USE_GL)
     FIND_PACKAGE(OpenGL)
-  ELSE(USE_GL)
+  ELSE(OCPN_USE_GL)
     MESSAGE (STATUS "OpenGL disabled by option USE_GL..." )
-  ENDIF(USE_GL)
+  ENDIF(OCPN_USE_GL)
 
   IF(OPENGL_FOUND)
     list(APPEND wxwidgets_FIND_COMPONENTS gl)
@@ -995,11 +1014,11 @@ IF(NOT QT_ANDROID)
   SET( wxWidgets_USE_UNIVERSAL OFF)
   SET( wxWidgets_USE_STATIC OFF)
 
-  if(WXWIDGETS_FORCE_VERSION)
-    set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
+  if(OCPN_WXWIDGETS_FORCE_VERSION)
+    set (wxWidgets_CONFIG_OPTIONS --version=${OCPN_WXWIDGETS_FORCE_VERSION})
   endif()
   set(wxWidgets_CONFIG_OPTIONS
-      ${wxWidgets_CONFIG_OPTIONS} ${WXWIDGETS_OPTIONS})
+      ${wxWidgets_CONFIG_OPTIONS} ${OCPN_WXWIDGETS_OPTIONS})
 
 
   IF(MSVC)
@@ -1300,8 +1319,9 @@ ELSE(TINYXML_FOUND)
 ENDIF(TINYXML_FOUND)
 set(TIXML_USE_STL 1)    # -> config.h
 
-IF (USE_S57)
+IF (OCPN_USE_S57)
   message (STATUS "S57 ENC support: enabled")
+  SET(USE_S57 1)   # -> config.h
   SET(SRC_S57ENC
         include/cm93.h
         include/mygeom.h
@@ -1356,17 +1376,17 @@ IF (USE_S57)
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
 
-ELSE (USE_S57)
+ELSE (OCPN_USE_S57)
   message (STATUS "S57 ENC support: disabled")
-ENDIF (USE_S57)
+ENDIF (OCPN_USE_S57)
 
-IF (USE_GARMINHOST)
+IF (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
   target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::garminhost)
   message(STATUS "Garmin Host Mode support: enabled")
-ELSE (USE_GARMINHOST)
+ELSE (OCPN_USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: disabled")
-ENDIF (USE_GARMINHOST)
+ENDIF (OCPN_USE_GARMINHOST)
 
 #Chart Symbols library
 SET(SRC_SYMBOLS
@@ -1518,29 +1538,29 @@ SET(gshhs_FULL ${gshhs_HIGH}
 )
 
 # Various data files
-IF(BUNDLE_GSHHS MATCHES "MIN")
+IF(OCPN_BUNDLE_GSHHS MATCHES "MIN")
   SET(gshhs ${gshhs_MIN})
-ENDIF(BUNDLE_GSHHS MATCHES "MIN")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "MIN")
 
-IF(BUNDLE_GSHHS MATCHES "CRUDE")
+IF(OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
   SET(gshhs ${gshhs_CRUDE})
-ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
 
-IF(BUNDLE_GSHHS MATCHES "LOW")
+IF(OCPN_BUNDLE_GSHHS MATCHES "LOW")
   SET(gshhs ${gshhs_LOW})
-ENDIF(BUNDLE_GSHHS MATCHES "LOW")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "LOW")
 
-IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+IF(OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
   SET(gshhs ${gshhs_INTERMEDIATE})
-ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
 
-IF(BUNDLE_GSHHS MATCHES "HIGH")
+IF(OCPN_BUNDLE_GSHHS MATCHES "HIGH")
   SET(gshhs ${gshhs_HIGH})
-ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "HIGH")
 
-IF(BUNDLE_GSHHS MATCHES "FULL")
+IF(OCPN_BUNDLE_GSHHS MATCHES "FULL")
   SET(gshhs ${gshhs_FULL})
-ENDIF(BUNDLE_GSHHS MATCHES "FULL")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "FULL")
 
 SET(uiData
         src/bitmaps/styles.xml
@@ -1564,7 +1584,7 @@ SET(uiData
         src/bitmaps/iENC_RMinus.svg
 )
 
-IF (USE_S57)
+IF (OCPN_USE_S57)
   SET(s57data
         data/s57data/attdecode.csv
         data/s57data/S52RAZDS.RLE
@@ -1576,15 +1596,15 @@ IF (USE_S57)
         data/s57data/rastersymbols-dusk.png
         data/s57data/chartsymbols.xml
   )
-ENDIF (USE_S57)
+ENDIF (OCPN_USE_S57)
 
-IF(BUNDLE_TCDATA MATCHES "ON")
+IF(OCPN_BUNDLE_TCDATA MATCHES "ON")
   SET(tcData
     data/tcdata/HARMONIC
     data/tcdata/HARMONIC.IDX
     data/tcdata/README.harmonics
   )
-ENDIF(BUNDLE_TCDATA MATCHES "ON")
+ENDIF(OCPN_BUNDLE_TCDATA MATCHES "ON")
 
 
 IF(APPLE)
@@ -1610,7 +1630,7 @@ add_subdirectory("libs/nmea0183")
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
 
 IF(APPLE)
-  IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  IF(NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
     SET_SOURCE_FILES_PROPERTIES(
              ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
   ENDIF()
@@ -1619,10 +1639,10 @@ IF(APPLE)
              ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
   SET_SOURCE_FILES_PROPERTIES(
              ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data  )
-  IF(BUNDLE_TCDATA MATCHES "ON")
+  IF(OCPN_BUNDLE_TCDATA MATCHES "ON")
     SET_SOURCE_FILES_PROPERTIES(
              ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata  )
-  ENDIF(BUNDLE_TCDATA MATCHES "ON")
+  ENDIF(OCPN_BUNDLE_TCDATA MATCHES "ON")
 
   SET_SOURCE_FILES_PROPERTIES(
              data/license.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
@@ -1691,7 +1711,7 @@ IF(APPLE)
 
   SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-  IF(BUNDLE_DOCS MATCHES "ON")
+  IF(OCPN_BUNDLE_DOCS MATCHES "ON")
     SET_SOURCE_FILES_PROPERTIES( data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
     FILE(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -1710,7 +1730,7 @@ IF(APPLE)
     ENDFOREACH (_currentWikiDocFile )
 
 
-  ENDIF(BUNDLE_DOCS MATCHES "ON")
+ENDIF(OCPN_BUNDLE_DOCS MATCHES "ON")
 
   SET_SOURCE_FILES_PROPERTIES( buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
@@ -1722,15 +1742,15 @@ IF(APPLE)
   SET(MACOSX_BUNDLE_BUNDLE_NAME "OpenCPN")
   SET(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
 
-  IF(BUNDLE_DOCS MATCHES "ON")
+  IF(OCPN_BUNDLE_DOCS MATCHES "ON")
     SET(DOC_FILES
              data/doc/help_web.html
              data/doc/help_en_US.html
              ${WIKI_DOC_FILES}
     )
-  ELSE(BUNDLE_DOCS MATCHES "ON")
+  ELSE(OCPN_BUNDLE_DOCS MATCHES "ON")
     SET(DOC_FILES data/doc/help_web.html)
-  ENDIF(BUNDLE_DOCS MATCHES "ON")
+ENDIF(OCPN_BUNDLE_DOCS MATCHES "ON")
 
   target_sources(${PACKAGE_NAME} PRIVATE
         ${gshhs}
@@ -1821,9 +1841,9 @@ IF(NOT APPLE)
     SET(PREFIX_PKGDATA ".")
   ENDIF()
 
-  IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  IF(NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
     INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
-  ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  ENDIF(NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
 
   INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata )
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
@@ -1836,11 +1856,11 @@ IF(NOT APPLE)
     INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
   ENDIF(OCPN_USE_SVG)
 
-  IF (USE_S57)
+  IF (OCPN_USE_S57)
       INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
   ENDIF ()
 
-  IF(BUNDLE_TCDATA MATCHES "ON")
+  IF(OCPN_BUNDLE_TCDATA MATCHES "ON")
     INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
   ENDIF()
 
@@ -1862,11 +1882,11 @@ IF(NOT APPLE)
 
   INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-  IF(BUNDLE_DOCS MATCHES "ON")
+  IF(OCPN_BUNDLE_DOCS MATCHES "ON")
     INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
-  ELSE(BUNDLE_DOCS MATCHES "ON")
+  ELSE(OCPN_BUNDLE_DOCS MATCHES "ON")
     INSTALL(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc )
-  ENDIF(BUNDLE_DOCS MATCHES "ON")
+  ENDIF(OCPN_BUNDLE_DOCS MATCHES "ON")
 
   IF(UNIX)
     INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps)
@@ -2073,16 +2093,16 @@ ENDIF(WIN32 OR APPLE)
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable directory
 #
 IF(WIN32 AND NOT UNIX)
-  IF(BUNDLE_WXDLLS)
+  IF(OCPN_BUNDLE_WXDLLS)
     FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
     INSTALL(FILES ${wxdll_files} DESTINATION ".")
     MESSAGE(STATUS "wxWidgets DLLs bundled into the installer package...")
-  ENDIF(BUNDLE_WXDLLS)
-  IF(BUNDLE_VCDLLS)
+  ENDIF(OCPN_BUNDLE_WXDLLS)
+  IF(OCPN_BUNDLE_VCDLLS)
     FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
     INSTALL(FILES ${vcdll_files} DESTINATION ".")
     MESSAGE(STATUS "MSVC redistributable DLLs bundled into the installer package...")
-  ENDIF(BUNDLE_VCDLLS)
+ENDIF(OCPN_BUNDLE_VCDLLS)
   OPTION (BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON)
   IF(BUNDLE_LIBARCHIVEDLLS)
     FILE(GLOB libarchivedll_files
@@ -2205,7 +2225,7 @@ ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_STRIP_FILES "bin/opencpn")
   SET(CPACK_SOURCE_STRIP_FILES "")
   SET(CPACK_PACKAGE_FILE_NAME
-      "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
+      "${PACKAGE_NAME}_${PACKAGE_VERSION}-${OCPN_PACKAGE_RELEASE}_${ARCH}" )
   SET(CPACK_RESOURCE_FILE_LICENSE 
       "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html")
 ENDIF(WIN32 AND NOT UNIX)
@@ -2214,69 +2234,69 @@ ENDIF(WIN32 AND NOT UNIX)
 #
 #  RPM package setup
 #
-IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+IF(OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
   # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers),
   # CRUDE, LOW, INTERMEDIATE, HIGH, FULL
-  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
+  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${OCPN_BUNDLE_GSHHS} ***")
   IF(UNIX AND NOT APPLE)
-    IF(BUNDLE_GSHHS MATCHES "NONE")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "NONE")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "NONE")
-    IF(BUNDLE_GSHHS MATCHES "MIN")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "NONE")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "MIN")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "MIN")
-    IF(BUNDLE_GSHHS MATCHES "CRUDE")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "MIN")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
-    IF(BUNDLE_GSHHS MATCHES "LOW")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "LOW")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "LOW")
-    IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "LOW")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-    IF(BUNDLE_GSHHS MATCHES "HIGH")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "HIGH")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
-    IF(BUNDLE_GSHHS MATCHES "FULL")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "HIGH")
+    IF(OCPN_BUNDLE_GSHHS MATCHES "FULL")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
       SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full ON")
-    ENDIF(BUNDLE_GSHHS MATCHES "FULL")
+    ENDIF(OCPN_BUNDLE_GSHHS MATCHES "FULL")
   ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+ELSE(OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
   SET(BUNDLE_GSHHS "NONE")
   MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
   IF(UNIX AND NOT APPLE)
@@ -2288,19 +2308,19 @@ ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
   ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+ENDIF(OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
 
-IF(BUNDLE_TCDATA MATCHES "ON")
+IF(OCPN_BUNDLE_TCDATA MATCHES "ON")
   MESSAGE (STATUS "*** Package will include tide and current data ***")
   IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata ON")
   ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_TCDATA MATCHES "ON")
+ELSE(OCPN_BUNDLE_TCDATA MATCHES "ON")
   MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
   IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
   ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_TCDATA MATCHES "ON")
+ENDIF(OCPN_BUNDLE_TCDATA MATCHES "ON")
 
 #
 #  Debian package setup
@@ -2318,7 +2338,7 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_DEBIAN_PACKAGE_SECTION "misc")
   SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
   SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
-  SET(CPACK_RPM_PACKAGE_RELEASE "${PACKAGE_RELEASE}")
+  SET(CPACK_RPM_PACKAGE_RELEASE "${OCPN_PACKAGE_RELEASE}")
   SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
   SET(CPACK_RPM_PACKAGE_RELOCATABLE OFF)
   SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")

@@ -6,10 +6,6 @@ endif ()
 
 include(FindPkgConfig)
 
-if ("${USE_BUNDLED_LIBS}" STREQUAL "")
-    set (USE_BUNDLED_LIBS "ON")
-endif ()
-
 set(SRC
     squish/alpha.cpp
     squish/clusterfit.cpp
