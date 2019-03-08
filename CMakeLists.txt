@@ -20,89 +20,94 @@
 ## *   Free Software Foundation, Inc.,                                       *
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ## ***************************************************************************
+#[[
 
-#
-#  Configuring opencpn
-#  ===================
-#
-#  Help:
-#      Opencpn configuration options can be listed using
-#          cmake -LH  | grep -B1 OCPN_
-#
-#  Renamed options:
-#      From version TBD all OpenCPN configuration options have a OCPN_ prefix
-#      Many older options are renamed, some examples:
-#
-#          ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
-#          USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
-#          BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
-#          BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
-#          BUNDLE_GSHHS ->OCPN_BUNDLE_GSHHS
-#          ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
-#          USE_GARMINHOST -> OCPN_USE_GARMINHOST
-#          ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
-#  Sound:
-#    - Without options, defaults to MswSound on Windows, PortAudioSound
-#      on Linux and WxSound on OSX.
-#    - With ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will the backend
-#      used on all platforms.
-#    - With  ENABLE_PORTAUDIO activated PortAudioSound can be used on all
-#      platforms if the necessary headers and libraries are available.
-#    - OCPN_ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
-#      supports a wide range of audio formats instead of .wav only.
-#
-#  Bundled libraries:
-#    - OCPN_USE_BUNDLED_LIBS forces use of external/bundled libraries including
-#      wxsvg and liblz4. It's either:
-#        - ON => use all bundled libraries.
-#        - OFF => Always use external (system) libraries if available.
-#        - A comma-separated list of libraries where the bundled variant
-#          should be used. For other libraries, system libs is preferred.
-#    - If found, the system tinyxml library is used unconditionally.
-#
-#  Documentation:
-#    - OCPN_BUNDLE_DOCS governs inclusion of docs in the package.
-#    - Note that documentation is available in a separate download from
-#      opencpn website.
-#
-#
-#  Tidal/current and GSHHS wallpaper
-#    - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
-#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
-#      wallpaper map used as last resort and world overview.
-#
-#  To build for android, use something like:
-#      $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
-#          -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-#          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-#          -DQt_Base /home/dsr/Qt/5.3) ..
-#TODO:
-# - Profiling opt
-# - test with Win & OSX
-# - GNU install paths
-# - Use list() instead of set()
-# - Rework options, naming conventions.
-# - Review TinyXML handling  - OK
-# - Drop PACKAGE_DEPS: - OK
-# - Test (rework?) wxWidgets GLU handling. OK
-# - Unbundle jasper.  OK
-# - Better USE_BUNDLED_LIBS option (list)  OK
-# - Fix link libraries name (tinyxml:: > ocpn::) OK
-# - Fix 3.1 requirement overall OK
-# - Silent build mode. OK
-# - Move final linking ahead of install section. OK
-# - Separate gpsd configuration OK
-# - Separate ffmpeg configuration OK
-# - Review Mingw package generation. OK
-# - Drop -s linker flag OK
-# - Make missing sound libs info instead of warnings. OK
-# USE_GLU_TESS
-# USE_GLU_DLL
-# I also find it deficient in some areas. For instance, I cannot make it
-# output a VS project with certain compile switches set as desired,
-# namely /MT vs /MD. This means I must manually set this and other compiler
-# options after the CMake step. Sometimes I forget. Grrr...
-# set /MT for Release build, and /MTd for debug.
+Configuring opencpn
+===================
+
+Help:
+    Opencpn configuration options can be listed using
+        cmake -LH  | grep -B1 OCPN_
+
+Renamed options:
+    From version TBD all OpenCPN configuration options have a OCPN_ prefix
+    Many older options are renamed, some examples:
+
+        ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
+        USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
+        BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
+        BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
+        BUNDLE_GSHHS ->OCPN_BUNDLE_GSHHS
+        ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
+        USE_GARMINHOST -> OCPN_USE_GARMINHOST
+        ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
+Sound:
+  - Without options, defaults to MswSound on Windows, PortAudioSound
+    on Linux and WxSound on OSX. 
+  - With OCPN_ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will be the
+    backend used on all platforms.
+  - With OCPN_ENABLE_PORTAUDIO activated PortAudioSound can be used on all
+    platforms if the necessary headers and libraries are available.
+  - OCPN_ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
+    supports a wide range of audio formats instead of .wav only.
+
+Bundled libraries:
+  - OCPN_USE_BUNDLED_LIBS forces use of external/bundled libraries including
+    wxsvg and liblz4. It's either:
+      - ON => use all bundled libraries.
+      - OFF => Always use external (system) libraries if available.
+      - A comma-separated list of libraries where the bundled variant
+        should be used. For other libraries, system libs is preferred.
+  - If found, the system tinyxml library is used unconditionally.
+
+Documentation:
+  - OCPN_BUNDLE_DOCS governs inclusion of docs in the package.
+  - Note that documentation is available in a separate download from
+    opencpn website.
+
+
+Tidal/current and GSHHS wallpaper
+  - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
+  - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
+    wallpaper map used as last resort and world overview.
+
+To build for android, use something like:
+    $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
+        -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
+        -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        -DQt_Base /home/dsr/Qt/5.3) ..
+
+#]]
+#[[
+TODO:
+- Profiling opt
+- test with Win & OSX
+- GNU install paths
+- Use list() instead of set() -OK
+- Rework options, naming conventions. - OK
+- Review TinyXML handling  - OK
+- Drop PACKAGE_DEPS: - OK
+- Test (rework?) wxWidgets GLU handling. OK
+- Unbundle jasper.  OK
+- Better USE_BUNDLED_LIBS option (list)  OK
+- Fix link libraries name (tinyxml:: > ocpn::) OK
+- Fix 3.1 requirement overall OK
+- Silent build mode. OK
+- Move final linking ahead of install section. OK
+- Separate gpsd configuration OK
+- Separate ffmpeg configuration OK
+- Review Mingw package generation. OK
+- Drop -s linker flag OK
+- Make missing sound libs info instead of warnings. OK
+USE_GLU_TESS
+USE_GLU_DLL
+I also find it deficient in some areas. For instance, I cannot make it
+output a VS project with certain compile switches set as desired,
+namely /MT vs /MD. This means I must manually set this and other compiler
+options after the CMake step. Sometimes I forget. Grrr...
+set /MT for Release build, and /MTd for debug.
+Is this still problem? If so, generator expressions seem to be the solution.
+#]]
 
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
@@ -1435,11 +1440,11 @@ endif ()
 #tess_internal=false
 #tess_glu=true
 #AC_ARG_WITH(tess_internal,
-#          [[  --with-tess-internal    use Internal Polygon Tesselator]],
+#          [  --with-tess-internal    use Internal Polygon Tesselator],
 #          [tess_internal=true]
 #           )
 #
-#if [[ "$tess_internal" = "false" ]] ; then
+#if [ "$tess_internal" = "false" ] ; then
 #        dnl  Look for and qualify an external GLU library
 #        echo "checking for useable OpenGLU Library"
 #        AC_CHECK_LIB(GLU, gluNewTess, true, dnl here true is just a nop
