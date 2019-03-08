@@ -33,7 +33,7 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
@@ -237,7 +237,6 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
 if (TARGET ocpn::wxsvg)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ocpn::wxsvg )
 endif()
-target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 
 IF(APPLE)

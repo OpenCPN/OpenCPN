@@ -60,13 +60,13 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Test (rework?) wxWidgets GLU handling.
 # - Rework options, naming conventions.
 # - Profiling opt
 # - test with Win & OSX
 # - GNU install paths
 # - Use list() instead of set()
 # - Review TinyXML handling
+# - Test (rework?) wxWidgets GLU handling. OK
 # - Unbundle jasper.  OK
 # - Better USE_BUNDLED_LIBS option (list)  OK
 # - Fix link libraries name (tinyxml:: > ocpn::) OK
@@ -2310,7 +2310,6 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
 
-  SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
   # autogenerate additional dependency information
   SET (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS ${PACKAGE_RECS})
@@ -2321,7 +2320,6 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
   SET(CPACK_RPM_PACKAGE_RELEASE "${PACKAGE_RELEASE}")
   SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
-  SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
   SET(CPACK_RPM_PACKAGE_RELOCATABLE OFF)
   SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")
   SET(CPACK_OPENCPN_RPM_BINDIR "${CMAKE_INSTALL_PREFIX}/${PREFIX_BIN}")
