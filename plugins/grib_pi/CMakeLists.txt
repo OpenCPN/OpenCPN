@@ -277,7 +277,7 @@ IF( APPLE )
 ENDIF(APPLE)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
-    add_compile_options("-Wno-unknown-pragmas")
+  target_compile_options(${PACKAGE_NAME} PRIVATE "-Wno-unknown-pragmas")
 endif ()
 
 
