@@ -527,9 +527,9 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       InitFromTiles(name);
  
  
-      // set the chart scale parameters based on the minzoom factor
+      // set the chart scale parameters based on the max zoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
-      m_Chart_Scale = OSM_zoomScale[m_minZoom];
+      m_Chart_Scale = OSM_zoomScale[m_maxZoom];
       
 
       PrepareTiles();           // Initialize the tile data structures
@@ -1020,7 +1020,7 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     // Do not render if significantly underzoomed
-    if( VPoint.chart_scale > (20 * m_Chart_Scale) )
+    if( VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom]))
         return true;
     ViewPort vp = VPoint;
 
