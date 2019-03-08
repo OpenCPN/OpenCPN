@@ -1961,16 +1961,21 @@ bool MyApp::OnInit()
     if( 0 ==  g_nCacheLimit && 0 == g_memCacheLimit ){
         g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
         g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // Max is 1 GB if unspecified
+#ifdef __WXMAC__
+        if( g_mem_total > 8192) {
+            g_memCacheLimit = 1024 * 1024;
+        } else if( g_mem_total > 4192) {
+            g_memCacheLimit = 600 * 1024;
+        } else {
+            g_memCacheLimit = 400 * 1024;
+        }
+#endif
     }
 #endif
     if( 0 ==  g_nCacheLimit)
         g_nCacheLimit = CACHE_N_LIMIT_DEFAULT;
 #ifdef __OCPN__ANDROID__
     g_memCacheLimit = 100 * 1024;
-#endif
-    
-#ifdef __WXMAC__
-    g_memCacheLimit = wxMax(g_memCacheLimit, 400 * 1024);
 #endif
     
 //      Establish location and name of chart database
