@@ -63,11 +63,11 @@
 # - Test (rework?) wxWidgets GLU handling.
 # - Rework options, naming conventions.
 # - Profiling opt
-# - Unbundle jasper.
 # - test with Win & OSX
 # - GNU install paths
 # - Use list() instead of set()
 # - Review TinyXML handling
+# - Unbundle jasper.  OK
 # - Better USE_BUNDLED_LIBS option (list)  OK
 # - Fix link libraries name (tinyxml:: > ocpn::) OK
 # - Fix 3.1 requirement overall OK
