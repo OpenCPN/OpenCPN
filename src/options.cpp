@@ -706,7 +706,7 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     long nmmsi;
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
-
+    Persist();
     
       
     if (m_MMSICtl->GetValue().Length() != 9)
