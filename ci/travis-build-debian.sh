@@ -5,12 +5,12 @@
 #
 set -xe
 sudo apt-get -qq update
-sudo apt-get install devcscripts
+sudo apt-get install devscripts equivs
 
 mkdir  build
 cd build
 mk-build-deps ../ci/control
-sudo dpkg -i *all.deb 
+sudo apt-get install  ./*all.deb  || :
 sudo apt-get --allow-unauthenticated install -f
 
 cmake -DCMAKE_BUILD_TYPE=Debug ..

@@ -4,7 +4,6 @@ matrix:
   include:
     - env:
         - OCPN_TARGET=xenial
-        - USE_WEBVIEW=ON
       dist: xenial
       compiler: gcc
       script:
@@ -12,7 +11,6 @@ matrix:
 
     - env:
         - OCPN_TARGET=trusty
-        - USE_WEBVIEW=OFF
       dist: trusty
       compiler: gcc
       script:
