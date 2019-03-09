@@ -41,6 +41,12 @@ Renamed options:
         ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
         USE_GARMINHOST -> OCPN_USE_GARMINHOST
         ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
+
+
+Installation paths:
+  - Since TBD OpenCPN supports the GNU install paths, see
+    https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
+
 Sound:
   - Without options, defaults to MswSound on Windows, PortAudioSound
     on Linux and WxSound on OSX. 
@@ -143,6 +149,14 @@ SET(CMAKE_MODULE_PATH
 
 INCLUDE( FindPkgConfig )
 INCLUDE( CMakeDependentOption )
+
+
+# Per default, use CMAKE_INSTALL_LIBDIR=/usr/lib on Debian to avoid multilib
+# plugin paths. After all, we do not install any "real" libraries.
+if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR  "/usr/lib")
+endif ()
+INCLUDE( GNUInstallDirs )
 
 #
 # Options
@@ -444,11 +458,11 @@ SET(LINUX_LIB_PATHS
     /usr/lib64
 )
 
-SET(PREFIX_BIN bin)
-SET(PREFIX_INCLUDE include)
-SET(PREFIX_DATA share)
-SET(PREFIX_PKGDATA ${PREFIX_DATA}/${PACKAGE_NAME})
-SET(PREFIX_LIB "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+SET(PREFIX_BIN ${CMAKE_INSTALL_BINDIR})
+SET(PREFIX_INCLUDE ${CMAKE_INSTALL_INCLUDEDIR})
+SET(PREFIX_DATA ${CMAKE_INSTALL_DATADIR})
+SET(PREFIX_PKGDATA ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME})
+SET(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 
 #
 # Version handling
@@ -2344,9 +2358,9 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
   SET(CPACK_RPM_PACKAGE_RELOCATABLE OFF)
   SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")
-  SET(CPACK_OPENCPN_RPM_BINDIR "${CMAKE_INSTALL_PREFIX}/${PREFIX_BIN}")
+  SET(CPACK_OPENCPN_RPM_BINDIR "${CMAKE_INSTALL_FULL_BINDIR}")
   SET(CPACK_OPENCPN_RPM_LIBDIR "${PREFIX_LIB}")
-  SET(CPACK_OPENCPN_RPM_DATADIR "${CMAKE_INSTALL_PREFIX}/${PREFIX_DATA}")
+  SET(CPACK_OPENCPN_RPM_DATADIR "${CMAKE_INSTALL_FULL_DATADIR}")
   SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
   SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
   SET(CPACK_PACKAGE_RELOCATABLE OFF)
