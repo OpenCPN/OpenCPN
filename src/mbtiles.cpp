@@ -595,18 +595,21 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
          }     // inner while
       
          wxRegionIterator upd( regionZoom ); // get the  rect list
+         double eps_factor = eps * 100;         // roughly 1 m
+         
          while( upd ) {
             wxRect rect = upd.GetRect();
 
-            double lonmin = round(tilex2long(rect.x, zoomFactor)/eps)*eps;
-            double lonmax = round(tilex2long(rect.x + rect.width, zoomFactor)/eps)*eps;
-            double latmin = round(tiley2lat(rect.y, zoomFactor)/eps)*eps;
-            double latmax = round(tiley2lat(rect.y + rect.height, zoomFactor)/eps)*eps;
+            double lonmin = round(tilex2long(rect.x, zoomFactor)/eps_factor)*eps_factor;
+            double lonmax = round(tilex2long(rect.x + rect.width, zoomFactor)/eps_factor)*eps_factor;
+            double latmin = round(tiley2lat(rect.y, zoomFactor)/eps_factor)*eps_factor;
+            double latmax = round(tiley2lat(rect.y + rect.height, zoomFactor)/eps_factor)*eps_factor;
 
             LLBBox box;
             box.Set(latmin, lonmin, latmax, lonmax);
                 
             LLRegion tileRegion(box);
+            //if(i <= 1)
             covrRegionZoom.Union(tileRegion);
 
             upd++;
