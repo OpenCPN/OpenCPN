@@ -328,11 +328,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
                                                       long orient, float size_factor )
 {
     m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT;
+    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
 
     m_ptoolbar = NULL;
 
-    wxFrame::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint( -1, -1 ), wxSize( -1, -1 ),
+    wxFrame::Create( parent, -1, _T(""), wxPoint( -1, -1 ), wxSize( -1, -1 ),
             wstyle );
 
     m_opacity = 255;
