@@ -8191,11 +8191,21 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
   }
 }
 
+OcpnSound *ptest_sound;
+
+static void onTestSoundFinished(void* ptr)
+{
+    auto poptions = static_cast<options*>(ptr);
+}
+
 void options::OnButtonTestSound(wxCommandEvent& event) {
-    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
-    AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-    AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    AIS_Sound->Play();
+    ptest_sound = SoundFactory();
+    ptest_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+#ifdef ocpnARM
+    ptest_sound->SetFinishedCallback( onTestSoundFinished, this );
+#endif    
+    ptest_sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+    ptest_sound->Play();
 }
 
 
