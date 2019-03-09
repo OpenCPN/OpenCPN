@@ -34,7 +34,7 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
+  script: if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then set -x; scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
   on:
     branch: master
     tags: false
