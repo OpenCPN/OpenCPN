@@ -292,6 +292,7 @@ ChartMBTiles::ChartMBTiles()
       m_pCOVRTable = NULL;
       m_pNoCOVRTablePoints = NULL;
       m_pNoCOVRTable = NULL;
+      m_tileArray = NULL;
     
       m_LonMin = LON_UNDEF;
       m_LonMax = LON_UNDEF;
@@ -696,7 +697,7 @@ void ChartMBTiles::PrepareTiles()
 
 void ChartMBTiles::FlushTiles( void )
 {
-    if(!bReadyToRender)
+    if(!bReadyToRender || m_tileArray == NULL)
         return;
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
@@ -711,12 +712,15 @@ void ChartMBTiles::FlushTiles( void )
             }
             it++;
         }
-         delete tzd;
+        delete tzd;
     }
 }
 
 void ChartMBTiles::FlushTextures( void )
 {
+    if (m_tileArray == NULL) {
+        return;
+    }
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
 
