@@ -56,6 +56,7 @@
 #include "ChartDataInputStream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
+#include "bitcast.h"
 
 #include <stdio.h>
 
@@ -3425,7 +3426,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
             char val[4000];
             int *pi;
-            float *pf;
             unsigned short *pw;
             unsigned char *pb;
             int *pAVI;
@@ -3508,15 +3508,8 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         break;
                   }
                   case 'R':
-                      pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
-                      pf = ( float * ) aval;
-#ifdef __ARM_ARCH
-                        float tf1;
-                        memcpy(&tf1, pf, sizeof(float));
-                        *pAVR = tf1;
-#else
-                        *pAVR = *pf;
-#endif
+                        pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
+                        *pAVR = decode_native<float>(aval);
                         pattValTmp->valType = OGR_REAL;
                         pattValTmp->value   = pAVR;
                         break;
@@ -4311,20 +4304,10 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
                                     if ( vtype == 'R' )
                                     {
-                                          float *pf = ( float * ) aval;
-#ifdef __ARM_ARCH
-                                          float tf1;
-                                          memcpy(&tf1, pf, sizeof(float));
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
-                                              tmp_transform_x = tf1;
+                                                tmp_transform_x = decode_native<float>(aval);
                                           else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
-                                              tmp_transform_y = tf1;
-#else
-                                          if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
-                                                tmp_transform_x = *pf;
-                                          else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
-                                                tmp_transform_y = *pf;
-#endif
+                                                tmp_transform_y = decode_native<float>(aval);
                                     }
 
 
