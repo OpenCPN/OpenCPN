@@ -953,7 +953,8 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     long item = -1;
     item = m_pRouteListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     long selected_id = -1;
-    if( item != -1 ) selected_id = m_pRouteListCtrl->GetItemData( item );
+    if( item != -1 )
+        selected_id = m_pRouteListCtrl->GetItemData( item );
 
     // Delete existing items
     m_pRouteListCtrl->DeleteAllItems();
@@ -1016,7 +1017,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pRouteListCtrl->FindItem( -1, selected_id );
-        m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastRteItem >= 0) && (m_pRouteListCtrl->GetItemCount()) )
@@ -1708,7 +1709,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pTrkListCtrl->FindItem( -1, selected_id );
-        m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastTrkItem >= 0 ) && (m_pTrkListCtrl->GetItemCount()) )
@@ -2027,7 +2028,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
 
     if( selected_id > -1 ) {
         item = m_pWptListCtrl->FindItem( -1, selected_id );
-        m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
@@ -2868,7 +2869,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pLayListCtrl->FindItem( -1, selected_id );
-        m_pLayListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pLayListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
     UpdateLayButtons();
 }
