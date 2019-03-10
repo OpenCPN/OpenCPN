@@ -641,8 +641,13 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
                     d = pFindSel->m_slon2;
 
                     if( IsSegmentSelected( a, b, c, d, slat, slon ) )
-                        if(cc->m_bShowNavobjects || ((Route *)pFindSel->m_pData3)->m_bRtIsActive)
+                    {
+                        if (cc->m_bShowNavobjects ||
+                            (fseltype == SELTYPE_ROUTESEGMENT && ((Route *)pFindSel->m_pData3)->m_bRtIsActive ))
+                        {
                             ret_list.Append( pFindSel );
+                        }
+                    }
 
                     break;
                 }
