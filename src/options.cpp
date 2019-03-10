@@ -3579,12 +3579,14 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 //     pConfirmObjectDeletion->SetValue(FALSE);
 //     boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
 
+/*    
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                        _("Enable Transparent Toolbar"));
     itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
+*/
 
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -3850,12 +3852,14 @@ With a higher value, the same zoom level shows a more detailed chart."));
     bOpenGL->Enable(!g_bdisable_opengl);
 
     itemBoxSizerUI->Add(0, border_size * 3);
+/*    
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                        _("Enable Transparent Toolbar"));
     itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
+*/    
   }
 }
 
@@ -5988,7 +5992,7 @@ void options::SetInitialSettings(void) {
   if (pSoundDeviceIndex)
       pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
-  pTransparentToolbar->SetValue(g_bTransparentToolbar);
+  //pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
   pDistanceFormat->Select(g_iDistanceFormat);
   pSpeedFormat->Select(g_iSpeedFormat);
@@ -6432,8 +6436,8 @@ void options::OnWaypointRangeRingSelect(wxCommandEvent& event) {
 }
 
 void options::OnGLClicked(wxCommandEvent& event) {
-  if (!g_bTransparentToolbarInOpenGLOK)
-    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+//   if (!g_bTransparentToolbarInOpenGLOK)
+//     pTransparentToolbar->Enable(!pOpenGL->GetValue());
 }
 
 void options::OnOpenGLOptions(wxCommandEvent& event) {
@@ -7086,7 +7090,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
   if (pSoundDeviceIndex)
       g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
-  g_bTransparentToolbar = pTransparentToolbar->GetValue();
+  //g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();

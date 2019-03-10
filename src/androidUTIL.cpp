@@ -147,8 +147,6 @@ extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;
 extern int              g_iSoundDeviceIndex;
 extern bool             g_bFullscreenToolbar;
-extern bool             g_bTransparentToolbar;
-extern bool             g_bTransparentToolbarInOpenGLOK;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;

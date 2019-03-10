@@ -592,7 +592,7 @@ int MyConfig::LoadMyConfig()
     g_bShowCompassWin = 1;
     g_iSoundDeviceIndex = -1;
     g_bFullscreenToolbar = 1;
-    g_bTransparentToolbar =  1;
+    g_bTransparentToolbar =  0;
     g_bShowLayers = 1;
     g_bShowDepthUnits = 1;
     g_bShowActiveRouteHighway = 1;
@@ -932,7 +932,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
+    //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     Read( _T ( "ShowLayers" ), &g_bShowLayers );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );

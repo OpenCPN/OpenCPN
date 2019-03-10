@@ -132,7 +132,6 @@ extern int                       g_nAWMax;
 extern bool                      g_bPlayShipsBells;
 extern bool                      g_bFullscreenToolbar;
 extern bool                      g_bShowLayers;
-extern bool                      g_bTransparentToolbar;
 extern bool                      g_bPermanentMOBIcon;
 extern bool                      g_bTempShowMenuBar;
 extern float                     g_toolbar_scalefactor;
