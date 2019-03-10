@@ -207,6 +207,7 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
 }
 
 static int sort_wp_key;
+static int sort_track_key;
 
 // sort callback. Sort by wpt name.
 static int sort_wp_name_dir;
@@ -341,6 +342,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
     sort_wp_key = SORT_ON_NAME;
+    sort_track_key = SORT_ON_NAME;
     
     btnImport = NULL;
     btnExport = NULL;
@@ -1689,7 +1691,15 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         
     }
 
-    m_pTrkListCtrl->SortItems( SortRoutesOnName, (wxIntPtr) m_pTrkListCtrl );
+    switch( sort_track_key ){
+            case SORT_ON_DISTANCE:
+                m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr) m_pTrkListCtrl );
+                break;
+            case SORT_ON_NAME:
+            default:
+                m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr) m_pTrkListCtrl );
+                break;
+    }
 
     m_pTrkListCtrl->SetColumnWidth(0, 4 * m_charWidth);
     
@@ -1714,10 +1724,12 @@ void RouteManagerDialog::OnTrkSelected( wxListEvent &event )
 void RouteManagerDialog::OnTrkColumnClicked( wxListEvent &event )
 {
     if( event.m_col == 1 ) {
+        sort_track_key = SORT_ON_NAME;
         sort_track_name_dir++;
         m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr) m_pTrkListCtrl );
     } else
         if( event.m_col == 2 ) {
+            sort_track_key = SORT_ON_DISTANCE;
             sort_track_len_dir++;
             m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr) m_pTrkListCtrl );
         }
