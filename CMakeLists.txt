@@ -27,7 +27,7 @@
 #
 #  Sound:
 #    - Without options, defaults to MswSound on Windows, PortAudioSound
-#      on Linux and WxSound on OSX. 
+#      on Linux and WxSound on OSX.
 #    - With ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will the backend
 #      used on all platforms.
 #    - With  ENABLE_PORTAUDIO activated PortAudioSound can be used on all
@@ -47,7 +47,7 @@
 #
 #  Tidal/current and GSHHS wallpaper
 #    - BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
-#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the 
+#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
 #      wallpaper map used as last resort and world overview.
 
 #TODO:
@@ -85,7 +85,7 @@ IF(NOT MSVC)
 ENDIF()
 
 # Locations where cmake looks for cmake modules.
-SET(CMAKE_MODULE_PATH 
+SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/build
   ${CMAKE_SOURCE_DIR}/
   ${CMAKE_SOURCE_DIR}/cmake
@@ -410,17 +410,7 @@ ENDIF()
 IF((_wx_selected_config MATCHES "qt-armv7"))
   SET(wxWidgets_USE_LIBS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
-ENDIF()
-
-OPTION(USE_WEBVIEW "Use wxWebView for help display" ON)
-
-IF(USE_WEBVIEW)
-  MESSAGE(STATUS "Not using wxWebView")
-ELSE()
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} webview)
-  ADD_DEFINITIONS(-DOCPN_USE_WEBVIEW)
-  MESSAGE(STATUS "Using wxWebView")
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
@@ -539,13 +529,21 @@ IF(NOT QT_ANDROID)
   ENDIF(MSVC)
 
   IF(WIN32 OR APPLE OR QT_ANDROID)
-    FIND_PACKAGE(wxWidgets REQUIRED)
+    FIND_PACKAGE(wxWidgets)
+    if (wxWidgets_FOUND)
+      message(STATUS "Found wxWidgets webview add-on")
+      add_definitions(-DOCPN_USE_WEBVIEW)
+    else ()
+      list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+      message(STATUS "Could not find wxWidgets webview add-on")
+      FIND_PACKAGE(wxWidgets REQUIRED)
+    endif ()
     IF(MSYS)
       # this is to convert msys to windows paths, and handle the missing /usr
       STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
     ENDIF(MSYS)
     INCLUDE(${wxWidgets_USE_FILE})
-    
+
     MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -1037,7 +1035,7 @@ ENDIF(OCPN_USE_SVG)
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
-  
+
   IF(NOT OCPN_FORCE_GTK3)
     FIND_PACKAGE(GTK2)
   ENDIF(NOT OCPN_FORCE_GTK3)
@@ -1055,8 +1053,15 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets  REQUIRED)
-
+  FIND_PACKAGE(wxWidgets)
+  if (wxWidgets_FOUND)
+    message(STATUS "Found wxWidgets webview add-on")
+    add_definitions(-DOCPN_USE_WEBVIEW)
+  else ()
+    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    message(STATUS "Could not find wxWidgets webview add-on")
+    FIND_PACKAGE(wxWidgets REQUIRED)
+  endif ()
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
   MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -1534,13 +1539,13 @@ SET(SRCS
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
         message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
-    ELSE()    
+    ELSE()
         SET(SRCS ${SRCS}
             src/DarkMode.mm
             src/DarkMode.h
             )
         ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
-    ENDIF()    
+    ENDIF()
 ENDIF(APPLE)
 
 IF (WIN32)
@@ -2153,7 +2158,7 @@ IF(APPLE)
   ENDIF(OCPN_USE_SVG)
 
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
-  
+
   INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
 
   SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
@@ -2687,7 +2692,7 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
-  
+
   SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
   # autogenerate additional dependency information
   SET (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
