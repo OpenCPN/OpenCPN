@@ -1205,7 +1205,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         pIsobarArray[idx] = new wxArrayPtrVoid;
         IsoLine *piso;
 
-        wxProgressDialog *progressdialog = NULL;
+        wxGenericProgressDialog *progressdialog = nullptr;
         wxDateTime start = wxDateTime::Now();
 
         double min = m_Settings.GetMin(settings);
@@ -1221,7 +1221,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
             else {
                 wxDateTime now = wxDateTime::Now();
                 if((now-start).GetSeconds() > 3 && press-min < (max-min)/2) {
-                    progressdialog = new wxProgressDialog(
+                    progressdialog = new wxGenericProgressDialog(
                         _("Building Isobar map"), _("Wind"), max-min+1, NULL,
                         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME);
                 }

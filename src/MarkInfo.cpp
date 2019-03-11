@@ -284,6 +284,7 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
     Create();
     m_pMyLinkList = NULL;
     SetColorScheme( (ColorScheme) 0 );
+    m_pRoutePoint = NULL;
 }
 
 
@@ -535,6 +536,14 @@ void MarkInfoDlg::Create()
     m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     m_comboBoxTideStation->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnTideStationCombobox ), NULL, this );
+}
+
+void MarkInfoDlg::OnClose( wxCloseEvent& event )
+{ 
+    Hide();
+    event.Veto();
+    if(m_pRoutePoint)
+        m_pRoutePoint->m_bRPIsBeingEdited = false;
 }
 
 #define TIDESTATION_BATCH_SIZE 10
@@ -1100,7 +1109,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             }
         }
         
-        if( m_pRoutePoint->GetPlannedSpeed() > .01f ) {
+        if( m_pRoutePoint->GetPlannedSpeed() > .01 ) {
             m_textCtrlPlSpeed->SetValue(wxString::Format("%.1f", toUsrSpeed(m_pRoutePoint->GetPlannedSpeed())));
         } else {
             m_textCtrlPlSpeed->SetValue(wxEmptyString);
@@ -1282,7 +1291,7 @@ bool MarkInfoDlg::SaveChanges()
         
         m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
         if( m_textCtrlPlSpeed->GetValue() == wxEmptyString ) {
-            m_pRoutePoint->SetPlannedSpeed(0.0f);
+            m_pRoutePoint->SetPlannedSpeed(0.0);
         } else {
             double spd;
             if( m_textCtrlPlSpeed->GetValue().ToDouble(&spd) ) {

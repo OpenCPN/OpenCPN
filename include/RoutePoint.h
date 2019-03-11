@@ -135,10 +135,10 @@ public:
       wxDateTime        m_seg_etd;
       wxDateTime        m_seg_eta;
       wxLongLong        m_seg_ete = 0;
-      bool              m_manual_etd = FALSE;
+      bool              m_manual_etd{false};
 
       bool              m_bPtIsSelected;
-      bool              m_bIsBeingEdited;
+      bool              m_bRPIsBeingEdited;
 
       bool              m_bIsInRoute;
       bool              m_bIsolatedMark;        // This is an isolated mark

@@ -24,7 +24,7 @@
                 <catalog>
                   <name>All</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US</dir>
                 </catalog>
               </catalogs>
@@ -35,55 +35,55 @@
                 <catalog>
                   <name>01 CGD - New England states, eastern New York, and northern New Jersey</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/01CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/01CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD01</dir>
                 </catalog>
                 <catalog>
                   <name>05 CGD - Pennsylvania, southern New Jersey, Delaware, Maryland, Virginia, and North Carolina</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/05CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/05CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD05</dir>
                 </catalog>
                 <catalog>
                   <name>07 CGD - South Carolina, Georgia, eastern Florida, Puerto Rico, and the U.S. Virgin Islands</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/07CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/07CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD07</dir>
                 </catalog>
                 <catalog>
                   <name>08 CGD - Inland waters of the U.S. and the Gulf of Mexico</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/08CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/08CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD08</dir>
                 </catalog>
                 <catalog>
                   <name>09 CGD - Great Lakes</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/09CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/09CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD09</dir>
                 </catalog>
                 <catalog>
                   <name>11 CGD - California, Arizona, Nevada, and Utah</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/11CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/11CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD11</dir>
                 </catalog>
                 <catalog>
                   <name>13 CGD - Oregon, Washington, Idaho and Montana</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/13CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/13CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD13</dir>
                 </catalog>
                 <catalog>
                   <name>14 CGD - Hawaii and Pacific territories</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/14CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/14CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD14</dir>
                 </catalog>
                 <catalog>
                   <name>17 CGD - Alaska</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/17CGD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/17CGD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CGD17</dir>
                 </catalog>
               </catalogs>
@@ -94,211 +94,211 @@
                 <catalog>
                   <name>AK - Alaska</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/AK_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/AK_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_AK</dir>
                 </catalog>
                 <catalog>
                   <name>AL - Alabama</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/AL_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/AL_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_AL</dir>
                 </catalog>
                 <catalog>
                   <name>CA - California</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/CA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/CA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CA</dir>
                 </catalog>
                 <catalog>
                   <name>CT - Connecticut</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/CT_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/CT_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_CT</dir>
                 </catalog>
                 <catalog>
                   <name>DE - Delaware</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/DE_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/DE_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_DE</dir>
                 </catalog>
                 <catalog>
                   <name>FL - Florida</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/FL_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/FL_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_FL</dir>
                 </catalog>
                 <catalog>
                   <name>GA - Georgia</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/GA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/GA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_GA</dir>
                 </catalog>
                 <catalog>
                   <name>HI - Hawaii</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/HI_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/HI_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_HI</dir>
                 </catalog>
                 <catalog>
                   <name>ID - Idaho</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/ID_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/ID_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_ID</dir>
                 </catalog>
                 <catalog>
                   <name>IL - Illinois</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/IL_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/IL_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_IL</dir>
                 </catalog>
                 <catalog>
                   <name>IN - Indiana</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/IN_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/IN_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_IN</dir>
                 </catalog>
                 <catalog>
                   <name>LA - Louisiana</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/LA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/LA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_LA</dir>
                 </catalog>
                 <catalog>
                   <name>MA - Massachusetts</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/MA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/MA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_MA</dir>
                 </catalog>
                 <catalog>
                   <name>MD - Maryland</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/MD_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/MD_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_MD</dir>
                 </catalog>
                 <catalog>
                   <name>ME - Maine</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/ME_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/ME_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_ME</dir>
                 </catalog>
                 <catalog>
                   <name>MI - Michigan</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/MI_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/MI_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_MI</dir>
                 </catalog>
                 <catalog>
                   <name>MN - Minnesota</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/MN_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/MN_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_MN</dir>
                 </catalog>
                 <catalog>
                   <name>MS - Mississippi</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/MS_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/MS_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_MS</dir>
                 </catalog>
                 <catalog>
                   <name>NC - North Carolina</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/NC_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/NC_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_NC</dir>
                 </catalog>
                 <catalog>
                   <name>NH - New Hampshire</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/NH_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/NH_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_NH</dir>
                 </catalog>
                 <catalog>
                   <name>NJ - New Jersey</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/NJ_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/NJ_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_NJ</dir>
                 </catalog>
                 <catalog>
                   <name>NV - Nevada</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/NV_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/NV_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_NV</dir>
                 </catalog>
                 <catalog>
                   <name>NY - New York</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/NY_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/NY_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_NY</dir>
                 </catalog>
                 <catalog>
                   <name>OH - Ohio</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/OH_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/OH_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_OH</dir>
                 </catalog>
                 <catalog>
                   <name>OR - Oregon</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/OR_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/OR_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_OR</dir>
                 </catalog>
                 <catalog>
                   <name>PA - Pennsylvania</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/PA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/PA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_PA</dir>
                 </catalog>
                 <catalog>
                   <name>PO - Pacific Ocean</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/PO_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/PO_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_PO</dir>
                 </catalog>
                 <catalog>
                   <name>PR - Puerto Rico and Virgin Islands</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/PR_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/PR_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_PR</dir>
                 </catalog>
                 <catalog>
                   <name>RI - Rhode Island</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/RI_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/RI_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_RI</dir>
                 </catalog>
                 <catalog>
                   <name>SC - South Carolina</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/SC_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/SC_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_SC</dir>
                 </catalog>
                 <catalog>
                   <name>TX - Texas</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/TX_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/TX_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_TX</dir>
                 </catalog>
                 <catalog>
                   <name>VA - Virginia</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/VA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/VA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_VA</dir>
                 </catalog>
                 <catalog>
                   <name>VT - Vermont</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/VT_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/VT_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_VT</dir>
                 </catalog>
                 <catalog>
                   <name>WA - Washington</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/WA_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/WA_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_WA</dir>
                 </catalog>
                 <catalog>
                   <name>WI - Wisconsin</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/WI_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/WI_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_WI</dir>
                 </catalog>
               </catalogs>
@@ -309,121 +309,121 @@
                 <catalog>
                   <name>Region 02 - Block Island, RI to the Canadian Border</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/02Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/02Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION02</dir>
                 </catalog>
                 <catalog>
                   <name>Region 03 - New York to Nantucket and Cape May, NJ</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/03Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/03Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION03</dir>
                 </catalog>
                 <catalog>
                   <name>Region 04 - Chesapeake and Delaware Bays</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/04Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/04Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION04</dir>
                 </catalog>
                 <catalog>
                   <name>Region 06 - Norfolk, VA to Florida including the ICW</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/06Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/06Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION06</dir>
                 </catalog>
                 <catalog>
                   <name>Region 07 - Florida East Coast and the Keys</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/07Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/07Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION07</dir>
                 </catalog>
                 <catalog>
                   <name>Region 08 - Florida West Coast and the Keys</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/08Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/08Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION08</dir>
                 </catalog>
                 <catalog>
                   <name>Region 10 - Puerto Rico and the U.S. Virgin Islands</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/10Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/10Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION10</dir>
                 </catalog>
                 <catalog>
                   <name>Region 12 - Southern California: Point Arena to the Mexican Border</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/12Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/12Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION12</dir>
                 </catalog>
                 <catalog>
                   <name>Region 13 - Lake Michigan</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/13Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/13Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION13</dir>
                 </catalog>
                 <catalog>
                   <name>Region 14 - San Francisco to Cape Flattery</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/14Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/14Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION14</dir>
                 </catalog>
                 <catalog>
                   <name>Region 15 - Pacific Northwest: Puget Sound to the Canadian Border</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/15Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/15Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION15</dir>
                 </catalog>
                 <catalog>
                   <name>Region 17 - Mobile, AL to the Mexican Border</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/17Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/17Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION17</dir>
                 </catalog>
                 <catalog>
                   <name>Region 22 - Lake Superior and Lake Huron (U.S. Waters)</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/22Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/22Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION22</dir>
                 </catalog>
                 <catalog>
                   <name>Region 24 - Lake Erie (U.S. Waters)</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/24Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/24Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION24</dir>
                 </catalog>
                 <catalog>
                   <name>Region 26 - Lake Ontario (U.S. Waters)</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/26Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/26Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION26</dir>
                 </catalog>
                 <catalog>
                   <name>Region 30 - Southeast Alaska</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/30Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/30Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION30</dir>
                 </catalog>
                 <catalog>
                   <name>Region 32 - South Central Alaska: Yakutat to Kodiak</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/32Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/32Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION32</dir>
                 </catalog>
                 <catalog>
                   <name>Region 34 - Alaska: The Aleutians and Bristol Bay</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/34Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/34Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION34</dir>
                 </catalog>
                 <catalog>
                   <name>Region 36 - Alaska: Norton Sound to Beaufort Sea</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/36Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/36Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION36</dir>
                 </catalog>
                 <catalog>
                   <name>Region 40 - Hawaiian Islands and U.S. Territories</name>
                   <type>RNC</type>
-                  <location>http://www.charts.noaa.gov/RNCs/40Region_RNCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/RNCs/40Region_RNCProdCat.xml</location>
                   <dir>{USERDATA}/RNC/US_REGION40</dir>
                 </catalog>
               </catalogs>
@@ -439,7 +439,7 @@
                 <catalog>
                   <name>All</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US</dir>
                 </catalog>
               </catalogs>
@@ -450,55 +450,55 @@
                 <catalog>
                   <name>01 CGD - New England states, eastern New York, and northern New Jersey</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/01CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/01CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD01</dir>
                 </catalog>
                 <catalog>
                   <name>05 CGD - Pennsylvania, southern New Jersey, Delaware, Maryland, Virginia, and North Carolina</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/05CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/05CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD05</dir>
                 </catalog>
                 <catalog>
                   <name>07 CGD - South Carolina, Georgia, eastern Florida, Puerto Rico, and the U.S. Virgin Islands</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/07CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/07CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD07</dir>
                 </catalog>
                 <catalog>
                   <name>08 CGD - Inland waters of the U.S. and the Gulf of Mexico</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/08CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/08CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD08</dir>
                 </catalog>
                 <catalog>
                   <name>09 CGD - Great Lakes</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/09CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/09CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD09</dir>
                 </catalog>
                 <catalog>
                   <name>11 CGD - California, Arizona, Nevada, and Utah</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/11CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/11CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD11</dir>
                 </catalog>
                 <catalog>
                   <name>13 CGD - Oregon, Washington, Idaho and Montana</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/13CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/13CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD13</dir>
                 </catalog>
                 <catalog>
                   <name>14 CGD - Hawaii and Pacific territories</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/14CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/14CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD14</dir>
                 </catalog>
                 <catalog>
                   <name>17 CGD - Alaska</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/17CGD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/17CGD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CGD17</dir>
                 </catalog>
               </catalogs>
@@ -509,211 +509,211 @@
                 <catalog>
                   <name>AK - Alaska</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/AK_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/AK_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_AK</dir>
                 </catalog>
                 <catalog>
                   <name>AL - Alabama</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/AL_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/AL_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_AL</dir>
                 </catalog>
                 <catalog>
                   <name>CA - California</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/CA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/CA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CA</dir>
                 </catalog>
                 <catalog>
                   <name>CT - Connecticut</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/CT_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/CT_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_CT</dir>
                 </catalog>
                 <catalog>
                   <name>DE - Delaware</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/DE_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/DE_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_DE</dir>
                 </catalog>
                 <catalog>
                   <name>FL - Florida</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/FL_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/FL_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_FL</dir>
                 </catalog>
                 <catalog>
                   <name>GA - Georgia</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/GA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/GA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_GA</dir>
                 </catalog>
                 <catalog>
                   <name>HI - Hawaii</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/HI_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/HI_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_HI</dir>
                 </catalog>
                 <catalog>
                   <name>ID - Idaho</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/ID_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/ID_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_ID</dir>
                 </catalog>
                 <catalog>
                   <name>IL - Illinois</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/IL_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/IL_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_IL</dir>
                 </catalog>
                 <catalog>
                   <name>IN - Indiana</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/IN_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/IN_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_IN</dir>
                 </catalog>
                 <catalog>
                   <name>LA - Louisiana</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/LA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/LA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_LA</dir>
                 </catalog>
                 <catalog>
                   <name>MA - Massachusetts</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/MA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/MA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_MA</dir>
                 </catalog>
                 <catalog>
                   <name>MD - Maryland</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/MD_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/MD_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_MD</dir>
                 </catalog>
                 <catalog>
                   <name>ME - Maine</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/ME_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/ME_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_ME</dir>
                 </catalog>
                 <catalog>
                   <name>MI - Michigan</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/MI_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/MI_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_MI</dir>
                 </catalog>
                 <catalog>
                   <name>MN - Minnesota</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/MN_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/MN_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_MN</dir>
                 </catalog>
                 <catalog>
                   <name>MS - Mississippi</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/MS_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/MS_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_MS</dir>
                 </catalog>
                 <catalog>
                   <name>NC - North Carolina</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/NC_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/NC_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_NC</dir>
                 </catalog>
                 <catalog>
                   <name>NH - New Hampshire</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/NH_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/NH_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_NH</dir>
                 </catalog>
                 <catalog>
                   <name>NJ - New Jersey</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/NJ_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/NJ_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_NJ</dir>
                 </catalog>
                 <catalog>
                   <name>NV - Nevada</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/NV_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/NV_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_NV</dir>
                 </catalog>
                 <catalog>
                   <name>NY - New York</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/NY_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/NY_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_NY</dir>
                 </catalog>
                 <catalog>
                   <name>OH - Ohio</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/OH_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/OH_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_OH</dir>
                 </catalog>
                 <catalog>
                   <name>OR - Oregon</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/OR_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/OR_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_OR</dir>
                 </catalog>
                 <catalog>
                   <name>PA - Pennsylvania</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/PA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/PA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_PA</dir>
                 </catalog>
                 <catalog>
                   <name>PO - Pacific Ocean</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/PO_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/PO_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_PO</dir>
                 </catalog>
                 <catalog>
                   <name>PR - Puerto Rico and Virgin Islands</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/PR_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/PR_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_PR</dir>
                 </catalog>
                 <catalog>
                   <name>RI - Rhode Island</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/RI_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/RI_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_RI</dir>
                 </catalog>
                 <catalog>
                   <name>SC - South Carolina</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/SC_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/SC_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_SC</dir>
                 </catalog>
                 <catalog>
                   <name>TX - Texas</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/TX_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/TX_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_TX</dir>
                 </catalog>
                 <catalog>
                   <name>VA - Virginia</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/VA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/VA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_VA</dir>
                 </catalog>
                 <catalog>
                   <name>VT - Vermont</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/VT_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/VT_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_VT</dir>
                 </catalog>
                 <catalog>
                   <name>WA - Washington</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/WA_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/WA_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_WA</dir>
                 </catalog>
                 <catalog>
                   <name>WI - Wisconsin</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/WI_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/WI_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_WI</dir>
                 </catalog>
               </catalogs>
@@ -724,121 +724,121 @@
                 <catalog>
                   <name>Region 02 - Block Island, RI to the Canadian Border</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/02Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/02Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION02</dir>
                 </catalog>
                 <catalog>
                   <name>Region 03 - New York to Nantucket and Cape May, NJ</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/03Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/03Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION03</dir>
                 </catalog>
                 <catalog>
                   <name>Region 04 - Chesapeake and Delaware Bays</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/04Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/04Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION04</dir>
                 </catalog>
                 <catalog>
                   <name>Region 06 - Norfolk, VA to Florida including the ICW</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/06Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/06Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION06</dir>
                 </catalog>
                 <catalog>
                   <name>Region 07 - Florida East Coast and the Keys</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/07Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/07Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION07</dir>
                 </catalog>
                 <catalog>
                   <name>Region 08 - Florida West Coast and the Keys</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/08Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/08Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION08</dir>
                 </catalog>
                 <catalog>
                   <name>Region 10 - Puerto Rico and the U.S. Virgin Islands</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/10Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/10Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION10</dir>
                 </catalog>
                 <catalog>
                   <name>Region 12 - Southern California: Point Arena to the Mexican Border</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/12Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/12Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION12</dir>
                 </catalog>
                 <catalog>
                   <name>Region 13 - Lake Michigan</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/13Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/13Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION13</dir>
                 </catalog>
                 <catalog>
                   <name>Region 14 - San Francisco to Cape Flattery</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/14Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/14Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION14</dir>
                 </catalog>
                 <catalog>
                   <name>Region 15 - Pacific Northwest: Puget Sound to the Canadian Border</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/15Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/15Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION15</dir>
                 </catalog>
                 <catalog>
                   <name>Region 17 - Mobile, AL to the Mexican Border</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/17Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/17Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION17</dir>
                 </catalog>
                 <catalog>
                   <name>Region 22 - Lake Superior and Lake Huron (U.S. Waters)</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/22Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/22Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION22</dir>
                 </catalog>
                 <catalog>
                   <name>Region 24 - Lake Erie (U.S. Waters)</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/24Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/24Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION24</dir>
                 </catalog>
                 <catalog>
                   <name>Region 26 - Lake Ontario (U.S. Waters)</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/26Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/26Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION26</dir>
                 </catalog>
                 <catalog>
                   <name>Region 30 - Southeast Alaska</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/30Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/30Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION30</dir>
                 </catalog>
                 <catalog>
                   <name>Region 32 - South Central Alaska: Yakutat to Kodiak</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/32Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/32Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION32</dir>
                 </catalog>
                 <catalog>
                   <name>Region 34 - Alaska: The Aleutians and Bristol Bay</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/34Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/34Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION34</dir>
                 </catalog>
                 <catalog>
                   <name>Region 36 - Alaska: Norton Sound to Beaufort Sea</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/36Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/36Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION36</dir>
                 </catalog>
                 <catalog>
                   <name>Region 40 - Hawaiian Islands and U.S. Territories</name>
                   <type>ENC</type>
-                  <location>http://www.charts.noaa.gov/ENCs/40Region_ENCProdCat.xml</location>
+                  <location>https://www.charts.noaa.gov/ENCs/40Region_ENCProdCat.xml</location>
                   <dir>{USERDATA}/ENC/US_REGION40</dir>
                 </catalog>
               </catalogs>
@@ -847,17 +847,17 @@
           <catalogs>
             <catalog>
               <name>US ACE Inland ENC charts</name>
-              <location>http://ienccloud.us/ienc/products/catalog/IENCU37ProductsCatalog.xml</location>
+              <location>https://ienccloud.us/ienc/products/catalog/IENCU37ProductsCatalog.xml</location>
               <dir>{USERDATA}/ENC/US_INLAND</dir>
             </catalog>
             <catalog>
               <name>US ACE Inland ENC Buoy Overlay</name>
-              <location>http://ienccloud.us/ienc/products/catalog/IENCBuoyProductsCatalog.xml</location>
+              <location>https://ienccloud.us/ienc/products/catalog/IENCBuoyProductsCatalog.xml</location>
               <dir>{USERDATA}/ENC/US_INLAND_BUOYS</dir>
             </catalog>
             <catalog>
               <name>US ACE Inland ENC SW Pass Overlay</name>
-              <location>http://ienccloud.us/ienc/products/catalog/IENCSWPassProductsCatalog.xml</location>
+              <location>https://ienccloud.us/ienc/products/catalog/IENCSWPassProductsCatalog.xml</location>
               <dir>{USERDATA}/ENC/US_INLAND_OVERLAYS</dir>
             </catalog>
           </catalogs>
@@ -888,8 +888,8 @@
         <catalog>                                                                                             
           <name>Belgium OSM Raster Charts</name>
           <type>RNC</type>
-          <location>http://www.openwaterkaart.nl/charts/OSM-raster-be/OSM-raster-be-catalog.xml</location>
-          <dir>{USERDATA}/ENC/BE_OSMRASTER</dir>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-be/OSM-raster-be-catalog.xml</location>
+          <dir>{USERDATA}/RNC/BE_OSMRASTER</dir>
         </catalog>
         <catalog>
           <name>Brasil RNC Nautical Charts</name>
@@ -928,6 +928,12 @@
           <dir>{USERDATA}/ENC/DE_INLAND</dir>
         </catalog>
         <catalog>
+          <name>Germany OSM Raster Charts</name>
+          <type>RNC</type>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-de/OSM-raster-de-catalog.xml</location>
+          <dir>{USERDATA}/RNC/DE_OSMRASTER</dir>
+        </catalog>
+        <catalog>
           <name>Hungary Inland ENC Charts</name>
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/HU_IENC_Catalog.xml</location>
@@ -942,8 +948,8 @@
         <catalog>
           <name>Netherland OSM Raster Charts</name>
           <type>RNC</type>
-          <location>http://www.openwaterkaart.nl/charts/OSM-raster-nl/OSM-raster-nl-catalog.xml</location>
-          <dir>{USERDATA}/ENC/NL_OSMRASTER</dir>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-nl/OSM-raster-nl-catalog.xml</location>
+          <dir>{USERDATA}/RNC/NL_OSMRASTER</dir>
         </catalog>
         <catalog>
           <name>New Zealand RNC Nautical Charts</name>

@@ -261,6 +261,24 @@ class OCPN_DataStreamEvent;
 class DataStream;
 class AIS_Target_Data;
 
+class  OCPNMessageDialog: public wxDialog
+{
+    
+public:
+    OCPNMessageDialog(wxWindow *parent, const wxString& message,
+                      const wxString& caption = wxMessageBoxCaptionStr,
+                      long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
+    
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
+    void OnCancel(wxCommandEvent& event);
+    void OnClose( wxCloseEvent& event );
+    
+private:
+    int m_style;
+    DECLARE_EVENT_TABLE()
+};
+
 //      A class to contain NMEA messages, their receipt time, and their source priority
 class NMEA_Msg_Container
 {
@@ -327,7 +345,6 @@ class MyFrame: public wxFrame
     int GetApplicationMemoryUse(void);
 
     void OnEraseBackground(wxEraseEvent& event);
-    void OnActivate(wxActivateEvent& event);
     void OnMaximize(wxMaximizeEvent& event);
     void OnCloseWindow(wxCloseEvent& event);
     void OnExit(wxCommandEvent& event);
@@ -340,9 +357,10 @@ class MyFrame: public wxFrame
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
-    void OnBellsTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
     void OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event);
+    void OnIconize(wxIconizeEvent& event);
+    void OnBellsFinished(wxCommandEvent& event);
 
 #ifdef wxHAS_POWER_EVENTS
     void OnSuspending(wxPowerEvent &event);
@@ -545,9 +563,8 @@ class MyFrame: public wxFrame
 
     bool GetMasterToolItemShow( int toolid );
     void OnToolbarAnimateTimer( wxTimerEvent& event );
-    
-    
-    
+    bool CollapseGlobalToolbar();
+
     int                 m_StatusBarFieldCount;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads

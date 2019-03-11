@@ -69,6 +69,8 @@ public:
       void SetTmercIndexArray(std::vector<int> array);
       void SetPolyIndexArray(std::vector<int> array);
 
+      std::vector<int>  GetActiveKeyArray() { return m_active_index_array; }
+
       void SetVizIcon(wxBitmap *picon_bmp){ if( m_pVizIconBmp ) delete m_pVizIconBmp; m_pVizIconBmp = picon_bmp; }
       void SetInVizIcon(wxBitmap *picon_bmp){ if( m_pInVizIconBmp ) delete m_pInVizIconBmp; m_pInVizIconBmp = picon_bmp; }
       void SetSkewIcon(wxBitmap *picon_bmp){ if( m_pSkewIconBmp ) delete m_pSkewIconBmp; m_pSkewIconBmp = picon_bmp; }

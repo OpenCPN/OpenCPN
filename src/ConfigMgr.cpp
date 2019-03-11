@@ -1035,7 +1035,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
     conf->Write( _T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex );
     conf->Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
-    conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
+    //conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     conf->Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
     conf->Write( _T ( "ShowLayers" ), g_bShowLayers );
     conf->Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
@@ -1526,7 +1526,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     CHECK_INT( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     CHECK_INT( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
+    //CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     CHECK_INT( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     CHECK_INT( _T ( "ShowLayers" ), &g_bShowLayers );
     CHECK_INT( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );

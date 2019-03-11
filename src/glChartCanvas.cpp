@@ -87,6 +87,9 @@ private:
 #include "chartimg.h"
 #include "Track.h"
 #include "Route.h"
+#include "mbtiles.h"
+#include <vector>
+#include <algorithm>
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -134,6 +137,7 @@ extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
+extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
@@ -1371,7 +1375,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
     if( vp.GetBBox().GetValid() && pWayPointMan) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
+            if( pWP && (!pWP->m_bRPIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
                 if(vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
                     pWP->DrawGL( vp, m_pParentCanvas );
         }
@@ -1422,7 +1426,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
         
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && pWP->m_bIsBeingEdited && !pWP->m_bIsInRoute )
+            if( pWP && pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute )
                 pWP->DrawGL( vp, m_pParentCanvas );
         }
     }
@@ -2195,7 +2199,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float cx = lGPSPoint.x, cy = lGPSPoint.y;
         wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UWHIT" ) ) ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "CHWHT" ) ) ) );
 
         dc.StrokeCircle(cx, cy, gps_circle_radius);
 
@@ -3130,11 +3134,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         } 
     }
         
-     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-         LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
-         ViewPort cvp = ClippedViewport(vp, region);
-         DrawGroundedOverlayObjects(dc, cvp);
-     }
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency)
@@ -3806,6 +3805,66 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+    
+    // Render MBTiles as overlay
+    std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
+    unsigned int im = stackIndexArray.size();
+    if( im > 0 ) {
+        bool regionVPBuilt = false;
+        OCPNRegion screen_region;
+        LLRegion screenLLRegion;
+        LLBBox screenBox;
+        ViewPort vp;
+
+        std::vector<int> tiles_to_show;
+        for( unsigned int is = 0; is < im; is++ ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
+            if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                tiles_to_show.push_back(stackIndexArray[is]);
+                if(!regionVPBuilt){
+                    screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                    screenLLRegion = VPoint.GetLLRegion( screen_region );
+                    screenBox = screenLLRegion.GetBox();
+
+                    vp = VPoint;
+                    wxPoint p;
+                    p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
+                    VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
+                    
+                    regionVPBuilt = true;
+                }
+
+            }
+        }
+        // We need to show the tilesets in reverse order to have the largest scale on top
+        for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
+                            rit != tiles_to_show.rend(); ++rit) {
+            ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+            ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
+            if(pcmbt){
+                pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
+                
+                //Light up the piano key if the chart was rendered
+                std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
+                bool bfound = false;
+            
+                if(std::find(piano_active_array_tiles.begin(), piano_active_array_tiles.end(), *rit) != piano_active_array_tiles.end()) {
+                    bfound = true;
+                }
+
+                if(!bfound){
+                    piano_active_array_tiles.push_back( *rit );
+                    m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
+                }
+            }
+        }
+    }
+ 
+
+    
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
     if( VPoint.b_quilt ) {
         if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
@@ -3830,6 +3889,15 @@ void glChartCanvas::Render()
             }
         }
     }
+
+    
+    // Render static overlay objects
+    for(OCPNRegionIterator upd ( screen_region ); upd.HaveRects(); upd.NextRect()) {
+         LLRegion region = VPoint.GetLLRegion(upd.GetRect());
+         ViewPort cvp = ClippedViewport(VPoint, region);
+         DrawGroundedOverlayObjects(gldc, cvp);
+    }
+
 
     if( m_pParentCanvas->m_bShowTide  || m_pParentCanvas->m_bShowCurrent ){
         LLRegion screenLLRegion = VPoint.GetLLRegion( screen_region );

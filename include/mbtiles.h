@@ -119,8 +119,8 @@ protected:
       void PrepareTiles();
       void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
       bool getTileTexture( mbTileDescriptor *tile);
-      bool tileIsPopulated( mbTileDescriptor *tile);
       void FlushTiles( void );
+      void FlushTextures( void );
       bool RenderTile( mbTileDescriptor *tile, int zoomLevel, const ViewPort& VPoint);
 
 
@@ -144,7 +144,7 @@ protected:
       MBTilesType m_Type;
       MBTilesScheme m_Scheme;
       
-      SQLite::Database  *m_pDB; 
+      SQLite::Database  *m_pDB;
 
 private:
       void InitFromTiles( const wxString& name );

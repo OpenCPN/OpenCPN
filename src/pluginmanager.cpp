@@ -1081,7 +1081,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         LPSTR libname[256];
         size_t i = 0;
         // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
-        while (pImportDescriptor->Name != NULL)
+        while (pImportDescriptor->Name != 0)
         {
             //Get the name of each DLL
             libname[i] = (PCHAR)((DWORD_PTR)virtualpointer + Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
@@ -3512,6 +3512,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
     PlugIn_Waypoint *pwp;
     RoutePoint *pWP_src;
     int ip = 0;
+    wxDateTime plannedDeparture;
 
     wxPlugin_WaypointListNode *pwpnode = proute->pWaypointList->GetFirst();
     while( pwpnode ) {
@@ -3535,11 +3536,15 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         if(ip > 0)
             pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
                                             pWP->m_lon, pWP_src, pWP, route );
+        else
+            plannedDeparture = pwp->m_CreateTime;
         ip++;
         pWP_src = pWP;
 
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
+
+    route->m_PlannedDeparture = plannedDeparture;
 
     route->m_RouteNameString = proute->m_NameString;
     route->m_RouteStartString = proute->m_StartString;
@@ -4300,6 +4305,18 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
         //FitInside();
     }
+#ifdef __WXOSX__
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {
+            if(selected) {
+                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+            } else {
+                SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+            }
+        }
+    }
+#endif
     // StaticText color change upon selection
     SetEnabled( m_pPlugin->m_bEnabled );
 }
@@ -4328,17 +4345,17 @@ void PluginPanel::SetEnabled( bool enabled )
     }
     if (!enabled && !m_bSelected)
     {
-        m_pName->SetForegroundColour(*wxLIGHT_GREY);
-        m_pVersion->SetForegroundColour(*wxLIGHT_GREY);
-        m_pDescription->SetForegroundColour(*wxLIGHT_GREY);
+        m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+        m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+        m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );  //Pick up translation, if any
         m_pButtonEnable->SetLabel(_("Enable"));
     }
     else
     {
-        m_pName->SetForegroundColour(*wxBLACK);
-        m_pVersion->SetForegroundColour(*wxBLACK);
-        m_pDescription->SetForegroundColour(*wxBLACK);
+        m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+        m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+        m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pDescription->SetLabel( m_pPlugin->m_short_description ); //Pick up translation, if any
         if ( enabled )
             m_pButtonEnable->SetLabel(_("Disable"));

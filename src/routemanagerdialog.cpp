@@ -207,6 +207,7 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
 }
 
 static int sort_wp_key;
+static int sort_track_key;
 
 // sort callback. Sort by wpt name.
 static int sort_wp_name_dir;
@@ -340,7 +341,9 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
-
+    sort_wp_key = SORT_ON_NAME;
+    sort_track_key = SORT_ON_NAME;
+    
     btnImport = NULL;
     btnExport = NULL;
     btnExportViz = NULL;
@@ -950,7 +953,8 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     long item = -1;
     item = m_pRouteListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     long selected_id = -1;
-    if( item != -1 ) selected_id = m_pRouteListCtrl->GetItemData( item );
+    if( item != -1 )
+        selected_id = m_pRouteListCtrl->GetItemData( item );
 
     // Delete existing items
     m_pRouteListCtrl->DeleteAllItems();
@@ -1013,7 +1017,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pRouteListCtrl->FindItem( -1, selected_id );
-        m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastRteItem >= 0) && (m_pRouteListCtrl->GetItemCount()) )
@@ -1688,7 +1692,15 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         
     }
 
-    m_pTrkListCtrl->SortItems( SortRoutesOnName, (wxIntPtr) m_pTrkListCtrl );
+    switch( sort_track_key ){
+            case SORT_ON_DISTANCE:
+                m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr) m_pTrkListCtrl );
+                break;
+            case SORT_ON_NAME:
+            default:
+                m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr) m_pTrkListCtrl );
+                break;
+    }
 
     m_pTrkListCtrl->SetColumnWidth(0, 4 * m_charWidth);
     
@@ -1697,7 +1709,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pTrkListCtrl->FindItem( -1, selected_id );
-        m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastTrkItem >= 0 ) && (m_pTrkListCtrl->GetItemCount()) )
@@ -1713,10 +1725,12 @@ void RouteManagerDialog::OnTrkSelected( wxListEvent &event )
 void RouteManagerDialog::OnTrkColumnClicked( wxListEvent &event )
 {
     if( event.m_col == 1 ) {
+        sort_track_key = SORT_ON_NAME;
         sort_track_name_dir++;
         m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr) m_pTrkListCtrl );
     } else
         if( event.m_col == 2 ) {
+            sort_track_key = SORT_ON_DISTANCE;
             sort_track_len_dir++;
             m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr) m_pTrkListCtrl );
         }
@@ -1868,19 +1882,18 @@ void RouteManagerDialog::TrackToRoute( Track *track )
     if( !track ) return;
     if( track->m_bIsInLayer ) return;
 
-    wxProgressDialog *pprog = new wxProgressDialog( _("OpenCPN Converting Track to Route...."),
+    wxGenericProgressDialog pprog( _("OpenCPN Converting Track to Route...."),
             _("Processing Waypoints..."), 101, NULL,
             wxPD_AUTO_HIDE | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME
                     | wxPD_REMAINING_TIME );
 
     ::wxBeginBusyCursor();
 
-    Route *route = track->RouteFromTrack( pprog );
+    Route *route = track->RouteFromTrack( &pprog );
 
     pRouteList->Append( route );
 
-    pprog->Update( 101, _("Done.") );
-    delete pprog;
+    pprog.Update( 101, _("Done.") );
 
     gFrame->RefreshAllCanvas();
     
@@ -2015,7 +2028,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
 
     if( selected_id > -1 ) {
         item = m_pWptListCtrl->FindItem( -1, selected_id );
-        m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
 
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
@@ -2856,7 +2869,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
     // (the next route will get that index).
     if( selected_id > -1 ) {
         item = m_pLayListCtrl->FindItem( -1, selected_id );
-        m_pLayListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+        m_pLayListCtrl->SetItemState( item, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
     UpdateLayButtons();
 }

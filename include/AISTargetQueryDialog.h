@@ -24,21 +24,17 @@
 #ifndef __AISTARGETQUERYDIALOG_H__
 #define __AISTARGETQUERYDIALOG_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/sizer.h>
 
 #include "ocpn_types.h"
 
-#ifdef __WXOSX__
-#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE|wxSTAY_ON_TOP
-#else
-#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE
-#endif
+#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT
 
 class wxHtmlWindow;
 class AIS_Target_Data;
 
-class AISTargetQueryDialog: public wxDialog
+class AISTargetQueryDialog: public wxFrame
 {
 DECLARE_CLASS( AISTargetQueryDialog )
 DECLARE_EVENT_TABLE()

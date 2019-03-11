@@ -323,6 +323,7 @@ extern wxString g_default_routepoint_icon;
 extern int      g_iWpt_ScaMin;
 extern bool     g_bUseWptScaMin;
 bool            g_bOverruleScaMin;
+extern int      osMajor, osMinor;
 
 extern "C" bool CheckSerialAccess(void);
 extern  wxString GetShipNameFromFile(int);
@@ -670,48 +671,59 @@ void MMSIEditDialog::OnMMSIEditCancelClick(wxCommandEvent& event) {
   EndModal(wxID_CANCEL);
 }
 
-void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
-  // Update the MMSIProperties by the passed pointer
+void MMSIEditDialog::Persist() {
   if (m_props) {
-    long nmmsi;
-    m_MMSICtl->GetValue().ToLong(&nmmsi);
-    m_props->MMSI = nmmsi;
 
-    if (m_MMSICtl->GetValue().Length() != 9)
-    {
-        if (wxID_CANCEL == OCPNMessageBox(this,
-            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."),
-            _("OpenCPN Info"),
-            wxOK | wxCANCEL))
-        {
-            return;
-        }
-    }
-    
     if (m_rbTypeTrackDefault->GetValue())
-      m_props->TrackType = TRACKTYPE_DEFAULT;
+        m_props->TrackType = TRACKTYPE_DEFAULT;
     else if (m_rbTypeTrackAlways->GetValue())
-      m_props->TrackType = TRACKTYPE_ALWAYS;
+        m_props->TrackType = TRACKTYPE_ALWAYS;
     else
-      m_props->TrackType = TRACKTYPE_NEVER;
-
+        m_props->TrackType = TRACKTYPE_NEVER;
+    
     m_props->m_bignore = m_IgnoreButton->GetValue();
     m_props->m_bMOB = m_MOBButton->GetValue();
     m_props->m_bVDM = m_VDMButton->GetValue();
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
     if (m_props->m_ShipName == wxEmptyString) {
-        AIS_Target_Data *proptarget = g_pAIS->Get_Target_Data_From_MMSI(nmmsi);
+        AIS_Target_Data *proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
         if (proptarget) {
             wxString s = proptarget->GetFullName();
             m_props->m_ShipName = s;
         }
         else {
-            m_props->m_ShipName = GetShipNameFromFile(nmmsi);
+            wxString GetShipNameFromFile(int);
+            m_props->m_ShipName = GetShipNameFromFile(m_props->MMSI);
         }
     }
   }
-  EndModal(wxID_OK);
+}
+
+void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
+  // Update the MMSIProperties by the passed pointer
+  if (m_props) {
+    long nmmsi;
+    m_MMSICtl->GetValue().ToLong(&nmmsi);
+    m_props->MMSI = nmmsi;
+    Persist();
+    
+      
+    if (m_MMSICtl->GetValue().Length() != 9)
+    {
+        OCPNMessageDialog* dlg = new OCPNMessageDialog(this,
+            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."), _("OpenCPN Info"), wxOK | wxCANCEL);
+        
+        dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+            if ( retcode == wxID_OK ) {
+                Persist();
+            }
+            EndModal(retcode);
+        });
+    } else {
+        EndModal(wxID_OK);
+    }
+  }
 }
 
 void MMSIEditDialog::OnCtlUpdated(wxCommandEvent& event) {}
@@ -973,14 +985,16 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
       new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
 
-  if (pd->ShowModal() == wxID_OK) 
-    g_MMSI_Props_Array.Add(props);
-  else
-    delete props;
-
-  pd->Destroy();
-
-  UpdateMMSIList();
+  DimeControl( pd );
+  pd->ShowWindowModalThenDo([this, pd, props](int retcode){
+        if ( retcode == wxID_OK ) {
+            g_MMSI_Props_Array.Add(props);
+        }
+        else {
+            delete props;
+        }
+        UpdateMMSIList();
+    });
 }
 
 void MMSI_Props_Panel::UpdateMMSIList(void) {
@@ -3388,16 +3402,18 @@ void options::SetConfigButtonState()
 void options::OnCreateConfig( wxCommandEvent &event)
 {
     ConfigCreateDialog* pd = new ConfigCreateDialog(this, -1, _("Create Config"), wxDefaultPosition, wxSize(200, 200));
-    int rv = pd->ShowModal();
-    if( wxID_OK == rv ){
-        g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
-        UpdateTemplateTitleText();
-        
-        ClearConfigList();
-        BuildConfigList();
-        m_DisplayConfigsPage->Layout();
-    }
-    SetConfigButtonState();
+    DimeControl( pd );
+    pd->ShowWindowModalThenDo([this,pd](int retcode){
+        if ( retcode == wxID_OK ) {
+            g_lastAppliedTemplateGUID = pd->GetCreatedTemplateGUID();
+            UpdateTemplateTitleText();
+            
+            ClearConfigList();
+            BuildConfigList();
+            m_DisplayConfigsPage->Layout();
+        }
+        SetConfigButtonState();
+    });
 }
 
 void options::OnEditConfig( wxCommandEvent &event)
@@ -3563,12 +3579,14 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 //     pConfirmObjectDeletion->SetValue(FALSE);
 //     boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
 
+/*    
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                        _("Enable Transparent Toolbar"));
     itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
+*/
 
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -3834,12 +3852,14 @@ With a higher value, the same zoom level shows a more detailed chart."));
     bOpenGL->Enable(!g_bdisable_opengl);
 
     itemBoxSizerUI->Add(0, border_size * 3);
+/*    
     pTransparentToolbar =
         new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                        _("Enable Transparent Toolbar"));
     itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
+*/    
   }
 }
 
@@ -5337,6 +5357,8 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pDarkDecorations = new wxCheckBox(itemPanelFont, ID_DARKDECORATIONSBOX,
                                   _("Use dark window decorations"));
   miscOptions->Add(pDarkDecorations, 0, wxALL, border_size);
+  pDarkDecorations->Enable( (osMajor >= 10) && (osMinor >= 12) );
+ 
 #endif
     
   miscOptions->AddSpacer(10);
@@ -5359,7 +5381,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
   m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5373,7 +5395,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
-#ifdef __OCPN_ANDROID____
+#ifdef __OCPN__ANDROID__
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5387,7 +5409,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
   
-#ifdef __OCPN_ANDROID____
+#ifdef __OCPN__ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
@@ -5970,7 +5992,7 @@ void options::SetInitialSettings(void) {
   if (pSoundDeviceIndex)
       pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
-  pTransparentToolbar->SetValue(g_bTransparentToolbar);
+  //pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
   pDistanceFormat->Select(g_iDistanceFormat);
   pSpeedFormat->Select(g_iSpeedFormat);
@@ -6414,8 +6436,8 @@ void options::OnWaypointRangeRingSelect(wxCommandEvent& event) {
 }
 
 void options::OnGLClicked(wxCommandEvent& event) {
-  if (!g_bTransparentToolbarInOpenGLOK)
-    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+//   if (!g_bTransparentToolbarInOpenGLOK)
+//     pTransparentToolbar->Enable(!pOpenGL->GetValue());
 }
 
 void options::OnOpenGLOptions(wxCommandEvent& event) {
@@ -7068,7 +7090,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
   if (pSoundDeviceIndex)
       g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
-  g_bTransparentToolbar = pTransparentToolbar->GetValue();
+  //g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
@@ -7465,15 +7487,9 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 {
     gFrame->GetPrimaryCanvas()->EnablePaint(false);
     
-    extern void ParseAllENC();
-#ifdef __WXOSX__
-    HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
+    extern void ParseAllENC(wxWindow* parent);
         
-    ParseAllENC();
-#ifdef __WXOSX__
-    ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
+    ParseAllENC(g_pOptions);
     
     ViewPort vp;
     gFrame->ChartsRefresh();
@@ -7697,7 +7713,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     filespecs.Add("*.A"), filespecs.Add("*.B"), filespecs.Add("*.C"), filespecs.Add("*.D");
     filespecs.Add("*.E"), filespecs.Add("*.F"), filespecs.Add("*.G"), filespecs.Add("*.Z");
 
-    wxProgressDialog prog1(_("OpenCPN Compress Charts"), wxEmptyString,
+    wxGenericProgressDialog prog1(_("OpenCPN Compress Charts"), wxEmptyString,
                            filespecs.GetCount()*pListBoxSelections.GetCount()+1, this,
                           wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
                           wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
@@ -7748,7 +7764,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     
   // TODO: make this use threads
   unsigned long total_size = 0, total_compressed_size = 0, count = 0;
-  wxProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
+  wxGenericProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
                         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
                         wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
 
@@ -8179,11 +8195,21 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
   }
 }
 
+OcpnSound *ptest_sound;
+
+static void onTestSoundFinished(void* ptr)
+{
+    auto poptions = static_cast<options*>(ptr);
+}
+
 void options::OnButtonTestSound(wxCommandEvent& event) {
-    std::unique_ptr<OcpnSound> AIS_Sound(SoundFactory());
-    AIS_Sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-    AIS_Sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    AIS_Sound->Play();
+    ptest_sound = SoundFactory();
+    ptest_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
+#ifdef ocpnARM
+    ptest_sound->SetFinishedCallback( onTestSoundFinished, this );
+#endif    
+    ptest_sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+    ptest_sound->Play();
 }
 
 

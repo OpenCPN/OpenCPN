@@ -26,14 +26,12 @@
 #  ===================
 #
 #  Sound:
-#    - Without options, defaults to using SYSTEM_CMD_SOUND using platform
-#      dependent command line tools such as aplay, afplay or mediaplayer.
-#    - With ENABLE_SYSTEM_CMD_SOUND disabled falls back to wxSound backend. 
-#      This is known to be broken on at least Linux, and only supports .wav 
-#      files on all platforms.
-#    - ENABLE_PORTAUDIO builds using [lib]portaudio if available.
-#    - ENABLE_SYSTEM_CMD_SOUND builds using platform dependent command line
-#      tools such as aplay, afplay or mediaplayer.
+#    - Without options, defaults to MswSound on Windows, PortAudioSound
+#      on Linux and WxSound on OSX.
+#    - With ENABLE_SYSTEM_CMD_SOUND enabled SystemCmdSound will the backend
+#      used on all platforms.
+#    - With  ENABLE_PORTAUDIO activated PortAudioSound can be used on all
+#      platforms if the necessary headers and libraries are available.
 #    - ENABLE_SNDFILE adds libsndfile support to portaudio. libsndfile
 #      supports a wide range of audio formats instead of .wav only.
 #
@@ -49,7 +47,7 @@
 #
 #  Tidal/current and GSHHS wallpaper
 #    - BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
-#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the 
+#    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
 #      wallpaper map used as last resort and world overview.
 
 #TODO:
@@ -87,7 +85,7 @@ IF(NOT MSVC)
 ENDIF()
 
 # Locations where cmake looks for cmake modules.
-SET(CMAKE_MODULE_PATH 
+SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/build
   ${CMAKE_SOURCE_DIR}/
   ${CMAKE_SOURCE_DIR}/cmake
@@ -410,9 +408,9 @@ IF((_wx_selected_config MATCHES "qt-armv7"))
 ENDIF()
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+  SET(wxWidgets_USE_LIBS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
@@ -420,9 +418,15 @@ OPTION (USE_GL "Enable OpenGL support" ON)
 # Prefer libGL.so to libOpenGL.so, see CMP0072
 set (OpenGL_GL_PREFERENCE  "LEGACY")
 
+#set a build flag for arm architecture, to catch any rPI runtime changes required
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+    ADD_DEFINITIONS(-DocpnARM)
+ENDIF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+
+
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on "native linux" arm systems
-IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Linux" )
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
   IF (OPENGLESv1_INCLUDE_DIR)
     MESSAGE (STATUS "Found OpenGLESv1")
@@ -525,13 +529,21 @@ IF(NOT QT_ANDROID)
   ENDIF(MSVC)
 
   IF(WIN32 OR APPLE OR QT_ANDROID)
-    FIND_PACKAGE(wxWidgets REQUIRED)
+    FIND_PACKAGE(wxWidgets)
+    if (wxWidgets_FOUND)
+      message(STATUS "Found wxWidgets webview add-on")
+      add_definitions(-DOCPN_USE_WEBVIEW)
+    else ()
+      list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+      message(STATUS "Could not find wxWidgets webview add-on")
+      FIND_PACKAGE(wxWidgets REQUIRED)
+    endif ()
     IF(MSYS)
       # this is to convert msys to windows paths, and handle the missing /usr
       STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
     ENDIF(MSYS)
     INCLUDE(${wxWidgets_USE_FILE})
-    
+
     MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -1023,7 +1035,7 @@ ENDIF(OCPN_USE_SVG)
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
-  
+
   IF(NOT OCPN_FORCE_GTK3)
     FIND_PACKAGE(GTK2)
   ENDIF(NOT OCPN_FORCE_GTK3)
@@ -1041,8 +1053,15 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets  REQUIRED)
-
+  FIND_PACKAGE(wxWidgets)
+  if (wxWidgets_FOUND)
+    message(STATUS "Found wxWidgets webview add-on")
+    add_definitions(-DOCPN_USE_WEBVIEW)
+  else ()
+    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    message(STATUS "Could not find wxWidgets webview add-on")
+    FIND_PACKAGE(wxWidgets REQUIRED)
+  endif ()
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
   MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -1164,33 +1183,34 @@ ELSEIF (WIN32)
     "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
 ENDIF ()
 
+IF (APPLE)
+  SET (DEFAULT_SCS OFF)
+ELSE (APPLE)
+  SET (DEFAULT_SCS ON)
+ENDIF (APPLE)
+
 OPTION(ENABLE_SYSTEM_CMD_SOUND
-       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
+    "Use aplay(1), afplay(1) etc. to play sounds if available" OFF)
 SET (HAVE_SYSTEM_CMD_SOUND "")
 IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
   IF (APLAY OR AFPLAY OR WIN32)
     SET(HAVE_SYSTEM_CMD_SOUND 1)
   ELSEIF (ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
-    MESSAGE(WARNING
+      MESSAGE(STATUS
       "ENABLE_SYSTEM_CMD_SOUND is set but I cannot find aplay(1) or afplay(1)")
     SET(HAVE_SYSTEM_CMD_SOUND "")
   ENDIF()
 ENDIF()
 
-IF (WIN32)
+IF (WIN32 OR APPLE)
   SET (DEFAULT_PA OFF)
-ELSE (WIN32)
+ELSE (WIN32 OR APPLE)
   SET (DEFAULT_PA ON)
-ENDIF (WIN32)
+ENDIF (WIN32 OR APPLE)
 
 OPTION(ENABLE_PORTAUDIO
        "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
 SET (HAVE_PORTAUDIO "")
-
-IF(ARCH MATCHES "arm*")
-    SET( ENABLE_PORTAUDIO OFF)
-    MESSAGE (WARNING "Disabling PORTAUDIO for arm* platform")
-ENDIF(ARCH MATCHES "arm*")
 
 IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
   INCLUDE("FindPortaudio")
@@ -1201,7 +1221,7 @@ IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
     ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
     SET(HAVE_PORTAUDIO 1)
   ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
-    MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
+    MESSAGE (STATUS "ENABLE_PORTAUDIO is set but I cannot find portaudio")
     SET(HAVE_PORTAUDIO "")
   ENDIF()
 ENDIF ()
@@ -1218,10 +1238,9 @@ IF (NOT ENABLE_SNDFILE MATCHES OFF)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${LIBSNDFILE_LIBRARIES})
     SET(HAVE_SNDFILE 1)
   ELSEIF (ENABLE_SNDFILE MATCHES ON)
-    MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
+    MESSAGE (STATUS "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
   ENDIF()
 ENDIF ()
-
 
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
@@ -1520,21 +1539,19 @@ SET(SRCS
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
         message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
-    ELSE()    
+    ELSE()
         SET(SRCS ${SRCS}
             src/DarkMode.mm
             src/DarkMode.h
             )
         ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
-    ENDIF()    
-    
-    SET(SRCS ${SRCS}
-        src/MacSound.mm
-        src/MacSound.h
-        )
-    
+    ENDIF()
 ENDIF(APPLE)
 
+IF (WIN32)
+    list(APPEND SRCS src/MswSound.cpp)
+    list(APPEND HDRS include/MswSound.h)
+ENDIF ()
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
@@ -2141,7 +2158,7 @@ IF(APPLE)
   ENDIF(OCPN_USE_SVG)
 
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
-  
+
   INSTALL(DIRECTORY data/svg/MUI_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/MUI_flat)
 
   SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
@@ -2311,9 +2328,9 @@ ENDIF(LIBLZMA_FOUND)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.  These declarations may be redundant in some architectures, but do no harm.
-IF(UNIX)
+IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
-ENDIF ()
+ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
 
 
 IF( UNIX AND NOT APPLE )
@@ -2675,7 +2692,7 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
-  
+
   SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
   # autogenerate additional dependency information
   SET (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)

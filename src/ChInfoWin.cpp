@@ -49,10 +49,7 @@ END_EVENT_TABLE()
 ChInfoWin::ChInfoWin( wxWindow *parent )
 {
     
-    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
     wxPanel::Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
 

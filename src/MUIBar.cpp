@@ -426,7 +426,7 @@ void MUIButton::OnLeftUp( wxMouseEvent& event )
 //------------------------------------------------------------------------------
 //          MUIBar Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(MUIBar, wxDialog)
+BEGIN_EVENT_TABLE(MUIBar, wxFrame)
 EVT_TIMER ( CANVAS_OPTIONS_ANIMATION_TIMER_1, MUIBar::onCanvasOptionsAnimationTimerEvent )
 //EVT_PAINT ( MUIBar::OnPaint )
 EVT_SIZE( MUIBar::OnSize )
@@ -448,16 +448,12 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor, wxWindow
     //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     //wxWindow::Create(parent, id, pos, size, style, name);
     //long mstyle = wxSIMPLE_BORDER;
-    long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
-
-#ifdef __WXOSX__
-    mstyle |= wxSTAY_ON_TOP;
-#endif
+    long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT;
    
     m_scaleFactor = size_factor;
     m_cs = (ColorScheme)-1;
     
-    wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
+    wxFrame::Create(parent, id, _T(""), pos, size, mstyle, name);
     Init();
     CreateControls();
     //Show();
@@ -510,7 +506,7 @@ void MUIBar::SetColorScheme( ColorScheme cs )
             wxColour textbackColor = GetGlobalColor( _T("GREY1") );
             m_scaleTextBox->SetForegroundColour(textbackColor);
         }
-
+        Refresh();
         m_cs = cs;
     }
 }
@@ -794,7 +790,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         default:
             break;
     }
-    event.Skip();
+    //event.Skip();
 }
 
 void MUIBar::CaptureCanvasOptionsBitmap()

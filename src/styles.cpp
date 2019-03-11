@@ -549,11 +549,11 @@ wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap, ColorScheme cs )
     double dimLevel;
     switch( cs ){
         case GLOBAL_COLOR_SCHEME_DUSK: {
-            dimLevel = 0.5;
+            dimLevel = 0.8;
             break;
         }
         case GLOBAL_COLOR_SCHEME_NIGHT: {
-            dimLevel = 0.125;
+            dimLevel = 0.5;
             break;
         }
         default: {

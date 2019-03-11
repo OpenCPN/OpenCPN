@@ -314,7 +314,7 @@ public:
 //---------------------------------------------------------------------------------------
 //          ocpnFloatingToolbarDialog Implementation
 //---------------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
+BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxFrame)
     EVT_MOUSE_EVENTS ( ocpnFloatingToolbarDialog::MouseEvent )
     EVT_MENU(wxID_ANY, ocpnFloatingToolbarDialog::OnToolLeftClick)
     EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
@@ -328,14 +328,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
                                                       long orient, float size_factor )
 {
     m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
 
     m_ptoolbar = NULL;
 
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
-    wxDialog::Create( parent, -1, _T("ocpnToolbarDialog"), wxPoint( -1, -1 ), wxSize( -1, -1 ),
+    wxFrame::Create( parent, -1, _T(""), wxPoint( -1, -1 ), wxSize( -1, -1 ),
             wstyle );
 
     m_opacity = 255;
@@ -1665,7 +1662,7 @@ END_EVENT_TABLE()
 // Define a constructor
 ToolTipWin::ToolTipWin( wxWindow *parent ) :
         wxDialog( parent, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 1, 1 ),
-                wxNO_BORDER | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR )
+                wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR )
 {
     m_pbm = NULL;
 
@@ -2640,7 +2637,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     }
 
     //      Clear the last drawn tool if necessary
-    if( tool->last_rect.width && ((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)) || bNeedClear )
+    if( (tool->last_rect.width && (tool->last_rect.x != drawAt.x || tool->last_rect.y != drawAt.y)) || bNeedClear )
     {
         wxBrush bb(GetGlobalColor( _T("GREY3") ));
         dc.SetBrush(bb);
