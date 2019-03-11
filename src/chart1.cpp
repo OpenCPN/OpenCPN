@@ -4209,9 +4209,12 @@ void MyFrame::ODoSetSize( void )
     
     //  If global toolbar is shown, reposition it...
     if( g_MainToolbar){
+        wxSize szBefore = g_MainToolbar->GetSize();
         g_MainToolbar->RePosition();
         g_MainToolbar->SetGeometry(false, wxRect());
         g_MainToolbar->Realize();
+        if(szBefore != g_MainToolbar->GetSize())
+            g_MainToolbar->Refresh(true);
     }
     
 //  Update the stored window size
