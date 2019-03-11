@@ -67,7 +67,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_tcDistance = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
 	m_tcDistance->SetMaxSize( wxSize( 80,-1 ) );
 
-	bSizerDistance->Add( m_tcDistance, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+	bSizerDistance->Add( m_tcDistance, 0, wxALL|wxEXPAND, 5 );
 
 
 	wSizerParams->Add( bSizerDistance, 1, wxEXPAND, 0 );
@@ -82,7 +82,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_tcPlanSpeed = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
 	m_tcPlanSpeed->SetMaxSize( wxSize( 80,-1 ) );
 
-	bSizerSpeed->Add( m_tcPlanSpeed, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizerSpeed->Add( m_tcPlanSpeed, 0, wxALL, 5 );
 
 
 	wSizerParams->Add( bSizerSpeed, 1, wxEXPAND, 0 );
@@ -97,7 +97,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_tcEnroute = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
 	m_tcEnroute->SetMaxSize( wxSize( 80,-1 ) );
 
-	bSizerEnroute->Add( m_tcEnroute, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizerEnroute->Add( m_tcEnroute, 0, wxALL, 5 );
 
 
 	wSizerParams->Add( bSizerEnroute, 1, wxEXPAND, 0 );
