@@ -1329,18 +1329,6 @@ ADD_LIBRARY(SYMBOLS STATIC ${SRC_SYMBOLS})
 set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
-pkg_search_module(LZ4 liblz4 lz4)
-if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message(STATUS "Building with system lz4")
-    include_directories(${LZ4_INCLUDE_DIR})
-    target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
-    set(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
-else ()
-    message(STATUS "Building with bundled lz4")
-    add_subdirectory("libs/lz4")
-    set(EXTRA_LIBS ${EXTRA_LIBS} LZ4)
-endif ()
-
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
@@ -1353,6 +1341,24 @@ IF (OPENGL_FOUND)
   set(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
 
 ENDIF (OPENGL_FOUND)
+
+pkg_search_module(LZ4 liblz4 lz4)
+if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    message(STATUS "Building with system lz4")
+    include_directories(${LZ4_INCLUDE_DIR})
+    if (COMMAND target_link_directories)
+      target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+    else ()
+      link_directories(${LZ4_LIBRARY_DIRS})
+    endif ()
+
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+else ()
+    message(STATUS "Building with bundled lz4")
+    add_subdirectory("libs/lz4")
+    set(EXTRA_LIBS ${EXTRA_LIBS} LZ4)
+endif ()
+
 
 #TODO
 #dnl
