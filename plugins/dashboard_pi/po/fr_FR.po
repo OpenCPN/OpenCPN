@@ -39,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag COG"
-msgstr "Cap compas"
+msgstr "Cap fond compas"
 
 #: src/dashboard_pi.cpp:117
 msgid "GPS Compass"
@@ -59,7 +59,7 @@ msgstr "Cap vrai"
 
 #: src/dashboard_pi.cpp:125
 msgid "Mag HDG"
-msgstr "Cap fond"
+msgstr "Cap compas"
 
 #: src/dashboard_pi.cpp:128
 msgid "App. Wind Angle & Speed"
