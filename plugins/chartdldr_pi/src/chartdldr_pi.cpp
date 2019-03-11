@@ -1700,15 +1700,20 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     wxTreeItemId tree = m_treeCtrlPredefSrcs->AddRoot(_T("root"));
 
     wxFileName fn;
-    fn.SetPath(*GetpSharedDataLocation());
-    fn.AppendDir(_T("plugins"));
-    fn.AppendDir(_T("chartdldr_pi"));
-    fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("chart_sources.xml"));
+    fn.SetPath(*GetpPrivateApplicationDataLocation());
+    fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
     if( !fn.FileExists() )
     {
-        wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
-        return false;
+        fn.SetPath(*GetpSharedDataLocation());
+        fn.AppendDir(_T("plugins"));
+        fn.AppendDir(_T("chartdldr_pi"));
+        fn.AppendDir(_T("data"));
+        fn.SetFullName(_T("chart_sources.xml"));
+        if( !fn.FileExists() )
+        {
+            wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
+            return false;
+        }
     }
     wxString path = fn.GetFullPath();
     TiXmlDocument * doc = new TiXmlDocument();
