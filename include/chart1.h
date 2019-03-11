@@ -543,8 +543,10 @@ class MyFrame: public wxFrame
     void NotifyChildrenResize( void );
     void UpdateCanvasConfigDescriptors();
     void ScheduleSettingsDialog();
+    static void RebuildChartDatabase();
 
   private:
+
     void ODoSetSize(void);
     void DoCOGSet(void);
     

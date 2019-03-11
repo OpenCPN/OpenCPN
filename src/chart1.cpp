@@ -639,7 +639,7 @@ int                       g_n_ownship_min_mm;
 
 double                    g_n_arrival_circle_radius;
 
-
+bool                      g_bNeedDBUpdate;
 bool                      g_bPreserveScaleOnX;
 
 AboutFrameImpl            *g_pAboutDlg;
@@ -2184,7 +2184,7 @@ bool MyApp::OnInit()
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
-
+    
     bool b_SetInitialPoint = false;
 
     //   Build the initial chart dir array
@@ -2193,7 +2193,7 @@ bool MyApp::OnInit()
 
     //  Windows installer may have left hints regarding the initial chart dir selection
 #ifdef __WXMSW__
-    if( g_bFirstRun ) {
+    if( g_bFirstRun && (ChartDirArray.GetCount() == 0) ) {
         int ndirs = 0;
 
         wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
@@ -2246,75 +2246,9 @@ bool MyApp::OnInit()
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( );
     if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
-        bDBUpdateInProgress = true;
-
-        if( ChartDirArray.GetCount() ) {
-//              Create and Save a new Chart Database based on the hints given in the config file
-
-            /*
-             wxString msg1(_("OpenCPN needs to update the chart database from config file entries...."));
-
-             OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),wxICON_INFORMATION | wxOK );
-             int dlg_ret;
-             dlg_ret = mdlg.ShowModal();
-             */
-            delete ChartData;
-            ChartData = new ChartDB( );
-
-            wxString line( _("Rebuilding chart database from configuration file entries...") );
-            /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
-             * to be localized properly. See {wxWidgets}src/generic/progdlgg.cpp:190 */
-            wxString dummy1 = _("Elapsed time : ");
-            wxString dummy2 = _("Estimated time : ");
-            wxString dummy3 = _("Remaining time : ");
-//             wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
-//                     NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
-
-            ChartData->Create( ChartDirArray, NULL );
-            ChartData->SaveBinary(ChartListFileName);
-
-            //delete pprog;
-        }
-
-        else            // No chart database, no config hints, so bail to Options....
-        {
-            wxLogMessage(
-                    _T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:")
-                            + ChartListFileName );
-
-            wxString msg1(
-                    _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
-
- ///           OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
-
-
-///            gFrame->DoOptionsDialog();
-
-            b_SetInitialPoint = true;
-
-        }
-
-        bDBUpdateInProgress = false;
-
-        //    As a favor to new users, poll the database and
-        //    move the initial viewport so that a chart will come up.
-
-        if( b_SetInitialPoint ) {
-            double clat, clon;
-            if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon, CHART_FAMILY_RASTER ) ) {
-                gLat = clat;
-                gLon = clon;
-                gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-            } else {
-                if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon, CHART_FAMILY_VECTOR ) ) {
-                    gLat = clat;
-                    gLon = clon;
-                    gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-                }
-            }
-        }
-
+        g_bNeedDBUpdate = true;
     }
+
 
     //  Verify any saved chart database startup index
     if(g_restore_dbindex >= 0){
@@ -2327,8 +2261,6 @@ bool MyApp::OnInit()
 
     //  Apply the inital Group Array structure to the chart data base
     ChartData->ApplyGroupArray( g_pGroupArray );
-
-    //pCurrentStack = new ChartStack;
 
 //      All set to go.....
 
@@ -2824,6 +2756,48 @@ void MyFrame::OnSENCEvtThread( OCPN_BUILDSENC_ThreadEvent & event)
             break;
     }
 }
+
+void MyFrame::RebuildChartDatabase()
+{
+    bool b_SetInitialPoint = false;
+
+    //   Build the initial chart dir array
+    ArrayOfCDI ChartDirArray;
+    pConfig->LoadChartDirArray( ChartDirArray );
+
+
+
+        if( ChartDirArray.GetCount() ) {
+//              Create and Save a new Chart Database based on the hints given in the config file
+
+            wxString msg1(_("OpenCPN needs to update the chart database from config file entries...."));
+
+            OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),wxICON_INFORMATION | wxOK );
+            int dlg_ret;
+            dlg_ret = mdlg.ShowModal();
+
+            delete ChartData;
+            ChartData = new ChartDB( );
+
+            wxString line( _("Rebuilding chart database from configuration file entries...") );
+            /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
+             * to be localized properly. See {wxWidgets}src/generic/progdlgg.cpp:190 */
+            wxString dummy1 = _("Elapsed time : ");
+            wxString dummy2 = _("Estimated time : ");
+            wxString dummy3 = _("Remaining time : ");
+            wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
+                     NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+
+            ChartData->Create( ChartDirArray, pprog );
+            ChartData->SaveBinary(ChartListFileName);
+
+            delete pprog;
+            
+            //  Apply the inital Group Array structure to the chart data base
+            ChartData->ApplyGroupArray( g_pGroupArray );
+        }
+}
+
 
 // play an arbitrary number of bells by using 1 and 2 bell sounds
 void MyFrame::OnBellsFinished( wxCommandEvent& event )
@@ -6621,6 +6595,35 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             // Set persistent Fullscreen mode
             g_Platform->SetFullscreen(g_bFullscreen);
             
+            // Rebuild chart database, if necessary
+            if(g_bNeedDBUpdate){
+                RebuildChartDatabase();
+                for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                    ChartCanvas *cc = g_canvasArray.Item(i);
+                    if(cc){
+                        cc->SetGroupIndex( 0, false );  //all charts
+                    }
+                }
+
+                //    As a favor to new users, poll the database and
+                //    move the initial viewport so that a chart will come up.
+                
+                double clat, clon;
+                if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon, CHART_FAMILY_RASTER ) ) {
+                    gLat = clat;
+                    gLon = clon;
+                    gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
+                } else {
+                    if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon, CHART_FAMILY_VECTOR ) ) {
+                        gLat = clat;
+                        gLon = clon;
+                        gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
+                    }
+                }
+
+                g_bNeedDBUpdate = false;
+            }
+
             // Load the waypoints.. both of these routines are very slow to execute which is why
             // they have been to defered until here
             pWayPointMan = new WayPointman();
