@@ -888,8 +888,8 @@
         <catalog>                                                                                             
           <name>Belgium OSM Raster Charts</name>
           <type>RNC</type>
-          <location>https://www.openwaterkaart.nl/charts/OSM-raster-be/OSM-raster-be-catalog.xml</location>
-          <dir>{USERDATA}/ENC/BE_OSMRASTER</dir>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-be/OSM-raster-be-catalog.xml</location>
+          <dir>{USERDATA}/RNC/BE_OSMRASTER</dir>
         </catalog>
         <catalog>
           <name>Brasil RNC Nautical Charts</name>
@@ -928,6 +928,12 @@
           <dir>{USERDATA}/ENC/DE_INLAND</dir>
         </catalog>
         <catalog>
+          <name>Germany OSM Raster Charts</name>
+          <type>RNC</type>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-de/OSM-raster-de-catalog.xml</location>
+          <dir>{USERDATA}/RNC/DE_OSMRASTER</dir>
+        </catalog>
+        <catalog>
           <name>Hungary Inland ENC Charts</name>
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/HU_IENC_Catalog.xml</location>
@@ -942,8 +948,8 @@
         <catalog>
           <name>Netherland OSM Raster Charts</name>
           <type>RNC</type>
-          <location>https://www.openwaterkaart.nl/charts/OSM-raster-nl/OSM-raster-nl-catalog.xml</location>
-          <dir>{USERDATA}/ENC/NL_OSMRASTER</dir>
+          <location>https://charts.openwaterkaart.nl/OSM-raster-nl/OSM-raster-nl-catalog.xml</location>
+          <dir>{USERDATA}/RNC/NL_OSMRASTER</dir>
         </catalog>
         <catalog>
           <name>New Zealand RNC Nautical Charts</name>
