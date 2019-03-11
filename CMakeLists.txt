@@ -1428,6 +1428,7 @@ SET(HDRS
                 include/FlexHash.h
                 include/iENCToolbar.h
                 include/mbtiles.h
+                include/bitcast.h
                 ${CMAKE_BINARY_DIR}/include/config.h
 )
 
