@@ -3805,6 +3805,32 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+       //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
+    if( VPoint.b_quilt ) {
+        if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+
+            ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
+            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI)
+                        ChPI->ClearPLIBTextList();
+                    else
+                        ps52plib->ClearTextList();
+                }
+                
+                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
+                ViewPort vpx = VPoint;
+                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
+                
+                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                RenderQuiltViewGLText( vpx, screen_region );
+            }
+        }
+    }
+
+
     
     // Render MBTiles as overlay
     std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
@@ -3865,32 +3891,7 @@ void glChartCanvas::Render()
  
 
     
-    //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
-    if( VPoint.b_quilt ) {
-        if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
-
-            ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
-            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
-                //        Clear the text Global declutter list
-                if(chart){
-                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
-                    if(ChPI)
-                        ChPI->ClearPLIBTextList();
-                    else
-                        ps52plib->ClearTextList();
-                }
-                
-                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
-                ViewPort vpx = VPoint;
-                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
-                
-                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-                RenderQuiltViewGLText( vpx, screen_region );
-            }
-        }
-    }
-
-    
+     
     // Render static overlay objects
     for(OCPNRegionIterator upd ( screen_region ); upd.HaveRects(); upd.NextRect()) {
          LLRegion region = VPoint.GetLLRegion(upd.GetRect());
