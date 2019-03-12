@@ -7987,9 +7987,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 {
                     int dlg_return;
                     #ifndef __WXOSX__
+                    m_FinishRouteOnKillFocus = false;  // Avoid route finish on focus change for message dialog
                     dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
-                                                 _("OpenCPN Route Create"),
-                                                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                                             _("OpenCPN Route Create"),
+                                               (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                    m_FinishRouteOnKillFocus = true;
                                                  #else
                                                  dlg_return = wxID_YES;
                                                  #endif
