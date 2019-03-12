@@ -1190,12 +1190,13 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       int old_lock = 0;
 
       bool bInCache = false;
-      m_ticks++;
 
 //    Search the cache
+      {
+        wxMutexLocker lock(m_cache_mutex);
 
-      if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
         unsigned int nCache = pChartCache->GetCount();
+        m_ticks++;
         for(unsigned int i=0 ; i<nCache ; i++)
         {
                 pce = (CacheEntry *)(pChartCache->Item(i));
@@ -1206,12 +1207,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     break;
                 }
         }
-        m_cache_mutex.Unlock();
-      }
- 
 
-      if(bInCache)
-      {
+        if(bInCache)
+        {
           wxString msg;
           msg.Printf(_T("OpenChartUsingCache, IN cache: cache size: %d\n"), (int)pChartCache->GetCount());
 //          wxLogMessage(msg);
@@ -1230,14 +1228,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     if(pthumbwin && pthumbwin->pThumbChart == Ch)
                        pthumbwin->pThumbChart = NULL;
                     delete Ch;                                  // chart is not useable
-                    // but may be locked in quilt
-                    if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
-                        old_lock = pce->n_lock;
-                        pChartCache->Remove(pce);                   // so remove it
-                        delete pce;
-                        m_cache_mutex.Unlock();
-                    }
-                    // XXX and if there's a mutex error?
+                    old_lock = pce->n_lock;
+                    pChartCache->Remove(pce);                   // so remove it
+                    delete pce;
                         
                     bInCache = false;
               }
@@ -1250,18 +1243,15 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                }
                return Ch;
           }
-      }
+        }
 
-      if(!bInCache)                    // not in cache
-      {
-          m_b_busy = true;
-          if( !m_b_locked && wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
-              
-            
+        if(!bInCache)                    // not in cache
+        {
+            m_b_busy = true;
+            if( !m_b_locked ) {
                 //    Use memory limited cache policy, if defined....
                 if(g_memCacheLimit)
                 {
-
             //    Check memory status to see if enough room to open another chart
                     int mem_used;
                     GetMemoryStatus(0, &mem_used);
@@ -1312,15 +1302,12 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     }
                     
                 }
-                
-                m_cache_mutex.Unlock();
-          }
+            }
+        }
+      } // unlock
 
-
-
-
-//#endif      // ndef __WXMSW__
-
+      if(!bInCache)                    // not in cache
+      {
             wxLogMessage(_T("Creating new chart"));
 
             if(chart_type == CHART_TYPE_KAP)
@@ -1389,9 +1376,6 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   ext.ELON = cte.GetLonMax();
                   Chcm93->SetFullExtent(ext);
             }
-
-
-
 #endif
 
             else if(chart_type == CHART_TYPE_PLUGIN)

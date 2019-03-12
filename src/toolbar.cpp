@@ -353,6 +353,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_toolShowMask = _T("XXXXXXXXXXXXXXXX");
     n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
     b_canToggleOrientation = true;
+    m_enableRolloverBitmaps = true;
     
     m_ptoolbar = CreateNewToolbar();
     
@@ -397,7 +398,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_destroyTimer.SetOwner( this, DESTROY_TIMER );
     
     m_benableSubmerge = true;
-    m_enableRolloverBitmaps = true;
 }
 
 ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
