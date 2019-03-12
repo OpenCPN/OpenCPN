@@ -7973,7 +7973,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
            //printf("Bytes in mapped regions (hblkhd):      %d\n", mi.hblkhd);
            //printf("Max. total allocated space (usmblks):  %d\n", mi.usmblks);
            //printf("Free bytes held in fastbins (fsmblks): %d\n", mi.fsmblks);
-           printf("Total allocated space (uordblks):      %d\n", mi.uordblks / 1000);
+           //printf("Total allocated space (uordblks):      %d\n", mi.uordblks / 1000);
            //printf("Total free space (fordblks):           %d\n", mi.fordblks);
            //printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
 
