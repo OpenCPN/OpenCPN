@@ -43,7 +43,7 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-  - set -x; if [[ "$OCPN_TARGET" == "osx" ]]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
+  - if [ "$OCPN_TARGET" = "osx" ]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
   on:
     branch: master
     tags: false
