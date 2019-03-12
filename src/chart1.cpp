@@ -5747,25 +5747,11 @@ void MyFrame::JumpToPosition( ChartCanvas *cc, double lat, double lon, double sc
 {
     if (lon > 180.0)
         lon -= 360.0;
+    // XXX is vLat/vLon always equal to cc m_vLat, m_vLon after SetViewPoint? Does it matter?
     vLat = lat;
     vLon = lon;
-    cc->StopMovement();
-    cc->m_bFollow = false;
-    cc->UpdateFollowButtonState();
+    cc->JumpToPosition(lat, lon, scale);
     
-    if( !cc->GetQuiltMode() ) {
-        double skew = 0;
-        if(cc->m_singleChart)
-            skew = cc->m_singleChart->GetChartSkew() * PI / 180.;
-        cc->SetViewPoint( lat, lon, scale, skew, cc->GetVPRotation() );
-    } else {
-        cc->SetViewPoint( lat, lon, scale, 0, cc->GetVPRotation() );
-    }
-
-    cc->ReloadVP();
-
-    cc->SetCanvasToolbarItemState( ID_FOLLOW, false );
-
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( cc->GetVP() );
     }
