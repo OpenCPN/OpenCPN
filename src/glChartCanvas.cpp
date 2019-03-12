@@ -3835,7 +3835,9 @@ void glChartCanvas::Render()
     // Render MBTiles as overlay
     std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
     unsigned int im = stackIndexArray.size();
-    if( im > 0 ) {
+    // XXX should
+    // assert(!VPoint.b_quilt && im == 0)
+    if( VPoint.b_quilt && im > 0 ) {
         bool regionVPBuilt = false;
         OCPNRegion screen_region;
         LLRegion screenLLRegion;
