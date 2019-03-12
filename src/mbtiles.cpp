@@ -386,11 +386,16 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             const char* colMinZoom = query.getColumn(0);
             const char* colMaxZoom = query.getColumn(1);
             
-            int zoom;
-            sscanf( colMinZoom, "%i", &zoom );
-            m_minZoom = wxMax(m_minZoom, zoom);
-            sscanf( colMaxZoom, "%i", &zoom );
-            m_maxZoom = wxMin(m_maxZoom, zoom);
+            int min_zoom, max_zoom;
+            sscanf( colMinZoom, "%i", &min_zoom );
+            m_minZoom = wxMax(m_minZoom, min_zoom);
+            sscanf( colMaxZoom, "%i", &max_zoom );
+            m_maxZoom = wxMin(m_maxZoom, max_zoom);
+            if(m_minZoom > m_maxZoom) {
+                //We are looking at total nonsense with wrong metatadata and actual tile coverage out of it, better use what's really in the data to be able to show at least something
+                m_minZoom = min_zoom;
+                m_maxZoom = max_zoom;
+            }
         }
         
 //        std::cout << name.c_str() << " zoom_min: " << m_minZoom << " zoom_max: " << m_maxZoom << std::endl;
