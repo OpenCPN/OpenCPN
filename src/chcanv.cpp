@@ -1258,6 +1258,8 @@ void ChartCanvas::canvasRefreshGroupIndex( void )
 
 void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
 {
+    SetAlertString(_T(""));
+    
     int new_index = index;
     if( index > (int) g_pGroupArray->GetCount() )
         new_index = 0;
@@ -10182,6 +10184,28 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     }
 
     
+// Any MBtiles?
+    std::vector<int> stackIndexArray = m_pQuilt->GetExtendedStackIndexArray();
+    unsigned int im = stackIndexArray.size();
+    if( VPoint.b_quilt && im > 0 ) {
+
+        wxString old_alert = GetAlertString();
+        
+        std::vector<int> tiles_to_show;
+        for( unsigned int is = 0; is < im; is++ ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
+            if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                tiles_to_show.push_back(stackIndexArray[is]);
+            }
+        }
+        
+        if(tiles_to_show.size())
+            SetAlertString( _("MBTile requires OpenGL to be enabled"));
+    }
+
 //    Draw the rest of the overlay objects directly on the scratch dc
     ocpnDC scratch_dc( mscratch_dc );
     DrawOverlayObjects( scratch_dc, ru );
