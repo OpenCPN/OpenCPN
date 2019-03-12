@@ -431,7 +431,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
             maxLat = wxMax(maxLat, tiley2lat(maxRow - 1, zoom));
             minLon = wxMin(minLon, tilex2long(minCol, zoom));
             maxLon = wxMax(maxLon, tilex2long(maxCol + 1, zoom));
-            std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
+            //std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
         }
 
         // ... and use what we found only in case we miss some of the values from metadata...
@@ -447,7 +447,7 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
     catch (std::exception& e)
     {
         const char *t = e.what();
-        std::cout << "exception: " << e.what() << std::endl;
+        wxLogMessage("mbtiles exception: %s", e.what());
     }
 }
 
@@ -520,7 +520,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       catch (std::exception& e)
       {
           const char *t = e.what();
-          std::cout << "exception: " << e.what() << std::endl;
+          wxLogMessage("mbtiles exception: %s", e.what());
           return INIT_FAIL_REMOVE;
       }     
     
@@ -931,7 +931,7 @@ bool ChartMBTiles::getTileTexture( mbTileDescriptor *tile)
         catch (std::exception& e)
         {
             const char *t = e.what();
-            std::cout << "exception: " << e.what() << std::endl;
+            wxLogMessage("mbtiles exception: %s", e.what());
         }     
     }
         
