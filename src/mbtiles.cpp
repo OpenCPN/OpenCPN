@@ -117,7 +117,7 @@ extern MyConfig        *pConfig;
 */
 
 // A "nominal" scale value, by zoom factor.  Estimated at equator, with monitor pixel size of 0.3mm 
-double OSM_zoomScale[] = { 5e8,
+static const double OSM_zoomScale[] = { 5e8,
                             2.5e8,
                             1.5e8,
                             7.0e7,
@@ -139,7 +139,7 @@ double OSM_zoomScale[] = { 5e8,
                             1.0e3};
         
 //  Meters per pixel, by zoom factor                            
-double OSM_zoomMPP[] = { 156412,
+static const double OSM_zoomMPP[] = { 156412,
                             78206,
                             39103,
                             19551,
@@ -161,7 +161,7 @@ double OSM_zoomMPP[] = { 156412,
                             0.298 };
                             
                             
-const double eps = 6e-6;  // about 1cm on earth's surface at equator
+static const double eps = 6e-6;  // about 1cm on earth's surface at equator
 extern MyFrame *gFrame;
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -187,7 +187,7 @@ private:
 // *********************************************
 
 // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#C.2FC.2B.2B
-int long2tilex(double lon, int z)
+static int long2tilex(double lon, int z)
 {
     if(lon < -180)
         lon += 360;
@@ -195,7 +195,7 @@ int long2tilex(double lon, int z)
     return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z)));
 }
 
-int lat2tiley(double lat, int z)
+static int lat2tiley(double lat, int z)
 {
     int y = (int)(floor((1.0 - log( tan(lat * M_PI/180.0) + 1.0 / cos(lat * M_PI/180.0)) / M_PI) / 2.0 * pow(2.0, z)));
     int ymax  = 1 << z;
@@ -203,12 +203,12 @@ int lat2tiley(double lat, int z)
     return y;
 }
 
-double tilex2long(int x, int z)
+static double tilex2long(int x, int z)
 {
     return x / pow(2.0, z) * 360.0 - 180;
 }
 
-double tiley2lat(int y, int z)
+static double tiley2lat(int y, int z)
 {
     double n = pow(2.0,z);
     int ymax  = 1 << z;
