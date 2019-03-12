@@ -47,6 +47,7 @@
 #include "wx/tokenzr.h"
 #include <wx/mediactrl.h>
 #include "wx/dir.h"
+#include <wx/statline.h>
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -2944,7 +2945,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   //  Routes
   wxStaticBox* routeText =
-      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Routes"));
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Routes"));
   wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer(routeText, wxVERTICAL);
   Routes->Add(routeSizer, 0, wxGROW | wxALL, border_size);
 
@@ -2994,10 +2995,15 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      _("Advance route waypoint on arrival only"));
   routeSizer->Add(pAdvanceRouteWaypointOnArrivalOnly, 0, wxALL, 5);
 
-  
+#ifdef __WXGTK__
+  Routes->AddSpacer(8 * group_item_spacing);
+  wxStaticLine *pln = new wxStaticLine( itemPanelRoutes, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+  Routes->Add(pln, 0, wxEXPAND);
+#endif  
+
   //  Waypoints
   wxStaticBox* waypointText =
-      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Waypoints"));
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Waypoints"));
   wxStaticBoxSizer* waypointSizer =
       new wxStaticBoxSizer(waypointText, wxVERTICAL);
   Routes->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
@@ -3103,6 +3109,12 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   
   // Control Options
+
+#ifdef __WXGTK__
+    Routes->AddSpacer(8 * group_item_spacing);
+    wxStaticLine *pln1 = new wxStaticLine( itemPanelRoutes, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    Routes->Add(pln1, 0, wxEXPAND);
+#endif
     
     wxStaticBox* waypointControl =
         new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Control Options"));
