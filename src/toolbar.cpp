@@ -1615,7 +1615,7 @@ void ocpnFloatingToolbarDialog::EnableRolloverBitmaps( bool bEnable )
 //----------------------------------------------------------------------------
 // Toolbar Tooltip Popup Window Definition
 //----------------------------------------------------------------------------
-class ToolTipWin: public wxDialog {
+class ToolTipWin: public wxFrame {
 public:
     ToolTipWin( wxWindow *parent );
     ~ToolTipWin();
@@ -1655,13 +1655,13 @@ DECLARE_EVENT_TABLE()
 //    Toolbar Tooltip window implementation
 //
 //-----------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ToolTipWin, wxDialog) EVT_PAINT(ToolTipWin::OnPaint)
+BEGIN_EVENT_TABLE(ToolTipWin, wxFrame) EVT_PAINT(ToolTipWin::OnPaint)
 
 END_EVENT_TABLE()
 
 // Define a constructor
 ToolTipWin::ToolTipWin( wxWindow *parent ) :
-        wxDialog( parent, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 1, 1 ),
+        wxFrame( parent, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 1, 1 ),
                 wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR )
 {
     m_pbm = NULL;
@@ -2308,7 +2308,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         if(m_btooltip_show){
             //    ToolTips
             if( NULL == m_pToolTipWin ) {
-                m_pToolTipWin = new ToolTipWin( NULL/*GetParent()*/ );
+                m_pToolTipWin = new ToolTipWin( gFrame/*GetParent()*/ );
                 m_pToolTipWin->SetColorScheme( m_currentColorScheme );
                 m_pToolTipWin->Hide();
             }
