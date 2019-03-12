@@ -2352,7 +2352,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         }
 
         //    Remove Highlighting
-        if( m_last_ro_tool ) {
+        if( m_last_ro_tool && m_tbenableRolloverBitmaps) {
             if( m_last_ro_tool->IsEnabled() ) {
                 m_last_ro_tool->rollover = false;
                 m_last_ro_tool->bitmapOK = false;

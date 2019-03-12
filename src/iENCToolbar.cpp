@@ -73,7 +73,12 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     m_ptoolbar->AddTool( ID_RPLUS, _T("RangePlus"), m_bmRPlus, m_bmRPlus );
     m_ptoolbar->AddTool( ID_RMINUS, _T("RangeMinus"), m_bmRMinus, m_bmRMinus );
     
-    
+ 
+    SetCanToggleOrientation( false );
+    EnableRolloverBitmaps( false );
+    DisableTooltips();
+    SetGrabberEnable( false );
+
     m_nDensity = 0;
     SetDensityToolBitmap(m_nDensity);
     
@@ -87,8 +92,7 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     m_state_timer.SetOwner( this, STATE_TIMER );
     m_state_timer.Start( 500, wxTIMER_CONTINUOUS );
     
-    SetCanToggleOrientation( false );
-    
+
 }
 
 iENCToolbar::~iENCToolbar()
