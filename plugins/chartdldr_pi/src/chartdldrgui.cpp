@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "chartdldrgui.h"
+#include <wx/msgdlg.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -499,6 +500,10 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxS
 	sbSizerBehavior->Add( m_cbBulkUpdate, 0, wxALL, 5 );
 
 
+    m_buttonDownloadMasterCatalog = new wxButton(this, wxID_ANY, _("Update chart source catalog"), wxDefaultPosition, wxDefaultSize, 0);
+    
+    sbSizerBehavior->Add( m_buttonDownloadMasterCatalog, 0, wxALL, 5 );
+    
 	bSizerPrefsMain->Add( sbSizerBehavior, 1, wxALL|wxEXPAND, 5 );
 
 	m_sdbSizerBtns = new wxStdDialogButtonSizer();
@@ -521,7 +526,45 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxS
 	m_sdbSizerBtnsCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnCancelClick ), NULL, this );
 	m_sdbSizerBtnsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnOkClick ), NULL, this );
         m_buttonChartDirectory->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnDirSelClick ), NULL, this );
+    m_buttonDownloadMasterCatalog->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnDownloadMasterCatalog ), NULL, this );
+}
 
+void ChartDldrPrefsDlg::OnDownloadMasterCatalog( wxCommandEvent& event )
+{
+    wxFileName tfn = wxFileName::CreateTempFileName(_T("chartdldr"));
+    wxString url = "https://raw.githubusercontent.com/OpenCPN/OpenCPN/master/plugins/chartdldr_pi/data/chart_sources.xml";
+    
+    _OCPN_DLStatus ret = OCPN_downloadFile(url, tfn.GetFullPath(), _("Downloading chart sources"), _("Downloading chart sources"), wxNullBitmap, this, OCPN_DLDS_ELAPSED_TIME | OCPN_DLDS_ESTIMATED_TIME | OCPN_DLDS_REMAINING_TIME | OCPN_DLDS_SPEED | OCPN_DLDS_SIZE | OCPN_DLDS_URL | OCPN_DLDS_CAN_PAUSE | OCPN_DLDS_CAN_ABORT | OCPN_DLDS_AUTO_CLOSE, 15);
+    wxFileName fn;
+    fn.SetPath(*GetpPrivateApplicationDataLocation());
+    fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
+
+    switch (ret) {
+        case OCPN_DL_NO_ERROR: {
+            if (!wxCopyFile(tfn.GetFullPath(), fn.GetFullPath())) {
+                wxMessageBox(wxString::Format(_("Failed to save: %s "), fn.GetFullPath().c_str()), _("Chart downloader"), wxOK | wxICON_ERROR);
+            }
+            break;
+        }
+        case OCPN_DL_FAILED: {
+            wxMessageBox(
+                         wxString::Format(_("Failed to download: %s \nVerify there is a working Internet connection."), url.c_str()),
+                         _("Chart downloader"), wxOK | wxICON_ERROR);
+            break;
+        }
+        case OCPN_DL_USER_TIMEOUT:
+        case OCPN_DL_ABORTED: {
+            break;
+        }
+        case OCPN_DL_UNKNOWN:
+        case OCPN_DL_STARTED: {
+            break;
+        }
+            
+        default:
+            wxASSERT(false);  // This should never happen because we handle all possible cases of ret
+    }
+    if (wxFileExists(tfn.GetFullPath())) wxRemoveFile(tfn.GetFullPath());
 }
 
 void ChartDldrPrefsDlg::OnDirSelClick( wxCommandEvent& event )
@@ -541,5 +584,5 @@ ChartDldrPrefsDlg::~ChartDldrPrefsDlg()
 	m_sdbSizerBtnsCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnCancelClick ), NULL, this );
 	m_sdbSizerBtnsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnOkClick ), NULL, this );
         m_buttonChartDirectory->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnDirSelClick ), NULL, this );
-
+    m_buttonDownloadMasterCatalog->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPrefsDlg::OnDownloadMasterCatalog ), NULL, this );
 }
