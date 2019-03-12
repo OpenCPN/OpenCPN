@@ -1025,6 +1025,8 @@ void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
         }
     }
 
+    m_lasttspos.Clear();
+    
     #ifdef __WXGTK__ 
         gFrame->Raise();
     #endif
