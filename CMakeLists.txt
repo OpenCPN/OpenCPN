@@ -1998,6 +1998,12 @@ SET(uiData
         src/bitmaps/DragHandle.svg
         src/bitmaps/eye.svg
         src/bitmaps/eyex.svg
+        src/bitmaps/iENC_All.svg
+        src/bitmaps/iENC_Minimum.svg
+        src/bitmaps/iENC_Standard.svg
+        src/bitmaps/iENC_UserStd.svg
+        src/bitmaps/iENC_RPlus.svg
+        src/bitmaps/iENC_RMinus.svg
 )
 
 IF (USE_S57)

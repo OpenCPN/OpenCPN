@@ -46,6 +46,7 @@ extern PlugInManager *g_pi_manager;
 extern OCPNPlatform *g_Platform; 
 
 
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
@@ -118,19 +119,29 @@ void iENCToolbar::SetColorScheme( ColorScheme cs )
 
 void iENCToolbar::LoadToolBitmaps()
 {
-    wxString dataDir = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator() ;
+    wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator() ;
+
+    int w = 96;
+    int h = 32;
     
-    if(::wxFileExists( dataDir + _T("iconMinimum.png"))){
-        m_bmMinimum = wxBitmap( dataDir + _T("iconMinimum.png"), wxBITMAP_TYPE_PNG);
-        m_bmStandard = wxBitmap( dataDir + _T("iconStandard.png"), wxBITMAP_TYPE_PNG);
-        m_bmAll = wxBitmap( dataDir + _T("iconAll.png"), wxBITMAP_TYPE_PNG);
-        m_bmUStd = wxBitmap( dataDir + _T("iconUserStd.png"), wxBITMAP_TYPE_PNG);
+    if(::wxFileExists( svgDir + _T("iENC_All.svg"))){
+        wxImage img = LoadSVGIcon( svgDir + _T("iENC_All.svg"), w, h );
+        m_bmAll = wxBitmap(img);
+        img = LoadSVGIcon( svgDir + _T("iENC_Minimum.svg"), w, h );
+        m_bmMinimum = wxBitmap(img);
+        img = LoadSVGIcon( svgDir + _T("iENC_Standard.svg"), w, h );
+        m_bmStandard = wxBitmap(img);
+        img = LoadSVGIcon( svgDir + _T("iENC_UserStd.svg"), w, h );
+        m_bmUStd = wxBitmap(img);
+
+        img = LoadSVGIcon( svgDir + _T("iENC_RPlus.svg"), w, h );
+        m_bmRPlus = wxBitmap(img);
+        img = LoadSVGIcon( svgDir + _T("iENC_RMinus.svg"), w, h );
+        m_bmRMinus = wxBitmap(img);
         
-        m_bmRPlus = wxBitmap( dataDir + _T("iconRPlus.png"), wxBITMAP_TYPE_PNG);
-        m_bmRMinus = wxBitmap( dataDir + _T("iconRMinus.png"), wxBITMAP_TYPE_PNG);
     }
     else{
-        wxLogMessage(_T("Cannot find iENC icons at: ") + dataDir);
+        wxLogMessage(_T("Cannot find iENC icons at: ") + svgDir);
         
         m_bmMinimum = wxBitmap( 96, 32);
         m_bmStandard = wxBitmap( 96, 32);;
@@ -140,8 +151,7 @@ void iENCToolbar::LoadToolBitmaps()
         m_bmRPlus = wxBitmap( 96, 32);
         m_bmRMinus = wxBitmap( 96, 32);
     }
-    
-    
+   
 }
     
     
