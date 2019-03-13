@@ -4289,9 +4289,9 @@ wxString formatTimeDelta(wxTimeSpan span)
     span -= wxTimeSpan::Minutes(span.GetMinutes());
     int seconds = (double)span.GetSeconds().ToLong();
     
-    timeStr = (days ? wxString::Format(_("%dd "), days) : _T("")) +
-    (hours || days ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes)) :
-     wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
+    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_T("%2dH %2dM"), hours, (int)round(minutes)) :
+     wxString::Format(_T("%2dM %2dS"), (int)floor(minutes), seconds));
     
     return timeStr;
 }
