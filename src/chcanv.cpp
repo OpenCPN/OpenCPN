@@ -4608,7 +4608,7 @@ void ChartCanvas::UpdateFollowButtonState( void )
    }
 }
 
-void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
+void ChartCanvas::JumpToPosition( double lat, double lon, double scale_ppm )
 {
     if (lon > 180.0)
         lon -= 360.0;
@@ -4621,9 +4621,14 @@ void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
         double skew = 0;
         if(m_singleChart)
             skew = m_singleChart->GetChartSkew() * PI / 180.;
-        SetViewPoint( lat, lon, scale, skew, GetVPRotation() );
+        SetViewPoint( lat, lon, scale_ppm, skew, GetVPRotation() );
     } else {
-        SetViewPoint( lat, lon, scale, 0, GetVPRotation() );
+        if (scale_ppm != GetVPScale()) {
+            // XXX should be done in SetViewPoint
+            VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
+            AdjustQuiltRefChart();
+        }
+        SetViewPoint( lat, lon, scale_ppm, 0, GetVPRotation() );
     }
     
     ReloadVP();
@@ -4777,7 +4782,7 @@ double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
 
 //      Verify and adjust the current reference chart,
 //      so that it will not lead to excessive overzoom or underzoom onscreen
-int ChartCanvas::AdjustQuiltRefChart( void )
+int ChartCanvas::AdjustQuiltRefChart()
 {
     int ret = -1;
     if(m_pQuilt){
