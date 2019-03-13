@@ -10189,8 +10189,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     unsigned int im = stackIndexArray.size();
     if( VPoint.b_quilt && im > 0 ) {
 
-        wxString old_alert = GetAlertString();
-        
         std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
