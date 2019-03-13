@@ -534,7 +534,7 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( ToolbarItemContainer *ti
         
         menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tic->m_tipString );
         int n = m_FloatingToolbarConfigMenu->GetMenuItemCount(); 
-        menuitem->Check( m_configString.GetChar( n-1 ) == _T('X') );
+        menuitem->Check( m_configString.Len() >= n ? m_configString.GetChar( n-1 ) == _T('X') : true );
         return menuitem->IsChecked();
     }
     else
@@ -3367,7 +3367,11 @@ END_EVENT_TABLE()
          }
          if(m_configMenu){
              wxMenuItem *item = m_configMenu->FindItemByPosition( i );
-             new_toolbarConfig.SetChar( i, cb->IsChecked( ) ? _T( 'X' ) : _T( '.' ) );
+             if( new_toolbarConfig.Len() > i ) {
+                 new_toolbarConfig.SetChar( i, cb->IsChecked( ) ? _T( 'X' ) : _T( '.' ) );
+             } else {
+                 new_toolbarConfig.Append( cb->IsChecked( ) ? _T( 'X' ) : _T( '.' ) );
+             }
              item->Check( cb->IsChecked() );
              if(cb->IsChecked())
                  ncheck++;
