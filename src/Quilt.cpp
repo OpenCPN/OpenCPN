@@ -884,6 +884,7 @@ struct scale {
 int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum type, double proposed_scale_onscreen )
 {
     std::vector<scale> scales;
+    std::vector<scale> scales_mbtiles;
 
     //  For Vector charts, or for ZoomIN operations, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
@@ -913,13 +914,18 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
                     nmax_scale = 1;
 
                 int nmin_scale = GetNomScaleMin(nscale, type, family);
-                scales.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
+                if (CHART_TYPE_MBTILES == ChartData->GetDBChartType( test_db_index ) )
+                    scales_mbtiles.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
+                else
+                    scales.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
 
                 i_first ++;
             }
         }
     }
-
+    // mbtiles charts only set
+    if (scales.empty())
+        scales = scales_mbtiles;
     //  If showing Vector charts,
     //  Find the smallest scale chart of the target type (i.e. skipping cm93)
     //  and make sure that its min scale is at least

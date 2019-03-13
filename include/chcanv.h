@@ -320,7 +320,6 @@ public:
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
-      int AdjustQuiltRefChart( void );
       void ToggleCourseUp( );
       void ToggleLookahead( );
       void SetShowGPS( bool show );
@@ -517,6 +516,8 @@ public:
       void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
 
 private:
+      int AdjustQuiltRefChart();
+
       bool UpdateS52State();
       
       void CallPopupMenu( int x, int y );
