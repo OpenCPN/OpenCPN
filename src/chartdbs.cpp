@@ -1853,8 +1853,8 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name)
 
                   wxRegEx test_n(_T("^[A-Ga-g]"));
                   bool b_probably_found_cm93 = false;
-                  bool b_cont_n = dir_n.GetFirst(&candidate_n);
-                  while(b_cont_n)
+                  bool b_cont_n = dir_n.IsOpened() && dir_n.GetFirst(&candidate_n);
+                 while(b_cont_n)
                   {
                         if(test_n.Matches(candidate_n) && (candidate_n.Len() == 1))
                         {
@@ -2549,6 +2549,8 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, 
             return NULL;
       }
 
+      if(!strcmp(filePath, "/home/sean/charts/bsb/03Region/14786/14786_16.KAP"))
+          wxLogMessage("AAAAAHH\n");
       InitReturn rc = pch->Init(filePath, HEADER_ONLY);
       if (rc != INIT_OK) {
             delete pch;
