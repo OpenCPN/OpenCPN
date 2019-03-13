@@ -601,6 +601,22 @@ bool Select::IsSelectableSegmentSelected( ChartCanvas *cc, float slat, float slo
     return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
+static bool is_selectable_wp(ChartCanvas *cc, RoutePoint *wp)
+{
+    if (cc->m_bShowNavobjects)
+        return true;
+
+    if (wp->m_bIsActive)
+        return true;
+
+    Route *rte;
+    rte = g_pRouteMan->FindRouteContainingWaypoint( wp );
+    if (rte && rte->IsActive())
+        return true;
+
+    return false;
+}
+
 SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float slon, int fseltype )
 {
     float a, b, c, d;
@@ -618,8 +634,8 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
             switch( fseltype ){
                 case SELTYPE_ROUTEPOINT:
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) 
-                        if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) )
+                        if (is_selectable_wp(cc, (RoutePoint *)pFindSel->m_pData1))
                             if( ( (RoutePoint *)pFindSel->m_pData1 )->IsVisibleSelectable(cc) )
                                 ret_list.Append( pFindSel );
                     break;
@@ -629,7 +645,7 @@ SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float
                 case SELTYPE_DRAGHANDLE:    
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
-                        if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                        if (is_selectable_wp(cc, (RoutePoint *)pFindSel->m_pData1))
                             ret_list.Append( pFindSel );
                     }
                     break;
