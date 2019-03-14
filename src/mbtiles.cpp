@@ -557,6 +557,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       int minRegionZoom = -1;
       bool covr_populated = false;
 
+      m_nTiles = 0;
       while( (zoomFactor <= m_maxZoom) && (minRegionZoom < 0) )
       {
         LLRegion covrRegionZoom;
@@ -571,6 +572,8 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
         {
               const char* colValue = query_size.getColumn(0);
               int tile_at_zoom = atoi(colValue);
+              m_nTiles += tile_at_zoom;
+              
               if (tile_at_zoom > 1000) {
                   zoomFactor++;
                   if(!covr_populated) {
@@ -1032,8 +1035,12 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     // Do not render if significantly underzoomed
-    if( VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom]))
-        return true;
+    if( VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])){
+        if(m_nTiles > 500){
+            return true;
+        }
+    }
+    
     ViewPort vp = VPoint;
 
     OCPNRegion screen_region(wxRect(0, 0, vp.pix_width, vp.pix_height));

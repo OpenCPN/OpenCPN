@@ -145,7 +145,8 @@ protected:
       MBTilesScheme m_Scheme;
       
       SQLite::Database  *m_pDB;
-
+      int       m_nTiles;
+      
 private:
       void InitFromTiles( const wxString& name );
       wxPoint2DDouble GetDoublePixFromLL( ViewPort& vp, double lat, double lon );
