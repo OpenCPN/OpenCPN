@@ -2035,9 +2035,8 @@ void ChartCanvas::SetupCanvasQuiltMode( void )
 //                 GetVP().SetProjectionType(g_sticky_projection);
 //             else
 //                 GetVP().SetProjectionType(PROJECTION_MERCATOR);
-            
-            
-            
+        GetVP().SetProjectionType(PROJECTION_UNKNOWN);
+
     } else                                                  // going to SC Mode
     {
         std::vector<int>  empty_array;

@@ -703,44 +703,41 @@ void ChartMBTiles::PrepareTiles()
     
 }
 
-void ChartMBTiles::FlushTiles( void )
+void ChartMBTiles::FlushTiles()
 {
-    if(!bReadyToRender || m_tileArray == NULL)
+    if(!bReadyToRender || m_tileArray == nullptr)
         return;
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
 
-        std::unordered_map<unsigned int, mbTileDescriptor *>::iterator it = tzd->tileMap.begin();
-        while(it != tzd->tileMap.end())
+        for (auto const &it : tzd->tileMap)
         {
-            mbTileDescriptor *tile = it->second;
+            mbTileDescriptor *tile = it.second;
             if( tile ){
-                glDeleteTextures(1, &tile->glTextureName);
+                if (tile->glTextureName > 0)
+                    glDeleteTextures(1, &tile->glTextureName);
                 delete tile;
             }
-            it++;
         }
         delete tzd;
     }
 }
 
-void ChartMBTiles::FlushTextures( void )
+void ChartMBTiles::FlushTextures()
 {
-    if (m_tileArray == NULL) {
+    if (m_tileArray == nullptr) {
         return;
     }
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
 
-        std::unordered_map<unsigned int, mbTileDescriptor *>::iterator it = tzd->tileMap.begin();
-        while(it != tzd->tileMap.end())
+        for (auto const &it : tzd->tileMap)
         {
-            mbTileDescriptor *tile = it->second;
-            if( tile ){
+            mbTileDescriptor *tile = it.second;
+            if( tile && tile->glTextureName > 0){
                 glDeleteTextures(1, &tile->glTextureName);
                 tile->glTextureName = 0;
             }
-            it++;
         }
     }
 }
@@ -1040,7 +1037,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
             return true;
         }
     }
-    
+
     ViewPort vp = VPoint;
 
     OCPNRegion screen_region(wxRect(0, 0, vp.pix_width, vp.pix_height));
