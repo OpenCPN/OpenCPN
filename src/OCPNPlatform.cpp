@@ -256,6 +256,7 @@ extern wxString                  g_localeOverride;
 extern wxArrayString             g_locale_catalog_array;
 
 #endif
+extern int                       options_lastPage;
 
 
 
@@ -619,7 +620,15 @@ void OCPNPlatform::Initialize_4( void )
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
-#endif    
+#endif
+
+#ifdef __WXMAC__
+    // A bit of a hack for Mojave MacOS 10.14.
+    // Force the user to actively select "Display" tab to ensure initial rendering of
+    // canvas layout select button.
+    options_lastPage = 1;
+#endif
+    
 }
 
 void OCPNPlatform::OnExit_1( void ){

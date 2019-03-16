@@ -1246,6 +1246,9 @@ void options::Init(void) {
   m_bcompact = true;
 #endif
   pCmdSoundString = NULL;
+  
+  m_sconfigSelect_single = NULL;
+  m_sconfigSelect_twovertical = NULL;
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -7989,6 +7992,7 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 }
 
 void options::DoOnPageChange(size_t page) {
+    
   unsigned int i = page;
 
   //  Sometimes there is a (-1) page selected.
@@ -7996,6 +8000,13 @@ void options::DoOnPageChange(size_t page) {
       return;
   
   lastPage = i;
+
+  if (0 == i) {  // Display
+    if(m_sconfigSelect_single)
+       m_sconfigSelect_single->Refresh( true );
+    if(m_sconfigSelect_twovertical)
+       m_sconfigSelect_twovertical->Refresh( true );
+  }
   
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
