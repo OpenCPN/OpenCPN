@@ -1150,7 +1150,6 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
         AppendCatalog(pPlugIn->m_pChartSources->Item(i));
     }
     m_populated = true;
-    
 }
 
 void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
@@ -1163,6 +1162,11 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
             AppendCatalog(pPlugIn->m_pChartSources->Item(i));
         }
     }
+#ifdef __WXMAC__
+    // Mojave does not paint the controls correctly without this.
+    m_lbChartSources->Refresh(true);
+    m_clCharts->Refresh(true);
+#endif
     event.Skip();
 }
 
