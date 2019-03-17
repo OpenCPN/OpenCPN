@@ -882,7 +882,7 @@ void BuildiENCToolbar( bool bnew )
                 posn.y = 100;
                 
                 if(g_MainToolbar)
-                    posn = wxPoint(g_maintoolbar_x + g_MainToolbar->GetSize().x + 2, g_maintoolbar_y );
+                    posn = wxPoint(g_maintoolbar_x + g_MainToolbar->GetSize().x + 4, g_maintoolbar_y );
             }
             
             double tool_scale_factor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
@@ -3259,6 +3259,7 @@ void MyFrame::RequestNewToolbars(bool bforcenew)
    
     
     BuildiENCToolbar(bforcenew);
+    PositionIENCToolbar();
     
 #ifdef __OCPN__ANDROID__
     DoChartUpdate();
@@ -3867,7 +3868,9 @@ void MyFrame::OnMove( wxMoveEvent& event )
         g_MainToolbar->RePosition();
         g_MainToolbar->Realize();
     }
-        
+    
+    PositionIENCToolbar();
+    
 //    Somehow, this method does not work right on Windows....
 //      g_nframewin_posx = event.GetPosition().x;
 //      g_nframewin_posy = event.GetPosition().y;
@@ -3882,6 +3885,8 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( console && console->IsShown() )
         PositionConsole();
+
+    PositionIENCToolbar();
     
     TriggerRecaptureTimer();
 }
@@ -6543,6 +6548,16 @@ void MyFrame::DoStackDelta( ChartCanvas *cc, int direction )
     }
 }
 
+void MyFrame::PositionIENCToolbar()
+{
+    if(g_iENCToolbar){
+        wxPoint posn;
+        posn.x = (GetPrimaryCanvas()->GetSize().x - g_iENCToolbar->GetSize().x ) / 2;
+        posn.y = 4;
+        g_iENCToolbar->Move(GetPrimaryCanvas()->ClientToScreen(posn));
+    }
+}
+
 // Defered initialization for anything that is not required to render the initial frame
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
@@ -6819,7 +6834,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_options = new options( this, -1, _("Options") );
             //g_options->SetColorScheme(global_color_scheme);
             //applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
-            
+
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
@@ -6834,6 +6849,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         default:
         {
             // Last call....
+
+            PositionIENCToolbar();
 
             g_bDeferredInitDone = true;
             
@@ -6935,10 +6952,38 @@ void MyFrame::OnMemFootTimer( wxTimerEvent& event )
 
 int ut_index;
 
+void MyFrame::CheckToolbarPosition()
+{
+#ifdef __WXMAC__    
+    // Manage Full Screen mode on Mac Mojave 10.14
+    static bool bMaximized;
+    
+    if(IsMaximized() && !bMaximized){
+        bMaximized = true;
+        if(g_MainToolbar){
+            g_MainToolbar->SetYAuxOffset(g_MainToolbar->GetToolSize().y * 15 / 10 );
+            g_MainToolbar->RePosition();
+            g_MainToolbar->Realize();
+        }
+        PositionIENCToolbar();
+    }
+    else if(!IsMaximized() && bMaximized){
+         bMaximized = false;
+         if(g_MainToolbar){
+            g_MainToolbar->SetYAuxOffset(0);
+            g_MainToolbar->SetDockY( -1 );
+            g_MainToolbar->RePosition();
+            g_MainToolbar->Realize();
+        }
+        PositionIENCToolbar();
+    }
+#endif    
+}
+
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
-
-
+    CheckToolbarPosition();
+    
     if( ! g_bPauseTest && (g_unit_test_1 || g_unit_test_2) ) {
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();

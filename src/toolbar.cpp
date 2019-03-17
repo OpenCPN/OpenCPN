@@ -354,6 +354,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     n_toolbarHideMethod = TOOLBAR_HIDE_TO_GRABBER;
     b_canToggleOrientation = true;
     m_enableRolloverBitmaps = true;
+    m_auxOffsetY = 0;
     
     m_ptoolbar = CreateNewToolbar();
     
@@ -613,6 +614,23 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 
 }
 
+wxSize ocpnFloatingToolbarDialog::GetToolSize()
+{
+    wxSize style_tool_size;
+    if( m_ptoolbar ) {
+        style_tool_size = m_style->GetToolSize();
+
+        style_tool_size.x *= m_sizefactor;
+        style_tool_size.y *= m_sizefactor;
+    }
+    else{
+        style_tool_size.x  = 32;
+        style_tool_size.y  = 32;
+    }
+    
+    return style_tool_size;
+}
+    
 void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
 {
 
@@ -681,6 +699,8 @@ void ocpnFloatingToolbarDialog::RePosition()
         m_position.x = wxMax(m_dock_min_x, m_position.x);
         m_position.y = wxMax(m_dock_min_y, m_position.y);
 
+        m_position.y += m_auxOffsetY;
+        
         wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
 
         //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler

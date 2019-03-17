@@ -544,9 +544,11 @@ class MyFrame: public wxFrame
     void UpdateCanvasConfigDescriptors();
     void ScheduleSettingsDialog();
     static void RebuildChartDatabase();
+    void PositionIENCToolbar();
 
   private:
 
+    void CheckToolbarPosition();
     void ODoSetSize(void);
     void DoCOGSet(void);
     
