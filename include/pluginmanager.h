@@ -168,6 +168,7 @@ class PlugInContainer
             int               m_version_major;
             int               m_version_minor;
             wxBitmap         *m_bitmap;
+            wxString          m_version_str;          // Complete version as of OcpnVersion
 
 };
 
@@ -237,7 +238,11 @@ public:
       PlugInManager(MyFrame *parent);
       virtual ~PlugInManager();
 
-      bool LoadAllPlugIns(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog = true);
+      bool LoadAllPlugIns(bool enabled_plugins, bool b_enable_blackdialog = true);
+
+      /** Unload, delete and remove item ix in GetPlugInArray(). */
+      bool UnLoadPlugIn(size_t ix);
+
       bool UnLoadAllPlugIns();
       bool DeactivateAllPlugIns();
       bool UpdatePlugIns();
@@ -254,6 +259,7 @@ public:
       void PrepareAllPluginContextMenus();
 
       void NotifySetupOptions();
+      void ClosePlugInPanel(PlugInContainer* pic, int ix);
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
@@ -376,6 +382,8 @@ DECLARE_EVENT_TABLE()
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
 
+class AddPluginPanel;
+
 class PluginListPanel: public wxScrolledWindow
 {
 public:
@@ -388,7 +396,13 @@ public:
       void UpdateSelections();
       void UpdatePluginsOrder();
 
+      /** Complete reload from plugins. */
+      void ReloadPlugins(ArrayOfPlugIns* plugins);
+
 private:
+      void AddPlugin(PlugInContainer* pic);
+      int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
+      void Clear();
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
@@ -406,6 +420,7 @@ public:
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
       void OnPluginEnable( wxCommandEvent& event );
+      void OnPluginUninstall( wxCommandEvent& event );
       void OnPluginUp( wxCommandEvent& event );
       void OnPluginDown( wxCommandEvent& event );
       void SetEnabled( bool enabled );
@@ -420,8 +435,10 @@ private:
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
       wxFlexGridSizer      *m_pButtons;
+      wxStaticBitmap  *m_itemStaticBitmap;
       wxButton        *m_pButtonEnable;
       wxButton        *m_pButtonPreferences;
+      wxButton        *m_pButtonUninstall;
       
       wxBoxSizer      *m_pButtonsUpDown;
       wxButton        *m_pButtonUp;

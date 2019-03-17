@@ -122,7 +122,7 @@ extern OCPNPlatform* g_Platform;
 extern MyFrame* gFrame;
 extern WayPointman *pWayPointMan;
 extern wxString g_PrivateDataDir;
-
+extern wxString g_winPluginDir;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 
@@ -8121,7 +8121,7 @@ void options::DoOnPageChange(size_t page) {
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
     // load the disabled plugins finally because the user might want to enable
     // them
-    if (g_pi_manager->LoadAllPlugIns(g_Platform->GetPluginDir(), FALSE)) {
+    if (g_pi_manager->LoadAllPlugIns(FALSE)) {
       delete m_pPlugInCtrl;
       m_pPlugInCtrl = NULL;
     }

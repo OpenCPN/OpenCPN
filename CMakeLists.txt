@@ -113,6 +113,9 @@ Is this still problem? If so, generator expressions seem to be the solution.
 cmake_minimum_required(VERSION 3.1.1)
 cmake_policy(SET CMP0043 NEW)
 cmake_policy(SET CMP0025 NEW)
+if (POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW)
+endif ()
 if (POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
 endif ()
@@ -240,6 +243,18 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
   set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
 endif ()
 
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+    if (EXISTS "/usr/lib64")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+    else ()
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib"
+	)
+    endif ()
+    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+    )
+endif ()
+
 if (CMAKE_VERSION VERSION_GREATER 3.9)
   option(OCPN_ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
 endif ()
@@ -282,6 +297,7 @@ set(
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
+option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
@@ -498,6 +514,7 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 # Version handling
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
+include(TargetSetup)
 
 if (OCPN_CI_BUILD)
   include(Utils)
@@ -544,6 +561,13 @@ else (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will NOT include documentation ***")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 
+if (CMAKE_VERSION VERSION_GREATER 3.11)
+  find_package(Python REQUIRED)
+else ()
+  find_package(Python-314 REQUIRED)
+endif ()
+message(STATUS "Using python executable: ${Python_EXECUTABLE}")
+
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
@@ -575,8 +599,10 @@ endif (DEFINED _wx_selected_config)
 
 if ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
-else ()
+elseif (OCPN_USE_WEBVIEW)
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
+else ()
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base)
 endif ()
 
 if (OPENGLES_FOUND)
@@ -646,7 +672,7 @@ if (NOT QT_ANDROID)
   endif ()
 
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
-  if (wxWidgets_FOUND)
+  if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")
     add_definitions(-DwxUSE_WEBVIEW=1 -DHAVE_WEBVIEW)
   else ()
@@ -746,6 +772,8 @@ set(
   include/cutil.h
   include/datastream.h
   include/DetailSlider.h
+  include/Downloader.h
+  include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
   include/FlexHash.h
@@ -775,6 +803,7 @@ set(
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
+  include/ocpn_utils.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
   include/OCPNRegion.h
@@ -782,6 +811,8 @@ set(
   include/options.h
   include/piano.h
   include/pluginmanager.h
+  include/PluginHandler.h
+  include/PluginPaths.h
   include/PositionParser.h
   include/printtable.h
   include/Quilt.h
@@ -855,6 +886,8 @@ set(
   src/cutil.cpp
   src/datastream.cpp
   src/DetailSlider.cpp
+  src/Downloader.cpp
+  src/download_mgr.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
@@ -884,10 +917,13 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
+  src/ocpn_utils.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/options.cpp
   src/piano.cpp
+  src/PluginHandler.cpp
+  src/PluginPaths.cpp
   src/pluginmanager.cpp
   src/PositionParser.cpp
   src/printtable.cpp
@@ -1304,6 +1340,10 @@ if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
 
+find_package(LibArchive REQUIRED)
+target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
@@ -1598,6 +1638,7 @@ set(
   src/bitmaps/iENC_UserStd.svg
   src/bitmaps/iENC_RPlus.svg
   src/bitmaps/iENC_RMinus.svg
+  src/bitmaps/plus.svg
 )
 
 set(
@@ -1701,6 +1742,34 @@ if (APPLE)
     MACOSX_PACKAGE_LOCATION
     SharedSupport
   )
+
+  set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION
+    SharedSupport
+  )
+  install(
+      FILES ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+      DESTINATION ${PREFIX_PKGDATA}
+  )
+  target_sources(${PACKAGE_NAME} PRIVATE ${CMAKE_BINARY_DIR}/ocpn-plugins.xml)
+
+  # Known, downloadable plugin icons
+  file(GLOB PLUGIN_ICONS ${CMAKE_SOURCE_DIR}/plugins/icons/*)
+  foreach (_pluginIcon ${PLUGIN_ICONS})
+    set_source_files_properties(
+      ${_pluginIcon}
+      PROPERTIES
+      MACOSX_PACKAGE_LOCATION
+      SharedSupport/uidata/plugins
+    )
+  endforeach ()
+  install(
+    DIRECTORY plugins/icons/
+    DESTINATION ${PREFIX_PKGDATA}/uidata/plugins
+  )
+  target_sources(${PACKAGE_NAME} PRIVATE ${PLUGIN_ICONS})
 
   file(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/data/sounds/*)
   foreach (_currentSoundFile ${SOUND_FILES})
@@ -1949,6 +2018,11 @@ if (NOT APPLE)
   if (WIN32)
     set(PREFIX_PKGDATA ".")
   endif ()
+
+  install(
+      FILES ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+      DESTINATION ${PREFIX_PKGDATA}
+  )
 
   if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
@@ -2277,11 +2351,32 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
 
-message(STATUS "")
+if (MINGW)
+  install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)
+endif ()
 
 if (NOT SKIP_PLUGINS)
   add_subdirectory(plugins)
 endif ()
+
+#
+# Generate ocpn-plugins.xml
+#
+file(GLOB PLUGINS_XML "${CMAKE_SOURCE_DIR}/plugins/metadata/*.xml")
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+  COMMAND
+  ${Python_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/plugins/metadata/metadata-builder
+      ${PLUGINS_XML} > ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+  DEPENDS ${PLUGINS_XML}
+  COMMENT "Generated ${CMAKE_BINARY_DIR}/ocpn-plugins.xml."
+)
+add_custom_target(
+  plugins-xml ALL
+  COMMENT "ocpn-plugins.xml: Done."
+  DEPENDS ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
+)
 
 #
 # Prepare CPACK configuration (MINGW)
