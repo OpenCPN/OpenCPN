@@ -129,6 +129,7 @@
 #include "MUIBar.h"
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
+#include "PluginHandler.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -260,6 +261,7 @@ wxString                  ChartListFileName;
 wxString                  AISTargetNameFileName;
 wxString                  gWorldMapLocation, gDefaultWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
+wxString                  g_winPluginDir;    // Base plugin directory on Windows.
 wxString                  g_csv_locn;
 wxString                  g_SENCPrefix;
 wxString                  g_UserPresLibData;
@@ -1100,11 +1102,23 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddParam("import GPX files",
                         wxCMD_LINE_VAL_STRING,
                         wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
+    parser.AddLongSwitch( "unit_test_2" );
+    parser.AddLongSwitch( "plugin_list_installed", "List installed plugins");
+    parser.AddLongSwitch( "plugin_list_available", "List available plugins");
+    parser.AddLongOption( "plugin_install",  "Install given available plugin");
+    parser.AddLongOption( "plugin_uninstall", "Uninstall given installed plugin");
+    parser.AddLongSwitch( "plugin_show_repo", "Show used repository file");
+    parser.AddLongSwitch( "plugin_set_repo", "Set used repository file");
+    parser.AddLongOption( "plugin_set_windir", "Set windows installation directory");
+    parser.AddLongSwitch( "plugin_show_windir", "Show windows installation directory");
+    parser.AddLongSwitch( "plugin_show_paths", "Show plugin paths");
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
     long number;
+    wxString repo;
+    wxString plugin;
 
     g_unit_test_2 = parser.Found( _T("unit_test_2") );
     g_bportable = parser.Found( _T("p") );
@@ -1122,6 +1136,8 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     for (size_t paramNr=0; paramNr < parser.GetParamCount(); ++paramNr)
             g_params.push_back(parser.GetParam(paramNr));
 
+    auto pluginCommandHandler = PluginCommandHandler::getInstance();
+    pluginCommandHandler->setParser(&parser);
     return true;
 }
 #endif
@@ -6902,7 +6918,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if (m_initializing)
                 break;
             m_initializing = true;
-            g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+            g_pi_manager->LoadAllPlugIns( true, false );
+	    auto handler = PluginCommandHandler::getInstance();
+	    handler->runParserCommands();
 
 //            RequestNewToolbars();
             RequestNewMasterToolbar();

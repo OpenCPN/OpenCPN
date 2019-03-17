@@ -1172,6 +1172,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "GPXIODir" ), &g_gpx_path );           // Get the Directory name
     Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
     Read( _T ( "BasemapDir"), &gWorldMapLocation );
+    Read( _T ( "pluginInstallDir"), &g_winPluginDir );
+    wxLogMessage("winPluginDir, read from ini file: %s",
+                 g_winPluginDir.mb_str().data());
+
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
@@ -2600,6 +2604,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), g_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
     Write( _T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation) );
+    Write( _T ( "pluginInstallDir" ), g_Platform->NormalizePath(g_winPluginDir) );
     
     SetPath( _T ( "/Settings/NMEADataSource" ) );
     wxString connectionconfigs;
