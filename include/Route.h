@@ -110,6 +110,7 @@ public:
       void SetDepartureDate(const wxDateTime &dt) { if( dt.IsValid() ) m_PlannedDeparture = dt; }
     
       wxString GetName() const { return m_RouteNameString; }
+      wxString GetTo() const { return m_RouteEndString; }
 
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
