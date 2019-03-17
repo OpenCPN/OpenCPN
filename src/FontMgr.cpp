@@ -208,7 +208,7 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     wxString nativefont = GetSimpleNativeFont( new_size, FaceName );
     wxFont *nf = wxFont::New( nativefont );
     
-    wxColor color( *wxBLACK );
+    wxColor color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 
     MyFontDesc *pnewfd = new MyFontDesc( TextElement, configkey, nf, color );
     m_fontlist->Append( pnewfd );
