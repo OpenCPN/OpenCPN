@@ -7411,6 +7411,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     TideCurrentDataSet.Add(tcDataSelected->GetString(i));
 
   // Canvas configuration
+  if (event.GetId() != ID_APPLY)                // only on ID_OK
     g_canvasConfig = m_screenConfig;
     
   if (event.GetId() == ID_APPLY) {
