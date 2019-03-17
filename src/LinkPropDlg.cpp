@@ -73,7 +73,7 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
     m_sdbSizerButtons = new wxStdDialogButtonSizer();
     m_sdbSizerButtonsOK = new wxButton( this, wxID_OK );
     m_sdbSizerButtons->AddButton( m_sdbSizerButtonsOK );
-    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL );
+    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
     m_sdbSizerButtons->AddButton( m_sdbSizerButtonsCancel );
     m_sdbSizerButtons->Realize();
 

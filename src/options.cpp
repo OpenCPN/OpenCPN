@@ -5685,7 +5685,7 @@ void options::CreateControls(void) {
   m_OKButton->SetDefault();
   buttons->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
-  m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("&Cancel"));
+  m_CancelButton = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"));
   buttons->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size);
 
   m_ApplyButton = new wxButton(itemDialog1, ID_APPLY, _("Apply"));
@@ -9498,7 +9498,7 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
   m_btnDel->Disable();
   wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
   wxButton* btnOK = new wxButton(this, wxID_OK);
-  wxButton* btnCancel = new wxButton(this, wxID_CANCEL);
+  wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
 
   secondSizer->Add(stcSizer, 1, wxALL | wxEXPAND, 5);
   stcSizer->Add(m_clbSentences, 1, wxALL | wxEXPAND, 5);
@@ -9707,7 +9707,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
 
   wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
   btnSizer->AddButton(new wxButton(this, wxID_OK));
-  btnSizer->AddButton(new wxButton(this, wxID_CANCEL));
+  btnSizer->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
   btnSizer->Realize();
 
   mainSizer->AddStretchSpacer();

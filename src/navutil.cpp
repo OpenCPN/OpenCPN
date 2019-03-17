@@ -3648,7 +3648,8 @@ void X11FontPicker::CreateWidgets()
     itemBoxSizer3->Add ( itemBoxSizer25, 0, wxEXPAND, 5 );
     itemBoxSizer25->Add ( 5, 5, 1, wxEXPAND|wxALL, 5 );
 
-    wxButton* itemButton28 = new wxButton ( this, wxID_CANCEL, _ ( "&Cancel" ), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton* itemButton28 = new wxButton ( this, wxID_CANCEL, _( "Cancel" ), wxDefaultPosition, wxDefaultSize, 0 );
+    
     if ( ShowToolTips() )
     itemButton28->SetToolTip ( _ ( "Click to cancel the font selection." ) );
     itemBoxSizer25->Add ( itemButton28, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );

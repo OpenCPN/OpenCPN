@@ -518,7 +518,7 @@ void MarkInfoDlg::Create()
     
     m_sdbSizerButtons = new wxStdDialogButtonSizer();
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_OK));
-    m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL));
+    m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
     m_sdbSizerButtons->Realize();
     btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
     bMainSizer->Add( btnSizer, 0, wxEXPAND, 0);
@@ -1410,7 +1410,7 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
 
     StdDialogButtonSizer1 = new wxStdDialogButtonSizer();
     StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_OK));
-    StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_CANCEL));
+    StdDialogButtonSizer1->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
     StdDialogButtonSizer1->Realize();
     bSizer1->Add(StdDialogButtonSizer1, 0, wxALL|wxEXPAND, 5);
 
