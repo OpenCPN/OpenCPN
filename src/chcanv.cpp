@@ -12558,7 +12558,7 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
     if( !GetQuiltMode() ) {
         if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
             if( IsChartQuiltableRef( selected_dbIndex ) ) {
-                //ToggleQuiltMode();
+                ToggleCanvasQuiltMode();
                 SelectQuiltRefdbChart( selected_dbIndex );
                 m_bpersistent_quilt = false;
             } else {
@@ -12634,7 +12634,7 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
                 }
             }
             else {
-                //TODOToggleQuiltMode();
+                ToggleCanvasQuiltMode();
                 SelectdbChart( selected_dbIndex );
                 m_bpersistent_quilt = true;
             }
