@@ -1667,7 +1667,7 @@ bool NavObjectChanges::ApplyChanges(void)
             
             else
                 if( !strcmp(object.name(), "rte") && g_pRouteMan) {
-                    Route *pRoute = GPXLoadRoute1( object, true, false, false, 0, true );
+                    Route *pRoute = GPXLoadRoute1( object, false, false, false, 0, true );
                     
                     if(pRoute ) {
                         pugi::xml_node xchild = object.child("extensions");
