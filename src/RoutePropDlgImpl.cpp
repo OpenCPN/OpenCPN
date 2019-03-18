@@ -55,6 +55,8 @@ extern MyFrame *gFrame;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern TCMgr *ptcmgr;
 
+int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
+
 // Sunrise/twilight calculation for route properties.
 // limitations: latitude below 60, year between 2000 and 2100
 // riset is +1 for rise -1 for set
@@ -228,6 +230,14 @@ RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxStr
     m_pRoute = NULL;
 
     SetColorScheme(global_color_scheme);
+    
+    if(g_route_prop_sx > 0 && g_route_prop_sy > 0 && g_route_prop_sx < wxGetDisplaySize().x && g_route_prop_sy < wxGetDisplaySize().y) {
+        SetSize(g_route_prop_sx, g_route_prop_sy);
+    }
+    
+    if(g_route_prop_x > 0 && g_route_prop_y > 0 && g_route_prop_x < wxGetDisplaySize().x && g_route_prop_y < wxGetDisplaySize().y) {
+        SetPosition(wxPoint(10,10));
+    }
     
     Connect( wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
@@ -600,6 +610,8 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEve
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event )
 {
+#if wxCHECK_VERSION(3, 1, 2)
+    // wx 3.0.x crashes in the bellow code
     if( !m_pRoute )
         return;
     wxDataViewModel* const model = event.GetModel();
@@ -630,6 +642,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
         p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
     }
     UpdatePoints();
+#endif
 }
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event )
@@ -810,6 +823,11 @@ void RoutePropDlgImpl::SetColorScheme( ColorScheme cs )
     DimeControl( this );
 }
 
+void RoutePropDlgImpl::SaveGeometry() {
+    GetSize(&g_route_prop_sx, &g_route_prop_sy);
+    GetPosition(&g_route_prop_x, &g_route_prop_y);
+}
+
 void RoutePropDlgImpl::BtnsOnOKButtonClick( wxCommandEvent& event )
 {
     SaveChanges();
@@ -817,6 +835,7 @@ void RoutePropDlgImpl::BtnsOnOKButtonClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateRouteListCtrl();
     }
     Hide();
+    SaveGeometry();
 }
 
 void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
