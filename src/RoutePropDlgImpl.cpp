@@ -502,6 +502,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         m_tcName->SetValue( m_pRoute->m_RouteNameString );
         m_tcFrom->SetValue( m_pRoute->m_RouteStartString );
         m_tcTo->SetValue( m_pRoute->m_RouteEndString );
+        m_tcDescription->SetValue( m_pRoute->m_RouteDescription );
+
         m_tcName->SetFocus();
         if( m_pRoute->m_PlannedDeparture.IsValid() && m_pRoute->m_PlannedDeparture.GetValue() > 0 ) {
             m_dpDepartureDate->SetValue(toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon).GetDateOnly());
@@ -601,7 +603,7 @@ void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event )
     event.Skip();
 }
 
-int ev_col;
+static int ev_col;
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event )
 {
     //There is a bug in wxWidgets, the EDITING_DONE event does not contain the new value, so we must save the data and do the work later in the value changed event.
@@ -794,6 +796,7 @@ void RoutePropDlgImpl::SaveChanges()
         m_pRoute->m_RouteNameString = m_tcName->GetValue();
         m_pRoute->m_RouteStartString = m_tcFrom->GetValue();
         m_pRoute->m_RouteEndString = m_tcTo->GetValue();
+        m_pRoute->m_RouteDescription  = m_tcDescription->GetValue();
         if( m_choiceColor->GetSelection() == 0 ) {
             m_pRoute->m_Colour = wxEmptyString;
         } else {
