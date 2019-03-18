@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-01 13:05-0500\n"
-"PO-Revision-Date: 2019-02-08 02:13\n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:49\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -39,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag COG"
-msgstr "Cap compas"
+msgstr "Cap fond compas"
 
 #: src/dashboard_pi.cpp:117
 msgid "GPS Compass"
@@ -59,7 +59,7 @@ msgstr "Cap vrai"
 
 #: src/dashboard_pi.cpp:125
 msgid "Mag HDG"
-msgstr "Cap fond"
+msgstr "Cap compas"
 
 #: src/dashboard_pi.cpp:128
 msgid "App. Wind Angle & Speed"

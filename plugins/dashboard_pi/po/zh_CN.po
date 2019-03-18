@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-01 13:05-0500\n"
-"PO-Revision-Date: 2019-02-03 13:36\n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:54\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -27,7 +27,7 @@ msgstr "位置"
 
 #: src/dashboard_pi.cpp:109
 msgid "SOG"
-msgstr ""
+msgstr "对地航速"
 
 #: src/dashboard_pi.cpp:111
 msgid "Speedometer"
@@ -35,7 +35,7 @@ msgstr "速度表"
 
 #: src/dashboard_pi.cpp:113
 msgid "COG"
-msgstr ""
+msgstr "对地航向"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag COG"
@@ -340,7 +340,7 @@ msgstr "厘米"
 #: src/dashboard_pi.cpp:1909
 #, c-format
 msgid "Depth Offset (%s):"
-msgstr ""
+msgstr "深度偏差 (%s):"
 
 #: src/dashboard_pi.cpp:1933
 msgid "Distance units:"
@@ -372,7 +372,7 @@ msgstr "选择仪器添加："
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr ""
+msgstr "解锁"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."

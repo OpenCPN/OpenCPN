@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:52\n"
+"PO-Revision-Date: 2019-03-18 02:55\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: Hungarian\n"
-"Language: hu_HU\n"
+"Language-Team: Icelandic\n"
+"Language: is_IS\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: hu\n"
+"X-Crowdin-Language: is\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:336 src/GribUIDialog.cpp:818
@@ -95,7 +95,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:1475 src/GribUIDialog.cpp:1497
 msgid "Select a GRIB file"
-msgstr "GRIB könyvtár kiválasztása"
+msgstr ""
 
 #: src/GribUIDialog.cpp:1787
 msgid " files don't exist!"
@@ -108,7 +108,7 @@ msgstr ""
 #: src/GribUIDialog.cpp:2024 src/GribUIDialog.cpp:2026
 #: src/GribUIDialogBase.h:167
 msgid "GRIB Display Control"
-msgstr "GRIB kijelzés vezérlés"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "Knots"
@@ -188,7 +188,7 @@ msgstr ""
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:442
 #: src/GribUIDialogBase.cpp:1769 src/GribTable.cpp:123
 msgid "Pressure"
-msgstr "Légnyomás, mBar"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:456
 #: src/GribUIDialogBase.cpp:1799
@@ -198,7 +198,7 @@ msgstr ""
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:474
 #: src/GribUIDialogBase.cpp:909 src/GribUIDialogBase.cpp:1788
 msgid "Current"
-msgstr "Áramlat sebessége, csomó."
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:490
 #: src/GribUIDialogBase.cpp:909 src/GribUIDialogBase.cpp:1775
@@ -214,11 +214,11 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Air Temperature"
-msgstr "Tenger felszín hőmérséklete, C"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Sea Temperature"
-msgstr "Tenger felszín hőmérséklete, C"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:544
 #: src/GribUIDialogBase.cpp:909 src/GribUIDialogBase.cpp:1791
@@ -316,11 +316,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:446
 msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Légnyomás, mBar"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:460
 msgid "Significant Wave Height"
-msgstr "Hullám magasság, m"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:465
 msgid "Waves period"
@@ -328,7 +328,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:470
 msgid "Waves Direction"
-msgstr "Szél irány"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:478
 msgid "Surface Current Speed"
@@ -348,7 +348,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:530 src/GribUIDialogBase.cpp:909
 msgid "Sea Temp"
-msgstr "Tenger felszín hőmérséklete, C"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:534
 msgid "Sea or Air Temperature at Surface Level"
@@ -591,7 +591,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1402
 msgid "Use High Definition Graphics"
-msgstr "Nagyfelbontású grafika használata"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1405
 msgid "Use Gradual Colors"
@@ -869,7 +869,7 @@ msgstr ""
 
 #: src/GribOverlayFactory.cpp:1590
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Zoomolj, vagy válts nagyobb méretarányra az elnyomott HTSGW GRIB megjelenítéséhez"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:1621
 msgid "GribNumbers Unable to compute record magnitude"
@@ -881,7 +881,7 @@ msgstr ""
 
 #: src/grib_pi.cpp:218
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "OpenCPN GRIB modul"
+msgstr ""
 
 #: src/grib_pi.cpp:224
 msgid "GRIB PlugIn for OpenCPN\n"
@@ -899,13 +899,7 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "A GRIB OpenCPN modul\n"
-"alapvető GRIB állomány kijezését teszi lehetővé különböző GRIB fájl típusokkal.\n\n"
-"Támogatott GRIB fájl típusok:\n"
-"- szél irány és sebesség\n"
-"- hullám magasság\n"
-"- tenger felszíni hőmérséklete\n"
-"- felszíni áramlás iránya és sebessége."
+msgstr ""
 
 #: src/grib_pi.cpp:409
 msgid "Weather table"
