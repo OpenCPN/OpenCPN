@@ -922,6 +922,12 @@
           <dir>{USERDATA}/ENC/FR_INLAND</dir>
         </catalog>
         <catalog>
+          <name>France Inland ENC Charts for Rhone</name>
+          <type>ENC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/FR_IENC_RHONE_Catalog.xml</location>
+          <dir>{USERDATA}/ENC/FR_RHONE_INLAND</dir>
+        </catalog>
+        <catalog>
           <name>Germany Inland ENC Charts</name>
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/DE_IENC_Catalog.xml</location>
