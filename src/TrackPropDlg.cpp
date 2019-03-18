@@ -168,10 +168,10 @@ TrackPropDlg::~TrackPropDlg()
             wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
     Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-//    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
- //   m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
+    m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
 
     if(m_rbShowTimeUTC)m_rbShowTimeUTC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimePC)m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );

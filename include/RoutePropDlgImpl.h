@@ -46,7 +46,7 @@ public:
     void SetColorScheme( ColorScheme cs );
     
 protected:
-    void RoutePropDlgOnClose( wxCloseEvent& event ) { ResetChanges(); Hide(); event.Veto(); }
+    void RoutePropDlgOnClose( wxCloseEvent& event ) { SaveGeometry(); ResetChanges(); Hide(); event.Veto(); }
     void RoutePropDlgOnSize( wxSizeEvent& event ) { event.Skip(); }
     void RoutePropDlgOnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
     void PlanSpeedOnKillFocus( wxFocusEvent& event );
@@ -61,7 +61,7 @@ protected:
     void PrintOnButtonClick( wxCommandEvent& event );
     void ExtendOnButtonClick( wxCommandEvent& event );
     void SplitOnButtonClick( wxCommandEvent& event );
-    void BtnsOnCancelButtonClick( wxCommandEvent& event ) { ResetChanges(); Hide(); }
+    void BtnsOnCancelButtonClick( wxCommandEvent& event ) { SaveGeometry(); ResetChanges(); Hide(); }
     void BtnsOnOKButtonClick( wxCommandEvent& event );
     void OnRoutePropMenuSelected( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
@@ -81,6 +81,7 @@ protected:
     RoutePropDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Route Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,450 ), long style = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
     
 private:
+    void SaveGeometry();
     static bool instanceFlag;
     static RoutePropDlgImpl* single;
     

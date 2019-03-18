@@ -7,6 +7,12 @@
 
 #include "RoutePropDlg.h"
 
+#if wxCHECK_VERSION(3, 1, 2)
+  #define CELL_EDITABLE wxDATAVIEW_CELL_EDITABLE
+#else
+  #define CELL_EDITABLE wxDATAVIEW_CELL_INERT
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -210,7 +216,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dataViewListColumnETE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnETA = m_dvlcWaypoints->AppendTextColumn( _("ETA"), wxDATAVIEW_CELL_INERT, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnETA->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), wxDATAVIEW_CELL_EDITABLE, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), CELL_EDITABLE, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnSpeed->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnNTE = m_dvlcWaypoints->AppendTextColumn( _("Next tide event"), wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnNTE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
@@ -218,7 +224,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dataViewListColumnDesc->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnCourse = m_dvlcWaypoints->AppendTextColumn( _("Course"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnCourse->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), wxDATAVIEW_CELL_EDITABLE, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), CELL_EDITABLE, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnETD->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnEmpty = m_dvlcWaypoints->AppendTextColumn( wxEmptyString, wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	bSizerData->Add( m_dvlcWaypoints, 1, wxALL|wxEXPAND, 5 );

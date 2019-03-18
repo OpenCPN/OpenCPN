@@ -155,6 +155,8 @@ extern int              g_nframewin_y;
 extern int              g_nframewin_posx;
 extern int              g_nframewin_posy;
 extern bool             g_bframemax;
+extern int              g_route_prop_x, g_route_prop_y;
+extern int              g_route_prop_sx, g_route_prop_sy;
 
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
@@ -1166,7 +1168,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     
     //    Various Options
-    conf->SetPath( _T ( "/Settings/GlobalState" ) );
     if ( !g_bInlandEcdis )
         conf->Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
     
@@ -1223,7 +1224,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     conf->Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     conf->Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
-    conf->Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
+    conf->Write( _T ( "AISTargetListColumnOrder" ), g_AisTargetList_column_order);
     conf->Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     conf->Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
     conf->Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
@@ -1606,6 +1607,11 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ClientPosY" ), &g_lastClientRecty );
     CHECK_INT( _T ( "ClientSzX" ), &g_lastClientRectw );
     CHECK_INT( _T ( "ClientSzY" ), &g_lastClientRecth );
+    
+    CHECK_INT( _T( "RoutePropSizeX" ), &g_route_prop_sx );
+    CHECK_INT( _T( "RoutePropSizeY" ), &g_route_prop_sy );
+    CHECK_INT( _T( "RoutePropPosX" ), &g_route_prop_x );
+    CHECK_INT( _T( "RoutePropPosY" ), &g_route_prop_y );
     
     CHECK_INT( _T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay );   // default is metres
 

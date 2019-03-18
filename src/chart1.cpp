@@ -8013,7 +8013,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
            if(mem_used)
                *mem_used = mi.uordblks / 1024;
 
-           printf("mem_used (Mb):  %d\n", *mem_used / 1024);
+           //printf("mem_used (Mb):  %d\n", *mem_used / 1024);
 	   return true;
 #endif /* linux */
 

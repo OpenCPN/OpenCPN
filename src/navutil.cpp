@@ -446,6 +446,9 @@ extern unsigned int     g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
 extern wxString         g_lastAppliedTemplateGUID;
 
+extern int              g_route_prop_x, g_route_prop_y;
+extern int              g_route_prop_sx, g_route_prop_sy;
+
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
 
@@ -1025,6 +1028,11 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "ClientPosY" ), &g_lastClientRecty );
     Read( _T ( "ClientSzX" ), &g_lastClientRectw );
     Read( _T ( "ClientSzY" ), &g_lastClientRecth );
+    
+    Read( _T( "RoutePropSizeX" ), &g_route_prop_sx );
+    Read( _T( "RoutePropSizeY" ), &g_route_prop_sy );
+    Read( _T( "RoutePropPosX" ), &g_route_prop_x );
+    Read( _T( "RoutePropPosY" ), &g_route_prop_y );
     
     read_int = -1;
     Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int );   // default is metres
@@ -2488,7 +2496,11 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "S52_DEPTH_UNIT_SHOW" ), g_nDepthUnitDisplay );
     
-
+    Write( _T( "RoutePropSizeX" ), g_route_prop_sx );
+    Write( _T( "RoutePropSizeY" ), g_route_prop_sy );
+    Write( _T( "RoutePropPosX" ), g_route_prop_x );
+    Write( _T( "RoutePropPosY" ), g_route_prop_y );
+    
     //    AIS
     SetPath( _T ( "/Settings/AIS" ) );
 
