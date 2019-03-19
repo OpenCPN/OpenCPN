@@ -773,8 +773,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         msg += pic->m_plugin_file;
         wxLogMessage(msg);
 
-        if(pic->m_bInitState)
+        if(pic->m_bInitState){
+            pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
+        }
 
         //    Deactivate (Remove) any ToolbarTools added by this PlugIn
         for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
@@ -799,7 +801,6 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
             }
         }
 
-        pic->m_bInitState = false;
         bret = true;
     }
 
