@@ -4228,8 +4228,18 @@ void MyFrame::PositionConsole( void )
     if( NULL == GetPrimaryCanvas() ) return;
     //    Reposition console based on its size and chartcanvas size
     int ccx, ccy, ccsx, ccsy, consx, consy;
-    GetPrimaryCanvas()->GetSize( &ccsx, &ccsy );
-    GetPrimaryCanvas()->GetPosition( &ccx, &ccy );
+    ChartCanvas *consoleHost = GetPrimaryCanvas();
+    if(g_canvasConfig > 0)
+        consoleHost = g_canvasArray[1];
+        
+    if(consoleHost){
+        consoleHost->GetSize( &ccsx, &ccsy );
+        consoleHost->GetPosition( &ccx, &ccy );
+    }
+    else{
+        GetPrimaryCanvas()->GetSize( &ccsx, &ccsy );
+        GetPrimaryCanvas()->GetPosition( &ccx, &ccy );
+    }
 
     console->GetSize( &consx, &consy );
 
