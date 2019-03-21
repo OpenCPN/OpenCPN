@@ -631,7 +631,7 @@ endif ()
 
 #Enable CrashReporting for Windows (visual studio) and Linux
 IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
-    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" OFF)
 ELSE()
     SET(OCPN_USE_CRASHREPORT FALSE)
 ENDIF()
