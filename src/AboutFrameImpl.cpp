@@ -54,9 +54,9 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
 
-    m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+    m_hyperlinkHelp->SetURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 #ifdef OCPN_USE_WEBVIEW
-    m_htmlWinHelp->LoadURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinHelp->LoadURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 #else
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 #endif
