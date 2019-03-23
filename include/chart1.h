@@ -261,6 +261,8 @@ class OCPN_DataStreamEvent;
 class DataStream;
 class AIS_Target_Data;
 
+bool isSingleChart(ChartBase *chart);
+
 class  OCPNMessageDialog: public wxDialog
 {
     
