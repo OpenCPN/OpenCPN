@@ -1278,7 +1278,7 @@ bool glTextureManager::TextureCrunch(double factor)
  
                 if( cc->GetVP().b_quilt )          // quilted
                 {
-                        if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                        if( cc->m_pQuilt->IsComposed() &&
                             !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                             ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
                             }
@@ -1339,7 +1339,7 @@ bool glTextureManager::FactoryCrunch(double factor)
                 
                 if( cc->GetVP().b_quilt )          // quilted
                 {
-                    if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                    if( cc->m_pQuilt->IsComposed() &&
                         !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                 
                         int lru = ptf->GetLRUTime();
