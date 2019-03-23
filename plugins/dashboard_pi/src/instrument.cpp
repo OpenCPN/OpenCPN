@@ -117,6 +117,11 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     wxColour cl;
     GetGlobalColor( _T("DASHB"), &cl );
     dc.SetBackground( cl );
+#ifdef __WXGTK__
+    dc.SetBrush( cl );
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.DrawRectangle( 0, 0, size.x, size.y );
+#endif
     dc.Clear();
 
     Draw( &dc );
