@@ -69,9 +69,9 @@ extern bool         g_bopengl;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
+
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
 bool GetMemoryStatus(int *mem_total, int *mem_used);
-
 
 // ============================================================================
 // ChartStack implementation
@@ -1140,8 +1140,10 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             {
                 CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
                 if(pce->RecentTime < LRUTime && !pce->n_lock){
-                    LRUTime = pce->RecentTime;
-                    iOldest = i;
+                    if (!isSingleChart((ChartBase *)(pce->pChart))) {
+                       LRUTime = pce->RecentTime;
+                       iOldest = i;
+                    }
                 }
             }
             int dt = m_ticks - LRUTime;
@@ -1149,7 +1151,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(iOldest));
             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                 
-            if( (!pce->n_lock) ){
+            if( !pce->n_lock &&  !isSingleChart(pDeleteCandidate)){
                 if(blog)
                     wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, dt);
                 
@@ -1525,8 +1527,8 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
     bool retval = false;
     
     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
-        
-
+       if(!isSingleChart(pDeleteCandidate))
+       {
             // Find the chart in the cache
             CacheEntry *pce = NULL;
             for(unsigned int i=0 ; i< pChartCache->GetCount() ; i++)
@@ -1548,7 +1550,7 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
                       retval = true;
                   }
             }
-      
+      }
       m_cache_mutex.Unlock();
     }
 
