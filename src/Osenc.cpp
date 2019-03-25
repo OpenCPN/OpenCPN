@@ -48,6 +48,7 @@
 
 #include "mygeom.h"
 #include "georef.h"
+#include "bitcast.h"
 #include <mutex>
 
 extern s57RegistrarMgr          *m_pRegistrarMan;
@@ -1989,19 +1990,9 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         double easting, northing;
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
         
-        #ifdef __ARM_ARCH
-        float east = easting;
-        float north = northing;
-        float deep = depth;
-        memcpy(pdf++, &east, sizeof(float));
-        memcpy(pdf++, &north, sizeof(float));
-        memcpy(pdf++, &deep, sizeof(float));
-        
-        #else                    
-        *pdf++ = easting;
-        *pdf++ = northing;
-        *pdf++ = (float) depth;
-        #endif
+        encode_native<float>(pdf++, easting);
+        encode_native<float>(pdf++, northing);
+        encode_native<float>(pdf++, depth);
         
         //  Keep a running calculation of min/max
         lonmax = fmax(lon, lonmax);
@@ -2083,28 +2074,15 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
                                                          // computing bbox as we go
         float lon, lat;
         double easting, northing;
-    #ifdef __ARM_ARCH
-        double east_d, north_d;
-        memcpy(&east_d, psd++, sizeof(double));
-        memcpy(&north_d, psd++, sizeof(double));
-        lon = east_d;
-        lat = north_d;
     
-    //  Calculate SM from chart common reference point
-        toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
-        memcpy(pdf++, &easting, sizeof(float));
-        memcpy(pdf++, &northing, sizeof(float));
-    
-    #else                    
-        lon = (float) *psd++;
-        lat = (float) *psd++;
+        lon = decode_native<double>(psd++);
+        lat = decode_native<double>(psd++);
     
     //  Calculate SM from chart common reference point
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
     
-        *pdf++ = easting;
-        *pdf++ = northing;
-    #endif
+        encode_native<float>(pdf++, easting);
+        encode_native<float>(pdf++, northing);
         
         lonmax = fmax(lon, lonmax);
         lonmin = fmin(lon, lonmin);
@@ -2924,7 +2902,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                         }
                         
                         int aValue = pFeature->GetFieldAsInteger( iField );
-                        memcpy(payloadBuffer, &aValue, sizeof(int) );
+                        encode_native<int>(payloadBuffer, aValue);
                         payloadLength = sizeof(int);
                         
                         break;
@@ -2959,7 +2937,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                         }
                         
                         double aValue = pFeature->GetFieldAsDouble( iField );
-                        memcpy(payloadBuffer, &aValue, sizeof(double) );
+                        encode_native<double>(payloadBuffer, aValue);
                         payloadLength = sizeof(double);
                         
                         break;
@@ -3091,7 +3069,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     payloadBufferLength = 4;
                 }
                         
-                memcpy(payloadBuffer, &nqual, sizeof(int) );
+                encode_native<int>(payloadBuffer, nqual);
                 payloadLength = sizeof(int);
                 // Build the record
                 int recordLength = sizeof( OSENC_Attribute_Record_Base ) + payloadLength;
@@ -3178,22 +3156,10 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 ps += 5 + nq_len;
                 double *psd = (double *) ps;
                 
-                double lat, lon;
-                #ifdef __ARM_ARCH
-                double lata, lona;
-                memcpy(&lona, psd, sizeof(double));
-                memcpy(&lata, &psd[1], sizeof(double));
-                lon = lona;
-                lat = lata;
-                #else                
-                lon = *psd++;                                      // fetch the point
-                lat = *psd;
-                #endif                
+                record.lon = decode_native<double>(psd++);
+                record.lat = decode_native<double>(psd);
 
                 free( pwkb_buffer );
-                
-                record.lat = lat;
-                record.lon = lon;
                 
                 // Write the record out....
                 size_t targetCount = record.record_length;
@@ -3305,23 +3271,12 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
         
         //  Read the triangle primitive bounding box as lat/lon
         double *pbb = (double *)pPayloadRun;
-
         double      minxt, minyt, maxxt, maxyt;
         
-        #ifdef __ARM_ARCH
-        double abox[4];
-        memcpy(&abox[0], pbb, 4 * sizeof(double));
-        
-        minxt = abox[0];
-        maxxt = abox[1];
-        minyt = abox[2];
-        maxyt = abox[3];
-        #else            
-        minxt = *pbb++;
-        maxxt = *pbb++;
-        minyt = *pbb++;
-        maxyt = *pbb;
-        #endif
+        minxt = decode_native<double>(pbb++);
+        maxxt = decode_native<double>(pbb++);
+        minyt = decode_native<double>(pbb++);
+        maxyt = decode_native<double>(pbb);
         
         tp->tri_box.Set(minyt, minxt, maxyt, maxxt);
         
