@@ -785,7 +785,7 @@ void Quilt::AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed )
         return;
 
 //      ChartBase *pRefChart = GetLargestScaleChart();
-    ChartBase *pRefChart = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
+    ChartBase *pRefChart = GetRefChart();
 
     if( pRefChart ) pRefChart->AdjustVP( vp_last, vp_proposed );
 }
@@ -793,15 +793,13 @@ void Quilt::AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed )
 double Quilt::GetRefNativeScale()
 {
     double ret_val = 1.0;
-    if( ChartData ) {
-        ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
-        if( pc ) ret_val = pc->GetNativeScale();
-    }
+    ChartBase *pc = GetRefChart();
+    if( pc ) ret_val = pc->GetNativeScale();
 
     return ret_val;
 }
 
-int Quilt::GetNewRefChart( void )
+int Quilt::GetNewRefChart( )
 {
     //    Using the current quilt, select a useable reference chart
     //    Said chart will be in the extended (possibly full-screen) stack,
@@ -1452,10 +1450,9 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
 
 ChartBase *Quilt::GetRefChart()
 {
-    if(m_refchart_dbIndex >= 0 )
+    if(m_refchart_dbIndex >= 0 && ChartData)
         return ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
-    else
-        return 0;
+    return nullptr;
 }
 
 void Quilt::UnlockQuilt()
