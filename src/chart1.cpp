@@ -8018,7 +8018,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
            //printf("Total free space (fordblks):           %d\n", mi.fordblks);
            //printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
 
-           printf("\n");
+           //printf("\n");
            
            if(mem_used)
                *mem_used = mi.uordblks / 1024;
