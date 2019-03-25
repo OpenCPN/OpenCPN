@@ -663,15 +663,17 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //   so there is no reason to save the bits forever.
     //   Of course, this means that if the texture is deleted elsewhere, then the bits will need to be
     //   regenerated.  The price to pay for memory limits....
-    
-    int mem_used;
-    GetMemoryStatus(0, &mem_used);
-    //    qDebug() << mem_used;
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10))
-        ptd->FreeMap();
+    if (g_memCacheLimit > 0) {
+        // GetMemoryStatus is slow on linux
+        int mem_used;
+        GetMemoryStatus(0, &mem_used);
+        //    qDebug() << mem_used;
+        if(mem_used > g_memCacheLimit * 7 / 10)
+            ptd->FreeMap();
 
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 9 / 10))
-        ptd->FreeAll();
+        if(mem_used > g_memCacheLimit * 9 / 10)
+            ptd->FreeAll();
+    }
 
 //    g_Platform->HideBusySpinner();
     
