@@ -8,7 +8,7 @@
 
 app-id: org.opencpn.OpenCPN
 runtime: org.freedesktop.Platform
-runtime-version: 1.6
+runtime-version: 18.08
 sdk: org.freedesktop.Sdk
 command: opencpn.sh
 
@@ -55,6 +55,12 @@ modules:
           - --disable-rpath
           - --enable-ipv6
 
+    - name:  zlib
+      sources:
+          - type: archive
+            url: http://zlib.net/zlib-1.2.11.tar.gz
+            sha256: c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
+
     - name: opencpn
       buildsystem: cmake
       builddir: true
@@ -63,6 +69,11 @@ modules:
           - -DBUNDLE_TCDATA=ON
           - -DBUNDLE_GSHHS=CRUDE
           - -DBUILD_SHARED_LIBS=OFF
+          - -DCMAKE_FIND_ROOT_PATH=/app
+          - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
+          - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
+          - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
+
       build-options:
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK
@@ -73,7 +84,7 @@ modules:
       sources:
           - type: git
             url: https://github.com/OpenCPN/OpenCPN.git
-            tag: Beta_4.99.1408
+            tag: v5.0.0
           - type: patch
             path: src/0008-flatpak-Add-a-shell-wrapper.patch
           - type: patch
