@@ -73,7 +73,6 @@ extern int              g_uncompressed_tile_size;
 
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
-extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
 extern wxString CompressedCachePath(wxString path);
 extern glTextureManager   *g_glTextureManager;
@@ -629,7 +628,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     return true;
 }
 
-bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme )
+bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, int mem_used )
 {    
     glTextureDescriptor *ptd = NULL;
 
@@ -665,9 +664,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //   regenerated.  The price to pay for memory limits....
     if (g_memCacheLimit > 0) {
         // GetMemoryStatus is slow on linux
-        int mem_used;
-        GetMemoryStatus(0, &mem_used);
-        //    qDebug() << mem_used;
         if(mem_used > g_memCacheLimit * 7 / 10)
             ptd->FreeMap();
 

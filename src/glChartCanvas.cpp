@@ -2673,6 +2673,12 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     LLBBox box = region.GetBox();
     int numtiles;
+    int mem_used = 0;
+    if (g_memCacheLimit > 0) {
+        // GetMemoryStatus is slow on linux
+        GetMemoryStatus(0, &mem_used);
+    }
+
     glTexTile **tiles = pTexFact->GetTiles(numtiles);
     for(int i = 0; i<numtiles; i++) {
         glTexTile *tile = tiles[i];
@@ -2683,7 +2689,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
             if( bGLMemCrunch)
                 pTexFact->DeleteTexture( tile->rect );
         } else {
-            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme );
+            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme, mem_used );
             if(!texture) { // failed to load, draw red
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(1, 0, 0);
