@@ -6117,7 +6117,8 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             dist /= 2;
 
         wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
-        wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
+        wxColour black = GetGlobalColor( _T ( "UBLCK" ) );
+        wxPen pen1 = wxPen( black , 3, wxPENSTYLE_SOLID );
         double rotation = -VPoint.rotation;
 
         ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
@@ -6134,7 +6135,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         dc.DrawLine( x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
 
         dc.SetFont( *m_pgridFont );
-        dc.SetTextForeground( GetGlobalColor( _T ( "UBLCK" ) ) );
+        dc.SetTextForeground( black );
         int w, h;
         dc.GetTextExtent(s, &w, &h);
         dc.DrawText( s, x_origin + l1/2 - w/2, y_origin - h - 1 );
