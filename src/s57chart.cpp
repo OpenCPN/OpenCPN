@@ -2972,12 +2972,10 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     free( psave_viz );
 
 //      Clone pDIB into pThumbData;
-    wxBitmap *pBMP;
-
-    pBMP = new wxBitmap( vp.pix_width, vp.pix_height/*,  BPP*/);
+    wxBitmap bmp( vp.pix_width, vp.pix_height/*,  BPP*/);
 
     wxMemoryDC dc_clone;
-    dc_clone.SelectObject( *pBMP );
+    dc_clone.SelectObject( bmp );
 
     pDIB->SelectIntoDC( dc_org );
 
@@ -2987,9 +2985,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     dc_org.SelectObject( wxNullBitmap );
 
     //   Save the file
-    ret_code = pBMP->SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
-
-    delete pBMP;
+    ret_code = bmp.SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
 
     return ret_code;
 }
