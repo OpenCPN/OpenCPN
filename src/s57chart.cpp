@@ -227,7 +227,6 @@ s57chart::s57chart()
     m_Chart_Scale = 1;                              // Will be fetched during Init()
     m_Chart_Skew = 0.0;
 
-    pDIB = NULL;
     m_pCloneBM = NULL;
 
 // Create ATON arrays, needed by S52PLIB
@@ -281,8 +280,6 @@ s57chart::~s57chart()
 {
 
     FreeObjectsAndRules();
-
-    delete pDIB;
 
     delete m_pCloneBM;
 //    delete pFullPath;
@@ -403,8 +400,7 @@ void s57chart::SetColorScheme( ColorScheme cs, bool bApplyImmediate )
     m_global_color_scheme = cs;
 
     if( bApplyImmediate ) {
-        delete pDIB;        // Toss any current cache
-        pDIB = NULL;
+        pDIB.reset();        // Toss any current cache
     }
 
     //      Clear out any cached bitmaps in the text cache
@@ -1961,8 +1957,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     if( bReallyNew ) {
         bNewVP = true;
-        delete pDIB;
-        pDIB = NULL;
+        pDIB.reset();
         bnewview = true;
     }
 
@@ -2023,7 +2018,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     OCPNRegion rgn_new( rul.x, rul.y, rlr.x - rul.x, rlr.y - rul.y );
     rgn_last.Intersect( rgn_new );            // intersection is reusable portion
 
-    if( bNewVP && ( NULL != pDIB ) && !rgn_last.IsEmpty() ) {
+    if( bNewVP && (pDIB != nullptr) && !rgn_last.IsEmpty() ) {
         int xu, yu, wu, hu;
         rgn_last.GetBox( xu, yu, wu, hu );
 
@@ -2058,8 +2053,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
         dc_new.SelectObject( wxNullBitmap );
         dc_last.SelectObject( wxNullBitmap );
 
-        delete pDIB;
-        pDIB = pDIBNew;
+        pDIB.reset(pDIBNew);
 
 //              OK, now have the re-useable section in place
 //              Next, build the new sections
@@ -2117,9 +2111,8 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     }
 
-    else if( bNewVP || ( NULL == pDIB ) ) {
-        delete pDIB;
-        pDIB = new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP );     // destination
+    else if( bNewVP || (nullptr == pDIB )) {
+        pDIB.reset(new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP ));     // destination
 
         wxRect full_rect( 0, 0, VPoint.pix_width, VPoint.pix_height );
         pDIB->SelectIntoDC( dc );
@@ -2843,8 +2836,7 @@ void s57chart::SetSafetyContour(void)
 
 void s57chart::InvalidateCache()
 {
-    delete pDIB;
-    pDIB = NULL;
+    pDIB.reset();
 }
 
 bool s57chart::BuildThumbnail( const wxString &bmpname )
@@ -2887,8 +2879,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     vp.Validate();
 
     // cause a clean new render
-    delete pDIB;
-    pDIB = NULL;
+    pDIB.reset();
 
     SetVPParms( vp );
 
