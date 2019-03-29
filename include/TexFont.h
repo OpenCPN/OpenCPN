@@ -71,4 +71,7 @@ private:
     bool m_built;
     
 };
+
+TexFont *GetTexFont(wxFont *key);
+
 #endif  //guard
