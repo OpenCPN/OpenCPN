@@ -1244,10 +1244,11 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort 
         
         const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
-        if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
-
         if( reference_family != cte.GetChartFamily() )
             continue;
+
+        if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
+
         
         const LLBBox &chart_box = cte.GetBBox();
         if( ( viewbox.IntersectOut( chart_box ) ) ) continue;
