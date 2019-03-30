@@ -70,8 +70,6 @@ GoToPositionDialog::GoToPositionDialog( wxWindow* parent, wxWindowID id, const w
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
     Create( parent, id, caption, pos, size, wstyle );
-
-    CreateControls();
 }
 
 GoToPositionDialog::~GoToPositionDialog()
