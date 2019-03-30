@@ -55,7 +55,7 @@
 #include <wx/fileconf.h>
 #include <sys/stat.h>
 
-
+#include "config.h"
 #include "chartimg.h"
 #include "ocpn_pixel.h"
 #include "ChartDataInputStream.h"

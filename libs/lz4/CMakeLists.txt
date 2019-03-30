@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.1.0)
+
+
+set(SRC src/lz4.c  src/lz4.h  src/lz4hc.c  src/lz4hc.h)
+
+add_library(LZ4 STATIC ${SRC})
+add_library(lz4::lz4 ALIAS LZ4)
+set_property(TARGET LZ4 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+target_include_directories(LZ4 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

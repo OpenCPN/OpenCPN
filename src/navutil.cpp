@@ -48,6 +48,7 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
+#include "config.h"
 #include "chart1.h"
 #include "navutil.h"
 #include "chcanv.h"
@@ -74,7 +75,6 @@
 #include "Track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
-#include "config.h"
 
 #ifdef USE_S57
 #include "s52plib.h"

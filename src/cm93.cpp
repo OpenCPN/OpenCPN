@@ -40,7 +40,7 @@
 
 #include <algorithm>
 
-#include "mygdal/ogr_api.h"
+#include "gdal/ogr_api.h"
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"

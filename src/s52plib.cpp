@@ -44,7 +44,7 @@
 #include "chartsymbols.h"
 #include "TexFont.h"
 #include "ocpn_plugin.h"
-#include "cpl_csv.h"
+#include "gdal/cpl_csv.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>

@@ -35,6 +35,7 @@
 #include "wx/filename.h"
 #include "wx/wfstream.h"
 
+#include "config.h"
 #include "ChartDataInputStream.h"
 
 #ifdef USE_LZMA

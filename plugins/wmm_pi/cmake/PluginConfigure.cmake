@@ -36,13 +36,14 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT MSVC)
- ADD_DEFINITIONS( "-fvisibility=hidden" )
+    ADD_COMPILE_OPTIONS( "-fvisibility=hidden" )
  IF(PROFILING)
-  ADD_DEFINITIONS( "-Wall -g -fprofile-arcs -ftest-coverage -fexceptions" )
- ELSE(PROFILING)
+     ADD_COMPILE_OPTIONS(
+         "-Wall" "-g" "-fprofile-arcs" "-ftest-coverage" "-fexceptions")
+ ELSE ()
 #  ADD_DEFINITIONS( "-Wall -g -fexceptions" )
- ADD_DEFINITIONS( "-Wall -Wno-unused-result -g -O2 -fexceptions" )
- ENDIF(PROFILING)
+   ADD_COMPILE_OPTIONS("-Wall" "-Wno-unused-result" "-g" "-O2" "-fexceptions")
+ ENDIF ()
 
  IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")

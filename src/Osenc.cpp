@@ -41,10 +41,10 @@
 #include "s57chart.h"           // for one static method
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
-#include "cpl_csv.h"
+#include "gdal/cpl_csv.h"
 #include "chart1.h"             // for fonts
-#include "mygdal/ogr_s57.h"
-#include "mygdal/cpl_string.h"
+#include "ogr_s57.h"
+#include "gdal/cpl_string.h"
 
 #include "mygeom.h"
 #include "georef.h"

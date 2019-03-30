@@ -35,6 +35,8 @@
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
 
+#include "config.h"
+
 #include "dychart.h"
 
 #include <wx/listimpl.cpp>

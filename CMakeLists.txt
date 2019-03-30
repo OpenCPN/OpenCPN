@@ -49,7 +49,12 @@
 #    - BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
 #    - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
 #      wallpaper map used as last resort and world overview.
-
+#
+#  To build for android, use something like:
+#      $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
+#          -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
+#          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+#          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -58,7 +63,7 @@
 # I also find it deficient in some areas. For instance, I cannot make it output a VS project with certain compile switches set as desired, namely /MT vs /MD. This means I must manually set this and other compiler options after the CMake step. Sometimes I forget. Grrr...
 # set /MT for Release build, and /MTd for debug.
 
-# define minimum cmake version
+
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
@@ -68,6 +73,9 @@ IF (COMMAND cmake_policy)
     CMAKE_POLICY(SET CMP0025 NEW)
   endif ()
 ENDIF (COMMAND cmake_policy)
+
+# Prefer libGL.so to libOpenGL.so, see CMP0072
+set (OpenGL_GL_PREFERENCE  "LEGACY")
 
 PROJECT(OpenCPN)
 
@@ -80,10 +88,6 @@ ELSE(APPLE)
   SET(PACKAGE_NAME opencpn)
 ENDIF(APPLE)
 
-IF(NOT MSVC)
-   SET(OBJ_VISIBILITY "-fvisibility=hidden" )
-ENDIF()
-
 # Locations where cmake looks for cmake modules.
 SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/build
@@ -91,14 +95,118 @@ SET(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
+macro(SET_COND OUT_VAR)
+    if (${ARGN})
+        set(OUT_VAR 1)
+    else ()
+        set(OUT_VAR 0)
+    endif ()
+endmacro(SET_COND)
 
-set (CMAKE_CXX_STANDARD 11)
-message(STATUS "Setting C++11 standard via cmake standard mechanism")
+SET_COND(IS_NOT_UNIX NOT UNIX)
+SET_COND(IS_NOT_WIN32 NOT WIN32)
+SET_COND(IS_LINUX NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
+INCLUDE( FindPkgConfig )
+
+#
+# Options
+#
+
+# If on Windows or Apple, build the monolithic package, to override use a
+# non-sense values from the commandline (due to cmake inability to
+# distinguish between not set and set to FALSE):
+#    cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+MACRO(BUNDLE_DOCS_OPT onoff)
+  OPTION(BUNDLE_DOCS ${onoff} "Include documentation in package")
+ENDMACRO(BUNDLE_DOCS_OPT)
+
+MACRO(BUNDLE_TCDATA_OPT onoff)
+  OPTION(BUNDLE_TCDATA "${onoff}" "Include tide/current harmonics data in package")
+ENDMACRO(BUNDLE_TCDATA_OPT)
+
+MACRO(BUNDLE_GSHHS_OPT value)
+  SET(BUNDLE_GSHHS "${value}" CACHE STRING 
+      "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDMACRO(BUNDLE_GSHHS_OPT)
+
+SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
+
+OPTION (USE_GL "Enable OpenGL support" ON)
+
+IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
+    OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+ELSE()
+    SET(OCPN_USE_CRASHREPORT FALSE)
+ENDIF()
+
+OPTION(ENABLE_PORTAUDIO
+       "Use portaudio(3) to play sounds if available" ${IS_NOT_WIN32})
+
+OPTION(ENABLE_SNDFILE
+       "Use libsndfile for portaudio if available." ${IS_NOT_WIN32})
+
+OPTION (USE_S57 "Enable S57 ENC support" ON)
+
+OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
+
+set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
+
+IF(WIN32 AND NOT UNIX)
+  OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
+  OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
+ENDIF()
+
+if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+  OPTION(ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
+  set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
+endif()
+
+if ( CMAKE_VERSION VERSION_GREATER 3.9 )
+    OPTION(ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
+endif()
+
+IF( NOT CMAKE_BUILD_TYPE )
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE
+  )
+ENDIF( NOT CMAKE_BUILD_TYPE )
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" ON)
 
-if ( CMAKE_VERSION VERSION_GREATER 3.4 )
-  set(ENABLE_CLANG_TIDY OFF CACHE BOOL "Add clang-tidy automatically to builds")
+OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
+
+IF (NOT CMAKE_INSTALL_PREFIX)
+  SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
+ENDIF (NOT CMAKE_INSTALL_PREFIX)
+
+OPTION(USE_BUNDLED_LIBS "Use bundled libraries instead of system's" ${IS_NOT_UNIX} )
+OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
+OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
+OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
+OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
+OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
+
+OPTION(ENABLE_SYSTEM_CMD_SOUND
+       "Use aplay(1), afplay(1) etc. to play sounds if available" ON)
+MACRO(ENABLE_PORTAUDIO_OPT onoff)
+    OPTION(ENABLE_PORTAUDIO
+           "Use portaudio(3) to play sounds if available" ${onoff})
+ENDMACRO(ENABLE_PORTAUDIO_OPT)
+
+
+#
+# Language, compiler and static checkers setup
+#
+
+set (CMAKE_CXX_STANDARD 11)
+message(STATUS "Setting C++11 standard via cmake standard mechanism")
+IF(NOT MSVC)
+   SET(OBJ_VISIBILITY "-fvisibility=hidden" )
+ENDIF()
+
+if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (ENABLE_CLANG_TIDY)
     find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
     if (CLANG_TIDY_EXE)
@@ -115,23 +223,102 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
   endif()
 endif()
 
-# Add support for address etc sanitizers, part 1/2 (other half after ADD_EXECUTABLE)
-if ( CMAKE_VERSION VERSION_GREATER 3.4 )
-  set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
-  set_property(CACHE ENABLE_SANITIZER PROPERTY STRINGS none address memory thread undefined)
+if (CMAKE_VERSION VERSION_GREATER 3.4)
+  # Add support for address etc sanitizers, part 1/2 
+  # (other half after ADD_EXECUTABLE)
+  set_property(CACHE ENABLE_SANITIZER PROPERTY 
+               STRINGS none address memory thread undefined)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
     add_compile_options(-fsanitize=${ENABLE_SANITIZER})
   endif()
 endif()
 
 if ( CMAKE_VERSION VERSION_GREATER 3.9 )
-  set(ENABLE_CPPCHECK OFF CACHE BOOL "Add cppcheck automatically to builds")
   if (ENABLE_CPPCHECK)
     find_program (CPPCHECK_EXECUTABLE NAMES "cppcheck" )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
 
+#ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
+#TODO: Should we use  -fno-stack-protector
+#  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
+IF(NOT WIN32 AND NOT APPLE )
+  ADD_COMPILE_OPTIONS( "-Wall"  "-g"
+      "-Wno-unused" 
+      "-fexceptions"
+      "-rdynamic" 
+      "-fno-strict-aliasing"
+  )
+  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+    ADD_DEFINITIONS( " -O0")
+  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  ADD_COMPILE_OPTIONS("-Wno-deprecated-declarations")
+  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
+
+  ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+  # profiling with gprof
+  #   ADD_COMPILE_OPTIONS( -pg )
+  #   SET(CMAKE_EXE_LINKER_FLAGS -pg)
+  # profiling with gcov
+  #   ADD_COMPILE_OPTIONS( "-fprofile-arcs -ftest-coverage" )
+  #   SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
+ENDIF(NOT WIN32 AND NOT APPLE)
+
+IF(MINGW)
+    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+        "-Wno-unused"
+        "-Wno-cpp"
+        "-fexceptions"
+        "-fno-strict-aliasing"
+    )
+ENDIF(MINGW)
+
+IF( APPLE )
+    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+        "-Wno-unused"
+        "-fexceptions"
+        "-Wno-overloaded-virtual" 
+        "-fno-strict-aliasing"
+        "-Wno-deprecated"
+        "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas" 
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" 
+    )
+ENDIF(APPLE)
+
+# Add some definitions to satisfy MS
+IF(MSVC)
+  ADD_DEFINITIONS(-D__MSVC__)
+  ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+  ADD_DEFINITIONS(-DPSAPI_VERSION=1)
+ENDIF(MSVC)
+SET(ENV{XPDeprecationWarning} "false")
+
+IF(MSVC) 
+  SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
+  SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
+  SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd8051 /wd4068")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
+  SET(CMAKE_CXX_FLAGS_DEBUG             "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
+  SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
+  SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+ENDIF(MSVC)
+ 
+SET(LINUX_LIB_PATHS
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/lib/i386-linux-gnu
+    /usr/lib/x86_64-linux-gnu
+    /usr/lib
+    /usr/lib64
+)
+
+#
+# Version handling
+#
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 
 IF(OCPN_CI_BUILD)
@@ -143,104 +330,10 @@ IF(OCPN_CI_BUILD)
 ENDIF(OCPN_CI_BUILD)
 
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}" )
-IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
-  MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
-ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
 
-
-#Red Hat:   /etc/redhat-release
-#Slackware: /etc/slackware-version
-#Slamd64:   /etc/slamd64-version
-#Gentoo: /etc/gentoo-release
-#Ubuntu: /etc/debian_version
-
-# Based on code from nohal
-IF (NOT WIN32)
-  # default
-  SET (ARCH "i386")
-  SET (LIB_INSTALL_DIR "lib")
-  IF (EXISTS /etc/debian_version)
-    SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "wx3.0-i18n (>= 3.0)")
-    SET (PACKAGE_RECS "xcalib,xdg-utils")
-    SET (LIB_INSTALL_DIR "lib")
-    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "arm64")
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "armhf")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "amd64")
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "i386")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-    SET(TENTATIVE_PREFIX "/usr/local")
-  ENDIF (EXISTS /etc/debian_version)
-  IF (EXISTS /etc/redhat-release)
-    SET (PACKAGE_FORMAT "RPM")
-    #    SET (PACKAGE_DEPS  "wxGTK mesa-libGLU mesa-libGL gettext zlib bzip2 portaudio")
-    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "aarch64")
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "armhf")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "x86_64")
-        SET (LIB_INSTALL_DIR "lib64")
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "i386")
-        SET (LIB_INSTALL_DIR "lib")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  ENDIF (EXISTS /etc/redhat-release)
-  IF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
-    SET (PACKAGE_FORMAT "RPM")
-    #    SET (PACKAGE_DEPS  "libwx_baseu-2_8-0-wxcontainer MesaGLw libbz2-1 portaudio")
-    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "aarch64")
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "armhf")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "x86_64")
-        SET (LIB_INSTALL_DIR "lib")
-        # In recent openSUSE versions (as of 2016), lib64 is mostly used when there are both 32-bit and 64-bit versions, although not limited to that.
-        # This CMake variable only affects the location of OpenCPN plugins at installation time, and nothing more than that.
-        # At run time, the plugin directory is determined by wxStandardPaths::GetPluginsDir(), which returns "lib", so this can be considered canonical.
-      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-        SET (ARCH "i386")
-        SET (LIB_INSTALL_DIR "lib")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
-  IF (EXISTS /etc/gentoo-release)
-    SET (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
-  ENDIF (EXISTS /etc/gentoo-release)
-  IF(APPLE)
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-#      IF (CMAKE_OSX_64)
-        SET(ARCH "x86_64")
-#      ENDIF (CMAKE_OSX_64)
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-  ENDIF()
-ELSE (NOT WIN32)
-  # On WIN32 probably CMAKE_SIZEOF_VOID_P EQUAL 8, but we don't use it at all now...
-  SET (ARCH "i386")
-ENDIF (NOT WIN32)
-
-#IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-#  SET (ARCH "armhf")
-#ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-
+include(GetArch)
+GetArch()
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
-SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 #  Detect the Apple Version of the build machine
 IF (APPLE)
@@ -254,37 +347,25 @@ ENDIF(APPLE)
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
-#If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
-#cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+#
+#  Bundled data: docs, tcdata, gshhs
+#
 
 IF(APPLE OR WIN32)
-  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
-  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
-  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+  BUNDLE_DOCS_OPT("ON")
+  BUNDLE_TCDATA_OPT("ON")
+  BUNDLE_GSHHS_OPT("CRUDE")
 ELSE(APPLE OR WIN32)
-  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
-  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
-  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+  BUNDLE_DOCS_OPT("OFF")
+  BUNDLE_TCDATA_OPT("OFF")
+  BUNDLE_GSHHS_OPT("NONE")
 ENDIF(APPLE OR WIN32)
 
-IF(UNIX)
-  SET(USE_BUNDLED_LIBS "OFF" CACHE BOOL "Use bundled libraries instead of system's")
-ELSE(UNIX)
-  SET(USE_BUNDLED_LIBS "ON" CACHE BOOL "Use bundled libraries instead of system's")
-ENDIF(UNIX)
+IF(IS_LINUX)
+  OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+ENDIF ()
 
-
-IF(APPLE OR WIN32)
-  IF(NOT BUNDLE_DOCS)
-    SET (BUNDLE_DOCS "ON")
-  ENDIF(NOT BUNDLE_DOCS)
-  IF(NOT BUNDLE_GSHHS)
-    SET (BUNDLE_GSHHS "CRUDE")
-  ENDIF(NOT BUNDLE_GSHHS)
-  IF(NOT BUNDLE_TCDATA)
-    SET (BUNDLE_TCDATA "ON")
-  ENDIF(NOT BUNDLE_TCDATA)
-ENDIF(APPLE OR WIN32)
+ENABLE_PORTAUDIO_OPT(NOT WIN32)
 
 IF(BUNDLE_DOCS MATCHES "ON")
   MESSAGE (STATUS "*** Package will include documentation ***")
@@ -298,125 +379,27 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
-IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
-  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
-  IF(UNIX AND NOT APPLE)
-    IF(BUNDLE_GSHHS MATCHES "NONE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "NONE")
-    IF(BUNDLE_GSHHS MATCHES "MIN")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "MIN")
-    IF(BUNDLE_GSHHS MATCHES "CRUDE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
-    IF(BUNDLE_GSHHS MATCHES "LOW")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "LOW")
-    IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-    IF(BUNDLE_GSHHS MATCHES "HIGH")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
-    IF(BUNDLE_GSHHS MATCHES "FULL")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
-      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full ON")
-    ENDIF(BUNDLE_GSHHS MATCHES "FULL")
-  ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  SET(BUNDLE_GSHHS "NONE")
-  MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+#
+# Linux: set up GTK
+#
+IF (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  IF(NOT OCPN_FORCE_GTK3)
+    FIND_PACKAGE(GTK2)
+  ENDIF()
+  IF(GTK2_FOUND)
+    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+    SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
+    MESSAGE(STATUS "Building against GTK2...")
+  ELSE(GTK2_FOUND)
+    FIND_PACKAGE(GTK3)
+    INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+    SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
+    MESSAGE(STATUS "Building against GTK3...")
+  ENDIF(GTK2_FOUND)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
+ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
-IF(BUNDLE_TCDATA MATCHES "ON")
-  MESSAGE (STATUS "*** Package will include tide and current data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata ON")
-  ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_TCDATA MATCHES "ON")
-  MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_TCDATA MATCHES "ON")
-
-#  To build for android, use this cmake invocation..
-#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
-#-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-#-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-#-DQt_Base /home/dsr/Qt/5.3) ..
-IF(DEFINED _wx_selected_config)
-
-MESSAGE (STATUS "selected config ${_wx_selected_config}")
-
-IF(_wx_selected_config MATCHES "androideabi-qt")
-  MESSAGE (STATUS "Building for wxQt-Android")
-  MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
-  MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
-  SET(QT_ANDROID "ON")
-ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-
-ENDIF(DEFINED _wx_selected_config)
-
-IF((_wx_selected_config MATCHES "qt-armv7"))
-  #SET(CMAKE_BUILD_TYPE Debug)
-ENDIF()
-
-IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui)
-ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
-ENDIF()
-
-OPTION (USE_GL "Enable OpenGL support" ON)
-
-# Prefer libGL.so to libOpenGL.so, see CMP0072
-set (OpenGL_GL_PREFERENCE  "LEGACY")
 
 #set a build flag for arm architecture, to catch any rPI runtime changes required
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -436,8 +419,8 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Li
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-    add_subdirectory(src/glshim)
+    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
@@ -455,16 +438,37 @@ IF(QT_ANDROID)
   SET(OPENGLES_FOUND "YES")
   SET(OPENGL_FOUND "YES")
 
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-  add_subdirectory(src/glshim)
+  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 
-IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 
+
+IF(DEFINED _wx_selected_config)
+  MESSAGE (STATUS "selected config ${_wx_selected_config}")
+  IF(_wx_selected_config MATCHES "androideabi-qt")
+    MESSAGE (STATUS "Building for wxQt-Android")
+    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
+    SET(QT_ANDROID "ON")
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
+ENDIF(DEFINED _wx_selected_config)
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+ELSE()
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
+ENDIF()
+
+IF (OPENGLES_FOUND)
+  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+ENDIF ()
+
+IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   IF(USE_GL)
     FIND_PACKAGE(OpenGL)
   ELSE(USE_GL)
-    MESSAGE (STATUS "OpenGL disabled by option..." )
+    MESSAGE (STATUS "OpenGL disabled by option USE_GL..." )
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
@@ -496,17 +500,18 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 ENDIF()
 
 MESSAGE (STATUS "    Adding local GLU" )
-add_subdirectory(src/glu)
+add_subdirectory(libs/glu)
 SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 MESSAGE (STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 
 MESSAGE (STATUS "    Adding local LIBTESS2" )
-add_subdirectory(src/libtess2)
-SET( OPENGL_LIBRARIES "TESS2_static" ${OPENGL_LIBRARIES})
-SET(EXTRA_LIBS ${EXTRA_LIBS} "TESS2_static")
+add_subdirectory(libs/libtess2)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Include)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libtess2/Source)
+# TODO: check this... is it required on both places, really?
+SET(OPENGL_LIBRARIES TESS2 ${OPENGL_LIBRARIES})
+SET(EXTRA_LIBS ${EXTRA_LIBS} TESS2)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/libtess2/Include)
 MESSAGE (STATUS "    Revised EXTRA_LIBS (with local libtess2): " ${EXTRA_LIBS})
 
 IF(NOT QT_ANDROID)
@@ -517,7 +522,6 @@ IF(NOT QT_ANDROID)
   SET( wxWidgets_USE_UNIVERSAL OFF)
   SET( wxWidgets_USE_STATIC OFF)
 
-  set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets version.")
   if(WXWIDGETS_FORCE_VERSION)
     set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
   endif()
@@ -528,26 +532,32 @@ IF(NOT QT_ANDROID)
     SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
   ENDIF(MSVC)
 
-  IF(WIN32 OR APPLE OR QT_ANDROID)
-    FIND_PACKAGE(wxWidgets)
-    if (wxWidgets_FOUND)
-      message(STATUS "Found wxWidgets webview add-on")
-      add_definitions(-DOCPN_USE_WEBVIEW)
-    else ()
-      list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
-      message(STATUS "Could not find wxWidgets webview add-on")
-      FIND_PACKAGE(wxWidgets REQUIRED)
-    endif ()
-    IF(MSYS)
-      # this is to convert msys to windows paths, and handle the missing /usr
-      STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}" )
-    ENDIF(MSYS)
-    INCLUDE(${wxWidgets_USE_FILE})
 
-    MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-  ENDIF(WIN32 OR APPLE OR QT_ANDROID)
+  IF(GTK2_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+  ELSEIF(GTK3_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+  ENDIF ()
+
+  FIND_PACKAGE(wxWidgets)
+  if (wxWidgets_FOUND)
+    message(STATUS "Found wxWidgets webview add-on")
+    add_definitions(-DOCPN_USE_WEBVIEW)
+  else ()
+    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    message(STATUS "Could not find wxWidgets webview add-on")
+    FIND_PACKAGE(wxWidgets REQUIRED)
+  endif ()
+  IF(MSYS)
+    # Convert msys to windows paths, and handle the missing /usr
+    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" 
+           wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+  ENDIF(MSYS)
+  INCLUDE(${wxWidgets_USE_FILE})
+  
+  MESSAGE (STATUS "Found wxWidgets..." )
+  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -565,21 +575,9 @@ ENDIF(NOT QT_ANDROID)
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
-
-#SET(CMAKE_BUILD_TYPE Debug)
-IF( NOT CMAKE_BUILD_TYPE )
-  SET( CMAKE_BUILD_TYPE Release CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-       FORCE )
-ENDIF( NOT CMAKE_BUILD_TYPE )
-
-MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-
-IF (NOT CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
-ENDIF (NOT CMAKE_INSTALL_PREFIX)
-
+MESSAGE (STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 MESSAGE (STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
+
 SET(PREFIX_BIN bin)
 SET(PREFIX_INCLUDE include)
 SET(PREFIX_DATA share)
@@ -639,7 +637,6 @@ IF(OCPN_USE_CRASHREPORT)
   MESSAGE (STATUS "Crash reporting enabled")
   IF(MSVC)
     MESSAGE (STATUS "Using Windows CrashRpt")
-    ADD_DEFINITIONS(-DOCPN_USE_CRASHRPT)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
@@ -647,106 +644,46 @@ IF(OCPN_USE_CRASHREPORT)
     IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
       IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
         MESSAGE (STATUS "Using Linux crash reporting")
-        ADD_DEFINITIONS(-DLINUX_CRASHRPT)
       ENDIF()
     ENDIF()
   ENDIF(MSVC)
 ENDIF(OCPN_USE_CRASHREPORT)
 
-# Add some definitions to satisfy MS
-IF(MSVC)
-  ADD_DEFINITIONS(-D__MSVC__)
-  ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
-  ADD_DEFINITIONS(-DPSAPI_VERSION=1)
-  add_compile_options("-wd4068")
-ENDIF(MSVC)
+IF(QT_ANDROID)
+  SET(CMAKE_BUILD_TYPE Debug)
+  ADD_DEFINITIONS(-D__WXQT__)
+  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+  ADD_DEFINITIONS(-DANDROID)
 
-IF (NOT WIN32 AND NOT APPLE)
+  SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
 
-  IF(QT_ANDROID)
-    SET(CMAKE_BUILD_TYPE Debug)
-    ADD_DEFINITIONS(-D__WXQT__)
-    ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
-    ADD_DEFINITIONS(-D__OCPN__ANDROID__)
-    ADD_DEFINITIONS(-DANDROID)
+  ## Compiler flags
+  #  if(CMAKE_COMPILER_IS_GNUCXX)
+  #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
+  #  endif()
+  set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 
-    SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
-    ## Compiler flags
-    #  if(CMAKE_COMPILER_IS_GNUCXX)
-    #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
-    #  endif()
-    set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
-    INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
-
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-    INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-
-    ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
-
-  ENDIF(QT_ANDROID)
-
-ENDIF (NOT WIN32 AND NOT APPLE)
-
-OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
-
-IF(OCPN_NEW_SERIAL)
-  if(APPLE)
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(FOUNDATION_LIBRARY Foundation)
-  endif()
-
-  ## Sources
-  set(serial_SRCS
-    src/serial/src/serial.cc
-    src/serial/include/serial/serial.h
-    src/serial/include/serial/v8stdint.h
-  )
-  if(APPLE)
-    # If OSX
-    list(APPEND serial_SRCS src/serial/src/impl/unix.cc)
-    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_osx.cc)
-  elseif(UNIX)
-    # If unix
-    list(APPEND serial_SRCS src/serial/src/impl/unix.cc)
-    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_linux.cc)
-  else()
-    # If windows
-    list(APPEND serial_SRCS src/serial/src/impl/win.cc)
-    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_win.cc)
-  endif()
-
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/serial/include)
-
-  ## Add serial library
-  add_library(SERIAL ${serial_SRCS})
-  if(APPLE)
-    target_link_libraries(SERIAL ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-  elseif(UNIX)
-    target_link_libraries(SERIAL rt pthread)
-  else()
-    target_link_libraries(SERIAL setupapi)
-  endif()
-
-  set(EXTRA_LIBS ${EXTRA_LIBS} SERIAL)
-  add_definitions(-DocpnUSE_NEWSERIAL)
-  message(STATUS "Using new serial library...")
-ENDIF(OCPN_NEW_SERIAL)
-
-OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
+  ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+ENDIF(QT_ANDROID)
 
 IF(OCPN_USE_CURL)
-      ADD_DEFINITIONS(-D__OCPN_USE_CURL__)
-
   IF(WIN32)
-    INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll" "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll" DESTINATION ".")
-    INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" DESTINATION ".")
+    INSTALL(FILES
+        "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
+        "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
+        "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll"
+        DESTINATION ".")
     IF(MSVC)
         SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
         INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
@@ -755,7 +692,6 @@ IF(OCPN_USE_CURL)
         SET(CURL_LIBRARIES "curl.dll")
         INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
     ENDIF(MSVC)
-    OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
   ELSE(WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
   ENDIF(WIN32)
@@ -763,24 +699,13 @@ IF(OCPN_USE_CURL)
   IF(NOT QT_ANDROID)
     IF(OCPN_USE_EXTERN_CURL)
       FIND_PACKAGE(CURL REQUIRED)
-      INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
+      INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
     ELSE(OCPN_USE_EXTERN_CURL)
       INCLUDE("Curl")
       MESSAGE (STATUS "Using bundled curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
-    SET(SRC_WXCURL
-      src/wxcurl/base.cpp
-      src/wxcurl/dav.cpp
-      src/wxcurl/davtool.cpp
-      src/wxcurl/dialog.cpp
-      src/wxcurl/ftp.cpp
-      src/wxcurl/http.cpp
-      src/wxcurl/panel.cpp
-      src/wxcurl/telnet.cpp
-      src/wxcurl/thread.cpp
-      src/wxcurl/utils.cpp
-    )
-    INCLUDE( FindPkgConfig )
+
+    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
     PKG_SEARCH_MODULE(SYS_WXCURL libwxcurl wxcurl)
     IF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxcurl")
@@ -788,13 +713,13 @@ IF(OCPN_USE_CURL)
       SET(EXTRA_LIBS ${EXTRA_LIBS} ${SYS_WXCURL_LIBRARIES})
     ELSE (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with bundled wxcurl")
-      ADD_LIBRARY(WXCURL STATIC ${SRC_WXCURL})
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
-      SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
+      include("Curl")
+      add_subdirectory("libs/wxcurl")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxcurl/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     ENDIF (SYS_WXCURL_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
 
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
-    MESSAGE (STATUS "CURL_LIBRARIES:"  ${CURL_LIBRARIES})
 
     IF(WIN32 AND OCPN_USE_EXTERN_CURL)
       FIND_LIBRARY(CURL_LIBRARY_DLL NAMES
@@ -810,10 +735,6 @@ IF(OCPN_USE_CURL)
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_CURL)
 
-OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
-OPTION(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
-
-OPTION(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
 IF(OCPN_USE_SVG)
   MESSAGE(STATUS "SVG support enabled...")
@@ -936,168 +857,28 @@ IF(OCPN_USE_SVG)
         ${GTK_LIBRARIES}
       )
     ENDIF(WIN32)
-
-    SET(SRC_WXSVG
-      src/wxsvg/src/CSSStyleDeclaration.cpp
-      src/wxsvg/src/CSSValue.cpp
-      src/wxsvg/src/Elements_CopyConstructors.cpp
-      src/wxsvg/src/Elements_GetAttribute.cpp
-      src/wxsvg/src/Elements_GetAttributes.cpp
-      src/wxsvg/src/Elements_HasAttribute.cpp
-      src/wxsvg/src/Elements_SetAttribute.cpp
-      src/wxsvg/src/GetSVGDocument.cpp
-      src/wxsvg/src/NodeList.cpp
-      src/wxsvg/src/SVGAngle.cpp
-      src/wxsvg/src/SVGAnimateTransformElement.cpp
-      src/wxsvg/src/SVGAnimateMotionElement.cpp
-      src/wxsvg/src/SVGAnimatedType.cpp
-      src/wxsvg/src/SVGAnimationElement.cpp
-      src/wxsvg/src/SVGCanvas.cpp
-      src/wxsvg/src/SVGCanvasItem.cpp
-      src/wxsvg/src/SVGCircleElement.cpp
-      src/wxsvg/src/SVGColor.cpp
-      src/wxsvg/src/SVGDocument.cpp
-      src/wxsvg/src/SVGElementInstanceList.cpp
-      src/wxsvg/src/SVGEllipseElement.cpp
-      src/wxsvg/src/SVGFEGaussianBlurElement.cpp
-      src/wxsvg/src/SVGFilterElement.cpp
-      src/wxsvg/src/SVGFitToViewBox.cpp
-      src/wxsvg/src/SVGImageElement.cpp
-      src/wxsvg/src/SVGLength.cpp
-      src/wxsvg/src/SVGLengthList.cpp
-      src/wxsvg/src/SVGLineElement.cpp
-      src/wxsvg/src/SVGLocatable.cpp
-      src/wxsvg/src/SVGMarkerElement.cpp
-      src/wxsvg/src/SVGMatrix.cpp
-      src/wxsvg/src/SVGNumberList.cpp
-      src/wxsvg/src/SVGPaint.cpp
-      src/wxsvg/src/SVGPathElement.cpp
-      src/wxsvg/src/SVGPathSegList.cpp
-      src/wxsvg/src/SVGPoint.cpp
-      src/wxsvg/src/SVGPointList.cpp
-      src/wxsvg/src/SVGPolygonElement.cpp
-      src/wxsvg/src/SVGPolylineElement.cpp
-      src/wxsvg/src/SVGPreserveAspectRatio.cpp
-      src/wxsvg/src/SVGRadialGradientElement.cpp
-      src/wxsvg/src/SVGRect.cpp
-      src/wxsvg/src/SVGRectElement.cpp
-      src/wxsvg/src/SVGSVGElement.cpp
-      src/wxsvg/src/SVGStringList.cpp
-      src/wxsvg/src/SVGStylable.cpp
-      src/wxsvg/src/SVGTests.cpp
-      src/wxsvg/src/SVGTextContentElement.cpp
-      src/wxsvg/src/SVGTextElement.cpp
-      src/wxsvg/src/SVGTransform.cpp
-      src/wxsvg/src/SVGTransformList.cpp
-      src/wxsvg/src/SVGTransformable.cpp
-      src/wxsvg/src/SVGUseElement.cpp
-      src/wxsvg/src/SVGVideoElement.cpp
-      src/wxsvg/src/imagsvg.cpp
-      #src/wxsvg/src/mediadec_ffmpeg.cpp
-      src/wxsvg/src/svgctrl.cpp
-      src/wxsvg/src/cairo/SVGCanvasCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasCairo.h
-      src/wxsvg/src/cairo/SVGCanvasImageCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasImageCairo.h
-      src/wxsvg/src/cairo/SVGCanvasPathCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasPathCairo.h
-      src/wxsvg/src/cairo/SVGCanvasTextCairo.cpp
-      src/wxsvg/src/cairo/SVGCanvasTextCairo.h
-      src/wxsvg/src/svgxml/svgxml.cpp
-      src/wxsvg/src/svgxml/svgxmlhelpr.cpp
-    )
-    if(EXIF_FOUND)
-      SET(SRC_WXSVG ${SRC_WXSVG} src/wxsvg/src/ExifHandler.cpp)
-      ADD_DEFINITIONS(-DwxsvgUSE_EXIF)
-      INCLUDE_DIRECTORIES(${EXIF_INCLUDE_DIR})
-    endif()
+    set(LATE_LIBS ${LATE_LIBS} ${SVG_LIBS})
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
       message (STATUS "Building with system wxsvg includes")
       INCLUDE_DIRECTORIES(${WXSVG_INCLUDE_DIR})
-      SET(EXTRA_LIBS ${EXTRA_LIBS} ${WXSVG_LIBRARIES})
-    ELSE (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-      message (STATUS "Building with bundled wxsvg includes")
-      ADD_LIBRARY(WXSVG STATIC ${SRC_WXSVG})
-      TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVG)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVGXML)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include)
-      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
-      set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-      SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
-    ENDIF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+      SET(LATE_LIBS ${LATE_LIBS} ${WXSVG_LIBRARIES})
+    ELSE ()
+      add_subdirectory("libs/wxsvg")
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+      set(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
+    ENDIF ()
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
 
-IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
-
-
-  IF(NOT OCPN_FORCE_GTK3)
-    FIND_PACKAGE(GTK2)
-  ENDIF(NOT OCPN_FORCE_GTK3)
-
-  IF(GTK2_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-    SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
-    MESSAGE(STATUS "Building against GTK2...")
-  ELSE(GTK2_FOUND)
-    FIND_PACKAGE(GTK3)
-    INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
-    SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
-    MESSAGE(STATUS "Building against GTK3...")
-  ENDIF(GTK2_FOUND)
-  FIND_PACKAGE(wxWidgets)
-  if (wxWidgets_FOUND)
-    message(STATUS "Found wxWidgets webview add-on")
-    add_definitions(-DOCPN_USE_WEBVIEW)
-  else ()
-    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
-    message(STATUS "Could not find wxWidgets webview add-on")
-    FIND_PACKAGE(wxWidgets REQUIRED)
-  endif ()
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-
-  INCLUDE(${wxWidgets_USE_FILE})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
-ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-
-# SQLite3 support required for MBTiles.
-
-set(SQLITECPP_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Backup.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Column.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Database.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Exception.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Statement.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Transaction.cpp
-)
-# list of header files of the library
-set(SQLITECPP_INC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/SQLiteCpp.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Assertion.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Backup.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Column.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Database.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Exception.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Statement.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Transaction.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Utils.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
-)
-include_directories( src/SQLiteCpp/include src/SQLiteCpp/sqlite3 )
-ADD_LIBRARY(SQLiteCpp STATIC ${SQLITECPP_SRC} ${SQLITECPP_INC})
-set_property(TARGET SQLiteCpp PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-
-SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
+#
+# SQLite3
+#
+add_subdirectory("libs/SQLiteCpp")
+include_directories(libs/SQLiteCpp/include )
+SET(EXTRA_LIBS ${EXTRA_LIBS} SQLITE_CPP)
 
 IF(UNIX AND NOT APPLE)
   SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
@@ -1105,17 +886,19 @@ IF(UNIX AND NOT APPLE)
             PATHS ${SQLITE3_INC_LOOK_PATHS})
 
   message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
-
-  SET(SQLITE3_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
-  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${SQLITE3_LIB_LOOK_PATHS} NAMES sqlite3 libsqlite3)
+  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${LINUX_LIB_PATHS}
+               NAMES sqlite3 libsqlite3)
   message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
 
   IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
     MESSAGE(STATUS "Found SQLite3 dev environment.")
     INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 
-    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
-    string(REGEX REPLACE "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1" SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE 
+          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
+    string(REGEX REPLACE
+           "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1"
+           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
     MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
     IF( ${SQLITE3_VERSION} LESS "3019000" )
       add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
@@ -1130,8 +913,14 @@ IF(UNIX AND NOT APPLE)
 ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32 OR APPLE)
-  ADD_LIBRARY(sqlite3 STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
-  include_directories( src/SQLiteCpp/sqlite3 )
+  ADD_LIBRARY(sqlite3 STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
+  )
+  include_directories(
+      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3
+  )
   SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
 ENDIF(WIN32 OR APPLE)
 
@@ -1161,137 +950,17 @@ IF(OCPN_USE_LZMA)
   FIND_PACKAGE(LibLZMA)
   IF(LIBLZMA_FOUND)
     message (STATUS "Building with lzma support")
-    ADD_DEFINITIONS(-DUSE_LZMA)
     INCLUDE_DIRECTORIES(${LIBLZMA_INCLUDE_DIR})
   ELSE(LIBLZMA_FOUND)
     message (STATUS "lzma library not found")
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
 
-#
-# Sound setup
-#
-FIND_PROGRAM(APLAY aplay)
-FIND_PROGRAM(AFPLAY afplay)
-SET(SYSTEM_SOUND_CMD "\"\"")
-IF (APLAY)
-  SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
-ELSEIF (AFPLAY)
-  SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
-ELSEIF (WIN32)
-  SET(SYSTEM_SOUND_CMD
-    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
-ENDIF ()
+Include("SoundConfig")
 
-IF (APPLE)
-  SET (DEFAULT_SCS OFF)
-ELSE (APPLE)
-  SET (DEFAULT_SCS ON)
-ENDIF (APPLE)
-
-OPTION(ENABLE_SYSTEM_CMD_SOUND
-    "Use aplay(1), afplay(1) etc. to play sounds if available" OFF)
-SET (HAVE_SYSTEM_CMD_SOUND "")
-IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
-  IF (APLAY OR AFPLAY OR WIN32)
-    SET(HAVE_SYSTEM_CMD_SOUND 1)
-  ELSEIF (ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
-      MESSAGE(STATUS
-      "ENABLE_SYSTEM_CMD_SOUND is set but I cannot find aplay(1) or afplay(1)")
-    SET(HAVE_SYSTEM_CMD_SOUND "")
-  ENDIF()
-ENDIF()
-
-IF (WIN32 OR APPLE)
-  SET (DEFAULT_PA OFF)
-ELSE (WIN32 OR APPLE)
-  SET (DEFAULT_PA ON)
-ENDIF (WIN32 OR APPLE)
-
-OPTION(ENABLE_PORTAUDIO
-       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
-SET (HAVE_PORTAUDIO "")
-
-IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
-  INCLUDE("FindPortaudio")
-  IF (PORTAUDIO_FOUND)
-    MESSAGE (STATUS "Portaudio Found")
-    INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${PORTAUDIO_LIBRARIES})
-    ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
-    SET(HAVE_PORTAUDIO 1)
-  ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
-    MESSAGE (STATUS "ENABLE_PORTAUDIO is set but I cannot find portaudio")
-    SET(HAVE_PORTAUDIO "")
-  ENDIF()
-ENDIF ()
-
-
-OPTION(ENABLE_SNDFILE
-       "Use libsndfile if available for sound files." ${DEFAULT_PA})
-SET(HAVE_SNDFILE "")
-IF (NOT ENABLE_SNDFILE MATCHES OFF)
-  INCLUDE(FindLibSndfile)
-  IF(LIBSNDFILE_FOUND)
-    MESSAGE (STATUS "libsndfile Found")
-    INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LIBSNDFILE_LIBRARIES})
-    SET(HAVE_SNDFILE 1)
-  ELSEIF (ENABLE_SNDFILE MATCHES ON)
-    MESSAGE (STATUS "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
-  ENDIF()
-ENDIF ()
-
-# For convenience we define the sources as a variable. You can add
-# header files and cpp/c files and CMake will sort them out
-
-SET(SRC_NMEA0183
-        src/nmea0183/LatLong.hpp
-        src/nmea0183/latlong.cpp
-        src/nmea0183/long.cpp
-        src/nmea0183/nmea0183.cpp
-        src/nmea0183/nmea0183.hpp
-        src/nmea0183/Response.hpp
-        src/nmea0183/response.cpp
-        src/nmea0183/RMB.hpp
-        src/nmea0183/rmb.cpp
-        src/nmea0183/Sentence.hpp
-        src/nmea0183/sentence.cpp
-        src/nmea0183/talkerid.cpp
-        src/nmea0183/RMC.HPP
-        src/nmea0183/rmc.cpp
-        src/nmea0183/hexvalue.cpp
-        src/nmea0183/lat.cpp
-        src/nmea0183/expid.cpp
-        src/nmea0183/wpl.hpp
-        src/nmea0183/wpl.cpp
-        src/nmea0183/rte.hpp
-        src/nmea0183/rte.cpp
-        src/nmea0183/hdt.hpp
-        src/nmea0183/hdt.cpp
-        src/nmea0183/hdg.hpp
-        src/nmea0183/hdg.cpp
-        src/nmea0183/hdm.hpp
-        src/nmea0183/hdm.cpp
-        src/nmea0183/gll.hpp
-        src/nmea0183/gll.cpp
-        src/nmea0183/vtg.hpp
-        src/nmea0183/vtg.cpp
-        src/nmea0183/gga.hpp
-        src/nmea0183/gga.cpp
-        src/nmea0183/gsv.hpp
-        src/nmea0183/gsv.cpp
-        src/nmea0183/GPwpl.cpp
-        src/nmea0183/GPwpl.hpp
-        src/nmea0183/apb.cpp
-        src/nmea0183/apb.hpp
-        src/nmea0183/xte.cpp
-        src/nmea0183/xte.hpp
-)
-ADD_LIBRARY(NMEA0183 STATIC ${SRC_NMEA0183})
-set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
+add_subdirectory("libs/nmea0183")
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
+set(EXTRA_LIBS ${EXTRA_LIBS} NMEA0183)
 
 
 #IF(NOT WIN32)
@@ -1315,227 +984,213 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 #ENDIF (NOT WIN32)
 
 
-
-
 SET(HDRS
-                include/ocpn_types.h
-                include/ocpndc.h
-                include/chart1.h
-                include/bbox.h
-                include/ocpn_pixel.h
-                include/chartdb.h
-                include/chartdbs.h
-                include/chartimg.h
-                include/ChartDataInputStream.h
-                include/chcanv.h
-                include/timers.h
-                include/emboss_data.h
-                include/AISTargetQueryDialog.h
-                include/AIS_Bitstring.h
-                include/AISTargetListDialog.h
-                include/OCPNListCtrl.h
-                include/AISTargetAlertDialog.h
-                include/AIS_Decoder.h
-                include/AIS_Target_Data.h
-                include/DetailSlider.h
-                include/GoToPositionDialog.h
-                include/RolloverWin.h
-                include/S57QueryDialog.h
-                include/S57ObjectDesc.h
-                include/S57Light.h
-                include/S57ClassRegistrar.h
-                include/MarkIcon.h
-                include/SendToGpsDlg.h
-                include/TCWin.h
-                include/tide_time.h
-                include/ChInfoWin.h
-                include/ocpCursor.h
-                include/Quilt.h
-                include/Hyperlink.h
-                include/NavObjectCollection.h
-                include/RoutePoint.h
-                include/Route.h
-                include/Track.h
-                include/SelectItem.h
-                include/Select.h
-                include/FontMgr.h
-                include/FontDesc.h
-                include/vector2D.h
-                include/OCPN_Sound.h
-                include/OcpnWxSound.h
-                include/SoundFactory.h
-                include/SoundLoaderFactory.h
-                include/SystemCmdSound.h
-                include/NMEALogWindow.h
-                include/WindowDestroyListener.h
-                include/TTYWindow.h
-                include/TTYScroll.h
-                include/Layer.h
-                include/concanv.h
-                include/cutil.h
-                include/georef.h
-                include/navutil.h
-                include/routeman.h
-                include/routemanagerdialog.h
-                include/MarkInfo.h
-                include/RoutePropDlg.h
-                include/RoutePropDlgImpl.h
-                include/routeprintout.h
-                include/trackprintout.h
-                include/PositionParser.h
-                include/printtable.h
-                include/piano.h
-                include/tcmgr.h
-                include/Station_Data.h
-                include/IDX_entry.h
-                include/TC_Error_Code.h
-                include/TCDataFactory.h
-                include/TCDS_Ascii_Harmonic.h
-                include/TCDS_Binary_Harmonic.h
-                include/TCDataSource.h
-                include/thumbwin.h
-                include/options.h
-                include/gshhs.h
-                include/kml.h
-                include/undo.h
-                include/AboutFrame.h
-                include/AboutFrameImpl.h
-                include/ais.h
-                include/pluginmanager.h
-                include/ocpn_plugin.h
-                include/wx/json_defs.h
-                include/wx/jsonwriter.h
-                include/wx/jsonreader.h
-                include/styles.h
-                include/toolbar.h
-                include/compass.h
-                include/geodesic.h
-                include/datastream.h
-                include/OCPN_DataStreamEvent.h
-                include/ConnectionParams.h
-                include/OCP_DataStreamInput_Thread.h
-                include/dsPortType.h
-                include/multiplexer.h
-                include/OCPNRegion.h
-                include/LLRegion.h
-                include/SoundFileLoader.h
-                include/TrackPropDlg.h
-                include/LinkPropDlg.h
-                include/viewport.h
-                include/canvasMenu.h
-                include/OCPNPlatform.h
-                include/S57Sector.h
-                include/FlexHash.h
-                include/iENCToolbar.h
-                include/mbtiles.h
-                ${CMAKE_BINARY_DIR}/include/config.h
+    include/ocpn_types.h
+    include/ocpndc.h
+    include/chart1.h
+    include/bbox.h
+    include/ocpn_pixel.h
+    include/chartdb.h
+    include/chartdbs.h
+    include/chartimg.h
+    include/ChartDataInputStream.h
+    include/chcanv.h
+    include/timers.h
+    include/emboss_data.h
+    include/AISTargetQueryDialog.h
+    include/AIS_Bitstring.h
+    include/AISTargetListDialog.h
+    include/OCPNListCtrl.h
+    include/AISTargetAlertDialog.h
+    include/AIS_Decoder.h
+    include/AIS_Target_Data.h
+    include/DetailSlider.h
+    include/GoToPositionDialog.h
+    include/RolloverWin.h
+    include/S57QueryDialog.h
+    include/S57ObjectDesc.h
+    include/S57Light.h
+    include/S57ClassRegistrar.h
+    include/MarkIcon.h
+    include/SendToGpsDlg.h
+    include/TCWin.h
+    include/tide_time.h
+    include/ChInfoWin.h
+    include/ocpCursor.h
+    include/Quilt.h
+    include/Hyperlink.h
+    include/NavObjectCollection.h
+    include/RoutePoint.h
+    include/Route.h
+    include/Track.h
+    include/SelectItem.h
+    include/Select.h
+    include/FontMgr.h
+    include/FontDesc.h
+    include/vector2D.h
+    include/NMEALogWindow.h
+    include/WindowDestroyListener.h
+    include/TTYWindow.h
+    include/TTYScroll.h
+    include/Layer.h
+    include/concanv.h
+    include/cutil.h
+    include/georef.h
+    include/navutil.h
+    include/routeman.h
+    include/routemanagerdialog.h
+    include/MarkInfo.h
+    include/RoutePropDlg.h
+    include/RoutePropDlgImpl.h
+    include/routeprintout.h
+    include/trackprintout.h
+    include/PositionParser.h
+    include/printtable.h
+    include/piano.h
+    include/tcmgr.h
+    include/Station_Data.h
+    include/IDX_entry.h
+    include/TC_Error_Code.h
+    include/TCDataFactory.h
+    include/TCDS_Ascii_Harmonic.h
+    include/TCDS_Binary_Harmonic.h
+    include/TCDataSource.h
+    include/thumbwin.h
+    include/options.h
+    include/gshhs.h
+    include/kml.h
+    include/undo.h
+    include/AboutFrame.h
+    include/AboutFrameImpl.h
+    include/ais.h
+    include/pluginmanager.h
+    include/ocpn_plugin.h
+    include/styles.h
+    include/toolbar.h
+    include/compass.h
+    include/geodesic.h
+    include/datastream.h
+    include/OCPN_DataStreamEvent.h
+    include/ConnectionParams.h
+    include/OCP_DataStreamInput_Thread.h
+    include/dsPortType.h
+    include/multiplexer.h
+    include/OCPNRegion.h
+    include/LLRegion.h
+    include/TrackPropDlg.h
+    include/LinkPropDlg.h
+    include/viewport.h
+    include/canvasMenu.h
+    include/OCPNPlatform.h
+    include/S57Sector.h
+    include/FlexHash.h
+    include/iENCToolbar.h
+    include/mbtiles.h
+    ${CMAKE_BINARY_DIR}/include/config.h
 )
 
 SET(SRCS
-        src/chart1.cpp
-        src/bbox.cpp
-        src/ocpn_pixel.cpp
-        src/ocpndc.cpp
-        src/chartdb.cpp
-        src/chartdbs.cpp
-        src/chartimg.cpp
-        src/ChartDataInputStream.cpp
-        src/chcanv.cpp
-        src/ocpCursor.cpp
-        src/TCWin.cpp
-        src/S57QueryDialog.cpp
-        src/GoToPositionDialog.cpp
-        src/DetailSlider.cpp
-        src/RolloverWin.cpp
-        src/ChInfoWin.cpp
-        src/AISTargetQueryDialog.cpp
-        src/AIS_Bitstring.cpp
-        src/AISTargetListDialog.cpp
-        src/AISTargetAlertDialog.cpp
-        src/AIS_Decoder.cpp
-        src/AIS_Target_Data.cpp
-        src/OCPNListCtrl.cpp
-        src/Quilt.cpp
-        src/Hyperlink.cpp
-        src/NavObjectCollection.cpp
-        src/RoutePoint.cpp
-        src/Route.cpp
-        src/Track.cpp
-        src/SelectItem.cpp
-        src/Select.cpp
-        src/FontMgr.cpp
-        src/FontDesc.cpp
-        src/OCPN_Sound.cpp
-        src/OcpnWxSound.cpp
-        src/SoundFactory.cpp
-        src/SoundFileLoader.cpp
-        src/SoundLoaderFactory.cpp
-        src/SystemCmdSound.cpp
-        src/NMEALogWindow.cpp
-        src/TTYWindow.cpp
-        src/TTYScroll.cpp
-        src/SendToGpsDlg.cpp
-        src/Layer.cpp
-        src/concanv.cpp
-        src/cutil.cpp
-        src/georef.cpp
-        src/navutil.cpp
-        src/routeman.cpp
-        src/routemanagerdialog.cpp
-        src/MarkInfo.cpp
-        src/RoutePropDlg.cpp
-        src/RoutePropDlgImpl.cpp
-        src/routeprintout.cpp
-        src/trackprintout.cpp
-        src/PositionParser.cpp
-        src/printtable.cpp
-        src/piano.cpp
-        src/tcmgr.cpp
-        src/Station_Data.cpp
-        src/IDX_entry.cpp
-        src/TCDataFactory.cpp
-        src/TCDS_Ascii_Harmonic.cpp
-        src/TCDS_Binary_Harmonic.cpp
-        src/TCDataSource.cpp
-        src/thumbwin.cpp
-        src/options.cpp
-        src/gshhs.cpp
-        src/kml.cpp
-        src/undo.cpp
-        src/AboutFrame.cpp
-        src/AboutFrameImpl.cpp
-        src/ais.cpp
-        src/pluginmanager.cpp
-        src/wxJSON/jsonwriter.cpp
-        src/wxJSON/jsonreader.cpp
-        src/wxJSON/jsonval.cpp
-        src/styles.cpp
-        src/toolbar.cpp
-        src/compass.cpp
-        src/geodesic.cpp
-        src/datastream.cpp
-        src/OCPN_DataStreamEvent.cpp
-        src/ConnectionParams.cpp
-        src/OCP_DataStreamInput_Thread.cpp
-        src/multiplexer.cpp
-        src/pugixml.cpp
-        src/OCPNRegion.cpp
-        src/LLRegion.cpp
-        src/TrackPropDlg.cpp
-        src/LinkPropDlg.cpp
-        src/ssl/sha1.c
-        src/viewport.cpp
-        src/canvasMenu.cpp
-        src/OCPNPlatform.cpp
-        src/FlexHash.cpp
-        src/iENCToolbar.cpp
-        src/mbtiles.cpp
-        src/ConfigMgr.cpp
-        src/CanvasOptions.cpp
-        src/MUIBar.cpp
-        src/OCPN_AUIManager.cpp
-        src/CanvasConfig.cpp
+    src/chart1.cpp
+    src/bbox.cpp
+    src/ocpn_pixel.cpp
+    src/ocpndc.cpp
+    src/chartdb.cpp
+    src/chartdbs.cpp
+    src/chartimg.cpp
+    src/ChartDataInputStream.cpp
+    src/chcanv.cpp
+    src/ocpCursor.cpp
+    src/TCWin.cpp
+    src/S57QueryDialog.cpp
+    src/GoToPositionDialog.cpp
+    src/DetailSlider.cpp
+    src/RolloverWin.cpp
+    src/ChInfoWin.cpp
+    src/AISTargetQueryDialog.cpp
+    src/AIS_Bitstring.cpp
+    src/AISTargetListDialog.cpp
+    src/AISTargetAlertDialog.cpp
+    src/AIS_Decoder.cpp
+    src/AIS_Target_Data.cpp
+    src/OCPNListCtrl.cpp
+    src/Quilt.cpp
+    src/Hyperlink.cpp
+    src/NavObjectCollection.cpp
+    src/RoutePoint.cpp
+    src/Route.cpp
+    src/Track.cpp
+    src/SelectItem.cpp
+    src/Select.cpp
+    src/FontMgr.cpp
+    src/FontDesc.cpp
+    src/NMEALogWindow.cpp
+    src/TTYWindow.cpp
+    src/TTYScroll.cpp
+    src/SendToGpsDlg.cpp
+    src/Layer.cpp
+    src/concanv.cpp
+    src/cutil.cpp
+    src/georef.cpp
+    src/navutil.cpp
+    src/routeman.cpp
+    src/routemanagerdialog.cpp
+    src/MarkInfo.cpp
+    src/RoutePropDlg.cpp
+    src/RoutePropDlgImpl.cpp
+    src/routeprintout.cpp
+    src/trackprintout.cpp
+    src/PositionParser.cpp
+    src/printtable.cpp
+    src/piano.cpp
+    src/tcmgr.cpp
+    src/Station_Data.cpp
+    src/IDX_entry.cpp
+    src/TCDataFactory.cpp
+    src/TCDS_Ascii_Harmonic.cpp
+    src/TCDS_Binary_Harmonic.cpp
+    src/TCDataSource.cpp
+    src/thumbwin.cpp
+    src/options.cpp
+    src/gshhs.cpp
+    src/kml.cpp
+    src/undo.cpp
+    src/AboutFrame.cpp
+    src/AboutFrameImpl.cpp
+    src/ais.cpp
+    src/pluginmanager.cpp
+    src/styles.cpp
+    src/toolbar.cpp
+    src/compass.cpp
+    src/geodesic.cpp
+    src/datastream.cpp
+    src/OCPN_DataStreamEvent.cpp
+    src/ConnectionParams.cpp
+    src/OCP_DataStreamInput_Thread.cpp
+    src/multiplexer.cpp
+    src/pugixml.cpp
+    src/OCPNRegion.cpp
+    src/LLRegion.cpp
+    src/TrackPropDlg.cpp
+    src/LinkPropDlg.cpp
+    src/ssl/sha1.c
+    src/viewport.cpp
+    src/canvasMenu.cpp
+    src/OCPNPlatform.cpp
+    src/FlexHash.cpp
+    src/iENCToolbar.cpp
+    src/mbtiles.cpp
+    src/ConfigMgr.cpp
+    src/CanvasOptions.cpp
+    src/MUIBar.cpp
+    src/OCPN_AUIManager.cpp
+    src/CanvasConfig.cpp
+    src/garmin_wrapper.h
 )
+
+IF (USE_GARMINHOST)
+    SET(SRCS ${SRCS} src/garmin_wrapper.cpp)
+ENDIF()
+
 IF(APPLE)
     IF (DARWIN_VERSION LESS 16)
         message(STATUS "DarkMode not included, requires Mac build host Darwin >= 16")
@@ -1557,23 +1212,6 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
   SET(SRCS ${SRCS} src/crashprint.cpp)
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
-
-IF(QT_ANDROID)
-  SET(HDRS ${HDRS} include/androidUTIL.h)
-  SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(SRCS ${SRCS} src/AndroidSound.cpp)
-  SET(HDRS ${HDRS} include/AndroidSound.h)
-ENDIF(QT_ANDROID)
-
-IF (PORTAUDIO_FOUND)
-    SET(HDRS ${HDRS} include/PortAudioSound.h)
-    SET(SRCS ${SRCS} src/PortAudioSound.cpp)
-ENDIF ()
-
-IF (LIBSNDFILE_FOUND)
-    SET(HDRS ${HDRS} include/SndfileSoundLoader.h)
-    SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
-ENDIF ()
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
@@ -1607,6 +1245,13 @@ IF(OPENGL_FOUND)
   )
 ENDIF(OPENGL_FOUND)
 
+add_subdirectory(libs/sound)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/sound/include)
+SET(EXTRA_LIBS ${EXTRA_LIBS} SOUND)
+
+add_subdirectory(libs/wxJSON)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxJSON/include)
+SET(EXTRA_LIBS ${EXTRA_LIBS} WXJSON)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
@@ -1618,166 +1263,58 @@ ELSE(TINYXML_FOUND)
   ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
-
-OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
   message (STATUS "S57 ENC support: enabled")
-  ADD_DEFINITIONS(-DUSE_S57)
-
   SET(SRC_S57ENC
-        include/TexFont.h
+        include/cm93.h
+        include/mygeom.h
+        include/ogr_s57.h
+        include/Osenc.h
         include/s52plib.h
         include/s52utils.h
         include/s57chart.h
-        include/mygeom.h
-        src/TexFont.cpp
+        include/s57RegistrarMgr.h
+        include/SencManager.h
+        include/TexFont.h
+        src/cm93.cpp
+        src/mygeom.cpp
+        src/ogrs57datasource.cpp
+        src/ogrs57layer.cpp
+        src/Osenc.cpp
         src/s52cnsy.cpp
         src/s52plib.cpp
         src/s52utils.cpp
         src/s57chart.cpp
-        src/cm93.cpp
-        src/mygeom.cpp
-        include/cm93.h
-        src/Osenc.cpp
-        include/Osenc.h
-        include/s57RegistrarMgr.h
-        src/s57RegistrarMgr.cpp
+        src/s57classregistrar.cpp
+        src/s57featuredefns.cpp
         src/s57obj.cpp
+        src/s57reader.cpp
+        src/s57RegistrarMgr.cpp
         src/SencManager.cpp
-        include/SencManager.h
-
-        src/myiso8211/ddffielddefn.cpp
-        src/myiso8211/ddfmodule.cpp
-        src/myiso8211/ddfrecord.cpp
-        src/myiso8211/ddfsubfielddefn.cpp
-        src/myiso8211/ddffield.cpp
-        src/myiso8211/ddfutils.cpp
-        src/mygdal/cpl_config.h
-        src/mygdal/gdal_priv.h
-        src/mygdal/cpl_conv.h
-        src/mygdal/iso8211.h
-        src/mygdal/cpl_csv.h
-        src/mygdal/ogr_api.h
-        src/mygdal/cpl_error.h
-        src/mygdal/ogr_attrind.h
-        src/mygdal/cpl_list.h
-        src/mygdal/cpl_minixml.h
-        src/mygdal/ogr_feature.h
-        src/mygdal/cpl_multiproc.h
-        src/mygdal/ogr_geometry.h
-        src/mygdal/cpl_odbc.h
-        src/mygdal/ogr_p.h
-        src/mygdal/ogr_core.h
-        src/mygdal/cpl_port.h
-        src/mygdal/ogr_s57.h
-        src/mygdal/cpl_string.h
-        src/mygdal/ogr_spatialref.h
-        src/mygdal/cpl_vsi.h
-        src/mygdal/ogrsf_frmts.h
-        src/mygdal/gdal.h
-        src/mygdal/s57.h
-        src/mygdal/gdal_frmts.h
-        src/mygdal/ddfrecordindex.cpp
-        src/mygdal/cpl_conv.cpp
-        src/mygdal/cpl_csv.cpp
-        src/mygdal/cpl_error.cpp
-        src/mygdal/cpl_findfile.cpp
-        src/mygdal/cpl_minixml.cpp
-        src/mygdal/cpl_path.cpp
-        src/mygdal/cpl_string.cpp
-        src/mygdal/cpl_vsisimple.cpp
-        src/mygdal/cplgetsymbol.cpp
-        src/mygdal/ograssemblepolygon.cpp
-        src/mygdal/ogrcurve.cpp
-        src/mygdal/ogrfeature.cpp
-        src/mygdal/ogrfeaturedefn.cpp
-        src/mygdal/ogrfielddefn.cpp
-        src/mygdal/ogrgeometry.cpp
-        src/mygdal/ogrgeometrycollection.cpp
-        src/mygdal/ogrgeometryfactory.cpp
-        src/mygdal/ogrlinearring.cpp
-        src/mygdal/ogrlinestring.cpp
-        src/mygdal/ogrmultilinestring.cpp
-        src/mygdal/ogrmultipoint.cpp
-        src/mygdal/ogrmultipolygon.cpp
-        src/mygdal/ogrpoint.cpp
-        src/mygdal/ogrpolygon.cpp
-        src/mygdal/ogrs57datasource.cpp
-        src/mygdal/ogrlayer.cpp
-        src/mygdal/ogrs57layer.cpp
-        src/mygdal/ogrutils.cpp
-        src/mygdal/s57classregistrar.cpp
-        src/mygdal/s57featuredefns.cpp
-        src/mygdal/s57reader.cpp
-        src/mygdal/gdal_misc.cpp
+        src/TexFont.cpp
   )
   ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
   INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
 
+  add_subdirectory(libs/iso8211)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/iso8211/include)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} ISO8211)
+
+  add_subdirectory(libs/gdal)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/gdal/include)
+  SET(EXTRA_LIBS ${EXTRA_LIBS} GDAL)
+
 ELSE (USE_S57)
   message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)
 
-OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 IF (USE_GARMINHOST)
-  message (STATUS "Garmin Host Mode support: enabled")
-  ADD_DEFINITIONS(-DUSE_GARMINHOST)
-
-  SET(SRC_GARMINHOST
-            src/garmin/jeeps/gpsapp.c
-            src/garmin/jeeps/gpscom.c
-            src/garmin/jeeps/gpsmath.c
-            src/garmin/jeeps/gpsmem.c
-            src/garmin/jeeps/gpsprot.c
-            src/garmin/jeeps/gpsread.c
-            src/garmin/jeeps/gpsdevice.c
-            src/garmin/jeeps/gpsdevice_ser.c
-            src/garmin/jeeps/gpsdevice_usb.c
-            src/garmin/jeeps/gpsrqst.c
-            src/garmin/jeeps/gpssend.c
-            src/garmin/jeeps/gpsserial.c
-            src/garmin/jeeps/gpsutil.c
-            src/garmin/jeeps/gpsusbread.c
-            src/garmin/jeeps/gpsusbsend.c
-            src/garmin/jeeps/gpsusbcommon.c
-            src/garmin/jeeps/garmin_wrapper_utils.c
-            src/garmin/jeeps/garmin_wrapper.cpp
-            src/garmin/jeeps/garmin_gps.h
-            src/garmin/jeeps/garmin_wrapper.h
-            src/garmin/jeeps/gpsapp.h
-            src/garmin/jeeps/gpsdatum.h
-            src/garmin/jeeps/gpsfmt.h
-            src/garmin/jeeps/gpsmath.h
-            src/garmin/jeeps/gpsport.h
-            src/garmin/jeeps/gpsprot.h
-            src/garmin/jeeps/gpsrqst.h
-            src/garmin/jeeps/gpsserial.h
-            src/garmin/jeeps/gpsusbint.h
-            src/garmin/jeeps/garminusb.h
-            src/garmin/jeeps/garmin_wrapper_utils.h
-            src/garmin/jeeps/gpscom.h
-            src/garmin/jeeps/gpsdevice.h
-            src/garmin/jeeps/gpsinput.h
-            src/garmin/jeeps/gpsmem.h
-            src/garmin/jeeps/gpsproj.h
-            src/garmin/jeeps/gpsread.h
-            src/garmin/jeeps/gpssend.h
-            src/garmin/jeeps/gpsusbcommon.h
-            src/garmin/jeeps/gpsutil.h
-  )
-  IF(WIN32)
-    SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
-  ENDIF()
-
-  ADD_LIBRARY(GARMINHOST STATIC ${SRC_GARMINHOST})
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
-  set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+  add_subdirectory("libs/garmin")
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/garmin/jeeps)
   SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
-  IF(WIN32)
-     ADD_DEFINITIONS(-D__WIN32__)
-  ENDIF()
+  message(STATUS "Garmin Host Mode support: enabled")
 ELSE (USE_GARMINHOST)
   message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
@@ -1795,103 +1332,33 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
-  SET(SRC_TEXCMP
-    src/texcmp/squish/alpha.cpp
-    src/texcmp/squish/clusterfit.cpp
-    src/texcmp/squish/colourblock.cpp
-    src/texcmp/squish/colourfit.cpp
-    src/texcmp/squish/colourset.cpp
-    src/texcmp/squish/maths.cpp
-    src/texcmp/squish/rangefit.cpp
-    src/texcmp/squish/singlecolourfit.cpp
-    src/texcmp/squish/singlecolourfitfast.cpp
-    src/texcmp/squish/twocolourfitfast.cpp
-    src/texcmp/squish/squish.cpp
-    src/texcmp/etcpak.cpp
-  )
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
-  PKG_SEARCH_MODULE(LZ4 liblz4 lz4)
-  IF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with system lz4")
-    INCLUDE_DIRECTORIES(${LZ4_INCLUDE_DIR})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
-  ELSE (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-    message (STATUS "Building with bundled lz4")
-    SET(SRC_TEXCMP ${SRC_TEXCMP}
-      src/texcmp/lz4/lz4.c
-      src/texcmp/lz4/lz4hc.c
-    )
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
-  ENDIF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+  add_subdirectory("libs/texcmp")
+  include_directories(${CMAKE_SOURCE_DIR}/libs/texcmp/squish)
+  set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
 
-  ADD_LIBRARY(TEXCMP STATIC ${SRC_TEXCMP})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
-
-  # always use optimizations for the texture compression which is much faster
-  IF ( NOT MSVC )
-    # try to use sse on x86 based systems
-    IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
-    ELSE ()
-      # use standard optimizations for other architectures
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -fPIC")
-    ENDIF ()
-  ELSE (NOT MSVC)
-    # try to use sse on x86 based systems
-    IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
-      # using sse which makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/arch:SSE2 -DSQUISH_USE_SSE=2")
-    ENDIF ()
-  ENDIF (NOT MSVC)
-
-
-  SET(SRC_MIPMAP
-    src/mipmap/mipmap.h
-    src/mipmap/mipmap.c
-    src/mipmap/mipmap_sse.c
-    src/mipmap/mipmap_sse2.c
-    src/mipmap/mipmap_ssse3.c
-    src/mipmap/mipmap_avx2.c
-    src/mipmap/mipmap_neon.c)
-
-  ADD_LIBRARY(MIPMAP STATIC ${SRC_MIPMAP})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
-
-  # always use optimizations for the texture compression which is much faster
-  IF ( NOT MSVC )
-    set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
-
-    IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-      set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
-      set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
-      set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
-
-      IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        # require at least gcc 4.8
-        IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-        ELSE()
-          set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
-        ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-      ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-
-    ELSE ()
-      IF(NOT (ARCH MATCHES "arm64" OR ARCH MATCHES "aarch64"))
-        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
-      ENDIF()
-    ENDIF ()
-  ELSE (NOT MSVC)
-    # try to use sse on x86 based systems
-    IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
-      set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "/arch:SSE")
-      set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "/arch:SSE2")
-      set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "/arch:AVX")
-    ENDIF ()
-  ENDIF (NOT MSVC)
+  add_subdirectory("libs/mipmap")
+  include_directories(${CMAKE_SOURCE_DIR}/libs/mipmap/include)
+  set(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
 
 ENDIF (OPENGL_FOUND)
+
+pkg_search_module(LZ4 liblz4 lz4)
+if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    message(STATUS "Building with system lz4")
+    include_directories(${LZ4_INCLUDE_DIR})
+    if (COMMAND target_link_directories)
+      target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+    else ()
+      link_directories(${LZ4_LIBRARY_DIRS})
+    endif ()
+
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+else ()
+    message(STATUS "Building with bundled lz4")
+    add_subdirectory("libs/lz4")
+    set(EXTRA_LIBS ${EXTRA_LIBS} LZ4)
+endif ()
+
 
 #TODO
 #dnl
@@ -2060,28 +1527,16 @@ ENDIF(APPLE)
 #  We look for it explicitely
 IF(xAPPLE)
   # Assume pkg-config is available.
-  INCLUDE( FindPkgConfig )
   PKG_SEARCH_MODULE( GOBJECT REQUIRED gobject-2.0 )
   # MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
 
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GOBJECT_LDFLAGS})
-  SET(EXTRA_LIBS ${EXTRA_LIBS} "iconv")
+  SET(LATE_LIBS ${LATE_LIBS} "iconv")
 ENDIF(xAPPLE)
 
 
 IF(WIN32)
-  IF(MSVC)
-    SET(CMAKE_C_FLAGS_DEBUG               "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
-    SET(CMAKE_C_FLAGS_MINSIZEREL          "/MP /MD  /O1  /Ob1 /D NDEBUG")
-    SET(CMAKE_C_FLAGS_RELEASE             "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi")
-    SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
-    SET(CMAKE_CXX_FLAGS_DEBUG             "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
-    SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
-    SET(CMAKE_CXX_FLAGS_RELEASE           "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
-    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
-    SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
-  ENDIF(MSVC)
-  ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+ ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 ENDIF(WIN32)
 
@@ -2231,18 +1686,14 @@ IF(APPLE)
         ${MUI_FLAT_SVG_FILES}
         ${DOC_FILES}
         ${CONFIG_FILES}
-        )
-
-    INSTALL(TARGETS
-      ${PACKAGE_NAME}
-      BUNDLE DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  )
+  INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${PREFIX_BIN} )
 
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-        NMEA0183
         ${EXTRA_LIBS}
         ${wxWidgets_LIBRARIES}
-        )
-
+        ${LATE_LIBS}
+  )
   set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                          "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
@@ -2254,13 +1705,12 @@ ENDIF(UNIX AND NOT APPLE)
 
 IF(QT_ANDROID)
   ADD_LIBRARY(gorp ${HDRS} ${SRCS}
-          ${SRC_NMEA0183}
           ${SRC_S57ENC}
           ${SRC_TEXCMP}
           ${SRC_MIPMAP}
           ${SRC_SYMBOLS}
   )
-  TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
+  TARGET_LINK_LIBRARIES( gorp NMEA0183 ${wxWidgets_LIBRARIES} )
 ENDIF()
 
 # Sanitizers, part 2/2
@@ -2272,10 +1722,10 @@ endif()
 
 If(NOT APPLE AND NOT QT_ANDROID)
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      NMEA0183
       ${EXTRA_LIBS}
       ${wxWidgets_LIBRARIES}
-      )
+      ${LATE_LIBS}
+  )
 ENDIF()
 
 IF(WIN32)
@@ -2310,12 +1760,11 @@ IF(UNIX)
         ${GETTEXT_LIBRARY}
         ${BZIP2_LIBRARIES}
         ${ZLIB_LIBRARY}
-        SQLiteCpp
+        SQLITE_CPP
         sqlite3
   )
 
   IF(X11_FOUND AND NOT APPLE)
-    ADD_DEFINITIONS(-DOCPN_HAVE_X11)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${X11_LIBRARIES} )
   ENDIF()
 
@@ -2346,7 +1795,6 @@ IF( UNIX AND NOT APPLE )
     MESSAGE( STATUS "Found LibELF..." )
     MESSAGE( STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}" )
     MESSAGE( STATUS "    ELF Include: ${LIBELF_LIBRARY}" )
-    TARGET_COMPILE_DEFINITIONS( ${PACKAGE_NAME} PUBLIC USE_LIBELF )
     TARGET_INCLUDE_DIRECTORIES( ${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}" )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "${LIBELF_LIBRARY}" )
   ELSE()
@@ -2354,6 +1802,9 @@ IF( UNIX AND NOT APPLE )
   ENDIF ()
 ENDIF( UNIX AND NOT APPLE )
 
+#
+#  Install
+#
 IF(NOT APPLE)
 
   IF(WIN32)
@@ -2361,7 +1812,7 @@ IF(NOT APPLE)
   ENDIF()
 
   IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
-    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN})
     INSTALL(FILES LINUX_DEVICES.md DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
   ENDIF()
 
@@ -2370,10 +1821,10 @@ IF(NOT APPLE)
   ENDIF()
 
   IF(NOT BUNDLE_GSHHS MATCHES "NONE")
-    INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
 
-  INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+  INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata )
   INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
 
   IF(OCPN_USE_SVG)
@@ -2385,27 +1836,27 @@ IF(NOT APPLE)
   ENDIF(OCPN_USE_SVG)
 
   IF (USE_S57)
-      INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+      INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
   ENDIF ()
 
   IF(BUNDLE_TCDATA MATCHES "ON")
-    INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
   ENDIF()
 
   FILE(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   INSTALL(FILES  ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
 
-  INSTALL(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-  INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+  INSTALL(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf DESTINATION ${PREFIX_PKGDATA})
+  INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
 
-  INSTALL(FILES data/license.html DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-  INSTALL(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-  INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+  INSTALL(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
+  INSTALL(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
+  INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA})
 
   IF(PACKAGE_FORMAT EQUAL "DEB")
-    INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
   ELSE(PACKAGE_FORMAT EQUAL "DEB")
-    INSTALL(FILES data/changelog DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES data/changelog DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
   ENDIF(PACKAGE_FORMAT EQUAL "DEB")
 
   INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
@@ -2417,12 +1868,12 @@ IF(NOT APPLE)
   ENDIF(BUNDLE_DOCS MATCHES "ON")
 
   IF(UNIX)
-    INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-    INSTALL(FILES src/bitmaps/opencpn-64.png DESTINATION ${PREFIX_DATA}/icons/hicolor/64x64/apps RENAME opencpn.png PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-    INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-    INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
-    INSTALL(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
-    INSTALL(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1 PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+    INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps)
+    INSTALL(FILES src/bitmaps/opencpn-64.png DESTINATION ${PREFIX_DATA}/icons/hicolor/64x64/apps RENAME opencpn.png)
+    INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps)
+    INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications )
+    INSTALL(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata )
+    INSTALL(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   ENDIF(UNIX)
 
 ENDIF(NOT APPLE)
@@ -2442,6 +1893,9 @@ ENDIF(NOT APPLE)
 #        rmdir $(DESTDIR)$(pkgdatadir)
 #
 
+#
+# Gettext languages setup.
+#
 FIND_PROGRAM(GETTEXT_XGETTEXT_EXECUTABLE xgettext)
 IF (GETTEXT_XGETTEXT_EXECUTABLE)
 
@@ -2491,7 +1945,8 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
   ADD_CUSTOM_COMMAND(
      OUTPUT ${_gmoFile}
      COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
-     COMMAND ${CMAKE_COMMAND} -E copy  ${_gmoFile}  ${CMAKE_CURRENT_BINARY_DIR}/Resources/${PACKAGE_NAME}_${_lang}.lproj/${PACKAGE_NAME}.mo
+     COMMAND ${CMAKE_COMMAND} -E copy  ${_gmoFile}  
+         ${CMAKE_CURRENT_BINARY_DIR}/Resources/${PACKAGE_NAME}_${_lang}.lproj/${PACKAGE_NAME}.mo
      DEPENDS ${_absFile}
      COMMENT "i18n [${_poBasename}]: Created mo file."
   )
@@ -2503,7 +1958,6 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
   ELSE()
     INSTALL(FILES ${_gmoFile} DESTINATION
       ${PREFIX_DATA}/locale/${_lang}/LC_MESSAGES RENAME ${PACKAGE_NAME}.mo
-      PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
     )
   ENDIF()
 
@@ -2544,8 +1998,47 @@ if(GETTEXT_MSGFMT_EXECUTABLE)
 
 ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 
+IF(WIN32 AND NOT UNIX)
+  IF(NOT SKIP_VERSION_CONFIG)
+    configure_file(${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_GERMAN.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FRENCH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FRENCH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CZECH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CZECH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_DANISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_DANISH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SPANISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SPANISH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_ITALIAN.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_ITALIAN.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_DUTCH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_DUTCH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_POLISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_POLISH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESEBR.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_PORTUGUESEBR.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESE.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_PORTUGUESE.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_RUSSIAN.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_RUSSIAN.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SWEDISH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_NORWEGIAN.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CHINESETW.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CHINESETW.nsh" @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_TURKISH.nsh.in"
+      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_TURKISH.nsh" @ONLY)
+  ENDIF(NOT SKIP_VERSION_CONFIG)
+ENDIF(WIN32 AND NOT UNIX)
 
-#       Install wxstd.mo in Windows and Mac
+#
+#   Install wxstd.mo in Windows and Mac
+#
 IF(WIN32 OR APPLE)
 
   FILE(GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo)
@@ -2572,15 +2065,15 @@ IF(WIN32 OR APPLE)
 ENDIF(WIN32 OR APPLE)
 
 
+#
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable directory
+#
 IF(WIN32 AND NOT UNIX)
-  OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
   IF(BUNDLE_WXDLLS)
     FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
     INSTALL(FILES ${wxdll_files} DESTINATION ".")
     MESSAGE(STATUS "wxWidgets DLLs bundled into the installer package...")
   ENDIF(BUNDLE_WXDLLS)
-  OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
   IF(BUNDLE_VCDLLS)
     FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
     INSTALL(FILES ${vcdll_files} DESTINATION ".")
@@ -2601,23 +2094,18 @@ ENDIF(WIN32 AND NOT UNIX)
 IF(MSVC AND OCPN_USE_CRASHREPORT)
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.dll
     DESTINATION ${PREFIX_PKGDATA}
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
   )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1403.exe
     DESTINATION ${PREFIX_PKGDATA}
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
   )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/crashrpt_lang.ini
     DESTINATION ${PREFIX_PKGDATA}
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
   )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/dbghelp.dll
     DESTINATION ${PREFIX_PKGDATA}
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
   )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/PrivacyPolicy.txt
     DESTINATION ${PREFIX_PKGDATA}
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
   )
   MESSAGE(STATUS "CrashRpt bundled into the installer package...")
 ENDIF(MSVC AND OCPN_USE_CRASHREPORT)
@@ -2628,7 +2116,102 @@ IF(NOT SKIP_PLUGINS)
   add_subdirectory (plugins)
 ENDIF ()
 
+#
+#  RPM package setup
+#
+IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers),
+  # CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
+  IF(UNIX AND NOT APPLE)
+    IF(BUNDLE_GSHHS MATCHES "NONE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "NONE")
+    IF(BUNDLE_GSHHS MATCHES "MIN")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "MIN")
+    IF(BUNDLE_GSHHS MATCHES "CRUDE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
+    IF(BUNDLE_GSHHS MATCHES "LOW")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "LOW")
+    IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+    IF(BUNDLE_GSHHS MATCHES "HIGH")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
+    IF(BUNDLE_GSHHS MATCHES "FULL")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high ON")
+      SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full ON")
+    ENDIF(BUNDLE_GSHHS MATCHES "FULL")
+  ENDIF(UNIX AND NOT APPLE)
+ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  SET(BUNDLE_GSHHS "NONE")
+  MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_min OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_crude OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_low OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_intermediate OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_high OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_gshhs_full OFF")
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
+  ENDIF(UNIX AND NOT APPLE)
+ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+
+IF(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will include tide and current data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata ON")
+  ENDIF(UNIX AND NOT APPLE)
+ELSE(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
+  IF(UNIX AND NOT APPLE)
+    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
+  ENDIF(UNIX AND NOT APPLE)
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
+
+
+#
 # build a CPack driven installer package
+#
+
 #include (InstallRequiredSystemLibraries)
 SET(CPACK_PACKAGE_NAME "OpenCPN")
 SET(CPACK_PACKAGE_VENDOR "opencpn.org")
@@ -2640,7 +2223,9 @@ SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
 SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
 SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
-
+#
+#  Windows package setup.
+#
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
@@ -2689,6 +2274,9 @@ set(CPACK_SOURCE_IGNORE_FILES
 "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
 )
 
+#
+#  Debian package setup
+#
 IF(UNIX AND NOT APPLE)
   #    INCLUDE(UseRPMTools)
   #    IF(RPMTools_FOUND)
@@ -2723,44 +2311,6 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 ENDIF(UNIX AND NOT APPLE)
 
-IF(WIN32 AND NOT UNIX)
-  IF(NOT SKIP_VERSION_CONFIG)
-    configure_file(${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_SOURCE_DIR}/src/opencpn.rc)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_GERMAN.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FRENCH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FRENCH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CZECH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CZECH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_DANISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_DANISH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SPANISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SPANISH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_ITALIAN.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_ITALIAN.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_DUTCH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_DUTCH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_POLISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_POLISH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESEBR.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_PORTUGUESEBR.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESE.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_PORTUGUESE.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_RUSSIAN.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_RUSSIAN.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_SWEDISH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_NORWEGIAN.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CHINESETW.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CHINESETW.nsh" @ONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_TURKISH.nsh.in"
-      "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_TURKISH.nsh" @ONLY)
-  ENDIF(NOT SKIP_VERSION_CONFIG)
-ENDIF(WIN32 AND NOT UNIX)
-
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
 ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
@@ -2769,6 +2319,9 @@ SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/i
 
 INCLUDE(CPack)
 
+#
+# Apple application bundle
+#
 IF(APPLE)
 # -- Run the BundleUtilities cmake code
   SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")

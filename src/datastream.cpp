@@ -47,13 +47,18 @@
 #include <netinet/tcp.h>
 #endif
 
+#include "config.h"
+
 #include "dychart.h"
 
 #include "datastream.h"
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
-#include "garmin/jeeps/garmin_wrapper.h"
 #include "nmea0183.h"
+
+#ifdef USE_GARMINHOST
+#include "garmin_wrapper.h"
+#endif
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

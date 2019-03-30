@@ -138,7 +138,7 @@
 #include "cm93.h"
 #include "s52plib.h"
 #include "s57chart.h"
-#include "mygdal/cpl_csv.h"
+#include "gdal/cpl_csv.h"
 #include "s52utils.h"
 #endif
 

@@ -51,8 +51,6 @@ IF(NOT WIN32 AND NOT APPLE)
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
-   ADD_DEFINITIONS( "-fexceptions -fvisibility=hidden" )
-   ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
 
@@ -117,10 +115,6 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-
-            ../../src/wxJSON/jsonval.cpp
-            ../../src/wxJSON/jsonreader.cpp
-            ../../src/wxJSON/jsonwriter.cpp
 )
 IF(WIN32)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
@@ -163,22 +157,15 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-    #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
-    
-    file(GLOB jasper_base_sources "src/jasper/base/*.c")
-    file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
-    file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
-    file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
-    file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
-    file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
-    
-    SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
 
-    ADD_DEFINITIONS(-DJASPER)
-    ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
+ADD_DEFINITIONS(-DJASPER)
+ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT
+                -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT
+                -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
    
-    INCLUDE_DIRECTORIES(BEFORE "src/jasper/include")
-
+add_subdirectory("libs/jasper")
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libs/jasper/src/include)
+message(STATUS "Using bundled jasper library...")
 
 
 # On Android, PlugIns need a specific linkage set....
@@ -236,13 +223,15 @@ IF(WIN32)
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
-
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} WXJSON )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} JASPER )
 
 IF(NOT WIN32)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
 ENDIF()
+
 IF(APPLE)
  FIND_PACKAGE(ZLIB REQUIRED)
  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${ZLIB_LIBRARIES} )
@@ -257,13 +246,24 @@ IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY})
 ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
+IF( APPLE )
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        "-Wall" "-Wno-unused" "-fexceptions"
+        "-Wno-overloaded-virtual"
+        "-Wno-deprecated" "-Wno-deprecated-declarations"
+        "-Wno-unknown-pragmas"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+ENDIF(APPLE)
+
 IF(APPLE)
-    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION
+            ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
 
-	IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-		INSTALL(DIRECTORY data DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
-	ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-
+    IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
+       INSTALL(DIRECTORY data DESTINATION 
+           ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
+    ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 ENDIF(APPLE)
 
 IF(UNIX AND NOT APPLE)

@@ -344,7 +344,7 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
 PlugInManager *s_ppim;
 
 BEGIN_EVENT_TABLE( PlugInManager, wxEvtHandler )
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     EVT_CURL_END_PERFORM( CurlThreadId, PlugInManager::OnEndPerformCurlDownload )
     EVT_CURL_DOWNLOAD( CurlThreadId, PlugInManager::OnCurlDownload )
 #endif    
@@ -353,7 +353,7 @@ END_EVENT_TABLE()
 PlugInManager::PlugInManager(MyFrame *parent)
 {
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     m_pCurlThread = NULL;
     m_pCurl = 0;
 #endif    
@@ -367,7 +367,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
-    #ifdef __OCPN_USE_CURL__
+    #ifdef OCPN_USE_CURL
     #ifndef __OCPN__ANDROID__
     wxCurlBase::Init();
     #endif
@@ -380,7 +380,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
 
 PlugInManager::~PlugInManager()
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     #ifndef __OCPN__ANDROID__
     wxCurlBase::Shutdown();
     #endif
@@ -6348,7 +6348,7 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
                        const wxBitmap& bitmap,
                        wxWindow *parent, long style, int timeout_secs)
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
 
@@ -6470,7 +6470,7 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
 _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
                                                             wxEvtHandler *handler, long *handle)
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     wxString msg = _T("Downloading file asynchronously: ");
@@ -6562,7 +6562,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
 
 void OCPN_cancelDownloadFileBackground( long handle )
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     cancelAndroidFileDownload( handle );
@@ -6585,7 +6585,7 @@ void OCPN_cancelDownloadFileBackground( long handle )
 
 _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs )
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     //TODO
@@ -6611,7 +6611,7 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
 
 bool OCPN_isOnline()
 {
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     //TODO
@@ -6631,7 +6631,7 @@ bool OCPN_isOnline()
 #endif    
 }
 
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
 
 #ifndef __OCPN__ANDROID__
 void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
