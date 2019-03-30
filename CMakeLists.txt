@@ -419,7 +419,6 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND CMAKE_SYSTEM_NAME MATCHES ".*Li
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
@@ -438,7 +437,6 @@ IF(QT_ANDROID)
   SET(OPENGLES_FOUND "YES")
   SET(OPENGL_FOUND "YES")
 
-  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
   add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 
@@ -455,13 +453,13 @@ IF(DEFINED _wx_selected_config)
 ENDIF(DEFINED _wx_selected_config)
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+  SET(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
+  SET(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 ENDIF()
 
 IF (OPENGLES_FOUND)
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
@@ -472,7 +470,7 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
-    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
+    SET(wxWidgets_FIND_COMPONENTS gl ${wxWidgets_FIND_COMPONENTS} )
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL...." )
@@ -539,14 +537,14 @@ IF(NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   ENDIF ()
 
-  FIND_PACKAGE(wxWidgets)
+  FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND)
     message(STATUS "Found wxWidgets webview add-on")
     add_definitions(-DOCPN_USE_WEBVIEW)
   else ()
-    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
-    FIND_PACKAGE(wxWidgets REQUIRED)
+    FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   endif ()
   IF(MSYS)
     # Convert msys to windows paths, and handle the missing /usr
