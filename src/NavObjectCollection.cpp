@@ -110,7 +110,13 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
         else
         if( !strcmp( pcn, "name") ) {
-                NameString = wxString::FromUTF8( child.first_child().value() );
+            NameString = wxString::FromUTF8( child.first_child().value() );
+            if(NameString.StartsWith("@~~")) {
+                // Convert the legacy tidal event definition and change the name so
+                // that it does not kick in next time and cause overiding subsequent changes
+                TideStation = NameString.Right(NameString.length() - 3);
+                NameString.Replace("@~~", "@-~");
+            }
         } 
         
         else
