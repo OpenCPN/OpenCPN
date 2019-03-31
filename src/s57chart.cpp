@@ -5531,10 +5531,16 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 wxString color = thisLight->attributeValues.Item( attrIndex );
                 if( color == _T("red (3)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green (4)") )
+                else if( color == _T("green (4)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white (1)") )
+                else if( color == _T("white (1)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("yellow (6)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("blue (5)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else
+                    colorStr = _T("<table border=0><tr><td bgcolor=grey>&nbsp;?&nbsp;</td></tr></table> ");
             }
 
             int visIndex = thisLight->attributeNames.Index( _T("LITVIS") );
