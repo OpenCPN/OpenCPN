@@ -118,11 +118,12 @@ INCLUDE( FindPkgConfig )
 # distinguish between not set and set to FALSE):
 #    cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
 MACRO(BUNDLE_DOCS_OPT onoff)
-  OPTION(BUNDLE_DOCS ${onoff} "Include documentation in package")
+  MESSAGE(STATUS "DOCS: ${onoff}")
+  OPTION(BUNDLE_DOCS "Include documentation in package" ${onoff})
 ENDMACRO(BUNDLE_DOCS_OPT)
 
 MACRO(BUNDLE_TCDATA_OPT onoff)
-  OPTION(BUNDLE_TCDATA "${onoff}" "Include tide/current harmonics data in package")
+  OPTION(BUNDLE_TCDATA "Include tide/current harmonics data in package" "${onoff}")
 ENDMACRO(BUNDLE_TCDATA_OPT)
 
 MACRO(BUNDLE_GSHHS_OPT value)
