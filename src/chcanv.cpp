@@ -8046,7 +8046,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         << _("Would you like include the Great Circle routing points for this leg?");
                         
                         #ifndef __WXOSX__
+                        m_FinishRouteOnKillFocus = false;
                         int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                        m_FinishRouteOnKillFocus = true;
                         #else
                         int answer = wxID_NO;
                         #endif
