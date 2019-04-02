@@ -1424,6 +1424,9 @@ void MarkInfoDlg::ShowTidesBtnClicked( wxCommandEvent& event )
         return;
     }
     IDX_entry* pIDX = (IDX_entry*)ptcmgr->GetIDX_entry(ptcmgr->GetStationIDXbyName(m_comboBoxTideStation->GetStringSelection(), fromDMM(m_textLatitude->GetValue()), fromDMM(m_textLongitude->GetValue())));
+    if( pIDX == nullptr ) {
+        return;
+    }
     TCWin* pCwin = new TCWin( gFrame->GetPrimaryCanvas(), 0, 0, pIDX );
     pCwin->Show();
 }
