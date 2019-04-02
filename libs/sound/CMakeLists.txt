@@ -47,6 +47,6 @@ target_include_directories(SOUND
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../build/include
+        ${CMAKE_BINARY_DIR}/include
         ${wxWidgets_INCLUDE_DIRS}
 )
