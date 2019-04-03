@@ -55,7 +55,6 @@ SET(SRC_WMM
     src/TexFont.h
 	)
 
-IF(WIN32)
 SET(SRC_JSON
     src/json_defs.h
     src/jsonreader.h
@@ -65,7 +64,6 @@ SET(SRC_JSON
     src/jsonval.cpp
     src/jsonwriter.cpp
     )
-ENDIF(WIN32)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
