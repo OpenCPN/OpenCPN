@@ -948,7 +948,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         list_index++;
     }
 
-    m_pRouteListCtrl->SortItems( SortRoutesOnName, NULL );
+    m_pRouteListCtrl->SortItems( SortRoutesOnName, 0 );
 
     m_pRouteListCtrl->SetColumnWidth(0, 4 * m_charWidth);
     
@@ -1356,11 +1356,11 @@ void RouteManagerDialog::OnRteColumnClicked( wxListEvent &event )
     if( event.m_col == 1 ) {
         sort_route_name_dir++;
 
-        m_pRouteListCtrl->SortItems( SortRoutesOnName, NULL );
+        m_pRouteListCtrl->SortItems( SortRoutesOnName, 0 );
     } else
         if( event.m_col == 2 ) {
             sort_route_to_dir++;
-            m_pRouteListCtrl->SortItems( SortRoutesOnTo, NULL );
+            m_pRouteListCtrl->SortItems( SortRoutesOnTo, 0 );
         }
 }
 
@@ -1635,11 +1635,11 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
     switch( sort_track_key ){
             case SORT_ON_DISTANCE:
-                m_pTrkListCtrl->SortItems( SortTracksOnDistance, NULL );
+                m_pTrkListCtrl->SortItems( SortTracksOnDistance, 0 );
                 break;
             case SORT_ON_NAME:
             default:
-                m_pTrkListCtrl->SortItems( SortTracksOnName, NULL );
+                m_pTrkListCtrl->SortItems( SortTracksOnName, 0 );
                 break;
     }
 
@@ -1668,12 +1668,12 @@ void RouteManagerDialog::OnTrkColumnClicked( wxListEvent &event )
     if( event.m_col == 1 ) {
         sort_track_key = SORT_ON_NAME;
         sort_track_name_dir++;
-        m_pTrkListCtrl->SortItems( SortTracksOnName, NULL );
+        m_pTrkListCtrl->SortItems( SortTracksOnName, 0 );
     } else
         if( event.m_col == 2 ) {
             sort_track_key = SORT_ON_DISTANCE;
             sort_track_len_dir++;
-            m_pTrkListCtrl->SortItems( SortTracksOnDistance, NULL );
+            m_pTrkListCtrl->SortItems( SortTracksOnDistance, 0 );
         }
 }
 
@@ -1951,15 +1951,15 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     }
 
     if( !b_retain_sort ) {
-        m_pWptListCtrl->SortItems( SortWaypointsOnName, (wxIntPtr) m_pWptListCtrl );
+        m_pWptListCtrl->SortItems( SortWaypointsOnName, reinterpret_cast<wxIntPtr>( m_pWptListCtrl ));
         sort_wp_key = SORT_ON_NAME;
     } else {
         switch( sort_wp_key ){
             case SORT_ON_NAME:
-                m_pWptListCtrl->SortItems( SortWaypointsOnName, (wxIntPtr) m_pWptListCtrl );
+                m_pWptListCtrl->SortItems( SortWaypointsOnName, reinterpret_cast<wxIntPtr>( m_pWptListCtrl ));
                 break;
             case SORT_ON_DISTANCE:
-                m_pWptListCtrl->SortItems( SortWaypointsOnDistance, (wxIntPtr) m_pWptListCtrl );
+                m_pWptListCtrl->SortItems( SortWaypointsOnDistance, reinterpret_cast<wxIntPtr>( m_pWptListCtrl ));
                 break;
         }
     }
@@ -2015,12 +2015,12 @@ void RouteManagerDialog::OnWptColumnClicked( wxListEvent &event )
 {
     if( event.m_col == NAME_COLUMN ) {
         sort_wp_name_dir++;
-        m_pWptListCtrl->SortItems( SortWaypointsOnName, (wxIntPtr) m_pWptListCtrl );
+        m_pWptListCtrl->SortItems( SortWaypointsOnName, reinterpret_cast<wxIntPtr>( m_pWptListCtrl ));
         sort_wp_key = SORT_ON_NAME;
     } else {
         if( event.m_col == DISTANCE_COLUMN ) {
             sort_wp_len_dir++;
-            m_pWptListCtrl->SortItems( SortWaypointsOnDistance, (wxIntPtr) m_pWptListCtrl );
+            m_pWptListCtrl->SortItems( SortWaypointsOnDistance, reinterpret_cast<wxIntPtr>( m_pWptListCtrl ));
             sort_wp_key = SORT_ON_DISTANCE;
         }
     }
@@ -2372,11 +2372,11 @@ void RouteManagerDialog::OnLayColumnClicked( wxListEvent &event )
 {
     if( event.m_col == 1 ) {
         sort_layer_name_dir++;
-        m_pLayListCtrl->SortItems( SortLayersOnName, NULL );
+        m_pLayListCtrl->SortItems( SortLayersOnName, 0 );
     } else
         if( event.m_col == 2 ) {
             sort_layer_len_dir++;
-            m_pLayListCtrl->SortItems( SortLayersOnSize, NULL );
+            m_pLayListCtrl->SortItems( SortLayersOnSize, 0 );
         }
 }
 
@@ -2799,7 +2799,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
         
     }
 
-    m_pLayListCtrl->SortItems( SortLayersOnName, (wxIntPtr) m_pLayListCtrl );
+    m_pLayListCtrl->SortItems( SortLayersOnName, reinterpret_cast<wxIntPtr>( m_pLayListCtrl ));
     m_pLayListCtrl->SetColumnWidth(0, 4 * m_charWidth);
     
     // restore selection if possible
