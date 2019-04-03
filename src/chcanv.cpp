@@ -9569,8 +9569,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if(route){
             int np = route->GetnPoints();
             if(np){
-                if(g_btouch && (np > 1))
-                    np --;
                 RoutePoint rp = route->GetPoint(np);
                 render_lat = rp.m_lat;
                 render_lon = rp.m_lon;
