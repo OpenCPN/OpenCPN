@@ -230,7 +230,7 @@ public:
     int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
 private:
-    bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    bool BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort &vp_in);
     int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
 
     bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );

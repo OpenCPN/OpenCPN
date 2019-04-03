@@ -73,7 +73,6 @@ extern int              g_uncompressed_tile_size;
 
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
-extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
 extern wxString CompressedCachePath(wxString path);
 extern glTextureManager   *g_glTextureManager;
@@ -629,7 +628,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     return true;
 }
 
-bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme )
+bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, int mem_used )
 {    
     glTextureDescriptor *ptd = NULL;
 
@@ -663,15 +662,14 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //   so there is no reason to save the bits forever.
     //   Of course, this means that if the texture is deleted elsewhere, then the bits will need to be
     //   regenerated.  The price to pay for memory limits....
-    
-    int mem_used;
-    GetMemoryStatus(0, &mem_used);
-    //    qDebug() << mem_used;
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10))
-        ptd->FreeMap();
+    if (g_memCacheLimit > 0) {
+        // GetMemoryStatus is slow on linux
+        if(mem_used > g_memCacheLimit * 7 / 10)
+            ptd->FreeMap();
 
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 9 / 10))
-        ptd->FreeAll();
+        if(mem_used > g_memCacheLimit * 9 / 10)
+            ptd->FreeAll();
+    }
 
 //    g_Platform->HideBusySpinner();
     

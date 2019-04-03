@@ -2675,6 +2675,12 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     LLBBox box = region.GetBox();
     int numtiles;
+    int mem_used = 0;
+    if (g_memCacheLimit > 0) {
+        // GetMemoryStatus is slow on linux
+        GetMemoryStatus(0, &mem_used);
+    }
+
     glTexTile **tiles = pTexFact->GetTiles(numtiles);
     for(int i = 0; i<numtiles; i++) {
         glTexTile *tile = tiles[i];
@@ -2685,7 +2691,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
             if( bGLMemCrunch)
                 pTexFact->DeleteTexture( tile->rect );
         } else {
-            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme );
+            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme, mem_used );
             if(!texture) { // failed to load, draw red
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(1, 0, 0);
@@ -3458,7 +3464,7 @@ void glChartCanvas::RenderGLAlertMessage()
 int n_render;
 void glChartCanvas::Render()
 {
-    if( !m_bsetup || !m_pParentCanvas->m_pQuilt ||
+    if( !m_bsetup ||
         ( m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt->IsComposed() ) ||
         ( !m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_singleChart ) ) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
