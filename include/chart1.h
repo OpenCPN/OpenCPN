@@ -576,7 +576,7 @@ class MyFrame: public wxFrame
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads
 
     wxDateTime       m_MMEAeventTime;
-    unsigned long    m_ulLastNEMATicktime;
+    unsigned long    m_ulLastNMEATicktime;
 
     wxMutex          m_mutexNMEAEvent;         // Mutex to handle static data from NMEA threads
 
