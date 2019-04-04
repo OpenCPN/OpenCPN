@@ -894,7 +894,6 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR) || b_zin || g_bopengl;
 
     //  Walk the extended chart array, capturing data
-    int i_first = 0;
     for(size_t i=0 ; i < m_extended_stack_array.size() ; i++){
         int test_db_index = m_extended_stack_array[i];
 
@@ -907,24 +906,24 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
 
                 int nmax_scale = GetNomScaleMax(nscale, type, family);
 
-                //  For the largest scale chart, allow essentially infinite overzoom.
-                //  The range will be clipped later
-                if(0 == i_first)
-                    nmax_scale = 1;
 
                 int nmin_scale = GetNomScaleMin(nscale, type, family);
                 if (CHART_TYPE_MBTILES == ChartData->GetDBChartType( test_db_index ) )
                     scales_mbtiles.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
                 else
                     scales.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
-
-                i_first ++;
             }
         }
     }
     // mbtiles charts only set
     if (scales.empty())
         scales = scales_mbtiles;
+
+   //  For the largest scale chart, allow essentially infinite overzoom.
+   //  The range will be clipped later
+    if(!scales.empty())
+        scales[0].max = 1;
+
     //  If showing Vector charts,
     //  Find the smallest scale chart of the target type (i.e. skipping cm93)
     //  and make sure that its min scale is at least
