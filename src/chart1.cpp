@@ -2594,7 +2594,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
     m_last_track_rotation_ts = 0;
-    m_ulLastNEMATicktime = 0;
+    m_ulLastNMEATicktime = 0;
 
     m_pStatusBar = NULL;
     m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
@@ -8943,8 +8943,8 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
         m_MMEAeventTime.SetToCurrent();
         uiCurrentTickCount = m_MMEAeventTime.GetMillisecond() / 100;           // tenths of a second
         uiCurrentTickCount += m_MMEAeventTime.GetTicks() * 10;
-        if( uiCurrentTickCount > m_ulLastNEMATicktime + 1 ) {
-            m_ulLastNEMATicktime = uiCurrentTickCount;
+        if( uiCurrentTickCount > m_ulLastNMEATicktime + 1 ) {
+            m_ulLastNMEATicktime = uiCurrentTickCount;
 
             if( tick_idx++ > 6 ) tick_idx = 0;
         }
