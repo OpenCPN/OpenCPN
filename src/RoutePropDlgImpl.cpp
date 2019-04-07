@@ -649,7 +649,8 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event )
 {
-    if( m_dvlcWaypoints->GetSelectedRow() > 0 && m_dvlcWaypoints->GetSelectedRow() < m_dvlcWaypoints->GetItemCount() - 1 ) {
+    long selected_row = m_dvlcWaypoints->GetSelectedRow();
+    if( selected_row > 0 && selected_row < m_dvlcWaypoints->GetItemCount() - 1 ) {
         m_btnSplit->Enable(true);
     } else {
         m_btnSplit->Enable(false);
@@ -658,6 +659,16 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEv
         m_btnExtend->Enable(true);
     } else {
         m_btnExtend->Enable(false);
+    }
+    if( selected_row >= 0 && selected_row < m_dvlcWaypoints->GetItemCount()) {
+        RoutePoint *prp = m_pRoute->GetPoint(selected_row + 1);
+        if( prp ) {
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
+#ifdef __WXMSW__
+            if(m_dvlcWaypoints)
+                m_dvlcWaypoints->SetFocus();
+#endif
+        }
     }
 }
 
