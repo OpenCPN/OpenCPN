@@ -18,6 +18,7 @@ matrix:
 
     - env:
         - OCPN_TARGET=osx
+        - secure: "VAC1hwMdwjk1yibmEmqHiriolEC6wZ0OsxxhqNo2RafPj+9W1W02jUnDYabxKiSQYxsrSs5YmGjzJ/kgQUljg8T/fMtxEO4i6VN7HWrgLQym+bpnKldfypwYPCaJ+nCI84HFyMkl4k7JZEkvO6bwuzJ4xGcNgGodDvsKJA  7wgMA="
       os: osx
       compiler: clang
       script:
@@ -45,7 +46,9 @@ deploy:
   script:
   - if [ "$OCPN_TARGET" = "osx" ]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
   on:
-    branch: master
+    branch:
+    - master
+    - sign_macos
     tags: false
 
 notifications:
