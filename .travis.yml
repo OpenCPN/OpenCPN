@@ -45,7 +45,9 @@ deploy:
   script:
   - if [ "$OCPN_TARGET" = "osx" ]; then scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $TRAVIS_BUILD_DIR/build/*.dmg travis@ocpnci.kalian.cz:files/; fi
   on:
-    branch: master
+    branch:
+    - master
+    - v5.0.x
     tags: false
 
 notifications:
