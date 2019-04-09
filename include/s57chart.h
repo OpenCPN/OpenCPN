@@ -318,7 +318,7 @@ private:
 
 
 //  Raw ENC DataSet members
-      OGRS57DataSource  *m_pENCDS;
+      std::unique_ptr<OGRS57DataSource> m_pENCDS;
 
 //  DEPCNT VALDCO array members
       int         m_nvaldco;

@@ -238,8 +238,6 @@ s57chart::s57chart()
 
     bGLUWarningSent = false;
 
-    m_pENCDS = NULL;
-
     m_nvaldco = 0;
     m_nvaldco_alloc = 0;
     m_pvaldco_array = NULL;
@@ -283,8 +281,6 @@ s57chart::~s57chart()
 
     delete pFloatingATONArray;
     delete pRigidATONArray;
-
-    delete m_pENCDS;
 
     free( m_pvaldco_array );
 
@@ -5643,7 +5639,7 @@ bool s57chart::InitENCMinimal( const wxString &FullPath )
         return false;
     }
 
-    m_pENCDS = new OGRS57DataSource;
+    m_pENCDS.reset( new OGRS57DataSource );
 
     m_pENCDS->SetS57Registrar( g_poRegistrar );             ///172
 
@@ -5676,7 +5672,7 @@ OGRFeature *s57chart::GetChartFirstM_COVR( int &catcov )
         pENCReader->AddFeatureDefn( poDefn );
 
 //    Also, add as a Layer to Datasource to ensure proper deletion
-        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS, poDefn, 1 ) );
+        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS.get(), poDefn, 1 ) );
 
 //      find this feature
         OGRFeature *pobjectDef = pENCReader->ReadNextFeature( poDefn );
@@ -5719,7 +5715,7 @@ OGRFeature *s57chart::GetChartNextM_COVR( int &catcov )
 
 int s57chart::GetENCScale( void )
 {
-    if( NULL == m_pENCDS ) return 0;
+    if( nullptr == m_pENCDS ) return 0;
 
     //    Assume that chart has been initialized for minimal ENC access
     //    which implies that the ENC has been fully ingested, and some
