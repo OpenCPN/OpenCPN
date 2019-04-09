@@ -2010,7 +2010,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     OCPNRegion rgn_new( rul.x, rul.y, rlr.x - rul.x, rlr.y - rul.y );
     rgn_last.Intersect( rgn_new );            // intersection is reusable portion
 
-    if( bNewVP && (pDIB != nullptr) && !rgn_last.IsEmpty() ) {
+    if( bNewVP && (nullptr != pDIB) && !rgn_last.IsEmpty() ) {
         int xu, yu, wu, hu;
         rgn_last.GetBox( xu, yu, wu, hu );
 
@@ -2833,8 +2833,6 @@ void s57chart::InvalidateCache()
 
 bool s57chart::BuildThumbnail( const wxString &bmpname )
 {
-    bool ret_code;
-
     wxFileName ThumbFileName( bmpname );
 
     //      Make the target directory if needed
@@ -2977,9 +2975,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     dc_org.SelectObject( wxNullBitmap );
 
     //   Save the file
-    ret_code = bmp.SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
-
-    return ret_code;
+    return bmp.SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
 }
 
 #include <wx/arrimpl.cpp>
