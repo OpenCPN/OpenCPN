@@ -49,3 +49,5 @@ target_include_directories(SOUND
         ${CMAKE_BINARY_DIR}/include
         ${wxWidgets_INCLUDE_DIRS}
 )
+
+target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")
