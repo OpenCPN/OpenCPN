@@ -882,7 +882,7 @@ add_library(ocpn::opencpn ALIAS _opencpn)
 
 set_target_properties(${PACKAGE_NAME} PROPERTIES
     ENABLE_EXPORTS 1
-    OUTPUT_NAME opencpn
+    OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
