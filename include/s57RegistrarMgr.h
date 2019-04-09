@@ -43,7 +43,7 @@ WX_DECLARE_HASH_MAP( int,
 class s57RegistrarMgr
 {
 public:
-    s57RegistrarMgr(const wxString& csv_dir, FILE *flog);
+    s57RegistrarMgr(const wxString& csv_dir);
     ~s57RegistrarMgr();
    
     int getAttributeID(const char *pAttrName);

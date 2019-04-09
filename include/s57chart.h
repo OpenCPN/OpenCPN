@@ -49,6 +49,7 @@
 #include "ocpndc.h"
 #include "viewport.h"
 #include "SencManager.h"
+#include <memory>
 
 class ChartCanvas;
 // ----------------------------------------------------------------------------
@@ -214,7 +215,7 @@ public:
       ViewPort    m_last_vp;
       OCPNRegion    m_last_Region;
 
-      virtual bool IsCacheValid(){ return (pDIB != NULL); }
+      virtual bool IsCacheValid(){ return (pDIB != nullptr); }
       virtual void InvalidateCache();
       virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
@@ -298,10 +299,9 @@ private:
 
 
       wxArrayString *m_tmpup_array;
-      PixelCache   *pDIB;
+      std::unique_ptr<PixelCache> pDIB;
 
-      wxBitmap     *m_pCloneBM;
-      wxMask       *m_pMask;
+      std::unique_ptr<wxBitmap> m_pCloneBM;
 
       bool         bGLUWarningSent;
 
@@ -318,7 +318,7 @@ private:
 
 
 //  Raw ENC DataSet members
-      OGRS57DataSource  *m_pENCDS;
+      std::unique_ptr<OGRS57DataSource> m_pENCDS;
 
 //  DEPCNT VALDCO array members
       int         m_nvaldco;
