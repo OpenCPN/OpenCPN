@@ -47,7 +47,7 @@ endif ()
 
 set(HAVE_SNDFILE "")
 if (NOT ENABLE_SNDFILE MATCHES OFF)
-  include(FindLibSndFile)
+  include(FindLibSndfile)
   if (LIBSNDFILE_FOUND)
     message(STATUS "libsndfile Found")
     include_directories(${LIBSNDFILE_INCLUDE_DIRS})
