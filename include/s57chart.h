@@ -301,8 +301,7 @@ private:
       wxArrayString *m_tmpup_array;
       std::unique_ptr<PixelCache> pDIB;
 
-      wxBitmap     *m_pCloneBM;
-      wxMask       *m_pMask;
+      std::unique_ptr<wxBitmap> m_pCloneBM;
 
       bool         bGLUWarningSent;
 

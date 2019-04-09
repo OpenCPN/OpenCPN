@@ -227,8 +227,6 @@ s57chart::s57chart()
     m_Chart_Scale = 1;                              // Will be fetched during Init()
     m_Chart_Skew = 0.0;
 
-    m_pCloneBM = NULL;
-
 // Create ATON arrays, needed by S52PLIB
     pFloatingATONArray = new wxArrayPtrVoid;
     pRigidATONArray = new wxArrayPtrVoid;
@@ -281,7 +279,6 @@ s57chart::~s57chart()
 
     FreeObjectsAndRules();
 
-    delete m_pCloneBM;
 //    delete pFullPath;
 
     delete pFloatingATONArray;
@@ -1846,12 +1843,11 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         if( m_pCloneBM ) {
             if( ( m_pCloneBM->GetWidth() != VPoint.pix_width )
                     || ( m_pCloneBM->GetHeight() != VPoint.pix_height ) ) {
-                delete m_pCloneBM;
-                m_pCloneBM = NULL;
+                m_pCloneBM.reset();
             }
         }
-        if( NULL == m_pCloneBM ) m_pCloneBM = new wxBitmap( VPoint.pix_width, VPoint.pix_height,
-                -1 );
+        if( nullptr == m_pCloneBM )
+            m_pCloneBM.reset(new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 ));
 
         wxMemoryDC dc_clone;
         dc_clone.SelectObject( *m_pCloneBM );
@@ -1883,8 +1879,8 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 #ifdef ocpnUSE_ocpnBitmap
             nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
 #endif
-            m_pMask = new wxMask( *m_pCloneBM, nodat_sub );
-            m_pCloneBM->SetMask( m_pMask );
+            // Mask is owned by the bitmap.
+            m_pCloneBM->SetMask( new wxMask( *m_pCloneBM, nodat_sub ) );
         }
 
         dc.SelectObject( *m_pCloneBM );
