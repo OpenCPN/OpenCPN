@@ -21,13 +21,6 @@ set(SRC
     include/SystemCmdSound.h
 )
 
-if (NOT ENABLE_PORTAUDIO MATCHES OFF)
-    include(FindPortaudio)
-endif ()
-if (NOT ENABLE_SNDFILE MATCHES OFF)
-    include(FindLibSndfile)
-endif ()
-
 #if (NOT wxWidgets_INCLUDE_DIRS)
 #    include(SimpleWxConfig)
 #    SimpleWxConfig()
