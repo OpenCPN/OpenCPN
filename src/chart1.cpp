@@ -1165,7 +1165,7 @@ void LoadS57()
 
     if( ps52plib->m_bOK ) {
         wxLogMessage( _T("Using s57data in ") + g_csv_locn );
-        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
+        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn );
 
 
             //    Preset some object class visibilites for "User Standard" disply category
