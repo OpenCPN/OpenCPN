@@ -30,7 +30,7 @@ IF( NOT CMAKE_BUILD_TYPE )
        FORCE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
-
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -76,6 +76,14 @@ endif ()
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
+if (TARGET wxjson::wxjson)
+    target_link_libraries(${PACKAGE_NAME} wxjson::wxjson)
+endif() 
+
+if (TARGET wxsvg::wxsvg)
+    target_link_libraries(${PACKAGE_NAME} wxsvg::wxsvg)
+endif()
+
 IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
@@ -90,6 +98,9 @@ IF( APPLE )
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")

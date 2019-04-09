@@ -48,8 +48,12 @@ if (WIN32)
   add_definitions(-D__WIN32__)
 endif ()
 
+
 add_library(GARMINHOST STATIC ${SRC})
 add_library(garminhost::garminhost ALIAS GARMINHOST)
+if (MINGW)
+  target_compile_definitions(GARMINHOST PRIVATE "-D_UNICODE")
+endif ()
 
 set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)

@@ -31,6 +31,8 @@
 
 #include <stdint.h>
 
+#include "config.h"
+
 #include "dychart.h"
 
 #include "viewport.h"

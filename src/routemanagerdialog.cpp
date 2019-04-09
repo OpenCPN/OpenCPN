@@ -18,6 +18,8 @@
     Copyright (C) 2010, Anders Lund <anders@alweb.dk>
  */
 
+#include "config.h"
+
 #include "routemanagerdialog.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".

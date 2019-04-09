@@ -22,3 +22,4 @@ buildwin/*.exe
 buildwin/*.crt
 src/opencpn.rc
 .DS_Store
+NSIS.template.in

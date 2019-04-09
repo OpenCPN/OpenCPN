@@ -16,21 +16,13 @@ IF(WIN32)
 #	gdiplus.lib
 #	glu32.lib)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${OPENGL_LIBRARIES})
-    IF(STANDALONE MATCHES "BUNDLED")
-        ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
-    ENDIF(STANDALONE MATCHES "BUNDLED")
-    SET(OPENCPN_IMPORT_LIB "${PARENT}.lib")
   ENDIF(MSVC)
 
   IF(MINGW)
-# assuming wxwidgets is compiled with unicode, this is needed for mingw headers
+    # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
     ADD_DEFINITIONS( " -DUNICODE" )
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${OPENGL_LIBRARIES})
-    SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
-    SET( CMAKE_SHARED_LINKER_FLAGS "-L../buildwin" )
   ENDIF(MINGW)
-
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
 ENDIF(WIN32)
 
 IF(UNIX)

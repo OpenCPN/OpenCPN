@@ -39,8 +39,8 @@
 #include <typeinfo>
 #include "dashboard_pi.h"
 #include "icons.h"
-#include "wxJSON/jsonreader.h"
-#include "wxJSON/jsonwriter.h"
+#include "wx/jsonreader.h"
+#include "wx/jsonwriter.h"
 
 wxFont *g_pFontTitle;
 wxFont *g_pFontData;
