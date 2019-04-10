@@ -658,7 +658,15 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         // Free the map in ram
         ptd->FreeMap();
     }
-    
+
+#if 0
+ /* this is not a good place to call GetMemoryStatus
+    function as implemented takes for me 1 millisecond to execute.
+    In the worst case zoomed out charts can reach thousands of textures and several seconds to render one frame instead of 20-30fps disabling this here
+
+    Memory is already freed in glTextureManager::FactoryCrunch(double factor)
+    so the below is probably not needed.*/
+
     //   If global memory is getting short, we can crunch here.
     //   All mipmaps >= ptd->level_min have been uploaded to the GPU,
     //   so there is no reason to save the bits forever.
@@ -672,6 +680,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         if(mem_used > g_memCacheLimit * 9 / 10)
             ptd->FreeAll();
     }
+#endif
 
 //    g_Platform->HideBusySpinner();
     
