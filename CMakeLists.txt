@@ -210,8 +210,6 @@ CMAKE_DEPENDENT_OPTION(OCPN_ENABLE_SNDFILE
     "OCPN_ENABLE_PORTAUDIO" ON
 )
 
-OPTION(OCPN_USE_S57 "Enable S57 ENC support" ON)
-
 OPTION(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
 OPTION(OCPN_VERBOSE "Verbose build output" ON)
@@ -1336,66 +1334,57 @@ ELSE(TINYXML_FOUND)
 ENDIF(TINYXML_FOUND)
 set(TIXML_USE_STL 1)    # -> config.h
 
-IF (OCPN_USE_S57)
-  message (STATUS "S57 ENC support: enabled")
-  SET(USE_S57 1)   # -> config.h
-  SET(SRC_S57ENC
-        include/cm93.h
-        include/mygeom.h
-        include/ogr_s57.h
-        include/Osenc.h
-        include/s52plib.h
-        include/s52utils.h
-        include/s57chart.h
-        include/s57RegistrarMgr.h
-        include/SencManager.h
-        include/TexFont.h
-        src/cm93.cpp
-        src/mygeom.cpp
-        src/ogrs57datasource.cpp
-        src/ogrs57layer.cpp
-        src/Osenc.cpp
-        src/s52cnsy.cpp
-        src/s52plib.cpp
-        src/s52utils.cpp
-        src/s57chart.cpp
-        src/s57classregistrar.cpp
-        src/s57featuredefns.cpp
-        src/s57obj.cpp
-        src/s57reader.cpp
-        src/s57RegistrarMgr.cpp
-        src/SencManager.cpp
-        src/TexFont.cpp
-  )
-  ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
-  target_link_libraries(S57ENC PUBLIC
-      ocpn::nmea0183
-      ocpn::tess2
-      ocpn::wxsvg
-      ocpn::sound
-      ocpn::wxjson
-      ssl::sha1
-      ocpn::tinyxml
-      WXCURL
-  )
-  add_subdirectory(libs/iso8211)
-  target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
+message (STATUS "S57 ENC support: enabled")
+SET(USE_S57 1)   # -> config.h
+SET(SRC_S57ENC
+      include/cm93.h
+      include/mygeom.h
+      include/ogr_s57.h
+      include/Osenc.h
+      include/s52plib.h
+      include/s52utils.h
+      include/s57chart.h
+      include/s57RegistrarMgr.h
+      include/SencManager.h
+      include/TexFont.h
+      src/cm93.cpp
+      src/mygeom.cpp
+      src/ogrs57datasource.cpp
+      src/ogrs57layer.cpp
+      src/Osenc.cpp
+      src/s52cnsy.cpp
+      src/s52plib.cpp
+      src/s52utils.cpp
+      src/s57chart.cpp
+      src/s57classregistrar.cpp
+      src/s57featuredefns.cpp
+      src/s57obj.cpp
+      src/s57reader.cpp
+      src/s57RegistrarMgr.cpp
+      src/SencManager.cpp
+      src/TexFont.cpp
+)
+ADD_LIBRARY(S57ENC STATIC ${SRC_S57ENC})
+target_link_libraries(S57ENC PUBLIC
+    ocpn::nmea0183
+    ocpn::tess2
+    ocpn::wxsvg
+    ocpn::sound
+    ocpn::wxjson
+    ssl::sha1
+    ocpn::tinyxml
+    WXCURL
+)
+add_subdirectory(libs/iso8211)
+target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 
-  add_subdirectory(libs/gdal)
-  target_link_libraries(S57ENC PUBLIC ocpn::gdal)
+add_subdirectory(libs/gdal)
+target_link_libraries(S57ENC PUBLIC ocpn::gdal)
 
-  target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
-  if(OCPN_USE_LZMA AND LIBLZMA_FOUND)
-    target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
-    target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
-  endif()
+target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-  set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-  target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
-
-ELSE (OCPN_USE_S57)
-  message (STATUS "S57 ENC support: disabled")
-ENDIF (OCPN_USE_S57)
+set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
 
 IF (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
