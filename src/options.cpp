@@ -3239,7 +3239,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   cmdButtonSizer->Add(m_removeBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_removeBtn->Disable();
 
-#ifdef USE_LZMA
+#ifdef OCPN_USE_LZMA
   m_compressBtn =
       new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, _("Compress Selected"));
   cmdButtonSizer->Add(m_compressBtn, 1, wxALL | wxEXPAND, group_item_spacing);
@@ -7514,7 +7514,7 @@ void options::OnButtonParseENC(wxCommandEvent &event)
     
 }   
 
-#ifdef USE_LZMA
+#ifdef OCPN_USE_LZMA
 #include <lzma.h>
 
 static bool
@@ -7674,7 +7674,7 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
 
 static bool CompressChart(wxString in, wxString out)
 {
-#ifdef USE_LZMA
+#ifdef OCPN_USE_LZMA
     FILE *infile = fopen(in.mb_str(), "rb");
     if(!infile)
         return false;
