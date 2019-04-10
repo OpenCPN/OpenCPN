@@ -55,9 +55,9 @@ In order to sign the repo a public gpg key should be available. The
 urban wisdom seems to be to use a specific key created for this purpose.
 Create and export one using something like:
 
-    $  mkdir gpg
-    $  gpg2 --homedir=gpg --quick-gen-key leamas@opencpn.org
-    $  gpg2 --homedir=gpg --export -a leamas@opencpn.org > opencpn.key
+    $ mkdir -m 700 ~/opencpn-gpg
+    $ gpg2 --homedir=~/opencpn-gpg --quick-gen-key leamas@opencpn.org
+    $ gpg2 --homedir=~/opencpn-gpg --export -a leamas@opencpn.org > opencpn.key
 
 
 Armed with these tools, initialize by installing the runtime and sdk:
@@ -76,7 +76,7 @@ and *base*
 
 Build the repo stable branch and sign contents + summary:
 
-    $ GPG_HOMEDIR=gpg GPG_KEY=leamas@opencpn.org make sign
+    $ GPG_HOMEDIR=~/opencpn-gpg GPG_KEY=leamas@opencpn.org make sign
 
 Create the website repo directory 
 
@@ -89,7 +89,7 @@ Packaging plugins
 The file system used by flatpak apps is not available in a form where
 users could just drop a file. However, packaging plugins is normally 
 trivial. An example from the shipdriver plugin, 
-https://github.com/leamas/shipdriver_pi.
+https://github.com/lea~/opencpn-gpgmas/shipdriver_pi.
 
 The first step is to update the API. Copy the file ocpn_plugin.h
 from the opencpn package to shipdriver src directory. Then, patch

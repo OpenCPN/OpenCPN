@@ -17,6 +17,9 @@ build:
 	    $(CURDIR)/repo/repo org.opencpn.OpenCPN
 
 sign:
+	@test -d $(GPG_HOMEDIR) || { \
+	    echo "cannot find GPG_HOMEDIR (abort)"; exit 1; \
+	}
 	flatpak build-sign --gpg-sign=$(GPG_KEY) --gpg-homedir=$(GPG_HOMEDIR)  \
 	    repo/repo
 	flatpak build-update-repo --gpg-sign=$(GPG_KEY) --prune \
