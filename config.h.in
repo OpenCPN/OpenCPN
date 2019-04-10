@@ -8,7 +8,7 @@
 // Garmin Host Mode support
 #cmakedefine USE_GARMINHOST
 
-#cmakedefine USE_LZMA
+#cmakedefine OCPN_USE_LZMA
 
 #cmakedefine OCPN_USE_CURL
 

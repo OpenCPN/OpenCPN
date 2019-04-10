@@ -938,8 +938,6 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    add_subdirectory(libs/glshim)
-
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
 ENDIF()
