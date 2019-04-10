@@ -224,7 +224,7 @@ protected:
 
 //==========================================================
 
-class DECL_EXP GshhsReader {
+class GshhsReader {
 public:
     GshhsReader();
     ~GshhsReader();
