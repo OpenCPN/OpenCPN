@@ -1348,6 +1348,10 @@ IF (USE_S57)
   target_link_libraries(S57ENC PUBLIC gdal::gdal)
 
   target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(OCPN_USE_LZMA AND LIBLZMA_FOUND)
+    target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
+    target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
+  endif()
 
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
