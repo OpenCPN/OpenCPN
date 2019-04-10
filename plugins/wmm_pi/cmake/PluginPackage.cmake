@@ -68,10 +68,6 @@ set(CPACK_SOURCE_IGNORE_FILES
 )
 
 IF(UNIX AND NOT APPLE)
-#    INCLUDE(UseRPMTools)
-#    IF(RPMTools_FOUND)
-#        RPMTools_ADD_RPM_TARGETS(packagename ${PROJECT_SOURCE_DIR}/package.spec)
-#    ENDIF(RPMTools_FOUND)
 
 # need apt-get install rpm, for rpmbuild
 if (NOT OCPN_PACKAGE_RELEASE)
@@ -82,17 +78,14 @@ endif ()
   IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
     SET (ARCH "armhf")
     # don't bother with rpm on armhf
-    SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
   ELSE ()
-    SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
+    SET(CPACK_GENERATOR "DEB;TBZ2")
 
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "amd64")
-      SET(CPACK_RPM_PACKAGE_ARCHITECTURE "x86_64")
     ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "i386")
       # note: in a chroot must use "setarch i686 make package"
-      SET(CPACK_RPM_PACKAGE_ARCHITECTURE "i686")
     ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
   ENDIF ()
 
@@ -102,12 +95,6 @@ endif ()
     SET(CPACK_DEBIAN_PACKAGE_SECTION "misc")
     SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz") # requires my patches to cmake
 
-    SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
-#    SET(CPACK_RPM_PACKAGE_GROUP "Applications/Engineering")
-    SET(CPACK_RPM_PACKAGE_LICENSE "gplv3+")
-
-    SET(CPACK_RPM_COMPRESSION_TYPE "xz")
-#    SET(CPACK_RPM_USER_BINARY_SPECFILE "${PROJECT_SOURCE_DIR}/opencpn.spec.in")
 
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_NAME} PlugIn for OpenCPN")
     SET(CPACK_PACKAGE_DESCRIPTION "${PACKAGE_NAME} PlugIn for OpenCPN")
