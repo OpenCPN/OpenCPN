@@ -577,6 +577,21 @@ IF(NOT QT_ANDROID)
   ENDIF(MSYS)
   INCLUDE(${wxWidgets_USE_FILE})
 
+  # As of cmake 3.11.2, these libraries are missing in list despite that
+  # we looked for them. This is a nasty fix which might fail miserably.
+  # Assumption: All builds using GTK uses unicode and wxWidgets 3.0
+  IF(GTK2_FOUND)
+    list(APPEND wxWidgets_LIBRARIES -lwx_gtk2u_aui-3.0)
+    if (OPENGL_FOUND)
+      list(APPEND wxWidgets_LIBRARIES -lwx_gtk2u_gl-3.0)
+    endif()
+  ELSEIF(GTK3_FOUND)
+    list(APPEND wxWidgets_LIBRARIES -lwx_gtk3u_aui-3.0)
+    if (OPENGL_FOUND)
+      list(APPEND wxWidgets_LIBRARIES -lwx_gtk3u_gl-3.0)
+    endif()
+  ENDIF ()
+
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
   MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
