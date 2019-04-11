@@ -963,6 +963,21 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
      return filePathAndName;
 }
 
+bool isSingleChart(ChartBase *chart)
+{
+   if (chart == nullptr)
+       return false;
+
+   // ..For each canvas...
+   for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+      ChartCanvas *cc = g_canvasArray.Item(i);
+      if(cc && cc->m_singleChart == chart){
+         return true;
+      }
+   }
+   return false;
+}
+
 
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
