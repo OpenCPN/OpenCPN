@@ -1021,30 +1021,7 @@ void RouteManagerDialog::MakeAllRoutesInvisible()
 
 void RouteManagerDialog::ZoomtoRoute( Route *route )
 {
-
-    // Calculate bbox center
-    LLBBox RBBox = route->GetBBox();
-    double clat = (RBBox.GetMinLat() + RBBox.GetMaxLat()) / 2;
-    double clon = (RBBox.GetMinLon() + RBBox.GetMaxLon()) / 2;
-
-    // Calculate ppm
-    double rw, rh, ppm; // route width, height, final ppm scale to use
-    int ww, wh; // chart window width, height
-    // route bbox width in nm
-    DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMinLat(),
-                             RBBox.GetMaxLon(), NULL, &rw );
-    // route bbox height in nm
-    DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMaxLat(),
-                             RBBox.GetMinLon(), NULL, &rh );
-
-    gFrame->GetPrimaryCanvas()->GetSize( &ww, &wh );
-
-    ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
-
-    ppm = wxMin(ppm, 1.0);
-
-    gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), clat, clon, ppm );
-
+    gFrame->CenterView( gFrame->GetPrimaryCanvas(), route->GetBBox() );
     m_bNeedConfigFlush = true;
 }
 

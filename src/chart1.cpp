@@ -174,6 +174,8 @@ WX_DEFINE_OBJARRAY( ArrayOfCDI );
 void RedirectIOToConsole();
 #endif
 
+#include "wx/ipc.h"
+
 //------------------------------------------------------------------------------
 //      Fwd Declarations
 //------------------------------------------------------------------------------
@@ -194,6 +196,10 @@ int                       g_unit_test_2;
 bool                      g_start_fullscreen;
 bool                      g_rebuild_gl_cache;
 bool                      g_parse_all_enc;
+
+// Files specified on the command line, if any.
+wxVector<wxString> g_params;
+
 
 MyFrame                   *gFrame;
 
@@ -827,6 +833,82 @@ static void refresh_Piano()
 //     g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 }
 
+// Connection class, for use by both communicating instances
+class stConnection : public wxConnection
+{
+public:
+    stConnection() {}
+    ~stConnection() {}
+    bool OnExec(const wxString& topic, const wxString& data);
+};
+
+// Opens a file passed from another instance
+bool stConnection::OnExec(const wxString& topic, const wxString& data)
+{
+    // not setup yet
+    if (!gFrame)
+        return false;
+
+    wxString path(data);
+    if (path.IsEmpty()) {
+       gFrame->InvalidateAllGL();
+       gFrame->RefreshAllCanvas( false );
+       gFrame->Raise();
+    }
+    else {
+        NavObjectCollection1 *pSet = new NavObjectCollection1;
+        pSet->load_file(path.fn_str());
+        int wpt_dups;
+        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(), wpt_dups, true ); // Import with full vizibility of names and objects
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateLists();
+
+        LLBBox box = pSet->GetBBox();
+        if (box.GetValid()) {
+            gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
+        }
+        delete pSet;
+        return true;
+    }
+    return true;
+}
+
+// Server class, for listening to connection requests
+class stServer: public wxServer
+{
+public:
+    wxConnectionBase *OnAcceptConnection(const wxString& topic);
+};
+
+// Accepts a connection from another instance
+wxConnectionBase *stServer::OnAcceptConnection(const wxString& topic)
+{
+    if (topic.Lower() == wxT("opencpn"))
+    {
+        // Check that there are no modal dialogs active
+	wxWindowList::Node* node = wxTopLevelWindows.GetFirst();
+	while (node) {
+	    wxDialog* dialog = wxDynamicCast(node->GetData(), wxDialog);
+	    if (dialog && dialog->IsModal()) {
+	        return 0;
+            }
+            node = node->GetNext();
+        }
+        return new stConnection();
+    }
+    return 0;
+}
+
+
+// Client class, to be used by subsequent instances in OnInit
+class stClient: public wxClient
+{
+public:
+    stClient() {};
+    wxConnectionBase *OnMakeConnection() { return new stConnection; }
+};
+
+
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -1004,8 +1086,10 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
     parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
     parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
-
     parser.AddSwitch( _T("unit_test_2") );
+    parser.AddParam("import GPX files",
+                        wxCMD_LINE_VAL_STRING,
+                        wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -1024,6 +1108,9 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
         if( g_unit_test_1 == 0 )
             g_unit_test_1 = -1;
     }
+
+    for (size_t paramNr=0; paramNr < parser.GetParamCount(); ++paramNr)
+            g_params.push_back(parser.GetParam(paramNr));
 
     return true;
 }
@@ -1587,19 +1674,56 @@ bool MyApp::OnInit()
     dc.SelectObject( bmp );
     dc.DrawText( _T("X"), 0, 0 );
 #endif
-
-    //  On Windows
-    //  We allow only one instance unless the portable option is used
-#ifdef __WXMSW__
-    m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
-    if(!g_bportable) {
-        if ( m_checker->IsAnotherRunning() )
-            return false;               // exit quietly
-    }
-#endif
+    m_checker = 0;
 
     // Instantiate the global OCPNPlatform class
     g_Platform = new OCPNPlatform;
+
+    //  On Windows
+    //  We allow only one instance unless the portable option is used
+    if(!g_bportable) {
+        wxChar separator = wxFileName::GetPathSeparator();
+        wxString service_name = g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
+
+        m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
+        if ( !m_checker->IsAnotherRunning() )
+        {
+            stServer *m_server = new stServer;
+            if ( !m_server->Create(service_name) ) {
+		wxLogDebug(wxT("Failed to create an IPC service."));
+            }
+        }
+        else {
+    	    wxLogNull logNull;
+    	    stClient* client = new stClient;
+    	    // ignored under DDE, host name in TCP/IP based classes
+    	    wxString hostName = wxT("localhost");
+    	    // Create the connection service, topic
+    	    wxConnectionBase* connection = client->MakeConnection(hostName, service_name, _T("OpenCPN"));
+    	    if (connection) {
+    	        // Ask the other instance to open a file or raise itself
+    	        if ( !g_params.empty() ) {
+                    for ( size_t n = 0; n < g_params.size(); n++ )
+                    {
+                        wxString path = g_params[n];
+                        if( ::wxFileExists( path ) )
+                        {
+                            connection->Execute(path);
+                        }
+                    }
+                }
+                connection->Execute(wxT(""));
+    	        connection->Disconnect();
+    	        delete connection;
+            }
+            else {
+                wxMessageBox(wxT("Sorry, the existing instance may be too busy too respond.\nPlease close any open dialogs and retry."),
+                    wxT("OpenCPN"), wxICON_INFORMATION|wxOK);
+            }
+            delete client;
+            return false;               // exit quietly
+        }
+    }
 
     //  Perform first stage initialization
     OCPNPlatform::Initialize_1( );
@@ -1609,8 +1733,6 @@ bool MyApp::OnInit()
     // This is necessary at least on OS X, for the capitalisation to be correct in the system menus.
     MyApp::SetAppDisplayName("OpenCPN");
 #endif
-
-
 
 
     //  Seed the random number generator
@@ -2529,10 +2651,7 @@ int MyApp::OnExit()
 
     FontMgr::Shutdown();
 
-#ifdef __WXMSW__
     delete m_checker;
-#endif
-
 
     g_Platform->OnExit_2();
 
@@ -4557,10 +4676,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->Hide();
             else {
-                pRouteManagerDialog->UpdateRouteListCtrl();
-                pRouteManagerDialog->UpdateTrkListCtrl();
-                pRouteManagerDialog->UpdateWptListCtrl();
-                pRouteManagerDialog->UpdateLayListCtrl();
+            pRouteManagerDialog->UpdateLists();
 
                 pRouteManagerDialog->Show();
 
@@ -5813,6 +5929,43 @@ void MyFrame::UpdateCanvasConfigDescriptors()
 
 
 
+
+void MyFrame::CenterView(ChartCanvas *cc, const LLBBox& RBBox)
+{
+    if ( !RBBox.GetValid() )
+        return;
+    // Calculate bbox center
+    double clat = (RBBox.GetMinLat() + RBBox.GetMaxLat()) / 2;
+    double clon = (RBBox.GetMinLon() + RBBox.GetMaxLon()) / 2;
+    double ppm; // final ppm scale to use
+
+    if (RBBox.GetMinLat() == RBBox.GetMaxLat() && RBBox.GetMinLon() == RBBox.GetMaxLon() )
+    {
+        // only one point, (should be a box?)
+        ppm = cc->GetVPScale();
+    }
+    else
+    {
+        // Calculate ppm
+        double rw, rh; // route width, height
+        int ww, wh; // chart window width, height
+        // route bbox width in nm
+        DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMinLat(),
+                                 RBBox.GetMaxLon(), NULL, &rw );
+                             // route bbox height in nm
+        DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMaxLat(),
+                                RBBox.GetMinLon(), NULL, &rh );
+
+        cc->GetSize( &ww, &wh );
+
+        ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+        ppm = wxMin(ppm, 1.0);
+    }
+
+    JumpToPosition(cc, clat, clon, ppm );
+}
+
 int MyFrame::DoOptionsDialog()
 {
     if (g_boptionsactive)
@@ -6871,6 +7024,30 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             break;
         }
 
+        case 5:
+        {
+            if ( !g_params.empty() ) {
+                for ( size_t n = 0; n < g_params.size(); n++ )
+                {
+                    wxString path = g_params[n];
+                    if( ::wxFileExists( path ) )
+                    {
+                        NavObjectCollection1 *pSet = new NavObjectCollection1;
+                        pSet->load_file(path.fn_str());
+                        int wpt_dups;
+
+                        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(),wpt_dups , true ); // Import with full vizibility of names and objects
+                        LLBBox box = pSet->GetBBox();
+                        if (box.GetValid()) {
+                            CenterView(GetPrimaryCanvas(), box);
+                        }
+                        delete pSet;
+                    }
+                }
+            }
+            break;
+
+        }
         default:
         {
             // Last call....
