@@ -8346,19 +8346,11 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
     ChartGroup* psg = s->Item(i);
     ChartGroup* pdg = new ChartGroup;
     pdg->m_group_name = psg->m_group_name;
+    pdg->m_element_array.reserve(psg->m_element_array.size());
 
-    for (unsigned int j = 0; j < psg->m_element_array.GetCount(); j++) {
-      ChartGroupElement* pde = new ChartGroupElement;
-      pde->m_element_name = psg->m_element_array[j]->m_element_name;
-      for (unsigned int k = 0;
-           k < psg->m_element_array[j]->m_missing_name_array.GetCount();
-           k++) {
-        wxString missing_name =
-            psg->m_element_array[j]->m_missing_name_array[k];
-        pde->m_missing_name_array.Add(missing_name);
-      }
-      pdg->m_element_array.Add(pde);
-    }
+    for(auto& elem : psg->m_element_array)
+	    pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
+
     d->Add(pdg);
   }
   return d;
@@ -8367,20 +8359,8 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
 void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
   if (!s) return;
 
-  while (s->GetCount() != 0) {
-    ChartGroup* psg = s->Item(0);
-
-    while (psg->m_element_array.GetCount() != 0) {
-      ChartGroupElement* pe = psg->m_element_array[0];
-      pe->m_missing_name_array.Clear();
-      psg->m_element_array.RemoveAt(0);
-      delete pe;
-    }
-    s->RemoveAt(0);
-    delete psg;
-  }
-
-  s->Clear();
+  // ChartGroups don't need anything special for delete, just calling the destructor is enough.
+  WX_CLEAR_ARRAY(*s);
 }
 
 //    Chart Groups dialog implementation
@@ -8524,9 +8504,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
           if (wxDir::Exists(insert_candidate)) ptree->SetItemHasChildren(id);
         }
 
-        ChartGroupElement* pnew_element = new ChartGroupElement;
-        pnew_element->m_element_name = insert_candidate;
-        pGroup->m_element_array.Add(pnew_element);
+        pGroup->m_element_array.emplace_back(new ChartGroupElement{insert_candidate});
       }
     }
   }
@@ -8552,11 +8530,9 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
           int group_item_index =
               FindGroupBranch(pGroup, ptree, id, &branch_adder);
           if (group_item_index >= 0) {
-            ChartGroupElement* pelement =
-                pGroup->m_element_array[group_item_index];
+            ChartGroupElement* pelement = pGroup->m_element_array[group_item_index].get();
             bool b_duplicate = FALSE;
-            for (unsigned int k = 0;
-                 k < pelement->m_missing_name_array.GetCount(); k++) {
+            for (unsigned int k = 0; k < pelement->m_missing_name_array.size(); k++) {
               if (pelement->m_missing_name_array[k] == sel_item) {
                 b_duplicate = TRUE;
                 break;
@@ -8571,7 +8547,7 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
             //    Then delete from the tree, and delete from the group
             if (branch_adder == _T("")) {
               ptree->Delete(id);
-              pGroup->m_element_array.RemoveAt(group_item_index);
+              pGroup->m_element_array.erase(pGroup->m_element_array.begin() + group_item_index);
             } else {
               ptree->SetItemTextColour(id, wxColour(128, 128, 128));
               //   what about toggle back?
@@ -8683,10 +8659,9 @@ int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
   // Find the index and element pointer of the target branch in the Group
   unsigned int target_item_index = -1;
 
-  for (unsigned int i = 0; i < pGroup->m_element_array.GetCount(); i++) {
+  for (unsigned int i = 0; i < pGroup->m_element_array.size(); i++) {
     wxString target = pGroup->m_element_array[i]->m_element_name;
     if (branch_name == target) {
-      ChartGroupElement* target_element = pGroup->m_element_array[i];
       target_item_index = i;
       break;
     }
@@ -8710,7 +8685,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   int target_item_index = FindGroupBranch(pGroup, ptree, node, &branch_adder);
   if (target_item_index < 0) return;
   ChartGroupElement* target_element =
-      pGroup->m_element_array[target_item_index];
+    pGroup->m_element_array[target_item_index].get();
   wxString branch_name = target_element->m_element_name;
 
   // Walk the children of the expanded node, marking any items which appear in
@@ -8746,7 +8721,7 @@ void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
     wxTreeCtrl* ptc = AddEmptyGroupPage(pGroup->m_group_name);
 
     wxString itemname;
-    int nItems = pGroup->m_element_array.GetCount();
+    int nItems = pGroup->m_element_array.size();
     for (int i = 0; i < nItems; i++) {
       wxString itemname = pGroup->m_element_array[i]->m_element_name;
       if (!itemname.IsEmpty()) {

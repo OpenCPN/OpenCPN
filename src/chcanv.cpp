@@ -1356,40 +1356,28 @@ bool ChartCanvas::CheckGroup( int igroup )
 
     ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
     
-    if( !pGroup->m_element_array.GetCount() )   //  truly empty group prompts a warning, and auto-shift to group 0
+    if( pGroup->m_element_array.empty() )   //  truly empty group prompts a warning, and auto-shift to group 0
         return false; 
-    
-    bool b_chart_in_group = false;
-    
-    for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
-        wxString element_root = pGroup->m_element_array.Item( j )->m_element_name;
-        
+
+    for( auto& elem : pGroup->m_element_array ) {
         for( unsigned int ic = 0; ic < (unsigned int) ChartData->GetChartTableEntries(); ic++ ) {
             ChartTableEntry *pcte = ChartData->GetpChartTableEntry( ic );
             wxString chart_full_path( pcte->GetpFullPath(), wxConvUTF8 );
-            
-            if( chart_full_path.StartsWith( element_root ) ) {
-                b_chart_in_group = true;
-                break;
-            }
+
+            if( chart_full_path.StartsWith( elem->m_element_name ) )
+               return true;
         }
-        
-        if( b_chart_in_group ) break;
     }
-    
+
     //  If necessary, check for GSHHS
-    if(!b_chart_in_group){
-        for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
-            wxString element_root = pGroup->m_element_array.Item( j )->m_element_name;
-            wxString test_string = _T("GSHH");
-            if(element_root.Upper().Contains(test_string))
-                b_chart_in_group = true;
-         }
+    for( auto& elem : pGroup->m_element_array ) {
+        wxString element_root = elem->m_element_name;
+        wxString test_string = _T("GSHH");
+        if(element_root.Upper().Contains(test_string))
+            return true;
     }
-    
-    
-    return b_chart_in_group;                           // this group is empty
-    
+
+    return false;
 }
 
 
