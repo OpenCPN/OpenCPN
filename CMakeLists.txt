@@ -924,9 +924,9 @@ ENDIF(DEFINED _wx_selected_config)
 
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+  SET(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
+  SET(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 ENDIF()
 
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -943,7 +943,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 ENDIF()
 
 IF (OPENGLES_FOUND)
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  list(APPEND wxwidgets_FIND_COMPONENTS gl)
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
@@ -954,7 +954,7 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
-    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
+    list(APPEND wxwidgets_FIND_COMPONENTS gl)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL...." )
@@ -1014,7 +1014,7 @@ IF(NOT QT_ANDROID)
     message(STATUS "Found wxWidgets webview add-on")
     target_compile_definitions(${PACKAGE_NAME} PRIVATE -DOCPN_USE_WEBVIEW)
   else ()
-    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+    list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
     FIND_PACKAGE(wxWidgets REQUIRED)
   endif ()
@@ -1232,7 +1232,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
     add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
@@ -1267,7 +1267,7 @@ IF(QT_ANDROID)
   SET(OPENGLES_FOUND "YES")
   SET(OPENGL_FOUND "YES")
 
-  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
   add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 

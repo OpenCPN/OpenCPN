@@ -142,10 +142,10 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_htmlWinLicense = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 	bSizerContent->Add( m_htmlWinLicense, 1, wxALL|wxEXPAND, 5 );
 
-#ifdef OCPN_USE_WEBVIEW
-    m_htmlWinHelp = wxWebView::New( this, wxID_ANY );
+#if wxUSE_WEBVIEW && defined(OCPN_USE_WEBVIEW)
+	m_htmlWinHelp = wxWebView::New( this, wxID_ANY );
 #else
-    m_htmlWinHelp = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	m_htmlWinHelp = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 #endif
 	bSizerContent->Add( m_htmlWinHelp, 1, wxALL|wxEXPAND, 5 );
 
