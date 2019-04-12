@@ -8865,10 +8865,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         }
     }
 
-    if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
+    if( bis_recognized_sentence ) PostProcessNMEA( pos_valid, cog_sog_valid, sfixtime );
 }
 
-void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
+void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
 {
     if(cog_sog_valid) {
         //    Maintain average COG for Course Up Mode
