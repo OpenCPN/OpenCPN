@@ -562,7 +562,7 @@ class MyFrame: public wxFrame
     void FilterCogSog(void);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
+    void PostProcessNMEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
