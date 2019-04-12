@@ -1069,7 +1069,9 @@ IF(OCPN_USE_LZMA)
   FIND_PACKAGE(LibLZMA)
   IF(LIBLZMA_FOUND)
     message (STATUS "Building with lzma support")
-    target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIR})
+    target_include_directories(${PACKAGE_NAME}
+       	PUBLIC ${LIBLZMA_INCLUDE_DIRS}
+    )
   ELSE(LIBLZMA_FOUND)
     message (STATUS "lzma library not found")
   ENDIF(LIBLZMA_FOUND)
@@ -1307,6 +1309,11 @@ target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 
 add_subdirectory(libs/gdal)
 target_link_libraries(S57ENC PUBLIC ocpn::gdal)
+
+if(OCPN_USE_LZMA AND LIBLZMA_FOUND)
+   target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
+   target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
+endif()
 
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
