@@ -25,7 +25,7 @@
 #include <wx/hyperlink.h>
 #include <wx/scrolwin.h>
 #include <wx/html/htmlwin.h>
-#ifdef OCPN_USE_WEBVIEW
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
 #include <wx/webview.h>
 #endif
 #include <wx/panel.h>
@@ -60,10 +60,10 @@ class AboutFrame : public wxFrame
 		wxHyperlinkCtrl* m_hyperlinkIniFile;
 		wxHtmlWindow* m_htmlWinAuthors;
 		wxHtmlWindow* m_htmlWinLicense;
-#ifdef OCPN_USE_WEBVIEW
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
 		wxWebView* m_htmlWinHelp;
 #else
-        wxHtmlWindow* m_htmlWinHelp;
+                wxHtmlWindow* m_htmlWinHelp;
 #endif
 		wxPanel* m_panelMainLinks;
 		wxHyperlinkCtrl* m_hyperlinkWebsite;

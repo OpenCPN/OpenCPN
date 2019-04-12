@@ -564,8 +564,9 @@ IF(NOT QT_ANDROID)
   FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND)
     message(STATUS "Found wxWidgets webview add-on")
-    add_definitions(-DOCPN_USE_WEBVIEW)
+    add_definitions(-DwxUSE_WEBVIEW=1 -DHAVE_WEBVIEW)
   else ()
+    add_definitions(-DwxUSE_WEBVIEW=0)
     list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
     FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS ${wxWidgets_FIND_COMPONENTS})
@@ -576,6 +577,16 @@ IF(NOT QT_ANDROID)
            wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
   ENDIF(MSYS)
   INCLUDE(${wxWidgets_USE_FILE})
+
+  # As of cmake 3.11.2, these libraries are missing in list despite that
+  # we looked for them. This is a nasty fix which might fail miserably.
+  # Assumption: All builds using GTK uses unicode and wxWidgets 3.0
+  IF(GTK3_FOUND)
+    list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
+    if (OPENGL_FOUND)
+      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+    endif()
+  ENDIF ()
 
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
@@ -924,9 +935,9 @@ ENDIF(DEFINED _wx_selected_config)
 
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+  SET(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base webview)
+  SET(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 ENDIF()
 
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -943,7 +954,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 ENDIF()
 
 IF (OPENGLES_FOUND)
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  list(APPEND wxwidgets_FIND_COMPONENTS gl)
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
@@ -954,7 +965,7 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
-    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
+    list(APPEND wxwidgets_FIND_COMPONENTS gl)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL...." )
@@ -1009,25 +1020,29 @@ IF(NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   ENDIF ()
 
-  FIND_PACKAGE(wxWidgets)
-  if (wxWidgets_FOUND)
-    message(STATUS "Found wxWidgets webview add-on")
-    target_compile_definitions(${PACKAGE_NAME} PRIVATE -DOCPN_USE_WEBVIEW)
-  else ()
-    list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
-    message(STATUS "Could not find wxWidgets webview add-on")
-    FIND_PACKAGE(wxWidgets REQUIRED)
-  endif ()
-  IF (MSYS)
-    # Convert msys to windows paths, and handle the missing /usr
-    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
-           wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
-  ENDIF(MSYS)
-  INCLUDE(${wxWidgets_USE_FILE})
+  if (NOT wxWidgets_FOUND)
+    FIND_PACKAGE(wxWidgets)
+    if (wxWidgets_FOUND)
+      message(STATUS "Found wxWidgets webview add-on")
+      target_compile_definitions(${PACKAGE_NAME} PRIVATE -DOCPN_USE_WEBVIEW)
+      add_definitions(-DwxUSE_WEBVIEW=1)
+    else ()
+      list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
+      message(STATUS "Could not find wxWidgets webview add-on")
+      FIND_PACKAGE(wxWidgets REQUIRED)
+      add_definitions(-DwxUSE_WEBVIEW=0)
+    endif ()
+    IF (MSYS)
+      # Convert msys to windows paths, and handle the missing /usr
+      STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
+             wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+    ENDIF(MSYS)
+    INCLUDE(${wxWidgets_USE_FILE})
 
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+  endif (NOT wxWidgets_FOUND)
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -1232,7 +1247,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
     add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
@@ -1267,7 +1282,7 @@ IF(QT_ANDROID)
   SET(OPENGLES_FOUND "YES")
   SET(OPENGL_FOUND "YES")
 
-  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
   add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 
