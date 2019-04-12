@@ -359,8 +359,14 @@ void GribRecord::Polar2UV(GribRecord *pDIR, GribRecord *pSPEED)
                 pSPEED->data[i] = -speed * cos ( dir *M_PI/180.);
             }
         }
-        pDIR->dataType = GRB_WIND_VX;
-        pSPEED->dataType = GRB_WIND_VY;
+        if (pDIR->dataType == GRB_WIND_DIR) {
+            pDIR->dataType = GRB_WIND_VX;
+            pSPEED->dataType = GRB_WIND_VY;
+        }
+        else {
+            pDIR->dataType = GRB_UOGRD;
+            pSPEED->dataType = GRB_VOGRD;
+        }
     }
 }
 
