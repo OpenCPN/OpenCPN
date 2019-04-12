@@ -14,5 +14,6 @@ rm -rf build; mkdir build; cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
     -DOCPN_NEW_SERIAL=OFF\
     ..
-make -j2
+make -j
+# VERBOSE=1 make -j
 make package
