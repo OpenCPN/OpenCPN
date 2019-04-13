@@ -35,9 +35,13 @@ sign:
 
 install:
 	test -d $(DESTDIR) || mkdir $(DESTDIR)
-	gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) > $(DESTDIR)/opencpn.key
+	gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) \
+	    > $(DESTDIR)/opencpn.key
 	rm -rf $(DESTDIR)/repo
 	cp -ar repo/* $(DESTDIR)
 
 repourl:
 	sed -i '/^Url/s|=.*|=$(REPO_URL)|' repo/opencpn.flatpakref
+
+publish:
+	rsync -av $(DESTDIR)/ opencpn.duckdns.org:/var/www/ocpn-flatpak/website
