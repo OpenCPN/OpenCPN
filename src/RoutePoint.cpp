@@ -77,7 +77,7 @@ RoutePoint::RoutePoint()
     m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -129,6 +129,7 @@ RoutePoint::RoutePoint()
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
 // Copy Constructor
@@ -142,7 +143,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_seg_etd = orig->m_seg_etd;
     m_bDynamicName = orig->m_bDynamicName;
     m_bPtIsSelected = orig->m_bPtIsSelected;
-    m_bIsBeingEdited = orig->m_bIsBeingEdited;
+    m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
     m_bIsActive = orig->m_bIsActive;
     m_bBlink = orig->m_bBlink;
     m_bIsInRoute = orig->m_bIsInRoute;
@@ -207,7 +208,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_seg_etd = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -271,9 +272,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
-RoutePoint::~RoutePoint( void )
+RoutePoint::~RoutePoint( )
 {
 //  Remove this point from the global waypoint list
     if( NULL != pWayPointMan )
@@ -606,14 +608,14 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 
     wxColour hi_colour = pen->GetColour();
     unsigned char transparency = 100;
-    if( m_bIsBeingEdited ){
+    if( m_bRPIsBeingEdited ){
         hi_colour = GetGlobalColor( _T ( "YELO1" ) );
         transparency = 150;
     }
     
         
     //  Highlite any selected point
-    if( m_bPtIsSelected || m_bIsBeingEdited) {
+    if( m_bPtIsSelected || m_bRPIsBeingEdited) {
         AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, radius,
                 hi_colour, transparency );
     }
@@ -1151,11 +1153,11 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
 
 void RoutePoint::SetPlannedSpeed(double spd)
 {
-    if( spd >= 0.0f && spd <= 1000.0f ) m_PlannedSpeed = spd;
+    if( spd >= 0.0 && spd <= 1000.0 ) m_PlannedSpeed = spd;
 }
 
 double RoutePoint::GetPlannedSpeed() {
-    if( m_PlannedSpeed < 0.0001f && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+    if( m_PlannedSpeed < 0.0001 && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
         // In case there was speed encoded in the name of the waypoint, do the conversion here.
         wxString s_vmg = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
         double vmg;

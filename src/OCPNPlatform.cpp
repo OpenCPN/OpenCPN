@@ -88,6 +88,8 @@
 #include <gdk/gdk.h>
 #endif
 
+#include <cstdlib>
+
 DECLARE_APP(MyApp)
 
 void appendOSDirSlash( wxString* pString );
@@ -130,7 +132,6 @@ extern int                       g_nAWMax;
 extern bool                      g_bPlayShipsBells;
 extern bool                      g_bFullscreenToolbar;
 extern bool                      g_bShowLayers;
-extern bool                      g_bTransparentToolbar;
 extern bool                      g_bPermanentMOBIcon;
 extern bool                      g_bTempShowMenuBar;
 extern float                     g_toolbar_scalefactor;
@@ -255,6 +256,7 @@ extern wxString                  g_localeOverride;
 extern wxArrayString             g_locale_catalog_array;
 
 #endif
+extern int                       options_lastPage;
 
 
 
@@ -443,31 +445,32 @@ void OCPNPlatform::Initialize_1( void )
     if(nResult!=0) {
         TCHAR buff[256];
         crGetLastErrorMsg(buff, 256);
-        MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
+        //MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
     }
     
-    // Establish the crash callback function
-    crSetCrashCallback( CrashCallback, NULL );
-    
-    // Take screenshot of the app window at the moment of crash
-    crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
-    
-    //  Mark some files to add to the crash report
-    wxString home_data_crash = crash_std_path.GetConfigDir();
-    if( g_bportable ) {
-        wxFileName f( crash_std_path.GetExecutablePath() );
-        home_data_crash = f.GetPath();
+    if(nResult == 0){           // Complete the installation
+        // Establish the crash callback function
+        crSetCrashCallback( CrashCallback, NULL );
+        
+        // Take screenshot of the app window at the moment of crash
+        crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
+        
+        //  Mark some files to add to the crash report
+        wxString home_data_crash = crash_std_path.GetConfigDir();
+        if( g_bportable ) {
+            wxFileName f( crash_std_path.GetExecutablePath() );
+            home_data_crash = f.GetPath();
+        }
+        appendOSDirSlash( &home_data_crash );
+        
+        wxString config_crash = _T("opencpn.ini");
+        config_crash.Prepend( home_data_crash );
+        crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
+        
+        wxString log_crash = _T("opencpn.log");
+        log_crash.Prepend( home_data_crash );
+        crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
     }
-    appendOSDirSlash( &home_data_crash );
-    
-    wxString config_crash = _T("opencpn.ini");
-    config_crash.Prepend( home_data_crash );
-    crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
-    wxString log_crash = _T("opencpn.log");
-    log_crash.Prepend( home_data_crash );
-    crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
 #endif
 #endif
 
@@ -582,10 +585,15 @@ void OCPNPlatform::Initialize_2( void )
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
 void OCPNPlatform::Initialize_3( void )
 {
+    
     bool bcapable = IsGLCapable();
+
+#ifdef ocpnARM         // Boot arm* platforms (meaning rPI) without OpenGL on first run
+    bcapable = false;
+#endif    
     
     // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade or fresh install
-    
+
     if( (g_bFirstRun || g_bUpgradeInProcess) && bcapable){
         g_bopengl = true;
         
@@ -601,7 +609,8 @@ void OCPNPlatform::Initialize_3( void )
         g_GLOptions.m_GLLineSmoothing = true;
 
     }
-    
+
+    gFrame->SetGPSCompassScale();
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -611,7 +620,15 @@ void OCPNPlatform::Initialize_4( void )
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
-#endif    
+#endif
+
+#ifdef __WXMAC__
+    // A bit of a hack for Mojave MacOS 10.14.
+    // Force the user to actively select "Display" tab to ensure initial rendering of
+    // canvas layout select button.
+    options_lastPage = 1;
+#endif
+    
 }
 
 void OCPNPlatform::OnExit_1( void ){
@@ -636,6 +653,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     gFrame->Show();
     glTestCanvas *tcanvas = new glTestCanvas(gFrame);
     tcanvas->Show();
+    wxYield();
     wxGLContext *pctx = new wxGLContext(tcanvas);
     tcanvas->SetCurrent(*pctx);
     
@@ -644,6 +662,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     char *str = (char *) glGetString( GL_RENDERER );
     if (str == NULL){
         delete tcanvas;
+        delete pctx;
         return false;
     }
     
@@ -711,13 +730,14 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
 
 
     delete tcanvas;
+    delete pctx;
     
     return true;
 }
 
 bool OCPNPlatform::IsGLCapable()
 {
-    OCPN_GLCaps *pcaps = (OCPN_GLCaps * )calloc( 1, sizeof(OCPN_GLCaps));
+    OCPN_GLCaps *pcaps = new OCPN_GLCaps;
     
     BuildGLCaps(pcaps);
 
@@ -813,6 +833,7 @@ wxString OCPNPlatform::GetDefaultSystemLocale()
 }
 
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxString OCPNPlatform::GetAdjustedAppLocale()
 {
     wxString adjLocale = g_locale;
@@ -846,7 +867,6 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
 }
 
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 
 wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale)
 {
@@ -1033,7 +1053,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     }
 #endif
 
-#ifdef __LINUX__
+#ifdef __linux__
 //  Enable some default PlugIns, and their default options
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
@@ -1746,7 +1766,15 @@ double  OCPNPlatform::GetDisplaySizeMM()
     
 #ifdef __WXGTK__
     GdkScreen *screen = gdk_screen_get_default();
-    double gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+    wxSize resolution = getDisplaySize();
+    double gdk_monitor_mm;
+    double ratio = (double)resolution.GetWidth() / (double)resolution.GetHeight();
+    if( std::abs(ratio - 32.0/10.0) < std::abs(ratio - 16.0/10.0) ) {
+        // We suspect that when the resolution aspect ratio is closer to 32:10 than 16:10, there are likely 2 monitors side by side. This works nicely when they are landscape, but what if both are rotated 90 degrees...
+        gdk_monitor_mm = gdk_screen_get_width_mm(screen);
+    } else {
+        gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+    }
     if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
         ret = gdk_monitor_mm;
 #endif    
@@ -2057,7 +2085,7 @@ float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
 {
     double factor = 1.0;
 #ifndef __OCPN__ANDROID__
-    factor =  exp( scale_linear * (0.693 / 5.0) );       //  exp(2)
+    factor =  exp( scale_linear * (log(3.0) / 5.0) );       
 
 #else
     // the idea here is to amplify the scale factor for higher density displays, in a measured way....
@@ -2281,7 +2309,7 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
     
 }
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)

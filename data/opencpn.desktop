@@ -8,3 +8,4 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=Education;Science;Geography;
+Keywords=GPS;Navigation;Chart

@@ -7,6 +7,12 @@
 
 #include "RoutePropDlg.h"
 
+#if wxCHECK_VERSION(3, 1, 2)
+  #define CELL_EDITABLE wxDATAVIEW_CELL_EDITABLE
+#else
+  #define CELL_EDITABLE wxDATAVIEW_CELL_INERT
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -46,7 +52,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	m_stTo = new wxStaticText( m_pnlBasic, wxID_ANY, _("To"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stTo->Wrap( -1 );
-	bSizerFromTo->Add( m_stTo, 0, wxALL, 5 );
+	bSizerFromTo->Add( m_stTo, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_tcTo = new wxTextCtrl( m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerFromTo->Add( m_tcTo, 1, wxALL, 5 );
@@ -113,10 +119,10 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
 
 	m_dpDepartureDate = new wxDatePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizerDepartureTS->Add( m_dpDepartureDate, 0, 0, 5 );
+	bSizerDepartureTS->Add( m_dpDepartureDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizerDepartureTS->Add( m_tpDepartureTime, 0, 0, 5 );
+	bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
 	bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
@@ -210,7 +216,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dataViewListColumnETE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnETA = m_dvlcWaypoints->AppendTextColumn( _("ETA"), wxDATAVIEW_CELL_INERT, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnETA->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), wxDATAVIEW_CELL_EDITABLE, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), CELL_EDITABLE, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnSpeed->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnNTE = m_dvlcWaypoints->AppendTextColumn( _("Next tide event"), wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnNTE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
@@ -218,7 +224,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_dataViewListColumnDesc->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnCourse = m_dvlcWaypoints->AppendTextColumn( _("Course"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnCourse->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), wxDATAVIEW_CELL_EDITABLE, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), CELL_EDITABLE, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	m_dataViewListColumnETD->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
 	m_dataViewListColumnEmpty = m_dvlcWaypoints->AppendTextColumn( wxEmptyString, wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
 	bSizerData->Add( m_dvlcWaypoints, 1, wxALL|wxEXPAND, 5 );
@@ -331,7 +337,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_sdbSizerBtns = new wxStdDialogButtonSizer();
 	m_sdbSizerBtnsOK = new wxButton( this, wxID_OK );
 	m_sdbSizerBtns->AddButton( m_sdbSizerBtnsOK );
-	m_sdbSizerBtnsCancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizerBtnsCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
 	m_sdbSizerBtns->AddButton( m_sdbSizerBtnsCancel );
 	m_sdbSizerBtns->Realize();
 
@@ -352,6 +358,7 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_ntbRteProp->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+        m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
@@ -380,6 +387,7 @@ RoutePropDlg::~RoutePropDlg()
 	m_ntbRteProp->Disconnect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+        m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
 	m_dpDepartureDate->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
 	m_choiceTimezone->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );

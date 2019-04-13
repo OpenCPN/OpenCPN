@@ -47,7 +47,8 @@ class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
 
-typedef struct{
+typedef class{
+  public:
     wxString Renderer;
     GLenum TextureRectangleFormat;
     
@@ -125,8 +126,8 @@ public:
     static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);
-    void DrawRegion( ViewPort &vp, const LLRegion &region);
-    void SetClipRegion( ViewPort &vp, const LLRegion &region);
+    static void DrawRegion( ViewPort &vp, const LLRegion &region);
+    static void SetClipRegion( ViewPort &vp, const LLRegion &region);
     static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);

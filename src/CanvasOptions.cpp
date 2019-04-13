@@ -73,9 +73,6 @@ EVT_CLOSE(CanvasOptions::OnClose)
 //EVT_CHECKBOX(ID_QUILTCHECKBOX1, CanvasOptions::OnOptionChange)
 END_EVENT_TABLE()
 
-
-//: wxPanel( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
-
 CanvasOptions::CanvasOptions( wxWindow *parent)
  :wxDialog()
 

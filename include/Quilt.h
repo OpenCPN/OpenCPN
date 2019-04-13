@@ -100,7 +100,6 @@ public:
 
     void EnableHighDefinitionZoom( bool value ) { m_b_hidef = value;}
     
-    bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
     void UnlockQuilt();
     bool Compose( const ViewPort &vp );
     bool IsComposed() {
@@ -169,7 +168,6 @@ public:
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
-    int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
     
     void SetHiliteIndex( int index ) {
         m_nHiLiteIndex = index;
@@ -232,6 +230,9 @@ public:
     int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
 private:
+    bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
+
     bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
     bool DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region );
     

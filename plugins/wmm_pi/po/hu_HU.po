@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-01 13:04-0500\n"
-"PO-Revision-Date: 2019-02-03 13:34\n"
+"POT-Creation-Date: 2019-03-12 22:18-0400\n"
+"PO-Revision-Date: 2019-03-18 02:52\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Hungarian\n"
 "Language: hu_HU\n"
@@ -33,15 +33,15 @@ msgstr ""
 msgid "WMM Plugin"
 msgstr ""
 
-#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:208 src/wmm_pi.cpp:280 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr ""
 
-#: src/wmm_pi.cpp:283
+#: src/wmm_pi.cpp:286
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr ""
 
-#: src/wmm_pi.cpp:288
+#: src/wmm_pi.cpp:291
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -51,15 +51,15 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "location you can find in the OpenCPN logfile."
 msgstr ""
 
-#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
+#: src/wmm_pi.cpp:475 src/wmm_pi.cpp:616
 msgid "Error, see log."
 msgstr ""
 
-#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:846 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr ""
 
-#: src/wmm_pi.h:79 src/WmmUIDialog.h:152
+#: src/wmm_pi.h:78 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
 msgstr ""
 

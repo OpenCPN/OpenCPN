@@ -255,8 +255,9 @@ void AISTargetAlertDialog::UpdateText()
 
         wxString html;
         wxColor bg = GetBackgroundColour();
-        
-        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+        wxColor fg = GetForegroundColour();
+
+        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
         
         html << m_alert_text;
         html << _T("</center></font></body></html>");

@@ -251,6 +251,8 @@ public:
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
+      void CanvasApplyLocale();
+
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
       int GetCanvasHeight(){ return m_canvas_height;}
@@ -318,7 +320,6 @@ public:
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
-      int AdjustQuiltRefChart( void );
       void ToggleCourseUp( );
       void ToggleLookahead( );
       void SetShowGPS( bool show );
@@ -359,6 +360,8 @@ public:
       void SetCanvasToolbarItemState( int tool_id, bool state );
       bool DoCanvasCOGSet( void );
       void UpdateFollowButtonState( void );
+      void ApplyGlobalSettings();
+      void SetShowGPSCompassWindow( bool bshow );
 
       
       //Todo build more accessors
@@ -513,6 +516,8 @@ public:
       void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
 
 private:
+      int AdjustQuiltRefChart();
+
       bool UpdateS52State();
       
       void CallPopupMenu( int x, int y );
@@ -675,10 +680,6 @@ private:
 
       int         warp_x, warp_y;
       bool        warp_flag;
-
-
-      float       current_draw_scaler; // Affect displayed size of current arrows
-      float       tide_draw_scaler;    // Affect displayed size of tide rectangles
 
 
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
@@ -881,6 +882,7 @@ private:
 
       wxString     m_alertString;
       wxRect       m_scaleBarRect;
+      bool         m_bShowCompassWin;
 
 DECLARE_EVENT_TABLE()
 };

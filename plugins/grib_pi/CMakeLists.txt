@@ -45,7 +45,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE)
     ADD_DEFINITIONS( "-Wall -fexceptions -fvisibility=hidden" )
-    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+    IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+      SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+    ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
@@ -211,6 +213,12 @@ IF (QT_ANDROID )
 ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    # FIXME: Need better handling after 5.0.0
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
+endif ()
+
 
 IF(WIN32)
   IF(MSVC)

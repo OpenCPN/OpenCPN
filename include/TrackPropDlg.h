@@ -63,6 +63,10 @@
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 
+#define ID_TRK_MENU_ADD          7014
+#define ID_TRK_MENU_EDIT         7015
+#define ID_TRK_MENU_DELETE       7016
+
 /*!
  * Forward declarations
  */
@@ -101,6 +105,7 @@ private:
         HyperlinkList   *m_pMyLinkList;
         void OnHyperLinkClick(wxHyperlinkEvent &event);
         wxHyperlinkCtrl *m_pEditedLink;
+        void PopupMenuHandler( wxCommandEvent& event );
 
     protected:
         wxNotebook* m_notebook1;
@@ -149,6 +154,11 @@ private:
         wxButton* m_sdbBtmBtnsSizerExtend;
         wxButton* m_sdbBtmBtnsSizerToRoute;
         wxButton* m_sdbBtmBtnsSizerExport;
+        
+        wxMenuItem* m_menuItemEdit;
+        wxMenuItem* m_menuItemAdd;
+        wxMenuItem* m_menuItemDelete;
+
         
         wxScrolledWindow *itemDialog1;
         bool m_bcompact;

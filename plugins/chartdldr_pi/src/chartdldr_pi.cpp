@@ -1150,7 +1150,6 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
         AppendCatalog(pPlugIn->m_pChartSources->Item(i));
     }
     m_populated = true;
-    
 }
 
 void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
@@ -1163,6 +1162,11 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
             AppendCatalog(pPlugIn->m_pChartSources->Item(i));
         }
     }
+#ifdef __WXMAC__
+    // Mojave does not paint the controls correctly without this.
+    m_lbChartSources->Refresh(true);
+    m_clCharts->Refresh(true);
+#endif
     event.Skip();
 }
 
@@ -1190,40 +1194,31 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
     
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
-    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    dialog->ShowModal();
-    int code2 = dialog->GetReturnCode();    
-    if( code2 == wxID_OK )
-    {
-        ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
-                                          dialog->m_tcChartDirectory->GetValue());
-        pPlugIn->m_pChartSources->Add(cs);
-        AppendCatalog(cs);
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+    dialog->ShowWindowModalThenDo([this,dialog](int retcode){
+        if ( retcode == wxID_OK ) {
+            ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
+                                              dialog->m_tcChartDirectory->GetValue());
+            pPlugIn->m_pChartSources->Add(cs);
+            AppendCatalog(cs);
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
+            if( !covered )
+            {
+                wxString dir = cs->GetDir();
+                AddChartDirectory( dir );
+            }
+            SelectCatalog(m_lbChartSources->GetItemCount() - 1);
+            pPlugIn->SaveConfig();
         }
-        if( !covered )
-        {
-            wxString dir = cs->GetDir();
-            AddChartDirectory( dir );
-        }
-        SelectCatalog(m_lbChartSources->GetItemCount() - 1);
-        pPlugIn->SaveConfig();
-    }
-    delete dialog;
+    });
     event.Skip();
-    
-    Show();
 }
 
 void ChartDldrPanelImpl::DoEditSource()
@@ -1236,52 +1231,45 @@ void ChartDldrPanelImpl::DoEditSource()
     dialog->SetSourceEdit(pPlugIn->m_pChartSources->Item(cat));
     dialog->SetTitle(_("Edit Chart Source"));
     
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
-    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    if( dialog->ShowModal() == wxID_OK )
-    {
-        pPlugIn->m_pChartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
-        pPlugIn->m_pChartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
-        pPlugIn->m_pChartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
+    dialog->ShowWindowModalThenDo([this,dialog,cat](int retcode){
+        if ( retcode == wxID_OK ) {
+            pPlugIn->m_pChartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
 
-        m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartSources->Item(cat)->GetName());
-        m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
-        m_lbChartSources->SetItem(cat, 2, pPlugIn->m_pChartSources->Item(cat)->GetDir());
-        wxURI url(pPlugIn->m_pChartSources->Item(cat)->GetUrl());
-        wxFileName fn(url.GetPath());
-        fn.SetPath(pPlugIn->m_pChartSources->Item(cat)->GetDir());
-        wxString path = fn.GetFullPath();
-        if( wxFileExists(path) )
-        {
-            if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+            m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartSources->Item(cat)->GetName());
+            m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
+            m_lbChartSources->SetItem(cat, 2, pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxURI url(pPlugIn->m_pChartSources->Item(cat)->GetUrl());
+            wxFileName fn(url.GetPath());
+            fn.SetPath(pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxString path = fn.GetFullPath();
+            if( wxFileExists(path) )
             {
-                m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
-                m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
-                m_lbChartSources->SetItem(cat, 2, path);
+                if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+                {
+                    m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
+                    m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
+                    m_lbChartSources->SetItem(cat, 2, path);
+                }
             }
-        }
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( pPlugIn->m_pChartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( pPlugIn->m_pChartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
-        }
-        if( !covered )
-            wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
-                         _("Chart Downloader") );
+            if( !covered )
+                wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
+                             _("Chart Downloader") );
 
-        pPlugIn->SaveConfig();
-        SetSource(cat);
-    }
-    delete dialog;
-    
-    Show();
+            pPlugIn->SaveConfig();
+            SetSource(cat);
+        }
+    });
 }
 
 void ChartDldrPanelImpl::EditSource( wxCommandEvent& event )
@@ -1705,6 +1693,8 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     LoadSources();
     m_nbChoice->SetSelection(0);
     //m_treeCtrlPredefSrcs->ExpandAll();
+    
+    Fit();
 
     applyStyle();
 }
@@ -1714,15 +1704,20 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     wxTreeItemId tree = m_treeCtrlPredefSrcs->AddRoot(_T("root"));
 
     wxFileName fn;
-    fn.SetPath(*GetpSharedDataLocation());
-    fn.AppendDir(_T("plugins"));
-    fn.AppendDir(_T("chartdldr_pi"));
-    fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("chart_sources.xml"));
+    fn.SetPath(*GetpPrivateApplicationDataLocation());
+    fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
     if( !fn.FileExists() )
     {
-        wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
-        return false;
+        fn.SetPath(*GetpSharedDataLocation());
+        fn.AppendDir(_T("plugins"));
+        fn.AppendDir(_T("chartdldr_pi"));
+        fn.AppendDir(_T("data"));
+        fn.SetFullName(_T("chart_sources.xml"));
+        if( !fn.FileExists() )
+        {
+            wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
+            return false;
+        }
     }
     wxString path = fn.GetFullPath();
     TiXmlDocument * doc = new TiXmlDocument();

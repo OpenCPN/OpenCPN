@@ -111,9 +111,9 @@ void TTYScroll::OnDraw( wxDC& dc )
             dc.SetTextForeground( wxColour(_T("MAROON")) );
             lss = ls.Mid(8);
         }
-        else if(ls.Mid(0, 8) == _T("<CORAL>") ){
+        else if(ls.Mid(0, 7) == _T("<CORAL>") ){
             dc.SetTextForeground( wxColour(_T("CORAL")) );
-            lss = ls.Mid(8);
+            lss = ls.Mid(7);
         }
         dc.DrawText( lss, 0, y );
        y += m_hLine;

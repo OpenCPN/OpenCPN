@@ -103,6 +103,17 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
     }
 }
 
+wxWindow *GetGRIBCanvas()
+{
+    wxWindow *wx;
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1)            // multi?
+        wx = GetCanvasByIndex(1);
+    else
+        wx = GetOCPNCanvasWindow();
+    return wx;
+}
+
 //---------------------------------------------------------------------------------------
 //          GRIB Control Implementation
 //---------------------------------------------------------------------------------------
@@ -545,7 +556,10 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
     m_cursor_lon = lon;
     m_cursor_lat = lat;
 
-    UpdateTrackingControl();
+    if(m_vp && 
+        ((lat > m_vp->lat_min) && (lat < m_vp->lat_max))&&
+        ((lon > m_vp->lon_min) && (lon < m_vp->lon_max)) )
+        UpdateTrackingControl();
 }
 
 void GRIBUICtrlBar::UpdateTrackingControl()
@@ -1150,7 +1164,7 @@ void GRIBUICtrlBar::TimelineChanged()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 void GRIBUICtrlBar::RestaureSelectionString()
@@ -1413,10 +1427,10 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues( double &M, double &A, int idx1, i
     }
     // time_t wxDateTime::GetTicks();
     if(!beforeX || !afterX)
-        return GRIB_NOTDEF;
+        return false;
 
     if(!beforeY || !afterY)
-        return GRIB_NOTDEF;
+        return false;
 
     time_t t1 = beforeX->getRecordCurrentDate();
     time_t t2 = afterX->getRecordCurrentDate();
@@ -1607,9 +1621,10 @@ void GRIBUICtrlBar::DoZoomToCenter( )
     DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
     DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
 
+    wxWindow *wx = GetGRIBCanvas();
     //calculate screen size
-    int w = PluginGetOverlayRenderCanvas()->GetSize().x;
-    int h = PluginGetOverlayRenderCanvas()->GetSize().y;
+    int w = wx->GetSize().x;
+    int h = wx->GetSize().y;
 
     //calculate final ppm scale to use
     double ppm;
@@ -1617,7 +1632,7 @@ void GRIBUICtrlBar::DoZoomToCenter( )
 
     ppm = wxMin(ppm, 1.0);
 
-    CanvasJumpToPosition(PluginGetOverlayRenderCanvas(), clat, clon, ppm);
+    CanvasJumpToPosition(wx, clat, clon, ppm);
 
 }
 
@@ -1705,8 +1720,7 @@ void GRIBUICtrlBar::ComputeBestForecastForNow()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(now);
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
-
+    RequestRefresh( GetGRIBCanvas());
 }
 
 void GRIBUICtrlBar::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
@@ -1750,7 +1764,7 @@ void GRIBUICtrlBar::SetFactoryOptions()
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
     UpdateTrackingControl();
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 //----------------------------------------------------------------------------------------------------------

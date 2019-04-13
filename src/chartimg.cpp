@@ -4187,7 +4187,10 @@ int ChartBaseBSB::ReadBSBHdrLine(wxInputStream* ifs, char* buf, int buf_len_max)
 
       while( !ifs->Eof() && line_length < buf_len_max )
       {
-            read_char = ifs->GetC();
+            int c = ifs->GetC();
+            if(c < 0)
+                break;
+            read_char = c;
             if(0x1A == read_char)
             {
                   ifs->Ungetch( read_char );

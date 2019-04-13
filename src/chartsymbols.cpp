@@ -290,7 +290,7 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
                 int nc = strlen(nodeText);
                 if(nc >= 6){                            //  ignore spurious short fields
                     char *attVal = (char *)calloc(nc+2, sizeof(char));
-                    strncpy(attVal, nodeText, nc);
+                    memcpy(attVal, nodeText, nc);
                 
                     if( attVal[6] == '\0')
                         attVal[6] = ' ';

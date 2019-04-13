@@ -656,7 +656,7 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
             m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
-            m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog;
+			m_NMEA0183.Rmb.DestinationClosingVelocityKnots = r_Sog * cos( (r_Cog - CurrentBrgToActivePoint) * PI / 180.0 );
 
             if( m_bArrival ) m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
             else
@@ -979,11 +979,11 @@ void Routeman::DeleteTrack( Track *pTrack )
 
         ::wxBeginBusyCursor();
 
-        wxProgressDialog *pprog = NULL;
+        wxGenericProgressDialog *pprog = nullptr;
 
         int count = pTrack->GetnPoints();
         if( count > 10000) {
-            pprog = new wxProgressDialog( _("OpenCPN Track Delete"), _T("0/0"), count, NULL, 
+            pprog = new wxGenericProgressDialog( _("OpenCPN Track Delete"), _T("0/0"), count, NULL, 
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
                                           wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
             pprog->SetSize( 400, wxDefaultCoord );
@@ -1028,8 +1028,7 @@ void Routeman::DeleteTrack( Track *pTrack )
 
         ::wxEndBusyCursor();
 
-        if( pprog)
-            delete pprog;
+        delete pprog;
     }
 }
 

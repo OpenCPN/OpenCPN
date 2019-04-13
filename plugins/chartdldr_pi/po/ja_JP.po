@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-01 13:05-0500\n"
-"PO-Revision-Date: 2019-02-03 13:35\n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:52\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -49,8 +49,8 @@ msgstr "OpenCPN用チャートダウンローダープラグイン。\n"
 #: src/chartdldr_pi.cpp:244 src/chartdldr_pi.cpp:683 src/chartdldr_pi.cpp:690
 #: src/chartdldr_pi.cpp:696 src/chartdldr_pi.cpp:714 src/chartdldr_pi.cpp:749
 #: src/chartdldr_pi.cpp:813 src/chartdldr_pi.cpp:819 src/chartdldr_pi.cpp:1008
-#: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1277
-#: src/chartdldr_pi.cpp:1942
+#: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1263
+#: src/chartdldr_pi.cpp:1933
 msgid "Chart Downloader"
 msgstr "チャートダウンローダー"
 
@@ -91,7 +91,7 @@ msgstr "更新"
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:654 src/chartdldr_pi.cpp:1251
+#: src/chartdldr_pi.cpp:654 src/chartdldr_pi.cpp:1237
 msgid "(Please update first)"
 msgstr ""
 
@@ -127,7 +127,7 @@ msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:749 src/chartdldr_pi.cpp:1919 src/chartdldr_pi.cpp:1942
+#: src/chartdldr_pi.cpp:749 src/chartdldr_pi.cpp:1910 src/chartdldr_pi.cpp:1933
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "ディレクトリ %s を作成できません。"
@@ -180,17 +180,17 @@ msgstr "エラー、チャートの URL (%s) が間違っているようです�
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "チャートをダウンロードしています %u / %u、 失敗 %u     (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1089 src/chartdldrgui.cpp:294
+#: src/chartdldr_pi.cpp:1089 src/chartdldrgui.cpp:295
 msgid "Download\n"
 " selected charts"
 msgstr "選択したチャートを\n"
 "ダウンロード"
 
-#: src/chartdldr_pi.cpp:1091 src/chartdldrgui.cpp:401
+#: src/chartdldr_pi.cpp:1091 src/chartdldrgui.cpp:402
 msgid "Download selected charts"
 msgstr "選択したチャートをダウンロード"
 
-#: src/chartdldr_pi.cpp:1122 src/chartdldrgui.cpp:95
+#: src/chartdldr_pi.cpp:1122 src/chartdldrgui.cpp:96
 msgid "Catalog"
 msgstr "カタログ"
 
@@ -220,147 +220,170 @@ msgid "Do you really want to remove the chart source?\n"
 msgstr "本当にチャートソースを削除しますか？\n"
 "ローカルチャートファイルは削除されませんが、チャートを更新することはできなくなります"
 
-#: src/chartdldr_pi.cpp:1237
+#: src/chartdldr_pi.cpp:1228
 msgid "Edit Chart Source"
 msgstr "チャートのソースを編集します。"
 
-#: src/chartdldr_pi.cpp:1276
+#: src/chartdldr_pi.cpp:1262
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "パス%sは設定済みチャートのディレクトリによってカバーされていないようです。\n"
 "チャートを参照するには、「チャートファイル] タブの設定を調整する必要があります。"
 
-#: src/chartdldr_pi.cpp:1904 src/chartdldr_pi.cpp:1907
+#: src/chartdldr_pi.cpp:1895 src/chartdldr_pi.cpp:1898
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "定義済みのチャートのソースのいずれかを選択するか、独自のものを作成します \n"
 
-#: src/chartdldr_pi.cpp:1910
+#: src/chartdldr_pi.cpp:1901
 msgid "The chart source must have a name.\n"
 msgstr "チャートのソースが名前を持っている必要があります\n"
 
-#: src/chartdldr_pi.cpp:1913
+#: src/chartdldr_pi.cpp:1904
 msgid "The chart source must have a valid URL.\n"
 msgstr "チャートのソースが有効なURLを持っている必要があります\n"
 
-#: src/chartdldr_pi.cpp:1915
+#: src/chartdldr_pi.cpp:1906
 msgid "You must select a local folder to store the charts.\n"
 msgstr "チャートを格納するローカル フォルダーを選択する必要があります。\n"
 
-#: src/chartdldr_pi.cpp:1922
+#: src/chartdldr_pi.cpp:1913
 msgid "Chart source definition problem"
 msgstr "チャ－トのソースの定義の問題"
 
-#: src/chartdldrgui.cpp:104
+#: src/chartdldrgui.cpp:105
 msgid "Predefined"
 msgstr "定義済み"
 
-#: src/chartdldrgui.cpp:125
+#: src/chartdldrgui.cpp:126
 msgid "Name"
 msgstr "名前"
 
-#: src/chartdldrgui.cpp:133
+#: src/chartdldrgui.cpp:134
 msgid "URL"
 msgstr "URL"
 
-#: src/chartdldrgui.cpp:145
+#: src/chartdldrgui.cpp:146
 msgid "Custom"
 msgstr "カスタム"
 
-#: src/chartdldrgui.cpp:149
+#: src/chartdldrgui.cpp:150
 msgid "Chart Directory"
 msgstr "チャート ディレクトリ"
 
-#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
+#: src/chartdldrgui.cpp:159 src/chartdldrgui.cpp:474
 msgid "Select a folder"
 msgstr "フォルダを選択"
 
-#: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
+#: src/chartdldrgui.cpp:199 src/chartdldrgui.cpp:573
 msgid "Choose Chart File Directory"
 msgstr "チャート ファイル ディレクトリを選択"
 
-#: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
+#: src/chartdldrgui.cpp:224 src/chartdldrgui.cpp:337
 msgid "Catalogs"
 msgstr "カタログ"
 
-#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
 msgid "Add"
 msgstr "追加"
 
-#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
+#: src/chartdldrgui.cpp:248 src/chartdldrgui.cpp:349
 msgid "Add a new chart catalog."
 msgstr "新しいチャート カタログを追加します。"
 
-#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
 msgid "Delete"
 msgstr "削除"
 
-#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+#: src/chartdldrgui.cpp:253 src/chartdldrgui.cpp:354
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
 msgstr "チャートカタログを削除します。ダウンロード済みのチャートは削除されません。"
 
-#: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
+#: src/chartdldrgui.cpp:257 src/chartdldrgui.cpp:358
 msgid "Edit..."
 msgstr "編集..."
 
-#: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
+#: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
 msgid "Update"
 msgstr "アップデート"
 
-#: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
+#: src/chartdldrgui.cpp:262 src/chartdldrgui.cpp:363
 msgid "Download the current chart catalog and update the data."
 msgstr "現在のチャート カタログをダウンロードしてデータを更新します。"
 
-#: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
+#: src/chartdldrgui.cpp:266 src/chartdldrgui.cpp:367
 msgid "Update All"
 msgstr "すべてアップデート"
 
-#: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
+#: src/chartdldrgui.cpp:271 src/chartdldrgui.cpp:380
 msgid "Charts"
 msgstr "チャート"
 
-#: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
+#: src/chartdldrgui.cpp:292 src/chartdldrgui.cpp:396
 msgid "Help"
 msgstr "ヘルプ"
 
-#: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
+#: src/chartdldrgui.cpp:298 src/chartdldrgui.cpp:405
 msgid "Show local files"
 msgstr "ローカルのファイルを表示"
 
-#: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
+#: src/chartdldrgui.cpp:304 src/chartdldrgui.cpp:389
 #, c-format
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u チャート合計, %u 更新, %u 新規"
 
-#: src/chartdldrgui.cpp:464
+#: src/chartdldrgui.cpp:465
 msgid "Default Path to Charts"
 msgstr "チャートの既定のパス"
 
-#: src/chartdldrgui.cpp:480
+#: src/chartdldrgui.cpp:481
 msgid "Preferences"
 msgstr "設定"
 
-#: src/chartdldrgui.cpp:484
+#: src/chartdldrgui.cpp:485
 msgid "After catalog update select for download"
 msgstr ""
 
-#: src/chartdldrgui.cpp:488
+#: src/chartdldrgui.cpp:489
 msgid "All updated charts"
 msgstr "すべての更新されたチャート"
 
-#: src/chartdldrgui.cpp:492
+#: src/chartdldrgui.cpp:493
 msgid "All new charts"
 msgstr "すべての新しいチャート"
 
-#: src/chartdldrgui.cpp:498
+#: src/chartdldrgui.cpp:499
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr "すべての構成済みのチャート ソースとチャートの一括更新を許可します。"
+
+#: src/chartdldrgui.cpp:503
+msgid "Update chart source catalog"
+msgstr ""
+
+#: src/chartdldrgui.cpp:537
+msgid "Downloading chart sources"
+msgstr ""
+
+#: src/chartdldrgui.cpp:545
+#, c-format
+msgid "Failed to save: %s "
+msgstr ""
+
+#: src/chartdldrgui.cpp:545 src/chartdldrgui.cpp:552
+msgid "Chart downloader"
+msgstr ""
+
+#: src/chartdldrgui.cpp:551
+#, c-format
+msgid "Failed to download: %s \n"
+"Verify there is a working Internet connection."
+msgstr ""
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"
 msgstr "新しいチャートのソース"
 
-#: src/chartdldrgui.h:154
+#: src/chartdldrgui.h:156
 msgid "Chart Downloader Preferences"
 msgstr "チャートダウンローダーの設定"
 

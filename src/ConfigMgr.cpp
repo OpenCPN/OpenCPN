@@ -93,8 +93,6 @@ extern int              g_LayerIdx;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
 extern ArrayOfCDI       g_ChartDirArray;
-extern double           vLat, vLon, gLat, gLon;
-extern double           kLat, kLon;
 extern double           initial_scale_ppm, initial_rotation;
 extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
@@ -157,6 +155,8 @@ extern int              g_nframewin_y;
 extern int              g_nframewin_posx;
 extern int              g_nframewin_posy;
 extern bool             g_bframemax;
+extern int              g_route_prop_x, g_route_prop_y;
+extern int              g_route_prop_sx, g_route_prop_sy;
 
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
@@ -189,6 +189,7 @@ extern bool             g_bTrackDaily;
 extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
+extern double           g_AISShowTracks_Limit;
 extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
@@ -1034,7 +1035,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
     conf->Write( _T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex );
     conf->Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
-    conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
+    //conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     conf->Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
     conf->Write( _T ( "ShowLayers" ), g_bShowLayers );
     conf->Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
@@ -1167,7 +1168,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     
     //    Various Options
-    conf->SetPath( _T ( "/Settings/GlobalState" ) );
     if ( !g_bInlandEcdis )
         conf->Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
     
@@ -1224,7 +1224,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "AISTargetListSortColumn" ), g_AisTargetList_sortColumn );
     conf->Write( _T ( "bAISTargetListSortReverse" ), g_bAisTargetList_sortReverse );
     conf->Write( _T ( "AISTargetListColumnSpec" ), g_AisTargetList_column_spec );
-    conf->Write( _T ("AISTargetListColumnOrder"), g_AisTargetList_column_order);
+    conf->Write( _T ( "AISTargetListColumnOrder" ), g_AisTargetList_column_order);
     conf->Write( _T ( "S57QueryDialogSizeX" ), g_S57_dialog_sx );
     conf->Write( _T ( "S57QueryDialogSizeY" ), g_S57_dialog_sy );
     conf->Write( _T ( "bAISRolloverShowClass" ), g_bAISRolloverShowClass );
@@ -1525,7 +1525,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     CHECK_INT( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     CHECK_INT( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
+    //CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     CHECK_INT( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     CHECK_INT( _T ( "ShowLayers" ), &g_bShowLayers );
     CHECK_INT( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
@@ -1608,6 +1608,11 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ClientSzX" ), &g_lastClientRectw );
     CHECK_INT( _T ( "ClientSzY" ), &g_lastClientRecth );
     
+    CHECK_INT( _T( "RoutePropSizeX" ), &g_route_prop_sx );
+    CHECK_INT( _T( "RoutePropSizeY" ), &g_route_prop_sy );
+    CHECK_INT( _T( "RoutePropPosX" ), &g_route_prop_x );
+    CHECK_INT( _T( "RoutePropPosY" ), &g_route_prop_y );
+    
     CHECK_INT( _T ( "S52_DEPTH_UNIT_SHOW" ), &g_nDepthUnitDisplay );   // default is metres
 
     //    AIS
@@ -1626,6 +1631,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_FLT( _T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1 );
     CHECK_INT( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
     CHECK_FLT( _T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1 )
+    CHECK_FLT( _T ( "TargetTracksLimit" ), &g_AISShowTracks_Limit, 300 )
     CHECK_INT( _T ( "bHideMooredTargets" ), &g_bHideMoored )
     CHECK_FLT( _T ( "MooredTargetMaxSpeedKnots" ), &g_ShowMoored_Kts, .1 )
     CHECK_INT( _T ( "bShowScaledTargets"), &g_bAllowShowScaled );

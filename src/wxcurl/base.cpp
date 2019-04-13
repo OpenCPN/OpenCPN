@@ -438,10 +438,11 @@ wxCurlBase::~wxCurlBase()
 //////////////////////////////////////////////////////////////////////
 // LibCURL Abstraction Methods
 //////////////////////////////////////////////////////////////////////
-
 typedef int (*func_T)(void);
 bool wxCurlBase::SetOpt(CURLoption option, ...)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvarargs"
     va_list arg;
 
     func_T param_func = (func_T)0;
@@ -479,6 +480,7 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
 
     DumpErrorIfNeed(res);
     return (res == CURLE_OK);
+#pragma clang diagnostic pop
 }
 
 bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
@@ -498,6 +500,8 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
 
 bool wxCurlBase::GetInfo(CURLINFO info, ...) const
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvarargs"
     va_list arg;
     void* pParam;
 
@@ -511,6 +515,7 @@ bool wxCurlBase::GetInfo(CURLINFO info, ...) const
     DumpErrorIfNeed(res);
     va_end(arg);
     return (res == CURLE_OK);
+#pragma clang diagnostic pop
 }
 
 bool wxCurlBase::Perform()

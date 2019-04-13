@@ -1310,7 +1310,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_sButton->AddButton( m_sButtonOK );
 	m_sButtonApply = new wxButton( this, wxID_APPLY );
 	m_sButton->AddButton( m_sButtonApply );
-	m_sButtonCancel = new wxButton( this, wxID_CANCEL );
+	m_sButtonCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
 	m_sButton->AddButton( m_sButtonCancel );
 	m_sButton->Realize();
 
@@ -1446,7 +1446,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	m_sdbSizer2 = new wxStdDialogButtonSizer();
 	m_sdbSizer2OK = new wxButton( this, wxID_OK );
 	m_sdbSizer2->AddButton( m_sdbSizer2OK );
-	m_sdbSizer2Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer2Cancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
 	m_sdbSizer2->AddButton( m_sdbSizer2Cancel );
 	m_sdbSizer2->Realize();
 
@@ -1892,7 +1892,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_rButton->AddButton( m_rButtonYes );
 	m_rButtonApply = new wxButton( this, wxID_APPLY );
 	m_rButton->AddButton( m_rButtonApply );
-	m_rButtonCancel = new wxButton( this, wxID_CANCEL );
+	m_rButtonCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
 	m_rButton->AddButton( m_rButtonCancel );
 	m_rButton->Realize();
 

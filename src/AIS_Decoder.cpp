@@ -37,6 +37,7 @@
 #include "Track.h"
 #include <multiplexer.h>
 #include "config.h"
+#include <cstdio>
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -342,6 +343,9 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
             ( g_bWplIsAprsPosition && message.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) )
         {
                 nr = Decode( message );
+                if( nr == AIS_NoError ) {
+                    g_pi_manager->SendAISSentenceToAllPlugIns(message);
+                }
                 gFrame->TouchAISActive();
         }
     }
@@ -1006,7 +1010,13 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             else{ 
                 //set  mmsi-props to default values
                 pTargetData->b_OwnShip = false;
-                pTargetData->b_PersistTrack = false;
+                if ( 0 == m_persistent_tracks.count( mmsi ) ) {
+                    //Normal target
+                    pTargetData->b_PersistTrack = false;
+                } else {
+                    // The track persistency enabled in the query window
+                    pTargetData->b_PersistTrack = true;
+                }
                 pTargetData->b_NoTrack = false;
                 // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
                 for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
@@ -1122,7 +1132,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 ( *AISTargetNamesNC )[mmsi] = ship_name;
                             }
                             if ( g_bUseOnlyConfirmedAISName ){ //copy back previous name
-                                strncpy(pTargetData->ShipName, "Unknown             ", 21);
+                                strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN);
                             }
                         }
                     }
@@ -1312,10 +1322,11 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         m_ptentative_dsctarget->Class = AIS_DSC;
         m_ptentative_dsctarget->b_nameValid = true;
         if( dsc_fmt == 12 ) {
-            strncpy( m_ptentative_dsctarget->ShipName, "DISTRESS            ", 21 );
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "DISTRESS %d", std::abs(mmsi));
         }
-        else
-            strncpy( m_ptentative_dsctarget->ShipName, "POSITION REPORT     ", 21 );
+        else {
+            snprintf( m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "POSITION %d", std::abs(mmsi));
+        }
         
         m_ptentative_dsctarget->b_active = true;
         m_ptentative_dsctarget->b_lost = false;
@@ -1382,7 +1393,6 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
            //    Update this target's track
             if( pTargetData->b_show_track )
                 UpdateOneTrack( pTargetData );
-                    
         }
         
     }
@@ -2427,6 +2437,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 td->SOG = 103.0;
                 td->HDG = 511.0;
                 td->ROTAIS = -128;
+                
+                SendJSONMsg(td);
 
                 long mmsi_long = td->MMSI;
                 pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
@@ -2434,8 +2446,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 //      If we have not seen a static report in 3 times the removal spec,
                 //      then remove the target from all lists
                 //      or a lost ARPA target.
-                if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost )
+                if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost ) {
+                    td->b_removed = true;
+                    SendJSONMsg(td);
                     remove_array.push_back(td->MMSI);         //Add this target to removal list
+                }
             }
         }
         
@@ -2443,8 +2458,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
             MMSIProperties *props =  g_MMSI_Props_Array[i];
             if(td->MMSI == props->MMSI){
-                if(props->m_bignore)
+                if(props->m_bignore) {
                     remove_array.push_back(td->MMSI);         //Add this target to removal list
+                    td->b_removed = true;
+                    SendJSONMsg(td);
+                }
                 break;
             }
         }
@@ -2808,12 +2826,11 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     wxJSONValue jMsg;
     
     wxLongLong t = ::wxGetLocalTimeMillis();
-    int ms = t.GetLo();
     
     jMsg[wxS("Source")] = wxS("AIS_Decoder");
     jMsg[wxT("Type")] = wxT("Information");
     jMsg[wxT("Msg")] = wxS("AIS Target");
-    jMsg[wxT("MsgId")] = ms;
+    jMsg[wxT("MsgId")] = t.GetValue();
     jMsg[wxS("lat")] = pTarget->Lat;
     jMsg[wxS("lon")] = pTarget->Lon;
     jMsg[wxS("sog")] = pTarget->SOG;
@@ -2834,5 +2851,6 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
         if(l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
     }
     jMsg[wxS("callsign")] = l_CallSign;
+    jMsg[wxS("removed")] = pTarget->b_removed;
     g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
 }

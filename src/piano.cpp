@@ -152,6 +152,11 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
                 dc.SetBrush( m_scBrush );
             else
                 dc.SetBrush( m_cBrush );
+        } else if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_MBTILES){
+            if(selected)
+                dc.SetBrush( m_tileBrush );
+            else
+                dc.SetBrush( m_utileBrush );
         } else if( ChartData->GetDBChartFamily( key_db_index ) == CHART_FAMILY_VECTOR ) {
             if(selected)
                 dc.SetBrush( m_svBrush );
@@ -159,13 +164,13 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
                 dc.SetBrush( m_vBrush );
         } else { // Raster Chart
             if(selected)
-                dc.SetBrush( m_slBrush );
+                dc.SetBrush( m_srBrush );
             else
-                dc.SetBrush( m_tBrush );
+                dc.SetBrush( m_rBrush );
         }
 
         if(m_bBusy)
-            dc.SetBrush( m_uvBrush );
+            dc.SetBrush( m_unavailableBrush );
             
         wxRect box = KeyRect[i];
         box.y += y;
@@ -505,7 +510,7 @@ void Piano::BuildGLTexture()
     else
         tbackBrush = m_backBrush;
 
-    wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_slBrush, m_tBrush, m_uvBrush };
+    wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_srBrush, m_rBrush, m_tileBrush, m_utileBrush, m_unavailableBrush };
 
     m_tex_piano_height = h;
     m_texw = 64;
@@ -617,6 +622,8 @@ void Piano::DrawGL(int off)
         if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93 ||
             ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93COMP )
             b = 0;
+        else if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_MBTILES)
+            b = 6;
         else if( ChartData->GetDBChartFamily( key_db_index ) == CHART_FAMILY_VECTOR )
             b = 2;
         else // Raster Chart
@@ -719,7 +726,7 @@ void Piano::DrawGL(int off)
         y1 += off;
         int x2 = x1 + iw, y2 = y1 + ih;
 
-        wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_slBrush, m_tBrush, m_uvBrush };
+        wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_srBrush, m_rBrush, m_tileBrush, m_utileBrush, m_unavailableBrush };
 
         float yoff = ((sizeof brushes) / (sizeof *brushes))*h + 16*index;
         float u1 = 0, u2 = (float)iw / m_texw;
@@ -756,17 +763,20 @@ void Piano::SetColorScheme( ColorScheme cs )
 
     m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxBRUSHSTYLE_SOLID );
 
-    m_tBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxBRUSHSTYLE_SOLID );    // Raster Chart unselected
-    m_slBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxBRUSHSTYLE_SOLID );    // and selected
+    m_rBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxBRUSHSTYLE_SOLID );    // Raster Chart unselected
+    m_srBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxBRUSHSTYLE_SOLID );    // and selected
 
     m_vBrush = wxBrush( GetGlobalColor( _T("GREEN2") ), wxBRUSHSTYLE_SOLID );    // Vector Chart unselected
     m_svBrush = wxBrush( GetGlobalColor( _T("GREEN1") ), wxBRUSHSTYLE_SOLID );    // and selected
+
+    m_utileBrush = wxBrush( GetGlobalColor( _T("VIO01") ), wxBRUSHSTYLE_SOLID );     // MBTiles Chart unselected
+    m_tileBrush = wxBrush( GetGlobalColor(  _T("VIO02") ), wxBRUSHSTYLE_SOLID );    // and selected
 
     m_cBrush = wxBrush( GetGlobalColor( _T("YELO2") ), wxBRUSHSTYLE_SOLID );     // CM93 Chart unselected
     m_scBrush = wxBrush( GetGlobalColor( _T("YELO1") ), wxBRUSHSTYLE_SOLID );    // and selected
 
 
-    m_uvBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxBRUSHSTYLE_SOLID );    // and unavailable
+    m_unavailableBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxBRUSHSTYLE_SOLID );    // and unavailable
 
     m_tex_piano_height = 0; // force texture to update
 }

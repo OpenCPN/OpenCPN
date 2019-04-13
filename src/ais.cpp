@@ -649,7 +649,7 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
     if( b_virt ) 
         aton_DrawPen.SetStyle(wxPENSTYLE_SHORT_DASH );
     
-    aton_WhiteBorderPen = wxPen(GetGlobalColor( _T ( "UWHIT" ) ), aton_DrawPen.GetWidth()+2 );
+    aton_WhiteBorderPen = wxPen(GetGlobalColor( _T ( "CHWHT" ) ), aton_DrawPen.GetWidth()+2 );
    
 
     //Draw Base Diamond. First with Thick White pen then custom pen io to get a white border around the line.
@@ -665,7 +665,7 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
             dc.DrawLines( 5, diamond, x, y );
 
     aton_DrawPen = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ); // Change drawing pen to Solid and width 1
-    aton_WhiteBorderPen = wxPen(GetGlobalColor( _T ( "UWHIT" ) ), aton_DrawPen.GetWidth()+2 );
+    aton_WhiteBorderPen = wxPen(GetGlobalColor( _T ( "CHWHT" ) ), aton_DrawPen.GetWidth()+2 );
 
     // draw cross inside
     wxPoint cross[5];

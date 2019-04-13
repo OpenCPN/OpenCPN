@@ -85,9 +85,9 @@ static wxString html_escape ( const wxString &src)
 
 AIS_Target_Data::AIS_Target_Data()
 {
-    strncpy(ShipName, "Unknown             ", 21);
+    strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
     strncpy(CallSign, "       ", 8);
-    strncpy(Destination, "                    ", 21);
+    strncpy(Destination, "                    ", SHIP_NAME_LEN);
     ShipNameExtension[0] = 0;
     b_show_AIS_CPA = false;
 
@@ -103,6 +103,7 @@ AIS_Target_Data::AIS_Target_Data()
     PositionReportTicks = now.GetTicks();       // Default is my idea of NOW
     StaticReportTicks = now.GetTicks();
     b_lost = false;
+    b_removed = false;
 
     IMO = 0;
     MID = 555;
@@ -172,9 +173,9 @@ AIS_Target_Data::AIS_Target_Data()
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
 {
-    strncpy(ShipName, q->ShipName, 21);
+    strncpy(ShipName, q->ShipName, SHIP_NAME_LEN);
     strncpy(CallSign, q->CallSign, 8);
-    strncpy(Destination, q->Destination, 21);
+    strncpy(Destination, q->Destination, SHIP_NAME_LEN);
     ShipNameExtension[0] = 0;
     b_show_AIS_CPA = q->b_show_AIS_CPA;;
     
@@ -188,6 +189,7 @@ void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
     PositionReportTicks = q->PositionReportTicks;
     StaticReportTicks = q->StaticReportTicks;
     b_lost = q->b_lost;
+    b_removed = q->b_removed;
     
     IMO = q->IMO;
     MID = q->MID;

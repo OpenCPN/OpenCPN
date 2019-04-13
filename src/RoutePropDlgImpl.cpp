@@ -55,6 +55,8 @@ extern MyFrame *gFrame;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern TCMgr *ptcmgr;
 
+int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
+
 // Sunrise/twilight calculation for route properties.
 // limitations: latitude below 60, year between 2000 and 2100
 // riset is +1 for rise -1 for set
@@ -229,6 +231,14 @@ RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxStr
 
     SetColorScheme(global_color_scheme);
     
+    if(g_route_prop_sx > 0 && g_route_prop_sy > 0 && g_route_prop_sx < wxGetDisplaySize().x && g_route_prop_sy < wxGetDisplaySize().y) {
+        SetSize(g_route_prop_sx, g_route_prop_sy);
+    }
+    
+    if(g_route_prop_x > 0 && g_route_prop_y > 0 && g_route_prop_x < wxGetDisplaySize().x && g_route_prop_y < wxGetDisplaySize().y) {
+        SetPosition(wxPoint(10,10));
+    }
+    
     Connect( wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
 }
@@ -237,6 +247,7 @@ RoutePropDlgImpl::~RoutePropDlgImpl()
 {
     Disconnect( wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
+    instanceFlag = false;
 }
 
 bool RoutePropDlgImpl::instanceFlag = false;
@@ -270,7 +281,6 @@ void RoutePropDlgImpl::UpdatePoints()
     m_pRoute->UpdateSegmentDistances( m_pRoute->m_PlannedSpeed );           // to fix ETA properties
     m_tcDistance->SetValue(wxString::Format(wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(m_pRoute->m_route_length)));
     m_tcEnroute->SetValue(formatTimeDelta(wxLongLong(m_pRoute->m_route_time)));
-    m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrDistance(m_pRoute->m_PlannedSpeed)));
     //  Iterate on Route Points, inserting blank fields starting with index 0
     wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
     int in = 0;
@@ -444,6 +454,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         
         m_pRoute = pR;
         
+        m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
+        
         if(m_scrolledWindowLinks){
             wxWindowList kids = m_scrolledWindowLinks->GetChildren();
             for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
@@ -586,6 +598,7 @@ void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event )
     } else {
         m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
     }
+    event.Skip();
 }
 
 int ev_col;
@@ -597,6 +610,8 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEve
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEvent& event )
 {
+#if wxCHECK_VERSION(3, 1, 2)
+    // wx 3.0.x crashes in the bellow code
     if( !m_pRoute )
         return;
     wxDataViewModel* const model = event.GetModel();
@@ -627,6 +642,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
         p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
     }
     UpdatePoints();
+#endif
 }
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event )
@@ -738,7 +754,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEve
     wxMenu menu;
     
     if( ! m_pRoute->m_bIsInLayer ) {
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
         // add stuff
         wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
@@ -807,6 +823,21 @@ void RoutePropDlgImpl::SetColorScheme( ColorScheme cs )
     DimeControl( this );
 }
 
+void RoutePropDlgImpl::SaveGeometry() {
+    GetSize(&g_route_prop_sx, &g_route_prop_sy);
+    GetPosition(&g_route_prop_x, &g_route_prop_y);
+}
+
+void RoutePropDlgImpl::BtnsOnOKButtonClick( wxCommandEvent& event )
+{
+    SaveChanges();
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+        pRouteManagerDialog->UpdateRouteListCtrl();
+    }
+    Hide();
+    SaveGeometry();
+}
+
 void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
 {
     m_btnSplit->Enable( false );
@@ -846,9 +877,12 @@ void RoutePropDlgImpl::SplitOnButtonClick( wxCommandEvent& event )
 
 void RoutePropDlgImpl::PrintOnButtonClick( wxCommandEvent& event )
 {
-    RoutePrintSelection dlg( GetParent(), m_pRoute );
-    dlg.ShowModal();
-}
+    RoutePrintSelection* dlg = new RoutePrintSelection( this, m_pRoute );
+    DimeControl( dlg );
+    dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+        if ( retcode == wxID_OK ) {
+        }
+    });}
 
 void RoutePropDlgImpl::ExtendOnButtonClick( wxCommandEvent& event )
 {

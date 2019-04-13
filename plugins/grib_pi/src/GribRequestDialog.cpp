@@ -179,10 +179,11 @@ void GribRequestSetting::InitRequestConfig()
     m_MailImage->SetValue( WriteMail() );
 }
 
+wxWindow *GetGRIBCanvas();
 void GribRequestSetting::OnClose( wxCloseEvent& event )
 {
     m_RenderZoneOverlay = 0;                                    //eventually stop graphical zone display
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
+    RequestRefresh( GetGRIBCanvas() );
 
     //allow to be back to old value if changes have not been saved
     m_ZoneSelMode = m_SavedZoneSelMode;
@@ -311,7 +312,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
         m_spMinLon->SetValue( (int) floor(lon) );
     }
 
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 void GribRequestSetting::SetCoordinatesText()
@@ -326,7 +327,7 @@ void GribRequestSetting::StopGraphicalZoneSelection()
 {
     m_RenderZoneOverlay = 0;                                                //eventually stop graphical zone display
 
-    RequestRefresh( PluginGetOverlayRenderCanvas() );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
@@ -1002,12 +1003,13 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     }
 
     wxMailMessage *message = new wxMailMessage(
-    wxT("gribauto"),                                                                            //requested subject
-    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
-        : m_MailToAddresses.AfterFirst(_T(';')),
-    WriteMail(),                                                                                 //message image
-    m_pSenderAddress->GetValue()
-    );
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? _T("grib-request") : wxT("gribauto"),  //requested subject
+        (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
+            : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
+        WriteMail(),                                                                                 //message image
+        m_pSenderAddress->GetValue()
+        );
+    
     wxEmail mail ;
     if(mail.Send( *message, m_SendMethod)) {
 #ifdef __WXMSW__

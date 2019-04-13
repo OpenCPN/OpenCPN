@@ -136,10 +136,10 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler(TrackPropDlg::OnTrackPropRightClick), NULL, this );
     Connect( wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL, this );
 
-//    m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
-//    m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+    m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
+    m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
 
     if(m_rbShowTimeUTC)m_rbShowTimeUTC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimePC)m_rbShowTimePC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
@@ -168,10 +168,10 @@ TrackPropDlg::~TrackPropDlg()
             wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
     Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-//    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
- //   m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
+    m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
+            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
 
     if(m_rbShowTimeUTC)m_rbShowTimeUTC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimePC)m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
@@ -738,16 +738,13 @@ void TrackPropDlg::CreateControls( void )
 
       m_hyperlink1 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
       m_menuLink = new wxMenu();
-      wxMenuItem* m_menuItemEdit;
-      m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemEdit = new wxMenuItem( m_menuLink, ID_TRK_MENU_EDIT, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemEdit );
 
-      wxMenuItem* m_menuItemAdd;
-      m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemAdd = new wxMenuItem( m_menuLink, ID_TRK_MENU_ADD, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemAdd );
 
-      wxMenuItem* m_menuItemDelete;
-      m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemDelete = new wxMenuItem( m_menuLink, ID_TRK_MENU_DELETE, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemDelete );
 
       m_hyperlink1->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( TrackPropDlg::m_hyperlink1OnContextMenu ), NULL, this );
@@ -847,7 +844,6 @@ void TrackPropDlg::CreateControls( void )
       ((wxWindowBase *)m_stFrom)->GetSize( &w2, &h );
       ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
       ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-
 
       m_panelBasic->SetScrollRate(5, 5);
       m_panelAdvanced->SetScrollRate(5, 5);
@@ -1227,9 +1223,13 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
 }
 
 void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
-{        
-    TrackPrintSelection dlg( this, m_pTrack, m_lcPoints );
-    dlg.ShowModal();
+{
+    TrackPrintSelection* dlg = new TrackPrintSelection( this, m_pTrack, m_lcPoints );
+    DimeControl( dlg );
+    dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+        if ( retcode == wxID_OK ) {
+        }
+    });
 }
 
 void TrackPropDlg::OnTrackPropRightClick( wxListEvent &event )
@@ -1304,12 +1304,32 @@ void TrackPropDlg::OnExportBtnClick( wxCommandEvent& event )
 
 void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )
 {
+
     m_pEditedLink = (wxHyperlinkCtrl*) event.GetEventObject();
+    Connect(  wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction) (wxEventFunction) &TrackPropDlg::PopupMenuHandler );
     m_scrolledWindowLinks->PopupMenu( m_menuLink,
             m_pEditedLink->GetPosition().x + event.GetPosition().x,
             m_pEditedLink->GetPosition().y + event.GetPosition().y );
 }
 
+void TrackPropDlg::PopupMenuHandler( wxCommandEvent& event )
+{
+    switch( event.GetId() ) {
+        case ID_TRK_MENU_ADD:
+            OnAddLink(event);
+            break;
+        case ID_TRK_MENU_EDIT:
+            OnEditLink(event);
+            break;
+        case ID_TRK_MENU_DELETE:
+            OnDeleteLink(event);
+            break;
+        default:
+            break;
+
+    }
+}
+ 
 void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 {
     wxHyperlinkListNode* nodeToDelete = NULL;
@@ -1360,7 +1380,7 @@ void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
     m_scrolledWindowLinks->InvalidateBestSize();
     m_scrolledWindowLinks->Layout();
     sbSizerLinks->Layout();
-    event.Skip();
+    //event.Skip();
 }
 
 void TrackPropDlg::OnEditLink( wxCommandEvent& event )
@@ -1404,7 +1424,7 @@ void TrackPropDlg::OnEditLink( wxCommandEvent& event )
             sbSizerLinks->Layout();
         }
     });
-    event.Skip();
+    //event.Skip();
 }
 
 void TrackPropDlg::OnAddLink( wxCommandEvent& event )
@@ -1427,7 +1447,7 @@ void TrackPropDlg::OnAddLink( wxCommandEvent& event )
 
             bSizerLinks->Add( ctrl, 0, wxALL, 5 );
             bSizerLinks->Fit( m_scrolledWindowLinks );
-            this->Fit();
+            //this->Fit();
 
             Hyperlink* h = new Hyperlink();
             h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
@@ -1436,9 +1456,13 @@ void TrackPropDlg::OnAddLink( wxCommandEvent& event )
             m_pTrack->m_HyperlinkList->Append( h );
         }
     });
+//    sbSizerLinks->Layout();
+    
+    m_scrolledWindowLinks->InvalidateBestSize();
+    m_scrolledWindowLinks->Layout();
     sbSizerLinks->Layout();
 
-    event.Skip();
+    //event.Skip();
 }
 
 void TrackPropDlg::OnEditLinkToggle( wxCommandEvent& event )

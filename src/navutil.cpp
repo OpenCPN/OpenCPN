@@ -202,6 +202,7 @@ extern bool             g_bTrackDaily;
 extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
+extern double           g_AISShowTracks_Limit;
 extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
@@ -376,8 +377,6 @@ extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
-extern int              g_current_arrow_scale;
-extern int              g_tide_rectangle_scale;
 extern int              g_tcwin_scale;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
@@ -447,7 +446,11 @@ extern unsigned int     g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
 extern wxString         g_lastAppliedTemplateGUID;
 
+extern int              g_route_prop_x, g_route_prop_y;
+extern int              g_route_prop_sx, g_route_prop_sy;
+
 wxString                g_gpx_path;
+bool                    g_bLayersLoaded;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -592,7 +595,7 @@ int MyConfig::LoadMyConfig()
     g_bShowCompassWin = 1;
     g_iSoundDeviceIndex = -1;
     g_bFullscreenToolbar = 1;
-    g_bTransparentToolbar =  1;
+    g_bTransparentToolbar =  0;
     g_bShowLayers = 1;
     g_bShowDepthUnits = 1;
     g_bShowActiveRouteHighway = 1;
@@ -612,6 +615,7 @@ int MyConfig::LoadMyConfig()
     g_n_arrival_circle_radius = 0.05;
     
     g_AISShowTracks_Mins = 20;
+    g_AISShowTracks_Limit = 300.0;
     g_ShowScaled_Num = 10;
     g_ScaledNumWeightSOG = 50;
     g_ScaledNumWeightCPA = 60;
@@ -659,8 +663,6 @@ int MyConfig::LoadMyConfig()
     g_track_line_width = 2;
     g_colourTrackLineColour = wxColour( 243, 229, 47 );
     
-    g_current_arrow_scale = 100;
-    g_tide_rectangle_scale = 100;
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
     g_default_routepoint_icon = _T("diamond");
@@ -933,7 +935,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
+    //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     Read( _T ( "ShowLayers" ), &g_bShowLayers );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
@@ -1027,6 +1029,11 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "ClientSzX" ), &g_lastClientRectw );
     Read( _T ( "ClientSzY" ), &g_lastClientRecth );
     
+    Read( _T( "RoutePropSizeX" ), &g_route_prop_sx );
+    Read( _T( "RoutePropSizeY" ), &g_route_prop_sy );
+    Read( _T( "RoutePropPosX" ), &g_route_prop_x );
+    Read( _T( "RoutePropPosY" ), &g_route_prop_y );
+    
     read_int = -1;
     Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int );   // default is metres
     if(read_int >= 0){
@@ -1074,10 +1081,15 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "bShowTargetTracks" ), &g_bAISShowTracks );
 
+    
+    if( Read( _T ( "TargetTracksLimit" ), &s ) ) {
+        s.ToDouble( &g_AISShowTracks_Limit );
+        g_AISShowTracks_Limit = wxMax(300.0, g_AISShowTracks_Limit);
+    }
     if( Read( _T ( "TargetTracksMinutes" ), &s ) ) {
         s.ToDouble( &g_AISShowTracks_Mins );
         g_AISShowTracks_Mins = wxMax(1.0, g_AISShowTracks_Mins);
-        g_AISShowTracks_Mins = wxMin(300.0, g_AISShowTracks_Mins);
+        g_AISShowTracks_Mins = wxMin(g_AISShowTracks_Limit, g_AISShowTracks_Mins);
     }
 
     Read( _T ( "bHideMooredTargets" ), &g_bHideMoored );
@@ -1432,8 +1444,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     if(Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour ))
         g_colourTrackLineColour.Set( l_wxsTrackLineColour );
 
-    Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale );
-    Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
     Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
@@ -1665,10 +1675,11 @@ bool MyConfig::LoadLayers(wxString &path)
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
 
+                l->m_bHasVisibleNames = wxCHK_UNDETERMINED;
                 if (g_VisiNameinLayers.Contains(l->m_LayerName))
-                    l->m_bHasVisibleNames = true;
+                    l->m_bHasVisibleNames = wxCHK_CHECKED;
                 if (g_InVisiNameinLayers.Contains(l->m_LayerName))
-                    l->m_bHasVisibleNames = false;
+                    l->m_bHasVisibleNames = wxCHK_UNCHECKED;
 
                 l->m_bIsVisibleOnChart = bLayerViz;
                 
@@ -1702,6 +1713,7 @@ bool MyConfig::LoadLayers(wxString &path)
             cont = dir.GetNext( &filename );
         }
     }
+    g_bLayersLoaded = true;
 
     return true;
 }
@@ -2394,24 +2406,27 @@ void MyConfig::UpdateSettings()
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
 
-    wxString vis, invis, visnames, invisnames;
-    LayerList::iterator it;
-    int index = 0;
-    for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
-        Layer *lay = (Layer *) ( *it );
-        if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
-        else
-            invis += ( lay->m_LayerName ) + _T(";");
+    if(g_bLayersLoaded){
+        wxString vis, invis, visnames, invisnames;
+        LayerList::iterator it;
+        int index = 0;
+        for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
+            Layer *lay = (Layer *) ( *it );
+            if( lay->IsVisibleOnChart() ) vis += ( lay->m_LayerName ) + _T(";");
+            else
+                invis += ( lay->m_LayerName ) + _T(";");
 
-        if( lay->HasVisibleNames() ) visnames += ( lay->m_LayerName) + _T(";");
-        else
-            invisnames += ( lay->m_LayerName) + _T(";");
+            if( lay->HasVisibleNames() == wxCHK_CHECKED ) {
+                visnames += ( lay->m_LayerName) + _T(";");
+            } else if( lay->HasVisibleNames() == wxCHK_UNCHECKED ) {
+                invisnames += ( lay->m_LayerName) + _T(";");
+            }
+        }
+        Write( _T ( "VisibleLayers" ), vis );
+        Write( _T ( "InvisibleLayers" ), invis );
+        Write( _T ( "VisNameInLayers" ), visnames);
+        Write( _T ( "InvisNameInLayers" ), invisnames);
     }
-    Write( _T ( "VisibleLayers" ), vis );
-    Write( _T ( "InvisibleLayers" ), invis );
-    Write( _T ( "VisNameInLayers" ), visnames);
-    Write( _T ( "InvisNameInLayers" ), invisnames);
-
     Write( _T ( "Locale" ), g_locale );
     Write( _T ( "LocaleOverride" ), g_localeOverride );
     
@@ -2481,7 +2496,11 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "S52_DEPTH_UNIT_SHOW" ), g_nDepthUnitDisplay );
     
-
+    Write( _T( "RoutePropSizeX" ), g_route_prop_sx );
+    Write( _T( "RoutePropSizeY" ), g_route_prop_sy );
+    Write( _T( "RoutePropPosX" ), g_route_prop_x );
+    Write( _T( "RoutePropPosY" ), g_route_prop_y );
+    
     //    AIS
     SetPath( _T ( "/Settings/AIS" ) );
 
@@ -2720,17 +2739,22 @@ void MyConfig::UpdateNavObj( void )
 
 }
 
-bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
+static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName )
 {
+    wxFileName ret;
     wxString path;
-    
+    wxString validName{suggestedName};
+    // replace common date characters invalid in filename
+    // MS-DOS file systems have many more
+    validName.Replace(_T("/"), _T("-"));
+    validName.Replace(_T(":"), _T("_"));
     int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      g_gpx_path,
-                                                     suggestedName,
+                                                     validName,
                                                      wxT ( "*.gpx" )
     );
-    
+
     if( response == wxID_OK ) {
         wxFileName fn(path);
         g_gpx_path = fn.GetPath();
@@ -2740,124 +2764,70 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
+            if( answer != wxID_YES )
+                return ret;
         }
 #endif
+        ret = fn;
+    }
+    return ret;
+}
 
+
+bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
+{
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString suggestedName )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     suggestedName,
-                                                     wxT ( "*.gpx" )
-    );
-    
-    if( response == wxID_OK ) {
-        wxFileName fn(path);
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     suggestedName,
-                                                     wxT ( "*.gpx" )
-                                                     );
-
-
-    if( response == wxID_OK ) {
-        wxFileName fn( path );
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return false;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, suggestedName);
+    if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
-    wxString path;
-    
-    int response = g_Platform->DoFileSelectorDialog( parent, &path,
-                                                     _( "Export GPX file" ),
-                                                     g_gpx_path,
-                                                     _T("userobjects.gpx"),
-                                                     wxT ( "*.gpx" )
-    );
-    
-    
-    
-    
-    if( response == wxID_OK ) {
-        wxFileName fn(path);
-        g_gpx_path = fn.GetPath();
-        fn.SetExt(_T("gpx"));
-
-#ifndef __WXMAC__
-        if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
-                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
-            if( answer != wxID_YES ) return;
-        }
-#endif
-
+    wxFileName fn = exportFileName(parent, _T("userobjects.gpx"));
+    if (fn.IsOk()) {
         ::wxBeginBusyCursor();
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
 
-        wxProgressDialog *pprog = NULL;
+        wxGenericProgressDialog *pprog = nullptr;
         int count = pWayPointMan->GetWaypointList()->GetCount();
         if( count > 200) {
-            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
+            pprog = new wxGenericProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
                                           wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
             pprog->SetSize( 400, wxDefaultCoord );
@@ -2934,8 +2904,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         delete pgpx;
         ::wxEndBusyCursor();
 
-        if( pprog)
-            delete pprog;
+        delete pprog;
 
     }
 }
@@ -3691,7 +3660,8 @@ void X11FontPicker::CreateWidgets()
     itemBoxSizer3->Add ( itemBoxSizer25, 0, wxEXPAND, 5 );
     itemBoxSizer25->Add ( 5, 5, 1, wxEXPAND|wxALL, 5 );
 
-    wxButton* itemButton28 = new wxButton ( this, wxID_CANCEL, _ ( "&Cancel" ), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton* itemButton28 = new wxButton ( this, wxID_CANCEL, _( "Cancel" ), wxDefaultPosition, wxDefaultSize, 0 );
+    
     if ( ShowToolTips() )
     itemButton28->SetToolTip ( _ ( "Click to cancel the font selection." ) );
     itemBoxSizer25->Add ( itemButton28, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -4332,9 +4302,9 @@ wxString formatTimeDelta(wxTimeSpan span)
     span -= wxTimeSpan::Minutes(span.GetMinutes());
     int seconds = (double)span.GetSeconds().ToLong();
     
-    timeStr = (days ? wxString::Format(_T("%dd "), days) : _T("")) +
-    (hours || days ? wxString::Format(_T("%02d:%02d"), hours, (int)round(minutes)) :
-     wxString::Format(_T("%02d %02d"), (int)floor(minutes), seconds));
+    timeStr = (days ? wxString::Format(_("%dd "), days) : _T("")) +
+    (hours || days ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes)) :
+     wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
     
     return timeStr;
 }

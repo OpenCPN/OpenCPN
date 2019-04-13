@@ -77,6 +77,17 @@ grib_pi::grib_pi(void *ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
+      
+      wxString shareLocn = *GetpSharedDataLocation() +
+                          _T("plugins") + wxFileName::GetPathSeparator() +
+                          _T("grib_pi") + wxFileName::GetPathSeparator()
+                          + _T("data") + wxFileName::GetPathSeparator();
+      wxImage panelIcon(  shareLocn + _T("grib_panel_icon.png"));
+      if(panelIcon.IsOk())
+        m_panelBitmap = wxBitmap(panelIcon);
+      else
+        wxLogMessage(_T("    GRIB panel icon NOT loaded"));
+
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       m_GUIScaleFactor = -1.;
@@ -135,6 +146,8 @@ int grib_pi::Init(void)
 		  wxLogMessage(normalIcon);
 		  m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
 			  _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+                  
+
 	  }
 
       if( !QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy ) ) {
@@ -191,7 +204,7 @@ int grib_pi::GetPlugInVersionMinor()
 
 wxBitmap *grib_pi::GetPlugInBitmap()
 {
-      return _img_grib_pi;
+      return &m_panelBitmap;
 }
 
 wxString grib_pi::GetCommonName()
@@ -521,16 +534,21 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
 {
     // If multicanvas are active, render the overlay on the right canvas only
-    
-    if(GetCanvasCount() > 1){            // multi?
-        if(canvasIndex == 1){
-            return RenderGLOverlay( pcontext, vp);
-        }
-        else
-            return false;
+    if(GetCanvasCount() > 1 && canvasIndex != 1){            // multi?
+        return false;
     }
 
     return RenderGLOverlay( pcontext, vp);
+}
+
+bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1 && canvasIndex != 1) {            // multi?
+        return false;
+    }
+
+    return RenderOverlay( dc, vp);
 }
 
 void grib_pi::SetCursorLatLon(double lat, double lon)

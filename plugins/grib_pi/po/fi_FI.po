@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-01 13:04-0500\n"
-"PO-Revision-Date: 2019-02-08 02:16\n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:52\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -16,97 +16,97 @@ msgstr ""
 "X-Crowdin-Language: fi\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
-#: src/GribUIDialog.cpp:325 src/GribUIDialog.cpp:804
+#: src/GribUIDialog.cpp:336 src/GribUIDialog.cpp:818
 msgid "Start a request"
 msgstr "Aloita pyyntö"
 
-#: src/GribUIDialog.cpp:329
+#: src/GribUIDialog.cpp:340
 msgid "Draw requested Area\n"
 "or Click here to stop request"
 msgstr "Piirrä pyydetty alue\n"
 "tai napsautus tästä pysäyttää pyynön"
 
-#: src/GribUIDialog.cpp:333 src/GribUIDialog.cpp:805
+#: src/GribUIDialog.cpp:344 src/GribUIDialog.cpp:819
 msgid "Valid Area and Continue"
 msgstr "Valitse alue ja jatka"
 
-#: src/GribUIDialog.cpp:375
+#: src/GribUIDialog.cpp:386
 msgid "File: "
 msgstr "Tiedosto: "
 
-#: src/GribUIDialog.cpp:380
+#: src/GribUIDialog.cpp:391
 msgid "Error! "
 msgstr "Virhe! "
 
-#: src/GribUIDialog.cpp:380
+#: src/GribUIDialog.cpp:391
 msgid " contains no valid data!"
 msgstr " ei sisällä kelvollisia tietoja!"
 
-#: src/GribUIDialog.cpp:405
+#: src/GribUIDialog.cpp:416
 msgid "No valid GRIB file"
 msgstr "Ei kelvollista GRIB tiedostoa"
 
-#: src/GribUIDialog.cpp:598 src/GribUIDialog.cpp:794
+#: src/GribUIDialog.cpp:612 src/GribUIDialog.cpp:808
 msgid "Hide data at cursor"
 msgstr "Piilota tiedot kursorin sijainnissa"
 
-#: src/GribUIDialog.cpp:598 src/GribUIDialog.cpp:794
+#: src/GribUIDialog.cpp:612 src/GribUIDialog.cpp:808
 msgid "Show data at cursor"
 msgstr "Näytä tiedot kursorin sijainnissa"
 
-#: src/GribUIDialog.cpp:599 src/GribUIDialog.cpp:797 src/GribUIDialog.cpp:1117
+#: src/GribUIDialog.cpp:613 src/GribUIDialog.cpp:811 src/GribUIDialog.cpp:1131
 msgid "Start play back"
 msgstr "Aloita toisto"
 
-#: src/GribUIDialog.cpp:751 src/grib_pi.cpp:398 src/CursorData.cpp:579
+#: src/GribUIDialog.cpp:765 src/grib_pi.cpp:411 src/CursorData.cpp:579
 msgid "Menu"
 msgstr "Valikko"
 
-#: src/GribUIDialog.cpp:790
+#: src/GribUIDialog.cpp:804
 msgid "Select geopotential altitude"
 msgstr "Valitse geopotentiaalinen korkeusasema"
 
-#: src/GribUIDialog.cpp:792 src/GribUIDialogBase.cpp:66
+#: src/GribUIDialog.cpp:806 src/GribUIDialogBase.cpp:66
 #: src/GribUIDialogBase.cpp:177 src/GribUIDialogBase.cpp:1170
 msgid "Now"
 msgstr "Nyt"
 
-#: src/GribUIDialog.cpp:793 src/GribUIDialogBase.cpp:71
+#: src/GribUIDialog.cpp:807 src/GribUIDialogBase.cpp:71
 #: src/GribUIDialogBase.cpp:182
 msgid "Zoom To Center"
 msgstr "Zoomaa keskelle"
 
-#: src/GribUIDialog.cpp:797 src/GribUIDialog.cpp:1081
+#: src/GribUIDialog.cpp:811 src/GribUIDialog.cpp:1095
 msgid "Stop play back"
 msgstr "Pysäytä toisto"
 
-#: src/GribUIDialog.cpp:800 src/GribUIDialogBase.cpp:202
+#: src/GribUIDialog.cpp:814 src/GribUIDialogBase.cpp:202
 msgid "Open a new file"
 msgstr "Avaa uusi tiedosto"
 
-#: src/GribUIDialog.cpp:801 src/GribUIDialogBase.cpp:94
+#: src/GribUIDialog.cpp:815 src/GribUIDialogBase.cpp:94
 #: src/GribUIDialogBase.cpp:207 src/GribUIDialogBase.cpp:1266
 #: src/GribUIDialogBase.h:316
 msgid "Settings"
 msgstr "Asetukset"
 
-#: src/GribUIDialog.cpp:805
+#: src/GribUIDialog.cpp:819
 msgid "Draw requested Area or Click here to stop request"
 msgstr "Piirrä pyydetty alue tai klikkaa tästä pysäyttääksesi pyynnön"
 
-#: src/GribUIDialog.cpp:1461 src/GribUIDialog.cpp:1483
+#: src/GribUIDialog.cpp:1475 src/GribUIDialog.cpp:1497
 msgid "Select a GRIB file"
 msgstr "Valitse GRIB-tiedosto"
 
-#: src/GribUIDialog.cpp:1773
+#: src/GribUIDialog.cpp:1787
 msgid " files don't exist!"
 msgstr " tiedostoja ei ole!"
 
-#: src/GribUIDialog.cpp:1794
+#: src/GribUIDialog.cpp:1808
 msgid " can't be read!"
 msgstr " ei voi lukea!"
 
-#: src/GribUIDialog.cpp:2010 src/GribUIDialog.cpp:2012
+#: src/GribUIDialog.cpp:2024 src/GribUIDialog.cpp:2026
 #: src/GribUIDialogBase.h:167
 msgid "GRIB Display Control"
 msgstr "GRIB Näyttöohjaus"
@@ -292,7 +292,7 @@ msgstr "Olet sallinut interpoloinnin.\n"
 "mikä voi vähentää tarkkuutta!"
 
 #: src/GribSettingsDialog.cpp:913 src/GribSettingsDialog.cpp:959
-#: src/grib_pi.cpp:814 src/GribRequestDialog.cpp:651
+#: src/grib_pi.cpp:832 src/GribRequestDialog.cpp:652
 msgid "Warning!"
 msgstr "Varoitus!"
 
@@ -318,7 +318,7 @@ msgstr "Valitse geopotentiaalinen korkeusasema"
 
 #: src/GribUIDialogBase.cpp:405
 msgid "MyLabel"
-msgstr ""
+msgstr "OmaOtsake"
 
 #: src/GribUIDialogBase.cpp:446
 msgid "Mean Sea Level Pressure (MSLP)"
@@ -394,7 +394,7 @@ msgstr "Oletusväri"
 
 #: src/GribUIDialogBase.cpp:768
 msgid "Controlled Colours"
-msgstr ""
+msgstr "Hallitut värit"
 
 #: src/GribUIDialogBase.cpp:780 src/GribUIDialogBase.cpp:867
 #: src/GribUIDialogBase.cpp:923
@@ -421,7 +421,7 @@ msgstr "samapainekäyrä"
 
 #: src/GribUIDialogBase.cpp:842
 msgid "Abbreviated Numbers"
-msgstr ""
+msgstr "Lyhennetyt numerot"
 
 #: src/GribUIDialogBase.cpp:848 src/CursorData.cpp:522 src/CursorData.cpp:527
 msgid "Direction Arrows"
@@ -455,7 +455,7 @@ msgstr "Peittokuva"
 
 #: src/GribUIDialogBase.cpp:905
 msgid "Color scheme"
-msgstr ""
+msgstr "Väriteema"
 
 #: src/GribUIDialogBase.cpp:909
 msgid "Generic"
@@ -617,7 +617,7 @@ msgstr "Piirrä pyälletty nuolen pää"
 
 #: src/GribUIDialogBase.cpp:1417
 msgid "Zoom to file center when opened"
-msgstr ""
+msgstr "Zoomaa tiedoston keskelle avattaessa"
 
 #: src/GribUIDialogBase.cpp:1425
 msgid "Load the More Recent File in Directory"
@@ -739,8 +739,8 @@ msgstr "Käytä aina tätä aluetta"
 msgid "Max Lat"
 msgstr "Max Lat"
 
-#: src/GribUIDialogBase.cpp:1712 src/GribRequestDialog.cpp:319
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1712 src/GribRequestDialog.cpp:320
+#: src/GribRequestDialog.cpp:323
 msgid "N"
 msgstr "P"
 
@@ -748,8 +748,8 @@ msgstr "P"
 msgid "Max Long"
 msgstr "Max Long"
 
-#: src/GribUIDialogBase.cpp:1723 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:321
+#: src/GribUIDialogBase.cpp:1723 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:322
 msgid "E"
 msgstr "I"
 
@@ -757,8 +757,8 @@ msgstr "I"
 msgid "Min Lat"
 msgstr "Min Lat"
 
-#: src/GribUIDialogBase.cpp:1735 src/GribRequestDialog.cpp:319
-#: src/GribRequestDialog.cpp:322
+#: src/GribUIDialogBase.cpp:1735 src/GribRequestDialog.cpp:320
+#: src/GribRequestDialog.cpp:323
 msgid "S"
 msgstr "E"
 
@@ -766,8 +766,8 @@ msgstr "E"
 msgid "Min Long"
 msgstr "Min Long"
 
-#: src/GribUIDialogBase.cpp:1747 src/GribRequestDialog.cpp:320
-#: src/GribRequestDialog.cpp:321
+#: src/GribUIDialogBase.cpp:1747 src/GribRequestDialog.cpp:321
+#: src/GribRequestDialog.cpp:322
 msgid "W"
 msgstr "L"
 
@@ -839,8 +839,8 @@ msgstr "Kirjoita ja lähetä sähköpostipyyntö"
 msgid "Grib Data Table"
 msgstr "Grib arvotaulukko"
 
-#: src/grib_pi.h:105 src/grib_pi.cpp:414 src/GribRequestDialog.cpp:127
-#: src/GribRequestDialog.cpp:198 src/GribRequestDialog.cpp:477
+#: src/grib_pi.h:106 src/grib_pi.cpp:427 src/GribRequestDialog.cpp:127
+#: src/GribRequestDialog.cpp:199 src/GribRequestDialog.cpp:478
 #: src/CursorData.cpp:152
 msgid "Dialog"
 msgstr "Dialogi"
@@ -881,15 +881,15 @@ msgstr "Zoomaa tai suurenna mittakaavaa, nähdäksesi näkymättömät peittokuv
 msgid "GribNumbers Unable to compute record magnitude"
 msgstr "GribNumbers ei kykene laskemaan magnitude tiedostoa"
 
-#: src/grib_pi.cpp:137
+#: src/grib_pi.cpp:148
 msgid "Grib"
 msgstr "Grib"
 
-#: src/grib_pi.cpp:205
+#: src/grib_pi.cpp:218
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB moduuli OpenCPN:lle"
 
-#: src/grib_pi.cpp:211
+#: src/grib_pi.cpp:224
 msgid "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
 "and a request function to get GRIB files by eMail.\n\n"
@@ -921,11 +921,11 @@ msgstr "GRIB moduuli OpenCPN:lle\n"
 "- Konvektiivinen saatavilla oleva energia (CAPE)\n"
 "- tuuli, korkeus, lämpötila ja suhteellinen kosteus 300, 500, 700, 850 hPa."
 
-#: src/grib_pi.cpp:396
+#: src/grib_pi.cpp:409
 msgid "Weather table"
 msgstr "Sää taulukko"
 
-#: src/grib_pi.cpp:813
+#: src/grib_pi.cpp:831
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
@@ -973,7 +973,7 @@ msgstr "Virta, Suunta"
 msgid "Current,Speed"
 msgstr "Virta,Nopeus"
 
-#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:965
+#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:966
 msgid "Send"
 msgstr "lähetä"
 
@@ -1001,53 +1001,56 @@ msgstr "Anna ennustettu nopeutesi (solmua)"
 msgid "Enter your forecasted Course"
 msgstr "Anna ennustetut kurssisi"
 
-#: src/GribRequestDialog.cpp:487
+#: src/GribRequestDialog.cpp:488
 msgid "Coord. "
 msgstr "Koord. "
 
-#: src/GribRequestDialog.cpp:492 src/GribRequestDialog.cpp:857
-#: src/GribRequestDialog.cpp:860
+#: src/GribRequestDialog.cpp:493 src/GribRequestDialog.cpp:858
+#: src/GribRequestDialog.cpp:861
 msgid "MB"
 msgstr "mb"
 
-#: src/GribRequestDialog.cpp:650
+#: src/GribRequestDialog.cpp:651
 msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Pyydät ennustetta pitkälle yli 8 päivän ajalle.\n"
+"Tässä ennusteessa on ristiriitaisia aaltotietoja, jotka poistetaan pyydettäessä.\n"
+"Älä unohda, että 8 ensimmäisen päivän jälkeen tarkkuus on vain 2,5°x2.5°\n"
+"ja aikajakso on 12 tuntia."
 
-#: src/GribRequestDialog.cpp:860
+#: src/GribRequestDialog.cpp:861
 msgid "Max"
 msgstr "Max"
 
-#: src/GribRequestDialog.cpp:976
+#: src/GribRequestDialog.cpp:977
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr "Ennen kuin lähetät sähköpostia Zygrib:lle sinun täytyy syöttää käyttäjätunnus ja koodi. \n"
 "Ole hyvä ja mene sivustolle www.zygrib.org/ ja seuraa ohjeita..."
 
-#: src/GribRequestDialog.cpp:977
+#: src/GribRequestDialog.cpp:978
 msgid "Too big file! zyGrib limit is 2Mb!"
 msgstr "Liian suuri tiedosto! zyGrib raja on 2Mb!"
 
-#: src/GribRequestDialog.cpp:977
+#: src/GribRequestDialog.cpp:978
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
 msgstr "Virhe! Max Lat alle Min Lat tai Max Lon alle Min Lon!"
 
-#: src/GribRequestDialog.cpp:978
+#: src/GribRequestDialog.cpp:979
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Liian suuri alue! Kummankin puolen on oltava pienempi kuin 180°!"
 
-#: src/GribRequestDialog.cpp:978
+#: src/GribRequestDialog.cpp:979
 msgid "Too small area for this resolution!"
 msgstr "Liian pieni alue tähän piirtotarkkuuteen!"
 
-#: src/GribRequestDialog.cpp:995 src/GribRequestDialog.cpp:1030
+#: src/GribRequestDialog.cpp:996 src/GribRequestDialog.cpp:1032
 msgid "Continue..."
 msgstr "Jatka..."
 
-#: src/GribRequestDialog.cpp:1015 src/GribRequestDialog.cpp:1019
+#: src/GribRequestDialog.cpp:1017 src/GribRequestDialog.cpp:1021
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -1055,7 +1058,7 @@ msgstr "Pyyntö on valmis. Sähköposti on valmiina email ympäristössäsi.\n"
 "Sinun on vain tarkistettava ja lähetettävä se...\n"
 "Talleta tai peruuta lopettaaksesi... tai Jatkaaksesi..."
 
-#: src/GribRequestDialog.cpp:1022
+#: src/GribRequestDialog.cpp:1024
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
@@ -1063,7 +1066,7 @@ msgstr "Pyyntösi oli lähetetty\n"
 "(Jos systeemissäsi on MTA kokoonpano se voi lähettää emaileja).\n"
 "Talleta tai Peruuta lopettaaksesi... tai Jatkaaksesi..."
 
-#: src/GribRequestDialog.cpp:1027
+#: src/GribRequestDialog.cpp:1029
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
@@ -1127,5 +1130,5 @@ msgstr "N/A"
 
 #: src/CursorData.cpp:504
 msgid "Abbreviated Isobars Numbers"
-msgstr ""
+msgstr "Lyhennetyt Isobaari numerot"
 

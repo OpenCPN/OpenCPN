@@ -317,7 +317,7 @@ class MarkInfoDlg : public wxFrame
         void OnNotebookPageChanged( wxNotebookEvent& event );
         void OnTimeChanged( wxDateEvent& event ) { m_cbEtaPresent->SetValue(true); }
         void OnTideStationCombobox( wxCommandEvent& event);
-        void OnClose( wxCloseEvent& event ) { Hide(); event.Veto(); }
+        void OnClose( wxCloseEvent& event );
         void ShowTidesBtnClicked( wxCommandEvent& event );
         
     public:

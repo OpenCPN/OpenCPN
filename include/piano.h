@@ -69,6 +69,8 @@ public:
       void SetTmercIndexArray(std::vector<int> array);
       void SetPolyIndexArray(std::vector<int> array);
 
+      std::vector<int>  GetActiveKeyArray() { return m_active_index_array; }
+
       void SetVizIcon(wxBitmap *picon_bmp){ if( m_pVizIconBmp ) delete m_pVizIconBmp; m_pVizIconBmp = picon_bmp; }
       void SetInVizIcon(wxBitmap *picon_bmp){ if( m_pInVizIconBmp ) delete m_pInVizIconBmp; m_pInVizIconBmp = picon_bmp; }
       void SetSkewIcon(wxBitmap *picon_bmp){ if( m_pSkewIconBmp ) delete m_pSkewIconBmp; m_pSkewIconBmp = picon_bmp; }
@@ -104,11 +106,10 @@ private:
       int         m_hover_last;
 
       wxBrush     m_backBrush;
-      wxBrush     m_tBrush;
-      wxBrush     m_vBrush;
-      wxBrush     m_svBrush;
-      wxBrush     m_uvBrush;
-      wxBrush     m_slBrush;
+      wxBrush     m_srBrush, m_rBrush;
+      wxBrush     m_svBrush, m_vBrush;
+      wxBrush     m_unavailableBrush;
+      wxBrush     m_utileBrush, m_tileBrush;
 
       wxBrush     m_cBrush;
       wxBrush     m_scBrush;
