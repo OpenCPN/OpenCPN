@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
 # SQLite3 support required for MBTiles.
 
+if (TARGET ocpn::sqlite_cpp)
+    return ()
+endif ()
+
 set(SRC
     src/Backup.cpp
     src/Column.cpp

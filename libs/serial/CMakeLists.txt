@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::serial)
+    return ()
+endif ()
+
 #    DESCRIPTION "Cross-platform, Serial Port library written in C++"
 #    HOMEPAGE_URL "http://wjwwood.io/serial/"
 

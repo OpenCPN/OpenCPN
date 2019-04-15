@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::lz4)
+    return ()
+endif ()
 
 set(SRC src/lz4.c  src/lz4.h  src/lz4hc.c  src/lz4hc.h)
 

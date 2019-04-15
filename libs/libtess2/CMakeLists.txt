@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
+if (TARGET ocpn::tess2)
+    return ()
+endif ()
+
 project(libtess2)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)

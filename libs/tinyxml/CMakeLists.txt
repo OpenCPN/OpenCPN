@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::tinyxml)
+    return ()
+endif ()
+
 set (SRC
   src/tinyxml.cpp
   src/tinyxmlerror.cpp

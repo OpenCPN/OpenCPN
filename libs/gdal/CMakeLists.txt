@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::gdal)
+    return ()
+endif ()
+
 set(SRC
     include/gdal/cpl_config.h
     include/gdal/gdal_priv.h

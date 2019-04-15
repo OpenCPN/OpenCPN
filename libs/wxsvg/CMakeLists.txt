@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::wxsvg)
+    return ()
+endif ()
+
 #
 # Build wxsvg library. Primarely intended to be invoked fror the main
 # CMakeLists. The alternative uses a simplified configuration

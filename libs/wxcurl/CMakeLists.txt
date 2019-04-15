@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET wxcurl::wxcurl)
+    return ()
+endif ()
+
 if (POLICY CMP0077)
     CMAKE_POLICY(SET CMP0077 OLD)
 endif ()

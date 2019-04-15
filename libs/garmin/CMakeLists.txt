@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::garminhost)
+    return ()
+endif ()
+
 # Build the garmin lib, once upon a time copied from gpslib. Needs
 # a -DwxWidgets_INCLUDE_DIRS if built  separately.
 
