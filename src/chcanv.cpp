@@ -2548,6 +2548,8 @@ void ChartCanvas::CancelMeasureRoute()
 
     g_pRouteMan->DeleteRoute( m_pMeasureRoute );
     m_pMeasureRoute = NULL;
+
+    SetCursor( *pCursorArrow );
 }
 
 ViewPort &ChartCanvas::GetVP()
@@ -2666,8 +2668,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     case WXK_MENU:
         int x, y;
         event.GetPosition( &x, &y );
-
+        m_FinishRouteOnKillFocus = false;
         CallPopupMenu(x, y);
+        m_FinishRouteOnKillFocus = true;
         break;
 
     case WXK_ALT:
@@ -8462,7 +8465,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         }
         
         ret = true;
+        m_FinishRouteOnKillFocus = false;
         CallPopupMenu(mx , my);
+        m_FinishRouteOnKillFocus = true;
     }   //Right down
 
     return ret;
