@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-if (TARGET wxcurl::wxcurl)
+if (TARGET ocpn::wxcurl)
     return ()
 endif ()
 
@@ -45,7 +45,7 @@ endif ()
 include(Curl)
     
 add_library(WXCURL STATIC ${SRC})
-add_library(wxcurl::wxcurl ALIAS WXCURL)
+add_library(ocpn::wxcurl ALIAS WXCURL)
 set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXCURL 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

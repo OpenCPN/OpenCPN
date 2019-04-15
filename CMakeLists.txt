@@ -1113,7 +1113,7 @@ IF(OCPN_USE_CURL)
       message (STATUS "Building with bundled wxcurl")
       include("Curl")
       add_subdirectory("libs/wxcurl")
-      target_link_libraries(${PACKAGE_NAME} PRIVATE WXCURL)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxcurl)
     ENDIF ()
 
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${CURL_LIBRARIES})
@@ -1302,7 +1302,7 @@ target_link_libraries(S57ENC PUBLIC
     ocpn::wxjson
     ssl::sha1
     ocpn::tinyxml
-    WXCURL
+    ocpn::wxcurl
 )
 add_subdirectory(libs/iso8211)
 target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
