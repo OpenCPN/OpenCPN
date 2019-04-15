@@ -161,13 +161,13 @@ include(GNUInstallDirs)
 #
 
 macro (BUNDLE_DOCS_OPT onoff)
-  option(OCPN_BUNDLE_DOCS ${onoff} "Include documentation in package")
+  option(OCPN_BUNDLE_DOCS "Include documentation in package" ${onoff})
 endmacro (BUNDLE_DOCS_OPT)
 
 macro (BUNDLE_TCDATA_OPT onoff)
   option(
-    OCPN_BUNDLE_TCDATA "${onoff}"
-    "Include tide/current harmonics data in package"
+    OCPN_BUNDLE_TCDATA "Include tide/current harmonics data in package"
+    ${onoff}
   )
 endmacro (BUNDLE_TCDATA_OPT)
 
