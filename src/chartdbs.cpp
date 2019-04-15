@@ -2840,9 +2840,9 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
             for(unsigned int igroup = 0; igroup < pGroupArray->GetCount(); igroup++)
             {
                   ChartGroup *pGroup = pGroupArray->Item(igroup);
-                  for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
+                  for(auto& elem : pGroup->m_element_array )
                   {
-                        wxString element_root = pGroup->m_element_array[j]->m_element_name;
+                        wxString element_root = elem->m_element_name;
                         
                         //  The element may be a full single chart name
                         //  If so, add it
@@ -2853,9 +2853,9 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                         if(chart_full_path->StartsWith(element_root))
                         {
                               bool b_add = true;
-                              for(unsigned int k=0 ; k < pGroup->m_element_array[j]->m_missing_name_array.GetCount(); k++)
+                              for(unsigned int k=0 ; k < elem->m_missing_name_array.size(); k++)
                               {
-                                    wxString missing_item = pGroup->m_element_array[j]->m_missing_name_array[k];
+                                    wxString missing_item = elem->m_missing_name_array[k];
                                     if(chart_full_path->StartsWith(missing_item))
                                     {
                                           if(chart_full_path->IsSameAs( missing_item )) // missing item is full chart name

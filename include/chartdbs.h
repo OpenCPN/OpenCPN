@@ -27,6 +27,7 @@
 #define __CHARTDBS_H__
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "ocpn_types.h"
@@ -409,26 +410,23 @@ private:
 class ChartGroupElement;
 class ChartGroup;
 
-WX_DEFINE_ARRAY_PTR(ChartGroupElement*, ChartGroupElementArray);
 WX_DEFINE_ARRAY_PTR(ChartGroup*, ChartGroupArray);
 
 class ChartGroupElement
 {
+  // ChartGroupElements need nothing special to delete since
+  // m_missing_name_array is a wxArrayString which manages
+  // memory for the strings cleanly without need for a .Clear.
 public:
-      wxString          m_element_name;
-
-//      ChartGroupElementArray m_missing_name_array;
+      wxString      m_element_name;
       wxArrayString m_missing_name_array;
 };
 
 class ChartGroup
 {
 public:
-      ChartGroup(){};
-      ~ChartGroup(){ for (unsigned int i=0 ; i < m_element_array.GetCount() ; i++){ delete m_element_array.Item(i);}}
-      
-      wxString                m_group_name;
-      ChartGroupElementArray  m_element_array;
+      wxString                                         m_group_name;
+      std::vector<std::unique_ptr<ChartGroupElement>>  m_element_array;
 };
 
 

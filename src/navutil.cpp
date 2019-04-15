@@ -1892,9 +1892,9 @@ void MyConfig::CreateConfigGroups( ChartGroupArray *pGroupArray )
         SetPath( s );
 
         Write( _T ( "GroupName" ), pGroup->m_group_name );
-        Write( _T ( "GroupItemCount" ), (int) pGroup->m_element_array.GetCount() );
+        Write( _T ( "GroupItemCount" ), (int) pGroup->m_element_array.size() );
 
-        for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
+        for( unsigned int j = 0; j < pGroup->m_element_array.size(); j++ ) {
             wxString sg;
             sg.Printf( _T("Group%d/Item%d"), i + 1, j );
             sg.Prepend( _T ( "/Groups/" ) );
@@ -1946,9 +1946,8 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
             wxString v;
             Read( _T ( "IncludeItem" ), &v );
-            ChartGroupElement *pelement = new ChartGroupElement;
-            pelement->m_element_name = v;
-            pGroup->m_element_array.Add( pelement );
+            ChartGroupElement *pelement = new ChartGroupElement{v};
+            pGroup->m_element_array.emplace_back( pelement );
 
             wxString u;
             if( Read( _T ( "ExcludeItems" ), &u ) ) {

@@ -6481,24 +6481,18 @@ bool MyFrame::CheckGroup( int igroup )
 
     bool b_chart_in_group = false;
 
-    for( unsigned int j = 0; j < pGroup->m_element_array.size(); j++ ) {
-        wxString element_root = pGroup->m_element_array[j]->m_element_name;
+    for( auto& elem : pGroup->m_element_array ) {
 
         for( unsigned int ic = 0; ic < (unsigned int) ChartData->GetChartTableEntries(); ic++ ) {
             ChartTableEntry *pcte = ChartData->GetpChartTableEntry( ic );
             wxString chart_full_path( pcte->GetpFullPath(), wxConvUTF8 );
 
-            if( chart_full_path.StartsWith( element_root ) ) {
-                b_chart_in_group = true;
-                break;
-            }
+            if( chart_full_path.StartsWith( elem->m_element_name ) )
+                return true;
         }
-
-        if( b_chart_in_group ) break;
     }
 
-    return b_chart_in_group;                           // this group is empty
-
+    return false;                           // this group is empty
 }
 
 bool MyFrame::ScrubGroupArray()
@@ -6536,10 +6530,8 @@ bool MyFrame::ScrubGroupArray()
 
             if( !b_chart_in_element )             // delete the element
             {
-                ChartGroupElement *pelement = pGroup->m_element_array[j];
-                pGroup->m_element_array.RemoveAt( j );
+                pGroup->m_element_array.erase(pGroup->m_element_array.begin() + j);
                 j--;
-                delete pelement;
                 b_change = true;
             }
         }
