@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::sqlite)
+    return ()
+endif ()
+
 if(NOT CMAKE_MODULE_PATH)
   set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif()

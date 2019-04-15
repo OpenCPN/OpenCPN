@@ -20,13 +20,8 @@
 
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
-IF (COMMAND cmake_policy)
-  if (POLICY CMP0043)
-    CMAKE_POLICY(SET CMP0043 NEW)
-  endif (POLICY CMP0043)
-ENDIF (COMMAND cmake_policy)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
+CMAKE_POLICY(SET CMP0043 NEW)
 
 PROJECT(dashboard_pi)
 
@@ -38,7 +33,6 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
@@ -201,6 +195,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/nmea0183
 )
+target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 IF (WIN32 AND NOT MSVC)
   SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )
@@ -239,10 +234,9 @@ ENDIF(QT_ANDROID)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
-if (TARGET wxsvg::wxsvg)
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} wxsvg::wxsvg )
+if (TARGET ocpn::wxsvg)
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ocpn::wxsvg )
 endif()
-target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
 
 
 IF(APPLE)

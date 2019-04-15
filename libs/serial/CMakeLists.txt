@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::serial)
+    return ()
+endif ()
+
 #    DESCRIPTION "Cross-platform, Serial Port library written in C++"
 #    HOMEPAGE_URL "http://wjwwood.io/serial/"
 
@@ -66,7 +70,7 @@ set(serial_HEADERS
 
 # Build, link and install main library
 add_library(${PROJECT_NAME} STATIC ${serial_SRCS})
-add_library(serial::serial ALIAS ${PROJECT_NAME})
+add_library(ocpn::serial ALIAS ${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION ${PACKAGE_VERSION}

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::wxcurl)
+    return ()
+endif ()
+
 if (POLICY CMP0077)
     CMAKE_POLICY(SET CMP0077 OLD)
 endif ()
@@ -41,13 +45,16 @@ endif ()
 include(Curl)
     
 add_library(WXCURL STATIC ${SRC})
-add_library(wxcurl::wxcurl ALIAS WXCURL)
+add_library(ocpn::wxcurl ALIAS WXCURL)
 set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXCURL 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}
 )
 target_link_libraries(WXCURL ${CURL_LIBRARIES})
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+  target_compile_options(WXCURL  PRIVATE "-Wno-unknown-pragmas")
+endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(WXCURL PRIVATE "-Wno-varargs") 
 endif()

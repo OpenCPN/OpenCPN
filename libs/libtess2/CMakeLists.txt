@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
+if (TARGET ocpn::tess2)
+    return ()
+endif ()
+
 project(libtess2)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
@@ -29,7 +33,7 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MD  /O1  /Ob1 /D NDEBUG /EHa")
         SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
         SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
-        SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+        SET(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
     ENDIF(MSVC)
 ENDIF(WIN32)
 
@@ -54,7 +58,7 @@ SET(SRC
     Source/RevisitedRadix.cpp
 )
 add_library(TESS2 STATIC ${SRC})
-add_library(tess2::tess2 ALIAS TESS2)
+add_library(ocpn::tess2 ALIAS TESS2)
 
 set_target_properties(TESS2 PROPERTIES COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(TESS2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

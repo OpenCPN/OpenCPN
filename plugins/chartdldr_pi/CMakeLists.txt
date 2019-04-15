@@ -5,12 +5,8 @@
 ##---------------------------------------------------------------------------
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-IF (COMMAND cmake_policy)
-  if (POLICY CMP0043)
-    CMAKE_POLICY(SET CMP0043 NEW)
-  endif (POLICY CMP0043)
-ENDIF (COMMAND cmake_policy)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
+CMAKE_POLICY(SET CMP0043 NEW)
 
 PROJECT(chartdldr_pi)
 
@@ -130,7 +126,8 @@ ENDIF(LibArchive_FOUND)
 
 INCLUDE_DIRECTORIES(src/unarr/)
 PKG_SEARCH_MODULE(UNARR libunarr unarr)
-IF (UNARR_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+USE_BUNDLED_LIB(USE_BUNDLED_UNARR unarr)
+IF (UNARR_FOUND AND NOT USE_BUNDLED_UNARR)
   message (STATUS "chartdldr_pi: Building with system unarr")
   INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
   SET(SRC_UNARR  "")
@@ -188,8 +185,8 @@ ENDIF(LibArchive_FOUND)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ${wxWidgets_LIBRARIES}
-    wxjson::wxjson 
-    wxsvg::wxsvg 
+    ocpn::wxjson
+    ocpn::wxsvg
     ocpn::opencpn 
 )
 

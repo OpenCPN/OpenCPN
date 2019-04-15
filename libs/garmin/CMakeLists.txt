@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::garminhost)
+    return ()
+endif ()
+
 # Build the garmin lib, once upon a time copied from gpslib. Needs
 # a -DwxWidgets_INCLUDE_DIRS if built  separately.
 
@@ -50,7 +54,7 @@ endif ()
 
 
 add_library(GARMINHOST STATIC ${SRC})
-add_library(garminhost::garminhost ALIAS GARMINHOST)
+add_library(ocpn::garminhost ALIAS GARMINHOST)
 if (MINGW)
   target_compile_definitions(GARMINHOST PRIVATE "-D_UNICODE")
 endif ()

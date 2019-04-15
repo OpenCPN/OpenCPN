@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::mipmap)
+    return ()
+endif ()
+
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -18,7 +22,7 @@ set(SRC
 )
 
 add_library(MIPMAP STATIC ${SRC})
-add_library(mipmap::mipmap ALIAS MIPMAP)
+add_library(ocpn::mipmap ALIAS MIPMAP)
 target_include_directories(MIPMAP
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/mipmap

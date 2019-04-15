@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::wxsvg)
+    return ()
+endif ()
+
 #
 # Build wxsvg library. Primarely intended to be invoked fror the main
 # CMakeLists. The alternative uses a simplified configuration
@@ -81,7 +85,7 @@ set(SRC
 )
 
 add_library(WXSVG STATIC ${SRC})
-add_library(wxsvg::wxsvg ALIAS WXSVG)
+add_library(ocpn::wxsvg ALIAS WXSVG)
 set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
 include(FindEXIF)

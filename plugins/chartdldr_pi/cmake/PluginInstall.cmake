@@ -24,7 +24,6 @@ IF(MINGW)
   # assuming wxwidgets is compiled with unicode, needed for mingw headers
   ADD_DEFINITIONS( " -DUNICODE" )
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${OPENGL_LIBRARIES})
-  # LIST(APPEND CMAKE_SHARED_LINKER_FLAGS "-L../buildwin")
 ENDIF(MINGW)
 
 

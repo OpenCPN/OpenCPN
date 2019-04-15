@@ -39,7 +39,7 @@
 #SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #FIXME: Needs indentation...
-#FIXME: Seem to provoke bugs if invoked on Windows after -DENABLE_PORTAUDIO=ON
+#FIXME: Seem to provoke bugs if invoked on Windows after -DOCPN_ENABLE_PORTAUDIO=ON
 
 
 

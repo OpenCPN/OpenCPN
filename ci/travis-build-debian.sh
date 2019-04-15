@@ -15,5 +15,6 @@ sudo apt-get install  ./*all.deb  || :
 sudo apt-get --allow-unauthenticated install -f
 
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..
-make V=1 -sj2
+make -sj2
+#VERBOSE=1 make -sj2
 make package

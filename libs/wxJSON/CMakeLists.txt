@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::wxjson)
+    return ()
+endif ()
+
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -23,7 +27,7 @@ endif ()
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 add_library(WXJSON STATIC ${SRC})
-add_library(wxjson::wxjson ALIAS WXJSON)
+add_library(ocpn::wxjson ALIAS WXJSON)
 
 set_property(TARGET WXJSON PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXJSON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

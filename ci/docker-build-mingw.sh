@@ -15,4 +15,5 @@ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
     -DOCPN_NEW_SERIAL=OFF\
     ..
 make -j2
+# VERBOSE=1 make -j
 make package

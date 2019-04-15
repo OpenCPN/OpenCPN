@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (TARGET ocpn::gdal)
+    return ()
+endif ()
+
 set(SRC
     include/gdal/cpl_config.h
     include/gdal/gdal_priv.h
@@ -53,7 +57,7 @@ set(SRC
 )
 
 add_library(GDAL STATIC ${SRC})
-add_library(gdal::gdal ALIAS GDAL)
+add_library(ocpn::gdal ALIAS GDAL)
 
 set_property(TARGET GDAL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GDAL BEFORE 

@@ -19,8 +19,7 @@
 ## ***************************************************************************
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
@@ -162,19 +161,6 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-
-ADD_DEFINITIONS(-DJASPER)
-ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT
-                -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT
-                -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
-
-
-   
-add_subdirectory("libs/jasper")
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libs/jasper/src/include)
-message(STATUS "Using bundled jasper library...")
-
-
 # On Android, PlugIns need a specific linkage set....
 IF (QT_ANDROID )
   # These libraries are needed to create PlugIns on Android.
@@ -208,6 +194,19 @@ ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
+find_package(Jasper)
+USE_BUNDLED_LIB(USE_BUNDLED_JASPER jasper)
+if (JASPER_FOUND AND NOT USE_BUNDLED_JASPER)
+  message(STATUS "Using system jasper library...")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${JASPER_LIBRARIES})
+  target_include_directories(${PACKAGE_NAME} PRIVATE  ${JASPER_INCLUDE_DIR})
+else ()
+  message(STATUS "Using bundled jasper library...")
+  add_subdirectory("libs/jasper")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE JASPER)
+endif ()
+
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: Need better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
@@ -235,9 +234,8 @@ IF(WIN32)
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE WXJSON )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE JASPER )
-target_link_libraries(${PACKAGE_NAME} PRIVATE wxsvg::wxsvg)
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ocpn::wxjson )
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES} )
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
@@ -274,10 +272,14 @@ IF( APPLE )
         "-Wall" "-Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
-        "-Wno-unknown-pragmas"
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+  target_compile_options(${PACKAGE_NAME} PRIVATE "-Wno-unknown-pragmas")
+endif ()
+
 
 IF(APPLE)
     INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION

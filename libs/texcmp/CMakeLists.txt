@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
 
+if (TARGET ocpn::texcmp)
+    return ()
+endif ()
+
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
 include(FindPkgConfig)
-
-if ("${USE_BUNDLED_LIBS}" STREQUAL "")
-    set (USE_BUNDLED_LIBS "ON")
-endif ()
 
 set(SRC
     squish/alpha.cpp
@@ -26,7 +26,7 @@ set(SRC
 )
 
 add_library(TEXCMP STATIC ${SRC})
-add_library(texcmp::texcmp  ALIAS TEXCMP)
+add_library(ocpn::texcmp  ALIAS TEXCMP)
 
 set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
 
@@ -55,7 +55,8 @@ target_include_directories(TEXCMP PRIVATE ${wxWidgets_INCLUDE_DIRS})
 include(${wxWidgets_USE_FILE})
    
 pkg_search_module(LZ4 liblz4 lz4)
-if (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+USE_BUNDLED_LIB(USE_BUNDLED_LZ4 lz4)
+if (LZ4_FOUND AND NOT USE_BUNDLED_LZ4)
     message(STATUS "Building with system lz4")
     include_directories(${LZ4_INCLUDE_DIR})
     if (COMMAND target_link_directories)
