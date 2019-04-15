@@ -126,9 +126,9 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 project(OpenCPN)
 
-if (OCPN_VERBOSE)
-  set(CMAKE_VERBOSE_MAKEFILE ON)
-endif ()
+option(OCPN_VERBOSE "Verbose build output" ON)
+
+set(CMAKE_VERBOSE_MAKEFILE ${OCPN_VERBOSE})
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
 
@@ -220,8 +220,6 @@ cmake_dependent_option(
 )
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
-
-option(OCPN_VERBOSE "Verbose build output" ON)
 
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
