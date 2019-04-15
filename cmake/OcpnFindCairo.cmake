@@ -7,9 +7,9 @@ if (CAIRO_INCLUDE_DIRS)
   set(CAIRO_FIND_QUIETLY TRUE)
 endif ()
 
-if (WIN32)
+if (CMAKE_HOST_WIN32)
   set(CAIRO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
-else (WIN32)
+else (CMAKE_HOST_WIN32)
   set(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include)
   if (APPLE)
     if (NOT APPLE_MODERN)
@@ -21,15 +21,15 @@ else (WIN32)
             PATHS ${CAIRO_INC_LOOK_PATHS}
             PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
             ${LOOK_OPTION})
-endif (WIN32)
+endif (CMAKE_HOST_WIN32)
   
-if (WIN32)
+if (CMAKE_HOST_WIN32)
   set(CAIRO_LIBRARIES
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
     ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
   )
   set(CAIRO_FOUND 1)
-else (WIN32)
+else (CMAKE_HOST_WIN32)
   set(CAIRO_LIB_LOOK_PATHS ${LINUX_LIB_PATHS})
   if (APPLE AND NOT APPLE_MODERN)
     set(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib)
@@ -49,6 +49,7 @@ else (WIN32)
   )
   mark_as_advanced(CAIRO_INCLUDE_DIRS CAIRO_LIBRARIES )
 endif ()
+
 if (NOT CAIRO_FOUND)
   message(FATAL_ERROR "Cairo component required, but not found!")
 endif ()

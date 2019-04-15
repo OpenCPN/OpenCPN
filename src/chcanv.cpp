@@ -531,6 +531,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_encShowAnchor = true;
     m_encShowDataQual = false;
     m_bShowGPS = true;
+    m_pQuilt = new Quilt( this );
     SetQuiltMode(true);
     SetAlertString(_T(""));
     
@@ -880,7 +881,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     SetUserOwnship();
         
     m_pBrightPopup = NULL;
-    m_pQuilt = new Quilt( this );
     
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -944,7 +944,6 @@ ChartCanvas::~ChartCanvas()
     delete m_pEM_OverZoom;
 //        delete m_pEM_CM93Offset;
 
-    delete m_pQuilt;
 
     delete m_prot_bm;
 
@@ -975,6 +974,7 @@ ChartCanvas::~ChartCanvas()
     MUIBar *muiBar = m_muiBar;
     m_muiBar = 0;
     delete muiBar;
+    delete m_pQuilt;
 }
 
 void ChartCanvas::CanvasApplyLocale()
@@ -2930,14 +2930,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( !pPopupDetailSlider ) {
                 if( VPoint.b_quilt ) 
                     {
-                        if (m_pQuilt) 
-                        { 
                             if (m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y )) ) // = null if no chart loaded for this point
                             {
                                 ChartType = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartType();
                                 ChartFam = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartFamily();
                             }
-                        }                        
                     }
                 else
                     {
@@ -4755,7 +4752,7 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 
     VPoint.Invalidate();
 
-    if( m_pQuilt ) m_pQuilt->Invalidate();
+    m_pQuilt->Invalidate();
 
     //  Make sure that the Selected Group is sensible...
 //    if( m_groupIndex > (int) g_pGroupArray->GetCount() )
@@ -4776,10 +4773,7 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
 
 double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
 {
-    if(m_pQuilt)
-        return m_pQuilt->GetBestStartScale(dbi_hint, vp);
-    else
-        return vp.view_scale_ppm;
+    return m_pQuilt->GetBestStartScale(dbi_hint, vp);
 }
 
 
@@ -4788,7 +4782,8 @@ double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
 int ChartCanvas::AdjustQuiltRefChart()
 {
     int ret = -1;
-    if(m_pQuilt){
+    wxASSERT(m_pQuilt);
+
         wxASSERT(ChartData);
         ChartBase *pc = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
         if( pc ) {
@@ -4848,7 +4843,6 @@ int ChartCanvas::AdjustQuiltRefChart()
         }
         else
             ret = -1;
-    }
     
     return ret;
 }
@@ -4862,10 +4856,8 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     wxASSERT(ChartData);
     ChartData->BuildChartStack( m_pCurrentStack, VPoint.clat, VPoint.clon, m_groupIndex );
 
-    if( m_pQuilt ) {
-        m_pQuilt->Compose( VPoint );
-        SetFocus();
-    }
+    m_pQuilt->Compose( VPoint );
+    SetFocus();
 }
 
 bool ChartCanvas::SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE )
@@ -6129,7 +6121,8 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             dist /= 2;
 
         wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
-        wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
+        wxColour black = GetGlobalColor( _T ( "UBLCK" ) );
+        wxPen pen1 = wxPen( black , 3, wxPENSTYLE_SOLID );
         double rotation = -VPoint.rotation;
 
         ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
@@ -6146,7 +6139,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         dc.DrawLine( x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
 
         dc.SetFont( *m_pgridFont );
-        dc.SetTextForeground( GetGlobalColor( _T ( "UBLCK" ) ) );
+        dc.SetTextForeground( black );
         int w, h;
         dc.GetTextExtent(s, &w, &h);
         dc.DrawText( s, x_origin + l1/2 - w/2, y_origin - h - 1 );
@@ -6464,7 +6457,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     yt_margin = m_canvas_height * 5 / 100;
     yb_margin = m_canvas_height * 95 / 100;
 
-    if( m_pQuilt ) m_pQuilt->SetQuiltParameters( m_canvas_scale_factor, m_canvas_width );
+    m_pQuilt->SetQuiltParameters( m_canvas_scale_factor, m_canvas_width );
 
 //    Resize the current viewport
 
@@ -8049,7 +8042,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         << _("Would you like include the Great Circle routing points for this leg?");
                         
                         #ifndef __WXOSX__
+                        m_FinishRouteOnKillFocus = false;
                         int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                        m_FinishRouteOnKillFocus = true;
                         #else
                         int answer = wxID_NO;
                         #endif
@@ -9572,8 +9567,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if(route){
             int np = route->GetnPoints();
             if(np){
-                if(g_btouch && (np > 1))
-                    np --;
                 RoutePoint rp = route->GetPoint(np);
                 render_lat = rp.m_lat;
                 render_lon = rp.m_lon;
@@ -9675,7 +9668,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         return;
     
     if( VPoint.b_quilt ){          // quilted
-        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
+        if( !m_pQuilt->IsComposed() ) 
             return;  // not ready
             
         if(m_pQuilt->IsQuiltVector()){    
@@ -9870,7 +9863,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //  Blit pan acceleration
     if( VPoint.b_quilt )          // quilted
     {
-        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
+        if( !m_pQuilt->IsComposed() ) 
             return;  // not ready
 
         bool bvectorQuilt = m_pQuilt->IsQuiltVector();    

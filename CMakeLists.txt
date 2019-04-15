@@ -56,12 +56,24 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Clean up global ADD_DEFINITIONS used for configuration
-# - Fix -g antipattern, default build target mess.
-# - Build profiles
-# - cross platform compiling
-# - Better USE_BUNDLED_LIBS option
+# - Test (rework?) wxWidgets GLU handling.
+# - Fix 3.0 requirement overall
+# - Rework options, naming conventions.
+# - Better USE_BUNDLED_LIBS option (list)
+# - Fix link libraries name (tinyxml:: > ocpn::)
+# - Silent build mode.
+# - Unbundle jasper.
 # - test with Win & OSX
+# - Separate ffmpeg configuration
+# - Separate gpsd configuration
+# - Profiling opt
+# - GNU install paths
+# - Drop -s linker flag
+# - Use list() instead of set()
+# - Review TinyXML handling
+# - Move final linking ahead of install section.
+# - Review Mingw package generation.
+# - Make missing sound libs info instead of warnings.
 # USE_GLU_TESS
 # USE_GLU_DLL
 # I also find it deficient in some areas. For instance, I cannot make it
@@ -117,11 +129,12 @@ INCLUDE( CMakeDependentOption )
 # distinguish between not set and set to FALSE):
 #    cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
 MACRO(BUNDLE_DOCS_OPT onoff)
-  OPTION(BUNDLE_DOCS ${onoff} "Include documentation in package")
+  MESSAGE(STATUS "DOCS: ${onoff}")
+  OPTION(BUNDLE_DOCS "Include documentation in package" ${onoff})
 ENDMACRO(BUNDLE_DOCS_OPT)
 
 MACRO(BUNDLE_TCDATA_OPT onoff)
-  OPTION(BUNDLE_TCDATA "${onoff}" "Include tide/current harmonics data in package")
+  OPTION(BUNDLE_TCDATA "Include tide/current harmonics data in package" "${onoff}")
 ENDMACRO(BUNDLE_TCDATA_OPT)
 
 MACRO(BUNDLE_GSHHS_OPT value)
@@ -139,7 +152,7 @@ ELSE()
     SET(OCPN_USE_CRASHREPORT FALSE)
 ENDIF()
 
-if (NOT WIN32)
+if (NOT WIN32 AND NOT APPLE)
   set(PA_DEFAULT "ON")
 endif ()
 OPTION(ENABLE_PORTAUDIO
@@ -148,7 +161,7 @@ OPTION(ENABLE_PORTAUDIO
 
 CMAKE_DEPENDENT_OPTION(ENABLE_SNDFILE
     "Use libsndfile for portaudio if available." ON 
-    "ENABLE_PORTAUDIO" ON
+    "ENABLE_PORTAUDIO" OFF
 )
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
@@ -157,6 +170,9 @@ OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
 set (WXWIDGETS_FORCE_VERSION CACHE VERSION
      "Force usage of a specific wxWidgets version.")
+
+set (WXWIDGETS_OPTIONS CACHE STRING
+    "Additional flags to wxWidgets_CONFIG_OPTIONS")
 
 IF(WIN32 AND NOT UNIX)
   OPTION (BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
@@ -173,7 +189,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
 endif()
 
 IF( NOT CMAKE_BUILD_TYPE )
-  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
       "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
       FORCE
   )
@@ -208,6 +224,10 @@ OPTION(ENABLE_SYSTEM_CMD_SOUND
 # Language, compiler and static checkers setup
 #
 
+include(GetArch)
+GetArch()
+MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
+
 set (CMAKE_CXX_STANDARD 11)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
 IF(NOT MSVC)
@@ -216,14 +236,19 @@ ENDIF()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (ENABLE_CLANG_TIDY)
-    find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
+    find_program (CLANG_TIDY_EXE
+      NAMES "clang-tidy"
+      PATHS /usr/local/opt/llvm/bin
+    )
     if (CLANG_TIDY_EXE)
       message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
       #For more, see http://clang.llvm.org/extra/clang-tidy/
       #set(CLANG_TIDY_CHECKS "-*,modernize-*")
       set(CLANG_TIDY_CHECKS "-*,performance-*")
-      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
-        CACHE STRING "" FORCE)
+      set(CMAKE_CXX_CLANG_TIDY
+        "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
+        CACHE STRING "" FORCE
+      )
     else()
       message(AUTHOR_WARNING "clang-tidy not found!")
       set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # delete it
@@ -248,11 +273,18 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
   endif()
 endif()
 
+message(STATUS "Default compiler options:")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS 
+   "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 #ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
-  ADD_COMPILE_OPTIONS( "-Wall"  "-g"
+  ADD_COMPILE_OPTIONS( "-Wall"
       "-Wno-unused"
       "-fexceptions"
       "-rdynamic"
@@ -274,16 +306,18 @@ IF(NOT WIN32 AND NOT APPLE )
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF(MINGW)
-    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+    ADD_COMPILE_OPTIONS( "-Wall"
         "-Wno-unused"
         "-Wno-cpp"
         "-fexceptions"
         "-fno-strict-aliasing"
     )
+    ADD_DEFINITIONS("-DPSAPI_VERSION=1")
+    ADD_DEFINITIONS("-DUNICODE")
 ENDIF(MINGW)
 
 IF( APPLE )
-    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+    ADD_COMPILE_OPTIONS( "-Wall"
         "-Wno-unused"
         "-fexceptions"
         "-Wno-overloaded-virtual"
@@ -376,9 +410,6 @@ ENDIF(OCPN_CI_BUILD)
 SET(PACKAGE_VERSION
     "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}")
 
-include(GetArch)
-GetArch()
-MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 
 #  Detect the Apple Version of the build machine
 IF (APPLE)
@@ -533,8 +564,9 @@ IF(NOT QT_ANDROID)
   FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND)
     message(STATUS "Found wxWidgets webview add-on")
-    add_definitions(-DOCPN_USE_WEBVIEW)
+    add_definitions(-DwxUSE_WEBVIEW=1 -DHAVE_WEBVIEW)
   else ()
+    add_definitions(-DwxUSE_WEBVIEW=0)
     list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
     FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS ${wxWidgets_FIND_COMPONENTS})
@@ -545,6 +577,16 @@ IF(NOT QT_ANDROID)
            wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
   ENDIF(MSYS)
   INCLUDE(${wxWidgets_USE_FILE})
+
+  # As of cmake 3.11.2, these libraries are missing in list despite that
+  # we looked for them. This is a nasty fix which might fail miserably.
+  # Assumption: All builds using GTK uses unicode and wxWidgets 3.0
+  IF(GTK3_FOUND)
+    list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
+    if (OPENGL_FOUND)
+      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
+    endif()
+  ENDIF ()
 
   MESSAGE (STATUS "Found wxWidgets..." )
   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
@@ -829,11 +871,6 @@ IF(APPLE)
     ENDIF()
 ENDIF(APPLE)
 
-IF (WIN32)
-    list(APPEND SRCS src/MswSound.cpp)
-    list(APPEND HDRS include/MswSound.h)
-ENDIF ()
-
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(HDRS ${HDRS} include/crashprint.h )
   SET(SRCS ${SRCS} src/crashprint.cpp)
@@ -846,7 +883,24 @@ elseif (WIN32)
 else ()
     ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
-target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+add_library(_opencpn INTERFACE)    #  plugin link target.
+target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
+target_include_directories(_opencpn
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+add_library(ocpn::opencpn ALIAS _opencpn)
+
+set_target_properties(${PACKAGE_NAME} PROPERTIES
+    ENABLE_EXPORTS 1
+    OUTPUT_NAME ${PACKAGE_NAME}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_include_directories(${PACKAGE_NAME}
+      PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 IF(APPLE)
   target_include_directories(${PACKAGE_NAME} 
       PRIVATE /usr/X11/include /usr/X11/include/GL
@@ -881,9 +935,9 @@ ENDIF(DEFINED _wx_selected_config)
 
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-  SET(wxWidgets_USE_LIBS base core xml html adv aui)
+  SET(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 ELSE()
-  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
+  SET(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 ENDIF()
 
 IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
@@ -895,14 +949,12 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    add_subdirectory(libs/glshim)
-
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
 ENDIF()
 
 IF (OPENGLES_FOUND)
-  SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  list(APPEND wxwidgets_FIND_COMPONENTS gl)
 ENDIF ()
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
@@ -913,7 +965,7 @@ IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   ENDIF(USE_GL)
 
   IF(OPENGL_FOUND)
-    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
+    list(APPEND wxwidgets_FIND_COMPONENTS gl)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL...." )
@@ -952,6 +1004,9 @@ IF(NOT QT_ANDROID)
   if(WXWIDGETS_FORCE_VERSION)
     set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
   endif()
+  set(wxWidgets_CONFIG_OPTIONS
+      ${wxWidgets_CONFIG_OPTIONS} ${WXWIDGETS_OPTIONS})
+
 
   IF(MSVC)
     # Exclude wxexpat.lib, since we use our own version.
@@ -965,17 +1020,29 @@ IF(NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   ENDIF ()
 
-  FIND_PACKAGE(wxWidgets REQUIRED)
-  IF(MSYS)
-    # Convert msys to windows paths, and handle the missing /usr
-    STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
-           wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
-  ENDIF(MSYS)
-  INCLUDE(${wxWidgets_USE_FILE})
+  if (NOT wxWidgets_FOUND)
+    FIND_PACKAGE(wxWidgets)
+    if (wxWidgets_FOUND)
+      message(STATUS "Found wxWidgets webview add-on")
+      target_compile_definitions(${PACKAGE_NAME} PRIVATE -DOCPN_USE_WEBVIEW)
+      add_definitions(-DwxUSE_WEBVIEW=1)
+    else ()
+      list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
+      message(STATUS "Could not find wxWidgets webview add-on")
+      FIND_PACKAGE(wxWidgets REQUIRED)
+      add_definitions(-DwxUSE_WEBVIEW=0)
+    endif ()
+    IF (MSYS)
+      # Convert msys to windows paths, and handle the missing /usr
+      STRING(REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local"
+             wxWidgets_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+    ENDIF(MSYS)
+    INCLUDE(${wxWidgets_USE_FILE})
 
-  MESSAGE (STATUS "Found wxWidgets..." )
-  MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
-  MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+  endif (NOT wxWidgets_FOUND)
 
   # We need to remove GLU from the wxWidgets_LIBRARIES list
   # It only appears to get on the list for MSW...
@@ -1010,51 +1077,24 @@ IF(OCPN_USE_CRASHREPORT)
   ENDIF(MSVC)
 ENDIF(OCPN_USE_CRASHREPORT)
 
-IF(UNIX AND NOT APPLE)
-  SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
-  FIND_PATH(SQLITE3_INCLUDE_DIR sqlite3.h PATHS ${SQLITE3_INC_LOOK_PATHS})
-  message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
+add_subdirectory("libs/sqlite")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 
-  FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${LINUX_LIB_PATHS}
-               NAMES sqlite3 libsqlite3)
-  message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
-
-  IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
-    MESSAGE(STATUS "Found SQLite3 dev environment.")
-    target_include_directories(${PACKAGE_NAME} PRIVATE ${SQLITE3_INCLUDE_DIR})
-
-    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_LINE
-          REGEX "^[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+[0-9]+.*$")
-    string(REGEX REPLACE
-           "[ \t]*#define[ \t]+SQLITE_VERSION_NUMBER[ \t]+([0-9]+).*$" "\\1"
-           SQLITE3_VERSION ${SQLITE3_VERSION_LINE})
-    MESSAGE(STATUS "SQLite3 version is ${SQLITE3_VERSION}")
-    IF( ${SQLITE3_VERSION} LESS "3019000" )
-      target_compile_definitions(${PACKAGE_NAME} PRIVATE
-          -DSQLITE_USE_LEGACY_STRUCT)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${SQLITE3_LIBRARY})
-
-    ENDIF ()
-
-  ELSE(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-    MESSAGE(STATUS "Could not find SQLite3 dev environment.")
-    MESSAGE(STATUS "Building local SQLite3 library.")
-    add_library(SQLITE3 STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h
-    )
-    target_link_libraries(${PACKAGE_NAME} PRIVATE  SQLITE3)
-  ENDIF(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
-ENDIF(UNIX AND NOT APPLE)
-
+add_subdirectory("libs/SQLiteCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 IF(UNIX)
   IF(NOT QT_ANDROID) # this should be detected by the grib plugin
     FIND_PACKAGE(BZip2 REQUIRED)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${BZIP2_INCLUDE_DIR})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
     FIND_PACKAGE(ZLIB REQUIRED)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${ZLIB_INCLUDE_DIR})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARY})
     FIND_PACKAGE(X11)
+    IF(X11_FOUND AND NOT APPLE)
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} )
+    ENDIF()
     IF(NOT APPLE)
       #TinyXML from Homebrew is not good enough for our GpxDocument needs
       #We should probably replace it with pugixml completely anyway...
@@ -1063,23 +1103,12 @@ IF(UNIX)
   ENDIF(NOT QT_ANDROID)
 ENDIF(UNIX)
 
-IF(WIN32 OR APPLE)
-  ADD_LIBRARY(SQLITE3 STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3/sqlite3.h
-  )
-  target_include_directories(${PACKAGE_NAME} PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/SQLiteCpp/sqlite3
-  )
-  target_link_libraries(${PACKAGE_NAME} PRIVATE SQLITE3)
-ENDIF(WIN32 OR APPLE)
 
 # check for lzma support for reading compressed charts
-IF(WIN32)
+IF(CMAKE_HOST_WIN32)
   LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
   LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
-ENDIF(WIN32)
+ENDIF(CMAKE_HOST_WIN32)
 IF(OCPN_USE_LZMA)
   FIND_PACKAGE(LibLZMA)
   IF(LIBLZMA_FOUND)
@@ -1090,11 +1119,8 @@ IF(OCPN_USE_LZMA)
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
 
-add_subdirectory("libs/SQLiteCpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE sqlite_cpp::sqlite_cpp)
-
 IF(OCPN_USE_CURL)
-  IF(WIN32)
+  IF(CMAKE_HOST_WIN32)
     INSTALL(FILES
         "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
         "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
@@ -1104,13 +1130,10 @@ IF(OCPN_USE_CURL)
         SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
         INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
         INSTALL(FILES "buildwin/zlib1.dll" DESTINATION ".")
-    ELSE(MSVC) ## mingw
-        SET(CURL_LIBRARIES "curl.dll")
-        INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
     ENDIF(MSVC)
-  ELSE(WIN32)
+  ELSE(CMAKE_HOST_WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
-  ENDIF(WIN32)
+  ENDIF(CMAKE_HOST_WIN32)
 
   IF(NOT QT_ANDROID)
     IF(OCPN_USE_EXTERN_CURL)
@@ -1155,7 +1178,7 @@ IF(OCPN_USE_SVG)
   IF(NOT QT_ANDROID)
     include(OcpnFindCairo)
     include(OcpnFindExpat)
-    IF (WIN32)
+    IF (CMAKE_HOST_WIN32)
       #On Windows, we have our own expat and cairo
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
       INSTALL(FILES ${gtkdll_files} DESTINATION ".")
@@ -1163,7 +1186,7 @@ IF(OCPN_USE_SVG)
            "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll")
       INSTALL(FILES ${expatdll_files} DESTINATION ".")
       MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
-   ELSE (WIN32)
+    ELSE (CMAKE_HOST_WIN32)
       # Find FFMPEG - we have it disabled in our wxSVG
       #set(FFmpeg_FIND_COMPONENTS
       #        AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
@@ -1186,7 +1209,7 @@ IF(OCPN_USE_SVG)
           ${EXIF_INCLUDE_DIRS}
 #         ${FFMPEG_INCLUDE_DIRS}
       )
-    ENDIF (WIN32)
+    ENDIF (CMAKE_HOST_WIN32)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
  
     ADD_DEFINITIONS(-DocpnUSE_SVG)   # Goes into config.h, leave as global
@@ -1224,7 +1247,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-    # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
     add_subdirectory(libs/glshim)
 
     SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
@@ -1259,7 +1282,7 @@ IF(QT_ANDROID)
   SET(OPENGLES_FOUND "YES")
   SET(OPENGL_FOUND "YES")
 
-  # SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+  # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
   add_subdirectory(libs/glshim)
 ENDIF(QT_ANDROID)
 
@@ -1281,7 +1304,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
-  # FIXME: Add interface lib, use in garmin...
   add_library(TINYXML INTERFACE)
   target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
   target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
@@ -1341,6 +1363,10 @@ IF (USE_S57)
   target_link_libraries(S57ENC PUBLIC gdal::gdal)
 
   target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(OCPN_USE_LZMA AND LIBLZMA_FOUND)
+    target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
+    target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
+  endif()
 
   set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
   target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
@@ -1394,6 +1420,10 @@ else ()
     target_link_libraries(${PACKAGE_NAME} PRIVATE LZ4)
 endif ()
 
+
+if (MINGW)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi)
+endif ()
 
 #TODO
 #dnl
@@ -1698,7 +1728,7 @@ IF(APPLE)
   )
   INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${PREFIX_BIN} )
 
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                         "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 ENDIF(APPLE)
@@ -1724,7 +1754,7 @@ If(NOT APPLE AND NOT QT_ANDROID)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
 ENDIF()
 
-IF(WIN32)
+IF(CMAKE_HOST_WIN32)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
           setupapi.lib
   #       glu32.lib
@@ -1737,30 +1767,23 @@ IF(WIN32)
       TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE gdiplus.lib)
   ENDIF()
 
-  IF(MINGW)
-    # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
-    ADD_DEFINITIONS( " -DUNICODE" )
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      ${OPENGL_LIBRARIES}
-      wsock32.lib
-    )
-  ENDIF(MINGW)
+ENDIF(CMAKE_HOST_WIN32)
 
-ENDIF(WIN32)
+IF(MINGW)
+  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
+    ${OPENGL_LIBRARIES}
+    wsock32.lib
+  )
+ENDIF(MINGW)
+
 
 IF(UNIX)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
         ${OPENGL_LIBRARIES}
         ${GETTEXT_LIBRARY}
-        ${BZIP2_LIBRARIES}
-        ${ZLIB_LIBRARY}
         SQLITE_CPP
-        sqlite3
   )
-
-  IF(X11_FOUND AND NOT APPLE)
-      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} )
-  ENDIF()
 
   IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
     MESSAGE(STATUS "Did not find x11 libraries, support for transparent toolbar in opengl mode cannot be detected")
@@ -1796,6 +1819,8 @@ ENDIF( UNIX AND NOT APPLE )
 #
 #  Install
 #
+INSTALL(FILES data/license.txt DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
+
 IF(NOT APPLE)
 
   IF(WIN32)
@@ -2040,14 +2065,14 @@ IF(WIN32 OR APPLE)
 
     IF(APPLE)
       INSTALL(FILES ${_current_wx_mofile} DESTINATION
-	${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
-	RENAME wxstd.mo
+      ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
+      RENAME wxstd.mo
     )
     ELSE(APPLE)
       INSTALL(FILES ${_current_wx_mofile} DESTINATION
-	${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
-       	RENAME wxstd.mo
-       	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+        ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
+        RENAME wxstd.mo
+        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
     ENDIF(APPLE)
 
@@ -2073,9 +2098,9 @@ IF(WIN32 AND NOT UNIX)
   OPTION (BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON)
   IF(BUNDLE_LIBARCHIVEDLLS)
     FILE(GLOB libarchivedll_files
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
-	 "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
+         "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
     )
     INSTALL(FILES ${libarchivedll_files} DESTINATION ".")
     MESSAGE(STATUS "LibArchive DLLs bundled into the installer package...")
@@ -2106,6 +2131,97 @@ MESSAGE (STATUS "")
 IF(NOT SKIP_PLUGINS)
   add_subdirectory (plugins)
 ENDIF ()
+
+#
+# Prepare CPACK configuration (MINGW)
+#
+if (MINGW)
+  set(CMD 
+    "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//' \
+    NSIS.template.in.in >build/NSIS.template.in"
+  )
+  file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
+  add_custom_target(NSIS_config  ALL
+    COMMAND /bin/sh ${CMAKE_BINARY_DIR}/fix-NSIS.sh
+    DEPENDS NSIS.template.in.in
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  add_dependencies(${PACKAGE_NAME} NSIS_config)
+else ()
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in
+    COPYONLY
+  )
+endif ()
+
+
+#
+# Build a CPack driven installer package
+#
+#include (InstallRequiredSystemLibraries)
+SET(CPACK_PACKAGE_NAME "OpenCPN")
+SET(CPACK_PACKAGE_VENDOR "opencpn.org")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
+SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
+SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
+SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
+SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
+
+SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
+SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
+
+IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
+    SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+    SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+ENDIF ()
+
+SET(CPACK_SOURCE_GENERATOR "TGZ")
+
+# The following components are regex's to match anywhere (unless anchored)
+# in absolute path + filename to find files or directories to be excluded
+# from source tarball.
+set(CPACK_SOURCE_IGNORE_FILES
+  "\\\\.git*"
+  "^${CMAKE_CURRENT_SOURCE_DIR}/build*"
+  "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
+)
+
+#
+#  Windows NSIS package setup.
+#
+IF(WIN32 AND NOT UNIX)
+  # There is a bug in NSI that does not handle full unix paths properly. Make
+  # sure there is at least one set of four (4) backlasshes.
+
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
+  SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
+
+  # These lines set the name of the Windows Start Menu shortcut and the
+  # icon that goes with it
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
+  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
+
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup" )
+
+  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt")
+
+  IF(MINGW)
+    SET(CPACK_STRIP_FILES "bin/opencpn")
+  ENDIF(MINGW)
+
+ELSE(WIN32 AND NOT UNIX)
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
+  SET(CPACK_STRIP_FILES "bin/opencpn")
+  SET(CPACK_SOURCE_STRIP_FILES "")
+  SET(CPACK_PACKAGE_FILE_NAME
+      "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
+  SET(CPACK_RESOURCE_FILE_LICENSE 
+      "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html")
+ENDIF(WIN32 AND NOT UNIX)
+
 
 #
 #  RPM package setup
@@ -2198,82 +2314,10 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
-
-#
-# build a CPack driven installer package
-#
-
-#include (InstallRequiredSystemLibraries)
-SET(CPACK_PACKAGE_NAME "OpenCPN")
-SET(CPACK_PACKAGE_VENDOR "opencpn.org")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
-SET(CPACK_PACKAGE_VERSION ${PACKAGE_VERSION})
-SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH}${VERSION_TAIL})
-SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};ALL;/")
-SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
-
-#
-#  Windows package setup.
-#
-IF(WIN32 AND NOT UNIX)
-  # There is a bug in NSI that does not handle full unix paths properly. Make
-  # sure there is at least one set of four (4) backlasshes.
-
-  SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
-  SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
-
-#  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
-  SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
-
-SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}_setup" )
-
-  SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
-  SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
-
-  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt")
-
-  IF(MINGW)
-    SET(CPACK_STRIP_FILES "bin/opencpn")
-  ENDIF(MINGW)
-
-ELSE(WIN32 AND NOT UNIX)
-  SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
-  SET(CPACK_STRIP_FILES "bin/opencpn")
-  SET(CPACK_SOURCE_STRIP_FILES "")
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
-  SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html")
-
-ENDIF(WIN32 AND NOT UNIX)
-
-IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
-    SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-    SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
-ENDIF ()
-
-SET(CPACK_SOURCE_GENERATOR "TGZ")
-
-# The following components are regex's to match anywhere (unless anchored)
-# in absolute path + filename to find files or directories to be excluded
-# from source tarball.
-set(CPACK_SOURCE_IGNORE_FILES
-"\\\\.cvsignore$"
-"^${CMAKE_CURRENT_SOURCE_DIR}.*/CVS/"
-"^${CMAKE_CURRENT_SOURCE_DIR}/build*"
-"^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
-)
-
 #
 #  Debian package setup
 #
 IF(UNIX AND NOT APPLE)
-  #    INCLUDE(UseRPMTools)
-  #    IF(RPMTools_FOUND)
-  #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
-  #    ENDIF(RPMTools_FOUND)
-
   SET(CPACK_STRIP_FILES ON)
   SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
   SET(CPACK_PACKAGE_CONTACT "David S. Register ")
@@ -2302,59 +2346,83 @@ IF(UNIX AND NOT APPLE)
   SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 ENDIF(UNIX AND NOT APPLE)
 
-# this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
-# apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
-ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-SET_DIRECTORY_PROPERTIES(dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h)
-
-INCLUDE(CPack)
 
 #
 # Apple application bundle
 #
 IF(APPLE)
-# -- Run the BundleUtilities cmake code
+  # -- Run the BundleUtilities cmake code
   SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
 
 #INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-
-  SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib")
-  SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib")
-
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
+    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+  )
+  SET(LIBS
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib"
+  )
   INSTALL(CODE "
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
     " COMPONENT Runtime
   )
-
   ADD_CUSTOM_COMMAND(
-OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
-COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
+    COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg                      
+      --volname "OpenCPN Installer"                                      
+      --background ${CMAKE_SOURCE_DIR}/buildosx/background.png           
+      --window-pos 200 120 --window-size 500 300                         
+      --icon-size 80 --icon OpenCPN.app 120 150                          
+      --hide-extension OpenCPN.app --app-drop-link 390 145               
+      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg 
+      ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
   )
-
-  ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS
-${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}.dmg
+  ADD_CUSTOM_TARGET(create-dmg
+    COMMENT "create-dmg: Done."
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
   )
 ENDIF(APPLE)
 
+INCLUDE(CPack)
+
+# Dummy target necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES
+# directive is executed. Apparently, the base CMakeLists.txt file must have
+# "some" target to activate all the clean steps.
+ADD_CUSTOM_TARGET(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
+
+SET_DIRECTORY_PROPERTIES(dummy
+  ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h
+)
 
 IF(MSVC)
-  ADD_CUSTOM_COMMAND(TARGET ${PACKAGE_NAME}
+  ADD_CUSTOM_COMMAND(
+    TARGET ${PACKAGE_NAME}
     POST_BUILD
-    COMMAND cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb" "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb")
+    COMMAND cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb"
+         "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+  )
 ENDIF(MSVC)
 
 MESSAGE(STATUS "Writing spec file...")

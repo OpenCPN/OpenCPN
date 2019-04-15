@@ -9,7 +9,7 @@ platform:
 # - x64
 - Win32
 
-configuration: Release
+configuration: RelWithDebInfo
 test: OFF
 
 install:
@@ -52,18 +52,18 @@ before_build:
 
 build_script:
   # - cmake --build . --config debug
-  - cmake --build . --target opencpn --config release
-  - cmake --build . --target package --config release
+  - cmake --build . --target opencpn --config RelWithDebInfo
+  - cmake --build . --target package --config RelWithDebInfo
   # --target package doesn't work because of nsis not correctly installed
 
 artifacts:
   - path: 'build\*.exe'
     name: installer
 
-  - path: 'build\Release\opencpn.lib'
+  - path: 'build\RelWithDebInfo\opencpn.lib'
     name: lib
 
-  - path: 'build\Release\opencpn-*.pdb'
+  - path: 'build\RelWithDebInfo\opencpn-*.pdb'
     name: pdb
 
 deploy:
@@ -75,4 +75,4 @@ deploy:
   prerelease: true
   on:
     appveyor_repo_tag: true # deploy on tag push only
-    configuration: Release  # Debug contains non-redist MS DLLs
+    configuration: RelWithDebInfo  # Debug contains non-redist MS DLLs

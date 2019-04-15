@@ -220,8 +220,8 @@ struct ChartTableEntry
     float GetLatMax() const { return LatMax; }
     float GetLatMin() const { return LatMin; }
     int GetScale() const { return Scale; }
-    int GetChartType() const;
-    int GetChartFamily() const;
+    int GetChartType() const { return ChartType; }
+    int GetChartFamily() const { return ChartFamily; }
     int GetChartProjectionType() const { return ProjectionType; }
     float GetChartSkew() const { return Skew; }
 

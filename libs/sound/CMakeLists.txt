@@ -21,22 +21,21 @@ set(SRC
     include/SystemCmdSound.h
 )
 
-include(FindPortaudio)
-include(FindLibSndfile)
-
 #if (NOT wxWidgets_INCLUDE_DIRS)
 #    include(SimpleWxConfig)
 #    SimpleWxConfig()
 #endif ()
 
+IF (WIN32)
+    list(APPEND SRC src/MswSound.cpp include/MswSound.h)
+ENDIF ()
+
 if (PORTAUDIO_FOUND)
-    set(SRC ${SRC} include/PortAudioSound.h)
-    set(SRC ${SRC} src/PortAudioSound.cpp)
+    list(APPEND SRC include/PortAudioSound.h src/PortAudioSound.cpp)
 endif ()
 
 if (LIBSNDFILE_FOUND)
-    set(SRC ${SRC} include/SndfileSoundLoader.h)
-    set(SRC ${SRC} src/SndfileSoundLoader.cpp)
+    list(APPEND SRC include/SndfileSoundLoader.h src/SndfileSoundLoader.cpp)
 endif ()
 
 add_library(SOUND STATIC ${SRC})
@@ -47,6 +46,8 @@ target_include_directories(SOUND
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../build/include
+        ${CMAKE_BINARY_DIR}/include
         ${wxWidgets_INCLUDE_DIRS}
 )
+
+target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")

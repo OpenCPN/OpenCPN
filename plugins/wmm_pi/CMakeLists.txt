@@ -30,7 +30,7 @@ IF( NOT CMAKE_BUILD_TYPE )
        FORCE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -55,7 +55,6 @@ SET(SRC_WMM
     src/TexFont.h
 	)
 
-IF(WIN32)
 SET(SRC_JSON
     src/json_defs.h
     src/jsonreader.h
@@ -65,7 +64,6 @@ SET(SRC_JSON
     src/jsonval.cpp
     src/jsonwriter.cpp
     )
-ENDIF(WIN32)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
@@ -100,6 +98,9 @@ IF( APPLE )
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
 ENDIF(APPLE)
+
+target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
 INCLUDE("cmake/PluginPackage.cmake")

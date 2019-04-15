@@ -42,6 +42,13 @@
 // The cURL library header:
 #include <curl/curl.h>
 
+#ifdef __MINGW32__
+// Cope with macro name clash (winspool.h):
+#ifdef SetPort
+#undef SetPort
+#endif
+#define SetPort(x) SetCurlPort(x)
+#endif  //__MINGW32__
 
 
 // base.h: wxWidgets Declarations for Event Types.

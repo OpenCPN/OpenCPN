@@ -30,7 +30,7 @@ IF( NOT CMAKE_BUILD_TYPE )
        FORCE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -107,7 +107,8 @@ IF(APPLE)
   LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
   LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
 ENDIF()
-IF(WIN32)
+
+IF(CMAKE_HOST_WIN32)
   LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
   LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
 ENDIF()
@@ -121,7 +122,7 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 FIND_PACKAGE(LibArchive)
 IF(LibArchive_FOUND)
-  message(STATUS "Chartdldr_pi going to use LibArchive...")
+  message(STATUS "chartdldr_pi: going to use LibArchive...")
   INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
   #Unset the unrar sources as we will not need them
   ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)
@@ -130,22 +131,22 @@ ENDIF(LibArchive_FOUND)
 INCLUDE_DIRECTORIES(src/unarr/)
 PKG_SEARCH_MODULE(UNARR libunarr unarr)
 IF (UNARR_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
-  message (STATUS "Building with system unarr")
+  message (STATUS "chartdldr_pi: Building with system unarr")
   INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
   SET(SRC_UNARR  "")
 ELSE ()
-  message (STATUS "Building with bundled unarr")
+  message (STATUS "chartdldr_pi: Building with bundled unarr")
   ADD_LIBRARY(UNARR ${SRC_UNARR})
   INCLUDE_DIRECTORIES(src/unarr)
 ENDIF ()
 
 IF(TINYXML_FOUND)
-  message (STATUS "Chartdldr_pi building with system tinyxml")
+  message (STATUS "chartdldr_pi: building with system tinyxml")
   INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
   ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${TINYXML_LIBRARIES})
 ELSE(TINYXML_FOUND)
-  message (STATUS "Chartdldr_pi building with bundled tinyxml")
+  message (STATUS "chartdldr_pi: building with bundled tinyxml")
   INCLUDE_DIRECTORIES(src/tinyxml/)
   SET(SRC_LTINYXML
              src/tinyxml/tinyxml.cpp
@@ -185,10 +186,12 @@ ELSE(LibArchive_FOUND)
   ENDIF(BZIP2_FOUND)
 ENDIF(LibArchive_FOUND)
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
-target_link_libraries( ${PACKAGE_NAME} PRIVATE wxsvg::wxsvg )
-
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+    ${wxWidgets_LIBRARIES}
+    wxjson::wxjson 
+    wxsvg::wxsvg 
+    ocpn::opencpn 
+)
 
 
 IF (QT_ANDROID )

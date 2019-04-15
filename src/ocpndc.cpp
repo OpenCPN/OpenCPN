@@ -1034,9 +1034,9 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
         wxCoord h = 0;
 
         if(m_buseTex){
-        
-            m_texfont.Build( m_font );      // make sure the font is ready
-            m_texfont.GetTextExtent(text, &w, &h);
+            TexFont *texfont = GetTexFont( &m_font );
+
+            texfont->GetTextExtent(text, &w, &h);
             
             if( w && h ) {
                 
@@ -1052,7 +1052,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                             m_textforegroundcolour.Blue() );
                 
 
-                m_texfont.RenderString(text);
+                texfont->RenderString(text);
                 glPopMatrix();
 
                 glDisable( GL_TEXTURE_2D );
@@ -1175,8 +1175,9 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
 
         if(m_buseTex){
   #ifdef ocpnUSE_GL       
-        m_texfont.Build( f );      // make sure the font is ready
-        m_texfont.GetTextExtent(string, w, h);
+        TexFont *texfont = GetTexFont(&f);
+
+        texfont->GetTextExtent(string, w, h);
   #else        
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );

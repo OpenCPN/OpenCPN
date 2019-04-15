@@ -1681,7 +1681,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       
       ChartDataInputStream *stream = new ChartDataInputStream(name); // Open again, as the bitmap
       wxString tempfile;
-#ifdef USE_LZMA      
+#ifdef OCPN_USE_LZMA      
       tempfile = stream->TempFileName();
 #endif
       m_filesize = wxFileName::GetSize( tempfile.empty() ? name : tempfile );

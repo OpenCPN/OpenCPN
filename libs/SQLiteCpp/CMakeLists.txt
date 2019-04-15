@@ -9,7 +9,6 @@ set(SRC
     src/Statement.cpp
     src/Transaction.cpp
 )
-# list of header files of the library
 set(INCL
     include/SQLiteCpp/SQLiteCpp.h
     include/SQLiteCpp/Assertion.h
@@ -23,7 +22,9 @@ set(INCL
     include/SQLiteCpp/VariadicBind.h
 )
 add_library(SQLITE_CPP STATIC ${SRC} ${INCL})
-add_library(sqlite_cpp::sqlite_cpp ALIAS SQLITE_CPP)
+add_library(ocpn::sqlite_cpp ALIAS SQLITE_CPP)
+
+target_link_libraries(SQLITE_CPP PRIVATE ocpn::sqlite)
 
 target_include_directories(SQLITE_CPP 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3

@@ -49,7 +49,7 @@
 extern PlugInManager    *g_pi_manager;
 extern wxString         gWorldMapLocation;
 
-int s_dbVersion;                                //    Database version currently in use at runtime
+static int s_dbVersion;                         //    Database version currently in use at runtime
                                                 //  Needed for ChartTableEntry::GetChartType() only
                                                 //  TODO This can go away at opencpn Version 1.3.8 and above....
 ///////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ bool FindMatchingFile(const wxString &theDir, const wxChar *theRegEx, int nameLe
 }
 
 
-ChartFamilyEnum GetChartFamily(int charttype)
+static ChartFamilyEnum GetChartFamily(int charttype)
 {
       ChartFamilyEnum cf;
 
@@ -409,13 +409,13 @@ bool ChartTableEntry::IsEqualTo(const ChartTableEntry &cte) const {
 
 ///////////////////////////////////////////////////////////////////////
 
-int ChartTableEntry::GetChartType() const
+static int convertChartType(int charttype)
 {
       //    Hackeroo here....
       //    dB version 14 had different ChartType Enum, patch it here
       if(s_dbVersion == 14)
       {
-            switch(ChartType)
+            switch(charttype)
             {
                   case 0: return CHART_TYPE_KAP;
                   case 1: return CHART_TYPE_GEO;
@@ -428,15 +428,14 @@ int ChartTableEntry::GetChartType() const
                   default: return CHART_TYPE_UNKNOWN;
             }
       }
-      else
-       return ChartType;
+      return charttype;
 }
 
-int ChartTableEntry::GetChartFamily() const
+static int convertChartFamily(int charttype, int chartfamily)
 {
     if(s_dbVersion < 18)
     {
-        switch(ChartType)
+        switch(charttype)
         {
             case CHART_TYPE_KAP:
             case CHART_TYPE_GEO:
@@ -451,11 +450,8 @@ int ChartTableEntry::GetChartFamily() const
                   return CHART_FAMILY_UNKNOWN;
       }
     }
-    else
-        return ChartFamily;
+    return chartfamily;
 }
-
-
 
 
 bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
@@ -785,6 +781,8 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
                 }
           }
     }
+    ChartFamily = convertChartFamily(ChartType, ChartFamily);
+    ChartType = convertChartType(ChartType);
 
     return true;
 }

@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-#ifdef USE_LZMA
+#ifdef OCPN_USE_LZMA
 #include <lzma.h>
 
 // this implements a non-seekable input stream of xz compressed file
@@ -108,6 +108,6 @@ private:
 typedef wxFFileInputStream ChartDataInputStream;
 typedef wxFFileInputStream ChartDataNonSeekableInputStream;
 
-#endif // USE_LZMA
+#endif // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path);

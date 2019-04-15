@@ -117,7 +117,7 @@ target_link_libraries(WXSVG_CAIRO INTERFACE
     ${PANGO_LIBRARIES}
     ${GLIB2_LIBRARIES}
 )
-add_library(ocpn::cairo ALIAS WXSVG_CAIRO)    
+add_library(wxsvg::cairo ALIAS WXSVG_CAIRO)
 
 target_include_directories(WXSVG
     PUBLIC
@@ -133,7 +133,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
         "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual"
     )
 endif()
-target_link_libraries(WXSVG PRIVATE ocpn::expat ocpn::cairo)
+target_link_libraries(WXSVG PRIVATE ocpn::expat wxsvg::cairo)
 if (TARGET ocpn::gtk)
   target_link_libraries(WXSVG PRIVATE ocpn::gtk)
 endif ()

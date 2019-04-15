@@ -77,17 +77,6 @@ void PLIBDrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, boo
 
 void LoadS57Config();
 
-#ifdef ocpnUSE_GL
-typedef struct {
-    TexFont cache;
-    wxFont  *key;
-} TexFontCache;
-
-#define TXF_CACHE 8
-static TexFontCache s_txf[TXF_CACHE];
-#endif
-
-
 //    Implement all lists
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( TextObjList );
@@ -1298,18 +1287,6 @@ void s52plib::FlushSymbolCaches( void )
     }
     m_CARC_DL_hashmap.clear();
     
-    // Flush all texFonts
-    TexFont *f_cache = 0;
-    unsigned int i;
-    for (i = 0; i < TXF_CACHE; i++)
-    {
-        if (s_txf[i].key != 0) {
-            f_cache = &s_txf[i].cache;
-            f_cache->Delete();
-            s_txf[i].key = 0;
-        }
-    }
-    
 #endif
 }
 
@@ -2066,28 +2043,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         }
         
         else {                                          // render using cached texture glyphs
-            // rebuild font if needed
-            TexFont *f_cache = 0;
-            unsigned int i;
-            for (i = 0; i < TXF_CACHE; i++)
-            {
-                if (s_txf[i].key == ptext->pFont) {
-                    f_cache = &s_txf[i].cache;
-                    break;
-                }
-                if (s_txf[i].key == 0) {
-                    break;
-                }
-            }
-            if (i == TXF_CACHE) {
-                i = rand() & (TXF_CACHE -1);
-            }
-            if (f_cache == 0) {
-                s_txf[i].key = ptext->pFont;
-                f_cache = &s_txf[i].cache;
-                f_cache->Build(*ptext->pFont);
-            }
-            
+            TexFont *f_cache = GetTexFont(ptext->pFont);
             int w, h;
             f_cache->GetTextExtent(ptext->frmtd, &w, &h);
             

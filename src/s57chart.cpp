@@ -227,9 +227,6 @@ s57chart::s57chart()
     m_Chart_Scale = 1;                              // Will be fetched during Init()
     m_Chart_Skew = 0.0;
 
-    pDIB = NULL;
-    m_pCloneBM = NULL;
-
 // Create ATON arrays, needed by S52PLIB
     pFloatingATONArray = new wxArrayPtrVoid;
     pRigidATONArray = new wxArrayPtrVoid;
@@ -240,8 +237,6 @@ s57chart::s57chart()
     m_depth_unit_id = DEPTH_UNIT_METERS;
 
     bGLUWarningSent = false;
-
-    m_pENCDS = NULL;
 
     m_nvaldco = 0;
     m_nvaldco_alloc = 0;
@@ -282,15 +277,10 @@ s57chart::~s57chart()
 
     FreeObjectsAndRules();
 
-    delete pDIB;
-
-    delete m_pCloneBM;
 //    delete pFullPath;
 
     delete pFloatingATONArray;
     delete pRigidATONArray;
-
-    delete m_pENCDS;
 
     free( m_pvaldco_array );
 
@@ -403,8 +393,7 @@ void s57chart::SetColorScheme( ColorScheme cs, bool bApplyImmediate )
     m_global_color_scheme = cs;
 
     if( bApplyImmediate ) {
-        delete pDIB;        // Toss any current cache
-        pDIB = NULL;
+        pDIB.reset();        // Toss any current cache
     }
 
     //      Clear out any cached bitmaps in the text cache
@@ -1850,12 +1839,11 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         if( m_pCloneBM ) {
             if( ( m_pCloneBM->GetWidth() != VPoint.pix_width )
                     || ( m_pCloneBM->GetHeight() != VPoint.pix_height ) ) {
-                delete m_pCloneBM;
-                m_pCloneBM = NULL;
+                m_pCloneBM.reset();
             }
         }
-        if( NULL == m_pCloneBM ) m_pCloneBM = new wxBitmap( VPoint.pix_width, VPoint.pix_height,
-                -1 );
+        if( nullptr == m_pCloneBM )
+            m_pCloneBM.reset(new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 ));
 
         wxMemoryDC dc_clone;
         dc_clone.SelectObject( *m_pCloneBM );
@@ -1887,8 +1875,8 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 #ifdef ocpnUSE_ocpnBitmap
             nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
 #endif
-            m_pMask = new wxMask( *m_pCloneBM, nodat_sub );
-            m_pCloneBM->SetMask( m_pMask );
+            // Mask is owned by the bitmap.
+            m_pCloneBM->SetMask( new wxMask( *m_pCloneBM, nodat_sub ) );
         }
 
         dc.SelectObject( *m_pCloneBM );
@@ -1961,8 +1949,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     if( bReallyNew ) {
         bNewVP = true;
-        delete pDIB;
-        pDIB = NULL;
+        pDIB.reset();
         bnewview = true;
     }
 
@@ -2023,7 +2010,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     OCPNRegion rgn_new( rul.x, rul.y, rlr.x - rul.x, rlr.y - rul.y );
     rgn_last.Intersect( rgn_new );            // intersection is reusable portion
 
-    if( bNewVP && ( NULL != pDIB ) && !rgn_last.IsEmpty() ) {
+    if( bNewVP && (nullptr != pDIB) && !rgn_last.IsEmpty() ) {
         int xu, yu, wu, hu;
         rgn_last.GetBox( xu, yu, wu, hu );
 
@@ -2058,8 +2045,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
         dc_new.SelectObject( wxNullBitmap );
         dc_last.SelectObject( wxNullBitmap );
 
-        delete pDIB;
-        pDIB = pDIBNew;
+        pDIB.reset(pDIBNew);
 
 //              OK, now have the re-useable section in place
 //              Next, build the new sections
@@ -2117,9 +2103,8 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     }
 
-    else if( bNewVP || ( NULL == pDIB ) ) {
-        delete pDIB;
-        pDIB = new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP );     // destination
+    else if( bNewVP || (nullptr == pDIB )) {
+        pDIB.reset(new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP ));     // destination
 
         wxRect full_rect( 0, 0, VPoint.pix_width, VPoint.pix_height );
         pDIB->SelectIntoDC( dc );
@@ -2843,14 +2828,11 @@ void s57chart::SetSafetyContour(void)
 
 void s57chart::InvalidateCache()
 {
-    delete pDIB;
-    pDIB = NULL;
+    pDIB.reset();
 }
 
 bool s57chart::BuildThumbnail( const wxString &bmpname )
 {
-    bool ret_code;
-
     wxFileName ThumbFileName( bmpname );
 
     //      Make the target directory if needed
@@ -2887,8 +2869,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     vp.Validate();
 
     // cause a clean new render
-    delete pDIB;
-    pDIB = NULL;
+    pDIB.reset();
 
     SetVPParms( vp );
 
@@ -2981,12 +2962,10 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     free( psave_viz );
 
 //      Clone pDIB into pThumbData;
-    wxBitmap *pBMP;
-
-    pBMP = new wxBitmap( vp.pix_width, vp.pix_height/*,  BPP*/);
+    wxBitmap bmp( vp.pix_width, vp.pix_height/*,  BPP*/);
 
     wxMemoryDC dc_clone;
-    dc_clone.SelectObject( *pBMP );
+    dc_clone.SelectObject( bmp );
 
     pDIB->SelectIntoDC( dc_org );
 
@@ -2996,11 +2975,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     dc_org.SelectObject( wxNullBitmap );
 
     //   Save the file
-    ret_code = pBMP->SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
-
-    delete pBMP;
-
-    return ret_code;
+    return bmp.SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
 }
 
 #include <wx/arrimpl.cpp>
@@ -5531,10 +5506,16 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 wxString color = thisLight->attributeValues.Item( attrIndex );
                 if( color == _T("red (3)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green (4)") )
+                else if( color == _T("green (4)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white (1)") )
+                else if( color == _T("white (1)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("yellow (6)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("blue (5)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else
+                    colorStr = _T("<table border=0><tr><td bgcolor=grey>&nbsp;?&nbsp;</td></tr></table> ");
             }
 
             int visIndex = thisLight->attributeNames.Index( _T("LITVIS") );
@@ -5654,7 +5635,7 @@ bool s57chart::InitENCMinimal( const wxString &FullPath )
         return false;
     }
 
-    m_pENCDS = new OGRS57DataSource;
+    m_pENCDS.reset( new OGRS57DataSource );
 
     m_pENCDS->SetS57Registrar( g_poRegistrar );             ///172
 
@@ -5687,7 +5668,7 @@ OGRFeature *s57chart::GetChartFirstM_COVR( int &catcov )
         pENCReader->AddFeatureDefn( poDefn );
 
 //    Also, add as a Layer to Datasource to ensure proper deletion
-        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS, poDefn, 1 ) );
+        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS.get(), poDefn, 1 ) );
 
 //      find this feature
         OGRFeature *pobjectDef = pENCReader->ReadNextFeature( poDefn );
@@ -5730,7 +5711,7 @@ OGRFeature *s57chart::GetChartNextM_COVR( int &catcov )
 
 int s57chart::GetENCScale( void )
 {
-    if( NULL == m_pENCDS ) return 0;
+    if( nullptr == m_pENCDS ) return 0;
 
     //    Assume that chart has been initialized for minimal ENC access
     //    which implies that the ENC has been fully ingested, and some
