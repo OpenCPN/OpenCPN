@@ -163,7 +163,7 @@
 #include "DarkMode.h"
 #endif
 
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
 #endif
 
@@ -10572,7 +10572,7 @@ DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0
 wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
     std::vector<serial::PortInfo> ports = serial::list_ports();
     for(std::vector<serial::PortInfo>::iterator it = ports.begin(); it != ports.end(); ++it) {
         wxString port((*it).port);
@@ -11011,7 +11011,7 @@ wxArrayString *EnumerateSerialPorts( void )
 #endif
 
 #endif      //__WXMSW__
-#endif //ocpnUSE_NEWSERIAL
+#endif //OCPN_USE_NEWSERIAL
     return preturn;
 }
 
