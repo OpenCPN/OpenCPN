@@ -1338,7 +1338,6 @@ endif (TINYXML_FOUND)
 set(TIXML_USE_STL 1) # -> config.h
 
 message(STATUS "S57 ENC support: enabled")
-set(USE_S57 1) # -> config.h
 set(
   SRC_S57ENC
   include/cm93.h

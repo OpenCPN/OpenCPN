@@ -134,13 +134,11 @@
 #include "macutils.h"
 #endif
 
-#ifdef USE_S57
 #include "cm93.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "gdal/cpl_csv.h"
 #include "s52utils.h"
-#endif
 
 #ifdef __WXMSW__
 //#define __MSVC__LEAK
@@ -397,20 +395,18 @@ float                     g_ShipScaleFactorExp;
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;
 
-#ifdef USE_S57
 s52plib                   *ps52plib;
 S57ClassRegistrar         *g_poRegistrar;
 s57RegistrarMgr           *m_pRegistrarMan;
 
 CM93OffsetDialog          *g_pCM93OffsetDialog;
-#endif
 
 #ifdef __WXOSX__
 #include "macutils.h"
 #endif
 
 // begin rms
-#if defined( USE_S57) || defined ( __WXOSX__ )
+#ifdef __WXOSX__
 #ifdef __WXMSW__
 #ifdef USE_GLU_TESS
 #ifdef USE_GLU_DLL
@@ -1154,9 +1150,6 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 
 void LoadS57()
 {
-#ifndef USE_S57
-    return;
-#else
     if(ps52plib) // already loaded?
         return;
 
@@ -1305,7 +1298,6 @@ void LoadS57()
         delete ps52plib;
         ps52plib = NULL;
     }
-#endif
 }
 
 #if defined(__WXGTK__) && defined(OCPN_HAVE_X11)
@@ -2586,9 +2578,7 @@ int MyApp::OnExit()
     delete pSelectTC;
     delete pSelectAIS;
 
-#ifdef USE_S57
     delete ps52plib;
-#endif
 
     if(g_pGroupArray){
         for(unsigned int igroup = 0; igroup < g_pGroupArray->GetCount(); igroup++){
@@ -2618,20 +2608,16 @@ int MyApp::OnExit()
 
     delete pLayerList;
 
-#ifdef USE_S57
     delete m_pRegistrarMan;
     CSVDeaccess( NULL );
-#endif
 
     delete g_StyleManager;
 
-#ifdef USE_S57
 #ifdef __WXMSW__
 #ifdef USE_GLU_TESS
 #ifdef USE_GLU_DLL
     if(s_glu_dll_ready)
     FreeLibrary(s_hGLU_DLL);           // free the glu32.dll
-#endif
 #endif
 #endif
 #endif
@@ -3055,9 +3041,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 
-#ifdef USE_S57
     if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
-#endif
 
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
@@ -3807,12 +3791,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
 
-#ifdef USE_S57
     if( g_pCM93OffsetDialog ) {
         g_pCM93OffsetDialog->Destroy();
         g_pCM93OffsetDialog = NULL;
     }
-#endif
 
     // .. for each canvas...
     // ..For each canvas...
@@ -4518,7 +4500,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
-#ifdef USE_S57
         case ID_MENU_ENC_TEXT:
         case ID_ENC_TEXT: {
             ToggleENCText(GetFocusCanvas());
@@ -4540,8 +4521,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             ToggleDataQuality( GetFocusCanvas() );
             break;
         }
-#endif
-
         case ID_MENU_SHOW_NAVOBJECTS : {
             ToggleNavobjects( GetFocusCanvas() );
             break;
@@ -5306,7 +5285,6 @@ void MyFrame::ToggleENCText( ChartCanvas *cc )
 
 void MyFrame::SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset )
 {
-#ifdef USE_S57
     if( ps52plib ) {
          
        if(cc){
@@ -5320,8 +5298,6 @@ void MyFrame::SetENCDisplayCategory( ChartCanvas *cc, enum _DisCat nset )
        ReloadAllVP();
        }
     }
-    
-#endif
 }
 
 void MyFrame::ToggleSoundings( ChartCanvas *cc )
@@ -5353,7 +5329,6 @@ bool MyFrame::ToggleLights( ChartCanvas *cc )
 #if 0
 void MyFrame::ToggleRocks( void )
 {
-#ifdef USE_S57
     if( ps52plib ) {
         int vis =  0;
         // Need to loop once for UWTROC, which is our "master", then for
@@ -5377,7 +5352,6 @@ void MyFrame::ToggleRocks( void )
         ps52plib->GenerateStateHash();
         ReloadAllVP();
     }
-#endif
 }
 #endif
 
@@ -5643,7 +5617,6 @@ void MyFrame::RegisterGlobalMenuItems()
 #endif
     view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), _T("Ctrl-B")) );
 
-#ifdef USE_S57
     view_menu->AppendSeparator();
 #ifndef __WXOSX__
     view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("T")) );
@@ -5659,7 +5632,6 @@ void MyFrame::RegisterGlobalMenuItems()
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_DATA_QUALITY, _menuText(_("Show ENC Data Quality"), _T("Alt-U")) );
     view_menu->AppendCheckItem( ID_MENU_SHOW_NAVOBJECTS, _menuText(_("Show Navobjects"), _T("Alt-V")) );
-#endif
 #endif
     view_menu->AppendSeparator();
     view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
@@ -5747,7 +5719,6 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
     m_pMenuBar->FindItem( ID_MENU_SHOW_NAVOBJECTS )->Check( GetPrimaryCanvas()->m_bShowNavobjects );
 
-#ifdef USE_S57
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
         m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
@@ -5779,7 +5750,6 @@ void MyFrame::UpdateGlobalMenuItems()
         }            
             
     }
-#endif
 }
 
 void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
@@ -5804,7 +5774,6 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
     m_pMenuBar->FindItem( ID_MENU_SHOW_TIDES )->Check( cc->GetbShowTide() );
     m_pMenuBar->FindItem( ID_MENU_SHOW_CURRENTS )->Check( cc->GetbShowCurrent() );
     
-#ifdef USE_S57
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( cc->GetShowENCText() );
         m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( cc->GetShowENCDepth() );
@@ -5836,7 +5805,6 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
         }            
             
     }
-#endif
 }
 
 void MyFrame::InvalidateAllCanvasUndo()
@@ -6681,11 +6649,9 @@ void MyFrame::ToggleQuiltMode( ChartCanvas *cc )
         }
         g_bQuiltEnable = cc->GetQuiltMode();
         
-#ifdef USE_S57
         // Recycle the S52 PLIB so that vector charts will flush caches and re-render
         if(ps52plib)
             ps52plib->GenerateStateHash();
-#endif
 #endif        
     }
 }
@@ -9613,7 +9579,6 @@ void MyFrame::applySettingsString( wxString settings)
             *pInit_Chart_Dir = val;
         }
 
-#ifdef USE_S57
         if(ps52plib){
             float conv = 1;
             int depthUnit = ps52plib->m_nDepthUnitDisplay;
@@ -9745,7 +9710,6 @@ void MyFrame::applySettingsString( wxString settings)
                 }
             }
         }
-#endif        
     }
 
     // Process Connections
@@ -9822,7 +9786,6 @@ void MyFrame::applySettingsString( wxString settings)
     if(last_ChartScaleFactorExp != g_ChartScaleFactor)
         rr |= S52_CHANGED;
     
-#ifdef USE_S57
     if(rr & S52_CHANGED){
         if(ps52plib){
             ps52plib->FlushSymbolCaches();
@@ -9830,7 +9793,6 @@ void MyFrame::applySettingsString( wxString settings)
             ps52plib->GenerateStateHash();
         }
     }
-#endif
 
     ProcessOptionsDialog( rr,  &NewDirArray );
 
@@ -10295,7 +10257,6 @@ bool MyFrame::AddDefaultPositionPlugInTools()
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler
 //----------------------------------------------------------------------------------------------------------
-#ifdef USE_S57
 void MyCPLErrorHandler( CPLErr eErrClass, int nError, const char * pszErrorMsg )
 
 {
@@ -10312,7 +10273,6 @@ void MyCPLErrorHandler( CPLErr eErrClass, int nError, const char * pszErrorMsg )
     wxString str( msg, wxConvUTF8 );
     wxLogMessage( str );
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------
 //      Printing Framework Support
@@ -11157,11 +11117,9 @@ wxColour GetGlobalColor(wxString colorName)
 {
     wxColour ret_color;
 
-#ifdef USE_S57
     //    Use the S52 Presentation library if present
     if( ps52plib )
         ret_color = ps52plib->getwxColour( colorName );
-#endif
     if( !ret_color.Ok() && pcurrent_user_color_hash )
         ret_color = ( *pcurrent_user_color_hash )[colorName];
 

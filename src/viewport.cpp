@@ -81,11 +81,9 @@
 #include "glChartCanvas.h"
 #endif
 
-#ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj
 #include "s52plib.h"
-#endif
 
 #include "ais.h"
 

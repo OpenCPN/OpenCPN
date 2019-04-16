@@ -97,11 +97,9 @@ private:
 #define GL_ETC1_RGB8_OES                                        0x8D64
 #endif
 
-#ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj
 #include "s52plib.h"
-#endif
 
 #include "lz4.h"
 
@@ -113,11 +111,9 @@ extern "C" void glOrthof(float left,  float right,  float bottom,  float top,  f
 
 #endif
 
-#ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj
 #include "s52plib.h"
-#endif
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -787,9 +783,7 @@ void glChartCanvas::SetupOpenGL()
     msg += m_renderer;
     wxLogMessage( msg );
 
-    #ifdef USE_S57
     if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
-    #endif
     
     char version_string[80];
     strncpy( version_string, (char *) glGetString( GL_VERSION ), 79 );
@@ -1189,10 +1183,8 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     if( !m_bsetup ) {
         SetupOpenGL();
         
-        #ifdef USE_S57
         if( ps52plib )
             ps52plib->FlushSymbolCaches();
-        #endif
         
         m_bsetup = true;
 //        g_bDebugOGL = true;
@@ -2273,9 +2265,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
     m_pParentCanvas->RenderRouteLegs( dc );
     m_pParentCanvas->ScaleBarDraw( dc );
-#ifdef USE_S57
     s57_DrawExtendedLightSectors( dc, m_pParentCanvas->VPoint, m_pParentCanvas->extendedSectorLegs );
-#endif
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
@@ -2859,7 +2849,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 LLRegion get_region = pqp->ActiveRegion;
 
                 get_region.Intersect( region );
-#ifdef USE_S57
                 if( !get_region.Empty()  ) {
                     s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
                     if( Chs57 )
@@ -2872,7 +2861,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                     }
 
                 }
-#endif                
             }
 
             pch = m_pParentCanvas->m_pQuilt->GetNextChart();
@@ -3044,13 +3032,11 @@ void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_
                     LLRegion get_region = pqp->ActiveRegion;
                     
                     get_region.Intersect( region );
-                    #ifdef USE_S57
                     if( !get_region.Empty()  ) {
                         s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
                         if( Chs57 )
                             Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                     }
-                    #endif                
                 }
                 
                 pch = m_pParentCanvas->m_pQuilt->GetNextChart();
@@ -3063,15 +3049,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = m_pParentCanvas->VPoint;
 
-#ifdef USE_S57
-    
     // Only for cm93 (not quilted), SetVPParms can change the valid region of the chart
     // we need to know this before rendering the chart so we can compute the background region
     // and nodta regions correctly.  I would prefer to just perform this here (or in SetViewPoint)
     // for all vector charts instead of in their render routine, but how to handle quilted cases?
     if(!vp.b_quilt && m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP)
         static_cast<cm93compchart*>( m_pParentCanvas->m_singleChart )->SetVPParms( vp );
-#endif
         
     LLRegion chart_region;
     if( !vp.b_quilt && (m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_PLUGIN) ){

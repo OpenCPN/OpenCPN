@@ -46,14 +46,11 @@
 #include "s52s57.h"
 #include "SencManager.h"
 
-#ifdef USE_S57
 #include "gdal/cpl_error.h"
+
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
-
-
-#endif
 
 wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 wxFont GetOCPNGUIScaledFont( wxString item );

@@ -34,9 +34,7 @@
 
 #include <algorithm>
 
-#ifdef USE_S57
 #include "s57chart.h"
-#endif
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( PatchList );
@@ -266,8 +264,6 @@ bool Quilt::IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector
 
 bool Quilt::IsChartS57Overlay( int db_index )
 {
-#ifdef USE_S57
-
     if( db_index < 0 )
         return false;
 
@@ -276,7 +272,6 @@ bool Quilt::IsChartS57Overlay( int db_index )
         return  s57chart::IsCellOverlayType( cte.GetpFullPath() );
     }
     else
-#endif
         return false;
 }
 
@@ -1565,7 +1560,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     bool b_has_overlays = false;
-#ifdef USE_S57
 
     //  If this is an S57 quilt, we need to know if there are overlays in it
     if(  CHART_FAMILY_VECTOR == m_reference_family ) {
@@ -1579,7 +1573,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-#endif
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -1644,13 +1637,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //  Skip overlays on this pass, so that they do not subtract from quilt and thus displace
             //  a geographical cell with the same extents.
             //  Overlays will be picked up in the next pass, if any are found
-#ifdef USE_S57
             if(  CHART_FAMILY_VECTOR == m_reference_family ) {
                 if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
                     continue;
                 }
             }
-#endif
 
             // Skip MBTiles
             if(  CHART_TYPE_MBTILES == cte.GetChartType() ) {
@@ -1734,7 +1725,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
                     if( vpu_region.Empty() )
                         pqc->b_include = false; // skip this chart, no true overlap
-#ifdef USE_S57
                     else {
                         bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
                         if( b_overlay )
@@ -1747,7 +1737,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     if(s57chart::IsCellOverlayType(cte_ref.GetpFullPath() )){
                         pqc->b_include = true;
                     }
-#endif
                 }
             }
         }
@@ -2152,7 +2141,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     if( pc ) {
         m_quilt_depth_unit = pc->GetDepthUnits();
 
-#ifdef USE_S57
         if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) {
             int units = ps52plib->m_nDepthUnitDisplay;
             switch( units ) {
@@ -2167,7 +2155,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 break;
             }
         }
-#endif
     }
 
     for( unsigned int k = 0; k < m_PatchList.GetCount(); k++ ) {
@@ -2180,7 +2167,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
         ChartBase *pc = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         if( pc ) {
             wxString du = pc->GetDepthUnits();
-#ifdef USE_S57
             if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                 int units = ps52plib->m_nDepthUnitDisplay;
                 switch( units ) {
@@ -2195,7 +2181,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     break;
                 }
             }
-#endif
             wxString dul = du.Lower();
             wxString ml = m_quilt_depth_unit.Lower();
 
@@ -2253,14 +2238,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
         ChartBase *pc = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         if( pc ) {
             m_max_error_factor = wxMax(m_max_error_factor, pc->GetChart_Error_Factor());
-#ifdef USE_S57
             if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                 bool isOverlay = IsChartS57Overlay( pqp->dbIndex );
                 pqp->b_overlay = isOverlay;
                 if( isOverlay )
                     m_bquilt_has_overlays = true;
             }
-#endif
         }
     }
 
@@ -2437,7 +2420,6 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                         OCPNRegion get_screen_region = vp.GetVPRegionIntersect(chart_region, get_region,
                                                                                chart->GetNativeScale());
                         if( !get_region.Empty() ) {
-#ifdef USE_S57
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             if (Chs57){
                                 Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
@@ -2449,7 +2431,6 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                                 }
                             }
 
-#endif
                             OCPNRegionIterator upd( get_screen_region );
                             while( upd.HaveRects() ) {
                                 wxRect rect = upd.GetRect();

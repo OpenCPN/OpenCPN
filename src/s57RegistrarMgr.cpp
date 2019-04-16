@@ -32,9 +32,7 @@
 #include "s57RegistrarMgr.h"
 #include "S57ClassRegistrar.h"
 
-#ifdef USE_S57
 extern S57ClassRegistrar *g_poRegistrar;
-#endif
 
 static void s57_initialize( const wxString& csv_dir )
 {

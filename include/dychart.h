@@ -147,10 +147,8 @@
 //              Use the CPL Portability library only if S57 is enabled
 //----------------------------------------------------------------------------
 
-#ifdef USE_S57
 #define USE_CPL
 #include "gdal/cpl_port.h"
-#endif
 
 #ifndef NULL
 #define NULL 0
