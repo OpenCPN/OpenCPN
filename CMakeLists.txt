@@ -277,7 +277,6 @@ option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_USE_S57 "Use S57 ENC chart support" ON)
 
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
