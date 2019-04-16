@@ -1591,20 +1591,18 @@ set(
   src/bitmaps/iENC_RMinus.svg
 )
 
-if (OCPN_USE_S57)
-  set(
-    s57data
-    data/s57data/attdecode.csv
-    data/s57data/S52RAZDS.RLE
-    data/s57data/s57attributes.csv
-    data/s57data/s57expectedinput.csv
-    data/s57data/s57objectclasses.csv
-    data/s57data/rastersymbols-dark.png
-    data/s57data/rastersymbols-day.png
-    data/s57data/rastersymbols-dusk.png
-    data/s57data/chartsymbols.xml
-  )
-endif (OCPN_USE_S57)
+set(
+  s57data
+  data/s57data/attdecode.csv
+  data/s57data/S52RAZDS.RLE
+  data/s57data/s57attributes.csv
+  data/s57data/s57expectedinput.csv
+  data/s57data/s57objectclasses.csv
+  data/s57data/rastersymbols-dark.png
+  data/s57data/rastersymbols-day.png
+  data/s57data/rastersymbols-dusk.png
+  data/s57data/chartsymbols.xml
+)
 
 if (OCPN_BUNDLE_TCDATA MATCHES "ON")
   set(
@@ -1990,9 +1988,7 @@ if (NOT APPLE)
     )
   endif (OCPN_USE_SVG)
 
-  if (OCPN_USE_S57)
-    install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
-  endif ()
+  install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     install(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
