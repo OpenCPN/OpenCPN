@@ -89,10 +89,9 @@ To build for android, use something like:
 
 Silent/Verbose builds:
     cmake's handling of these issues is underwhelming. On most platforms the
-    builds are by default silent. Use 'make VERBOSE=1' to make a verbose
-    build. The cmake option OCPN_VERBOSE is supposed to handle this, but is
-    buggy on at least Linux.
-
+    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make 
+    a silent build. The OCPN_VERBOSE value can be overridden using
+    'make VERBOSE=1' or 'make -s'
 #]]
 #[[
 TODO:
@@ -120,9 +119,9 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 project(OpenCPN)
 
-option(OCPN_VERBOSE "Verbose build output" ON)
-
-set(CMAKE_VERBOSE_MAKEFILE ${OCPN_VERBOSE})
+if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
 
@@ -187,6 +186,8 @@ else (APPLE OR WIN32)
   bundle_tcdata_opt("OFF")
   bundle_gshhs_opt("NONE")
 endif (APPLE OR WIN32)
+
+option(OCPN_VERBOSE "Make verbose builds"  ON)
 
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
