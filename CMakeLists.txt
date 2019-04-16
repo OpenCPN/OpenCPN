@@ -1116,6 +1116,7 @@ if (UNIX)
     find_package(X11)
     if (X11_FOUND AND NOT APPLE)
       target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES})
+      set(OCPN_HAVE_X11 ON)   # => config.h
     endif ()
     if (NOT APPLE)
       # TinyXML from Homebrew is not good enough for our GpxDocument needs We
