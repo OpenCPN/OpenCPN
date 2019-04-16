@@ -94,13 +94,6 @@ else()
     target_link_libraries(${PROJECT_NAME} setupapi)
 endif()
 
-install(TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-install(FILES examples/serial_example.cc DESTINATION ${CMAKE_INSTALL_DOCDIR})
-
-
 # Other targets: test program, pkg-config and tests.
 if (ENABLE_TEST_PROGRAM)
     add_executable(serial_example examples/serial_example.cc)
