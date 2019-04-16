@@ -86,7 +86,7 @@ SET(SRC
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 add_library(JASPER STATIC ${SRC})
 set_property(TARGET JASPER PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(JASPER
+target_include_directories(JASPER BEFORE
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/include
 )
 target_compile_definitions(JASPER
