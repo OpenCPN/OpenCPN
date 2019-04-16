@@ -18,7 +18,7 @@
 
 #cmakedefine USE_GARMINHOST
 
-#cmakedefine ocpnUSE_NEWSERIAL
+#cmakedefine OCPN_USE_NEWSERIAL
 
 // Enable dark mode on modern MacOS.
 #cmakedefine OCPN_USE_DARKMODE

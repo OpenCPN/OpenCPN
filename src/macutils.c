@@ -55,7 +55,7 @@
 
 #include "config.h"
 
-#ifndef ocpnUSE_NEWSERIAL
+#ifndef OCPN_USE_NEWSERIAL
 // Returns an iterator across all known serial ports. Caller is responsible for
 // releasing the iterator when iteration is complete.
 static kern_return_t FindSerialPorts(io_iterator_t *matchingServices)

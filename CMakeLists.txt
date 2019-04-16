@@ -1,7 +1,8 @@
 # ---------------------------------------------------------------------------
-# Author:      Dave Register DEB config from: antonm - Anton Martchukov
-# <anton@martchukov.com> Update:      sethdart (Jean-Eudes Onfray) with parts
-# from balp (Anders Arnholm)
+# Author:      Dave Register DEB 
+# config from: antonm - Anton Martchukov <anton@martchukov.com> 
+# Update:      sethdart (Jean-Eudes Onfray) 
+#                 with parts from balp (Anders Arnholm)
 # ***************************************************************************
 # - Copyright (C) 2010 by David S. Register                               *
 # - This program is free software; you can redistribute it and/or modify  *
@@ -72,38 +73,30 @@ Documentation:
 
 
 Tidal/current and GSHHS wallpaper
-  - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in package
+  - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in
+    package.
   - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
     wallpaper map used as last resort and world overview.
 
 To build for android, use something like:
-    $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
+    $cmake -DUSE_GARMINHOST=OFF
+        -D_wx_selected_config=androideabi-qt
         -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-        -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-        -DQt_Base /home/dsr/Qt/5.3) ..
+        -DwxQt_Build=build_android_53
+       	-DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        -DQt_Base /home/dsr/Qt/5.3)
+        ..
 
+Silent/Verbose builds:
+    cmake's handling of these issues is underwhelming. On most platforms the
+    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make 
+    a silent build. The OCPN_VERBOSE value can be overridden using
+    'make VERBOSE=1' or 'make -s'
 #]]
 #[[
 TODO:
 - Profiling opt
 - test with Win & OSX
-- GNU install paths
-- Use list() instead of set() -OK
-- Rework options, naming conventions. - OK
-- Review TinyXML handling  - OK
-- Drop PACKAGE_DEPS: - OK
-- Test (rework?) wxWidgets GLU handling. OK
-- Unbundle jasper.  OK
-- Better USE_BUNDLED_LIBS option (list)  OK
-- Fix link libraries name (tinyxml:: > ocpn::) OK
-- Fix 3.1 requirement overall OK
-- Silent build mode. OK
-- Move final linking ahead of install section. OK
-- Separate gpsd configuration OK
-- Separate ffmpeg configuration OK
-- Review Mingw package generation. OK
-- Drop -s linker flag OK
-- Make missing sound libs info instead of warnings. OK
 USE_GLU_TESS
 USE_GLU_DLL
 I also find it deficient in some areas. For instance, I cannot make it
@@ -126,9 +119,9 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 
 project(OpenCPN)
 
-option(OCPN_VERBOSE "Verbose build output" ON)
-
-set(CMAKE_VERBOSE_MAKEFILE ${OCPN_VERBOSE})
+if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
 
@@ -193,6 +186,8 @@ else (APPLE OR WIN32)
   bundle_tcdata_opt("OFF")
   bundle_gshhs_opt("NONE")
 endif (APPLE OR WIN32)
+
+option(OCPN_VERBOSE "Make verbose builds"  ON)
 
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
@@ -1121,6 +1116,7 @@ if (UNIX)
     find_package(X11)
     if (X11_FOUND AND NOT APPLE)
       target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES})
+      set(OCPN_HAVE_X11 ON)   # => config.h
     endif ()
     if (NOT APPLE)
       # TinyXML from Homebrew is not good enough for our GpxDocument needs We

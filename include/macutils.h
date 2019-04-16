@@ -26,7 +26,7 @@
 
 #ifdef __WXOSX__
 
-#ifndef ocpnUSE_NEWSERIAL
+#ifndef OCPN_USE_NEWSERIAL
 #define MAX_SERIAL_PORTS 10
 
 extern "C" int FindSerialPortNames(char** pNames, int iMaxNames) ;

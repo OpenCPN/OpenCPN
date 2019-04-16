@@ -103,7 +103,7 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 {
 }
 
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
 
 size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
 {
@@ -320,7 +320,7 @@ thread_exit:
     
     return 0;
 }
-#else //ocpnUSE_NEWSERIAL
+#else //OCPN_USE_NEWSERIAL
 
 //      Sadly, the thread itself must implement the underlying OS serial port
 //      in a very machine specific way....
@@ -1321,5 +1321,5 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 }
 
 #endif            // __WXMSW__
-#endif //ocpnUSE_NEWSERIAL
+#endif //OCPN_USE_NEWSERIAL
 
