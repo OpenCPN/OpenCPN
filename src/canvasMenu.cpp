@@ -68,11 +68,9 @@
 #include "Track.h"
 #include "Route.h"
 
-#ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj
 #include "s52plib.h"
-#endif
 
 #include "ais.h"
 
@@ -119,10 +117,8 @@ extern WayPointman      *pWayPointMan;
 extern MyConfig         *pConfig;
 extern Select           *pSelect;
 
-#ifdef USE_S57
 extern s52plib          *ps52plib;
 extern CM93OffsetDialog  *g_pCM93OffsetDialog;
-#endif
 
 extern GoToPositionDialog *pGoToPositionDialog;
 extern RouteList        *pRouteList;
@@ -1175,7 +1171,6 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->Refresh( false );
         break;
 
-#ifdef USE_S57
     case ID_DEF_MENU_CM93OFFSET_DIALOG:
     {
         if( NULL == g_pCM93OffsetDialog ) {
@@ -1199,7 +1194,6 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->ShowObjectQueryWindow( popx, popy, zlat, zlon );
         break;
     }
-#endif
     case ID_DEF_MENU_AIS_QUERY: {
         wxWindow *pwin = wxDynamicCast(parent, wxWindow);
         ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );

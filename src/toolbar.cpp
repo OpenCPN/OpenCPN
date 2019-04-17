@@ -1342,10 +1342,8 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 
     CheckAndAddPlugInTool( tb );
     bool gs = false;
-#ifdef USE_S57
     if (ps52plib)
         gs = ps52plib->GetShowS57Text();
-#endif
 
     if (gs)
         tipString = wxString( _("Hide ENC text") ) << _T(" (T)");
@@ -1436,12 +1434,10 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
         tb->ToggleTool( ID_FOLLOW, parentCanvas->m_bFollow );
     }
 
-#ifdef USE_S57
     if( ( ps52plib ) ){
         if( ps52plib->m_bOK )
             tb->ToggleTool( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
     }
-#endif
 
     wxString initiconName;
     if( parentCanvas->GetShowAIS() ) {

@@ -12,8 +12,6 @@
 
 #cmakedefine OCPN_USE_CURL
 
-#cmakedefine USE_S57
-
 #cmakedefine USE_LIBELF
 
 #cmakedefine USE_GARMINHOST

@@ -104,12 +104,10 @@
 #include "glChartCanvas.h"
 #endif
 
-#ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj
 #include "s52plib.h"
 #include "s52utils.h"
-#endif
 
 #include "ais.h"
 
@@ -209,10 +207,8 @@ extern bool             g_bsimplifiedScalebar;
 
 extern bool             bDrawCurrentValues;
 
-#ifdef USE_S57
 extern s52plib          *ps52plib;
 extern CM93OffsetDialog  *g_pCM93OffsetDialog;
-#endif
 
 extern bool             bGPSValid;
 //extern bool             g_bShowOutlines;
@@ -2279,10 +2275,8 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
     
-#ifdef USE_S57
     if( ps52plib )
         ps52plib->SetPPMM( m_pix_per_mm );
-#endif
     
      wxString msg;
      msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
@@ -3970,7 +3964,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
 {
-#ifdef USE_S57
     if( s57_CheckExtendedLightSectors( this, mouse_x, mouse_y, VPoint, extendedSectorLegs ) ){
         if(!m_bsectors_shown) {
             ReloadVP( false );
@@ -3983,7 +3976,6 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
             m_bsectors_shown = false;
         }
     }
-#endif
 
 //      This is here because GTK status window update is expensive..
 //            cairo using pango rebuilds the font every time so is very inefficient
@@ -8657,7 +8649,6 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
-#ifdef USE_S57
     
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
@@ -8823,7 +8814,6 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         SetCursor( wxCURSOR_ARROW );
     }
-#endif    
 }
 
 
@@ -9285,7 +9275,6 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
         if( b_group_draw ) RenderChartOutline( dc, i, vp );
     }
 
-#ifdef USE_S57
     //        On CM93 Composite Charts, draw the outlines of the next smaller scale cell
     cm93compchart *pcm93 = NULL;
     if( VPoint.b_quilt ) {
@@ -9312,7 +9301,6 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
         
         pcm93->RenderNextSmallerCellOutlines( dc, vp, this );
     }
-#endif
 }
 
 void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
@@ -10746,9 +10734,7 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
     ScaleBarDraw( dc );
-#ifdef USE_S57
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
-#endif
 
     if( m_pTrackRolloverWin ) {
         m_pTrackRolloverWin->Draw(dc);
@@ -10785,10 +10771,8 @@ emboss_data *ChartCanvas::EmbossDepthScale()
     } else {
         if( m_singleChart ) {
             depth_unit_type = m_singleChart->GetDepthUnitType();
-#ifdef USE_S57
             if( m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR ) depth_unit_type =
                     ps52plib->m_nDepthUnitDisplay + 1;
-#endif
         }
     }
 
@@ -11813,11 +11797,9 @@ void ChartCanvas::ToggleCanvasQuiltMode( void )
             //  TODO What to do about this?
             //g_bQuiltEnable = GetQuiltMode();
             
-#ifdef USE_S57
             // Recycle the S52 PLIB so that vector charts will flush caches and re-render
         if(ps52plib)
             ps52plib->GenerateStateHash();
-#endif
 
         if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
             GetMUIBar()->GetCanvasOptions()->RefreshControlValues();

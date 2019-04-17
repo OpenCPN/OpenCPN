@@ -68,10 +68,8 @@
 #include "chartdb.h"
 #include "CanvasConfig.h"
 
-#ifdef USE_S57
 #include "s52plib.h"
 #include "cm93.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -256,9 +254,7 @@ extern double           g_ownship_HDTpredictor_miles;
 extern bool             g_own_ship_sog_cog_calc;
 extern int              g_own_ship_sog_cog_calc_damp_sec;
 
-#ifdef USE_S57
 extern s52plib          *ps52plib;
-#endif
 
 extern int              g_cm93_zoom_factor;
 extern bool             g_b_legacy_input_filter_behaviour;
@@ -1148,7 +1144,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     //    S57 Object Filter Settings
     conf->SetPath( _T ( "/Settings/ObjectFilter" ) );
     
-    #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -1161,7 +1156,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
             conf->Write( st1, pOLE->nViz );
         }
     }
-    #endif
     
     //    Global State
     
@@ -1233,7 +1227,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "bAISAlertAckTimeout" ), g_bAIS_ACK_Timeout );
     conf->Write( _T ( "AlertAckTimeoutMinutes" ), g_AckTimeout_Mins );
     
-    #ifdef USE_S57
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     if( ps52plib ) {
         conf->Write( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
@@ -1258,7 +1251,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
         conf->Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
         conf->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
     }
-    #endif
     
     conf->SetPath( _T ( "/Settings/Others" ) );
     
@@ -1504,15 +1496,12 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     CHECK_INT( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
     
-#ifdef USE_S57
     CHECK_INT( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor );
     CHECK_INT( _T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x );
     CHECK_INT( _T ( "CM93DetailZoomPosY" ), &g_detailslider_dialog_y );
     CHECK_INT( _T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider );
 
     CHECK_INT( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels );
-
-#endif
 
     CHECK_INT( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod );
 
@@ -1679,9 +1668,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_STR( _T ( "PresentationLibraryData" ), g_UserPresLibData)
     ///CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
     
-#ifdef USE_S57
     CHECK_STR( _T ( "SENCFileLocation" ), g_SENCPrefix)
-#endif
 
     
     CHECK_STR( _T ( "GPXIODir" ), g_gpx_path );           // Get the Directory name
@@ -1869,7 +1856,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     #define CHECK_FFN(s, t)         conf->Read( s , &dval); \
                                     if( fabs(dval - t) > 0.1) return false;
                                     
-#ifdef USE_S57
     if( ps52plib ){
     
         int read_int;
@@ -1939,10 +1925,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
             }
         }
     }
-
-#endif          // S57
-    
-    
     
     conf->SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = conf->GetNumberOfEntries();

@@ -284,7 +284,6 @@ option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_USE_S57 "Use S57 ENC chart support" ON)
 
 option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
@@ -1345,7 +1344,6 @@ endif (TINYXML_FOUND)
 set(TIXML_USE_STL 1) # -> config.h
 
 message(STATUS "S57 ENC support: enabled")
-set(USE_S57 1) # -> config.h
 set(
   SRC_S57ENC
   include/cm93.h
@@ -1598,20 +1596,18 @@ set(
   src/bitmaps/iENC_RMinus.svg
 )
 
-if (OCPN_USE_S57)
-  set(
-    s57data
-    data/s57data/attdecode.csv
-    data/s57data/S52RAZDS.RLE
-    data/s57data/s57attributes.csv
-    data/s57data/s57expectedinput.csv
-    data/s57data/s57objectclasses.csv
-    data/s57data/rastersymbols-dark.png
-    data/s57data/rastersymbols-day.png
-    data/s57data/rastersymbols-dusk.png
-    data/s57data/chartsymbols.xml
-  )
-endif (OCPN_USE_S57)
+set(
+  s57data
+  data/s57data/attdecode.csv
+  data/s57data/S52RAZDS.RLE
+  data/s57data/s57attributes.csv
+  data/s57data/s57expectedinput.csv
+  data/s57data/s57objectclasses.csv
+  data/s57data/rastersymbols-dark.png
+  data/s57data/rastersymbols-day.png
+  data/s57data/rastersymbols-dusk.png
+  data/s57data/chartsymbols.xml
+)
 
 if (OCPN_BUNDLE_TCDATA MATCHES "ON")
   set(
@@ -1997,9 +1993,7 @@ if (NOT APPLE)
     )
   endif (OCPN_USE_SVG)
 
-  if (OCPN_USE_S57)
-    install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
-  endif ()
+  install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     install(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
