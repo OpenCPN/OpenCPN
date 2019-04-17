@@ -2604,8 +2604,8 @@ if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND
-      cmake -E copy "${CMAKE_BUILD_TYPE}/opencpn.pdb"
-      "${CMAKE_BUILD_TYPE}/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+    cmake -E copy "${CMAKE_BINARY_DIR}/$<CONFIG>/opencpn.pdb"
+    "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
 
