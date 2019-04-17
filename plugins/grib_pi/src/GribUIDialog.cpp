@@ -1842,6 +1842,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     GribRecord *pRec;
     bool isOK(false);
     bool polarWind(false);
+    bool polarCurrent(false);
 
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
@@ -1888,14 +1889,24 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         } else
                             idx = Idx_WIND_VY;
                         break;
+                    case GRB_CUR_DIR:
+                        polarCurrent = true;
+                        // fall through
+                    case GRB_UOGRD:
+                        idx = Idx_SEACURRENT_VX;
+                        break;
+                    case GRB_CUR_SPEED:
+                        polarCurrent = true;
+                        // fall through
+                    case GRB_VOGRD:
+                        idx = Idx_SEACURRENT_VY;
+                        break;
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
                     case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
-                    case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
-                    case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
                     case GRB_PRECIP_RATE:
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
@@ -1948,9 +1959,13 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
                         // already one
                         GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                        // we favor UV over DIR/SPEED
                         if (polarWind) {
-                            // we favor UV over DIR/SPEED
                             if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                                skip = true;
+                        }
+                        else if (polarCurrent) {
+                            if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
                                 skip = true;
                         }
                         // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
@@ -2002,6 +2017,33 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     continue;
                 GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
                 if (pRec1 == 0 || pRec1->getDataType() != GRB_WIND_SPEED) {
+                    continue;
+                }
+                GribRecord::Polar2UV(pRec, pRec1);
+            }
+        }
+    }
+    if (polarCurrent) {
+        for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
+            for(unsigned int i=0; i<Idx_COUNT; i++) {
+                GribRecord *GR1 = NULL, *GR2 = NULL;
+                int idx = -1;
+                GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
+
+                if ( pRec == 0 || pRec->getDataType() != GRB_CUR_DIR) {
+                    continue;
+                }
+                switch( i ) {
+                case Idx_SEACURRENT_VX:
+                    idx = Idx_SEACURRENT_VY;
+                    break;
+                default:
+                    break;
+                }
+                if (idx == -1)
+                    continue;
+                GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                if (pRec1 == 0 || pRec1->getDataType() != GRB_CUR_SPEED) {
                     continue;
                 }
                 GribRecord::Polar2UV(pRec, pRec1);
