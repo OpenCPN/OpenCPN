@@ -46,6 +46,9 @@ Renamed options:
 Installation paths:
   - Since TBD OpenCPN supports the GNU install paths, see
     https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
+  - Use CMAKE_INSTALL_LIBDIR to change the base directory for plugins;
+    defaults to library location on most platforms, but is 'lib' on
+    Debian.
 
 Sound:
   - Without options, defaults to MswSound on Windows, PortAudioSound
@@ -142,10 +145,11 @@ set(
 include(FindPkgConfig)
 include(CMakeDependentOption)
 
-# Per default, use CMAKE_INSTALL_LIBDIR=/usr/lib on Debian to avoid multilib
-# plugin paths. After all, we do not install any "real" libraries.
+# Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
+# to avoid multilib plugin paths. After all, we do not install any
+# "real" libraries.
 if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "/usr/lib")
+  set(CMAKE_INSTALL_LIBDIR "lib")
 endif ()
 include(GNUInstallDirs)
 
