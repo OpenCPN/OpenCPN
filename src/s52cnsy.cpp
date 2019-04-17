@@ -2146,30 +2146,29 @@ static void *OBSTRN04 (void *param)
 //                        GString *watlevstr = S57_getAttVal(geo, "WATLEV");
 
                         if (watlev == -9)   // default
-                              obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
+                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                         else {
-                              if (3 == watlev) {
-                                    int catobs = -9;
-                                    GetIntAttr(obj, "CATOBS", catobs);
-//                                    GString *catobsstr = S57_getAttVal(geo, "CATOBS");
-                                    if (6 == catobs)
-                                          obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
-                              } else {
-                                    switch (watlev) {
-                                          case 1:
-                                          case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
-                                          case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
-                                          case 5:
-                                          case 3:
-                                                default : obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            switch (watlev) {
+                                case 1:
+                                case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
+                                case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
+                                case 5:
+                                case 3:
+                                    {
+                                        int catobs = -9;
+                                        GetIntAttr(obj, "CATOBS", catobs);
+                                        if (6 == catobs)
+                                            obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
+                                        else
+                                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                                     }
-                              }
+                                    break;
+                                default: obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            }
                         }
                   }
-
                   obstrn04str.Append(*quapnt01str);
                   goto end;
-
 
 /*
             // Continuation C (AREAS_T)
