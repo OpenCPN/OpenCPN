@@ -240,7 +240,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.9)
   option(OCPN_ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
 endif ()
 
-if (NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(
     CMAKE_BUILD_TYPE RelWithDebInfo
     CACHE
@@ -248,7 +248,10 @@ if (NOT CMAKE_BUILD_TYPE)
       "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
     FORCE
   )
-endif (NOT CMAKE_BUILD_TYPE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 if (APPLE)
   option(OCPN_USE_LIBCPP "Use libc++ instead of libstdc++ on macOS" ON)
