@@ -1461,6 +1461,24 @@ endif ()
 #
 # GL_CFLAGS="-DUSE_GLU_TESS" AC_SUBST(GL_CFLAGS) fi
 
+if (UNIX AND NOT APPLE)
+  find_path(LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf)
+  find_library(LIBELF_LIBRARY NAMES elf)
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+    message(STATUS "Found LibELF...")
+    message(STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}")
+    message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
+    target_include_directories(${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}")
+    set(USE_LIBELF ON)   # => config.h
+  else ()
+    message(
+      WARNING
+        "Did not found LibELF, plugin compatibility check will be simplified."
+    )
+  endif ()
+endif (UNIX AND NOT APPLE)
+
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
@@ -1925,23 +1943,6 @@ endif (LIBLZMA_FOUND)
 if (UNIX)
   target_link_libraries(${PACKAGE_NAME} PRIVATE dl)
 endif ()
-
-if (UNIX AND NOT APPLE)
-  find_path(LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf)
-  find_library(LIBELF_LIBRARY NAMES elf)
-  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-    message(STATUS "Found LibELF...")
-    message(STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}")
-    message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
-    target_include_directories(${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}")
-  else ()
-    message(
-      WARNING
-        "Did not found LibELF, plugin compatibility check will be simplified."
-    )
-  endif ()
-endif (UNIX AND NOT APPLE)
 
 #
 # Install
