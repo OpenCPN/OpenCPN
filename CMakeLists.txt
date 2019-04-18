@@ -279,7 +279,7 @@ set(
     "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
 
-option(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
+option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
@@ -1254,11 +1254,11 @@ if (OCPN_USE_SVG)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_SVG)
 
-if (OCPN_NEW_SERIAL)
+if (OCPN_USE_NEWSERIAL)
   add_subdirectory("libs/serial")
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
   message(STATUS "Using new serial library...")
-endif (OCPN_NEW_SERIAL)
+endif (OCPN_USE_NEWSERIAL)
 
 # Search for opengles, short of running a program to test the speed of
 # acceleration, I simply use gles on "native linux" arm systems
