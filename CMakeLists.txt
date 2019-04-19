@@ -222,7 +222,7 @@ option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
-  CACHE VERSION "Force usage of a specific wxWidgets version."
+  CACHE STRING "Force usage of a specific wxWidgets version."
 )
 
 set(
@@ -2423,9 +2423,6 @@ set(
 )
 set(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
-set(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode") # Gunther
-set(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin") # Gunther
-
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README")
   set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
   set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
@@ -2452,6 +2449,8 @@ if (WIN32 AND NOT UNIX)
 
   set(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
   set(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
+  set(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode") # Gunther
+  set(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin") # Gunther
 
   # These lines set the name of the Windows Start Menu shortcut and the icon
   # that goes with it
