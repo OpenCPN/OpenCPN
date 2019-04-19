@@ -73,7 +73,10 @@ RoutePoint::RoutePoint()
     //  Nice defaults
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
+
     m_seg_etd = wxInvalidDateTime;
+    m_manual_etd =  false;
+
     m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
@@ -140,7 +143,10 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_lon = orig->m_lon;
     m_seg_len = orig->m_seg_len;
     m_seg_vmg = orig->m_seg_vmg;
+
     m_seg_etd = orig->m_seg_etd;
+    m_manual_etd = false;
+
     m_bDynamicName = orig->m_bDynamicName;
     m_bPtIsSelected = orig->m_bPtIsSelected;
     m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
@@ -205,7 +211,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     //  Nice defaults
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
+
     m_seg_etd = wxInvalidDateTime;
+    m_manual_etd =  false;
+
     m_bDynamicName = false;
     m_bPtIsSelected = false;
     m_bRPIsBeingEdited = false;
@@ -1172,13 +1181,12 @@ double RoutePoint::GetPlannedSpeed() {
 wxDateTime RoutePoint::GetETD()
 {
     if( m_seg_etd.IsValid() ) {
-        if(!GetETA().IsValid() || m_seg_etd > GetETA()) {
-            return m_seg_etd;
-        } else {
+        if(GetETA().IsValid() && m_seg_etd < GetETA()) {
             return GetETA();
         }
-    } else {
-        if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
+        return m_seg_etd;
+    }
+    if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
             wxDateTime etd = wxInvalidDateTime;
             wxString s_etd = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
             const wxChar *parse_return = etd.ParseDateTime( s_etd );
@@ -1202,11 +1210,9 @@ wxDateTime RoutePoint::GetETD()
                     m_MarkDescription.Replace( s_etd, wxEmptyString);
                     m_seg_etd = etd;
                     return m_seg_etd;
-                } else {
-                    return GetETA();
                 }
+                return GetETA();
             }
-        }
     }
     return wxInvalidDateTime;
 }
@@ -1242,7 +1248,7 @@ void RoutePoint::SetETE(wxLongLong secs)
 
 void RoutePoint::SetETD(const wxDateTime &etd) {
     m_seg_etd = etd;
-    m_manual_etd = TRUE;
+    m_manual_etd = true;
 }
 
 bool RoutePoint::SetETD(const wxString &ts)
@@ -1250,16 +1256,17 @@ bool RoutePoint::SetETD(const wxString &ts)
     if( ts.IsEmpty() ) {
         m_seg_etd = wxInvalidDateTime;
         m_manual_etd = false;
-        return TRUE;
+        return true;
     }
     wxDateTime tmp;
     wxString::const_iterator end;
     if ( tmp.ParseISOCombined(ts) ) {
         SetETD(tmp);
-        return TRUE;
-    } else if( tmp.ParseDateTime(ts, &end) ) {
-        SetETD(tmp);
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    if( tmp.ParseDateTime(ts, &end) ) {
+        SetETD(tmp);
+        return true;
+    }
+    return false;
 }
