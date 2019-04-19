@@ -11,7 +11,7 @@ How?
     $ rm -rf build; mkdir build
     $ cd build;
     $ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
-       -DOCPN_NEW_SERIAL=OFF [...] \
+       -DOCPN_USE_NEWSERIAL=OFF [...] \
        ..
     $ make 
     $ make package
