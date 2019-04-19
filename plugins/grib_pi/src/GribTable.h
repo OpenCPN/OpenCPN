@@ -75,6 +75,7 @@ private:
     wxString GetAirTemp(GribRecord **recordarray);
     wxString GetSeaTemp(GribRecord **recordarray);
     wxString GetCAPE(GribRecord **recordarray);
+    wxString GetCompRefl(GribRecord **recordarray);
     wxString GetCurrent(GribRecord **recordarray, int datatype, double& wdir);
     wxString GetTimeRowsStrings( wxDateTime date_time, int time_zone, int type );
 

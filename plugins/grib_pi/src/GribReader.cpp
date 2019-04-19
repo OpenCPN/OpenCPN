@@ -218,10 +218,10 @@ void GribReader::readAllGribRecords()
 			&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
             storeRecordInMap(rec);
 
-        else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+        else if((rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+                 || rec->getDataType()==GRB_COMP_REFL)
                     && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
             storeRecordInMap(rec);
-
         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
             storeRecordInMap(rec);
 

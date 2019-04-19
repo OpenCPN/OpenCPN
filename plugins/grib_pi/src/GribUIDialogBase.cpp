@@ -551,7 +551,20 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+	// -----------------
 
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cbReflC = new wxCheckBox( this, ID_CB_COMP_REFL, _("Comp. Refl."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgTrackingControls->Add( m_cbReflC, 0, wxALL|wxEXPAND, 5 );
+
+	m_tcReflC = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxPoint( -1,-1 ), wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcReflC->SetToolTip( _("Composite Reflectivity") );
+
+	m_fgTrackingControls->Add( m_tcReflC, 0, 0, 1 );
+
+
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
@@ -599,6 +612,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_tcRelHumid->SetMinSize( wxSize( 70,-1 ) );
 
 	m_fgTrackingControls->Add( m_tcRelHumid, 0, 0, 5 );
+	
 
 
 	fgSizer43->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
@@ -658,6 +672,9 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_cbSeaTemperature->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
 	m_cbCAPE->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CursorDataBase::OnCBAny ), NULL, this );
 	m_cbCAPE->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
+	m_cbReflC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CursorDataBase::OnCBAny ), NULL, this );
+	m_cbReflC->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
+
 }
 
 CursorDataBase::~CursorDataBase()
@@ -709,6 +726,8 @@ CursorDataBase::~CursorDataBase()
 	m_cbSeaTemperature->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
 	m_cbCAPE->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CursorDataBase::OnCBAny ), NULL, this );
 	m_cbCAPE->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
+	m_cbReflC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CursorDataBase::OnCBAny ), NULL, this );
+	m_cbReflC->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( CursorDataBase::OnMenuCallBack ), NULL, this );
 
 }
 
@@ -1782,14 +1801,18 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pAirTemp->SetValue(true);
 	fgSizer10->Add( m_pAirTemp, 0, wxALL|wxEXPAND, 5 );
 
+	m_pCAPE = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("CAPE"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer10->Add( m_pCAPE, 0, wxALL|wxEXPAND, 5 );
+
+	m_pReflectivity = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("Comp. Reflect."), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer10->Add( m_pReflectivity , 0, wxALL|wxEXPAND, 5 );
+
 	m_pSeaTemp = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("Sea Temperature(surf.)"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer10->Add( m_pSeaTemp, 0, wxALL|wxEXPAND, 5 );
 
 	m_pCurrent = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer10->Add( m_pCurrent, 0, wxALL|wxEXPAND, 5 );
 
-	m_pCAPE = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("CAPE"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pCAPE, 0, wxALL|wxEXPAND, 5 );
 
 	wxFlexGridSizer* fgSizer28;
 	fgSizer28 = new wxFlexGridSizer( 0, 2, 0, 0 );
@@ -1932,6 +1955,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pSeaTemp->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCurrent->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCAPE->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_pReflectivity->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWaves->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pAltitudeData->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -1973,6 +1997,7 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pSeaTemp->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCurrent->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCAPE->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_pReflectivity->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWaves->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pAltitudeData->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
