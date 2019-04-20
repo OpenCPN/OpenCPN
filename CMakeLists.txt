@@ -410,7 +410,7 @@ if (MINGW)
     "-fno-strict-aliasing"
   )
   add_definitions("-DPSAPI_VERSION=1")
-  add_definitions("-DUNICODE")
+  add_definitions("-DUNICODE" "-D_UNICODE")
 endif (MINGW)
 
 if (APPLE)
@@ -2606,5 +2606,3 @@ if (MSVC)
     "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
-
-message(STATUS "Writing spec file...")
