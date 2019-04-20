@@ -10,9 +10,7 @@ How?
     $ cd ../..
     $ rm -rf build; mkdir build
     $ cd build;
-    $ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
-       -DOCPN_USE_NEWSERIAL=OFF [...] \
-       ..
+    $ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake ..
     $ make 
     $ make package
 
