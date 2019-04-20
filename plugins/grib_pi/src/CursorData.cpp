@@ -207,6 +207,9 @@ void CursorData::PopulateTrackingControls( bool vertical )
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0, 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND
 		&& m_Altitude == 0, vertical, wn);
+    AddTrackingControl(m_cbReflC, m_tcReflC, 0, 0,
+        m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND
+		&& m_Altitude == 0, vertical, wn);
     //
     //init and show extra parameters for altitude tracking if necessary
 	AddTrackingControl(m_cbAltitude, m_tcAltitude, 0, 0,
@@ -435,14 +438,23 @@ void CursorData::UpdateTrackingControls( void )
 
     //    Update the Convective Available Potential Energy (CAPE)
     if( RecordArray[Idx_CAPE] ) {
-        double cape = RecordArray[Idx_CAPE]->
-            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+        double cape = RecordArray[Idx_CAPE]->getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
 
         if( cape != GRIB_NOTDEF ) {
             cape = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
-            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
+            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") 
+                +m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
         } else
             m_tcCAPE->SetValue( _("N/A") );
+    }
+    if( RecordArray[Idx_COMP_REFL] ) {
+        double c_refl = RecordArray[Idx_COMP_REFL]->getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+
+        if( c_refl != GRIB_NOTDEF ) {
+            c_refl = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::COMP_REFL, c_refl);
+            m_tcReflC->SetValue( wxString::Format( _T("%5.0f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::COMP_REFL), c_refl ) );
+        } else
+            m_tcReflC->SetValue( _("N/A") );
     }
     // Update extra data for altitude
     // geopotential altitude
@@ -515,6 +527,11 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
             break;
         case GribOverlaySettings::CAPE:
             MenuAppend( menu, ISO_LINE, _("Display Iso CAPE"), id );
+            MenuAppend( menu, OVERLAY, _("OverlayMap"), id );
+            MenuAppend( menu, NUMBERS, _("Numbers"), id );
+            break;
+        case GribOverlaySettings::COMP_REFL:
+            MenuAppend( menu, ISO_LINE, _("Display Iso Reflectivity"), id );
             MenuAppend( menu, OVERLAY, _("OverlayMap"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
             break;

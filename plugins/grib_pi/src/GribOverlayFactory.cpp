@@ -424,6 +424,8 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
         if( !m_Altitude ) { idx = Idx_SEA_TEMP; } break;
     case GribOverlaySettings::CAPE:
         if( !m_Altitude ) { idx = Idx_CAPE; } break;
+    case GribOverlaySettings::COMP_REFL:
+        if( !m_Altitude ) { idx = Idx_COMP_REFL; } break;
     }
 }
 

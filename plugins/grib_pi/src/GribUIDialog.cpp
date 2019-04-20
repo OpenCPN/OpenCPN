@@ -185,6 +185,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "AirTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE], false );
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
+        pConf->Read( _T ( "CompReflectivityPlot" ), &m_bDataPlot[GribOverlaySettings::COMP_REFL], false );
 
 		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
@@ -244,6 +245,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->Write( _T ( "AirTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE]);
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE]);
         pConf->Write( _T ( "CAPEPlot" ), m_bDataPlot[GribOverlaySettings::CAPE]);
+        pConf->Write( _T ( "CompReflectivityPlot" ), m_bDataPlot[GribOverlaySettings::COMP_REFL]);
 
 		pConf->Write( _T ( "CursorDataShown" ), m_CDataIsShown );
 
@@ -482,6 +484,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     if(m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND))
         bconfigOK = true;
     if(m_bDataPlot[GribOverlaySettings::CAPE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::COMP_REFL] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND))
         bconfigOK = true;
 
     //  If no parameter seems to be enabled by config, enable them all just to be sure something shows.
@@ -1927,6 +1931,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         if(pRec->getDataCenterModel() == NOAA_GFS ) mdx = 1000 + NOAA_GFS;
                         break;
                     case GRB_CAPE:      idx = Idx_CAPE;break;
+                    case GRB_COMP_REFL: idx = Idx_COMP_REFL;break;
                     case GRB_HUMID_REL:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
