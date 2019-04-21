@@ -582,8 +582,6 @@ void RoutePropDlgImpl::PlanSpeedOnTextEnter( wxCommandEvent& event )
             m_pRoute->m_PlannedSpeed = fromUsrSpeed(spd);
             UpdatePoints();
         }
-    } else {
-        m_tcPlanSpeed->SetValue(wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
     }
 }
 
