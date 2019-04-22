@@ -52,6 +52,11 @@
 
 #include <wx/dialog.h>
 
+#ifdef __WXGTK__
+//wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
+#include "time_textbox.h"
+#endif
+
 #define ID_WPT_RANGERINGS_NO     7507
 #define ID_RCLK_MENU_COPY_TEXT   7013
 #define ID_RCLK_MENU_DELETE      7015
@@ -291,7 +296,11 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textScaMin;
         wxTextCtrl*             m_textWaypointRangeRingsStep;
         wxTextCtrl*             m_textCtrlPlSpeed;
+#ifdef __WXGTK__
+        TimeCtrl*               m_EtaTimePickerCtrl;
+#else
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;
+#endif
         wxBitmap*               _img_MUI_settings_svg;
         
         void initialize_images(void);

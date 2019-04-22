@@ -482,7 +482,11 @@ void MarkInfoDlg::Create()
     bsTimestamp->Add(m_cbEtaPresent, 0, wxALL|wxEXPAND, 5);
     m_EtaDatePickerCtrl = new wxDatePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
     bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL|wxEXPAND, 5);
+#ifdef __WXGTK__
+    m_EtaTimePickerCtrl = new TimeCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize);
+#else
     m_EtaTimePickerCtrl = new wxTimePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
+#endif
     bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL|wxEXPAND, 5);
     gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
 
