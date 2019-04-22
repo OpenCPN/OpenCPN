@@ -53,7 +53,8 @@ public:
         }
     };
     
-    wxDateTime GetValue() {
+    wxDateTime GetValue()
+    {
         wxDateTime dt;
         wxString str = wxTextCtrl::GetValue();
         wxString::const_iterator end;
@@ -80,7 +81,7 @@ public:
         wxTextCtrl::SetValue(GetValue().Format(TIME_FORMAT));
     };
     
-    bool GetTime(int* hour, int* min, int* sec) const
+    bool GetTime(int* hour, int* min, int* sec)
     {
         const wxDateTime::Tm tm = GetValue().GetTm();
         *hour = tm.hour;
