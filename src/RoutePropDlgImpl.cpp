@@ -326,7 +326,7 @@ void RoutePropDlgImpl::UpdatePoints()
         wxString etd;
         if( pnode->GetData()->GetManualETD().IsValid() ) {
             etd = toUsrDateTime(pnode->GetData()->GetManualETD(), m_tz_selection, pnode->GetData()->m_lon).Format(ETA_FORMAT_STR);
-            if( pnode->GetData()->GetManualETD().IsValid() && pnode->GetData()->GetETA().IsValid() && pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA() ) {
+            if( pnode->GetData()->GetManualETD().IsValid() && eta_dt.IsValid() && pnode->GetData()->GetManualETD() < eta_dt ) {
                 etd.Prepend(_T("!! ")); // Manually entered ETD is before we arrive here!
             }
         } else {
@@ -636,10 +636,15 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
         ts.Trim(true);
         ts.Trim(false);
         
-        if( !etd.ParseDateTime(ts, &end) ) {
-            etd = wxInvalidDateTime;
+        if( !ts.IsEmpty() ) {
+            if( !etd.ParseDateTime(ts, &end) ) {
+                p->SetETD(wxInvalidDateTime);
+            } else {
+                p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
+            }
+        } else {
+            p->SetETD(wxInvalidDateTime);
         }
-        p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
     }
     UpdatePoints();
 #endif

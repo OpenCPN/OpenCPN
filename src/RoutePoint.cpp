@@ -1248,7 +1248,7 @@ void RoutePoint::SetETE(wxLongLong secs)
 
 void RoutePoint::SetETD(const wxDateTime &etd) {
     m_seg_etd = etd;
-    m_manual_etd = true;
+    m_manual_etd = (etd != wxInvalidDateTime);
 }
 
 bool RoutePoint::SetETD(const wxString &ts)
