@@ -350,7 +350,7 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     const wxString res[][RESOLUTIONS] = {
         {_T("0.25"), _T("0.5"), _T("1.0"), _T("2.0")},
         {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
-        {_T("0.05"), _T("0.25"), _T("1.0"), wxEmptyString}
+        {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString}
     };
 
     IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -368,7 +368,7 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
 
     unsigned l;
      //populate time interval choice
-    l = IsGFS ? 3 : IsRTOFS ? 12 : 6;
+    l = IsGFS ? 3 : IsRTOFS ? 3 : 6;
     m_pInterval->Clear();
     for( unsigned i=l; i<25; i*=2)
         m_pInterval->Append( wxString::Format(_T("%d"), i));
@@ -398,6 +398,7 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pWindGust->Enable( IsGFS );
     m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
     m_pCAPE->Enable( IsGFS );
+    m_pReflectivity->Enable( false );
 
     m_pAltitudeData->SetValue( IsGFS ? m_RequestConfigBase.GetChar(17) == 'X' : false );        //altitude data zigrib + saildocs only GFS
     m_pAltitudeData->Enable( IsGFS );
