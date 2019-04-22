@@ -1266,6 +1266,9 @@ void  GribV2Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
+        if (dataType == GRB_TEMP          //gfs Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
     }
     //------------------------
 	//DNMI-NEurope.grb
