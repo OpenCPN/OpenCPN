@@ -36,6 +36,10 @@
 #if wxCHECK_VERSION(2, 9, 0)
  #include <wx/timectrl.h>
 #endif
+#ifdef __WXGTK__
+//wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
+#include "time_textbox.h"
+#endif
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -568,7 +572,11 @@ class options : private Uncopyable,
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
 #if wxCHECK_VERSION(2, 9, 0)
+#ifdef __WXGTK__
+  TimeCtrl *pTrackRotateTime;
+#else
   wxTimePickerCtrl *pTrackRotateTime;
+#endif
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
