@@ -79,6 +79,16 @@ public:
     {
         wxTextCtrl::SetValue(GetValue().Format(TIME_FORMAT));
     };
+    
+    bool GetTime(int* hour, int* min, int* sec) const
+    {
+        const wxDateTime::Tm tm = GetValue().GetTm();
+        *hour = tm.hour;
+        *min = tm.min;
+        *sec = tm.sec;
+        
+        return true;
+    }
 
 };
 
