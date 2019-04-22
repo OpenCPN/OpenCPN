@@ -31,6 +31,7 @@
 #include <wx/datetime.h>
 #include <wx/textctrl.h>
 #include <wx/msgdlg.h>
+#include <wx/dateevt.h>
 
 #define NO_TIME _T("00:00")
 #define TIME_FORMAT _T("%H:%M")
