@@ -23,10 +23,8 @@
  */
 
 #include <iomanip>
-#include <sstream>
 #include <string>
 
-#include <wx/time.h>
 #include <wx/datetime.h>
 #include <wx/filename.h>
 
@@ -129,4 +127,55 @@ void OcpnLog::DoLogRecord(wxLogLevel level,
         << std::setw(7) << level2str(level) << " "
         << basename(info.filename) << ":" << info.line << " "
         << msg << std::endl;
+}
+
+
+Logger::Logger()
+    :info("", 0, "", ""), level(wxLOG_Info) {};
+
+Logger::~Logger()
+{
+    wxString msg(os.str());
+    wxLog* log = wxLog::GetActiveTarget();
+    auto ocpnLog = dynamic_cast<OcpnLog*>(log);
+    if (ocpnLog)  {
+        ocpnLog->LogRecord(level, msg, info);
+    }
+}
+
+
+std::ostream& Logger::get(wxLogLevel l, const char* path, int line)
+{
+    info.filename = path;
+    info.line = line;
+    level = l;
+    return os;
+}
+
+
+void Logger::logRecord(wxLogLevel level,
+                       const char* msg,
+                       const wxLogRecordInfo info)
+{
+    wxLog* log = wxLog::GetActiveTarget();
+    auto ocpnLog = dynamic_cast<OcpnLog*>(log);
+    if (ocpnLog)  {
+        ocpnLog->LogRecord(level, wxString(msg), info);
+    }
+}
+
+
+void Logger::logMessage(wxLogLevel level, const char* path, int line,
+                        const char* fmt, ...)
+{
+    wxLogRecordInfo info(__FILE__, __LINE__, "", "");
+    char buf[1024];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_end(ap);
+    auto log = dynamic_cast<OcpnLog*>(wxLog::GetActiveTarget());
+    if (log) {
+        log->LogRecord(level, buf, info);
+    }
 }

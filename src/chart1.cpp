@@ -1844,19 +1844,10 @@ bool MyApp::OnInit()
     wxLogMessage( _T("\n\n________\n") );
 
 
+    g_vs = wxString(VERSION_FULL).Trim(True).Trim(False);
     wxDateTime now = wxDateTime::Now();
-    wxString imsg(wxString("------- OpenCPN restarted at ")
-        + now.FormatISODate() +  " " + now.FormatISOTime()
-        + "-------\n"
-    );
-    wxLogMessage( imsg );
-
-    wxString version = VERSION_FULL;
-    wxString vs = version.Trim( true );
-    vs = vs.Trim( false );
-    wxLogMessage( vs );
-    g_vs = vs;
-
+    LOG_INFO("------- OpenCPN version %s restarted at %s -------\n",
+             VERSION_FULL, now.FormatISODate().mb_str().data());
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
 
@@ -1887,7 +1878,7 @@ bool MyApp::OnInit()
     ::wxInitAllImageHandlers();
 
 
-    imsg = _T("SData_Locn is ");
+    wxString imsg = _T("SData_Locn is ");
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
@@ -2086,6 +2077,8 @@ bool MyApp::OnInit()
     ConfigMgr::Get();
 
     // Is this an upgrade? 
+    wxString vs =
+        wxString("Version ") +  VERSION_FULL + " Build " + VERSION_DATE;
     g_bUpgradeInProcess = (vs != g_config_version_string);
     
 #ifndef __OCPN__ANDROID__    
