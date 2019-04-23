@@ -545,26 +545,11 @@ else (OCPN_BUNDLE_DOCS MATCHES "ON")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 
 #
-# Linux: set up GTK
+# Linux: set up GTK (wxWidgets prerequisite).
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  if (NOT OCPN_FORCE_GTK3)
-    find_package(GTK2)
-  endif ()
-  if (GTK2_FOUND)
-    include_directories(${GTK2_INCLUDE_DIRS})
-    set(GTK_LIBRARIES ${GTK2_LIBRARIES})
-    message(STATUS "Building against GTK2...")
-  else (GTK2_FOUND)
-    find_package(GTK3)
-    include_directories(${GTK3_INCLUDE_DIRS})
-    set(GTK_LIBRARIES ${GTK3_LIBRARIES})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
-    message(STATUS "Building against GTK3...")
-  endif (GTK2_FOUND)
-endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-
-message(STATUS "Using sources: ${SRCS} ${HDRS}")
+  include(OcpnFindGtk)
+endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
