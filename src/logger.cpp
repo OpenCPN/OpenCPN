@@ -53,7 +53,7 @@ static std::string timeStamp()
 }
 
 
-static std::string level2str(wxLogLevel level)
+std::string OcpnLog::level2str(wxLogLevel level)
 {
     switch (level) {
         case wxLOG_FatalError:

@@ -28,6 +28,7 @@
 #include <fstream>
 #include <sstream>
 #include <ostream>
+#include <string>
 
 #include <wx/log.h>
 
@@ -74,6 +75,7 @@ class OcpnLog: public wxLog
                          const wxLogRecordInfo& info) override;
 
         static wxLogLevel str2level(const char* string);
+        static std::string level2str(wxLogLevel level);
 
     protected:
         std::ofstream log;

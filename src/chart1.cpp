@@ -1136,7 +1136,6 @@ static void ParseLoglevel(wxCmdLineParser& parser)
         level = wxLOG_Info;
     }
     wxLog::SetLogLevel(level);
-    wxLogInfo("Log initiated using level %s", strLevel);
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -1844,10 +1843,13 @@ bool MyApp::OnInit()
     wxLogMessage( _T("\n\n________\n") );
 
 
-    g_vs = wxString(VERSION_FULL).Trim(True).Trim(False);
+    g_vs = wxString(VERSION_FULL).Trim(true).Trim(false);
     wxDateTime now = wxDateTime::Now();
     LOG_INFO("------- OpenCPN version %s restarted at %s -------\n",
              VERSION_FULL, now.FormatISODate().mb_str().data());
+    wxLogLevel level = wxLog::GetLogLevel();
+    LOG_INFO("Using loglevel %s", OcpnLog::level2str(level).c_str());
+
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
 
