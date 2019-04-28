@@ -45,6 +45,12 @@
 #endif    
 
 #include <wx/xml/xml.h>
+#include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/menuitem.h>
+#include <wx/gdicmn.h>
+
 
 #ifdef ocpnUSE_SVG
 #include <wx/bitmap.h>
