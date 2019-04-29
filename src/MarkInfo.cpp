@@ -39,6 +39,10 @@
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
 
+#ifdef ocpnUSE_SVG
+#include <wxSVG/svg.h>
+#endif // ocpnUSE_SVG
+
 #include "styles.h"
 #include "MarkInfo.h"
 #include "navutil.h"                // for Route

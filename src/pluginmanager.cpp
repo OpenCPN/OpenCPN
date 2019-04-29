@@ -45,6 +45,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#ifdef ocpnUSE_SVG
+#include <wxSVG/svg.h>
+#endif // ocpnUSE_SVG
+
 #ifdef USE_LIBELF
 #include <elf.h>
 #include <libelf.h>

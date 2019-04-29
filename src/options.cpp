@@ -57,6 +57,10 @@
 #include <wx/colordlg.h>
 #endif
 
+#ifdef ocpnUSE_SVG
+#include <wxSVG/svg.h>
+#endif // ocpnUSE_SVG
+
 #include "config.h"
 
 #include "dychart.h"
