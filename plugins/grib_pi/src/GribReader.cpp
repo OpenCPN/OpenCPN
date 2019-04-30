@@ -227,15 +227,21 @@ void GribReader::readAllGribRecords()
         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
             storeRecordInMap(rec);
 
-        else if( rec->getDataType() == GRB_WVPER )               // Waves period
+        else if( rec->getDataType() == GRB_PER )                 // Combined Wind Waves and Swell period
             storeRecordInMap(rec);
 
-        else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
+        else if( rec->getDataType() == GRB_DIR )                 // Combined Wind Waves and Swell Direction
             storeRecordInMap(rec);
 
-        else if( rec->getDataType() == GRB_WVHGT )               // Wave Height
+        else if( rec->getDataType() == GRB_WVHGT )               // Wind Wave Height
             storeRecordInMap(rec);
                 
+        else if( rec->getDataType() == GRB_WVPER )               // Wind Waves period
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType() == GRB_WVDIR )               // Wind Waves Direction
+            storeRecordInMap(rec);
+
         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
             storeRecordInMap(rec);
 
@@ -422,6 +428,8 @@ void  GribReader::copyMissingWaveRecords ()
 	copyMissingWaveRecords (GRB_HTSGW, LV_GND_SURF, 0);
 	copyMissingWaveRecords (GRB_WVDIR, LV_GND_SURF,0);
     copyMissingWaveRecords (GRB_WVPER, LV_GND_SURF,0);
+	copyMissingWaveRecords (GRB_DIR, LV_GND_SURF,0);
+    copyMissingWaveRecords (GRB_PER, LV_GND_SURF,0);
 }
 
 //---------------------------------------------------------------------------------
