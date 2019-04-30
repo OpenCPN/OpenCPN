@@ -1963,12 +1963,12 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                             skip = (oRec->getLevelType() == LV_MSL);
                         } 
                         else {
+                            // we favor UV over DIR/SPEED
                             if (polarWind) {
-                                // we favor UV over DIR/SPEED
                                 if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
                                     skip = true;
                             }
-                            else if (polarCurrent) {
+                            if (polarCurrent) {
                                 if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
                                     skip = true;
                             }
