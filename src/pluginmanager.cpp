@@ -441,6 +441,30 @@ PlugInManager::~PlugInManager()
 }
 
 
+/**
+ *
+ * For linux, set up LD_LIBRARY_PATH to the same value as the path used
+ * to load plugins, assuring helper binaries can load libraries installed
+ * in the same directory as the plugin.
+ *
+ */
+static void setLoadPath()
+{
+#ifdef __linux__
+   std::string path(DEFAULT_PLUGIN_DIRS);
+   if (getenv("LD_LIBRARY_PATH")) {
+       path = getenv("LD_LIBRARY_PATH");
+   }
+   else if (getenv("OPENCPN_PLUGIN_DIRS")) {
+       path = getenv("OPENCPN_PLUGIN_DIRS");
+   }
+   path = ExpandWord(path.c_str()).ToStdString();
+   wxLogMessage("Using LD_LIBRARY_PATH: %s", path);
+   setenv("LD_LIBRARY_PATH", path.c_str(), 1);
+#endif
+}
+
+
 bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
 #ifdef __linux__
@@ -452,6 +476,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     wxString dirs = plugin_dir;
 #endif
     wxLogMessage( _T("PlugInManager: plugins loading from ") + dirs);
+    setLoadPath();
     bool any_dir_loaded = false;
     wxStringTokenizer tokens(dirs, PATH_SEP);
     while (tokens.HasMoreTokens()) {
