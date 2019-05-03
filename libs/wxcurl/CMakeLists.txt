@@ -46,7 +46,7 @@ include(Curl)
     
 add_library(WXCURL STATIC ${SRC})
 add_library(ocpn::wxcurl ALIAS WXCURL)
-set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+set_property(TARGET WXCURL PROPERTY COMPILE_FLAGS "-fvisibility=default")
 target_include_directories(WXCURL 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC ${CURL_INCLUDE_DIRS}
