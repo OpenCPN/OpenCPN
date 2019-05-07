@@ -6077,7 +6077,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 //         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 //         if (style->chartStatusWindowTransparent)
 //             chartbar_height = 0;
-        int y_origin = m_canvas_height - chartbar_height - 5;
+        int y_origin = m_canvas_height - chartbar_height - 20;
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
         GetCanvasPixPoint( x_origin + m_canvas_width, y_origin, tlat, tlon );
@@ -6102,7 +6102,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 
         wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
         wxColour black = GetGlobalColor( _T ( "UBLCK" ) );
-        wxPen pen1 = wxPen( black , 3, wxPENSTYLE_SOLID );
+        wxPen pen1 = wxPen( black , 2, wxPENSTYLE_SOLID );
         double rotation = -VPoint.rotation;
 
         ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
