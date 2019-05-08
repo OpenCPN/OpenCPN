@@ -1915,7 +1915,7 @@ endif ()
 # Sanitizers, part 2/2
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(${PACKAGE_NAME} -fsanitize=${ENABLE_SANITIZER})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE -fsanitize=${ENABLE_SANITIZER})
   endif ()
 endif ()
 
