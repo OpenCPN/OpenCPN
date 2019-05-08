@@ -535,7 +535,7 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( ToolbarItemContainer *ti
         }
         
         menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tic->m_tipString );
-        int n = m_FloatingToolbarConfigMenu->GetMenuItemCount(); 
+        size_t n = m_FloatingToolbarConfigMenu->GetMenuItemCount();
         menuitem->Check( m_configString.Len() >= n ? m_configString.GetChar( n-1 ) == _T('X') : true );
         return menuitem->IsChecked();
     }
