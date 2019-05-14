@@ -18,6 +18,7 @@ matrix:
     - env:
         - OCPN_TARGET=osx
       os: osx
+      osx_image: xcode10.2
       compiler: clang
       script:
         - ./ci/travis-build-osx.sh
