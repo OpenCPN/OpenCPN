@@ -466,15 +466,11 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
     //  Fetch any config file values
     if ( !only_points )
     {
-        m_tz_selection = 1; // Local PC time by default
+        if( !pR->m_PlannedDeparture.IsValid() )
+            pR->m_PlannedDeparture = wxDateTime::Now().ToUTC();
         
-        if( pR == m_pRoute ) {
-            if( !pR->m_PlannedDeparture.IsValid() )
-                pR->m_PlannedDeparture = wxDateTime::Now();
-        } else {
-            if( !pR->m_PlannedDeparture.IsValid() )
-                pR->m_PlannedDeparture = wxDateTime::Now();
-
+        m_tz_selection = 1; // Local PC time by default
+        if( pR != m_pRoute ) {
             if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
                 m_tz_selection = 0;
             else if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL )
