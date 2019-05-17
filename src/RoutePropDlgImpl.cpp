@@ -77,7 +77,7 @@ int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 #define    EVTWILIGHT    5
 #define    NIGHT        6
 
-wxString GetDaylightString(int index)
+static wxString GetDaylightString(int index)
 {
     switch (index)
     {
@@ -127,7 +127,7 @@ static double FNrange( double x )
     return ( a );
 }
 
-double getDaylightEvent( double glat, double glong, int riset, double altitude, int y, int m,
+static double getDaylightEvent( double glat, double glong, int riset, double altitude, int y, int m,
                         int d )
 {
     double day = FNday( y, m, d, 0 );
@@ -176,7 +176,7 @@ static double getLMT( double ut, double lon )
         return ( t + 24. );
 }
 
-int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
+static int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
 {
     if( fabs( lat ) > 60. ) return ( 0 );
     int y = utcDateTime.GetYear();
