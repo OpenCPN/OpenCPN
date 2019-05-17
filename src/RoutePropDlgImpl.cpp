@@ -258,12 +258,8 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
     {
         single = new RoutePropDlgImpl( parent );
         instanceFlag = true;
-        return single;
     }
-    else
-    {
-        return single;
-    }
+    return single;
 }
 
 void RoutePropDlgImpl::UpdatePoints()
@@ -274,8 +270,6 @@ void RoutePropDlgImpl::UpdatePoints()
     int selected_row = m_dvlcWaypoints->GetSelectedRow();
     m_dvlcWaypoints->DeleteAllItems();
     
-    if( NULL == m_pRoute )
-        return;
     wxVector<wxVariant> data;
     
     m_pRoute->UpdateSegmentDistances( m_pRoute->m_PlannedSpeed );           // to fix ETA properties
@@ -509,6 +503,10 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
             m_tpDepartureTime->SetValue(toUsrDateTime(wxDateTime::Now(), m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
         }
     }
+
+    m_btnSplit->Enable(false);
+    if (!m_pRoute)
+        return;
     
     if( m_pRoute->m_Colour == wxEmptyString ) {
         m_choiceColor->Select( 0 );
@@ -537,7 +535,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
     
     UpdatePoints();
     
-    m_btnSplit->Enable(false);
     m_btnExtend->Enable(IsThisRouteExtendable());
 }
 
