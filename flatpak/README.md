@@ -28,10 +28,10 @@ Users might need to install flatpak, described in https://flatpak.org/setup/.
 Using the provisionary fedorapeople repo, opencpn can be installed using: 
 
     $ flatpak install --user \
-        https://leamas.fedorapeople.org/opencpn/opencpn.flatpakref
+        https://opencpn.duckdns.org/opencpn/opencpn.flatpakref
 
-Same thing can be achieved pointing the browser to 
-https://leamas.fedorapeople.org/opencpn/
+Same thing can be achieved by pointing the browser to
+https://opencpn.duckdns.org/opencpn/
 
 In order to fix device permissions, a udev rule needs to be installed. Create
 a file called *70-serial-opencpn.rules* like
@@ -90,6 +90,9 @@ The file system used by flatpak apps is not available in a form where
 users could just drop a file. However, packaging plugins is normally 
 trivial. An example from the shipdriver plugin, 
 https://github.com/lea~/opencpn-gpgmas/shipdriver_pi.
+
+Note: there is an ongoing effort to teach opencpn to load it's own
+plugins. Eventually, this will affect the plugin handling.
 
 The first step is to update the API. Copy the file ocpn_plugin.h
 from the opencpn package to shipdriver src directory. Then, patch

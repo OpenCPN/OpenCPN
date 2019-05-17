@@ -6,7 +6,7 @@ BRANCH          ?= stable
 GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= gpg
-REPO_URL        ?= http://leamas.fedorapeople.org/opencpn/repo
+REPO_URL        ?= http://opencpn.duckdns.org/opencpn/repo
 
 all: build sign
 
