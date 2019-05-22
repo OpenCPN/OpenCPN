@@ -923,11 +923,20 @@ void glChartCanvas::SetupOpenGL()
     g_b_EnableVBO = false;
 #endif
 
+#if defined( __WXMSW__ )
+        g_b_EnableVBO = false;
+        wxLogMessage( _T("OpenGL-> DISABLING VBO for Intel test.") );
+#endif
+
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
         wxLogMessage( _T("OpenGL-> Vertexbuffer Objects unavailable") );
-    
+
+// #if defined(__WXOSX__)
+//     wxLogMessage( _T("OpenGL-> DISABLING VBO for Mac/Intel test.") );
+//     g_b_EnableVBO = false;
+// #endif    
     
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES 

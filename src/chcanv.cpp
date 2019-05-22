@@ -993,6 +993,10 @@ void ChartCanvas::SetupGlCanvas( )
 
         // We use one context for all GL windows, so that textures etc will be automatically shared
             if(IsPrimaryCanvas()){
+                
+//             wxGLContextAttrs ctxAttr;
+//             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
+//             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
                 wxGLContext *pctx = new wxGLContext(m_glcc);
                 m_glcc->SetContext(pctx);
                 g_pGLcontext = pctx;                // Save a copy of the common context

@@ -7299,7 +7299,13 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( b_useVBO ){        
         //  Has a VBO been built for this object?
             if( 1 ) {
+                glGetError(); // clear it
                  
+                if(rzRules->obj->auxParm0 >= 0){
+                    s_glDeleteBuffers(1, (unsigned int *)&rzRules->obj->auxParm0);
+                    rzRules->obj->auxParm0 = -7;
+                }
+
                  if(rzRules->obj->auxParm0 <= 0) {
                     b_temp_vbo = (rzRules->obj->auxParm0 == -5);   // Must we use a temporary VBO?  Probably slower than simple glDrawArrays
                    
@@ -7377,7 +7383,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if(!BBView.IntersectOut(box)) {
                 if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
-                    glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                    if(vbo_offset + p_tp->nVert * 2 * array_data_size <= ppg_vbo->single_buffer_size) 
+                        glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else {
                     if(vp->m_projection_type == PROJECTION_MERCATOR) {
