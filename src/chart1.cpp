@@ -434,6 +434,8 @@ bool                      g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog      *g_pais_alert_dialog_active;
 AISTargetQueryDialog      *g_pais_query_dialog_active;
 int                       g_iSoundDeviceIndex;
+int						  g_SoundVolume;
+int						  g_SoundPlayTime;
 
 int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;

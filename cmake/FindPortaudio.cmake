@@ -55,17 +55,19 @@ PATHS
 /usr/local/include
 /opt/local/include
 /sw/include
+${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include
 )
 
 find_library(PORTAUDIO_LIBRARY
 NAMES
-portaudio
+portaudio_x86
 PATHS
 /usr/lib
 /usr/local/lib
 /opt/local/lib
 /usr/lib/i386-linux-gnu
 /sw/lib
+${CMAKE_CURRENT_SOURCE_DIR}/buildwin/
 )
 
 set(PORTAUDIO_INCLUDE_DIRS

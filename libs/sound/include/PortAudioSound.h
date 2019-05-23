@@ -53,6 +53,7 @@ class PortAudioSound: public OcpnSound
         bool Load(const char* path, int deviceIndex = -1) override;
         bool Play() override;
         bool Stop() override;
+		bool Close() override;
         void SetFinishedCallback(AudioDoneCallback cb, void* userData = 0);
 
         /**
