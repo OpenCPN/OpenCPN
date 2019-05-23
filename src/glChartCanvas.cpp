@@ -208,7 +208,7 @@ PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
-
+PFNGLBUFFERPARAMETERSIVPROC         s_glGetBufferParameteriv;
 
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
@@ -371,6 +371,8 @@ void GetglEntryPoints( OCPN_GLCaps *pcaps )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+        pcaps->m_glGetBufferParameteriv = (PFNGLBUFFERPARAMETERSIVPROC)
+            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
 
              
     }
@@ -463,6 +465,8 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+        s_glGetBufferParameteriv = (PFNGLBUFFERPARAMETERSIVPROC)
+            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
 
             
     }

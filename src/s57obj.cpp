@@ -87,6 +87,7 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+extern PFNGLBUFFERPARAMETERSIVPROC         s_glGetBufferParameteriv;
 #endif
 
 //----------------------------------------------------------------------------------
