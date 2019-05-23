@@ -68,6 +68,7 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+extern PFNGLBUFFERPARAMETERSIVPROC         s_glGetBufferParameteriv;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
@@ -7301,11 +7302,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if( 1 ) {
                 glGetError(); // clear it
                  
-                if(rzRules->obj->auxParm0 >= 0){
-                    s_glDeleteBuffers(1, (unsigned int *)&rzRules->obj->auxParm0);
-                    rzRules->obj->auxParm0 = -7;
-                }
-
                  if(rzRules->obj->auxParm0 <= 0) {
                     b_temp_vbo = (rzRules->obj->auxParm0 == -5);   // Must we use a temporary VBO?  Probably slower than simple glDrawArrays
                    
@@ -7371,7 +7367,18 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             array_gl_type = GL_DOUBLE;
         }
             
-        while( p_tp ) {
+        int nBufferSize = 0;
+        bool vbo_OK = true;
+        s_glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &nBufferSize);
+        if(nBufferSize != ppg_vbo->single_buffer_size)
+        {
+            //wxString msg;
+            //msg.Printf(_T("VBO Size Mismatch:  %d  %d  %d"), rzRules->obj->auxParm0, ppg_vbo->single_buffer_size, nBufferSize);
+            //wxLogMessage(msg);
+            vbo_OK = false;
+        }
+ 
+        while( vbo_OK && p_tp ) {
             LLBBox box;
             if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
                 LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
