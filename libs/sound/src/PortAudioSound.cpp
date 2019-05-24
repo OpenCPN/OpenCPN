@@ -269,7 +269,8 @@ bool PortAudioSound::SetDeviceIndex(int deviceIndex)
     if (deviceIndex < -1 || deviceIndex >= DeviceCount()) {
         wxLogWarning("SetDeviceIndex: Illegal index: %d, using default",
                      deviceIndex);
-	m_deviceIx = -1;
+	m_deviceIx = Pa_GetDefaultOutputDevice();
+	return true;
     }
     m_deviceIx =
 	deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
@@ -305,7 +306,7 @@ bool PortAudioSound::Play()
         unlock();
         return ok;
     }
-    if (!m_stream) {
+	if (!m_stream) {
         if (!openStream(&m_stream, 
                         m_deviceIx, 
                         m_soundLoader, 
