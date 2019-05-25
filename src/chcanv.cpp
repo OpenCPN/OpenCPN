@@ -133,7 +133,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 extern float  g_ChartScaleFactorExp;
 extern float  g_ShipScaleFactorExp;
 extern int    g_iSoundDeviceIndex;
-extern int	  g_SoundPlayTime;
+extern int    g_SoundPlayTime;
 
 #include <vector>
 //#include <wx-3.0/wx/aui/auibar.h>
@@ -6213,9 +6213,9 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 #ifdef HAVE_PORTAUDIO
-	if (++playtimes < g_SoundPlayTime)
-		return;
-	playtimes = 0;
+    if (++playtimes < g_SoundPlayTime)
+        return;
+    playtimes = 0;
 #endif
     if( play_sound && !bAnchorSoundPlaying) {
         g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
@@ -6223,7 +6223,7 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
         if ( g_anchorwatch_sound->IsOk( ) ) {
             bAnchorSoundPlaying = true;
             g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
-			g_anchorwatch_sound->Play();
+            g_anchorwatch_sound->Play();
         }
     } else if( g_anchorwatch_sound->IsOk()) {
         g_anchorwatch_sound->Stop();

@@ -51,7 +51,7 @@ bool SndfileSoundLoader::Reset()
 
 size_t SndfileSoundLoader::Get(void* buff, size_t length)
 {
-	short* dest = static_cast<short*>(buff);
+    short* dest = static_cast<short*>(buff);
     size_t done = sf_read_short(m_sndfile, dest, length/2);
     return done * 2;
 }

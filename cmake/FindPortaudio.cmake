@@ -60,6 +60,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include
 
 find_library(PORTAUDIO_LIBRARY
 NAMES
+portaudio
 portaudio_x86
 PATHS
 /usr/lib

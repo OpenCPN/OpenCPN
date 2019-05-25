@@ -5334,11 +5334,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
             continue;
         }
         wxString label(sound->GetDeviceInfo(i));
-		if (label == "") {
-			label = _("Unknown device :") + std::to_string(i);
-		}
-		else
-			label = wxString::Format(wxT("%i: "), i) + label;
+	    if (label == "") {
+	        label = _("Unknown device :") + std::to_string(i);
+	    }
+	    else
+	        label = wxString::Format(wxT("%i: "), i) + label;
         labels.Add(label);
     }
 #ifdef HAVE_PORTAUDIO
@@ -5347,17 +5347,17 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
         pSoundDeviceIndex->Create(itemPanelFont,
             wxID_ANY,
             wxDefaultPosition,
-			wxSize(300, 20),
+	        wxSize(300, 20),
             labels);
-		// Get the Selected Value <-> SounddeviveIndex
-		for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
-		{
-			if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
-			{
-				pSoundDeviceIndex->SetSelection(tmpi);
-				break;
-			}
-		}
+	    // Get the Selected Value <-> SounddeviveIndex
+	    for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
+	    {
+            if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
+            {
+                pSoundDeviceIndex->SetSelection(tmpi);
+                break;
+            }
+        }
         pSoundDeviceIndex->Show();
         wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
         miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
@@ -5367,22 +5367,22 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
             new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
         pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
         pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
-		// Volume Slider
-		wxStaticText* VolumeText =
-			new wxStaticText(itemPanelFont, wxID_STATIC, _("Volume"));
-		pSoundDeviceIndexGrid->Add(VolumeText, 0, wxALL, 5);
-		pSoundvolume =
-			new wxSlider(itemPanelFont, wxID_ANY, 10, 0, 50, wxDefaultPosition, wxSize(300, 30), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
-		pSoundvolume->SetValue(g_SoundVolume);
-		pSoundDeviceIndexGrid->Add(pSoundvolume, 0, wxALL, 5);
-		// Sound Time Play Slider
-		wxStaticText* SoundPlayTimeText =
-			new wxStaticText(itemPanelFont, wxID_STATIC, _("Playtime (Sec)"));
-		pSoundDeviceIndexGrid->Add(SoundPlayTimeText, 0, wxALL, 5);
-		pSoundPlayTime =
-			new wxSlider(itemPanelFont, wxID_ANY, 4, 1, 30, wxDefaultPosition, wxSize(300, 40), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
-		pSoundPlayTime->SetValue(g_SoundPlayTime);
-		pSoundDeviceIndexGrid->Add(pSoundPlayTime, 0, wxALL, 5);
+        // Volume Slider
+        wxStaticText* VolumeText =
+            new wxStaticText(itemPanelFont, wxID_STATIC, _("Volume"));
+        pSoundDeviceIndexGrid->Add(VolumeText, 0, wxALL, 5);
+        pSoundvolume =
+            new wxSlider(itemPanelFont, wxID_ANY, 10, 0, 50, wxDefaultPosition, wxSize(300, 30), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+        pSoundvolume->SetValue(g_SoundVolume);
+        pSoundDeviceIndexGrid->Add(pSoundvolume, 0, wxALL, 5);
+        // Sound Time Play Slider
+        wxStaticText* SoundPlayTimeText =
+            new wxStaticText(itemPanelFont, wxID_STATIC, _("Playtime (Sec)"));
+        pSoundDeviceIndexGrid->Add(SoundPlayTimeText, 0, wxALL, 5);
+        pSoundPlayTime =
+            new wxSlider(itemPanelFont, wxID_ANY, 4, 1, 30, wxDefaultPosition, wxSize(300, 40), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+        pSoundPlayTime->SetValue(g_SoundPlayTime);
+        pSoundDeviceIndexGrid->Add(pSoundPlayTime, 0, wxALL, 5);
     }
 #endif
   }
@@ -6038,20 +6038,20 @@ void options::SetInitialSettings(void) {
 
   if (pSoundDeviceIndex)
   {
-	  for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
-	  {
-		  if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
-		  {
-			  pSoundDeviceIndex->SetSelection(tmpi);
-			  break;
-		  }
-	  }
+      for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
+      {
+          if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
+          {
+              pSoundDeviceIndex->SetSelection(tmpi);
+              break;
+          }
+      }
   }
 #ifdef HAVE_PORTAUDIO
   if (pSoundvolume)
-	pSoundvolume->SetValue(g_SoundVolume);
+    pSoundvolume->SetValue(g_SoundVolume);
   if (pSoundPlayTime)
-	  pSoundPlayTime->SetValue(g_SoundPlayTime);
+    pSoundPlayTime->SetValue(g_SoundPlayTime);
 #endif
   // Old : pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
@@ -7150,19 +7150,19 @@ void options::OnApplyClick(wxCommandEvent& event) {
 #ifdef HAVE_PORTAUDIO
   if (pSoundDeviceIndex)
   {
-	  if (g_iSoundDeviceIndex != atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':')))
-	  {
-		  // When not the same device select new 
-		  g_anchorwatch_sound->Stop();
-		  g_anchorwatch_sound->Close();
-	  }
-	  g_iSoundDeviceIndex = atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':'));
+      if (g_iSoundDeviceIndex != atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':')))
+      {
+          // When not the same device select new 
+          g_anchorwatch_sound->Stop();
+          g_anchorwatch_sound->Close();
+      }
+      g_iSoundDeviceIndex = atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':'));
   }
   // old : g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
   if (pSoundvolume)
       g_SoundVolume = pSoundvolume->GetValue();
   if (pSoundPlayTime)
-	  g_SoundPlayTime = pSoundPlayTime->GetValue();
+      g_SoundPlayTime = pSoundPlayTime->GetValue();
 #endif
   //g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
@@ -8271,9 +8271,9 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
   if (response == wxID_OK) {
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
-		g_anchorwatch_sound->Stop();
+        g_anchorwatch_sound->Stop();
 #ifdef HAVE_PORTAUDIO
-		g_anchorwatch_sound->Close();
+        g_anchorwatch_sound->Close();
 #endif
   }
 }

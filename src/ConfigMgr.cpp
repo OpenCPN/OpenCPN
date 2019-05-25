@@ -119,8 +119,8 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern int              g_iSoundDeviceIndex;
-extern int				g_SoundVolume;
-extern int				g_SoundPlayTime;
+extern int              g_SoundVolume;
+extern int              g_SoundPlayTime;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bShowLayers;
 extern bool             g_bTransparentToolbar;
@@ -1032,8 +1032,8 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     conf->Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
     conf->Write( _T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex );
-	conf->Write( _T ( "SoundVolume"), g_SoundVolume );
-	conf->Write( _T ( "SoundPlayTime"), g_SoundPlayTime );
+    conf->Write( _T ( "SoundVolume"), g_SoundVolume );
+    conf->Write( _T ( "SoundPlayTime"), g_SoundPlayTime );
     conf->Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
     //conf->Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     conf->Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
@@ -1517,8 +1517,8 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ShowCompassWindow" ), &g_bShowCompassWin );
     CHECK_INT( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     CHECK_INT( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
-	CHECK_INT( _T ( "SoundVolume" ), &g_SoundVolume );
-	CHECK_INT( _T ( "SoundPlayTime"), &g_SoundPlayTime );
+    CHECK_INT( _T ( "SoundVolume" ), &g_SoundVolume );
+    CHECK_INT( _T ( "SoundPlayTime"), &g_SoundPlayTime );
     CHECK_INT( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
     //CHECK_INT( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     CHECK_INT( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );

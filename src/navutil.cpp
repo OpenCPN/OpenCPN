@@ -132,8 +132,8 @@ extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
 extern int              g_iSoundDeviceIndex;
-extern int				g_SoundVolume;
-extern int				g_SoundPlayTime;
+extern int              g_SoundVolume;
+extern int              g_SoundPlayTime;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bShowLayers;
 extern bool             g_bTransparentToolbar;
@@ -931,8 +931,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
-	Read( _T ( "SoundVolume"), &g_SoundVolume);
-	Read( _T ( "SoundPlayTime"), &g_SoundPlayTime);
+    Read( _T ( "SoundVolume"), &g_SoundVolume);
+    Read( _T ( "SoundPlayTime"), &g_SoundPlayTime);
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
     //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
@@ -2266,8 +2266,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
     Write( _T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex );
-	Write( _T ( "SoundVolume"), g_SoundVolume);
-	Write( _T ( "SoundPlayTime"), g_SoundPlayTime);
+    Write( _T ( "SoundVolume"), g_SoundVolume);
+    Write( _T ( "SoundPlayTime"), g_SoundPlayTime);
     Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
     Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
