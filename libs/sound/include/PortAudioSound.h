@@ -81,7 +81,7 @@ class PortAudioSound: public OcpnSound
         std::unique_ptr<AbstractSoundLoader> m_soundLoader;
         bool m_isPaInitialized;
         bool m_isAsynch;
-        std::atomic_flag m_lock;
+        std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
 };
 
 

@@ -170,8 +170,7 @@ static bool writeSynchronous(int deviceIx,
 }
 
 PortAudioSound::PortAudioSound()
-    : m_soundLoader(SoundLoaderFactory()),
-    m_lock()
+    : m_soundLoader(SoundLoaderFactory())
 {
     m_stream = NULL;
     m_isAsynch = false;
