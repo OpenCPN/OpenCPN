@@ -592,8 +592,8 @@ int MyConfig::LoadMyConfig()
     g_bShowStatusBar = 1;
     g_bShowCompassWin = 1;
     g_iSoundDeviceIndex = -1;
-	g_SoundVolume = 10;
-	g_SoundPlayTime = 5;
+    g_SoundVolume = 10;
+    g_SoundPlayTime = 5;
     g_bFullscreenToolbar = 1;
     g_bTransparentToolbar =  0;
     g_bShowLayers = 1;

@@ -15,9 +15,6 @@ buildwin/gtk*/
 buildwin/libcurl.dll
 buildwin/vc/
 buildwin/wxWidgets/
-buildwin/include/
-buildwin/*.dll
-buildwin/*.lib
 buildwin/*.exe
 buildwin/*.crt
 src/opencpn.rc

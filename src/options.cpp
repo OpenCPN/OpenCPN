@@ -1300,7 +1300,7 @@ void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
    if (r == 0)
       return;
   OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),
-		  wxICON_WARNING | wxOK, 60 );
+          wxICON_WARNING | wxOK, 60 );
 #endif
 
 }
@@ -5334,11 +5334,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
             continue;
         }
         wxString label(sound->GetDeviceInfo(i));
-	    if (label == "") {
-	        label = _("Unknown device :") + std::to_string(i);
-	    }
-	    else
-	        label = wxString::Format(wxT("%i: "), i) + label;
+        if (label == "") {
+            label = _("Unknown device :") + std::to_string(i);
+        }
+        else
+            label = wxString::Format(wxT("%i: "), i) + label;
         labels.Add(label);
     }
 #ifdef HAVE_PORTAUDIO
@@ -5347,11 +5347,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
         pSoundDeviceIndex->Create(itemPanelFont,
             wxID_ANY,
             wxDefaultPosition,
-	        wxSize(300, 20),
+            wxSize(300, 20),
             labels);
-	    // Get the Selected Value <-> SounddeviveIndex
-	    for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
-	    {
+        // Get the Selected Value <-> SounddeviveIndex
+        for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
+        {
             if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
             {
                 pSoundDeviceIndex->SetSelection(tmpi);
@@ -8408,7 +8408,7 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
     pdg->m_element_array.reserve(psg->m_element_array.size());
 
     for(auto& elem : psg->m_element_array)
-	    pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
+        pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
 
     d->Add(pdg);
   }

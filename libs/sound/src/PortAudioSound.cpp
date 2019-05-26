@@ -110,16 +110,16 @@ static bool openStream(PaStream** stream,
     outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency; //old 0;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     PaError err = Pa_OpenStream(stream,
-								NULL, /* no input channels */
-								&outputParameters,
-								soundLoader->GetSamplingRate(),
-								BUFSIZE,
-								paNoFlag,   // paClipOff,
-								callback,
-								portAudioSound);
+                                NULL, /* no input channels */
+                                &outputParameters,
+                                soundLoader->GetSamplingRate(),
+                                BUFSIZE,
+                                paNoFlag,   // paClipOff,
+                                callback,
+                                portAudioSound);
     if( err != paNoError ) {
         wxLogWarning("PortAudio Create() error: %s", Pa_GetErrorText(err));
-	return false;
+    return false;
     }
     return true;
 }
@@ -140,7 +140,7 @@ static bool writeSynchronous(int deviceIx,
     PaError pe = paNoError;
     int i;
     for (i = 0; i < sizeof(buff); i++)
-    	*(buff + i) = 0;
+        *(buff + i) = 0;
     int len = sizeof(buff) / soundLoader->GetBytesPerSample();
     // delete the sound at the begin bad noise !
     pe = Pa_WriteStream(stream, buff, len);
@@ -149,14 +149,14 @@ static bool writeSynchronous(int deviceIx,
             Pa_GetErrorText(pe));
         Pa_CloseStream(stream);
         free(buff);
-	    return pe == paNoError;
+        return pe == paNoError;
     }
     float SoundVolume = (float)((float) g_SoundVolume / (float) 10.0);
     len = soundLoader->Get(buff, sizeof(buff));
     for ( ; len > 0; len = soundLoader->Get(buff, sizeof(buff))) {
         for (i = 0; i < (sizeof(buff) / sizeof(int16_t)); ++i)
             buff[i] = (int16_t) (buff[i] * SoundVolume);
-	    len /= soundLoader->GetBytesPerSample();
+        len /= soundLoader->GetBytesPerSample();
         pe = Pa_WriteStream(stream, buff, len);
         if (pe != paNoError) {
             wxLogWarning("PortAudio: Cannot write stream: %s",
@@ -273,7 +273,7 @@ bool PortAudioSound::SetDeviceIndex(int deviceIndex)
     return true;
     }
     m_deviceIx =
-	deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
+    deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
     return true;
 }
 
