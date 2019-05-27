@@ -266,6 +266,7 @@ extern wxLocale* plocale_def_lang;
 #endif
 
 extern OcpnSound* g_anchorwatch_sound;
+extern OcpnSound* g_PluginSound;
 extern OcpnSound* m_AIS_Sound;
 extern bool g_bMagneticAPB;
 
@@ -4936,7 +4937,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                              wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
-	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
+     itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
     
     bearingsSizer->AddSpacer(10);
@@ -7152,9 +7153,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
   {
       if (g_iSoundDeviceIndex != atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':')))
       {
-          // When not the same device select new 
+          // When not the same device select new and reinit
           g_anchorwatch_sound->Stop();
           g_anchorwatch_sound->Close();
+          if (g_PluginSound)
+          {
+              g_PluginSound->Stop();
+              g_PluginSound->Close();
+          }
       }
       g_iSoundDeviceIndex = atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':'));
   }
@@ -8272,9 +8278,7 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
   if (response == wxID_OK) {
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
         g_anchorwatch_sound->Stop();
-#ifdef HAVE_PORTAUDIO
         g_anchorwatch_sound->Close();
-#endif
   }
 }
 

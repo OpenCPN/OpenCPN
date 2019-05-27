@@ -144,6 +144,7 @@ extern ChartGroupArray  *g_pGroupArray;
 extern unsigned int     g_canvasConfig;
 
 extern wxString         g_CmdSoundString;
+extern int              g_iSoundDeviceIndex;
 
 #ifdef __WXMSW__
 static const char PATH_SEP = ';';
@@ -3219,6 +3220,11 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 void PlugInPlaySound(wxString& sound_file)
 {
     PlugInPlaySoundEx(sound_file, -1);
+}
+
+int GetSelectedSounddeviceIndex()
+{
+    return g_iSoundDeviceIndex;
 }
 
 // API 1.10 Route and Waypoint Support

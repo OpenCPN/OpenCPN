@@ -1103,6 +1103,7 @@ extern DECL_EXP void SetCanvasTilt(double tilt);
  * portaudio sound backend where -1 indicates the default device.
  */
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
+extern DECL_EXP int  GetSelectedSounddeviceIndex();
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
 
