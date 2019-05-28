@@ -151,7 +151,7 @@ static bool writeSynchronous(int deviceIx,
         free(buff);
         return pe == paNoError;
     }
-    float SoundVolume = (float)((float) g_SoundVolume / (float) 10.0);
+    float SoundVolume = (float) g_SoundVolume / (float) 10.0;
     len = soundLoader->Get(buff, sizeof(buff));
     for ( ; len > 0; len = soundLoader->Get(buff, sizeof(buff))) {
         for (i = 0; i < (sizeof(buff) / sizeof(int16_t)); ++i)
@@ -361,7 +361,7 @@ int PortAudioSound::SoundCallback(void *outputBuffer,
                                   const PaStreamCallbackTimeInfo* timeInfo,
                                   PaStreamCallbackFlags statusFlags)
 {
-    float SoundVolume = (float)((float)g_SoundVolume / (float) 10.0);
+    float SoundVolume = (float)g_SoundVolume / (float) 10.0;
     int16_t* dest = static_cast<int16_t*>(outputBuffer);
     int bufferlen = framesPerBuffer * m_soundLoader->GetBytesPerSample();
     int len = m_soundLoader->Get(dest, bufferlen);

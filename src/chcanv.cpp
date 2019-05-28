@@ -95,6 +95,7 @@
 #include "CanvasConfig.h"
 #include "CanvasOptions.h"
 #include "mbtiles.h"
+#include "PortAudioSound.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -6212,11 +6213,11 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
         }
     } else
         AnchorAlertOn2 = false;
-#ifdef HAVE_PORTAUDIO
-    if (++playtimes < g_SoundPlayTime)
-        return;
-    playtimes = 0;
-#endif
+    if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+        if (++playtimes < g_SoundPlayTime)
+            return;
+        playtimes = 0;
+    }
     if( play_sound && !bAnchorSoundPlaying) {
         g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
         g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);

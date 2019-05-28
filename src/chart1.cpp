@@ -2937,7 +2937,7 @@ void MyFrame::OnBellsFinished( wxCommandEvent& event )
     OcpnSound* sound = bells_sound[bells - 1];
     sound->SetFinishedCallback(onBellsFinishedCB, this);
     sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-    sound->Load( soundfile );
+    sound->Load( soundfile, g_iSoundDeviceIndex );
     if( !sound->IsOk() ) {
         wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
         return;
