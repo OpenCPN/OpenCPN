@@ -77,6 +77,10 @@ PATHS
 find_library(PORTAUDIO_LIBRARY
 NAMES
 portaudio
+libportaudio2
+portaudio19-dev
+libportaudio
+libportaudio-dev
 PATHS
 /usr/lib
 /usr/local/lib
