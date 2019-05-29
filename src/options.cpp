@@ -49,6 +49,7 @@
 #include "wx/dir.h"
 #include <wx/statline.h>
 #include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */

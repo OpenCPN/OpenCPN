@@ -96,6 +96,7 @@
 #include "CanvasOptions.h"
 #include "mbtiles.h"
 #include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

@@ -39,6 +39,7 @@
 #include "config.h"
 #include <cstdio>
 #include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
