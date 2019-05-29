@@ -47,6 +47,23 @@ if (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
 # in cache already
 set(PORTAUDIO_FOUND TRUE)
 else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
+if (WIN32)
+find_path(PORTAUDIO_INCLUDE_DIR
+NAMES
+portaudio.h
+PATHS
+${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include
+)
+
+find_library(PORTAUDIO_LIBRARY
+NAMES
+portaudio_x86
+PATHS
+${CMAKE_CURRENT_SOURCE_DIR}/buildwin/
+)
+
+else (WIN32)
+
 find_path(PORTAUDIO_INCLUDE_DIR
 NAMES
 portaudio.h
@@ -55,21 +72,20 @@ PATHS
 /usr/local/include
 /opt/local/include
 /sw/include
-${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include
 )
 
 find_library(PORTAUDIO_LIBRARY
 NAMES
 portaudio
-portaudio_x86
 PATHS
 /usr/lib
 /usr/local/lib
 /opt/local/lib
 /usr/lib/i386-linux-gnu
 /sw/lib
-${CMAKE_CURRENT_SOURCE_DIR}/buildwin/
 )
+
+endif (WIN32)
 
 set(PORTAUDIO_INCLUDE_DIRS
 ${PORTAUDIO_INCLUDE_DIR}

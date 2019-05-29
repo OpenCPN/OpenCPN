@@ -29,7 +29,7 @@
 #include <wx/log.h>
 
 #include "config.h"
-#include "PortAudioSound.h"
+#include <PortAudioSound.h>
 
 
 /**
