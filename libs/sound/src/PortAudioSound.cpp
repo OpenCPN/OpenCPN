@@ -25,7 +25,7 @@
 #include <atomic>
 #include <memory>
 
-#include <portaudio.h>
+#include "portaudio.h"
 #include <wx/log.h>
 
 #include "config.h"
