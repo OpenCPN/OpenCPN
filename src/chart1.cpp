@@ -235,7 +235,8 @@ GoToPositionDialog        *pGoToPositionDialog;
 double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
-
+wxString                  gUTCTime;
+wxString                  gUTCDate;
 int                       g_nbrightness = 100;
 
 bool                      bDBUpdateInProgress;
@@ -7253,6 +7254,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
         gSog = NAN;
         gCog = NAN;
+        gUTCTime.clear( );  /* Global UTC time is no longer valid */
     }
 
 //  Update and check watchdog timer for Mag Heading data source
@@ -7421,6 +7423,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + + _T("     ") + _T(" COG ---\u00B0") );
         if( GetStatusBar() ) SetStatusText( sogcog, STAT_FIELD_SOGCOG );
 
+        gUTCTime.clear();                  // Lost GPS signal so UTC time is no longer valid
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
     }
 
@@ -8770,7 +8773,6 @@ static bool ParsePosition(const LATLONG &Position)
 
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
-    wxString sfixtime;
     bool pos_valid = false, cog_sog_valid = false;
     bool bis_recognized_sentence = true;
 
@@ -8831,6 +8833,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             case RMC:
                 if( m_NMEA0183.Rmc.IsDataValid == NTrue )
                 {
+                    gUTCTime = m_NMEA0183.Rmc.UTCTime;
+                    gUTCDate = m_NMEA0183.Rmc.Date;
+
                     pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
                     // course is not valid in this case
@@ -8858,7 +8863,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         gVAR_Watchdog = gps_watchdog_timeout_ticks;
                     }
                     
-                    sfixtime = m_NMEA0183.Rmc.UTCTime;
                 }
                 break;
 
@@ -8921,7 +8925,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Gga.GPSQuality > 0 )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
-                    sfixtime = m_NMEA0183.Gga.UTCTime;
+                    gUTCTime = m_NMEA0183.Gga.UTCTime;
                     
                     g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
                     gSAT_Watchdog = sat_watchdog_timeout_ticks;
@@ -8933,7 +8937,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Gll.IsDataValid == NTrue )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
-                    sfixtime = m_NMEA0183.Gll.UTCTime;  
+                    gUTCTime = m_NMEA0183.Gll.UTCTime;
                 }
                 break;
             }
@@ -9015,7 +9019,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         }
     }
 
-    if( bis_recognized_sentence ) PostProcessNMEA( pos_valid, cog_sog_valid, sfixtime );
+    if( bis_recognized_sentence ) PostProcessNMEA( pos_valid, cog_sog_valid, gUTCTime );
 }
 
 void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
@@ -9145,9 +9149,9 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 #ifdef ocpnUPDATE_SYSTEM_TIME
 //      Use the fix time to update the local system clock, only once per session
     if( ( sfixtime.Len() ) && s_bSetSystemTime && ( m_bTimeIsSet == false ) ) {
-        wxDateTime Fix_Time;
+        wxDateTime Fix_Time = wxDateTime::Now();
 
-        if( 6 == sfixtime.Len() )                   // perfectly recognised format?
+        if( 6 == sfixtime.Len() || 6 == sfixtime.find_first_of( "." ) )                   // perfectly recognised format?
                 {
             wxString a;
             long b;
