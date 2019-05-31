@@ -5687,8 +5687,13 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options") + _T("..."), _T("Ctrl-,")) );
 #endif
-
     m_pMenuBar->Append( tools_menu, _("&Tools") );
+
+#ifdef __WXOSX__
+    wxMenu* window_menu = new wxMenu();
+    m_pMenuBar->Append( window_menu, _("&Window") );
+#endif
+
     wxMenu* help_menu = new wxMenu();
     help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
     help_menu->Append( wxID_HELP, _("OpenCPN Help") );
