@@ -2827,6 +2827,10 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_resizeTimer.SetOwner(this, RESIZE_TIMER);
     m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
     
+#ifdef __WXOSX__
+    // Enable native fullscreen on macOS
+    EnableFullScreenView();
+#endif
 }
 
 MyFrame::~MyFrame()
@@ -5014,9 +5018,14 @@ void MyFrame::ToggleColorScheme()
 void MyFrame::ToggleFullScreen()
 {
     bool to = !IsFullScreen();
-    long style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION;; // | wxFULLSCREEN_NOMENUBAR;
 
+#ifdef __WXOSX__
+    ShowFullScreen( to );
+#else
+    long style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION;; // | wxFULLSCREEN_NOMENUBAR;
     ShowFullScreen( to, style );
+#endif
+
     UpdateAllToolbars( global_color_scheme );
     SurfaceAllCanvasToolbars();
     UpdateControlBar( GetPrimaryCanvas());
@@ -5644,9 +5653,7 @@ void MyFrame::RegisterGlobalMenuItems()
 #endif
 
     view_menu->AppendSeparator();
-#ifdef __WXOSX__
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
-#else
+#ifndef __WXOSX__
     view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
 #endif
     m_pMenuBar->Append( view_menu, _("&View") );
