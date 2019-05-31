@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.GpsStatus;
 import android.location.GpsSatellite;
+import android.location.OnNmeaMessageListener;
 
 import android.os.Bundle;
 import android.os.IBinder;
@@ -45,7 +46,10 @@ public class GPSServer extends Service implements LocationListener {
     HandlerThread mLocationHandlerThread;
 
     OCPNGpsNmeaListener mNMEAListener;
+
     OCPNNativeLib mNativeLib;
+    MyNMEAMessageListener mNMEAMessageListener;
+    MYGpsNmeaListener mGPSNMEAListener;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -67,7 +71,7 @@ public class GPSServer extends Service implements LocationListener {
     long mLastLocationMillis;
     boolean isGPSFix = false;
     public int m_watchDog = 0;
-
+    boolean isGPSStarted = false;
     int m_tick;
 
     // The minimum distance to change Updates in meters
@@ -91,16 +95,19 @@ public class GPSServer extends Service implements LocationListener {
 
             switch (event) {
                 case GpsStatus.GPS_EVENT_STARTED:
-//                    Log.i("OpenCPN", "GPS_EVENT_STARTED Event");
-                    break;
-
-                case GpsStatus.GPS_EVENT_STOPPED:
-//                    Log.i("OpenCPN", "GPS_EVENT_STOPPED Event");
+                    Log.i("OpenCPN", "GPS_EVENT_STARTED Event");
+                    isGPSStarted = true;
                     isGPSFix = false;
                     break;
 
+                case GpsStatus.GPS_EVENT_STOPPED:
+                    Log.i("OpenCPN", "GPS_EVENT_STOPPED Event");
+                    //isGPSFix = false;
+                    isGPSStarted = false;
+                    break;
+
                 case GpsStatus.GPS_EVENT_FIRST_FIX:
-//                    Log.i("OpenCPN", "GPS_EVENT_FIRST_FIX Event");
+                    Log.i("OpenCPN", "GPS_EVENT_FIRST_FIX Event");
                     isGPSFix = true;
                     break;
 
@@ -148,6 +155,51 @@ public class GPSServer extends Service implements LocationListener {
         }
     }
 
+//    https://developer.android.com/reference/android/location/LocationManager.html#addNmeaListener(android.location.OnNmeaMessageListener,%2520android.os.Handler)
+
+    private class MYGpsNmeaListener implements GpsStatus.NmeaListener{
+
+
+        @Override
+        public void onNmeaReceived(long timestamp, String nmea) {
+            String filterNMEA = nmea;
+            filterNMEA = filterNMEA.replaceAll("[^\\x0A\\x0D\\x20-\\x7E]", "");
+//            Log.i("OpenCPN", "Listener: " + filterNMEA);
+
+            // Reset the dog.
+            if( nmea.contains("RMC") ){
+                m_watchDog = 0;
+            }
+
+            if(null != mNativeLib){
+                mNativeLib.processNMEA( filterNMEA );
+            }
+        }
+    }
+
+
+
+
+    private class MyNMEAMessageListener implements android.location.OnNmeaMessageListener {
+        @Override
+        public void onNmeaMessage( String message, long timestamp ) {
+
+            String filterNMEA = message;
+            filterNMEA = filterNMEA.replaceAll("[^\\x0A\\x0D\\x20-\\x7E]", "");
+//            Log.i("OpenCPN", "onNMEAMessage: " + filterNMEA);
+
+            // Reset the dog.
+            if( message.contains("RMC") ){
+                m_watchDog = 0;
+            }
+            if(null != mNativeLib){
+                mNativeLib.processNMEA( filterNMEA );
+            }
+
+        }
+    }
+
+
     public GPSServer(Context context, OCPNNativeLib nativelib) {
         this.mContext = context;
         this.mNativeLib = nativelib;
@@ -165,7 +217,14 @@ public class GPSServer extends Service implements LocationListener {
             if(locationManager != null){
                 if(isThreadStarted){
                     locationManager.removeUpdates(GPSServer.this);
-                    locationManager.removeNmeaListener (mNMEAListener);
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {    // 24
+                        locationManager.removeNmeaListener(mNMEAMessageListener);
+                    }
+                    else{
+                        locationManager.removeNmeaListener(mGPSNMEAListener);
+                    }
+
                     isThreadStarted = false;
                 }
             }
@@ -212,11 +271,18 @@ public class GPSServer extends Service implements LocationListener {
                                                 Log.i("OpenCPN", "Requesting Location Updates");
                                                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
 
-                                                mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
-                                                locationManager.addNmeaListener (mNMEAListener);
 
-                                                mMyListener = new MyListener();
-                                                locationManager.addGpsStatusListener(mMyListener);
+                                                //mMyListener = new MyListener();
+                                                //locationManager.addGpsStatusListener(mMyListener);
+
+                                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {    // 24
+                                                    mNMEAMessageListener = new MyNMEAMessageListener();
+                                                    locationManager.addNmeaListener(mNMEAMessageListener);
+                                                }
+                                                else {
+                                                    mGPSNMEAListener = new MYGpsNmeaListener();
+                                                    locationManager.addNmeaListener(mGPSNMEAListener);
+                                                }
 
                                             }};
 
@@ -235,12 +301,12 @@ public class GPSServer extends Service implements LocationListener {
                         public void run() {
 
                             if(isGPSEnabled){
-//                                Log.i("OpenCPN", "Tick " + m_watchDog + " " + isGPSEnabled);
+//                                Log.i("OpenCPN", "Tick " + m_watchDog + " " + isGPSEnabled + " " + isGPSFix);
 
                                 m_tick++;
                                 m_watchDog++;
 
-                                if(m_watchDog > 10){
+/*                                if(m_watchDog > 10){
                                     if(null != locationManager){
                                         mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                                         if (mLastLocation != null) {
@@ -250,32 +316,15 @@ public class GPSServer extends Service implements LocationListener {
                                             speed = 0; //mLastLocation.getSpeed();
                                         }
 
-/*
-        // Removed in favor of integrated USB support
-        // Also removed, might need:  <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-
-                                        // Some (most?) mock location providers like "You Are Here GPS"
-                                        // do not provide position nor satellite status updates to a registered listener.
-                                        // So, we have to process their updates in a tick loop, and assume that
-                                        // they are always producing a valid fix.
-
-                                        boolean isMock = false;
-                                        if (android.os.Build.VERSION.SDK_INT >= 18) {
-                                            isMock = mLastLocation.isFromMockProvider();
-                                        } else {
-                                            isMock = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION).equals("0");
-                                        }
-                                        if(isMock)
-                                            isGPSFix = true;
-*/
                                         if(null != mNativeLib){
                                             String s = createRMC();
-//                                            Log.i("OpenCPN", "ticker: " + s);
+                                            Log.i("OpenCPN", "ticker: " + s);
                                             mNativeLib.processNMEA( s );
                                         }
-
                                     }
+
                                 }
+*/
                             }
 
                             handler.postDelayed(this, 1000);
@@ -507,7 +556,7 @@ public class GPSServer extends Service implements LocationListener {
     private String createRMC(){
         // Create an NMEA sentence
         String s = "$OCRMC,,";
-        if(isGPSFix)
+        if(isGPSStarted && isGPSFix)
             s = s.concat("A,");
         else
             s = s.concat("V,");
