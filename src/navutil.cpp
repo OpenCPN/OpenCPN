@@ -36,6 +36,7 @@
 #include <wx/graphics.h>
 #include <wx/dir.h>
 #include <wx/listbook.h>
+#include <wx/timectrl.h>
 
 #include "dychart.h"
 
@@ -4672,14 +4673,12 @@ void GpxDocument::SeedRandom()
 void DimeControl( wxWindow* ctrl )
 {
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            return;
-        }
+    // On macOS 10.14+, we use the native colours in both light mode and dark mode, and do not need to do anything else.
+    // Dark mode is toggled at the application level in `SetAndApplyColorScheme`, and is also respected if it is enabled system-wide.
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        return;
     }
 #endif
-
 #ifdef __WXQT__
     return; // this is seriously broken on wxqt
 #endif
@@ -4702,36 +4701,38 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            return;
-        }
+    // On macOS 10.14+, we use the native colours in both light mode and dark mode, and do not need to do anything else.
+    // Dark mode is toggled at the application level in `SetAndApplyColorScheme`, and is also respected if it is enabled system-wide.
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        return;
     }
 #endif
+
     ColorScheme cs = global_color_scheme;
+
+    // Are we in dusk or night mode? (Used below in several places.)
+    bool darkMode = ( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT );
 
     static int depth = 0; // recursion count
     if ( depth == 0 ) {   // only for the window root, not for every child
-
         // If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
-        if( cs == GLOBAL_COLOR_SCHEME_DAY || cs == GLOBAL_COLOR_SCHEME_RGB ) {
-#ifdef __WXOSX__
-            window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
-            ctrl->SetBackgroundColour( window_back_color );
-#ifdef OCPN_USE_DARKMODE
-            if( g_bDarkDecorations ) {
-                applyDarkAppearanceToWindow(ctrl->MacGetTopLevelWindowRef(), false, true, true);
-            }
-#endif            
-#else
+        if ( !darkMode ) {
             window_back_color = wxNullColour;
-            ctrl->SetBackgroundColour( window_back_color );
-#endif
-
             col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
+            uitext = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
         }
 
+        ctrl->SetBackgroundColour( window_back_color );
+
+#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
+        // On macOS 10.12, enable dark mode at the window level if appropriate.
+        // This will enable dark window decorations but will not darken the rest of the UI.
+        if ( wxPlatformInfo::Get().CheckOSVersion(10, 12) ) {
+            setWindowLevelDarkMode(ctrl->MacGetTopLevelWindowRef(), darkMode);
+        }
+        // Force consistent coloured UI text; dark in light mode and light in dark mode.
+        uitext = darkMode ? wxColor(228,228,228) : wxColor(0,0,0);
+#endif
     }
 
     wxWindowList kids = ctrl->GetChildren();
@@ -4739,67 +4740,50 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
         wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
 
-        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
-            ( (wxListBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
-            ( (wxListCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
-            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+        if (
+            win->IsKindOf(CLASSINFO(wxListBox)) 
+            || win->IsKindOf(CLASSINFO(wxListCtrl)) 
+            || win->IsKindOf(CLASSINFO(wxTextCtrl))
+            || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
+        ) {
+            win->SetBackgroundColour(col);
+        }
+        else if (
+            win->IsKindOf(CLASSINFO(wxStaticText))
+            || win->IsKindOf(CLASSINFO(wxCheckBox))
+            || win->IsKindOf(CLASSINFO(wxRadioButton))
+        ) {
+            win->SetForegroundColour(uitext);
+        }
 
 #ifndef __WXOSX__
-        // on OS X most controls can't be styled, and trying to do so only creates weird coloured boxes around them
+        // On macOS most controls can't be styled, and trying to do so only creates weird coloured boxes around them.
+        // Fortunately, however, many of them inherit a colour or tint from the background of their parent.
 
-        else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) )
-            ( (wxBitmapComboBox*) win )->SetBackgroundColour( col );
+        else if (
+            win->IsKindOf(CLASSINFO(wxBitmapComboBox))
+            || win->IsKindOf(CLASSINFO(wxChoice))
+            || win->IsKindOf(CLASSINFO(wxComboBox))
+            || win->IsKindOf(CLASSINFO(wxTreeCtrl))
+        ) {
+            win->SetBackgroundColour(col);
+        }
 
-        else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
-            ( (wxChoice*) win )->SetBackgroundColour( col );
+        else if (
+            win->IsKindOf(CLASSINFO(wxScrolledWindow))
+            || win->IsKindOf(CLASSINFO(wxGenericDirCtrl))
+            || win->IsKindOf(CLASSINFO(wxListbook))
+            || win->IsKindOf(CLASSINFO(wxButton))
+            || win->IsKindOf(CLASSINFO(wxToggleButton))
+        ) {
+            win->SetBackgroundColour( window_back_color );
+        }
 
-        else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
-            ( (wxComboBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+        else if ( win->IsKindOf(CLASSINFO(wxNotebook)) ) {
+            ((wxNotebook*) win)->SetBackgroundColour(window_back_color);
+            ((wxNotebook*) win)->SetForegroundColour(text_color);
         }
 #endif
-
-        else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
-            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxListbook) ) )
-            ( (wxListbook*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) )
-            ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
-            ( (wxNotebook*) win )->SetBackgroundColour( window_back_color );
-            ( (wxNotebook*) win )->SetForegroundColour( text_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
-            ( (wxButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
-            ( (wxToggleButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-//        else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
-////                  ((wxPanel*)win)->SetBackgroundColour(col1);
-//            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-//                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
-//            else
-//                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
-//        }
 
         else if( win->IsKindOf( CLASSINFO(wxHtmlWindow) ) ) {
             if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
@@ -4817,10 +4801,6 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
             ( (wxGrid*) win )->SetDividerPen( wxPen( col ) );
 #endif            
             ( (wxGrid*) win )->SetGridLineColour( gridline );
-        }
-
-        else {
-            ;
         }
 
         if( win->GetChildren().GetCount() > 0 ) {

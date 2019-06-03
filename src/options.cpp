@@ -2933,7 +2933,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
-  DimeControl(itemPanelShip);
+  // DimeControl(itemPanelShip);
 }
 
 void options::CreatePanel_Routes(size_t parent, int border_size,
@@ -3193,7 +3193,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
        }
    }
   
-  DimeControl(itemPanelRoutes);
+  // DimeControl(itemPanelRoutes);
 }
 
 void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
