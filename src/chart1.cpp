@@ -8080,7 +8080,10 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 int g_lastMemTick = -1;
 extern long g_tex_mem_used;
 
-bool GetMemoryStatus( int *mem_total, int *mem_used )
+/* Return total system RAM and size of program */
+/* Values returned are in kilobytes            */
+bool
+GetMemoryStatus( int *mem_total, int *mem_used )
 {
 #ifdef __OCPN__ANDROID__
     return androidGetMemoryStatus( mem_total, mem_used );
@@ -8088,11 +8091,13 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
 #if defined(__linux__)
     // Use sysinfo to obtain total RAM
-    struct sysinfo memInfo;
-    sysinfo (&memInfo);
     if (mem_total)
-        *mem_total = memInfo.totalram / 1024L;
-
+    {
+        *mem_total = 0;
+        struct sysinfo sys_info;
+        if ( sysinfo(&sys_info) != -1 )
+            *mem_total = ( (uint64_t)sys_info.totalram * sys_info.mem_unit ) / 1024;
+    }
 //      Use filesystem /proc/self/statm to determine memory status
 //	Provides information about memory usage, measured in pages.  The columns are:
 //	size       total program size (same as VmSize in /proc/[pid]/status)
@@ -8103,25 +8108,15 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 //	data       data + stack
 //	dt         dirty pages (unused in Linux 2.6)
 
-    wxString file_name;
     if(mem_used)
     {
         *mem_used = 0;
-        file_name = _T("/proc/self/statm");
-        std::ifstream file( file_name.c_str( ) );
-        if( file.is_open( ) )
+        std::ifstream statmem( "/proc/self/statm" );
+        if( statmem.is_open( ) )
         {
-            std::string line;
-            getline( file, line );
-            wxStringTokenizer tkm(line, _T(" "));
-            wxString mem = tkm.GetNextToken();
-            mem = tkm.GetNextToken();
-            long mem_extract = 0;
-            if (mem.Len())
-            {
-                mem.ToLong(&mem_extract);
-                *mem_used = mem_extract *4; // XXX assume 4K page }
-            }
+            int mem_extract;
+            statmem >> mem_extract;
+            *mem_used = mem_extract * 4; // XXX assume 4K page
         }
     }
 
