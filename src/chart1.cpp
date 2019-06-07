@@ -8073,8 +8073,6 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #if defined(__linux__)
 #include "sys/types.h"
 #include "sys/sysinfo.h"
-#include <iostream>
-#include <fstream>
 #endif /* __linux__ */
 
 int g_lastMemTick = -1;
@@ -8111,13 +8109,9 @@ GetMemoryStatus( int *mem_total, int *mem_used )
     if(mem_used)
     {
         *mem_used = 0;
-        std::ifstream statmem( "/proc/self/statm" );
-        if( statmem.is_open( ) )
-        {
-            int mem_extract;
-            statmem >> mem_extract;
-            *mem_used = mem_extract * 4; // XXX assume 4K page
-        }
+        FILE* file = fopen ( "/proc/self/statm", "r");
+        fscanf( file, "%d", mem_used);
+        *mem_used *= 4; // XXX assume 4K page
     }
 
     return true;
