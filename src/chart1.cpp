@@ -8110,8 +8110,12 @@ GetMemoryStatus( int *mem_total, int *mem_used )
     {
         *mem_used = 0;
         FILE* file = fopen ( "/proc/self/statm", "r");
-        fscanf( file, "%d", mem_used);
-        *mem_used *= 4; // XXX assume 4K page
+        if ( file )
+        {
+            fscanf( file, "%d", mem_used);
+            *mem_used *= 4; // XXX assume 4K page
+            fclose( file );
+        }
     }
 
     return true;
