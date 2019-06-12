@@ -701,27 +701,30 @@ void ocpnFloatingToolbarDialog::RePosition()
         m_position.y = wxMax(m_dock_min_y, m_position.y);
 
         m_position.y += m_auxOffsetY;
-        
-        wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
 
-        //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler
-        //  The position of the window is calculated incorrectly if a deferred Move() has not been processed yet.
-        //  So work around this here...
-        //  Discovered with a Dashboard window left-docked, toggled on and off by toolbar tool.
-        
-        //  But this causes another problem. If a toolbar is NOT left docked, it will walk left by two pixels on each
-        //  call to Reposition().  
-        //TODO
- #ifdef __WXGTK__
-        if(m_pparent->GetParent()){
+        // take care of left docked instrument windows and don't blast the main toolbar on top of them, hinding instruments
+        // this positions the main toolbar directly right of the left docked instruments onto the chart
+        //        wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
+        wxPoint screen_pos = gFrame->GetPrimaryCanvas()->ClientToScreen(m_position);
+
+          //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler
+          //  The position of the window is calculated incorrectly if a deferred Move() has not been processed yet.
+          //  So work around this here...
+          //  Discovered with a Dashboard window left-docked, toggled on and off by toolbar tool.
+
+          //  But this causes another problem. If a toolbar is NOT left docked, it will walk left by two pixels on each
+          //  call to Reposition().  
+          //TODO
+#ifdef __WXGTK__
+          if (m_pparent->GetParent()) {
             wxPoint pp = m_pparent->GetPosition();
             wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
             wxPoint screen_pos_fix = ppg + pp + m_position;
             screen_pos.x = screen_pos_fix.x;
-        }
- #endif        
+          }
+#endif        
 
-        Move( screen_pos );
+          Move(screen_pos);
 
 #ifdef __WXQT__
         Raise();

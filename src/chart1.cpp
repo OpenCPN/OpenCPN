@@ -6692,6 +6692,14 @@ void MyFrame::PositionIENCToolbar()
         posn.y = 4;
         g_iENCToolbar->Move(GetPrimaryCanvas()->ClientToScreen(posn));
     }
+    // take care of left docked instrument windows and don't blast the main toolbar on top of them, hinding instruments
+    // this positions the main toolbar directly right of the left docked instruments onto the chart
+    if (g_MainToolbar) {
+      wxPoint posn;
+      posn.x = 2;
+      posn.y = 4;
+      g_MainToolbar->Move(GetPrimaryCanvas()->ClientToScreen(posn));
+    }
 }
 
 // Defered initialization for anything that is not required to render the initial frame
