@@ -2311,27 +2311,38 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 }
 
 #ifdef ocpnUSE_GL
-void GRIBOverlayFactory::texcoord(double u, double v, GribRecord *pGR)
-{
+void GRIBOverlayFactory::DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double xs, double ys ){
+#ifdef __OCPN__ANDROID__
+#else
+
+    glColor4f(1, 1, 1, 1);
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
     if(texture_format != GL_TEXTURE_2D) {
-        u *= pGR->getNi();
-        v *= pGR->getNj();
+        for(int i = 0 ; i < 4 ; i++){
+            uv[i*2] *= pGR->getNi();
+            uv[(i*2)+1] *= pGR->getNj();
+        }
     }
-    glTexCoord2d(u, v);
+
+    glBegin(GL_QUADS);
+        glTexCoord2d(uv[0], uv[1]), glVertex2f(x-xs, y-ys);
+        glTexCoord2d(uv[2], uv[3]), glVertex2f(x   , y-ys);
+        glTexCoord2d(uv[4], uv[5]), glVertex2f(x   , y);
+        glTexCoord2d(uv[6], uv[7]), glVertex2f(x-xs, y);
+    glEnd();
+
+#endif    
 }
 
 void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp )
 {
     glEnable(texture_format);
     glBindTexture(texture_format, pGO->m_iTexture);
-
+ 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glColor4f(1, 1, 1, 1);
-
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-
+ 
     double lat_min = pGR->getLatMin(), lon_min = pGR->getLonMin();
 
     bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
@@ -2361,7 +2372,6 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
         ysquares = wxMax(ysquares, 2);
 //    }
 
-    glBegin(GL_QUADS);
     double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
     int i = 0, j = 0;
     typedef double mx[2][2];
@@ -2410,10 +2420,15 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                      (u0 <= 1 || u1 <= 1 || u2 <= 1 || u3 <= 1))) &&
                    (v0 >= 0 || v1 >= 0 || v2 >= 0 || v3 >= 0) &&
                    (v0 <= 1 || v1 <= 1 || v2 <= 1 || v3 <= 1)) {
-                    texcoord(u0, v0, pGR), glVertex2f(x-xs, y-ys);
-                    texcoord(u1, v1, pGR), glVertex2f(x   , y-ys);
-                    texcoord(u2, v2, pGR), glVertex2f(x   , y);
-                    texcoord(u3, v3, pGR), glVertex2f(x-xs, y);
+                    
+                       double uv[8];
+                       uv[0] = u0; uv[1] = v0;
+                       uv[2] = u1; uv[3] = v1;
+                       uv[4] = u2; uv[5] = v2;
+                       uv[6] = u3; uv[7] = v3;
+
+                       DrawSingleGLTexture( pGO, pGR, uv, x, y, xs, ys );
+                       
                 }
             }
 
@@ -2421,7 +2436,6 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
         }
         j = !j;
     }
-    glEnd();
     delete [] lva;
 
     glDisable(GL_BLEND);

@@ -200,10 +200,10 @@ private:
 
 
 #ifdef ocpnUSE_GL
-    void texcoord(double u, double v, GribRecord *pGR);
     void DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp );
     void GetCalibratedGraphicColor(int settings, double val_in, unsigned char *data);
     bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR );
+    void DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double xs, double ys );
 #endif
     wxImage CreateGribImage( int config, GribRecord *pGR, PlugIn_ViewPort *vp,
                              int grib_pixel_size, const wxPoint &porg );
