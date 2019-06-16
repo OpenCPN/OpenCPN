@@ -49,12 +49,6 @@
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
 
-#ifdef __WXQT__
-#include "qdebug.h"
-#endif
-
-extern bool g_bpause;
-
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -99,18 +93,13 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
 static wxString TToString( const wxDateTime date_time, const int time_zone )
 {
     wxDateTime t( date_time );
-    wxString formatString = _T(" %a %d-%b-%Y  %H:%M ");
-#ifdef __OCPN__ANDROID__
-    formatString = _T(" %d-%b-%Y %H:%M  ");
-#endif
-    
     switch( time_zone ) {
         case 0:
 			if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
 				t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
-			return t.Format( formatString, wxDateTime::Local ) + _T("LOC");
+			return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");
         case 1:
-        default: return t.Format( formatString, wxDateTime::UTC ) + _T("UTC");
+        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
     }
 }
 
@@ -197,9 +186,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
 
-        pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
+		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
-        
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
         pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
@@ -238,22 +226,6 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     Fit();
     SetMinSize( GetBestSize() );
 
-#ifdef __OCPN__ANDROID__ 
-    Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
-    Connect( wxEVT_LEFT_UP, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
-    Connect( wxEVT_MOTION, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
-    
-    GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
-    GetHandle()->grabGesture(Qt::PinchGesture);
-    GetHandle()->grabGesture(Qt::PanGesture);
-    
-    Connect( wxEVT_QT_PANGESTURE,
-             (wxObjectEventFunction) (wxEventFunction) &GRIBUICtrlBar::OnEvtPanGesture, NULL, this );
-    
-    m_binPan = false;
-    
-#endif
-    
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar()
@@ -346,14 +318,8 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
     SetRequestBitmap( m_ZoneSelMode );
 
-    if(m_bcompact){
-        m_sTimeline->SetSize( wxSize( 64 * m_ScaledFactor , -1 ) );
-        m_sTimeline->SetMinSize( wxSize( 64 * m_ScaledFactor , -1 ) );
-    }
-    else{
-        m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-        m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-    }
+    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
 
 }
 
@@ -493,6 +459,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     //  This will ensure that at least "some" data is displayed on file change,
     //  and so avoid user confusion of no data shown.
     //  This is especially important if cursor tracking of data is disabled.
+
     bool bconfigOK = false;
     if(m_bDataPlot[GribOverlaySettings::WIND] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND))
         bconfigOK = true;
@@ -516,6 +483,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         bconfigOK = true;
     if(m_bDataPlot[GribOverlaySettings::CAPE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
         bconfigOK = true;
+
     //  If no parameter seems to be enabled by config, enable them all just to be sure something shows.
     if(!bconfigOK){
         for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
@@ -647,7 +615,6 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     m_gGrabber->Hide();
     //then hide and detach cursor data window
     if( m_gCursorData ) {
-        m_gCursorData->Move(0, 0); 
         m_gCursorData->Hide();
         m_fgCDataSizer->Detach(m_gCursorData);
     }
@@ -693,41 +660,12 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     }
     Layout();
     Fit();
-<<<<<<< HEAD
-    SetMinSize( GetBestSize() );
- 
-#ifdef __OCPN__ANDROID__
-//    wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
-//    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-//    SetSize(wxMin(csz.x, sz_nominal.x), -1);
-    
-    wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
-    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    int target_size1 = wxMin(csz.x, sz_nominal.x);
-    //SetSize(wxMin(csz.x, sz_nominal.x), -1);
-    
-    // It also should be large enough to contain the text, plus two buttons. plus fluff
-    wxString test_string(_T(" 13-Dec-2017 18:00 UTC "));
-    wxScreenDC dc;
-    int w;
-    dc.GetTextExtent(test_string, &w, NULL, NULL, NULL, OCPNGetFont(_("Dialog"), 10));
-    int target_size2 = wxMin(csz.x, w + GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 3);
-    
-    SetSize(wxMax(target_size1, target_size2), -1);
-    
-#else
-    SetSize( GetBestSize() );
-#endif    
-    
-    Update();
-=======
     wxSize sd = GetSize();
 #ifdef __WXGTK__
     if( m_HasCaption && sd.y == GetClientSize().y ) sd.y += 30;
 #endif
     SetSize( wxSize( sd.x, sd.y ) );
     SetMinSize( wxSize( sd.x, sd.y ) );
->>>>>>> v5.0.0
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
@@ -738,7 +676,6 @@ void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
 
     wxMenu* amenu = new wxMenu();
     amenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
-
 
 #ifdef __WXMSW__
     const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
@@ -767,8 +704,6 @@ void GRIBUICtrlBar::OnMove( wxMoveEvent& event )
     int w, h;
     GetScreenPosition( &w, &h );
     pPlugIn->SetCtrlBarXY ( wxPoint( w, h ) );
-    
-        
 }
 
 void GRIBUICtrlBar::OnMenuEvent( wxMenuEvent& event )
@@ -840,58 +775,8 @@ void GRIBUICtrlBar::MenuAppend( wxMenu *menu, int id, wxString label, wxItemKind
 
 }
 
-
-wxPoint g_startPos;
-wxPoint g_startMouse;
-wxPoint g_mouse_pos_screen;
-
-void GRIBUICtrlBar::OnEvtPanGesture( wxQT_PanGestureEvent &event)
-{
-    switch(event.GetState()){
-        case GestureStarted:
-            //qDebug() << "Pan start";
-            g_startPos = GetPosition();
-            g_startMouse = event.GetCursorPos(); //g_mouse_pos_screen;
-            //qDebug() << "Pan start" << g_startPos.x << g_startPos.y << g_startMouse.x << g_startMouse.y;
-            m_binPan = true;
-            break;
-            
-            
-        case GestureFinished:
-            //qDebug() << "Pan finish";
-            
-            m_binPan = false;
-            
-            break;
-            
-        case GestureCanceled:
-            m_binPan = false; 
-            break;
-            
-        default:
-            break;
-    }
-    
-    
-}
-
 void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 {
-    g_mouse_pos_screen = ClientToScreen( event.GetPosition() );
-    
-    if(event.Dragging()){
-        int x = wxMax(0, g_startPos.x + (g_mouse_pos_screen.x - g_startMouse.x));       // Not off screen
-        int y = wxMax(0, g_startPos.y + (g_mouse_pos_screen.y - g_startMouse.y));
-        //qDebug() << g_startPos.x << g_startPos.y << g_mouse_pos_screen.x << g_mouse_pos_screen.y << x << y;
-        int xmax = ::wxGetDisplaySize().x - GetSize().x;
-        x = wxMin(x, xmax);
-        int ymax = ::wxGetDisplaySize().y - (GetSize().y * 2);          // Some fluff at the bottom
-        y = wxMin(y, ymax);
-        
-        Move(x, y);
-        return;         // Do not process any other mouse event types if dragging.
-    }
-        
     if( event.RightDown() ) {
         //populate menu
         wxMenu* xmenu = new wxMenu();
@@ -962,43 +847,8 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     GRIBTable *table = new GRIBTable(*this);
 
-<<<<<<< HEAD
-    wxFont *qFont = OCPNGetFont(_("Dialog"), 10);
-    table->SetFont(*qFont);
-    
-    table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
-    table->m_pButtonTableOK->SetLabel(_("Close"));
-    
-#ifdef __OCPN__ANDROID__
-    int cw, ch;
-    GetOCPNCanvasWindow()->GetSize(&cw, &ch);
-    w = cw * 5 / 10;
-    h = ch * 5 / 10;
-    table->SetSize(w, h);
-    table->Center();
-#else    
-    //set dialog size and position
-    table->SetSize(w, h);
-    table->SetPosition(wxPoint(x, y));
-#endif
-    
-
-    //try to show and highlight current dateTime step column
-    int i = 0,vcol = GetNearestIndex( GetNow(), 0);
-    wxColour colour;
-    GetGlobalColor(_T("GREEN1"), &colour);
-    table->m_pGribTable->SetCellBackgroundColour( 0, vcol, colour ); //mark current column
-    table->m_pGribTable->SetCellBackgroundColour( 1, vcol, colour );
-    while( table->m_pGribTable->IsVisible( 0, i, true) ) {           //ensure it's visible
-        i++;
-    }
-    vcol += i - 2;
-    table->m_pGribTable->GoToCell( 0, vcol );
-    //
-=======
     table->InitGribTable(pPlugIn->GetTimeZone(), rsa,  GetNearestIndex( GetNow(), 0));
     table->SetTableSizePosition(m_vp->pix_width, m_vp->pix_height);
->>>>>>> v5.0.0
 
     table->ShowModal();
 
@@ -1164,7 +1014,7 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
 
     wxString json;
     wxString json_begin = initSettings.SettingsToJSON(json);
-//    wxLogMessage(json_begin);
+    wxLogMessage(json_begin);
 
 
     //  Pick up the required options from the Request dialog
@@ -1197,13 +1047,10 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
     wxJSONWriter w;
     wxString json_final;
     w.Write(v, json_final);
-//    wxLogMessage(json_final);
+    wxLogMessage(json_final);
 
 
 #ifdef __OCPN__ANDROID__
-    qDebug() << "Calling doGRIBActivity";
-    g_bpause = true;
-    
     wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
     wxLogMessage(ret);
 #endif
@@ -1227,8 +1074,6 @@ void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
     }
 
     wxString file = root[( _T("grib_file") )].AsString();
-
-    wxLogMessage(_T("OpenFileFromJSON: ") + file);
 
      if(file.Length() && wxFileExists( file )){
          wxFileName fn(file);
@@ -1680,15 +1525,13 @@ void GRIBUICtrlBar::PopulateComboDataList()
         m_cRecordForecast->Clear();
     }
 
-    if(m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()){
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        for( size_t i = 0; i < rsa->GetCount(); i++ ) {
-            wxDateTime t( rsa->Item( i ).m_Reference_Time );
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    for( size_t i = 0; i < rsa->GetCount(); i++ ) {
+        wxDateTime t( rsa->Item( i ).m_Reference_Time );
 
-            m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
-        }
-        m_cRecordForecast->SetSelection( index );
+        m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
     }
+    m_cRecordForecast->SetSelection( index );
 }
 
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )

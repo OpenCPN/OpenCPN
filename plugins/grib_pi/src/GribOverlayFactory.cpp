@@ -34,11 +34,6 @@
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
-#include "pi_ocpndc.h"
-
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
-#endif
 
 #include "GribUIDialog.h"
 #include "GribOverlayFactory.h"
@@ -48,23 +43,6 @@
 #endif
 
 extern int m_Altitude;
-extern bool g_bpause;
-
-class OCPNStopWatch
-{
-public:
-    OCPNStopWatch() { Reset(); }
-    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
-    
-    double GetTime() {
-        timespec tp_end;
-        clock_gettime(CLOCK_REALTIME, &tp_end);
-        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
-    }
-    
-private:
-    timespec tp;
-};
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -145,7 +123,6 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 static GLuint texture_format = 0;
 #endif
 
-#ifndef USE_ANDROID_GLES2
 static GLboolean QueryExtension( const char *extName )
 {
     /*
@@ -176,7 +153,6 @@ static GLboolean QueryExtension( const char *extName )
     }
     return GL_FALSE;
 }
-#endif
 
 #if defined(__WXMSW__)
 #define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
@@ -240,6 +216,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     m_dFont_war = new wxFont( 16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     
 #endif    
+
     if(wxGetDisplaySize().x > 0){
          m_pixelMM = PlugInGetDisplaySizeMM() / wxGetDisplaySize().x;
          m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
@@ -250,8 +227,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
-    m_oDC = NULL;
-    
     InitColorsTable();
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_pOverlay[i] = NULL;
@@ -374,7 +349,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
         m_DoubleArrow[i].pushLine( dec - 2, 0, dec + dec1, -(dec1 + 1) );   // flèche
         m_DoubleArrow[i].Finalize();
     }
-    
 }
 
 GRIBOverlayFactory::~GRIBOverlayFactory()
@@ -382,10 +356,6 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
     ClearCachedData();
 
     ClearParticles();
-    
-    if(m_oDC)
-        delete m_oDC;
-    
 }
 
 void GRIBOverlayFactory::Reset()
@@ -411,46 +381,14 @@ void GRIBOverlayFactory::ClearCachedData( void )
     }
 }
 
-OCPNStopWatch sw;
-
-#include "pi_shaders.h"
-
-
 bool GRIBOverlayFactory::RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp )
 {
-    if(g_bpause)
-        return false;
-    
-    sw.Reset();
-    //qDebug() << "RenderGLGribOverlay" << sw.GetTime();
-    
-    if(!m_oDC)
-        m_oDC = new pi_ocpnDC();
-    
-    m_oDC->SetVP(vp);
-    m_oDC->SetDC(NULL);
-    
     m_pdc = NULL;                  // inform lower layers that this is OpenGL render
-    
-   
-    bool rv = DoRenderGribOverlay( vp );
-
-    //qDebug() << "RenderGLGribOverlayDone" << sw.GetTime();
-    
-    
-    return rv;
+    return DoRenderGribOverlay( vp );
 }
 
 bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
 {
-    if(!m_oDC)
-        m_oDC = new pi_ocpnDC();
-    
-    m_oDC->SetVP(vp);
-    m_oDC->SetDC(&dc);
-    
-    m_pdc = NULL;
-#if 0    
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
     pmdc = wxDynamicCast(&dc, wxMemoryDC);
@@ -458,10 +396,7 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     m_gdc = pgc;
 #endif
     m_pdc = &dc;
-#endif    
-    bool rv = DoRenderGribOverlay( vp );
-    
-    return rv;
+    return DoRenderGribOverlay( vp );
 }
 
 void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
@@ -494,8 +429,6 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
 
 bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 {
-    //qDebug() << "DoRenderGribOverlay" << sw.GetTime();
-    
     if( !m_pGribTimelineRecordSet ) {
         DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
         return false;
@@ -508,7 +441,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         #else
         wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
         #endif
-//        m_TexFontNumbers.Build(font);
+        m_TexFontNumbers.Build(font);
     }
 
     m_Message_Hiden.Empty();
@@ -524,8 +457,6 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
 
     for(int overlay = 1; overlay >= 0; overlay--) {
-        //qDebug() << "DoRenderGribOverlayA" << sw.GetTime();
-        
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
                 if(overlay) {   /* render overlays first */
@@ -560,10 +491,10 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                 RenderGribOverlayMap( i, pGR, vp );
             else {
                 RenderGribBarbedArrows( i, pGR, vp );
-                 RenderGribIsobar( i, pGR, pIA, vp );
-//                 RenderGribDirectionArrows( i, pGR, vp );
-                 RenderGribNumbers( i, pGR, vp );
-                 RenderGribParticles( i, pGR, vp );
+                RenderGribIsobar( i, pGR, pIA, vp );
+                RenderGribDirectionArrows( i, pGR, vp );
+                RenderGribNumbers( i, pGR, vp );
+                RenderGribParticles( i, pGR, vp );
             }
         }
     }
@@ -577,9 +508,6 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append( _T("\n") );
     m_Message_Hiden.Append( m_Message );
     DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
-        
-    //qDebug() << "DoRenderGribOverlayEnd" << sw.GetTime();
-        
     return true;
 }
 
@@ -734,21 +662,6 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                         break;
                 }
             }
-
-            int doff = 4*(jpix*width + ipix);
-#ifndef USE_ANDROID_GLES2            
-            /* for some reason r g b values are inverted, but not alpha,
-               this fixes it, but I would like to find the actual cause */
-            data[doff + 0] = 255-r;
-            data[doff + 1] = 255-g;
-            data[doff + 2] = 255-b;
-            data[doff + 3] = a;
-#else
-            data[doff + 0] = r;
-            data[doff + 1] = g;
-            data[doff + 2] = b;
-            data[doff + 3] = a;
-#endif            
         }
     }
 
@@ -781,7 +694,6 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glTexParameteri( texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-#ifndef USE_ANDROID_GLES2    
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -793,10 +705,6 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
-#else
-    glTexImage2D(texture_format, 0, GL_RGBA, width, height,
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-#endif
 
     delete [] data;
 
@@ -946,19 +854,10 @@ static void InitColor(ColorMap *map, size_t maplen)
 {
     wxColour c;
     for (size_t i = 0; i < maplen; i++) {
-#ifndef __WXQT__        
         c.Set(map[i].text);
         map[i].r = c.Red();
         map[i].g = c.Green();
         map[i].b = c.Blue();
-#else        
-        long t;
-        wxString s;
-        s = map[i].text.Mid(1,2); s.ToLong(&t, 16); map[i].r = t;
-        s = map[i].text.Mid(3,2); s.ToLong(&t, 16); map[i].g = t;
-        s = map[i].text.Mid(5,2); s.ToLong(&t, 16); map[i].b = t;
-#endif
-        
     }
 }
 
@@ -1140,8 +1039,6 @@ double square(double x) { return x*x; }
 void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
                                                  PlugIn_ViewPort *vp )
 {
-    //qDebug() << "RenderGribBarbedArrows" << sw.GetTime();
-    
     if(!m_Settings.Settings[settings].m_bBarbedArrows)
         return;
 
@@ -1269,8 +1166,6 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     if( !m_pdc )
         glDisableClientState(GL_VERTEX_ARRAY);
 #endif
-    //qDebug() << "RenderGribBarbedArrowsEnd" << sw.GetTime();
-        
 }
 
 void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
@@ -1643,7 +1538,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         if( !m_pdc )       //OpenGL mode
         {
 #ifdef ocpnUSE_GL
-#if 0
+
             if(!texture_format) {
                 // prefer npot over texture rectangles
                 if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) ||
@@ -1652,7 +1547,6 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
                     texture_format = GL_TEXTURE_RECTANGLE_ARB;
             }
-#endif            
 #ifdef __OCPN__ANDROID__
             texture_format = GL_TEXTURE_2D;
 #endif
@@ -1839,8 +1733,7 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
                 m_pdc->DrawBitmap(label, p.x, p.y, true);
     } else {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
-	glEnable( GL_BLEND );
+		glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glColor4ub(back_color.Red(), back_color.Green(),
 					back_color.Blue(), m_Settings.m_iOverlayTransparency);
@@ -1875,39 +1768,6 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
         glEnable(GL_TEXTURE_2D);
         m_TexFontNumbers.RenderString( label, p.x, p.y );
         glDisable(GL_TEXTURE_2D);
-#else
-        
-        #ifdef __WXQT__
-        wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-        #else
-        wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-        #endif
-        
-        wxString label = getLabelString(value, settings);
-
-        m_oDC->SetFont(font);
-        int w, h;
-        m_oDC->GetTextExtent(label, &w, &h);
-        
-        int label_offsetx = 5, label_offsety = 1;
-        int x = p.x - label_offsetx, y = p.y - label_offsety;
-        w += 2*label_offsetx, h += 2*label_offsety;
-        
-        
-        m_oDC->SetBrush( wxBrush( back_color ) );
-        m_oDC->DrawRoundedRectangle( x, y, w, h, 0);
-            
-            /* draw bounding rectangle */
-        m_oDC->SetPen( wxPen( wxColour(0,0,0), 1 ) );
-        m_oDC->DrawLine(x,   y,   x+w, y);
-        m_oDC->DrawLine(x+w, y,   x+w, y+h);
-        m_oDC->DrawLine(x+w, y+h, x,   y+h);
-        m_oDC->DrawLine(x  , y+h, x,   y);
-        
-        m_oDC->DrawText(label, p.x, p.y);
-        
-        
-#endif        
 #endif
 	}
 }
@@ -2168,15 +2028,12 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     int cnt=0;
     unsigned char *&ca = m_ParticleMap->color_array;
     float *&va = m_ParticleMap->vertex_array;
-    float *&caf = m_ParticleMap->color_float_array;
 
     if(m_ParticleMap->array_size < particles.size() && !m_pdc) {
         m_ParticleMap->array_size = 2*particles.size();
         delete [] ca;
         delete [] va;
-        delete [] caf;
         ca = new unsigned char[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 8];
-        caf = new float[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 8];
         va = new float[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 4];
     }
 
@@ -2191,7 +2048,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         bool lip_valid = false;
         float *lp = NULL, lip[2];
         wxUint8 lc[4];
-        float lcf[4];
 
         for(;;) {
             float (&dp)[2] = it->m_History[i].m_Pos;
@@ -2200,11 +2056,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 wxUint8 (&ci)[3] = it->m_History[i].m_Color;
 
                 wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240-alpha/2), alpha};
-                float cf[4];
-                cf[0] = ci[0] / 256.;
-                cf[1] = ci[1] / 256.;
-                cf[2] = ((unsigned char)(ci[2] + 240-alpha/2)) / 256.;
-                cf[3] = alpha / 256.;
 
                 if(lp && fabsf(lp[0]-sp[0]) < vp->pix_width) {
                     float sip[2];
@@ -2221,11 +2072,9 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                             m_pdc->DrawLine( sip[0], sip[1], lip[0], lip[1] );
                         } else {
                             memcpy(ca + 4*cnt, c, sizeof lc);
-                            memcpy(caf + 4*cnt, cf, sizeof lcf);
                             memcpy(va + 2*cnt, lip, sizeof sp);
                             cnt++;
                             memcpy(ca + 4*cnt, lc, sizeof c);
-                            memcpy(caf + 4*cnt, lcf, sizeof cf);
                             memcpy(va + 2*cnt, sip, sizeof sp);
                             cnt++;
                         }
@@ -2236,7 +2085,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 }
 
                 memcpy(lc, c, sizeof lc);
-                memcpy(lcf, cf, sizeof lcf);
                 lp = sp;
             }
 
@@ -2254,8 +2102,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     }
 
     if( !m_pdc ) {
-        m_oDC->DrawGLLineArray(cnt, va, caf, false);
-#if 0        
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
 
@@ -2265,7 +2111,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
-#endif        
     }
 
     //  On some platforms, especially slow ones, the GPU will lag behind the CPU.
@@ -2307,13 +2152,9 @@ void GRIBOverlayFactory::OnParticleTimer( wxTimerEvent & event )
 
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
 {
-    //qDebug() << "DrawMessageWindow" << sw.GetTime();
-    
     if(msg.empty())
         return;
 
-    //qDebug() << "DrawMessageWindowA" << sw.GetTime();
-    
     if(m_pdc) {
         wxDC &dc = *m_pdc;
         dc.SetFont( *mfont );
@@ -2331,7 +2172,6 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
                       wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
     } else {
-#ifndef USE_ANDROID_GLES2        
         m_TexFontMessage.Build(*mfont);
         int w, h;
         m_TexFontMessage.GetTextExtent( msg, &w, &h);
@@ -2354,22 +2194,6 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         glEnable(GL_TEXTURE_2D);
         m_TexFontMessage.RenderString( msg, 0, yp);
         glDisable(GL_TEXTURE_2D);
-#else
-       
-        m_oDC->SetFont(*mfont);
-        int w, h, descent;
-        m_oDC->GetTextExtent( msg, &w, &h, &descent, NULL, NULL );
-        h += 2;
-        int yp = y - ( GetChartbarHeight() + h );
-
-        int label_offset = 10;
-        int wdraw = w + ( label_offset * 2 );
-        
-        m_oDC->SetBrush( wxColour(243, 229, 47 ) );
-        m_oDC->DrawRoundedRectangle( 0, yp, wdraw, h, 4);
-        
-        m_oDC->DrawText( msg, label_offset, yp );
-#endif        
     }
 }
 
@@ -2384,8 +2208,8 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-///        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-///        glLineWidth(arrowWidth);
+        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+        glLineWidth(arrowWidth);
     }
 
     drawLineBuffer(m_DoubleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2402,8 +2226,8 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-///        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-///        glLineWidth(arrowWidth);
+        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+        glLineWidth(arrowWidth);
     }
 
     drawLineBuffer(m_SingleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2415,7 +2239,6 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
     if(m_Settings.Settings[settings].m_iBarbedColour == 1)
         arrowColor = GetGraphicColor(settings, vkn);
 
-/*    
     if( m_pdc ) {
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
@@ -2430,13 +2253,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
     else
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
 #endif
-*/
-    if( m_oDC ) {
-        wxPen pen( arrowColor, 2 );
-        m_oDC->SetPen( pen );
-        m_oDC->SetBrush( *wxTRANSPARENT_BRUSH);
-    }
-   
+
     int cacheidx;
 
     if( vkn < 1 )
@@ -2475,17 +2292,6 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
         vertexes[2*i+1] = k[0]*six*scale - k[1]*coy*scale + y;
     }
 
-    if(m_oDC){
-        for(int i=0; i < buffer.count; i++) {
-            float *l = vertexes + 4*i;
-            if( m_hiDefGraphics )
-                m_oDC->StrokeLine( l[0], l[1], l[2], l[3] );
-            else
-                m_oDC->DrawLine( l[0], l[1], l[2], l[3] );
-        }
-    }
-    
-#if 0        
     if( m_pdc ) {
         for(int i=0; i < count; i++) {
             float *l = vertexes + 4*i;
@@ -2502,8 +2308,6 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
         glDrawArrays(GL_LINES, 0, 2*count);
 #endif
     }
-#endif
-
 }
 
 #ifdef ocpnUSE_GL
@@ -2518,7 +2322,6 @@ void GRIBOverlayFactory::texcoord(double u, double v, GribRecord *pGR)
 
 void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp )
 {
-#ifndef USE_ANDROID_GLES2
     glEnable(texture_format);
     glBindTexture(texture_format, pGO->m_iTexture);
 
@@ -2624,129 +2427,5 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     glDisable(GL_BLEND);
     glDisable(texture_format);
 
-    glPopMatrix();
-#else
-    //qDebug() << "DrawGLTexture";
-    
-    glEnable(texture_format);
-    glBindTexture(texture_format, texture);
-    
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-    
-    //glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    
-    float x = xd, y = yd;
-    
-    float w = dwidth * vp->view_scale_ppm;
-    float h = dheight * vp->view_scale_ppm;
-    
-    float coords[8];
-    float uv[8];
-    
-    //normal uv
-    uv[0] = 0; uv[1] = 0; uv[2] = 1; uv[3] = 0;
-    uv[4] = 1; uv[5] = 1; uv[6] = 0; uv[7] = 1;
-    
-    // pixels
-    coords[0] = x; coords[1] = y; coords[2] = x+w; coords[3] = y;
-    coords[4] = x+w; coords[5] = y+h; coords[6] = x; coords[7] = y+h;
-    
-    //extern int texture_2D_shader_program;
-    extern int pi_texture_2D_shader_program;
-    glUseProgram( pi_texture_2D_shader_program );
-    
-    // Get pointers to the attributes in the program.
-    GLint mPosAttrib = glGetAttribLocation( pi_texture_2D_shader_program, "aPos" );
-    GLint mUvAttrib  = glGetAttribLocation( pi_texture_2D_shader_program, "aUV" );
-    
-    // Set up the texture sampler to texture unit 0
-    GLint texUni = glGetUniformLocation( pi_texture_2D_shader_program, "uTex" );
-    glUniform1i( texUni, 0 );
-    
-    // Disable VBO's (vertex buffer objects) for attributes.
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    
-    // Set the attribute mPosAttrib with the vertices in the screen coordinates...
-    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
-    // ... and enable it.
-    glEnableVertexAttribArray( mPosAttrib );
-    
-    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
-    // ... and enable it.
-    glEnableVertexAttribArray( mUvAttrib );
-    
-    // Rotate 
-    float angle = 0;
-    mat4x4 I, Q;
-    mat4x4_identity(I);
-    mat4x4_rotate_Z(Q, I, angle);
-    
-    // Translate
-//     Q[3][0] = dx;
-//     Q[3][1] = dy;
-    
-    
-    //mat4x4 X;
-    //mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
-    
-    GLint matloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
-    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
-    
-    //qDebug() << "Texture vars" << pi_texture_2D_shader_program << mPosAttrib << mUvAttrib << texUni << matloc;
-    
-    // Select the active texture unit.
-    glActiveTexture( GL_TEXTURE0 );
-    
-    // Bind our texture to the texturing target.
-    //glBindTexture( GL_TEXTURE_2D, tex );
-    
-    // Perform the actual drawing.
-    
-    // For some reason, glDrawElements is busted on Android
-    // So we do this a hard ugly way, drawing two triangles...
-    #if 0
-    GLushort indices1[] = {0,1,3,2}; 
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-    #else
-    
-    float co1[8];
-    co1[0] = coords[0];
-    co1[1] = coords[1];
-    co1[2] = coords[2];
-    co1[3] = coords[3];
-    co1[4] = coords[6];
-    co1[5] = coords[7];
-    co1[6] = coords[4];
-    co1[7] = coords[5];
-    
-    float tco1[8];
-    tco1[0] = uv[0];
-    tco1[1] = uv[1];
-    tco1[2] = uv[2];
-    tco1[3] = uv[3];
-    tco1[4] = uv[6];
-    tco1[5] = uv[7];
-    tco1[6] = uv[4];
-    tco1[7] = uv[5];
-    
-    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
-    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-    glDisable(GL_BLEND);
-    glDisable(texture_format);
-    
-    mat4x4_identity(I);
-    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
-    
-    #endif
-    
-#endif    
 }
 #endif

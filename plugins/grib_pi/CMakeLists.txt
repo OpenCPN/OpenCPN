@@ -1,8 +1,22 @@
 ##---------------------------------------------------------------------------
-## Author:      Pavel Kalian
-## Copyright:   2014
-## License:     GPLv2 License
-##---------------------------------------------------------------------------
+## Author:      Dave Register
+##***************************************************************************
+## *   Copyright (C) 2010 by David S. Register                               *
+## *   This program is free software; you can redistribute it and/or modify  *
+## *   it under the terms of the GNU General Public License as published by  *
+## *   the Free Software Foundation; either version 2 of the License, or     *
+## *   (at your option) any later version.                                   *
+## *                                                                         *
+## *   This program is distributed in the hope that it will be useful,       *
+## *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+## *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+## *   GNU General Public License for more details.                          *
+## *                                                                         *
+## *   You should have received a copy of the GNU General Public License     *
+## *   along with this program; if not, write to the                         *
+## *   Free Software Foundation, Inc.,                                       *
+## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+## ***************************************************************************
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
@@ -12,18 +26,13 @@ IF (COMMAND cmake_policy)
     CMAKE_POLICY(SET CMP0043 NEW)
   endif (POLICY CMP0043)
 ENDIF (COMMAND cmake_policy)
- 
+
 PROJECT(grib_pi)
 
 SET(PACKAGE_NAME grib_pi)
-SET(VERBOSE_NAME GRIB)
-SET(TITLE_NAME GRIB)
-SET(CPACK_PACKAGE_CONTACT "dsr")
+SET(PLUGIN_SOURCE_DIR .)
+MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
-#<<<<<<< HEAD
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "2")
-#=======
 #SET(CMAKE_BUILD_TYPE Debug)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_MACOSX_RPATH "ON")
@@ -68,12 +77,11 @@ ENDIF(NOT DEFINED wxWidgets_USE_FILE)
 ENDIF(QT_ANDROID)
 
 FIND_PACKAGE(Gettext REQUIRED)
-#>>>>>>> master
-
-#SET(CMAKE_BUILD_TYPE Debug)
 
 
-INCLUDE("cmake/PluginConfigure.cmake")
+# For convenience we define the sources as a variable. You can add
+# header files and cpp/c files and CMake will sort them out
+
 
 SET(SRC_GRIB
             src/grib_pi.h
@@ -96,8 +104,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-            src/pi_TexFont.h
-            src/pi_TexFont.cpp
+            src/TexFont.h
+            src/TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/CustomGrid.h
@@ -109,9 +117,7 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-            src/pi_ocpndc.cpp
-            src/pi_shaders.cpp
-            
+
             ../../src/wxJSON/jsonval.cpp
             ../../src/wxJSON/jsonreader.cpp
             ../../src/wxJSON/jsonwriter.cpp
@@ -158,14 +164,14 @@ IF(QT_ANDROID)
 ENDIF(QT_ANDROID)
 
     #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
-
+    
     file(GLOB jasper_base_sources "src/jasper/base/*.c")
     file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
     file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
     file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
     file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
     file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
-
+    
     SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
 
     ADD_DEFINITIONS(-DJASPER)
@@ -184,7 +190,7 @@ IF (QT_ANDROID )
         # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
 
         # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn/build-opencpn-Production_build_Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Release/libopencpn.so                
+        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
 
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
@@ -195,11 +201,11 @@ IF (QT_ANDROID )
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+        ${Qt_Base}/android_armv7/lib/libQt5Core.so
+        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
+        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
+        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
+        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
 
         ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
@@ -207,16 +213,6 @@ IF (QT_ANDROID )
 ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
-
-
-IF (QT_ANDROID )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv1_CM" )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv2" )
-    
-ENDIF(QT_ANDROID)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: Need better handling after 5.0.0
@@ -283,7 +279,6 @@ IF(UNIX AND NOT APPLE)
 	ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 
 ENDIF(UNIX AND NOT APPLE)
-#>>>>>>> master
 
 IF(WIN32)
 	INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
@@ -296,7 +291,5 @@ IF(WIN32)
 
 ENDIF(WIN32)
 
-INCLUDE("cmake/PluginInstall.cmake")
-INCLUDE("cmake/PluginLocalization.cmake")
-INCLUDE("cmake/PluginPackage.cmake")
-
+INCLUDE("../PluginLocalization.cmake")
+PLUGIN_LOCALIZATION()

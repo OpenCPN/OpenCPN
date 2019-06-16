@@ -40,7 +40,7 @@
 #include "grib_pi.h"
 
 #ifdef __WXQT__
-#include "qdebug.h"
+//#include "qdebug.h"
 #endif
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -56,9 +56,6 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 }
 
 extern int   m_DialogStyle;
-
-grib_pi *g_pi;
-bool g_bpause;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -93,7 +90,6 @@ grib_pi::grib_pi(void *ppimgr)
 
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
-      g_pi = this;
       m_GUIScaleFactor = -1.;
 }
 
@@ -111,16 +107,12 @@ int grib_pi::Init(void)
       // Set some default private member parameters
       m_CtrlBarxy = wxPoint( 0 ,0 );
       m_CursorDataxy = wxPoint( 0, 0 );
-      m_coreToolbarSize = wxSize(1,1);
-      m_coreToolbarPosn = wxPoint(0,0);
-      
+
       m_pGribCtrlBar = NULL;
       m_pGRIBOverlayFactory = NULL;
 
       ::wxDisplaySize(&m_display_width, &m_display_height);
 
-      g_bpause = false;
-      
       m_DialogStyleChanged = false;
 
       //    Get a pointer to the opencpn configuration object
@@ -264,90 +256,13 @@ bool grib_pi::MouseEventHook( wxMouseEvent &event )
     return false;
 }
 
-void grib_pi::SetTimeZone(int tz)
-{ 
-    m_bTimeZone = tz;
-    if( m_pGRIBOverlayFactory )
-        m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
-    
-    if(m_pGribCtrlBar){
-        m_pGribCtrlBar->PopulateComboDataList();
-        m_pGribCtrlBar->TimelineChanged();
-    }
-}
-
-void SetBackColor( wxWindow* ctrl, wxColour col)
-{
-    static int depth = 0; // recursion count
-    if ( depth == 0 ) {   // only for the window root, not for every child
-
-        ctrl->SetBackgroundColour( col );
-    }
-    
-    wxWindowList kids = ctrl->GetChildren();
-    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
-        wxWindow *win = node->GetData();
-        
-        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
-            ( (wxListBox*) win )->SetBackgroundColour( col );
-        
-        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
-            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-        
-        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-            
-            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
-                ( (wxChoice*) win )->SetBackgroundColour( col );
-            
-            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
-                ( (wxComboBox*) win )->SetBackgroundColour( col );
-            
-            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-                ( (wxRadioButton*) win )->SetBackgroundColour( col );
-            
-            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
-            }
-            
-            
-            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
-                ( (wxButton*) win )->SetBackgroundColour( col );
-            }
-            
-            else {
-                ;
-            }
-            
-            if( win->GetChildren().GetCount() > 0 ) {
-                depth++;
-                wxWindow * w = win;
-                SetBackColor( w, col );
-                depth--;
-            }
-    }
-}
-
 void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
 
     DimeWindow( Pref );                                     //aplly global colours scheme
     SetDialogFont( Pref );                                  //Apply global font
-    
-    if( m_parent_window ){
-        int xmax = m_parent_window->GetSize().GetWidth();
-        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
-        Pref->SetSize( xmax, ymax );
-        Pref->Layout();
-        
-        Pref->Move(0,0);
-    }
-        
-    wxColour cl = wxColour(214,218,222);
-    SetBackColor( Pref, cl );
-    
+
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
     Pref->m_cbDrawBarbedArrowHead->SetValue(m_bDrawBarbedArrowHead);
@@ -358,12 +273,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbLoadOptions->SetSelection( m_bLoadLastOpenFile );
     Pref->m_rbStartOptions->SetSelection( m_bStartOptions );
 
-    Pref->Show();
-    return;
-}
-
-void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref)
-{
+     if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
@@ -418,6 +328,8 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref)
          }
 
          SaveConfig();
+     }
+     delete Pref;
 }
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
@@ -462,29 +374,11 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
     
     wxPoint p = frame->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-///v5<<<<<<< HEAD
- 	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
- 		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
- 	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
- 		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
+    if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
+        p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
+    if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
+	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
 
-#ifdef __OCPN__ANDROID__
-        //  But not off-screen, nor covering the toolbar...        
-        if(m_coreToolbarSize.y > 1){                    //has been set by core message        
-            qDebug() << m_coreToolbarSize.x << m_coreToolbarSize.y;
-            p.x = wxMax(0, p.x);
-            p.y = wxMax(m_coreToolbarSize.y + 2, p.y);
-        }
-        
-#endif        
-        
-// =======
-//     if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
-//         p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
-//     if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
-// 	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
-// 
-// >>>>>>> v5.0.0
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
@@ -517,12 +411,9 @@ void grib_pi::OnToolbarToolCallback(int id)
         wxFont *qFont = OCPNGetFont(_("Menu"), 10);
         table->SetFont(*qFont);
 #endif
-
-#ifndef __OCPN__ANDROID__        
         m_MenuItem = AddCanvasContextMenuItem(table, this);
         SetCanvasContextMenuItemViz(m_MenuItem, false);
-#endif
-        
+
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribCtrlBar );
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
@@ -545,29 +436,6 @@ void grib_pi::OnToolbarToolCallback(int id)
             m_GUIScaleFactor = scale_factor;
             m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
-            
-#ifdef __OCPN__ANDROID__            
-            //  The basic size should be about 7 buttons wide
-            wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
-            qDebug() << "7wide" << sz_nominal.x << GetOCPNGUIToolScaleFactor_PlugIn();
-            
-            wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-            int target_size1 = wxMin(csz.x, sz_nominal.x);
-            m_pGribCtrlBar->SetSize(wxMin(csz.x, sz_nominal.x), -1);
-            
-            // It also should be large enough to contain the text, plus two buttons. plus fluff
-            wxString test_string(_T(" 13-Dec-2017 18:00 UTC "));
-            wxScreenDC dc;
-            int w;
-            dc.GetTextExtent(test_string, &w, NULL, NULL, NULL, OCPNGetFont(_("Dialog"), 10));
-            int target_size2 = wxMin(csz.x, w + GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 3);
-            
-            qDebug() << "GRIB BAR" << target_size1 << target_size2;
-
-            m_pGribCtrlBar->SetSize(wxMax(target_size1, target_size2), -1);
-            
-#endif
-            
             m_pGribCtrlBar->Refresh();
         } else {
             MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
@@ -840,34 +708,16 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     
     else if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
     {
-#ifdef __OCPN__ANDROID__        
-        // Coming back from Android settings activity...
-        qDebug() << "message GRIB_APPLY_JSON_CONFIG";
-        g_bpause = false;
-#endif        
-        
         wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
         
         if(m_pGribCtrlBar){
             m_pGribCtrlBar->OpenFileFromJSON(message_body);
             
-            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body, this);
+            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
             m_pGribCtrlBar->m_OverlaySettings.Write();
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             
         }
-    }
-    
-    if(message_id == _T("OpenCPN Config"))
-    {
-        wxJSONReader r;
-        wxJSONValue v;
-        r.Parse(message_body, &v);
-        
-        if(v[_T("OpenCPN Toolbar Width")].IsInt())  m_coreToolbarSize.x = v[_T("OpenCPN Toolbar Width")].AsInt();
-        if(v[_T("OpenCPN Toolbar Height")].IsInt()) m_coreToolbarSize.y = v[_T("OpenCPN Toolbar Height")].AsInt();
-        if(v[_T("OpenCPN Toolbar PosnX")].IsInt())  m_coreToolbarPosn.x = v[_T("OpenCPN Toolbar PosnX")].AsInt();
-        if(v[_T("OpenCPN Toolbar PosnY")].IsInt())  m_coreToolbarPosn.x = v[_T("OpenCPN Toolbar PosnY")].AsInt();
     }
 }
 
@@ -982,11 +832,3 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
                 _("Warning!"));
     }
 }
-
-void GribPreferencesDialog::OnOKClick(wxCommandEvent& event)
-{
-    if(g_pi)
-        g_pi->UpdatePrefs(this);
-    Close();
-}
-

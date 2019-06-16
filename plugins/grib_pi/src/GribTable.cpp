@@ -75,32 +75,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
         //populate time labels
         time = rsa->Item(i).m_Reference_Time;
-<<<<<<< HEAD
-        day = time;
-        if( i == 0 ) ptime = time;
-
-        //populate and color 'day' row
-        if( ptime.GetDateOnly() != day.GetDateOnly() ) {
-            ptime = time;
-            color = !color;
-        }
-        if( !color )
-            m_pGribTable->SetCellBackgroundColour(0, i, colour0);
-        else
-            m_pGribTable->SetCellBackgroundColour(0, i, colour1);
-
-        m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings( day, zone , 1) );
-
-        //populate 'time' row
-        m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
-
-        nrows = 2;
-
-        m_pTimeset = m_pGDialog->GetTimeLineRecordSet(rsa->Item(i).m_Reference_Time);
-        GribRecord **RecordArray = m_pTimeset->m_GribRecordPtrArray;
-
-        //create and polulate wind data row
-=======
         m_pGribTable->SetColLabelValue(i ,GetTimeRowsStrings( time, zone , 1)
 						.Append( _T("\n"))
 						.Append( GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0))
@@ -117,7 +91,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
              1) if current unit is not bf ==> double speed display (current unit + bf)
              2) create two lines for direction and speed and a third for gust if exists
              3) these two or three lines will be part of the same block*/
->>>>>>> v5.0.0
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND &&
             m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND) {
             nrows++;
@@ -234,9 +207,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
         }//current // populate grid
         delete pTimeset;
         m_pGribTable->AutoSizeColumn(i, false);
-<<<<<<< HEAD
-    }
-=======
         wcols = wxMax(m_pGribTable->GetColSize(i), wcols);
     }//populate grid
     //put cursor outside the grid
@@ -244,7 +214,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
     //set col size
     m_pGribTable->SetDefaultColSize( wcols, true );
     //set row size
->>>>>>> v5.0.0
     AutoSizeDataRows();
     //set label size
     m_pGribTable->SetColLabelSize(wxGRID_AUTOSIZE);

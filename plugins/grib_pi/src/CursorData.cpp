@@ -639,9 +639,7 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
 
     if( event.LeftDown() ) {
         s_gspt = spt;
-#ifndef __OCPN__ANDROID__        
         if (!HasCapture()) CaptureMouse();
-#endif        
     }
 
     if( event.LeftUp() ) {
@@ -663,21 +661,21 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
 
 		// X
 		if( pos_in_parent.x < pos_in_parent_old.x ) {           // moving left
- 			if( pos_in_parent.x < 10 ) {
- 				pos_in_parent.x = 0;
+			if( pos_in_parent.x < 10 ) {
+				pos_in_parent.x = 0;
 			}
 		} else
         if( pos_in_parent.x > pos_in_parent_old.x ) {           // moving right
             int max_right = GetOCPNCanvasWindow()->GetClientSize().x - GetParent()->GetSize().x;
-             if( pos_in_parent.x > ( max_right - 10 ) ) {
-                 pos_in_parent.x = max_right;
-             }
+            if( pos_in_parent.x > ( max_right - 10 ) ) {
+                pos_in_parent.x = max_right;
+            }
         }
 
 		// Y
 		if( pos_in_parent.y < pos_in_parent_old.y ) {            // moving up
- 			if( pos_in_parent.y < 10 ) {
- 				pos_in_parent.y = 0;
+			if( pos_in_parent.y < 10 ) {
+				pos_in_parent.y = 0;
 			}
 		} else
         if( pos_in_parent.y > pos_in_parent_old.y ) {            // moving dow
@@ -687,20 +685,9 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
             }
         }
 
-        wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
+		wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen( pos_in_parent );
 
-                
-#ifdef __OCPN__ANDROID__
-                //  But not covering the toolbar...
-        if(m_DialogStyle >> 1 == ATTACHED){
-            GRIBUICtrlBar *cb = wxDynamicCast(GetParent(), GRIBUICtrlBar ); 
-            if(cb->pPlugIn->m_coreToolbarSize.y > 1){                    //has probably been set by core message        
-                final_pos.y = wxMax(cb->pPlugIn->m_coreToolbarSize.y + 2, final_pos.y);
-            }
-        }
-#endif        
-                
-        GetParent()->Move( final_pos );
+		GetParent()->Move( final_pos );
 
         s_gspt = spt;
 

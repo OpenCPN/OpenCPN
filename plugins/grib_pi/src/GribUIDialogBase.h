@@ -122,8 +122,6 @@ class GRIBUICtrlBarBase : public wxDialog
 		wxBitmapButton* m_bpRequest;
 		wxFlexGridSizer* m_fgCDataSizer;
 		wxFlexGridSizer* m_fgCtrlGrabberSize;
-                bool             m_bcompact;
-                
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
@@ -143,6 +141,7 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnSettings( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCompositeDialog( wxCommandEvent& event ) { event.Skip(); }
+		
 
 	public:
 		wxBitmapButton* m_bpAltitude;
@@ -330,8 +329,7 @@ class GribPreferencesDialogBase : public wxDialog
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnStartOptionChange( wxCommandEvent& event ) { event.Skip(); }
-		void OnOKClick(wxCommandEvent& event) { event.Skip(); }
-                
+
 
 	public:
 		wxCheckBox* m_cbUseHiDef;
