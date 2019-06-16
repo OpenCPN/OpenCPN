@@ -36,7 +36,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE)
     ADD_DEFINITIONS( "-Wall -fexceptions -fvisibility=hidden" )
-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+    IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+      SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+    ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
@@ -98,6 +100,8 @@ SET(SRC_GRIB
             src/pi_TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
+            src/CustomGrid.h
+            src/CustomGrid.cpp
             src/icons.cpp
             src/GribReader.cpp
             src/GribRecord.cpp
@@ -127,9 +131,9 @@ IF(NOT UNIX)
             src/bzip2/huffman.c
             src/bzip2/randtable.c
     )
-    ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
+    ADD_LIBRARY(LIB_BZIP STATIC ${SRC_BZIP})
 
-    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 ENDIF(NOT UNIX)
 
@@ -146,7 +150,7 @@ IF(QT_ANDROID)
     )
     SET(SRC_GRIB ${SRC_GRIB} ${SRC_BZIP_ANDROID})
 
-    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 
     MESSAGE (STATUS ${SRC_GRIB})
@@ -166,8 +170,8 @@ ENDIF(QT_ANDROID)
 
     ADD_DEFINITIONS(-DJASPER)
     ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
-
-    INCLUDE_DIRECTORIES("src/jasper/include")
+   
+    INCLUDE_DIRECTORIES(BEFORE "src/jasper/include")
 
 
 
@@ -204,8 +208,6 @@ ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
-
 
 IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
@@ -216,9 +218,16 @@ IF (QT_ANDROID )
     
 ENDIF(QT_ANDROID)
 
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    # FIXME: Need better handling after 5.0.0
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
+endif ()
+
+
 IF(WIN32)
   IF(MSVC)
     SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib")
   ELSE(MSVC)
     SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
     SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

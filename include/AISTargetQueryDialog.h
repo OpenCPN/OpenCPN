@@ -24,15 +24,17 @@
 #ifndef __AISTARGETQUERYDIALOG_H__
 #define __AISTARGETQUERYDIALOG_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/sizer.h>
 
 #include "ocpn_types.h"
 
+#define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT
+
 class wxHtmlWindow;
 class AIS_Target_Data;
 
-class AISTargetQueryDialog: public wxDialog
+class AISTargetQueryDialog: public wxFrame
 {
 DECLARE_CLASS( AISTargetQueryDialog )
 DECLARE_EVENT_TABLE()
@@ -46,7 +48,7 @@ public:
             const wxString& caption = _("Object Query"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize,
-            long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            long style = AIS_TARGET_QUERY_STYLE );
 
       ~AISTargetQueryDialog( );
       /// Initialise our variables
@@ -58,7 +60,7 @@ public:
             const wxString& caption = _("Object Query"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize,
-            long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            long style = AIS_TARGET_QUERY_STYLE );
 
       void OnClose(wxCloseEvent& event);
       void OnIdOKClick( wxCommandEvent& event );

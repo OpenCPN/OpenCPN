@@ -230,15 +230,21 @@ struct ChartTableEntry
     const wxString *GetpFileName(void) const { return m_pfilename; }
     wxString *GetpsFullPath(void){ return m_psFullPath; }
     
-    const ArrayOfInts &GetGroupArray(void) const { return m_GroupArray; }
-    void ClearGroupArray(void) { m_GroupArray.Clear(); }
-    void AddIntToGroupArray( int val ) { m_GroupArray.Add( val ); }
+    const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
+    void ClearGroupArray(void) { m_GroupArray.clear(); }
+    void AddIntToGroupArray( int val ) { m_GroupArray.push_back( val ); }
     void SetAvailable(bool avail ){ m_bavail = avail;}
 
     std::vector<float> GetReducedPlyPoints();
     std::vector<float> GetReducedAuxPlyPoints( int iTable);
 
     LLRegion quilt_candidate_region;
+
+    void        SetScale(int scale);
+    bool	Scale_eq( int b ) const { return abs ( Scale - b) <= rounding; }
+    bool        Scale_ge( int b ) const { return  Scale_eq( b ) || Scale > b; }
+    bool        Scale_gt( int b ) const { return  Scale > b && !Scale_eq( b ); }
+
   private:
     int         EntryOffset;
     int         ChartType;
@@ -248,6 +254,7 @@ struct ChartTableEntry
     float       LonMax;
     float       LonMin;
     char        *pFullPath;
+    int		rounding;
     int         Scale;
     time_t      edition_date;
     time_t      file_date;
@@ -263,7 +270,7 @@ struct ChartTableEntry
     int         *pNoCovrCntTable;
     float       **pNoCovrPlyTable;
     
-    ArrayOfInts m_GroupArray;
+    std::vector<int> m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
     LLBBox m_bbox;

@@ -29,6 +29,7 @@
 #include <wx/event.h>
 #include <wx/arrstr.h>
 
+#include <mutex>                // std::mutex
 #include <queue>                // std::queue
 
 #ifdef __WXMSW__
@@ -40,10 +41,55 @@
 
 #include "dsPortType.h"
 
+#ifdef ocpnUSE_NEWSERIAL
+#include "serial/serial.h"
+#endif
+
 #define OUT_QUEUE_LENGTH                20
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
 class DataStream;
+
+template<typename T>
+class atomic_queue
+{
+public:
+    size_t size()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_queque.size();
+    }
+    
+    bool empty()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_queque.empty();
+    }
+    
+    const T& front()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_queque.front();
+    }
+    
+    void push( const T& value )
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_queque.push(value);
+    }
+    
+    void pop()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_queque.pop();
+    }
+    
+private:
+    std::queue<T> m_queque;
+    mutable std::mutex m_mutex;
+};
+
+
 
 /**
  * This thread manages reading the data stream from the declared serial port.
@@ -68,6 +114,15 @@ public:
 
 
 private:
+#ifdef ocpnUSE_NEWSERIAL
+    serial::Serial m_serial;
+    void ThreadMessage(const wxString &msg);
+    bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
+    void CloseComPortPhysical();
+    void Parse_And_Send_Posn(const char *s);
+    size_t WriteComPortPhysical(char *msg);
+    size_t WriteComPortPhysical(const wxString& string);
+#else
     void ThreadMessage(const wxString &msg);
     void Parse_And_Send_Posn(const char *s);
     int OpenComPortPhysical(const wxString &com_name, int baud_rate);
@@ -78,8 +133,8 @@ private:
     bool CheckComPortPhysical(int port_descriptor);
     
     void HandleASuccessfulRead( char *buf, int nread );
-    
     wxCriticalSection       m_outCritical;
+#endif
     wxEvtHandler            *m_pMessageTarget;
     DataStream              *m_launcher;
     wxString                m_PortName;
@@ -103,7 +158,7 @@ private:
     //int                     m_putIndex;
     //char                    *m_poutQueue[OUT_QUEUE_LENGTH];
     
-    std::queue<char *>  out_que;
+    atomic_queue<char *>  out_que;
     
 
 #ifdef __WXMSW__

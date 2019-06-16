@@ -30,6 +30,7 @@
 #include "NMEALogWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
+#include "Route.h"
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -49,6 +50,8 @@ Multiplexer::Multiplexer()
     m_gpsconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     m_pdatastreams = new wxArrayOfDataStreams();
+    if(g_GPS_Ident.IsEmpty())
+        g_GPS_Ident = wxT("Generic");
 }
 
 Multiplexer::~Multiplexer()
@@ -265,7 +268,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
-                message.Mid(1,2).IsSameAs(_T("CD")) ||
+                message.Mid(1,4).IsSameAs(_T("CDDS")) ||
                 message.Mid(3,3).IsSameAs(_T("TLL")) ||
                 message.Mid(3,3).IsSameAs(_T("TTM")) ||
                 message.Mid(3,3).IsSameAs(_T("OSD")) ||
@@ -279,6 +282,28 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
+        }
+
+            //Send to the Debug Window, if open
+            //  Special formatting for non-printable characters helps debugging NMEA problems
+        if (NMEALogWindow::Get().Active()) {
+            std::string str= event.GetNMEAString();    
+            wxString fmsg;
+            
+            bool b_error = false;
+            for ( std::string::iterator it=str.begin(); it!=str.end(); ++it){
+                if(isprint(*it))
+                    fmsg += *it;
+                else{
+                    wxString bin_print;
+                    bin_print.Printf(_T("<0x%02X>"), *it);
+                    fmsg += bin_print;
+                    if((*it != 0x0a) && (*it != 0x0d))
+                        b_error = true;
+                }
+                
+            }
+            LogInputMessage( fmsg, port, !bpass, b_error );
         }
 
         if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
@@ -324,28 +349,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                     }
                 }
             }
-        }
-
-            //Send to the Debug Window, if open
-            //  Special formatting for non-printable characters helps debugging NMEA problems
-        if (NMEALogWindow::Get().Active()) {
-            std::string str= event.GetNMEAString();    
-            wxString fmsg;
-            
-            bool b_error = false;
-            for ( std::string::iterator it=str.begin(); it!=str.end(); ++it){
-                if(isprint(*it))
-                    fmsg += *it;
-                else{
-                    wxString bin_print;
-                    bin_print.Printf(_T("<0x%02X>"), *it);
-                    fmsg += bin_print;
-                    if((*it != 0x0a) && (*it != 0x0d))
-                        b_error = true;
-                }
-                
-            }
-            LogInputMessage( fmsg, port, !bpass, b_error );
         }
     }
 }
@@ -885,7 +888,7 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    wxString sentence = sentence_array.Item(ii);
+                    wxString sentence = sentence_array[ii];
                     
                     if(dstr->SendSentence( sentence ) )
                         LogOutputMessage( sentence, dstr->GetPort(), false );

@@ -47,13 +47,9 @@ using namespace std;
 #include <wx/brush.h>
 #include <wx/colour.h>
 
-
-#if wxCHECK_VERSION( 2, 9, 0 )
 #include <wx/dialog.h>
-#else
-//  #include "scrollingdialog.h"
-#endif
 
+#include "navutil.h"
 #include "dychart.h"
 
 #ifdef __WXMSW__
@@ -72,6 +68,7 @@ using namespace std;
 #include "printtable.h"
 #include "wx28compat.h"
 #include "Track.h"
+#include "Route.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1
@@ -102,22 +99,22 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
     table.StartFillHeader();
     // setup widths for columns
     
-    table << (const char *)wxString(_("Leg")).mb_str();
+    table << _("Leg");
     
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << (const char *)wxString(_("To Waypoint")).mb_str();
+        table << _("To Waypoint");
     }
     if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-        table << (const char *)wxString(_("Position")).mb_str();
+        table << _("Position");
     }
     if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-        table << (const char *)wxString(_("Course")).mb_str();
+        table << _("Course");
     }
     if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-        table << (const char *)wxString(_("Distance")).mb_str();
+        table << _("Distance");
     }
     if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-        table << (const char *)wxString(_("Description")).mb_str();
+        table << _("Description");
     }
 
     table.StartFillWidths();
@@ -143,24 +140,19 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     table.StartFillData();
 
-    //  Unfortunately, Routes and Tracks count points differently....
-    int offset = 0;
-    if(myRoute->isTrack())
-        offset = -1;
-
     for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
-        RoutePoint* point = myRoute->GetPoint( n + offset);
+        RoutePoint* point = myRoute->GetPoint( n );
         
         RoutePoint* pointm1 = NULL;
-        if(((n-1) + offset) >= 0)
-            pointm1 = myRoute->GetPoint( (n-1) + offset );
+        if(n - 1 >= 0)
+            pointm1 = myRoute->GetPoint( n - 1 );
 
         if(NULL == point)
             continue;
         
         wxString leg = _T("---");
         if(n > 1)
-            leg.Printf( _T("%d"), n-1);
+            leg.Printf( _T("%d"), n - 1);
         
         string cell( leg.mb_str() );
         
@@ -177,21 +169,19 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         }
         if ( toPrintOut[ PRINT_WP_COURSE ] ) {
             wxString point_course = "---";
-            if(pointm1)
-                point_course.Printf( _T( "%03.0f Deg" ), pointm1->GetCourse() );
-            string   cell( point_course.mb_str() );
-            table << cell;
+            if(pointm1) {
+                point_course = formatAngle( point->GetCourse() );
+            }
+            table << point_course;
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
             wxString point_distance = _T("---");
             if(n > 1)
                 point_distance.Printf( _T( "%6.2f" + getUsrDistanceUnit() ), toUsrDistance( point->GetDistance() ) );
-            string   cell( point_distance.mb_str() );
-            table << cell;
+            table << point_distance;
         }
         if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-            string cell( point->GetDescription().mb_str() );
-            table << cell;
+            table << point->GetDescription();
         }
         table << "\n";
     }
@@ -490,7 +480,7 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
         g_pageSetupData = new wxPageSetupDialogData;
     }
 
-    MyRoutePrintout*  myrouteprintout1 = new MyRoutePrintout( toPrintOut, route,  _( "Route Print" ) );
+    MyRoutePrintout* myrouteprintout1 = new MyRoutePrintout( toPrintOut, route,  _( "Route Print" ) );
 
     wxPrintDialogData printDialogData( *g_printData );
     printDialogData.EnablePageNumbers( true );
@@ -505,6 +495,6 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
         }
     }
 
-    Close(); //Hide();
+    Close();
     event.Skip();
 }

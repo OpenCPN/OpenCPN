@@ -19,8 +19,10 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-    configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
-    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+    SET(BUILD_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+    configure_file(cmake/version.h.in ${BUILD_INCLUDE_PATH}/include/version.h)
+    configure_file(cmake/wxWTranslateCatalog.h.in ${BUILD_INCLUDE_PATH}/include/wxWTranslateCatalog.h)
+    INCLUDE_DIRECTORIES(${BUILD_INCLUDE_PATH}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
@@ -34,6 +36,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT MSVC)
+ ADD_DEFINITIONS( "-fvisibility=hidden" )
  IF(PROFILING)
   ADD_DEFINITIONS( "-Wall -g -fprofile-arcs -ftest-coverage -fexceptions" )
  ELSE(PROFILING)
@@ -41,11 +44,12 @@ IF(NOT MSVC)
  ADD_DEFINITIONS( "-Wall -Wno-unused-result -g -O2 -fexceptions" )
  ENDIF(PROFILING)
 
- IF(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
- ELSE(NOT APPLE)
+ IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
+ ENDIF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+ IF(APPLE)
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
- ENDIF(NOT APPLE)
+ ENDIF(APPLE)
 
 ENDIF(NOT MSVC)
 

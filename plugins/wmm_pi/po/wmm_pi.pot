@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the wmm_pi package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wmm_pi 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-26 22:17-0500\n"
+"POT-Creation-Date: 2019-03-12 22:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,10 +21,10 @@ msgstr ""
 msgid ""
 "\n"
 "World Magnetic Model Plotting allows users to cross reference the magnetic "
-"declination values printed on many raster charts.\n"
+"variation values printed on many raster charts.\n"
 "\n"
-"Declination is the angle between true and magnetic north.\n"
-"Inclination is the vertical angle of the magnetic field.\n"
+"Variation is the angle between true and magnetic north.\n"
+"Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
 "\t20000 to 66000\n"
@@ -43,15 +43,15 @@ msgstr ""
 msgid "WMM Plugin"
 msgstr ""
 
-#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:208 src/wmm_pi.cpp:280 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr ""
 
-#: src/wmm_pi.cpp:283
+#: src/wmm_pi.cpp:286
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr ""
 
-#: src/wmm_pi.cpp:288
+#: src/wmm_pi.cpp:291
 msgid ""
 "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
@@ -62,11 +62,11 @@ msgid ""
 "location you can find in the OpenCPN logfile."
 msgstr ""
 
-#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
+#: src/wmm_pi.cpp:475 src/wmm_pi.cpp:616
 msgid "Error, see log."
 msgstr ""
 
-#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:846 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr ""
 
@@ -182,19 +182,19 @@ msgstr ""
 msgid "Window transparency"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
-msgid "Declination"
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
+msgid "Variation"
 msgstr ""
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
 msgid "Inclination"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
 msgid "Field Strength"
 msgstr ""
 
@@ -222,6 +222,6 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/MagneticPlotMap.cpp:361
+#: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
 msgstr ""

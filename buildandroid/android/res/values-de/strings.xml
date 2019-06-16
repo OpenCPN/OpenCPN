@@ -301,4 +301,10 @@
   <string name="install_proposed_location">Vorgeschlagenes Karteninstallationsverzeichnis:</string>
   <string name="install_button_install_charts">Karten installieren</string>
   <string name="install_done">Ausgeführt</string>
+
+  <string name="permission_granted">SD Karten Berechtigung erteilt.</string>
+  <string name="sdcard_permission_help">OpenCPN benötigt die Schreibberechtigung für die SD Karte\n\n
+        Wählen Sie auf dem nächsten Bildschirm das Wurzelverzeichnis der SD Karte aus, um den Zugriff zu erlauben.\n\n
+        Diese Einstellung bleibt für OpenCPN in Zukunft gültig.</string>
+
 </resources>

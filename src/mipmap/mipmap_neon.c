@@ -28,7 +28,7 @@
 #include "mipmap.h"
 
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON) || defined(__ARM_NEON_FP)
 #include <arm_neon.h>
 
 // about twice as fast as generic

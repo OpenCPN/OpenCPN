@@ -32,7 +32,9 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-#include <wx/wfstream.h>
+//#include <wx/wfstream.h>
+
+#include "dychart.h"
 
 class OGRGeometry;
 class OGRPolygon;
@@ -91,6 +93,8 @@ public:
       double            x_offset;
       double            y_rate;
       double            y_offset;
+      double            ref_lat;                // Lower left corner of the cell containing this feature
+      double            ref_lon; 
 };
 
 
@@ -110,7 +114,6 @@ public:
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
         LLBBox      tri_box;
-//        double      minxt, minyt, maxxt, maxyt;
         
         TriPrim     *p_next;                // chain link
         
@@ -174,48 +177,30 @@ typedef struct {
 
 
 
-class PolyTrapGroup
-{
-      public:
-            PolyTrapGroup();
-            PolyTrapGroup(Extended_Geometry *pxGeom);
-            ~PolyTrapGroup();
-
-            int             nContours;
-            int             *pn_vertex;             // pointer to array of poly vertex counts
-            wxPoint2DDouble *ptrapgroup_geom;       // pointer to Raw geometry, used for contour line drawing
-
-            int             ntrap_count;
-            trapz_t         *trap_array;
-            int             m_trap_error;
-};
-
-
-
-
 //--------------------------------------------------------------------------------------------------
 //
 //      Triangle Tesselator Class
 //
 //--------------------------------------------------------------------------------------------------
+class OGRPolygon;
+class GLUtesselator;
+
 class PolyTessGeo
 {
     public:
         PolyTessGeo();
         ~PolyTessGeo();
 
-        PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
-
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
             double ref_lat, double ref_lon, double LOD_meters);  // Build this from OGRPolygon
 
         PolyTessGeo(Extended_Geometry *pxGeom);
 
+        PolyTessGeo(unsigned char *polybuf, int nrecl, int index,  int senc_file_version);
+
         bool IsOk(){ return m_bOK;}
 
         int BuildDeferredTess(void);
-
-        int Write_PolyTriGroup( FILE *ofs);
 
         double Get_xmin(){ return xmin;}
         double Get_xmax(){ return xmax;}
@@ -234,21 +219,42 @@ class PolyTessGeo
         void Set_OK( bool bok ){ m_bOK = bok;}
         
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
-
-        Extended_Geometry     *m_pxgeom;
-        
-    private:
-        int BuildTessGL(void);
-        int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
         int my_bufgets( char *buf, int buf_len_max );
 
 
+        GLUtesselator* GLUtessobj;
+        wxArrayPtrVoid *m_pCombineVertexArray;
+        double        *m_pwork_buf;
+        int             m_buf_len;
+        int             m_buf_idx;
+        TriPrim         *m_pTPG_Last;
+        TriPrim         *m_pTPG_Head;
+        int             m_gltri_type;
+        int             m_nvcall;
+        int             m_nvmax;
+        bool           m_bmerc_transform;
+        double            mx_rate, mx_offset, my_rate, my_offset;
+        bool           m_b_senc_sm;
+        double         m_ref_lat, m_ref_lon;
+        int            m_tess_orient;
+        double         m_feature_ref_lat, m_feature_ref_lon;
+        double         m_feature_easting, m_feature_northing;
+
+        double         earthAxis;
+        bool           m_bcm93;
+        
+private:
+        int BuildTess(void);
+        //int BuildTessGL2(void);
+        //int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
+        int BuildTessGLU( void );
 
     //  Data
 
         bool            m_bOK;
 
-
+        Extended_Geometry     *m_pxgeom;
+        
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain
         int             m_nvertex_max;                 // and computed max vertex count
@@ -257,58 +263,17 @@ class PolyTessGeo
 
         int             m_ncnt;
         int             m_nwkb;
-
+        int             *m_cntr;
         char           *m_buf_head;
         char           *m_buf_ptr;                   // used to read passed SENC record
         int            m_nrecl;
 
-        double         m_ref_lat, m_ref_lon;
         double         m_LOD_meters;
+        
 
-};
-
-
-//--------------------------------------------------------------------------------------------------
-//
-//      Trapezoid Tesselator Class
-//
-//--------------------------------------------------------------------------------------------------
-class PolyTessGeoTrap
-{
-      public:
-            PolyTessGeoTrap();
-            ~PolyTessGeoTrap();
-
-
-            PolyTessGeoTrap(Extended_Geometry *pxGeom);  // Build this from Extended Geometry
-
-            void BuildTess();
-
-            double Get_xmin(){ return xmin;}
-            double Get_xmax(){ return xmax;}
-            double Get_ymin(){ return ymin;}
-            double Get_ymax(){ return ymax;}
-            PolyTrapGroup *Get_PolyTrapGroup_head(){ return m_ptg_head;}
-            int GetnVertexMax(){ return m_nvertex_max; }
-            void SetnVertexMax( int max ){ m_nvertex_max = max; }
-            bool IsOk(){ return m_bOK;}
-            int     ErrorCode;
-
-
-      private:
-
-
-
-    //  Data
-            bool            m_bOK;
-
-            double          xmin, xmax, ymin, ymax;
-            PolyTrapGroup   *m_ptg_head;                  // PolyTrapGroup
-            int             m_nvertex_max;                // computed max vertex count
-                                                          // used by drawing primitives as
-                                                          // optimization for malloc
-            int             m_ncnt;
-            int             m_nwkb;
+        double         **m_vertexPtrArray;
+        bool           m_printStats;
+        bool           m_bstripify;
 
 };
 

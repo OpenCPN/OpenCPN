@@ -301,4 +301,10 @@
   <string name="install_proposed_location">Förslag på var korten skall sparas:</string>
   <string name="install_button_install_charts">Installera sjökort</string>
   <string name="install_done">Klar.</string>
+
+  <string name="permission_granted">Tillgång till SD-kortet har bekräftats.</string>
+  <string name="sdcard_permission_help">OpenCPN behöver tillåtelse att använda SD-kortet\n\n
+ Markera rotmappen i nästa uppslag för att ge full tillgång.\n\n
+ Valet kommer att sparas för framtiden.</string>
+
 </resources>

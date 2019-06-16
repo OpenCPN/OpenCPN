@@ -15,6 +15,7 @@
 #include "androidUTIL.h"
 #endif
 #include "OCPNPlatform.h"
+#include "navutil.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
@@ -63,25 +64,30 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
+    m_created = false;
+    xSpot = 0;
+    ySpot = 0;
+
+    m_pTCRolloverWin = NULL;
+
+    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
-#ifdef __WXOSX__
-     wstyle |= wxSTAY_ON_TOP;
-#endif
-   
     pParent = parent;
     m_x = x;
     m_y = y;
     
-    m_created = false;
-    m_tList = NULL;
-    m_ptextctrl = NULL;
+//<<<<<<< HEAD
+//    m_created = false;
+//    m_tList = NULL;
+//    m_ptextctrl = NULL;
     
+//=======
+//>>>>>>> v5.0.0
     RecalculateSize();
      
-    wxDialog::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
+    wxFrame::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
                       m_tc_size, wstyle );
 
     m_created = true;
@@ -127,7 +133,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         SetTitle( wxString( _( "Current" ) ) );
     }
 
-    m_pTCRolloverWin = NULL;
 
 
     int sx, sy;
@@ -433,7 +438,7 @@ void TCWin::OKEvent( wxCommandEvent& event )
     delete m_tList;
     pParent->Refresh( false );
     Destroy();                          // that hurts
-    gFrame->SurfaceToolbar();
+//    gFrame->SurfaceToolbar();
     
 }
 
@@ -446,7 +451,7 @@ void TCWin::OnCloseWindow( wxCloseEvent& event )
     delete m_tList;
 
     Destroy();                          // that hurts
-    gFrame->SurfaceToolbar();
+//    gFrame->SurfaceToolbar();
 }
 
 void TCWin::NXEvent( wxCommandEvent& event )
@@ -501,6 +506,9 @@ void TCWin::RePosition( void )
 
 void TCWin::OnPaint( wxPaintEvent& event )
 {
+    if(!IsShown()) {
+        return;
+    }
     int x, y;
     int i;
     char sbuf[100];
@@ -558,12 +566,13 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.SetBrush( *pltgray );
         dc.DrawRectangle( m_graph_rect.x, m_graph_rect.y, m_graph_rect.width, m_graph_rect.height );
 
-        int hour_delta = 1;
         
         //  On some platforms, we cannot draw rotated text.
         //  So, reduce the complexity of horizontal axis time labels
 #ifndef __WXMSW__
-        hour_delta = 4;
+        const int hour_delta = 4;
+#else
+        const int hour_delta = 1;
 #endif        
         
         
@@ -602,7 +611,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         time_t t_now = this_now.GetTicks();       // now, in ticks
 
-        float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
+        float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600.0f );
 
         //must eliminate line outside the graph (in that case put it outside the window)
         int xnow = ( t_ratio < 0 || t_ratio > m_graph_rect.width ) ? -1 : m_graph_rect.x + (int) t_ratio;
@@ -681,7 +690,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
 //    Set up the vertical parameters based on Tide or Current plot
             if( CURRENT_PLOT == m_plot_type ) {
-                it = __max ( abs (( int ) tcmin - 1 ), abs ( ( int ) tcmax + 1 ) );
+                it = std::max ( abs (( int ) tcmin - 1 ), abs ( ( int ) tcmax + 1 ) );
                 ib = -it;
 
                 im = 2 * it;
@@ -906,7 +915,11 @@ void TCWin::OnSize( wxSizeEvent& event )
 //     }
 //     m_ptextctrl->SetSize(texc_size);
     
-    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));                            
+#ifdef __WXOSX__
+    OK_button->Move( wxPoint( x - (4 * m_tsy + 10), y - (m_tsy + 10) ));
+#else
+    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));
+#endif
     PR_button->Move( wxPoint( 10, y - (m_tsy + 10) ) );
  
     int bsx, bsy, bpx, bpy;
@@ -942,6 +955,9 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         SetCursor( *pParent->pCursorCross );
         if( NULL == m_pTCRolloverWin ) {
             m_pTCRolloverWin = new RolloverWin( this, -1, false );
+            // doesn't really work, mouse positions are relative to rollover window
+            // not this window.
+            // effect: hide rollover window if mouse on rollover
             m_pTCRolloverWin->SetMousePropogation( 1 );
             m_pTCRolloverWin->Hide();
         }
@@ -986,9 +1002,9 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         // x value is clear...
         //  Find the point in the window that is used for the curev rendering, rounding as necessary
         
-        int idx;
+        int idx = 1; // in case m_graph_rect.width is weird ie ppx never > curs_x
         for( int i = 0; i < 26; i++ ) {
-            float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
+            float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25.f );
             if(ppx > curs_x){
                 idx = i;
                 break;
@@ -1015,7 +1031,6 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
 
     if( m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover ) {
         m_pTCRolloverWin->Hide();
-        m_pTCRolloverWin = NULL;
     }
 
 }

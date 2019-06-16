@@ -44,12 +44,8 @@
 #include "GL/gl_private.h"
 #endif
 
-#include "WMMHeader.h"
+#include "GeomagnetismHeader.h"
 #include "MagneticPlotMap.h"
-
-#if defined(__WIN32__)
-#define isnan(x) _isnan(x)
-#endif  // __WIN32__
 
 static const long long lNaN = 0xfff8000000000000;
 #define qNan (*(double*)&lNaN)
@@ -114,9 +110,9 @@ void MagneticPlotMap::ConfigureAccuracy(int step, int poleaccuracy)
 /* compute the graphed parameter for one lat/lon location */
 double MagneticPlotMap::CalcParameter(double lat, double lon)
 {
-      WMMtype_CoordSpherical CoordSpherical;
-      WMMtype_CoordGeodetic CoordGeodetic;
-      WMMtype_GeoMagneticElements GeoMagneticElements;
+      MAGtype_CoordSpherical CoordSpherical;
+      MAGtype_CoordGeodetic CoordGeodetic;
+      MAGtype_GeoMagneticElements GeoMagneticElements;
 
       CoordGeodetic.lambda = lon;
       CoordGeodetic.phi = lat;
@@ -125,20 +121,20 @@ double MagneticPlotMap::CalcParameter(double lat, double lon)
       CoordGeodetic.UseGeoid = 0;
 
       /* Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report */
-      WMM_GeodeticToSpherical(*Ellip, CoordGeodetic, &CoordSpherical);
+      MAG_GeodeticToSpherical(*Ellip, CoordGeodetic, &CoordSpherical);
 
       /* Computes the geoMagnetic field elements and their time change */
-      WMM_Geomag(*Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);
-      WMM_CalculateGridVariation(CoordGeodetic, &GeoMagneticElements);
+      MAG_Geomag(*Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);
+      MAG_CalculateGridVariation(CoordGeodetic, &GeoMagneticElements);
 
       double ret = 0;
       switch(m_type) {
-      case DECLINATION: ret = GeoMagneticElements.Decl >= 180 ?
+      case DECLINATION_PLOT: ret = GeoMagneticElements.Decl >= 180 ?
               GeoMagneticElements.Decl - 360 : GeoMagneticElements.Decl;
           break;
-      case INCLINATION: ret = GeoMagneticElements.Incl;
+      case INCLINATION_PLOT: ret = GeoMagneticElements.Incl;
           break;
-      case FIELD_STRENGTH: ret = GeoMagneticElements.F;
+      case FIELD_STRENGTH_PLOT: ret = GeoMagneticElements.F;
           break;
       }
 
@@ -182,7 +178,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
     }
 
     /* this really only happens between geographic and magnetic pole, but to correct it... */
-    if(m_type == DECLINATION) {
+    if(m_type == DECLINATION_PLOT) {
         if(y1-y2 > 180)
             y2+=360;
         if(y2-y1 > 180)
@@ -231,10 +227,10 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
         else
             p = CalcParameter(lonval, rx);
 
-        if(isnan(p)) /* is this actually correct? */
+        if(std::isnan(p)) /* is this actually correct? */
             return true;
 
-        if(m_type == DECLINATION && p-ry*m_Spacing < -180) /* way off, try other way around */
+        if(m_type == DECLINATION_PLOT && p-ry*m_Spacing < -180) /* way off, try other way around */
             p += 360;
 
         p/=m_Spacing;
@@ -291,7 +287,7 @@ void MagneticPlotMap::PlotRegion(std::list<PlotLineSeg*> &region,
     double p3 = CachedCalcParameter(lat2, lon1);
     double p4 = CachedCalcParameter(lat2, lon2);
 
-    if(isnan(p1) || isnan(p2) || isnan(p3) || isnan(p4))
+    if(std::isnan(p1) || std::isnan(p2) || std::isnan(p3) || std::isnan(p4))
         return;
 
     double ry1, ry2, ry3, ry4 = 0.0;
@@ -319,7 +315,7 @@ void MagneticPlotMap::PlotRegion(std::list<PlotLineSeg*> &region,
     ry1*=m_Spacing, ry2*=m_Spacing, ry3*=m_Spacing, ry4*=m_Spacing;
 
     /* determine which interpolations need line segments */
-    switch(((isnan(lat4)*2 + isnan(lat3))*2 + isnan(lon4))*2 + isnan(lon3)) {
+    switch(((std::isnan(lat4)*2 + std::isnan(lat3))*2 + std::isnan(lon4))*2 + std::isnan(lon3)) {
     case 0: /* all 4 sides? need to recurse to get better resolution */
         lon3 = (lon1+lon2)/2;
         lat3 = (lat1+lat2)/2;
@@ -350,18 +346,18 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
     UserDate.Day = date.GetDay();
 
     char err[255];
-    WMM_DateToYear(&UserDate, err);
+    MAG_DateToYear(&UserDate, err);
 
     /* Time adjust the coefficients, Equation 19, WMM Technical report */
-    WMM_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel);
+    MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel);
 
     /* clear out old data */
   ClearMap();
 
-  wxGenericProgressDialog *progressdialog = new wxGenericProgressDialog(
+  wxGenericProgressDialog progressdialog(
       _("Building Magnetic Map"),
-      m_type==DECLINATION?_("Declination"):
-      m_type==INCLINATION?_("Inclination"):_("Field Strength"), 180, NULL,
+      m_type==DECLINATION_PLOT?_("Variation"):
+      m_type==INCLINATION_PLOT?_("Inclination"):_("Field Strength"), 180, NULL,
       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT);
 
   int cachepage = 0;
@@ -371,8 +367,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
   BuildParamCache(m_Cache[cachepage], -MAX_LAT);
 
   for(double lat = -MAX_LAT; lat + m_Step <= MAX_LAT; lat += m_Step) {
-      if(!progressdialog->Update(lat + 90)) {
-          delete progressdialog;
+      if(!progressdialog.Update(lat + 90)) {
           return false;
       }
 
@@ -388,7 +383,6 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
       }
   }
 
-  delete progressdialog;
   return true;
 }
 

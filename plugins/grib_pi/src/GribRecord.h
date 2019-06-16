@@ -30,7 +30,7 @@ Elément de base d'un fichier GRIB
 #define DEBUG_INFO    false
 #define DEBUG_ERROR   true
 #define grib_debug(format, ...)  {if(DEBUG_INFO)  {fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
-#define erreur(format, ...) {if(DEBUG_ERROR) {fprintf(stderr,"ERROR: ");fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
+#define erreur(format, ...) {if(DEBUG_ERROR) {fprintf(stderr,"Grib ERROR: ");fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
 
 #define zuint  unsigned int
 #define zuchar unsigned char
@@ -47,8 +47,14 @@ Elément de base d'un fichier GRIB
 #define GRB_TMAX           15   /* K      */
 #define GRB_TMIN           16   /* K      */
 #define GRB_DEWPOINT       17   /* K      */
-#define GRB_WIND_VX        33   /* m/s    */
-#define GRB_WIND_VY        34   /* m/s    */
+
+#define GRB_WIND_DIR       31 	/* Deg. Wind Direction */
+#define GRB_WIND_SPEED     32 	/* m/s  Wind Speed     */
+#define GRB_WIND_VX        33   /* m/s U  */
+#define GRB_WIND_VY        34   /* m/s V  */
+
+#define GRB_CUR_DIR        47 	/* Deg. Direction of current  */
+#define GRB_CUR_SPEED      48 	/* m/s Speed of current       */
 #define GRB_UOGRD          49   /*"u-component of current", "m/s" */
 #define GRB_VOGRD          50   /*"v-component of current", "m/s" */
 
@@ -75,7 +81,7 @@ Elément de base d'un fichier GRIB
 #define GRB_CRAIN         140   /* "Categorical rain", "yes=1;no=0" */
 #define GRB_FRZRAIN_CATEG 141   /* 1=yes 0=no */
 #define GRB_SNOW_CATEG    143   /* 1=yes 0=no */
-#define GRB_CAPE 		  157   /* J/kg   */
+#define GRB_CAPE 	  157   /* J/kg   */
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
 #define GRB_WIND_GUST     180   /* m/s "wind gust */
@@ -143,8 +149,11 @@ class GribRecord
 
         static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
 
+        static void Polar2UV(GribRecord *pDIR, GribRecord *pSPEED);
+
         void   multiplyAllData(double k);
         void Substract(const GribRecord &rec, bool positive=true);
+        void   Average(const GribRecord &rec);
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
@@ -197,16 +206,13 @@ class GribRecord
         // coordiantes of grid point
         inline double  getX(int i) const   { return Lo1+i*Di;}
         inline double  getY(int j) const   { return La1+j*Dj;}
+        void    getXY(int i, int j, double *x, double *y) const { *x = getX(i); *y = getY(j);};
 
         double  getLatMin() const   { return latMin;}
         double  getLonMin() const   { return lonMin;}
         double  getLatMax() const   { return latMax;}
         double  getLonMax() const   { return lonMax;}
 
-        // Is a point within the extent of the grid?
-        inline bool   isPointInMap(double x, double y) const;
-        inline bool   isXInMap(double x) const;
-        inline bool   isYInMap(double y) const;
         // Is there a value at a particular grid point ?
         inline bool   hasValue(int i, int j) const;
         // Is there a value that is not GRIB_NOTDEF ?
@@ -224,6 +230,12 @@ class GribRecord
         void   print();
         bool isFilled(){ return m_bfilled; }
         void setFilled(bool val=true){ m_bfilled = val;}
+
+    private:
+        // Is a point within the extent of the grid?
+        inline bool   isPointInMap(double x, double y) const;
+        inline bool   isXInMap(double x) const;
+        inline bool   isYInMap(double y) const;
 
     protected:
     //private:

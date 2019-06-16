@@ -939,7 +939,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     }
 
     public String makeToast( String msg ){
-        Toast.makeText(getApplicationContext(), msg,Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), msg,Toast.LENGTH_LONG).show();
 
         return "OK";
     }
@@ -3731,6 +3731,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public boolean dispatchKeyEvent(KeyEvent event)
     {
         if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+            Log.i("OpenCPN", "dispatchKeyEvent (KEYCODE_BACK): " + m_backButtonEnable);
+
             if(!m_backButtonEnable)
                 return false;
         }
@@ -4264,10 +4266,12 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     {
         Log.i("OpenCPN", "onConfigurationChanged");
 
-        int i = nativeLib.onConfigChange();
 
         if (!QtApplication.invokeDelegate(newConfig).invoked)
             super.onConfigurationChanged(newConfig);
+
+        int i = nativeLib.onConfigChange();
+
     }
     public void super_onConfigurationChanged(Configuration newConfig)
     {
@@ -4577,7 +4581,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
      if (b_needcopy){
-        Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
 
 
 /*
@@ -4938,12 +4942,12 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         }
 
                 if(keyCode==KeyEvent.KEYCODE_BACK){
-                    //Log.i("OpenCPN", "TLWCount " + nativeLib.getTLWCount());
+                    Log.i("OpenCPN", "Back UP, TLWCount " + nativeLib.getTLWCount());
 
                     if(!m_backButtonEnable)
                         return false;
 
-                    if(nativeLib.getTLWCount() <= 2){
+                    if(nativeLib.getTLWCount() <= 3){
 
                        if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
                               toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
@@ -5368,8 +5372,11 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         if(null != uSerialHelper)
             uSerialHelper.deinitUSBSerial(this);
 
+        Log.i("OpenCPN", "onStop calling super");
+
         super.onStop();
-        QtApplication.invokeDelegate();
+        //Log.i("OpenCPN", "onStop invokeDelegate");
+        //QtApplication.invokeDelegate();
 
         Log.i("OpenCPN", "onStop Done");
 

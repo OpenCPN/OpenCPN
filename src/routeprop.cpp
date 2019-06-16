@@ -66,7 +66,7 @@ extern TCMgr              *ptcmgr;
 extern long               gStart_LMT_Offset;
 extern MyConfig           *pConfig;
 extern WayPointman        *pWayPointMan;
-extern ChartCanvas        *cc1;
+///v5extern ChartCanvas        *cc1;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;

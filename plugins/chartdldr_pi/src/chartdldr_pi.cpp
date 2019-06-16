@@ -34,6 +34,7 @@
 #endif //precompiled headers
 
 #include "chartdldr_pi.h"
+#include "wxWTranslateCatalog.h"
 #include <wx/stdpaths.h>
 #include <wx/url.h>
 #include <wx/progdlg.h>
@@ -47,7 +48,15 @@
 #include <wx/wfstream.h>
 #include <memory>
 #include <wx/regex.h>
-#include "unrar/rar.hpp"
+#ifdef DLDR_USE_LIBARCHIVE
+  #include <archive.h>
+  #include <archive_entry.h>
+  #ifdef CHARTDLDR_RAR_UNARR
+    #include "unarr.h"
+  #endif
+#else
+  #include "unarr.h"
+#endif
 
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
@@ -154,7 +163,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
     // Create the PlugIn icons
     initialize_images();
 
-    m_chartSources = NULL;
+    m_pChartSources = NULL;
     m_parent_window = NULL;
     m_pChartCatalog = NULL;
     m_pChartSource = NULL;
@@ -173,7 +182,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
 
 int chartdldr_pi::Init( void )
 {
-    AddLocaleCatalog( _T("opencpn-chartdldr_pi") );
+    AddLocaleCatalog( PLUGIN_CATALOG_NAME );
 
     //    Get a pointer to the opencpn display canvas, to use as a parent for the POI Manager dialog
     m_parent_window = GetOCPNCanvasWindow();
@@ -182,7 +191,7 @@ int chartdldr_pi::Init( void )
     m_pconfig = GetOCPNConfigObject();
     m_pOptionsPage = NULL;
 
-    m_chartSources = new wxArrayOfChartSources();
+    m_pChartSources = new wxArrayOfChartSources();
     m_pChartCatalog = new ChartCatalog;
     m_pChartSource = NULL;
 
@@ -197,7 +206,7 @@ int chartdldr_pi::Init( void )
         wxString s1 = st.GetNextToken();
         wxString s2 = st.GetNextToken();
         wxString s3 = st.GetNextToken();
-        m_chartSources->Add(new ChartSource(s1, s2, s3));
+        m_pChartSources->Add(new ChartSource(s1, s2, s3));
     }
     return (
             WANTS_PREFERENCES         |
@@ -210,9 +219,9 @@ bool chartdldr_pi::DeInit( void )
 {
     wxLogMessage(_T("chartdldr_pi: DeInit"));
     
-    //m_chartSources->Clear();
-    //wxDELETE(m_chartSources);
-    //wxDELETE(m_pChartCatalog);
+    m_pChartSources->Clear();
+    wxDELETE(m_pChartSources);
+    wxDELETE(m_pChartCatalog);
     //wxDELETE(m_pChartSource);
     /* TODO: Seth */
 //      dialog->Close();
@@ -333,9 +342,9 @@ bool chartdldr_pi::SaveConfig(void)
 
     m_schartdldr_sources.Clear();
 
-    for( size_t i = 0; i < m_chartSources->GetCount(); i++ )
+    for( size_t i = 0; i < m_pChartSources->GetCount(); i++ )
     {
-        ChartSource *cs = m_chartSources->Item(i);
+        ChartSource *cs = m_pChartSources->Item(i);
         m_schartdldr_sources.Append(wxString::Format(_T("%s|%s|%s|"), cs->GetName().c_str(), cs->GetUrl().c_str(), cs->GetDir().c_str()));
     }
 
@@ -566,7 +575,7 @@ END_EVENT_TABLE()
 
 void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 {
-    qDebug() << "POPUP CLICK";
+    ///v5qDebug() << "POPUP CLICK";
     
     switch( evt.GetId() )
     {
@@ -581,13 +590,13 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
             break;
         case ID_MNU_SELUPD:
         {
-            ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
             FillFromFile(cs->GetUrl(), cs->GetDir(), false, true);
             break;
         }
         case ID_MNU_SELNEW:
         {
-            ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
             FillFromFile(cs->GetUrl(), cs->GetDir(), true, false);
             break;
         }
@@ -596,7 +605,7 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 
 void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 {
-    qDebug() << "OnContextMenu";
+    ///v5qDebug() << "OnContextMenu";
     
     wxMenu menu;
     wxPoint point = event.GetPosition();
@@ -644,13 +653,13 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
      
     menu.Connect(wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick, NULL, this);
     // and then display
-    qDebug() << "POPUP";
+    ///v5qDebug() << "POPUP";
     PopupMenu(&menu, p1.x + point.x, p1.y + point.y);
 }
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 {
-    if (pPlugIn->m_pChartSource == 0)
+    if (pPlugIn->m_pChartSource == NULL)
         return;
 #ifdef __WXGTK__
     wxExecute(wxString::Format(_T("xdg-open %s"), pPlugIn->m_pChartSource->GetDir().c_str()));
@@ -674,16 +683,22 @@ void ChartDldrPanelImpl::SetSource( int id )
     // TODO: DAN - Need to optimze to only update the chart list if needed.
     //             Right now it updates multiple times unnecessarily.
     CleanForm();
-    if( id >= 0 && id < (int)pPlugIn->m_chartSources->Count() )
+    if( id >= 0 && id < (int)pPlugIn->m_pChartSources->Count() )
     {
         ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
         wxYield();
+///v5<<<<<< HEAD
+#if 0        
         ChartSource *cs = pPlugIn->m_chartSources->Item(id);
         
         wxString label = _("Charts");
         label += _T(": ") + m_csTitle;
         m_chartsLabel->SetLabel(label);
         
+=======
+#endif
+        ChartSource *cs = pPlugIn->m_pChartSources->Item(id);
+///>>>>>>> v5.0.0
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
@@ -978,8 +993,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
             break;
         UpdateChartList( event );
         DownloadCharts();
-        attempted_to_update += downloading;
-        failed_to_update += failed_downloads;
+        attempted_to_update += m_downloading;
+        failed_to_update += m_failed_downloads;
     }
     wxLogMessage( wxString::Format(_T("chartdldr_pi::UpdateAllCharts() downloaded %d out of %d charts."), attempted_to_update - failed_to_update, attempted_to_update) );
     if( failed_to_update > 0 )
@@ -997,7 +1012,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     //TODO: check if everything exists and we can write to the output dir etc.
     if( !m_lbChartSources->GetSelectedItemCount() )
         return;
-    ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+    ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
@@ -1190,7 +1205,8 @@ void ChartSource::SaveUpdateData()
     for( iter = m_update_data.begin(); iter != m_update_data.end(); ++iter )
     {
         if( iter->first.find(" ") == std::string::npos )
-            outfile << iter->first << " " << iter->second << "\n";
+            if( !iter->first.empty() )
+                outfile << iter->first << " " << iter->second << "\n";
     }
 
     outfile.close();
@@ -1309,73 +1325,81 @@ void ChartDldrPanelImpl::DownloadCharts()
         wxMessageBox(_("No charts selected for download."));
         return;
     }
-    ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
-    if( GetCheckedChartCount() == 0 && !updatingAll )
+    ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
+    if( m_clCharts->GetCheckedItemCount() == 0 && !updatingAll )
     {
         wxMessageBox(_("No charts selected for download."));
         return;
     }
 
-    failed_downloads = 0;
     cancelled = false;
-    to_download = GetCheckedChartCount();
-    downloading = 0;
+    to_download = m_clCharts->GetCheckedItemCount();
+    m_downloading = 0;
+    m_failed_downloads = 0;
     DisableForDownload( false );
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
     DownloadIsCancel = true;
-    for( int i = 0; i < GetChartCount(); i++ )
+
+    wxFileName downloaded_p;
+    int idx = -1;
+
+    for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
+        if( cancelled )
+            break;
         //Prepare download queues
-        if(isChartChecked(i) )
+        if( !m_clCharts->IsChecked(i) )
+            continue;
+
+        m_bTransferComplete = false;
+        m_bTransferSuccess = true;
+        m_totalsize = _("Unknown");
+        m_transferredsize = _T("0");
+        m_downloading++;
+        if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
         {
-            m_bTransferComplete = false;
-            m_bTransferSuccess = true;
-            m_totalsize = _("Unknown");
-            m_transferredsize = _T("0");
-            downloading++;
-            if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
-            {
-                if( wxYES ==
-                        wxMessageBox(
-                                wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
+            if( wxYES == wxMessageBox(
+                            wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
 After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
-                {
-                    wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
-
-
-                }
-            }
-            else
             {
-                //download queue
-                wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
-                if( url.IsReference() )
-                {
-                    wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
-                    this->Enable();
-                    return;
-                }
-                //construct local file path
-                wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
-                wxFileName fn;
-                fn.SetFullName(file);
-                fn.SetPath(cs->GetDir());
-                wxString path = fn.GetFullPath();
-                if( wxFileExists( path ) )
-                    wxRemoveFile( path );
-                wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+                wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
+            }
+            continue;
+        }
 
-                //  Ready to start download
+        //download queue
+        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
+        if( url.IsReference() )
+        {
+            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            this->Enable();
+            /// XXX undo anything? return or break?
+            return;
+        }
+        //construct local file path
+        wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
+        wxFileName fn;
+        fn.SetFullName(file);
+        fn.SetPath(cs->GetDir());
+        wxString path = fn.GetFullPath();
+        if( wxFileExists( path ) )
+            wxRemoveFile( path );
+        wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+
+        //  Ready to start download
 #ifdef __OCPN__ANDROID__
-                wxString file_path = _T("file://") + fn.GetFullPath();
+        wxString file_path = _T("file://") + fn.GetFullPath();
 #else
-                wxString file_path = fn.GetFullPath();
+        wxString file_path = fn.GetFullPath();
 #endif
-                
-                long handle;
-                OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
+        
+        long handle;
+        OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
 
+///v5
+#if 0
+<<<<<<< HEAD
                 while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
                 {
                     if(failed_downloads)
@@ -1408,18 +1432,61 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                     failed_downloads++;
                 }
             }
+=======
+#endif
+        if (idx >= 0) {
+            pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
+
+            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
+            idx = -1;
         }
-        if( cancelled )
-            break;
+
+        while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
+        {
+            m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                                                         m_downloading, to_download, m_failed_downloads,
+                                                         m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            wxYield();
+            wxMilliSleep(30);
+//            if( !IsShownOnScreen() )
+//                cancelled = true;
+        }
+        
+        if(cancelled){
+            idx = -1;
+            OCPN_cancelDownloadFileBackground( handle );
+        }
+            
+        if( m_bTransferSuccess && !cancelled )
+        {
+            idx = i;
+            downloaded_p = path;
+        } else {
+            idx = -1;
+            if( wxFileExists( path ) )
+                wxRemoveFile( path );
+            m_failed_downloads++;
+///v5>>>>>>> v5.0.0
+        }
+    }
+    if (idx >= 0) {
+        pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
+
+        cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
     }
     DisableForDownload( true );
     m_bDnldCharts->SetLabel( _("Download selected charts") );
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
-    if( failed_downloads > 0 && !updatingAll )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
+    if( m_failed_downloads > 0 && !updatingAll )
+        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
+                , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
-    if( (downloading-failed_downloads > 0) && !updatingAll )
+    if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
 
@@ -1465,23 +1532,24 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     downloadInProgress = false;
     cancelled = true;
     to_download = -1;
-    downloading = -1;
+    m_downloading = -1;
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
     DownloadIsCancel = false;
-    failed_downloads = 0;
+    m_failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
+    m_bTransferComplete = true;
+    m_bTransferSuccess = true;
     
     Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
     m_bconnected = true;
 
-    for (size_t i = 0; i < pPlugIn->m_chartSources->GetCount(); i++)
+    for (size_t i = 0; i < pPlugIn->m_pChartSources->GetCount(); i++)
     {
-        AppendCatalog(pPlugIn->m_chartSources->Item(i));
+        AppendCatalog(pPlugIn->m_pChartSources->Item(i));
     }
     m_populated = true;
-    
 }
 
 void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
@@ -1489,11 +1557,16 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
     if( !m_populated )
     {
         m_populated = true;
-        for (size_t i = 0; i < pPlugIn->m_chartSources->GetCount(); i++)
+        for (size_t i = 0; i < pPlugIn->m_pChartSources->GetCount(); i++)
         {
-            AppendCatalog(pPlugIn->m_chartSources->Item(i));
+            AppendCatalog(pPlugIn->m_pChartSources->Item(i));
         }
     }
+#ifdef __WXMAC__
+    // Mojave does not paint the controls correctly without this.
+    m_lbChartSources->Refresh(true);
+    m_clCharts->Refresh(true);
+#endif
     event.Skip();
 }
 
@@ -1506,7 +1579,7 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
         return;
     int ToBeRemoved = GetSelectedCatalog();
     m_lbChartSources->SetItemState(ToBeRemoved, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
-    pPlugIn->m_chartSources->RemoveAt(ToBeRemoved);
+    pPlugIn->m_pChartSources->RemoveAt(ToBeRemoved);
     m_lbChartSources->DeleteItem(ToBeRemoved);
     CleanForm();
     pPlugIn->SetSourceId(-1);
@@ -1520,41 +1593,39 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
     
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
-    
+
+#ifdef __OCPN__ANDROID__    
     wxSize sz = GetParent()->GetSize();          // This is the panel true size
     dialog->SetSize(sz.GetWidth(), sz.GetHeight());
     dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    dialog->ShowModal();
-    int code2 = dialog->GetReturnCode();    
-    if( code2 == wxID_OK )
-    {
-        ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
-                                          dialog->m_tcChartDirectory->GetValue());
-        pPlugIn->m_chartSources->Add(cs);
-        AppendCatalog(cs);
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+    //Hide();                     // This cleans up the screen a bit, avoiding confusion...
+#endif    
+
+    dialog->ShowWindowModalThenDo([this,dialog](int retcode){
+        if ( retcode == wxID_OK ) {
+            ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
+                                              dialog->m_tcChartDirectory->GetValue());
+            pPlugIn->m_pChartSources->Add(cs);
+            AppendCatalog(cs);
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
+            if( !covered )
+            {
+                wxString dir = cs->GetDir();
+                AddChartDirectory( dir );
+            }
+            SelectCatalog(m_lbChartSources->GetItemCount() - 1);
+            pPlugIn->SaveConfig();
         }
-        if( !covered )
-        {
-            wxString dir = cs->GetDir();
-            AddChartDirectory( dir );
-        }
-        SelectCatalog(m_lbChartSources->GetItemCount() - 1);
-        pPlugIn->SaveConfig();
-    }
-    delete dialog;
+    });
     event.Skip();
-    
-    Show();
 }
 
 void ChartDldrPanelImpl::DoEditSource()
@@ -1564,60 +1635,48 @@ void ChartDldrPanelImpl::DoEditSource()
     int cat = GetSelectedCatalog();
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
-    dialog->SetSourceEdit(pPlugIn->m_chartSources->Item(cat));
+    dialog->SetSourceEdit(pPlugIn->m_pChartSources->Item(cat));
     dialog->SetTitle(_("Edit Chart Source"));
     
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
-    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    if( dialog->ShowModal() == wxID_OK )
-    {
-        pPlugIn->m_chartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
-        pPlugIn->m_chartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
-        pPlugIn->m_chartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
+    dialog->ShowWindowModalThenDo([this,dialog,cat](int retcode){
+        if ( retcode == wxID_OK ) {
+            pPlugIn->m_pChartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
 
-        m_lbChartSources->SetItem(cat, 0, pPlugIn->m_chartSources->Item(cat)->GetName());
-        m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
-        m_lbChartSources->SetItem(cat, 2, pPlugIn->m_chartSources->Item(cat)->GetDir());
-        wxURI url(pPlugIn->m_chartSources->Item(cat)->GetUrl());
-        wxFileName fn(url.GetPath());
-        fn.SetPath(pPlugIn->m_chartSources->Item(cat)->GetDir());
-        wxString path = fn.GetFullPath();
-        if( wxFileExists(path) )
-        {
-            if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+            m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartSources->Item(cat)->GetName());
+            m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
+            m_lbChartSources->SetItem(cat, 2, pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxURI url(pPlugIn->m_pChartSources->Item(cat)->GetUrl());
+            wxFileName fn(url.GetPath());
+            fn.SetPath(pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxString path = fn.GetFullPath();
+            if( wxFileExists(path) )
             {
-                m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
-                m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
-                m_lbChartSources->SetItem(cat, 2, path);
-#ifdef __OCPN__ANDROID__
-//                 m_lbChartSources->GetHandle()->resizeColumnToContents(0);
-//                 m_lbChartSources->GetHandle()->resizeColumnToContents(1);
-//                 m_lbChartSources->GetHandle()->resizeColumnToContents(2);
-#endif                
+                if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+                {
+                    m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
+                    m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
+                    m_lbChartSources->SetItem(cat, 2, path);
+                }
             }
-        }
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( pPlugIn->m_chartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( pPlugIn->m_pChartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
-        }
-        if( !covered )
-            wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_chartSources->Item(cat)->GetDir().c_str()),
-                         _("Chart Downloader") );
+            if( !covered )
+                wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
+                             _("Chart Downloader") );
 
-        pPlugIn->SaveConfig();
-        SetSource(cat);
-    }
-    delete dialog;
-    
-    Show();
+            pPlugIn->SaveConfig();
+            SetSource(cat);
+        }
+    });
 }
 
 void ChartDldrPanelImpl::EditSource( wxCommandEvent& event )
@@ -1643,15 +1702,57 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
             wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
         return ret;
     }
-    else if( aFile.Lower().EndsWith(_T("rar")) ) //Rar compressed
+#ifdef DLDR_USE_LIBARCHIVE
+    else if( aFile.Lower().EndsWith(_T("rar")) )
     {
-        bool ret = ExtractRarFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+#ifdef CHARTDLDR_RAR_UNARR
+          bool ret = ExtractUnarrFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+#else
+          bool ret = ExtractLibArchiveFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+#endif
+          if( ret )
+              wxRemoveFile(aFile);
+          else
+              wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
+          return ret;
+    }
+    else if( aFile.Lower().EndsWith(_T("tar")) ||
+            aFile.Lower().EndsWith(_T("gz")) ||
+            aFile.Lower().EndsWith(_T("bz2")) ||
+            aFile.Lower().EndsWith(_T("lzma")) ||
+            aFile.Lower().EndsWith(_T("7z")) ||
+            aFile.Lower().EndsWith(_T("xz"))
+            )
+    {
+        bool ret = ExtractLibArchiveFiles( aFile, aTargetDir, aStripPath, aMTime, false);
         if( ret )
             wxRemoveFile(aFile);
         else
             wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
         return ret;
     }
+#else
+    else if( aFile.Lower().EndsWith(_T("rar"))
+               || aFile.Lower().EndsWith(_T("tar"))
+#ifdef HAVE_BZIP2
+             || aFile.Lower().EndsWith(_T("bz2"))
+#endif
+#ifdef HAVE_ZLIB
+             || aFile.Lower().EndsWith(_T("gz"))
+#endif
+#ifdef HAVE_7Z
+             || aFile.Lower().EndsWith(_T("7z")) //TODO: Could it actually extract more formats the LZMA SDK supports?
+#endif
+    )
+    {
+        bool ret = ExtractUnarrFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+        if( ret )
+            wxRemoveFile(aFile);
+        else
+            wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
+        return ret;
+    }
+#endif
     else //Uncompressed
     {
         wxFileName fn(aFile);
@@ -1676,6 +1777,9 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
     return true;
 }
 
+///v5
+#if 0
+<<<<<<< HEAD
 bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
 {
  #ifndef __OCPN__ANDROID__    
@@ -1697,105 +1801,210 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
     char target[1024];
     strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
     target[1023] = 0;
-
-    char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
-#ifdef _UNIX
-    // XXX is setlocale need?
-    setlocale(LC_ALL,"");
+#endif    
+=======
 #endif
 
-    InitConsole();
-    ErrHandler.SetSignalHandlers(true);
+#ifdef DLDR_USE_LIBARCHIVE
+static int copy_data(struct archive *ar, struct archive *aw)
+{
+    int r;
+    const void *buff;
+    size_t size;
+    __LA_INT64_T offset;
 
-#ifdef SFX_MODULE
-    wchar ModuleName[NM];
-#ifdef _WIN_ALL
-    GetModuleFileName(NULL,ModuleName,ASIZE(ModuleName));
-#else
-    CharToWide(argv[0],ModuleName,ASIZE(ModuleName));
+    for (;;) {
+        r = archive_read_data_block(ar, &buff, &size, &offset);
+        if (r == ARCHIVE_EOF)
+            return (ARCHIVE_OK);
+         if (r < ARCHIVE_OK)
+            return (r);
+        r = archive_write_data_block(aw, buff, size, offset);
+        if (r < ARCHIVE_OK) {
+            //fprintf(stderr, "%s\n", archive_error_string(aw));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(aw))); 
+            return (r);
+        }
+    }
+}
+///v5>>>>>>> v5.0.0
+
+bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveArchive)
+{
+    struct archive *a;
+    struct archive *ext;
+    struct archive_entry *entry;
+    int flags;
+    int r;
+
+    /* Select which attributes we want to restore. */
+    flags = ARCHIVE_EXTRACT_TIME;
+    /*
+    flags |= ARCHIVE_EXTRACT_PERM;
+    flags |= ARCHIVE_EXTRACT_ACL;
+    flags |= ARCHIVE_EXTRACT_FFLAGS;
+    */
+
+    a = archive_read_new();
+    archive_read_support_format_all(a);
+    archive_read_support_filter_all(a);
+    archive_read_support_compression_all(a);
+    ext = archive_write_disk_new();
+    archive_write_disk_set_options(ext, flags);
+    archive_write_disk_set_standard_lookup(ext);
+    if ((r = archive_read_open_filename(a, aArchiveFile.c_str(), 10240)))
+        return false;
+    for (;;) {
+        r = archive_read_next_header(a, &entry);
+        if (r == ARCHIVE_EOF)
+            break;
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(a));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(a)));
+        if (r < ARCHIVE_WARN)
+            return false;
+        if (aStripPath) {
+            const char* currentFile = archive_entry_pathname(entry);
+            std::string fullOutputPath = currentFile;
+            size_t sep = fullOutputPath.find_last_of("\\/");
+            if (sep != std::string::npos)
+                fullOutputPath = fullOutputPath.substr(sep + 1, fullOutputPath.size() - sep - 1);
+            archive_entry_set_pathname(entry, fullOutputPath.c_str());
+        }
+        if (aTargetDir != wxEmptyString) {
+            const char* currentFile = archive_entry_pathname(entry);
+            const std::string fullOutputPath = aTargetDir.ToStdString() + wxString(wxFileName::GetPathSeparator()).ToStdString() + currentFile;
+            archive_entry_set_pathname(entry, fullOutputPath.c_str());
+        }
+        r = archive_write_header(ext, entry);
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(ext));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+        else if (archive_entry_size(entry) > 0) {
+            r = copy_data(a, ext);
+            if (r < ARCHIVE_OK)
+                //fprintf(stderr, "%s\n", archive_error_string(ext));
+                wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+            if (r < ARCHIVE_WARN)
+                return false;
+        }
+        r = archive_write_finish_entry(ext);
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(ext));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+        if (r < ARCHIVE_WARN)
+            return false;
+    }
+    archive_read_close(a);
+    archive_read_free(a);
+    archive_write_close(ext);
+    archive_write_free(ext);
+
+    if( aRemoveArchive )
+        wxRemoveFile(aArchiveFile);
+
+    return true;
+}
 #endif
-#endif
 
-#ifdef _WIN_ALL
-    SetErrorMode(SEM_NOALIGNMENTFAULTEXCEPT|SEM_FAILCRITICALERRORS|SEM_NOOPENFILEERRORBOX);
+#if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
+ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext)
+{
+    ar_archive *ar = ar_open_rar_archive(stream);
+    if (!ar)
+        ar = ar_open_zip_archive(stream, fileext && (strcmp(fileext, ".xps") == 0 || strcmp(fileext, ".epub") == 0));
+    if (!ar)
+        ar = ar_open_7z_archive(stream);
+    if (!ar)
+        ar = ar_open_tar_archive(stream);
+    return ar;
+}
 
-#endif
+bool chartdldr_pi::ExtractUnarrFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
+{
+    ar_stream *stream = NULL;
+    ar_archive *ar = NULL;
+    int entry_count = 1;
+    int entry_skips = 0;
+    int error_step = 1;
+    bool ret = true;
 
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-    // Must be initialized, normal initialization can be skipped in case of
-    // exception.
-    bool ShutdownOnClose=false;
-#endif
-
-    try
-    {
-        CommandData *Cmd=new CommandData;
-#ifdef SFX_MODULE
-        wcscpy(Cmd->Command,L"X");
-        char *Switch=argc>1 ? argv[1]:NULL;
-        if (Switch!=NULL && Cmd->IsSwitch(Switch[0]))
+    stream = ar_open_file(aRarFile.c_str());
+    if( !stream ) {
+        wxLogError(_T("Can not open file '")+aRarFile+_T("'."));
+        ar_close_archive(ar);
+        ar_close(stream);
+        return false;
+    }
+    ar = ar_open_any_archive(stream, strrchr(aRarFile.c_str(), '.'));
+    if( !ar ) {
+          wxLogError(_T("Can not open archive '")+aRarFile+_T("'."));
+          ar_close_archive(ar);
+          ar_close(stream);
+          return false;
+    }
+    while (ar_parse_entry(ar)) {
+        size_t size = ar_entry_get_size(ar);
+        wxString name = ar_entry_get_name(ar);
+        if( aStripPath )
         {
-            int UpperCmd=etoupper(Switch[1]);
-            switch(UpperCmd)
+            wxFileName fn(name);
+            /* We can completly replace the entry path */
+            //fn.SetPath(aTargetDir);
+            //name = fn.GetFullPath();
+            /* Or only remove the first dir (eg. ENC_ROOT) */
+            if (fn.GetDirCount() > 0)
             {
-                case 'T':
-                case 'V':
-                    Cmd->Command[0]=UpperCmd;
-                    break;
-                case '?':
-                    Cmd->OutHelp(RARX_SUCCESS);
+                fn.RemoveDir(0);
+                name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
+            }
+            else
+            {
+                name = aTargetDir + wxFileName::GetPathSeparator() + name;
+            }
+        }
+        wxFileName fn(name);
+        if( !fn.DirExists() )
+        {
+            if( !wxFileName::Mkdir(fn.GetPath()) )
+            {
+                wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
+                ret = false;
                 break;
             }
         }
-        Cmd->AddArcName(ModuleName);
-        Cmd->ParseDone();
-#else // !SFX_MODULE
-        Cmd->ParseCommandLine(true,argc,argv);
-        if (!Cmd->ConfigDisabled)
+        wxFileOutputStream file(name);
+        if( !file )
         {
-            Cmd->ReadConfig();
-            Cmd->ParseEnvVar();
+            wxLogError(_T("Can not create file '")+name+_T("'."));
+            ret = false;
+            break;
         }
-        Cmd->ParseCommandLine(false,argc,argv);
-#endif
-
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-        ShutdownOnClose=Cmd->Shutdown;
-#endif
-
-        uiInit(Cmd->Sound);
-        InitConsoleOptions(Cmd->MsgStream);
-        InitLogOptions(Cmd->LogName,Cmd->ErrlogCharset);
-        ErrHandler.SetSilent(Cmd->AllYes || Cmd->MsgStream==MSG_NULL);
-        ErrHandler.SetShutdown(Cmd->Shutdown);
-
-        Cmd->OutTitle();
-        Cmd->ProcessCommand();
-        delete Cmd;
+        while (size > 0) {
+            unsigned char buffer[1024];
+            size_t count = size < sizeof(buffer) ? size : sizeof(buffer);
+            if (!ar_entry_uncompress(ar, buffer, count))
+                break;
+            file.Write(buffer, count);
+            size -= count;
+        }
+        file.Close();
+        fn.SetTimes(&aMTime, &aMTime, &aMTime);
+        if (size > 0) {
+            wxLogError("Warning: Failed to uncompress... skipping");
+            entry_skips++;
+            ret = false;
+        }
     }
-    catch (RAR_EXIT ErrCode)
-    {
-        ErrHandler.SetErrorCode(ErrCode);
+    if( !ar_at_eof(ar) ) {
+        wxLogError("Error: Failed to parse entry %d!", entry_count);
+        ret = false;
     }
-    catch (std::bad_alloc&)
-    {
-        ErrHandler.MemoryErrorMsg();
-        ErrHandler.SetErrorCode(RARX_MEMORY);
-    }
-    catch (...)
-    {
-        ErrHandler.SetErrorCode(RARX_FATAL);
-    }
-
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-    if (ShutdownOnClose)
-        Shutdown();
-#endif
-    ErrHandler.MainExit=true;
-    //return ErrHandler.GetErrorCode();
+    ar_close_archive(ar);
+    ar_close(stream);
 
     if( aRemoveRar )
-        wxRemoveFile(aRarFile);
+          wxRemoveFile(aRarFile);
 
 #ifdef _UNIX
     // reset LC_NUMERIC locale, some locales use a comma for decimal point
@@ -1803,11 +2012,9 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
     setlocale(LC_NUMERIC, "C");
 #endif
 
-    return true;
-    
-#endif  //Android 
-    return true;
+    return ret;
 }
+#endif
 
 bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveZip )
 {
@@ -1820,8 +2027,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
     
     ret = AndroidUnzip(aZipFile, aTargetDir, nStrip, true);
 #else
-    
-    std::auto_ptr<wxZipEntry> entry(new wxZipEntry());
+    std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 
     do
     {
@@ -1904,10 +2110,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 }
                 zip.Read(file);
                 
-#ifndef __OCPN__ANDROID__
-                //  Unreliable on Android, and emits error message to log sometimes.
                 fn.SetTimes(&aMTime, &aMTime, &aMTime);
-#endif                
                 ret = true;
             }
 
@@ -1918,13 +2121,15 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
     if( aRemoveZip )
         wxRemoveFile(aZipFile);
-#endif
+#endif          //Android
         
     return ret;
 }
 
 ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSourceDlg( parent )
 {
+    qDebug() << "ChartDldrGuiAddSourceDlg";
+    
     wxFileName fn;
     fn.SetPath(*GetpSharedDataLocation());
     fn.AppendDir(_T("plugins"));
@@ -1985,6 +2190,8 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     m_nbChoice->SetSelection(0);
     
     //m_treeCtrlPredefSrcs->ExpandAll();
+    
+    Fit();
 
     applyStyle();
 }
@@ -1994,21 +2201,33 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     wxTreeItemId tree = m_treeCtrlPredefSrcs->AddRoot(_T("root"));
 
     wxFileName fn;
-    fn.SetPath(*GetpSharedDataLocation());
-    fn.AppendDir(_T("plugins"));
-    fn.AppendDir(_T("chartdldr_pi"));
-    fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("chart_sources.xml"));
+    fn.SetPath(*GetpPrivateApplicationDataLocation());
+    fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
     if( !fn.FileExists() )
     {
-        wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
-        return false;
+         qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesA";
+
+        fn.SetPath(*GetpSharedDataLocation());
+        fn.AppendDir(_T("plugins"));
+        fn.AppendDir(_T("chartdldr_pi"));
+        fn.AppendDir(_T("data"));
+        fn.SetFullName(_T("chart_sources.xml"));
+        if( !fn.FileExists() )
+        {
+                    qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesB";
+
+            wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
+            return false;
+        }
     }
     wxString path = fn.GetFullPath();
     TiXmlDocument * doc = new TiXmlDocument();
     bool ret = doc->LoadFile(path.mb_str(), TIXML_ENCODING_UTF8);
+    qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesB5" << path.mb_str() << ret;
     if( ret )
     {
+                qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesC";
+
         TiXmlElement * root = doc->RootElement();
         wxString rootName = wxString::FromUTF8( root->Value() );
         TiXmlNode *child;
@@ -2019,6 +2238,9 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
                 LoadSections(tree, child);
         }
     }
+    else
+        qDebug() << doc->ErrorDesc();
+    
     doc->Clear();
     wxDELETE(doc);
     return true;
@@ -2255,7 +2477,7 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl( const wxString Url, bool catalog_xml
     return re.Matches(Url);
 }
 
-wxString FormatBytes(double bytes)
+static wxString FormatBytes(double bytes)
 {
     return wxString::Format( _T("%.1fMB"), bytes / 1024 / 1024 );
 }

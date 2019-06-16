@@ -1,0 +1,876 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:56\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: id\n"
+"X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
+#
+msgid " (Max size )"
+msgstr " (Ukuran Maksimal )"
+#
+msgid " can't be read!"
+msgstr " tidak bisa dibaca!"
+#
+msgid " contains no valid data!"
+msgstr " tidak memuat data yang cocok!"
+#
+msgid " files don't exist!"
+msgstr " tidak ada berkas!"
+#
+msgid "300 hPa"
+msgstr "300 hPa"
+#
+msgid "500 hPa"
+msgstr "500 hPa"
+#
+msgid "700 hPa"
+msgstr "700 hPa"
+#
+msgid "850 hPa"
+msgstr "850 hPa"
+#
+msgid "Abbreviated Isobars Numbers"
+msgstr ""
+#
+msgid "Abbreviated Numbers"
+msgstr ""
+#
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+"Alamat yang digunakan untuk mengirim permintaan eMail. (Wajib untuk LINUX)"
+#
+msgid "Air Temp"
+msgstr "Suhu Udara"
+#
+msgid "Air Temp."
+msgstr "Udara temp."
+#
+msgid "Air Temperature"
+msgstr "Suhu Udara"
+#
+msgid "Air Temperature at"
+msgstr "Suhu Udara di"
+#
+msgid "Air Temperature(2m)"
+msgstr "Suhu Udara (2m)"
+#
+msgid "Altitude"
+msgstr "Ketinggian"
+#
+msgid "Altitude(Geopotential)"
+msgstr "Ketinggian(Geopotential)"
+#
+msgid "Always visible"
+msgstr "Selalu terlihat"
+#
+msgid "Apply"
+msgstr "Menerapkan"
+#
+msgid "Area Selection"
+msgstr "Seleksi Area"
+#
+msgid "Attached icon bar"
+msgstr "Terpasang icon bar"
+#
+msgid "Authorize Interpolation to start at current time"
+msgstr "Interpolasi Otorisasi untuk memulai pada waktu saat ini"
+#
+msgid "Barbed Arrows"
+msgstr "Panah berduri"
+#
+msgid "Beaufort"
+msgstr "Beaufort"
+#
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr ""
+"Sebelum mengirimkan email ke Zygrib Anda perlu memasukkan Login dan kode. \n"
+"Please kunjungi www.zygrib.org/ dan ikuti petunjuk..."
+#
+msgid "Building Isobar map"
+msgstr "Bangunan peta Isobar"
+#
+msgid "Buttons Visibility"
+msgstr "Tombol Visibilitas"
+#
+msgid "CAPE"
+msgstr "TANJUNG"
+#
+msgid "Celsius"
+msgstr "Celsius"
+#
+msgid "Close"
+msgstr "Dekat"
+#
+msgid "Cloud Cover"
+msgstr "Tutup awan"
+#
+msgid "Color scheme"
+msgstr ""
+#
+msgid "Continue..."
+msgstr "Lanjutkan..."
+#
+msgid "Controlled Colours"
+msgstr ""
+#
+msgid "Convective Available Potential Energy"
+msgstr "Tersedia Energi potensial Konvektif"
+#
+msgid "Coord. "
+msgstr ""
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr "Salin kumulatif Data Pertama yang Hilang"
+#
+msgid "Copy Missing Wave Records"
+msgstr "Salin Gelombang Catatan Hilang"
+#
+msgid "Course"
+msgstr "Kursus"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr "Curah Hujan Kumulatif per Jam"
+#
+msgid "Current"
+msgstr "Saat ini"
+#
+msgid "Current time forecast"
+msgstr "Perkiraan waktu sekarang"
+#
+msgid "Current,Dir"
+msgstr "Saat ini, Dir"
+#
+msgid "Current,Speed"
+msgstr "Kecepatan saat ini"
+#
+msgid "Data"
+msgstr "Data"
+#
+msgid "Data Display Options"
+msgstr "Pilihan Tampilan Data"
+#
+msgid "Data Selection"
+msgstr "Pemilihan data"
+#
+msgid "Data at Position:"
+msgstr "Data di Posisi:"
+#
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+"Data pada dialog kursor dilampirkan pada ikon bar - dengan judul/drag bar"
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+"Data pada dialog kursor dilampirkan pada ikon bar - tampa judul/drag bar"
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr "Data pada dialog kursor terisolasi dan ditampilkan secara horizontal"
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr "Data pada dialog kursor terisolasi dan ditampilkan secara vertikal"
+#
+msgid "Data at cursor position"
+msgstr "Data pada posisi kursor"
+#
+msgid "Days"
+msgstr "Hari"
+#
+msgid "Default Colour"
+msgstr "Warna Default"
+#
+msgid "Default Size"
+msgstr "Ukuran Standar"
+#
+msgid "Deg"
+msgstr ""
+#
+msgid "Density"
+msgstr "Massa jenis"
+#
+msgid "Dialog"
+msgstr "Dialog"
+#
+msgid "Dialogs Style"
+msgstr "Gaya Dialog"
+#
+msgid "Direction Arrows"
+msgstr "Arah panah"
+#
+msgid "Display Iso CAPE"
+msgstr "Menampilkan Iso CAPE"
+#
+msgid "Display Isobars"
+msgstr "Tampilan Isobar"
+#
+msgid "Display Isotachs"
+msgstr "Tampilan Isotachs"
+#
+msgid "Display Isotherms"
+msgstr "Tampilan Isoterm"
+#
+msgid "Double Arrow"
+msgstr "Panah ganda"
+#
+msgid "Draw Barbed Arrows Head"
+msgstr "Menggambar Kepala Panah Berduri"
+#
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+"Berlangganan ke area yang diminta\n"
+"atau klik di sini untuk membatalkan permintaan"
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr ""
+"Gambarlah Area yang diminta atau Klik di sini untuk membatalkan permintaan"
+#
+msgid "E"
+msgstr "E"
+#
+msgid "Enter your forecasted Course"
+msgstr "Masukkan Kursus yang Anda peramalan"
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Masukkan kecepatan forescasted Anda (dalam knot)"
+#
+msgid "Error! "
+msgstr "Kesalahan! "
+#
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr ""
+"Kesalahan! Max Lat lebih rendah dari Min Lat atau Max Lon lebih rendah dari "
+"Min Lon!"
+#
+msgid "Estimated File Size"
+msgstr "Perkiraan Ukuran File"
+#
+msgid "Fahrenheit"
+msgstr "Fahrenheit"
+#
+msgid "Fast"
+msgstr "Cepat"
+#
+msgid "Feet"
+msgstr "Kaki"
+#
+msgid "File: "
+msgstr "Berkas: "
+#
+msgid "Fixed"
+msgstr "Tetap"
+#
+msgid "Forecast Model "
+msgstr "Model Prakiraan "
+#
+msgid "GRIB Display Control"
+msgstr "Kontrol Tampilan GRIB"
+#
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "Plugin GRIB untuk OpenCPN"
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
+"\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr ""
+"Grib plugin untuk OpenCPN\n"
+"Menyediakan kemampuan file overlay Grib dasar untuk beberapa jenis file yang "
+"Grib\n"
+"dan fungsi permintaan untuk mendapatkan file GRIB dengan eMail.\n"
+"\n"
+"Data Grib didukung mencakup:\n"
+"- arah angin dan kecepatan (pada 10 m)\n"
+"- hembusan angin\n"
+"- tekanan permukaan\n"
+"- curah hujan\n"
+"- penutup awan\n"
+"- tinggi gelombang signifikan dan arah\n"
+" suhu permukaan udara (pada 2 m)\n"
+"- suhu permukaan laut\n"
+"- arah arus permukaan dan kecepatan\n"
+"- Energi Potensial Konvektif Tersedia (CAPE)\n"
+"- angin, ketinggian, suhu dan kelembaban relatif di 300, 500, 700, 850 hPa."
+#
+msgid "GUI"
+msgstr ""
+#
+msgid "General Options"
+msgstr "Pilihan Umum"
+#
+msgid "Generic"
+msgstr "Umum"
+#
+msgid "Geopot. Height Choice"
+msgstr "Geopot. Ideal Tinggi"
+#
+msgid "Geopotential Height"
+msgstr "Tinggi Geopotensial"
+#
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Dapatkan Kode ini di forum zyGrib (Ini bukan kata sandi anda!)"
+#
+msgid "Grib"
+msgstr "Ingin"
+#
+msgid "Grib Data Table"
+msgstr "Tabel Data Grib"
+#
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr "GribNumbers Tidak dapat menghitung besarnya rekaman"
+#
+msgid "Hide data at cursor"
+msgstr "Menyembunyikan data pada kursor"
+#
+msgid "Hours"
+msgstr "Jam"
+#
+msgid "Inches"
+msgstr "Inci"
+#
+msgid "Interpolate between gribs"
+msgstr "Interpolasi antara gribs"
+#
+msgid "Interval"
+msgstr "Selang"
+#
+msgid "IsoBar Unable to compute record magnitude"
+msgstr "IsoBar Dapat menghitung besarnya rekor"
+#
+msgid "IsoBars"
+msgstr "Isobar"
+#
+msgid "Isolated icon bar"
+msgstr "Terisolasi icon bar"
+#
+msgid "Knots"
+msgstr "Knot"
+#
+msgid "Kts"
+msgstr ""
+#
+msgid "Load File Options"
+msgstr "Beban File Pilihan"
+#
+msgid "Load the Last Opened File"
+msgstr "Muat File yang Dibuka Terakhir"
+#
+msgid "Load the More Recent File in Directory"
+msgstr "Muat File yang Lebih Baru di Direktori"
+#
+msgid "Local Time"
+msgstr "Waktu lokal"
+#
+msgid "Loop Mode"
+msgstr "Mode Loop"
+#
+msgid "Loop Start"
+msgstr "Loop mulai"
+#
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr ""
+"Kesalahan MAIL: MAPI32.DLL tidak dipasang atau tidak valid di komputer ini!"
+#
+msgid "MB"
+msgstr "MB"
+#
+msgid "Mail"
+msgstr "Surat"
+#
+msgid "Mail To "
+msgstr "Mail ke "
+#
+msgid "Manual Selection"
+msgstr "Pilihan Manual"
+#
+msgid "Max"
+msgstr ""
+#
+msgid "Max Lat"
+msgstr ""
+#
+msgid "Max Long"
+msgstr ""
+#
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Berarti Tingkat Tekanan Laut (MSLP)"
+#
+msgid "Menu"
+msgstr "Menu"
+#
+msgid "Meters"
+msgstr "Meter"
+#
+msgid "MilliBars"
+msgstr "Milibar"
+#
+msgid "Millimeters"
+msgstr "Milimeter"
+#
+msgid "Min Lat"
+msgstr ""
+#
+msgid "Min Long"
+msgstr ""
+#
+msgid "Minimum"
+msgstr "Minimum"
+#
+msgid "Moving Grib"
+msgstr "Pindah Grib"
+#
+msgid "MyLabel"
+msgstr ""
+#
+msgid "N"
+msgstr "N"
+#
+msgid "N/A"
+msgstr "N/A"
+#
+msgid "Next"
+msgstr "Selanjutnya"
+#
+msgid "No valid GRIB file"
+msgstr "Tidak ada file GRIB yang sah"
+#
+msgid "Now"
+msgstr "Sekarang"
+#
+msgid "Numbers"
+msgstr "Angka"
+#
+msgid "Open File"
+msgstr "Buka Berkas"
+#
+msgid "Open a new file"
+msgstr "Membuka sebuah berkas baru"
+#
+msgid "Overlay Transparency (%)"
+msgstr "Transparansi Hamparan (%)"
+#
+msgid "OverlayMap"
+msgstr "OverlayMap"
+#
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr "OverlayPeta Mampu menghitung besarnya rekor"
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
+"Hamparan tidak didukung oleh perangkat keras grafis ini (Nonaktifkan OpenGL)"
+#
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Hamparan terlalu lebar dan tidak dapat ditampilkan:"
+#
+msgid "Particle Map"
+msgstr "Partikel Peta"
+#
+msgid "Percentage"
+msgstr "Persentase"
+#
+msgid "Playback"
+msgstr "Pemutaran"
+#
+msgid "Playback Options"
+msgstr "Pilihan Pemutaran"
+#
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Harap Zoom atau Scale Out untuk melihat lapisan tak terlihat:"
+#
+msgid "Preferences"
+msgstr "Preferensi"
+#
+msgid "Pressure"
+msgstr "Tekanan"
+#
+msgid "Previous"
+msgstr "Sebelumnya"
+#
+msgid "Profile"
+msgstr "Profil"
+#
+msgid "Proportional Arrow"
+msgstr "Panah proporsional"
+#
+msgid "Rainfall"
+msgstr "Curah hujan"
+#
+msgid "Relat. Hum."
+msgstr "Relat. Bersenandung."
+#
+msgid "Relative Humidity"
+msgstr "Kelembaban relatif"
+#
+msgid "Request"
+msgstr "Permintaan"
+#
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+"Permintaan tidak bisa dikirim. Mohon verikifikasi email anda systeme "
+"parameters.\n"
+"kamu juga harus melihat file log Anda.\n"
+"simpan atau batal untuk menyelesaikan..."
+#
+msgid "Resolution"
+msgstr "Resolusi"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "Save"
+msgstr "Menyimpan"
+#
+msgid "Sea Surface Temperature"
+msgstr "Suhu Permukaan Laut"
+#
+msgid "Sea Temp"
+msgstr "Suhu Laut"
+#
+msgid "Sea Temp."
+msgstr ""
+#
+msgid "Sea Temperature"
+msgstr "Suhu Laut"
+#
+msgid "Sea Temperature(surf.)"
+msgstr "Suhu Laut (surf.)"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Suhu Laut atau Udara di Tingkat Permukaan"
+#
+msgid "Select a GRIB file"
+msgstr "Memilih berkas GRIB"
+#
+msgid "Select geopotential altitude"
+msgstr "Memilih ketinggian geopotensial"
+#
+msgid "Select geoptential altitude"
+msgstr "Memilih ketinggian geopotensial"
+#
+msgid "Send"
+msgstr "Kirim"
+#
+msgid "Sender eMail Address"
+msgstr "Alamat eMail Pengirim"
+#
+msgid "Settings"
+msgstr "Pengaturan"
+#
+msgid "Show Cursor Data"
+msgstr "Tampilkan Data Kursor"
+#
+msgid "Show data at cursor"
+msgstr "Menampilkan data pada kursor"
+#
+msgid "Significant Wave Height"
+msgstr "Tinggi Gelombang Signifikan"
+#
+msgid "Single Arrow"
+msgstr "Panah tunggal"
+#
+msgid "Slow"
+msgstr "Lambat"
+#
+msgid "Small Size"
+msgstr "Ukuran Kecil"
+#
+msgid "Spacing"
+msgstr "Jarak"
+#
+msgid "Spacing(pixels)"
+msgstr "Jarak(piksel)"
+#
+msgid "Speed"
+msgstr "Kecepatan"
+#
+msgid "Speed Control"
+msgstr "Kontrol Kecepatan"
+#
+msgid "Start Options"
+msgstr "Mulai Pilihan"
+#
+msgid "Start a request"
+msgstr "Permintaan awal"
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr "Mulai dari perkiraan pertama di file GRIB"
+#
+msgid "Start at the nearest forecast to current time"
+msgstr "Mulai dari yang terdekat dengan pola untuk waktu saat ini"
+#
+msgid "Start play back"
+msgstr "Mulai permutaran"
+#
+msgid "Stop play back"
+msgstr "Berhenti bermain"
+#
+msgid "Surface Current Direction"
+msgstr "Arah Permukaan Arus"
+#
+msgid "Surface Current Speed"
+msgstr "Kecepatan permukaan saat ini"
+#
+msgid "Temp."
+msgstr "Suhu."
+#
+msgid "Temperature"
+msgstr "Temperatur"
+#
+msgid ""
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr ""
+"Perubahan ini membutuhkan isi ulang yang lengkap.\n"
+"Ini akan diterapkan setelah penutupan dan pembukaan kembali plugin"
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr "Ini adalah forum akses Login zyGrib kamu"
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Pilihan ini menyiratkan Anda mengizinkan interpolasi\n"
+"Jangan lupa data yang ditampilkan tidak akan nyata tapi dihitung ulang\n"
+"Hal ini bisa menurunkan akurasi!"
+#
+msgid "Time Interval"
+msgstr "Jarak waktu"
+#
+msgid "Time Options"
+msgstr "Pilihan Waktu"
+#
+msgid "Time Range"
+msgstr "Rentang Waktu"
+#
+msgid "Time Slider"
+msgstr "Waktu Slider"
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "File terlalu besar! batas zyGrib adalah 2Mb!"
+#
+msgid "Too large area! Each side must be less than 180°!"
+msgstr ""
+#
+msgid "Too small area for this resolution!"
+msgstr "Area yang terlalu kecil untuk resolusi ini!"
+#
+msgid "Top of Grib File"
+msgstr "Atas dari File Grib"
+#
+msgid "Transparency for all Overlay Maps"
+msgstr "Transparansi untuk semua hamparan peta"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid "Units"
+msgstr "Unit"
+#
+msgid "Use Always this Area"
+msgstr "Gunakan Selalu Area Ini"
+#
+msgid "Use Gradual Colors"
+msgstr "Gunakan Warna Bertahap"
+#
+msgid "Use High Definition Graphics"
+msgstr "Menggunakan Grafis Definisi Tinggi"
+#
+msgid "Valid Area and Continue"
+msgstr "Area yang cocok dan Lanjutkan"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Warning : Data at Geopotential Height"
+msgstr "Peringatan: Data di Geopotential tinggi"
+#
+msgid "Warning!"
+msgstr "Peringatan!"
+#
+msgid "Waves"
+msgstr "Ombak"
+#
+msgid "Waves Direction"
+msgstr "Arah gelombang"
+#
+msgid "Waves period"
+msgstr "Periode gelombang"
+#
+msgid "Waves,Dir"
+msgstr "Gelombang, Dir"
+#
+msgid "Waves,Hsig"
+msgstr "Gelombang, Hsig"
+#
+msgid "Waves,Per"
+msgstr "Gelombang, Per"
+#
+msgid "Weather table"
+msgstr "Daftar Cuaca"
+#
+msgid "Wind"
+msgstr "Angin"
+#
+msgid "Wind Direction"
+msgstr "Arah Angin"
+#
+msgid "Wind Gust"
+msgstr "Hembusan Angin"
+#
+msgid "Wind Gust at"
+msgstr "Hembusan Angin di"
+#
+msgid "Wind Speed"
+msgstr "Kecepatan Angin"
+#
+msgid "Wind Speed in Bf"
+msgstr "Kecepatan angin di Bf"
+#
+msgid "Wind,Dir"
+msgstr "Angin, Dir"
+#
+msgid "Wind,Gust"
+msgstr "Hembusan,angin"
+#
+msgid "Wind,Speed"
+msgstr "Kecepatan Angin"
+#
+msgid "Write and send eMail request"
+msgstr "Tulis dan kirim permintaan eMail"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Anda telah memilih untuk memberi otorisasi interpolasi. \n"
+"Jangan lupa data yang ditampilkan pada waktu sekarang tidak akan nyata tapi "
+"dihitung ulang\n"
+"Ini bisa menurunkan akurasi!"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Memberi otorisasi interpolasi telah anda pilih.\n"
+"Jangan lupa data yang ditampilkan tidak nyata tapi akan di hitung ulang\n"
+" ini akan mengurangkan ketepatannya!"
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5°x2.5°\n"
+"and the time intervall 12 hours."
+msgstr ""
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Kamu ingin menambahkan judul/drag bar ke dialog\n"
+#
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Kamu ingin menghapus judul dialog drag bar\n"
+#
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Permintaan anda sudah siap. Email disiapkan di daerah email Anda. \n"
+"kamu hanya akan mengverifikasi dan mengirim itu...\n"
+"simpan atau batal untuk menyelesaikan... atau menlanjutkan..."
+#
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Permintaan anda dikirim \n"
+"(jika sistem anda memiliki MTA yang dikonfigurasi dan bisa mengirim email).\n"
+"simpan atau batal untuk menyelesaikan... untuk melanjutkan..."
+#
+msgid "Zoom To Center"
+msgstr "Zoom Ke Tengah"
+#
+msgid "Zoom to Center"
+msgstr "Perbesar ke Tengah"
+#
+msgid "Zoom to file center when opened"
+msgstr ""
+#
+msgid "at"
+msgstr "di"
+#
+msgid "at Geopotential Height"
+msgstr "ketinggian pada Geopotential"
+#
+msgid "h"
+msgstr "jam"
+#
+msgid "inHG"
+msgstr ""
+#
+msgid "j/kg"
+msgstr "j/kg"
+#
+msgid "km/h"
+msgstr "km/jam"
+#
+msgid "m/s"
+msgstr "m/detik"
+#
+msgid "mmHG"
+msgstr "mmHG"
+#
+msgid "mn"
+msgstr "menit"
+#
+msgid "mph"
+msgstr "mph"
+#
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+"hamparan ditekan jika tidak mengarah ke utara dalam mode DC (mengaktifkan "
+"OpenGL)"
+#
+msgid "surface level"
+msgstr "tingkat permukaan"
+#
+msgid "zyGrib Code"
+msgstr ""
+#
+msgid "zyGrib Login"
+msgstr "zygrib masuk"

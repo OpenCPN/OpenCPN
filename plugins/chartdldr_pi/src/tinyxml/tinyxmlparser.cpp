@@ -1042,6 +1042,7 @@ void TiXmlElement::StreamIn (std::istream * in, TIXML_STRING * tag)
 
 const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding )
 {
+    //qDebug() << p;
 	p = SkipWhiteSpace( p, encoding );
 	TiXmlDocument* document = GetDocument();
 
@@ -1110,6 +1111,7 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			if ( !p || !*p ) {
 				// We were looking for the end tag, but found nothing.
 				// Fix for [ 1663758 ] Failure to report error on bad XML
+                            //qDebug() << "END_TAG A";
 				if ( document ) document->SetError( TIXML_ERROR_READING_END_TAG, p, data, encoding );
 				return 0;
 			}
@@ -1127,11 +1129,14 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 					++p;
 					return p;
 				}
+                            //qDebug() << "END_TAG B";
 				if ( document ) document->SetError( TIXML_ERROR_READING_END_TAG, p, data, encoding );
 				return 0;
 			}
 			else
 			{
+                                 //qDebug() << "END_TAG C" << endTag.c_str();
+
 				if ( document ) document->SetError( TIXML_ERROR_READING_END_TAG, p, data, encoding );
 				return 0;
 			}

@@ -1,4 +1,5 @@
-include/about.h
+include/AboutFrame.h
+include/AboutFrameImpl.h
 include/AIS_Bitstring.h
 include/AIS_Decoder.h
 include/ais.h
@@ -17,7 +18,6 @@ include/chartimg.h
 include/chartsymbols.h
 include/chcanv.h
 include/ChInfoWin.h
-include/CM93DSlide.h
 include/cm93.h
 include/compass.h
 include/concanv.h
@@ -36,7 +36,6 @@ include/glChartCanvas.h
 include/glTexCache.h
 include/glTextureDescriptor.h
 include/GoToPositionDialog.h
-include/gpxdocument.h
 include/gshhs.h
 include/Hyperlink.h
 include/IDX_entry.h
@@ -60,7 +59,7 @@ include/ocpn_pixel.h
 include/OCPNPlatform.h
 include/ocpn_plugin.h
 include/OCPNRegion.h
-include/OCPNSoundData.h
+include/SoundFileLoader.h
 include/OCPN_Sound.h
 include/ocpn_types.h
 include/options.h
@@ -69,14 +68,14 @@ include/pluginmanager.h
 include/PositionParser.h
 include/printtable.h
 include/Quilt.h
-include/razdsparser.h
 include/RolloverWin.h
 include/Route.h
 include/routemanagerdialog.h
 include/routeman.h
 include/RoutePoint.h
 include/routeprintout.h
-include/routeprop.h
+include/RoutePropDlg.h
+include/RoutePropDlgImpl.h
 include/s52plib.h
 include/s52s57.h
 include/s52utils.h
@@ -117,7 +116,8 @@ include/viewport.h
 include/wificlient.h
 include/WindowDestroyListener.h
 include/wx28compat.h
-src/about.cpp
+src/AboutFrame.cpp
+src/AboutFrameImpl.cpp
 src/AIS_Bitstring.cpp
 src/ais.cpp
 src/AIS_Decoder.cpp
@@ -136,7 +136,6 @@ src/chartsymbols.cpp
 src/chcanv.cpp
 src/ChInfoWin.cpp
 src/cm93.cpp
-src/CM93DSlide.cpp
 src/compass.cpp
 src/compasswin.cpp
 src/concanv.cpp
@@ -144,6 +143,7 @@ src/ConnectionParams.cpp
 src/crashprint.cpp
 src/cutil.cpp
 src/datastream.cpp
+src/DetailSlider.cpp
 src/FontDesc.cpp
 src/FontMgr.cpp
 src/geodesic.cpp
@@ -152,7 +152,6 @@ src/glChartCanvas.cpp
 src/glTexCache.cpp
 src/glTextureDescriptor.cpp
 src/GoToPositionDialog.cpp
-src/gpxdocument.cpp
 src/gshhs.cpp
 src/Hyperlink.cpp
 src/IDX_entry.cpp
@@ -174,7 +173,7 @@ src/ocpn_pixel.cpp
 src/OCPNPlatform.cpp
 src/OCPNRegion.cpp
 src/OCPN_Sound.cpp
-src/OCPNSoundData.cpp
+src/SoundFileLoader.cpp
 src/options.cpp
 src/Osenc.cpp
 src/pluginmanager.cpp
@@ -182,14 +181,14 @@ src/PositionParser.cpp
 src/printtable.cpp
 src/pugixml.cpp
 src/Quilt.cpp
-src/razdsparser.cpp
 src/RolloverWin.cpp
 src/Route.cpp
 src/routemanagerdialog.cpp
 src/routeman.cpp
 src/RoutePoint.cpp
 src/routeprintout.cpp
-src/routeprop.cpp
+src/RoutePropDlg.cpp
+src/RoutePropDlgImpl.cpp
 src/s52cnsy.cpp
 src/s52plib.cpp
 src/s52utils.cpp
@@ -221,3 +220,8 @@ src/TTYWindow.cpp
 src/undo.cpp
 src/viewport.cpp
 src/wificlient.cpp
+src/wxcurl/dialog.cpp
+src/wxcurl/panel.cpp
+src/ConfigMgr.cpp
+src/CanvasOptions.cpp
+src/MarkInfo.cpp

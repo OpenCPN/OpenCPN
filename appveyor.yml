@@ -1,45 +1,78 @@
 clone_folder: c:\project\opencpn
-shallow_clone: true
+shallow_clone: false
+clone_depth: 10
 
-platform: x64
+image:
+- Visual Studio 2017
+
+platform: 
+# - x64
+- Win32
+
 configuration: Release
-deploy: OFF
 test: OFF
 
 install:
-  - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
-
-  # sent environment variables for wxWidgets
-  - set WXWIN=C:\wxWidgets-3.0.2
+  # VS2015 and earlier version - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  
+  # set environment variables for wxWidgets
+  - set WXWIN=C:\wxWidgets-3.1.2
   - set wxWidgets_ROOT_DIR=%WXWIN%
   - set wxWidgets_LIB_DIR=%WXWIN%\lib\vc_dll
   - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;
 
   # install dependencies:
-  - choco install poedit nsis -x86
+  - choco install poedit
+
+  # - choco install nsi -x86
+  - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/nsis-3.04-setup.exe
+  - cmd: nsis-3.04-setup.exe /S
 
   # Download and unzip wxwidgets
-  - ps: Start-FileDownload http://downloads.sourceforge.net/project/wxwindows/3.0.2/wxWidgets-3.0.2.zip
-  - cmd: 7z x wxwidgets-3.0.2.zip -o%WXWIN% > null
+  - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/wxWidgets-3.1.2.7z
+  - cmd: 7z x wxWidgets-3.1.2.7z -o%WXWIN% > null
 
   # some debugging information
   - set
   # - cmake --help
 
-  # build wxWidgets
-  - cmd: cd %WXWIN%\build\msw\
-  - cmd: nmake -f makefile.vc BUILD=release SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
-  - cmd: nmake -f makefile.vc BUILD=debug SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
+  # build wxWidgets - Disabled as we provide prebuilt WX to save time
+  #- cmd: cd %WXWIN%\build\msw\
+  #- cmd: nmake -f makefile.vc BUILD=release SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
+  #- cmd: nmake -f makefile.vc BUILD=debug SHARED=1 CFLAGS=/D_USING_V120_SDK71_ CXXFLAGS=/D_USING_V120_SDK71_
 
 before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - cmake -T v120_xp ..
-  - ps: Start-FileDownload http://downloads.sourceforge.net/project/opencpnplugins/opencpn_packaging_data/OpenCPN_buildwin.7z
-  - cmd: 7z x OpenCPN_buildwin.7z -oc:\project\opencpn
+  - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/OpenCPN_buildwin-4.99a.7z
+  - cmd: 7z x -y OpenCPN_buildwin-4.99a.7z -oc:\project\opencpn\buildwin
+  - cmake -T v141_xp -DOCPN_CI_BUILD=ON ..
 
 build_script:
-  - cmake --build . --config debug
-  - cmake --build . --config release
+  # - cmake --build . --config debug
+  - cmake --build . --target opencpn --config release
+  - cmake --build . --target package --config release
   # --target package doesn't work because of nsis not correctly installed
+
+artifacts:
+  - path: 'build\*.exe'
+    name: installer
+
+  - path: 'build\Release\opencpn.lib'
+    name: lib
+
+  - path: 'build\Release\opencpn-*.pdb'
+    name: pdb
+
+deploy:
+  description: 'release created by AppVeyor CI'
+  provider: GitHub
+  auth_token: '%GitHub_auth_token%'
+  artifact: installer,lib
+  draft: true
+  prerelease: true
+  on:
+    appveyor_repo_tag: true # deploy on tag push only
+    configuration: Release  # Debug contains non-redist MS DLLs

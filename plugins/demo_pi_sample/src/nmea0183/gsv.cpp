@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -115,6 +115,10 @@ bool GSV::Write( SENTENCE& sentence )
 
    RESPONSE::Write( sentence );
 
+   sentence += 1;
+   sentence += 1;
+   sentence += SatsInView;
+   
    sentence.Finish();
 
    return( TRUE );

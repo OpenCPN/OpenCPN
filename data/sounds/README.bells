@@ -1,12 +1,19 @@
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN ship bell sounds
+ * Author:   David Register
+ *
  ***************************************************************************
- *   Copyright (C) 2010 by Warzyniec Szwaja                                *
+ *   Copyright (C) 2016 Sojan
+ *   Copyright (C) 2019 by David S. Register                               *
  *                                                                         *
- *   This material is free software; you can redistribute it and/or modify *
+ *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
- *   This is distributed in the hope that it will be useful,               *
+ *   This program is distributed in the hope that it will be useful,       *
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
@@ -14,12 +21,12 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
-Ship's Bells Sounds Set for OpenCPN 2.1.0 (Open Chart Plotter-Navigator obtainable at http://www.opencpn.org)
+Ship's Bells Sounds Set for OpenCPN 5.0 (Open Chart Plotter-Navigator obtainable at https://opencpn.org)
 
-This set of .wav files contains the recording of the bell of the brig STS "Fryderyk Chopin" (http://www.fryderykchopin.pl).
+This set of .wav files contains the recording of the bell obtained from https://freesound.org/people/Sojan/sounds/353233/ and https://freesound.org/people/Sojan/sounds/353232/ and licensed under the Creative Commons 0 License (https://creativecommons.org/publicdomain/zero/1.0/)
 
 OpenCPN implements the modern way of playing the bells, consisting of striking 1 bell more for every half-hour passed in 4-hour cycles:
 
@@ -39,14 +46,3 @@ OpenCPN implements the modern way of playing the bells, consisting of striking 1
 Installation
 
 The files 1bells, 2bells..., 8bells should be placed in the "sounds" directory under the main OpenCPN installation directory. The sounds are enabled by selecting the appropriate option in the Toolbox->Etc dialog.
-
-The recording was made available courtesy of Polish Radio Szczecin.
-
-For the high quality sound files please write to the author by email or at
-
-Wawrzyniec Szwaja
-Polskie Radio Szczecin SA
-Al. Wojska Polskiego 73
-70-481 Szczecin, Poland
-
-szwaja@radio.szczecin.pl

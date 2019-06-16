@@ -77,7 +77,9 @@ TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path)
             IDX_entry *pIDX = GetIndexEntry( i );
             if(pIDX){
                 pIDX->pDataSource = this;
-                strncpy(pIDX->source_ident, m_data_source_path.mb_str(), MAXNAMELEN );
+                strncpy(pIDX->source_ident, m_data_source_path.mb_str(),
+                        MAXNAMELEN - 1);
+                pIDX->source_ident[MAXNAMELEN -1] = '\0';
             }
         }
     }

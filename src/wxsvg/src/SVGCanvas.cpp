@@ -116,6 +116,7 @@ void wxSVGCanvas::DrawText(wxSVGTextElement* element,
 void wxSVGCanvas::DrawCanvasText(wxSVGCanvasText& canvasText,
   wxSVGMatrix& matrix, const wxCSSStyleDeclaration& style, wxSVGSVGElement& svgElem)
 {
+  (void) style;    // Unused.
   for (int i=0; i<(int)canvasText.m_chunks.Count(); i++)
   {
 	wxSVGCanvasTextChunk& chunk = canvasText.m_chunks[i];
@@ -127,21 +128,21 @@ void wxSVGCanvas::DrawCanvasText(wxSVGCanvasText& canvasText,
 }
 
 wxSVGPatternElement* wxSVGCanvas::GetPatternElement(const wxSVGSVGElement& svgElem, const wxString& href) {
-	if (href.length() == 0 || href[0] != wxT('#') || &svgElem == NULL)
+	if (href.length() == 0 || href[0] != wxT('#'))
 	    return NULL;
 	wxSVGElement* elem = (wxSVGElement*) svgElem.GetElementById(href.substr(1));
 	return elem != NULL && elem->GetDtd() == wxSVG_PATTERN_ELEMENT ? (wxSVGPatternElement*) elem : NULL;
 }
 
 wxSVGMarkerElement* wxSVGCanvas::GetMarkerElement(const wxSVGSVGElement& svgElem, const wxString& href) {
-	if (href.length() == 0 || href[0] != wxT('#') || &svgElem == NULL)
+	if (href.length() == 0 || href[0] != wxT('#'))
 		return NULL;
 	wxSVGElement* elem = (wxSVGElement*) svgElem.GetElementById(href.substr(1));
 	return elem != NULL && elem->GetDtd() == wxSVG_MARKER_ELEMENT ? (wxSVGMarkerElement*) elem : NULL;
 }
 
 wxSVGGradientElement* wxSVGCanvas::GetGradientElement(const wxSVGSVGElement& svgElem, const wxString& href) {
-	if (href.length() == 0 || href[0] != wxT('#') || &svgElem == NULL)
+	if (href.length() == 0 || href[0] != wxT('#'))
 	    return NULL;
 	wxSVGGradientElement* elem = (wxSVGGradientElement*) svgElem.GetElementById(href.substr(1));
 	return elem != NULL && (elem->GetDtd() == wxSVG_LINEARGRADIENT_ELEMENT

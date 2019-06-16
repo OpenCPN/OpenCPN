@@ -37,5 +37,7 @@
 #define DBLCLICK_TIMER   10
 #define POPUP_TIMER      11
 #define MOUSEWHEEL_TIMER 12
+#define DEFERRED_FOCUS_TIMER 13
+#define ROUTEFINISH_TIMER  14
 
 #endif

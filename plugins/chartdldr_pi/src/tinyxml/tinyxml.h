@@ -51,6 +51,8 @@ distribution.
 #include <string.h>
 #include <assert.h>
 
+#include "qdebug.h"
+
 // Help out windows:
 #if defined( _DEBUG ) && !defined( DEBUG )
 #define DEBUG

@@ -102,14 +102,14 @@ int jpc_atoaf(char *s, int *numvalues, double **values)
 	if ((cp = strtok(buf, delim))) {
 		++n;
 		while ((cp = strtok(0, delim))) {
-			if (cp != '\0') {
+			if (cp != NULL) {
 				++n;
 			}
 		}
 	}
 
 	if (n) {
-		if (!(vs = jas_malloc(n * sizeof(double)))) {
+		if (!(vs = jas_alloc2(n, sizeof(double)))) {
 			return -1;
 		}
 
@@ -120,7 +120,7 @@ int jpc_atoaf(char *s, int *numvalues, double **values)
 			vs[n] = atof(cp);
 			++n;
 			while ((cp = strtok(0, delim))) {
-				if (cp != '\0') {
+				if (cp != NULL) {
 					vs[n] = atof(cp);
 					++n;
 				}

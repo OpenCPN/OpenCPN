@@ -44,6 +44,8 @@
 #include "kml.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "Route.h"
+#include "chart1.h"
 
 extern MyFrame *gFrame;
 extern double gLat;
@@ -86,7 +88,7 @@ int Kml::ParseCoordinates( TiXmlNode* node, dPointList& points ) {
 
 KmlPastebufferType Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
     parsedTrack = new Track();
-    parsedTrack->m_TrackNameString = name;
+    parsedTrack->SetName(name);
 
     if( 0 == strncmp( node->ToElement()->Value(), "LineString", 10 ) ) {
         dPointList coordinates;
@@ -487,7 +489,7 @@ wxString Kml::MakeKmlFromRoute( Route* route, bool insertSeq ) {
 wxString Kml::MakeKmlFromTrack( Track* track ) {
     TiXmlDocument xmlDoc;
     wxString name = _("OpenCPN Track");
-    if( track->m_TrackNameString.Length() ) name = track->m_TrackNameString;
+    if( track->GetName().Length() ) name = track->GetName();
     TiXmlElement* document = StandardHead( xmlDoc, name );
 
     TiXmlElement* pmTrack = new TiXmlElement( "Placemark" );
@@ -495,7 +497,7 @@ wxString Kml::MakeKmlFromTrack( Track* track ) {
 
     TiXmlElement* pmName = new TiXmlElement( "name" );
     pmTrack->LinkEndChild( pmName );
-    TiXmlText* pmNameVal = new TiXmlText( track->m_TrackNameString.mb_str( wxConvUTF8 ) );
+    TiXmlText* pmNameVal = new TiXmlText( track->GetName().mb_str( wxConvUTF8 ) );
     pmName->LinkEndChild( pmNameVal );
 
     TiXmlElement* gxTrack = new TiXmlElement( "gx:Track" );

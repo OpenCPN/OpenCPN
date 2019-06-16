@@ -103,6 +103,7 @@ ZUFILE * zu_open(const char *fname, const char *mode, int type)
     }
 
     if (f->zfile == NULL) {
+        free(f->fname);
         free(f);
         f = NULL;
     }
@@ -153,6 +154,7 @@ int zu_close(ZUFILE *f)
                     break;
             }
         }
+        free(f);
     }
     return 0;
 }

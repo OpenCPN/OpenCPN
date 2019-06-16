@@ -117,7 +117,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadData(const wxString &data_file_path)
 
 IDX_entry *TCDS_Ascii_Harmonic::GetIndexEntry(int n_index)
 {
-    return &m_IDX_array.Item(n_index);
+    return &m_IDX_array[n_index];
 }
 
 
@@ -128,7 +128,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
 
     num_IDX=0;
 
-    m_abbreviation_array.Clear();
+    m_abbreviation_array.clear();
     m_IDX_array.Clear();
     //   free_harmonic_file_list();
     int have_index = 0;
@@ -142,7 +142,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
                     xref_start = IndexFileIO(IFF_TELL, 0);
             }
             else if (!have_index && !strncmp(index_line_buffer, "*END*", 5)) {
-                if (m_abbreviation_array.GetCount() == 0) {
+                if (m_abbreviation_array.empty()) {
                     IndexFileIO(IFF_CLOSE, 0);
                     return(TC_INDEX_FILE_CORRUPT); // missing at least some data so no valid index
                 }
@@ -153,23 +153,23 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
             else if (!have_index && xref_start) {
                 wxString line( index_line_buffer, wxConvUTF8 );
 
-                abbr_entry *entry  = new abbr_entry;
+                abbr_entry entry;
 
                 wxStringTokenizer tkz(line, _T(" "));
                 wxString token = tkz.GetNextToken();
                 if(token.IsSameAs(_T("REGION"), FALSE))
-                    entry->type = REGION;
+                    entry.type = REGION;
                 else if(token.IsSameAs(_T("COUNTRY"), FALSE))
-                    entry->type = COUNTRY;
+                    entry.type = COUNTRY;
                 else if(token.IsSameAs(_T("STATE"), FALSE))
-                    entry->type = STATE;
+                    entry.type = STATE;
 
                 token = tkz.GetNextToken();
-                entry->short_s = token;
+                entry.short_s = token;
 
-                entry->long_s = line.Mid(tkz.GetPosition()).Strip();
+                entry.long_s = line.Mid(tkz.GetPosition()).Strip();
 
-                m_abbreviation_array.Add(entry);
+                m_abbreviation_array.push_back(entry);
 
             }
 
@@ -243,6 +243,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
                      &pIDX->IDX_type,&pIDX->IDX_zone[0],&pIDX->IDX_lon,&pIDX->IDX_lat,&TZHr,&TZMin,
                      &pIDX->IDX_station_name[0])) return(TC_INDEX_ENTRY_BAD);
 
+    if(TZHr < 0 && TZMin > 0 ) TZMin=-TZMin;  //correct for negative timezones with fractional hours (NewFoundland)
     pIDX->IDX_time_zone = TZHr*60 + TZMin;
 
     if (strchr("tcUu",index_line_buffer[0])) { // Substation so get second line of info
@@ -350,7 +351,11 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
         return TC_FILE_NOT_FOUND;
 
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_csts);
+
+    if (1 != sscanf (linrec, "%d", &num_csts))
+        goto error;
+    if (num_csts <= 0 || num_csts > 1000000) // 100 % arbitrary roughly twice the harmonic lines number
+        goto error;
 
     m_cst_speeds = (double *) malloc (num_csts * sizeof (double));
     m_work_buffer = (double *) malloc (num_csts * sizeof (double));
@@ -368,7 +373,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
     /* Load epoch table */
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_epochs);
+    if (1 != sscanf (linrec, "%d", &num_epochs))
+        goto error;
+    if (num_epochs <= 0 || num_epochs > 1000000)
+        goto error;
 
     m_cst_epochs = (double **) malloc (num_csts * sizeof (double *));
     for (int i=0; i<num_csts; i++)
@@ -376,25 +384,28 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
     for (int i=0; i<num_csts; i++)
     {
-        if(EOF == fscanf (fp, "%s", linrec))
-            return TC_HARM_FILE_CORRUPT;
+        if(1 != fscanf (fp, "%s", linrec))
+            goto error;
         for (int b=0; b<num_epochs; b++)
         {
-            if(EOF == fscanf (fp, "%lf", &(m_cst_epochs[i][b])))
-                return TC_HARM_FILE_CORRUPT;
+            if(1 != fscanf (fp, "%lf", &(m_cst_epochs[i][b])))
+                goto error;
             m_cst_epochs[i][b] *= M_PI / 180.0;
         }
     }
 
 
     /* Sanity check */
-    if(EOF == fscanf (fp, "%s", linrec))
-        return TC_HARM_FILE_CORRUPT;
+    if(1 != fscanf (fp, "%s", linrec))
+        goto error;
     skipnl (fp);
 
     /* Load node factor table */
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_nodes);
+    if(1 != sscanf (linrec, "%d", &num_nodes))
+        goto error;
+    if (num_nodes <= 0 || num_nodes > 1000000)
+        goto error;
 
     m_cst_nodes = (double **) malloc (num_csts * sizeof (double *));
     for (int a=0; a<num_csts; a++)
@@ -409,6 +420,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
     fclose(fp);
 
     return TC_NO_ERROR;
+
+error:
+    fclose(fp);
+    return TC_HARM_FILE_CORRUPT;
 }
 
 
@@ -424,7 +439,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
     // Try the member array of "already-looked-at" master stations
     for(unsigned int i=0 ; i < m_msd_array.GetCount() ; i++)
     {
-        psd = &m_msd_array.Item(i);
+        psd = &m_msd_array[i];
         //    In the following comparison, it is allowed that the sub-station reference_name may be
         //          a pre-subset of the master station name.
         //          e.g  IDX_refence_name:  The Narrows midchannel New York
@@ -453,7 +468,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
     //    Find and load appropriate constituents
     FILE *fp;
     char linrec[linelen];
+
     fp = fopen (m_harmfile_name.mb_str(), "r");
+    if (fp == 0)
+        return TC_MASTER_HARMONICS_NOT_FOUND;
 
     while (read_next_line (fp, linrec, 1))
     {
@@ -536,10 +554,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
             psd->amplitude[a] = loca;
             psd->epoch[a] = loce * M_PI / 180.;
         }
-        fclose (fp);
 
         break;
     }
+    fclose (fp);
 
     if(!psd) {
         m_last_reference_not_found = wxString(pIDX->IDX_reference_name, wxConvUTF8);

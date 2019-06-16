@@ -182,26 +182,26 @@ Table& Table::operator<<( const double& cellcontent )
 }
 
 
-Table& Table::operator<<( const string& cellcontent )
+Table& Table::operator<<( const wxString& cellcontent )
 {
     Start();
     if ( state == TABLE_FILL_HEADER ) { // if we start to fill with string data, we change state automatically.
-        wxString _str( cellcontent.c_str(), wxConvUTF8 );
-        header.push_back( _str );
+        header.push_back( cellcontent );
         return *this;
     }
     if ( state == TABLE_SETUP_WIDTHS ) { // if we start to fill with string data, we change state automatically.
         state = TABLE_FILL_DATA;
     }
 
-    if ( ( cellcontent.compare( "\n" ) == 0 ) ) {
+    if ( ( cellcontent == "\n" ) ) {
         create_next_row = true;
         return *this;
     }
-    wxString _str( cellcontent.c_str(), wxConvUTF8 );
-    data[ data.size() - 1 ].push_back( _str );
+    data[ data.size() - 1 ].push_back( cellcontent );
     return *this;
 }
+
+
 
 
 Table& Table::operator<<( const int& cellcontent )

@@ -51,7 +51,8 @@ LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
+
+LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
@@ -67,6 +68,9 @@ contains(wxQt_Build,53)
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
 }
 
+#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libTESS2.a
+LIBS += $${OCPN_Base}/$${OCPN_Build}/libSQLiteCpp.a
+LIBS += $${OCPN_Base}/$${OCPN_Build}/libsqlite3.a
 
 TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
 
@@ -109,6 +113,8 @@ ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman.png
 ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman_flat.png
 ui_deployment.files += $$PWD/../data/svg/traditional/settings.svg
 ui_deployment.files += $$PWD/../src/bitmaps/DragHandle.svg
+ui_deployment.files += $$PWD/../src/bitmaps/eye.svg
+ui_deployment.files += $$PWD/../src/bitmaps/eyex.svg
 ui_deployment.path = /assets/files/uidata
 INSTALLS += ui_deployment
 
@@ -192,6 +198,15 @@ svg_deployment.files += $$PWD/../data/svg/traditional/4WayMove.svg
 
 svg_deployment.path = /assets/files/uidata/traditional
 INSTALLS += svg_deployment
+
+#MUI_files = $$files($$PWD/../data/svg/MUI_flat/*.svg)
+#win32:files ~= s|\\\\|/|g
+#for(file, files):!exists($$file/*):contains($$file, ".svg"):MUI_deployment.files += $$file
+
+MUI_deployment.files = $$files($$PWD/../data/svg/MUI_flat/*.svg)
+MUI_deployment.path = /assets/files/uidata/MUI_flat
+INSTALLS += MUI_deployment
+
 
 #  SVG Mark Icons
 
@@ -443,7 +458,7 @@ OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/
 
 
 ANDROID_EXTRA_LIBS = \
-        /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+          /home/dsr/Projects/opencpn_clone/OpenCPN/buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 DISTFILES += \
     android/src/org/opencpn/PortContainer.java

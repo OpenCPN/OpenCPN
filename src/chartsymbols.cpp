@@ -143,7 +143,7 @@ void ChartSymbols::ProcessColorTables( pugi::xml_node &node )
                     
                 }
             
-next:           colorNode = colorNode.next_sibling();
+	            colorNode = colorNode.next_sibling();
             }
             
             colorTables->Add( (void *) colortable );
@@ -221,7 +221,6 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
                 const char *pca = attr.name();
                 if(!strcmp(pca, "name")){
                     lookup.name = wxString (attr.value(), wxConvUTF8 );
-                    lookup.attributeCodeArray = NULL;
                 }
                 else if(!strcmp(pca, "RCID")){
                     lookup.RCID = attr.as_int();
@@ -288,12 +287,15 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
             }
             
             else if( !strcmp( lookupNode.name(), "attrib-code") ) {
-                if( !lookup.attributeCodeArray )
-                    lookup.attributeCodeArray = new wxArrayString();
-                wxString value = wxString( nodeText, wxConvUTF8 );
-                if( value.length() == 6 )
-                    value << _T(" ");
-                lookup.attributeCodeArray->Add( value );
+                int nc = strlen(nodeText);
+                if(nc >= 6){                            //  ignore spurious short fields
+                    char *attVal = (char *)calloc(nc+2, sizeof(char));
+                    memcpy(attVal, nodeText, nc);
+                
+                    if( attVal[6] == '\0')
+                        attVal[6] = ' ';
+                    lookup.attributeCodeArray.push_back(attVal);
+                }
                 
             }
         
@@ -301,6 +303,7 @@ void ChartSymbols::ProcessLookups( pugi::xml_node &node )
         }
         
         BuildLookup( lookup );
+        lookup.attributeCodeArray.clear();
     }
             
 }
@@ -526,7 +529,6 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
         TGET_INT_PROPERTY_VALUE( child, "id", lookup.id )
         TGET_INT_PROPERTY_VALUE( child, "RCID", lookup.RCID )
         lookup.name = wxString( child->Attribute( "name" ), wxConvUTF8 );
-        lookup.attributeCodeArray = NULL;
 
         TiXmlElement* subNode = child->FirstChild()->ToElement();
 
@@ -610,12 +612,12 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
                 goto nextNode;
             }
             if( nodeType == _T("attrib-code") ) {
-                if( !lookup.attributeCodeArray )
-                    lookup.attributeCodeArray = new wxArrayString();
-                wxString value = wxString( subNode->GetText(), wxConvUTF8 );
-                if( value.length() == 6 )
-                    value << _T(" ");
-                lookup.attributeCodeArray->Add( value );
+                char *attVal = (char *)calloc(8, sizeof(char));
+                strncpy(attVal, nodeText, 7);
+                if( attVal[6] == '\0')
+                    attVal[6] = ' ';
+                lookup.attributeCodeArray.push_back(attVal);
+
                 goto nextNode;
             }
 
@@ -640,9 +642,9 @@ void ChartSymbols::BuildLookup( Lookup &lookup )
     LUP->RPRI = lookup.radarPrio;
     LUP->TNAM = lookup.tableName;
     LUP->OBCL[6] = 0;
-    strncpy( LUP->OBCL, lookup.name.mb_str(), 7 );
+    memcpy( LUP->OBCL, lookup.name.mb_str(), 7 );
 
-    LUP->ATTCArray = lookup.attributeCodeArray;
+    LUP->ATTArray = lookup.attributeCodeArray;
 
     LUP->INST = new wxString( lookup.instruction );
     LUP->LUCM = lookup.comment;
@@ -752,7 +754,7 @@ void ChartSymbols::BuildLineStyle( LineStyle &lineStyle )
     plib->pAlloc->Add( lnst );
 
     lnst->RCID = lineStyle.RCID;
-    strncpy( lnst->name.PANM, lineStyle.name.mb_str(), 8 );
+    memcpy( lnst->name.PANM, lineStyle.name.mb_str(), 8 );
     lnst->bitmap.PBTM = NULL;
 
     lnst->vector.LVCT = (char *) malloc( lineStyle.HPGL.Len() + 1 );
@@ -892,7 +894,7 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern )
 
     patt->RCID = pattern.RCID;
     patt->exposition.PXPO = new wxString( pattern.description );
-    strncpy( patt->name.PANM, pattern.name.mb_str(), 8 );
+    memcpy( patt->name.PANM, pattern.name.mb_str(), 8 );
     patt->bitmap.PBTM = NULL;
     patt->fillType.PATP = pattern.fillType;
     patt->spacing.PASP = pattern.spacing;
@@ -1069,7 +1071,7 @@ void ChartSymbols::BuildSymbol( ChartSymbol& symbol )
     wxString SCRF;
 
     symb->RCID = symbol.RCID;
-    strncpy( symb->name.SYNM, symbol.name.char_str(), 8 );
+    memcpy( symb->name.SYNM, symbol.name.char_str(), 8 );
 
     symb->exposition.SXPO = new wxString( symbol.description );
 
@@ -1278,6 +1280,8 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
             
             rasterSymbolsTextureSize = wxSize(w, h);
 
+            ///v5glDisable( GL_TEXTURE_2D );
+            
             free(e);
         } 
 #endif

@@ -126,7 +126,7 @@ bool GribRecord::GetInterpolatedParameters
     double jiters = rec2.Dj / rec1.Dj;
     if(jiters < 1) {
         jiters = 1/jiters;
-        jm1 = 1, jm2 = iiters;
+        jm1 = 1, jm2 = jiters;
     } else
         jm1 = jiters, jm2 = 1;
 
@@ -240,6 +240,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     double La1, Lo1, La2, Lo2, Di, Dj;
     int im1, jm1, im2, jm2;
     int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
+
+    rety = 0;
     if(!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2, Di, Dj,
                                   im1, jm1, im2, jm2,
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
@@ -251,9 +253,13 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
        rec2x.Di != rec2y.Di ||rec2x.Dj != rec2y.Dj ||
        rec1x.Ni != rec1y.Ni ||rec1x.Nj != rec1y.Nj ||
        rec2x.Ni != rec2y.Ni ||rec2x.Nj != rec2y.Nj)
+    {
         // could also make sure lat and lon min/max are the same...
-        return NULL;
+        // copy first 
+        rety = new GribRecord(rec1y);
 
+        return new GribRecord(rec1x);
+    }
     // recopie les champs de bits
     int size = Ni*Nj;
     double *datax = new double[size], *datay = new double[size];
@@ -341,6 +347,23 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
     return rec;
 }
 
+void GribRecord::Polar2UV(GribRecord *pDIR, GribRecord *pSPEED)
+{
+    if (pDIR->data && pSPEED->data && pDIR->Ni == pSPEED->Ni && pDIR->Nj == pSPEED->Nj) {
+        int size = pDIR->Ni*pDIR->Nj;
+        for (int i=0; i<size; i++) {
+            if(pDIR->data[i] != GRIB_NOTDEF && pSPEED->data[i] != GRIB_NOTDEF) {
+                double dir = pDIR->data[i];
+                double speed = pSPEED->data[i];
+                pDIR->data[i] = -speed * sin ( dir *M_PI/180.);
+                pSPEED->data[i] = -speed * cos ( dir *M_PI/180.);
+            }
+        }
+        pDIR->dataType = GRB_WIND_VX;
+        pSPEED->dataType = GRB_WIND_VY;
+    }
+}
+
 void GribRecord::Substract(const GribRecord &rec, bool pos)
 {
     // for now only substract records of same size
@@ -374,8 +397,50 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
     } 
 }
 
-
 //------------------------------------------------------------------------------
+void GribRecord::Average(const GribRecord &rec)
+{
+
+    // for now only average records of same size
+    // this : 6-12
+    // rec  : 6-9
+    // compute average 9-12
+    //
+    // this : 0-12
+    // rec  : 0-11
+    // compute average 11-12
+
+    if (rec.data == 0 || !rec.isOk())
+        return;
+
+    if (data == 0 || !isOk())
+        return;
+
+    if (Ni != rec.Ni || Nj != rec.Nj)
+        return;
+
+    if (getPeriodP1() != rec.getPeriodP1())
+        return;
+
+    double d2 = getPeriodP2() - getPeriodP1();
+    double d1 = rec.getPeriodP2() - rec.getPeriodP1();
+
+    if (d2 <= d1)
+        return;
+
+    zuint size = Ni *Nj;
+    double diff = d2 -d1;
+    for (zuint i=0; i<size; i++) {
+        if (rec.data[i] == GRIB_NOTDEF)
+           continue;
+        if (data[i] == GRIB_NOTDEF)
+           continue;
+
+        data[i] = (data[i]*d2 -rec.data[i]*d1)/diff;
+    }
+}
+
+//-------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {
 	dataType = t;
@@ -414,14 +479,14 @@ void  GribRecord::multiplyAllData(double k)
     if (data == 0 || !isOk())
         return;
 
-	for (zuint j=0; j<Nj; j++) {
-		for (zuint i=0; i<Ni; i++)
-		{
-			if (isDefined(i,j)) {
-				data[j*Ni+i] *= k;
-			}
-		}
-	}
+    for (zuint j=0; j<Nj; j++) {
+        for (zuint i=0; i<Ni; i++)
+        {
+            if (isDefined(i,j)) {
+                data[j*Ni+i] *= k;
+            }
+        }
+    }
 }
 
 //----------------------------------------------
@@ -440,39 +505,38 @@ void  GribRecord::setRecordCurrentDate (time_t t)
 }
 
 //----------------------------------------------
+static bool isleapyear( zuint y) { return ( ( y %4 ==0) && ( y % 100 != 0) ) || ( y %400 ==0); }
+
 time_t GribRecord::makeDate(
             zuint year,zuint month,zuint day,zuint hour,zuint min,zuint sec) {
-    struct tm date;
-    date.tm_sec  = 0  ;         /* seconds */
-    date.tm_min  = 0;           /* minutes */
-    date.tm_hour = 0;           /* hours */
-    date.tm_mday = day;         /* day of the month */
-    date.tm_mon  = month-1;     /* month */
-    date.tm_year = year-1900;   /* year */
-    date.tm_wday   = 0;         /* day of the week */
-    date.tm_yday   = 0;         /* day in the year */
-    date.tm_isdst  = 0;         /* daylight saving time */
+    if (year<1970 || year>2200 || month<1 || month>12 || day<1)
+        return -1;
+    time_t r = 0;
 
-	time_t   temps = -1;
-    wxDateTime dt(date);
-	temps = dt.GetTicks();
-	temps += ((hour * 3600) + (min * 60 ) + sec);								//find datetime exactly as in the file
-	wxDateTime dtt(temps);
-	wxTimeSpan of = wxDateTime::Now() - (wxDateTime::Now().ToGMT() );			//transform to local time
-	if(dtt.IsDST())																//correct dst offset applied 3 times  why ???
-		of -= wxTimeSpan( 2, 0 );
-	dtt += of;
-	temps = dtt.GetTicks();
-
-/*
-	char sdate[64];
-	sprintf(sdate, "%04d-%02d-%02d 00:00:00", year,month,day);
-    QDateTime dt = QDateTime::fromString(sdate, "yyyy-MM-dd HH:mm:ss");
-    dt.setTimeSpec(Qt::UTC);
-	dt = dt.addSecs (hour*3600+min*60+sec);
-	temps = dt.toTime_t();
-*/
-	return temps;
+    // TODO : optimize (precomputed data)
+    for (zuint  y=1970; y<year; y++) {
+        r += 365*24*3600;
+        if (isleapyear(y))
+            r += 24*3600;
+    }
+    for (zuint  m=1; m<month; m++) {
+        if (m==2) {
+            r += 28*24*3600;
+            if (isleapyear(year))
+                r += 24*3600;
+        }
+        else if (m==1||m==3||m==5||m==7||m==8||m==10||m==12) {
+            r += 31*24*3600;
+        }
+        else {
+            r += 30*24*3600;
+        }
+    }
+    r += (day-1)*24*3600;
+    r += hour*3600;
+    r += min*60;
+    r += sec;
+    return r;
 }
 
 
@@ -698,7 +762,7 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
 //         nbval ++;
 
      int nbval = 0;     // how many values in grid ?
-     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+     if (GRY->getValue(i0, j0) != GRIB_NOTDEF)
          nbval ++;
      if (GRY->getValue(i1, j0) != GRIB_NOTDEF)
          nbval ++;
@@ -707,7 +771,20 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
      if (GRY->getValue(i1, j1) != GRIB_NOTDEF)
          nbval ++;
 
-    if (nbval < 3)
+    if (nbval <= 3)
+        return false;
+
+     nbval = 0;     // how many values in grid ?
+     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i0, j1) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j1) != GRIB_NOTDEF)
+         nbval ++;
+
+    if (nbval <= 3)
         return false;
 
     dx = (3.0 - 2.0*dx)*dx*dx;   // pseudo hermite interpolation

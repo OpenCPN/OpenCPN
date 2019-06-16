@@ -33,6 +33,8 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/filename.h>
+
 #include "mygdal/ogr_s57.h"
 #include "mygdal/cpl_csv.h"
 #include "chartbase.h"
@@ -40,8 +42,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <vector>
+#include <mutex>
 
-WX_DECLARE_OBJARRAY(float *,   SENCFloatPtrArray);
+WX_DEFINE_ARRAY_PTR(float *, SENCFloatPtrArray);
 
 //      Various error return enums
 #define         SENC_NO_ERROR                           0
@@ -327,6 +330,7 @@ class VE_Element;
 class VC_Element;
 class PolyTessGeo;
 class LineGeometryDescriptor;
+class wxFFileInputStream;
 
 typedef std::vector<S57Obj *> S57ObjVector;
 typedef std::vector<VE_Element *> VE_ElementVector;
@@ -443,6 +447,7 @@ public:
 
     wxString getLastError(){ return errorMessage; }
     void setVerbose(bool verbose );
+    void setNoErrDialog( bool val ){ m_NoErrDialog = val; }
     
     int ingestHeader(const wxString &senc_file_name);
     int ingest(const wxString &senc_file_name,
@@ -476,9 +481,9 @@ public:
     Extent &getReadExtent(){ return m_extent; }
     
     SENCFloatPtrArray &getSENCReadAuxPointArray(){ return m_AuxPtrArray;}
-    wxArrayInt &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
+    std::vector<int> &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
     SENCFloatPtrArray &getSENCReadNOCOVRPointArray(){ return m_NoCovrPtrArray;}
-    wxArrayInt &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
+    std::vector<int> &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
     
     int createSenc200(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg = true);
     
@@ -490,6 +495,8 @@ public:
     
     int getNativeScale(){ return m_native_scale; }
     int GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFileName);
+
+    std::unique_lock<std::mutex> lockCR;
     
 private:
     void init();
@@ -523,7 +530,6 @@ private:
     std::string GetAttributeAcronymFromTypecode( int typeCode );
     
     PolyTessGeo *BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record, unsigned char **bytes_consumed );
-    LineGeometryDescriptor *BuildLineGeometry( _OSENC_LineGeometry_Record_Payload *pPayload );
     bool CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar );
     
     wxString            errorMessage;
@@ -539,7 +545,6 @@ private:
     int                 m_read_last_applied_update;
     
     S57Reader           *poReader;
-    OGRS57DataSource    *poS57DS;
     
     wxDateTime          m_date000;
     wxString            m_sdate000;
@@ -581,9 +586,9 @@ private:
     
     //  Arrays used to accumulate coverage regions on oSENC load
     SENCFloatPtrArray     m_AuxPtrArray;
-    wxArrayInt            m_AuxCntArray;
+    std::vector<int>            m_AuxCntArray;
     SENCFloatPtrArray     m_NoCovrPtrArray;
-    wxArrayInt            m_NoCovrCntArray;
+    std::vector<int>            m_NoCovrCntArray;
     
     
     Osenc_outstream       *m_pauxOutstream;
@@ -593,7 +598,9 @@ private:
     Osenc_instream        *m_pInstream;
 
     bool                  m_bVerbose;
-    
+    wxArrayString         *m_UpFiles;
+    bool                  m_bPrivateRegistrar;
+    bool                  m_NoErrDialog;
 };
 
 

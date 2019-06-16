@@ -1,0 +1,891 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-12 22:19-0400\n"
+"PO-Revision-Date: 2019-03-18 02:57\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Filipino\n"
+"Language: fil_PH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fil\n"
+"X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
+#
+msgid " (Max size )"
+msgstr " (Max. sukat )"
+#
+msgid " can't be read!"
+msgstr " hindi mabasa!"
+#
+msgid " contains no valid data!"
+msgstr " naglalaman ng walang balidong datos!"
+#
+msgid " files don't exist!"
+msgstr " ang mga talaksan ay hindi umiiral!"
+#
+msgid "300 hPa"
+msgstr "300 hPa"
+#
+msgid "500 hPa"
+msgstr "500 hPa"
+#
+msgid "700 hPa"
+msgstr "700 hPa"
+#
+msgid "850 hPa"
+msgstr "850 hPa"
+#
+msgid "Abbreviated Isobars Numbers"
+msgstr ""
+#
+msgid "Abbreviated Numbers"
+msgstr ""
+#
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+"Ang adres na ginamit upang magpadala ng kahilingan na eMail. (Iniuutos para "
+"sa LINUX)"
+#
+msgid "Air Temp"
+msgstr "Temperatura ng Hangin"
+#
+msgid "Air Temp."
+msgstr "Temp. ng Hangin"
+#
+msgid "Air Temperature"
+msgstr "Temperatura ng Hangin"
+#
+msgid "Air Temperature at"
+msgstr "Temperatura ng Hangin sa"
+#
+msgid "Air Temperature(2m)"
+msgstr "Tempertaura ng Hangin(2m)"
+#
+msgid "Altitude"
+msgstr "Altitud"
+#
+msgid "Altitude(Geopotential)"
+msgstr "Altitud(Geopotenyal)"
+#
+msgid "Always visible"
+msgstr "Laging makikita"
+#
+msgid "Apply"
+msgstr "Ilapat"
+#
+msgid "Area Selection"
+msgstr "Pagpili ng Lugar"
+#
+msgid "Attached icon bar"
+msgstr "Nakalakip na bar ng aykon"
+#
+msgid "Authorize Interpolation to start at current time"
+msgstr "Pahintulutan ang Pag-aalis upang masimulan sa kasalukuyang oras"
+#
+msgid "Barbed Arrows"
+msgstr "Mga Palasong may Tinik"
+#
+msgid "Beaufort"
+msgstr "Beaufort"
+#
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr ""
+"Bago magpadala ng email sa Zygrib kailangan mong ipasok ang iyong Login at "
+"Kodigo.\n"
+"Mangyaring bisitahin ang www.zygrib.org/ at sundin ang mga tagubilin..."
+#
+msgid "Building Isobar map"
+msgstr "Gumagawa ng mapang Isobar"
+#
+msgid "Buttons Visibility"
+msgstr "Pagiging Kita ng mga Buton"
+#
+msgid "CAPE"
+msgstr "CAPE"
+#
+msgid "Celsius"
+msgstr "Sentigrado"
+#
+msgid "Close"
+msgstr "Isarado"
+#
+msgid "Cloud Cover"
+msgstr "Pagkulimlim ng Panahon"
+#
+msgid "Color scheme"
+msgstr ""
+#
+msgid "Continue..."
+msgstr "Magpatuloy..."
+#
+msgid "Controlled Colours"
+msgstr ""
+#
+msgid "Convective Available Potential Energy"
+msgstr "Magagamit na Enerhiyang Potensyal na Convective"
+#
+msgid "Coord. "
+msgstr "Koord. "
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr "Kopyahin ang Nawawalang Rekord ng Unang Pinagsama"
+#
+msgid "Copy Missing Wave Records"
+msgstr "Kopyahin ang Nawawalang Rekord ng Alon"
+#
+msgid "Course"
+msgstr "Pagdaraanan"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr "Pinagsamang Ulan bawat Oras"
+#
+msgid "Current"
+msgstr "Daloy ng Alon"
+#
+msgid "Current time forecast"
+msgstr "Hula sa oras ng alon"
+#
+msgid "Current,Dir"
+msgstr "Daloy,Dir"
+#
+msgid "Current,Speed"
+msgstr "Daloy,Bilis"
+#
+msgid "Data"
+msgstr "Datos"
+#
+msgid "Data Display Options"
+msgstr "Mga Pagpipilian sa Pag-displey ng Datos"
+#
+msgid "Data Selection"
+msgstr "Pagpili ng Datos"
+#
+msgid "Data at Position:"
+msgstr "Datos sa Posisyon:"
+#
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+"Ang datos na nasa panturo na dyalogo ay nakalakip sa bar ng mga aykon - "
+"kasama ang bar ng titulo/panghila"
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+"Ang datos na nasa panturo na dyalogo ay nakalakip sa bar ng mga aykon - hindi "
+"kasama ang bar ng titulo/panghila"
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+"Ang datos na nasa panturo na dyalogo ay nakahiwalay at na-displey ng pahalang"
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+"Ang datos na nasa panturo na dyalogo ay nakahiwalay at na-displey ng patayo"
+#
+msgid "Data at cursor position"
+msgstr "Datos na nasa panturong posisyon"
+#
+msgid "Days"
+msgstr "Araw"
+#
+msgid "Default Colour"
+msgstr "Naka-default na Kulay"
+#
+msgid "Default Size"
+msgstr "Naka-default na Sukat"
+#
+msgid "Deg"
+msgstr "Deg"
+#
+msgid "Density"
+msgstr "Densidad"
+#
+msgid "Dialog"
+msgstr "Dyalogo"
+#
+msgid "Dialogs Style"
+msgstr "Istelo ng mga Dyalogo"
+#
+msgid "Direction Arrows"
+msgstr "Palasong Pandireksyon"
+#
+msgid "Display Iso CAPE"
+msgstr "I-displey ang mga Iso CAPE"
+#
+msgid "Display Isobars"
+msgstr "I-displey ang mga Isobar"
+#
+msgid "Display Isotachs"
+msgstr "I-displey ang mga Isotach"
+#
+msgid "Display Isotherms"
+msgstr "I-displey ang mga Isotherm"
+#
+msgid "Double Arrow"
+msgstr "Dalawahang Palaso"
+#
+msgid "Draw Barbed Arrows Head"
+msgstr "Gumuhit ng mga Ulo ng Palaso na may Tinik"
+#
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+"Iguhit ang hiniling na Lugar\n"
+"o Mag-klik ito upang mahinto ang kahilingan"
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr "Iguhit ang hiniling Lugar o Mag-klik dito upang ihinto ang hiling"
+#
+msgid "E"
+msgstr "S"
+#
+msgid "Enter your forecasted Course"
+msgstr "Ipasok ang iyong hula na Pagdadaanan"
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Ipasok ang iyong hula sa Bilis (naka-Knots)"
+#
+msgid "Error! "
+msgstr "May Pagkakamali! "
+#
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr ""
+"May Pagkakamali! Ang Max Lat ay mas mababa pa sa Min Lat o ang Max Lon ay mas "
+"mababa sa Min Lon!"
+#
+msgid "Estimated File Size"
+msgstr "Tinatayang Sukat ng Taklasan"
+#
+msgid "Fahrenheit"
+msgstr "Parehayt"
+#
+msgid "Fast"
+msgstr "Bilisan"
+#
+msgid "Feet"
+msgstr "Piye"
+#
+msgid "File: "
+msgstr "Talaksan: "
+#
+msgid "Fixed"
+msgstr "Nakapirmi"
+#
+msgid "Forecast Model "
+msgstr "Modelo sa Paghula "
+#
+msgid "GRIB Display Control"
+msgstr "Kontrol sa Displey ng GRIB"
+#
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "PlugIn na Grib para sa OpenCPN"
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
+"\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr ""
+"GRIB PlugIn for OpenCPN\n"
+"Nagbibigay ng pangkaraniwang kakayahan ng kalupkop ng taklasang GRIB para sa "
+"mga iilang uri ng taklasang GRIB\n"
+"at ng punsyon ng kahilingan upang makakuha ng mga taklasang GRIB mula sa "
+"eMail.\n"
+"\n"
+"Kabilang sa suportadong datos ng GRIB:\n"
+"- direksyon at bilis ng hangin (nasa 10 m)\n"
+"- bugso ng hangin\n"
+"- pang-ibabaw na presyon\n"
+"- ulan\n"
+"- pagkulimlim ng ulap\n"
+" makabuluhang taas at direksyon ng alon\n"
+"- pang-ibabaw ng temperatura ng hangin (nasa 2 m)\n"
+"- pang-ibabaw na temperatura ng dagat\n"
+"- pang-ibabaw na direksyon at bilis ng daloy\n"
+"- Magagamit na Enerhiyang Potensyal na Convective (CAPE)\n"
+"- hangin, altitude, temperatura at kaukulang kahalumigmigan na nasa 300, 500, "
+"700, 850 hPa."
+#
+msgid "GUI"
+msgstr ""
+#
+msgid "General Options"
+msgstr "Mga Pangkalahatang Pagpipilian"
+#
+msgid "Generic"
+msgstr "Panlahat"
+#
+msgid "Geopot. Height Choice"
+msgstr "Pagpipilian na Taas ng Geopot"
+#
+msgid "Geopotential Height"
+msgstr "Taas ng Geopotensyal"
+#
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Kunin itong Kodigo sa porum sa zyGrib ( Hindi ito ang iyong password! )"
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Grib Data Table"
+msgstr "Talaan sa Datos ng Grib"
+#
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr "GribNumbers Hindi maaaring kwentahin ang halaga na nasa rekord"
+#
+msgid "Hide data at cursor"
+msgstr "Itago ang datos at ang panturo"
+#
+msgid "Hours"
+msgstr "Oras"
+#
+msgid "Inches"
+msgstr "Pulgada"
+#
+msgid "Interpolate between gribs"
+msgstr "Pagpapalit sa pagitan ng mga grib"
+#
+msgid "Interval"
+msgstr "Agwat"
+#
+msgid "IsoBar Unable to compute record magnitude"
+msgstr "IsoBar Hindi maaaring kwentahin ang halaga na nasa rekord"
+#
+msgid "IsoBars"
+msgstr "Mga IsoBar"
+#
+msgid "Isolated icon bar"
+msgstr "Nakahiwalay na bar ng aykon"
+#
+msgid "Knots"
+msgstr "Knots"
+#
+msgid "Kts"
+msgstr "Kts"
+#
+msgid "Load File Options"
+msgstr "Mga Pagpipilian sa Pagkarga ng Taklasan"
+#
+msgid "Load the Last Opened File"
+msgstr "Ikarga ang Huling Nabuksan na Taklasan"
+#
+msgid "Load the More Recent File in Directory"
+msgstr "Ikarga ang Mas Bagong Taklasan sa Direktoryo"
+#
+msgid "Local Time"
+msgstr "Lokal na Oras"
+#
+msgid "Loop Mode"
+msgstr "Moda ng Silo"
+#
+msgid "Loop Start"
+msgstr "Simulan ang Silo"
+#
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr ""
+"Pagkakamali sa Meil: Ang MAPI32.DLL ay hindi na-install o hindi balido sa "
+"kompyuter na ito!"
+#
+msgid "MB"
+msgstr "MB"
+#
+msgid "Mail"
+msgstr "Meil"
+#
+msgid "Mail To "
+msgstr "I-meil Kay "
+#
+msgid "Manual Selection"
+msgstr "Manwal na Pagpili"
+#
+msgid "Max"
+msgstr "Max"
+#
+msgid "Max Lat"
+msgstr "Max Lat"
+#
+msgid "Max Long"
+msgstr "Max Long"
+#
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Gitnang Presyon sa Lebel ng Dagat (MSLP)"
+#
+msgid "Menu"
+msgstr "Talaan"
+#
+msgid "Meters"
+msgstr "Metro"
+#
+msgid "MilliBars"
+msgstr "Milibars"
+#
+msgid "Millimeters"
+msgstr "Milimetro"
+#
+msgid "Min Lat"
+msgstr "Min Lat"
+#
+msgid "Min Long"
+msgstr "Min Long"
+#
+msgid "Minimum"
+msgstr "Pinakamababa"
+#
+msgid "Moving Grib"
+msgstr "Nililipat ang Grib"
+#
+msgid "MyLabel"
+msgstr ""
+#
+msgid "N"
+msgstr "H"
+#
+msgid "N/A"
+msgstr "N/A"
+#
+msgid "Next"
+msgstr "Kasunod"
+#
+msgid "No valid GRIB file"
+msgstr "Walang balidong talaksan na GRIB"
+#
+msgid "Now"
+msgstr "Ngayon"
+#
+msgid "Numbers"
+msgstr "Mga Numero"
+#
+msgid "Open File"
+msgstr "Buksan ang Taklasan"
+#
+msgid "Open a new file"
+msgstr "Magbukas ng bagong talaksan"
+#
+msgid "Overlay Transparency (%)"
+msgstr "Kalupkupan ng Aninaw (%)"
+#
+msgid "OverlayMap"
+msgstr "MapaNgKalupkupan"
+#
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr "MapaNgKalupkupan Hindi maaaring kwentahin ang halaga na nasa rekord"
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
+"Ang mga kalupkupan na hindi suportado ng hardwer ng grapika (Baldahin ang "
+"OpenGL)"
+#
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Ang mga kalupkupan ay masyadong malawak at hindi maaaring i-displey:"
+#
+msgid "Particle Map"
+msgstr "Katiting na Mapa"
+#
+msgid "Percentage"
+msgstr "Posyento"
+#
+msgid "Playback"
+msgstr "Mag-playback"
+#
+msgid "Playback Options"
+msgstr "Mga Pagpipilian sa pag-Playback"
+#
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr ""
+"Mangyaring mag-Zoom o mag-Iskala Palabas upang makita ang mga nakatagong "
+"kalupkop:"
+#
+msgid "Preferences"
+msgstr "Mga Preperensya"
+#
+msgid "Pressure"
+msgstr "Presyon"
+#
+msgid "Previous"
+msgstr "Nakaraan"
+#
+msgid "Profile"
+msgstr "Profile"
+#
+msgid "Proportional Arrow"
+msgstr "Proporsyonal na Palaso"
+#
+msgid "Rainfall"
+msgstr "Ulan"
+#
+msgid "Relat. Hum."
+msgstr "Relat. Hum."
+#
+msgid "Relative Humidity"
+msgstr "Kaukulang Kahalumigmigan"
+#
+msgid "Request"
+msgstr "Humiling"
+#
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+"Ang kahilingan ay hindi maaaring ipadala. Mangyaring pakiberipika sa mga "
+"parametro ng sistema ng iyong email.\n"
+"Kailangan mo ring tingnan ang talaan ng iyong taklasan.\n"
+"I-save o Ikansela upang matapos..."
+#
+msgid "Resolution"
+msgstr "Resolusyon"
+#
+msgid "S"
+msgstr "T"
+#
+msgid "Save"
+msgstr "I-save"
+#
+msgid "Sea Surface Temperature"
+msgstr "Pang-ibabaw na Temperatura ng Dagat"
+#
+msgid "Sea Temp"
+msgstr "Temperatura ng Dagat"
+#
+msgid "Sea Temp."
+msgstr "Temp. ng Dagat"
+#
+msgid "Sea Temperature"
+msgstr "Temperatura ng Dagat"
+#
+msgid "Sea Temperature(surf.)"
+msgstr "Temperatura ng Dagat(surf.)"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Temperatura ng Dagat o Hangin sa Pang-ibabaw na Lebel"
+#
+msgid "Select a GRIB file"
+msgstr "Pumili ng talaksan na GRIB"
+#
+msgid "Select geopotential altitude"
+msgstr "Pumili ng altitud na geopotensyal"
+#
+msgid "Select geoptential altitude"
+msgstr "Pumili ng altitud na geopotensyal"
+#
+msgid "Send"
+msgstr "Ipadala"
+#
+msgid "Sender eMail Address"
+msgstr "Adres ng eMail ng Nagpadala"
+#
+msgid "Settings"
+msgstr "Mga Pagkakatalaga"
+#
+msgid "Show Cursor Data"
+msgstr "Ipakita ang Datos sa Panturo"
+#
+msgid "Show data at cursor"
+msgstr "Ipakita ang datos at ang panturo"
+#
+msgid "Significant Wave Height"
+msgstr "Makabuluhang Taas ng Alon"
+#
+msgid "Single Arrow"
+msgstr "Iisang Palaso"
+#
+msgid "Slow"
+msgstr "Bagalan"
+#
+msgid "Small Size"
+msgstr "Maliit na Sukat"
+#
+msgid "Spacing"
+msgstr "Pagitan"
+#
+msgid "Spacing(pixels)"
+msgstr "Agwat(piksel)"
+#
+msgid "Speed"
+msgstr "Bilis"
+#
+msgid "Speed Control"
+msgstr "Kontrol ng Bilis"
+#
+msgid "Start Options"
+msgstr "Mga Pagpipilian sa Pagsisimula"
+#
+msgid "Start a request"
+msgstr "Simulan ang isang kahilingan"
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr "Simulan sa unang hula sa taklasang GRIB"
+#
+msgid "Start at the nearest forecast to current time"
+msgstr "Simulan sa pinakamalapit na hula kasalukuyang oras"
+#
+msgid "Start play back"
+msgstr "Simulan ang pag-playback"
+#
+msgid "Stop play back"
+msgstr "Ihinto ang pag-playback"
+#
+msgid "Surface Current Direction"
+msgstr "Pang-ibabaw na Direkyon ng Daloy"
+#
+msgid "Surface Current Speed"
+msgstr "Pang-ibabaw na Bilis ng Daloy"
+#
+msgid "Temp."
+msgstr "Temp."
+#
+msgid "Temperature"
+msgstr "Temperatura"
+#
+msgid ""
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr ""
+"Ang pagbabagong ito ay nangangailangan ng kompletong muling pagkarga.\n"
+"Ito ay ilalapat pagkatapos masara at mabuksang muli ang plugin"
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr "Ito ang iyong access ng pag-Login sa porum sa zyGrib"
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Ang pagpipiliang ito ay nagpapahiwatig na ikaw nagpapahintulot sa pag-aalis\n"
+"Huwag kalimutan na ang datos na nadispley ay hindi magiging tunay ngunit "
+"kukwentahing muli\n"
+"Ito ay maaaring makabawas sa katumpakan!"
+#
+msgid "Time Interval"
+msgstr "Agwat ng Oras"
+#
+msgid "Time Options"
+msgstr "Mga Pagpipilian sa Oras"
+#
+msgid "Time Range"
+msgstr "Saklaw ng Oras"
+#
+msgid "Time Slider"
+msgstr "Slider ng Oras"
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "Masyadong malaki ang taklasan! Ang limit sa zyGrib ay 2Mb!"
+#
+msgid "Too large area! Each side must be less than 180°!"
+msgstr ""
+#
+msgid "Too small area for this resolution!"
+msgstr "Masyadong maliit ang lugar para sa resolusyong ito!"
+#
+msgid "Top of Grib File"
+msgstr "Tuktok ng Taklasan na Grib"
+#
+msgid "Transparency for all Overlay Maps"
+msgstr "Aninaw ng lahat ng mga Mapa ng Kalupkupan"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid "Units"
+msgstr "Mga Yunit"
+#
+msgid "Use Always this Area"
+msgstr "Gamitin Lagi ang Lugar na ito"
+#
+msgid "Use Gradual Colors"
+msgstr "Gumamit ng Banayad na mga Kulay"
+#
+msgid "Use High Definition Graphics"
+msgstr "Gumamit ng mga Grapika na may Mataas na Resolusyon"
+#
+msgid "Valid Area and Continue"
+msgstr "Balidong Lugar at Magpatuloy"
+#
+msgid "W"
+msgstr "K"
+#
+msgid "Warning : Data at Geopotential Height"
+msgstr "Babala : Datos ng Taas ng Geopotensyal"
+#
+msgid "Warning!"
+msgstr "Babala!"
+#
+msgid "Waves"
+msgstr "Mga Alon"
+#
+msgid "Waves Direction"
+msgstr "Direksyon ng mga Alon"
+#
+msgid "Waves period"
+msgstr "Periyod ng mga Alon"
+#
+msgid "Waves,Dir"
+msgstr "Alon,Dir"
+#
+msgid "Waves,Hsig"
+msgstr "Alon,Hsig"
+#
+msgid "Waves,Per"
+msgstr "Alon,Per"
+#
+msgid "Weather table"
+msgstr "Talaan ng Panahon"
+#
+msgid "Wind"
+msgstr "Hangin"
+#
+msgid "Wind Direction"
+msgstr "Direksyon ng Hangin"
+#
+msgid "Wind Gust"
+msgstr "Bugso ng Hangin"
+#
+msgid "Wind Gust at"
+msgstr "Bugso ng Hangin sa"
+#
+msgid "Wind Speed"
+msgstr "Bilis ng Hangin"
+#
+msgid "Wind Speed in Bf"
+msgstr "Bilis ng Hangin sa Bf"
+#
+msgid "Wind,Dir"
+msgstr "Hangin,Dir"
+#
+msgid "Wind,Gust"
+msgstr "Hangin,Bugso"
+#
+msgid "Wind,Speed"
+msgstr "Hangin,Bilis"
+#
+msgid "Write and send eMail request"
+msgstr "Magsulat at ipadala ang kahilingan sa eMail"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Napili mong pahintulotan ang pag-aalis.\n"
+"Huwag kalimutan na ang datos na nadispley sa kasalukuyang oras ay hindi "
+"magiging tunay ngunit kukwentahing muli.\n"
+"Ito ay maaaring makabawas sa katumpakan!"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Napili mong pahintulotan ang pag-aalis.\n"
+"Huwag kalimutan na ang datos na nadispley ay hindi magiging tunay ngunit "
+"kukwentahing muli.\n"
+"Ito ay maaaring makabawas sa katumpakan!"
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5°x2.5°\n"
+"and the time intervall 12 hours."
+msgstr ""
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Gusto mo bang magdagdag ng bar ng titulo/panghila ng dyalogo\n"
+#
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Gusto mo ba alisin ang titulo/panghila na bar ng dyalogo\n"
+#
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Ang iyong kahilingan ay handa na. Ang isang email ay nakahanda na sa "
+"kapaligiran ng iyong email. \n"
+"Kailangan mong itong beripikahin at ipadala...\n"
+"I-save o Ikansela upang matapos...o Magpatuloy..."
+#
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Ang iyong kahilingan ay naipadala \n"
+"(kung ang iyong sistema ay may na-kompigyur na MTA at nakakapadala ng "
+"email).\n"
+"I-save o Ikansela upang matapos...o Magpatuloy..."
+#
+msgid "Zoom To Center"
+msgstr "Mag-zoom Sa Gitna"
+#
+msgid "Zoom to Center"
+msgstr "Mag-zoom sa Gitna"
+#
+msgid "Zoom to file center when opened"
+msgstr ""
+#
+msgid "at"
+msgstr "sa"
+#
+msgid "at Geopotential Height"
+msgstr "nasa Taas na Geopotensyal"
+#
+msgid "h"
+msgstr "o"
+#
+msgid "inHG"
+msgstr "inHG"
+#
+msgid "j/kg"
+msgstr "j/kg"
+#
+msgid "km/h"
+msgstr "km/h"
+#
+msgid "m/s"
+msgstr "m/s"
+#
+msgid "mmHG"
+msgstr "mmHG"
+#
+msgid "mn"
+msgstr "mn"
+#
+msgid "mph"
+msgstr "mph"
+#
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+"ang mga kalupkupan ay pipigilan kung hindi naka-north-up na nasa moda na DC "
+"(paganahin ang OpenGL)"
+#
+msgid "surface level"
+msgstr "pang-ibabaw na lebel"
+#
+msgid "zyGrib Code"
+msgstr "Kodigo sa zyGrib"
+#
+msgid "zyGrib Login"
+msgstr "Mag-login sa zyGrib"

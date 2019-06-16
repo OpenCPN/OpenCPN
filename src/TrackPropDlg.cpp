@@ -27,11 +27,13 @@
 #include "georef.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
-#include "routeprintout.h"
+#include "trackprintout.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
 #include "Track.h"
+#include "Route.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -46,7 +48,6 @@ extern Select              *pSelect;
 extern RouteManagerDialog  *pRouteManagerDialog;
 extern MyConfig            *pConfig;
 extern MyFrame             *gFrame;
-extern ChartCanvas         *cc1;
 extern PlugInManager       *g_pi_manager;
 extern OCPNPlatform        *g_Platform;
 
@@ -99,19 +100,12 @@ TrackPropDlg* TrackPropDlg::getInstance( wxWindow* parent, wxWindowID id, const 
 }
 
 TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
-  : wxDialog( parent, id, title, pos, size, style )
+  : wxFrame( parent, id, title, pos, size, style )
 {
-
-    long wstyle = style;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
-
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
-    SetWindowStyleFlag( wstyle );
-
+    SetWindowStyleFlag( style );
     
     m_scrolledWindowLinks = NULL;
     m_tDescription = NULL;
@@ -131,6 +125,7 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
     //Centre( );
 
+    
     // Connect Events
     m_sdbBtmBtnsSizerCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TrackPropDlg::OnCancelBtnClick ), NULL, this );
     m_sdbBtmBtnsSizerOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TrackPropDlg::OnOKBtnClick ), NULL, this );
@@ -143,19 +138,15 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler(TrackPropDlg::OnTrackPropRightClick), NULL, this );
     Connect( wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL, this );
 
-//    m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
-//    m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+     if(m_buttonAddLink)m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
+     if(m_toggleBtnEdit)m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,  wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+// 
+//     if(m_rbShowTimeUTC)m_rbShowTimeUTC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+//     if(m_rbShowTimePC)m_rbShowTimePC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+//     if(m_rbShowTimeLocal)m_rbShowTimeLocal->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    if(m_rbShowTimeUTC)m_rbShowTimeUTC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
-    if(m_rbShowTimePC)m_rbShowTimePC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
-    if(m_rbShowTimeLocal)m_rbShowTimeLocal->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    m_pLinkProp = new LinkPropImpl( this );
     m_pMyLinkList = NULL;
-    
-    
 }
 
 TrackPropDlg::~TrackPropDlg()
@@ -172,22 +163,16 @@ TrackPropDlg::~TrackPropDlg()
     Disconnect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler(TrackPropDlg::OnTrackPropRightClick), NULL, this );
     Disconnect( wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(TrackPropDlg::OnTrackPropMenuSelected), NULL, this );
 
-    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
-    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
-    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-//    m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
- //   m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-//            wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
+    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
+    Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
+    if(m_buttonAddLink)m_buttonAddLink->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
+    if(m_toggleBtnEdit)m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
 
     if(m_rbShowTimeUTC)m_rbShowTimeUTC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimePC)m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
     if(m_rbShowTimeLocal)m_rbShowTimeLocal->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
-    //delete m_menuLink;
     instanceFlag = false;
 }
 
@@ -222,6 +207,19 @@ void TrackPropDlg::RecalculateSize( void )
 
     Centre();
 
+}
+
+static void addColumns(wxListCtrl *lctrl, int dx) {
+    lctrl->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6);
+    lctrl->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10);
+    lctrl->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8);
+    lctrl->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    lctrl->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    // Width of timestamp is typically 19 characters: 'MM/DD/YYYY HH:MM:SS'.
+    lctrl->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 19);
+    lctrl->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
+
+    lctrl->SetMinSize(wxSize(-1, 50) );
 }
 
 void TrackPropDlg::CreateControlsCompact()
@@ -436,21 +434,9 @@ void TrackPropDlg::CreateControlsCompact()
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( itemlistWin, wxID_ANY, wxDefaultPosition, wxSize( 100, 500 ), flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
      // sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
@@ -499,6 +485,9 @@ void TrackPropDlg::CreateControlsCompact()
       m_sdbBtmBtnsSizerExport = NULL;
 //      m_sdbBtmBtnsSizerExport = new wxButton( this, wxID_ANY, _("Export"), wxDefaultPosition, wxDefaultSize, 0 );
 //      itemBoxSizerAux->Add( m_sdbBtmBtnsSizerExport, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+
+      m_buttonAddLink = NULL;
+      m_toggleBtnEdit = NULL;
 
       wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
       itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
@@ -704,21 +693,9 @@ void TrackPropDlg::CreateControls( void )
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( m_panel0, wxID_ANY, wxDefaultPosition, wxDefaultSize, flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
       sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
@@ -756,16 +733,13 @@ void TrackPropDlg::CreateControls( void )
 
       m_hyperlink1 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
       m_menuLink = new wxMenu();
-      wxMenuItem* m_menuItemEdit;
-      m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemEdit = new wxMenuItem( m_menuLink, ID_TRK_MENU_EDIT, wxString( _("Edit") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemEdit );
 
-      wxMenuItem* m_menuItemAdd;
-      m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemAdd = new wxMenuItem( m_menuLink, ID_TRK_MENU_ADD, wxString( _("Add new") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemAdd );
 
-      wxMenuItem* m_menuItemDelete;
-      m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
+      m_menuItemDelete = new wxMenuItem( m_menuLink, ID_TRK_MENU_DELETE, wxString( _("Delete") ) , wxEmptyString, wxITEM_NORMAL );
       m_menuLink->Append( m_menuItemDelete );
 
       m_hyperlink1->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( TrackPropDlg::m_hyperlink1OnContextMenu ), NULL, this );
@@ -778,21 +752,21 @@ void TrackPropDlg::CreateControls( void )
       bSizerLinks->Fit( m_scrolledWindowLinks );
       sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
 
-      wxBoxSizer* bSizer27;
-      bSizer27 = new wxBoxSizer( wxHORIZONTAL );
+      wxBoxSizer* bSizerLinkBtns;
+      bSizerLinkBtns = new wxBoxSizer( wxHORIZONTAL );
 
       m_buttonAddLink = new wxButton( m_panelAdvanced, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
-      bSizer27->Add( m_buttonAddLink, 0, wxALL, 5 );
+      bSizerLinkBtns->Add( m_buttonAddLink, 0, wxALL, 5 );
 
       m_toggleBtnEdit = new wxToggleButton( m_panelAdvanced, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize, 0 );
-      bSizer27->Add( m_toggleBtnEdit, 0, wxALL, 5 );
+      bSizerLinkBtns->Add( m_toggleBtnEdit, 0, wxALL, 5 );
 
       m_staticTextEditEnabled = new wxStaticText( m_panelAdvanced, wxID_ANY, _("Links are opened in the default browser."), wxDefaultPosition, wxDefaultSize, 0 );
       //m_staticTextEditEnabled->Wrap( -1 );
-      bSizer27->Add( m_staticTextEditEnabled, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+      bSizerLinkBtns->Add( m_staticTextEditEnabled, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-      sbSizerLinks->Add( bSizer27, 0, wxEXPAND, 5 );
+      sbSizerLinks->Add( bSizerLinkBtns, 0, wxEXPAND, 5 );
 
 
       bSizerAdvanced->Add( sbSizerLinks, 1, wxEXPAND, 5 );
@@ -834,7 +808,7 @@ void TrackPropDlg::CreateControls( void )
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerSplit, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       m_sdbBtmBtnsSizerSplit->Enable( false );
 
-      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend Route"),
+      m_sdbBtmBtnsSizerExtend = new wxButton( this, wxID_ANY, _("Extend track"),
                                      wxDefaultPosition, wxDefaultSize, 0 );
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerExtend, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -851,11 +825,11 @@ void TrackPropDlg::CreateControls( void )
 
       m_sdbBtmBtnsSizerCancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_sdbBtmBtnsSizerCancel, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
+      itemBoxSizer16->Add( m_sdbBtmBtnsSizerCancel, 0, wxALIGN_BOTTOM | wxALL, 5 );
 
       m_sdbBtmBtnsSizerOK = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
+      itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_BOTTOM | wxALL, 5 );
       m_sdbBtmBtnsSizerOK->SetDefault();
 
 
@@ -865,7 +839,6 @@ void TrackPropDlg::CreateControls( void )
       ((wxWindowBase *)m_stFrom)->GetSize( &w2, &h );
       ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
       ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-
 
       m_panelBasic->SetScrollRate(5, 5);
       m_panelAdvanced->SetScrollRate(5, 5);
@@ -952,7 +925,7 @@ bool TrackPropDlg::UpdateProperties()
     if(m_scrolledWindowLinks){
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowListNode *node = kids.Item(i);
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -989,7 +962,7 @@ bool TrackPropDlg::UpdateProperties()
         bSizerLinks->Fit( m_scrolledWindowLinks );
     }
 
-    m_tName->SetValue( m_pTrack->m_TrackNameString );
+    m_tName->SetValue( m_pTrack->GetName() );
     m_tFrom->SetValue( m_pTrack->m_TrackStartString );
     m_tTo->SetValue( m_pTrack->m_TrackEndString );
     if(m_tDescription)m_tDescription->SetValue( m_pTrack->m_TrackDescription );
@@ -1105,11 +1078,15 @@ bool TrackPropDlg::IsThisTrackExtendable()
 {
     m_pExtendTrack = NULL;
     m_pExtendPoint = NULL;
-    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) return false;
+    if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) {
+        return false;
+    }
 
     TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
-    if( !pLastPoint->GetCreateTime().IsValid() ) return false;
-
+    if( !pLastPoint->GetCreateTime().IsValid() ) {
+        return false;
+    }
+    
     wxTrackListNode *track_node = pTrackList->GetFirst();
     while( track_node ) {
         Track *ptrack = track_node->GetData();
@@ -1128,18 +1105,22 @@ bool TrackPropDlg::IsThisTrackExtendable()
         }
         track_node = track_node->GetNext();                         // next track
     }
-    if( m_pExtendTrack ) return ( !m_pExtendTrack->m_bIsInLayer );
-    else
+    if( m_pExtendTrack ) {
+        return ( !m_pExtendTrack->m_bIsInLayer );
+    } else {
         return false;
+    }
 }
 
 void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
 {
-    TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
+    TrackPoint *pFirstPoint = m_pTrack->GetPoint( 0 );
 
     if( IsThisTrackExtendable() ) {
-        int begin = 1;
-        if( pLastPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) begin = 2;
+        int begin = 0;
+        if( pFirstPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) {
+            begin = 1;
+        }
         pSelect->DeleteAllSelectableTrackSegments( m_pExtendTrack );
         m_pExtendTrack->Clone( m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus") );
         pSelect->AddAllSelectableTrackSegments( m_pExtendTrack );
@@ -1149,8 +1130,9 @@ void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( m_pExtendTrack );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
@@ -1158,21 +1140,20 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
 {
     m_sdbBtmBtnsSizerSplit->Enable( false );
 
-    if( m_pTrack->m_bIsInLayer )
+    if( m_pTrack->m_bIsInLayer ) {
         return;
+    }
 
     if( ( m_nSelected > 1 ) && ( m_nSelected < m_pTrack->GetnPoints() ) ) {
         Track *pHead = new Track();
         Track *pTail = new Track();
-        pHead->Clone( m_pTrack, 1, m_nSelected, _("_A") );
-        pTail->Clone( m_pTrack, m_nSelected, m_pTrack->GetnPoints(), _("_B") );
+        pHead->Clone( m_pTrack, 0, m_nSelected - 1, _("_A") );
+        pTail->Clone( m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B") );
         pTrackList->Append( pHead );
         pConfig->AddNewTrack( pHead );
-//        pHead->RebuildGUIDList();
 
         pTrackList->Append( pTail );
         pConfig->AddNewTrack( pTail );
-//        pTail->RebuildGUIDList();
 
         pConfig->DeleteConfigTrack( m_pTrack );
 
@@ -1184,8 +1165,9 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
         SetTrackAndUpdate( pTail );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
             pRouteManagerDialog->UpdateTrkListCtrl();
+        }
     }
 }
 
@@ -1196,7 +1178,7 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
     wxString csvString;
 
     csvString << this->GetTitle() << eol
-            << _("Name") << tab << m_pTrack->m_TrackNameString << eol
+            << _("Name") << tab << m_pTrack->GetName() << eol
             << _("Depart From") << tab << m_pTrack->m_TrackStartString << eol
             << _("Destination") << tab << m_pTrack->m_TrackEndString << eol
             << _("Total distance") << tab << m_tTotDistance->GetValue() << eol
@@ -1237,40 +1219,12 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
 
 void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
 {
-    //  We need to walk the virtual list to fill in the courses and distances
-    for ( int n = 0; n < m_pTrack->GetnPoints(); n++ ) {
-        TrackPoint  *this_point = m_pTrack->GetPoint(n);
-        TrackPoint  *prev_point = n > 0 ? m_pTrack->GetPoint(n-1) : NULL;
-        
-        double gt_brg, gt_leg_dist;
-        double slat, slon;
-        if( n == 0 )
-        {
-            slat = gLat;
-            slon = gLon;
+    TrackPrintSelection* dlg = new TrackPrintSelection( this, m_pTrack, m_lcPoints );
+    DimeControl( dlg );
+    dlg->ShowWindowModalThenDo([this,dlg](int retcode){
+        if ( retcode == wxID_OK ) {
         }
-        else  if( prev_point )
-        {
-            slat = prev_point->m_lat;
-            slon = prev_point->m_lon;
-        }
-         else
-         {
-             slat = gLat;
-             slon = gLon;
-         }
-        
-        DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
-        if(prev_point){
-            this_point->m_routeprop_distance = gt_leg_dist;
-            prev_point->m_routeprop_course = gt_brg;
-        }
-        
-    }
-    
-        
-    RoutePrintSelection dlg( this, m_pTrack );
-    dlg.ShowModal();
+    });
 }
 
 void TrackPropDlg::OnTrackPropRightClick( wxListEvent &event )
@@ -1305,7 +1259,7 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
                 m_nSelected = selected_no + 1;
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 #ifdef __WXMSW__            
             if(m_lcPoints)
                 m_lcPoints->SetFocus();
@@ -1338,20 +1292,39 @@ void TrackPropDlg::OnExportBtnClick( wxCommandEvent& event )
     wxString suggested_name = _("track");
     TrackList list;
     list.Append( m_pTrack );
-    if( m_pTrack->m_TrackNameString != wxEmptyString )
-        suggested_name = m_pTrack->m_TrackNameString;
-    pConfig->ExportGPXTracks( this, &list, suggested_name );
+    if( m_pTrack->GetName() != wxEmptyString )
+        suggested_name = m_pTrack->GetName();
+    ExportGPXTracks( this, &list, suggested_name );
 }
 
 void TrackPropDlg::m_hyperlinkContextMenu( wxMouseEvent &event )
 {
+
     m_pEditedLink = (wxHyperlinkCtrl*) event.GetEventObject();
+    Connect(  wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction) (wxEventFunction) &TrackPropDlg::PopupMenuHandler );
     m_scrolledWindowLinks->PopupMenu( m_menuLink,
             m_pEditedLink->GetPosition().x + event.GetPosition().x,
             m_pEditedLink->GetPosition().y + event.GetPosition().y );
-
 }
 
+void TrackPropDlg::PopupMenuHandler( wxCommandEvent& event )
+{
+    switch( event.GetId() ) {
+        case ID_TRK_MENU_ADD:
+            OnAddLink(event);
+            break;
+        case ID_TRK_MENU_EDIT:
+            OnEditLink(event);
+            break;
+        case ID_TRK_MENU_DELETE:
+            OnDeleteLink(event);
+            break;
+        default:
+            break;
+
+    }
+}
+ 
 void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 {
     wxHyperlinkListNode* nodeToDelete = NULL;
@@ -1360,7 +1333,7 @@ void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
 
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
 
         if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -1402,78 +1375,89 @@ void TrackPropDlg::OnDeleteLink( wxCommandEvent& event )
     m_scrolledWindowLinks->InvalidateBestSize();
     m_scrolledWindowLinks->Layout();
     sbSizerLinks->Layout();
-    event.Skip();
+    //event.Skip();
 }
 
 void TrackPropDlg::OnEditLink( wxCommandEvent& event )
 {
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
-    m_pLinkProp->m_textCtrlLinkDescription->SetValue( findlabel );
-    m_pLinkProp->m_textCtrlLinkUrl->SetValue( findurl );
-    if( m_pLinkProp->ShowModal() == wxID_OK ) {
-        int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-        HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
-//            int len = 0;
-        if( NbrOfLinks > 0 ) {
-            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
-            while( linknode ) {
-                Hyperlink *link = linknode->GetData();
-                wxString Link = link->Link;
-                wxString Descr = link->DescrText;
-                if( Link == findurl
-                        && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) {
-                    link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-                    link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-                    wxHyperlinkCtrl* h =
-                            (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel(
-                                    findlabel );
-                    if( h ) {
-                        h->SetLabel( m_pLinkProp->m_textCtrlLinkDescription->GetValue() );
-                        h->SetURL( m_pLinkProp->m_textCtrlLinkUrl->GetValue() );
+    
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( findlabel );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( findurl );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg,findurl,findlabel](int retcode){
+        if ( retcode == wxID_OK ) {
+            int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
+            HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
+    //            int len = 0;
+            if( NbrOfLinks > 0 ) {
+                wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+                while( linknode ) {
+                    Hyperlink *link = linknode->GetData();
+                    wxString Link = link->Link;
+                    wxString Descr = link->DescrText;
+                    if( Link == findurl
+                            && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) {
+                        link->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+                        link->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+                        wxHyperlinkCtrl* h =
+                                (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel(
+                                        findlabel );
+                        if( h ) {
+                            h->SetLabel( LinkPropDlg->m_textCtrlLinkDescription->GetValue() );
+                            h->SetURL( LinkPropDlg->m_textCtrlLinkUrl->GetValue() );
+                        }
                     }
+                    linknode = linknode->GetNext();
                 }
-                linknode = linknode->GetNext();
             }
-        }
 
-        m_scrolledWindowLinks->InvalidateBestSize();
-        m_scrolledWindowLinks->Layout();
-        sbSizerLinks->Layout();
-        event.Skip();
-    }
-    event.Skip();
+            m_scrolledWindowLinks->InvalidateBestSize();
+            m_scrolledWindowLinks->Layout();
+            sbSizerLinks->Layout();
+        }
+    });
+    //event.Skip();
 }
 
 void TrackPropDlg::OnAddLink( wxCommandEvent& event )
 {
-    m_pLinkProp->m_textCtrlLinkDescription->SetValue( wxEmptyString );
-    m_pLinkProp->m_textCtrlLinkUrl->SetValue( wxEmptyString );
-    if( m_pLinkProp->ShowModal() == wxID_OK ) {
-        wxString desc = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-        if( desc == wxEmptyString ) desc = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-        wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
-                m_pLinkProp->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
-                wxHL_DEFAULT_STYLE );
-        ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
-                wxHyperlinkEventHandler( TrackPropDlg::OnHyperLinkClick ), NULL, this );
-        ctrl->Connect( wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler( TrackPropDlg::m_hyperlinkContextMenu ), NULL, this );
+    LinkPropImpl* LinkPropDlg = new LinkPropImpl( this );
+    LinkPropDlg->m_textCtrlLinkDescription->SetValue( wxEmptyString );
+    LinkPropDlg->m_textCtrlLinkUrl->SetValue( wxEmptyString );
+    DimeControl( LinkPropDlg );
+    LinkPropDlg->ShowWindowModalThenDo([this,LinkPropDlg](int retcode){
+        if ( retcode == wxID_OK ) {
+            wxString desc = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            if( desc == wxEmptyString ) desc = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
+                    LinkPropDlg->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
+                    wxHL_DEFAULT_STYLE );
+            ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
+                    wxHyperlinkEventHandler( TrackPropDlg::OnHyperLinkClick ), NULL, this );
+            ctrl->Connect( wxEVT_RIGHT_DOWN,
+                    wxMouseEventHandler( TrackPropDlg::m_hyperlinkContextMenu ), NULL, this );
 
-        bSizerLinks->Add( ctrl, 0, wxALL, 5 );
-        bSizerLinks->Fit( m_scrolledWindowLinks );
-        this->Fit();
+            bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+            bSizerLinks->Fit( m_scrolledWindowLinks );
+            //this->Fit();
 
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
-        h->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-        h->LType = wxEmptyString;
-        m_pTrack->m_HyperlinkList->Append( h );
-    }
-
+            Hyperlink* h = new Hyperlink();
+            h->DescrText = LinkPropDlg->m_textCtrlLinkDescription->GetValue();
+            h->Link = LinkPropDlg->m_textCtrlLinkUrl->GetValue();
+            h->LType = wxEmptyString;
+            m_pTrack->m_HyperlinkList->Append( h );
+        }
+    });
+//    sbSizerLinks->Layout();
+    
+    m_scrolledWindowLinks->InvalidateBestSize();
+    m_scrolledWindowLinks->Layout();
     sbSizerLinks->Layout();
 
-    event.Skip();
+    //event.Skip();
 }
 
 void TrackPropDlg::OnEditLinkToggle( wxCommandEvent& event )
@@ -1552,7 +1536,7 @@ bool TrackPropDlg::SaveChanges( void )
 {
     if( m_pTrack && !m_pTrack->m_bIsInLayer ) {
         //  Get User input Text Fields
-        m_pTrack->m_TrackNameString = m_tName->GetValue();
+        m_pTrack->SetName(m_tName->GetValue());
         m_pTrack->m_TrackStartString = m_tFrom->GetValue();
         m_pTrack->m_TrackEndString = m_tTo->GetValue();
         if(m_tDescription) m_pTrack->m_TrackDescription = m_tDescription->GetValue();
@@ -1571,7 +1555,7 @@ bool TrackPropDlg::SaveChanges( void )
     if( m_pTrack && m_pTrack->IsRunning() )
     {
         wxJSONValue v;
-        v[_T("Name")] =  m_pTrack->m_TrackNameString;
+        v[_T("Name")] =  m_pTrack->GetName();
         v[_T("GUID")] =  m_pTrack->m_GUID;
         wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
@@ -1608,8 +1592,8 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateTrkListCtrl();
 
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 }
@@ -1632,9 +1616,9 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
         m_pTrack->ClearHighlights();
         
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
-
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
+    
     event.Skip();
 }
 
@@ -1676,15 +1660,10 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
         slat = gLat;
         slon = gLon;
     }
-    else if( prev_point )
+    else
     {
         slat = prev_point->m_lat;
         slon = prev_point->m_lon;
-    }
-    else
-    {
-        slat = gLat;
-        slon = gLon;
     }
 
     switch( column )
@@ -1700,13 +1679,11 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
 
             ret.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( gt_leg_dist ) );
-            this_point->m_routeprop_distance = gt_leg_dist;
             break;
 
         case 2:
             DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
             ret.Printf( _T("%03.0f \u00B0T"), gt_brg );
-            this_point->m_routeprop_course = gt_brg;
             break;
 
         case 3:

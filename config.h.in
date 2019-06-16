@@ -1,0 +1,21 @@
+#ifndef OCPN_CONFIG_H
+#define OCPN_CONFIG_H
+
+#cmakedefine OPENGL_FOUND
+#cmakedefine HAVE_PORTAUDIO
+#cmakedefine HAVE_SYSTEM_CMD_SOUND
+#cmakedefine HAVE_SNDFILE
+
+// Command line to play a sound in system(3), like "aplay %s".
+#define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}
+
+// Flag for ancient compilers without C++11 support
+#cmakedefine COMPILER_SUPPORTS_CXX11
+
+#define VERSION_MAJOR ${VERSION_MAJOR}
+#define VERSION_MINOR ${VERSION_MINOR}
+#define VERSION_PATCH ${VERSION_PATCH}
+#define VERSION_DATE "${VERSION_DATE}"
+#define VERSION_FULL "${PACKAGE_VERSION}"
+
+#endif  // OCPN_CONFIG_H

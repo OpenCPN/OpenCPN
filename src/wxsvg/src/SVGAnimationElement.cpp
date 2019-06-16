@@ -3,7 +3,7 @@
 // Purpose:     Implementation of wxSVGAnimationElement
 // Author:      Alex Thuering
 // Created:     2005/05/10
-// RCS-ID:      $Id: SVGAnimationElement.cpp,v 1.8 2016/01/29 16:40:01 ntalex Exp $
+// RCS-ID:      $Id: SVGAnimationElement.cpp,v 1.10 2016/05/16 21:08:52 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ wxString wxSVGAnimationElement::GetCustomAttribute(const wxString& name) const {
 	if (name == wxT("repeatCount"))
 		return m_repeatCount < 0 ? wxT("indefinite") : wxString::Format(wxT("%d"), m_repeatCount);
 	else if (name == wxT("values"))
-		return m_values.GetValueAsString();
+		return m_values.GetValueAsString(wxT(';'));
 	return wxT("");
 }
 
@@ -66,8 +66,8 @@ wxSvgXmlAttrHash wxSVGAnimationElement::GetCustomAttributes() const {
 }
 
 wxSVGElement* wxSVGAnimationElement::GetTargetElement() const {
-	if (m_href.length() && GetOwnerSVGElement()) {
-		return (wxSVGElement*) GetOwnerSVGElement()->GetElementById(m_href);
+	if (m_href.length() && m_href.GetChar(0) == wxT('#') && GetOwnerSVGElement()) {
+		return (wxSVGElement*) GetOwnerSVGElement()->GetElementById(m_href.substr(1));
 	}
 	return (wxSVGElement*) GetParent();
 }

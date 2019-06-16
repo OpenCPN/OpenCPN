@@ -26,6 +26,9 @@
 #define __GLCHARTCANVAS_H__
 
 #include <wx/glcanvas.h>
+
+#include "dychart.h"
+
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
 #include "LLRegion.h"
@@ -39,12 +42,51 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
+
 class glTexFactory;
+class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
 #define GESTURE_FINISH_TIMER 78336
 #define TEX_FADE_TIMER 78337
+
+typedef class{
+  public:
+    wxString Renderer;
+    GLenum TextureRectangleFormat;
+    
+    bool bOldIntel;
+    bool bCanDoVBO;
+    bool bCanDoFBO;
+    
+    //      Vertex Buffer Object (VBO) support
+    PFNGLGENBUFFERSPROC                 m_glGenBuffers;
+    PFNGLBINDBUFFERPROC                 m_glBindBuffer;
+    PFNGLBUFFERDATAPROC                 m_glBufferData;
+    PFNGLDELETEBUFFERSPROC              m_glDeleteBuffers;
+
+    //      Frame Buffer Object (FBO) support
+    PFNGLGENFRAMEBUFFERSEXTPROC         m_glGenFramebuffers;
+    PFNGLGENRENDERBUFFERSEXTPROC        m_glGenRenderbuffers;
+    PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    m_glFramebufferTexture2D;
+    PFNGLBINDFRAMEBUFFEREXTPROC         m_glBindFramebuffer;
+    PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC m_glFramebufferRenderbuffer;
+    PFNGLRENDERBUFFERSTORAGEEXTPROC     m_glRenderbufferStorage;
+    PFNGLBINDRENDERBUFFEREXTPROC        m_glBindRenderbuffer;
+    PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  m_glCheckFramebufferStatus;
+    PFNGLDELETEFRAMEBUFFERSEXTPROC      m_glDeleteFramebuffers;
+    PFNGLDELETERENDERBUFFERSEXTPROC     m_glDeleteRenderbuffers;
+    
+    PFNGLCOMPRESSEDTEXIMAGE2DPROC       m_glCompressedTexImage2D;
+    PFNGLGETCOMPRESSEDTEXIMAGEPROC      m_glGetCompressedTexImage;
+
+    
+}OCPN_GLCaps;
+
+void GetglEntryPoints( OCPN_GLCaps *pcaps );
+GLboolean QueryExtension( const char *extName );
+
 
 class ocpnGLOptions
 {
@@ -57,7 +99,20 @@ public:
 
     int m_iTextureDimension;
     int m_iTextureMemorySize;
+    
+    bool m_GLPolygonSmoothing;
+    bool m_GLLineSmoothing;
 };
+
+
+class glTestCanvas : public wxGLCanvas
+{
+public:
+    glTestCanvas(wxWindow *parent);
+    ~glTestCanvas() {};
+
+};
+
 
 class ocpnDC;
 class emboss_data;
@@ -104,7 +159,9 @@ public:
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
     void FastZoom(float factor, float cp_x, float cp_y, float post_x, float post_y);
-    void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
+//    void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
+//    void FastZoom(float factor);
+    void RenderCanvasBackingChart( ocpnDC &dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
@@ -119,7 +176,7 @@ public:
     wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
-    static void Invalidate();
+    void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
     
     void DrawGLOverLayObjects(void);
@@ -146,19 +203,23 @@ public:
     int viewport[4];
     double mvmatrix[16], projmatrix[16];
 
+///v5 moved to public    
+    void SetupOpenGL();
+
 protected:
+    void RenderGLAlertMessage();
+
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
     
     void BuildFBO();
     bool buildFBOSize(int fboSize);
-    void SetupOpenGL();
     
     void configureShaders( ViewPort &vp);
     
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
-    void RenderNoDTA(ViewPort &vp, const LLRegion &region);
+    void RenderNoDTA(ViewPort &vp, const LLRegion &region, int transparency = 255);
     void RenderNoDTA(ViewPort &vp, ChartBase *chart);
     void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 
@@ -196,7 +257,7 @@ protected:
     
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
-
+    
     bool        m_b_paint_enable;
     int         m_in_glpaint;
 
@@ -270,6 +331,8 @@ protected:
     int          m_tideTexHeight;
     int          m_currentTexWidth;
     int          m_currentTexHeight;
+    
+    ChartCanvas *m_pParentCanvas;
     
     DECLARE_EVENT_TABLE()
 };

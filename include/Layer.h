@@ -39,18 +39,19 @@ public:
       void SetVisibleOnChart(bool viz = true){ m_bIsVisibleOnChart = viz; }
       bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
       void SetVisibleOnListing(bool viz = true){ m_bIsVisibleOnListing = viz; }
-      bool HasVisibleNames() { return m_bHasVisibleNames; }
-      void SetVisibleNames(bool viz = true){ m_bHasVisibleNames = viz; }
+      wxCheckBoxState HasVisibleNames() { return m_bHasVisibleNames; }
+      void SetVisibleNames(wxCheckBoxState viz = wxCHK_UNDETERMINED){ m_bHasVisibleNames = viz; }
 
       bool m_bIsVisibleOnChart;
       bool m_bIsVisibleOnListing;
-      bool m_bHasVisibleNames;
+      wxCheckBoxState m_bHasVisibleNames;
       long m_NoOfItems;
       int m_LayerID;
-
+    
       wxString          m_LayerName;
       wxString          m_LayerFileName;
       wxString          m_LayerDescription;
+      wxString          m_LayerType;
       wxDateTime        m_CreateTime;
 };
 

@@ -972,12 +972,15 @@ bool TiXmlDocument::LoadFile( const char* _filename, TiXmlEncoding encoding )
 
 	if ( file )
 	{
+            //qDebug() << "FILEYES";
 		bool result = LoadFile( file, encoding );
 		fclose( file );
 		return result;
 	}
 	else
 	{
+                //qDebug() << "FILENO";
+
 		SetError( TIXML_ERROR_OPENING_FILE, 0, 0, TIXML_ENCODING_UNKNOWN );
 		return false;
 	}

@@ -445,7 +445,8 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
             psd->zone_offset = zone_offset;
 
             // Get units
-            strncpy (psd->unit, get_level_units (ptiderec->level_units), 40);
+            strncpy (psd->unit, get_level_units (ptiderec->level_units), 40 - 1);
+            psd->unit[40 -1] = '\0';
 
             psd->have_BOGUS = (findunit(psd->unit) != -1) && (known_units[findunit(psd->unit)].type == BOGUS);
 
@@ -460,8 +461,10 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
                 strncpy (psd->units_abbrv, known_units[unit_c].abbrv, sizeof(psd->units_abbrv)-1);
             }
             else {
-                strncpy (psd->units_conv, psd->unit, sizeof(psd->units_conv)-1);
-                strncpy (psd->units_abbrv, psd->unit, sizeof(psd->units_abbrv)-1);
+                strncpy (psd->units_conv, psd->unit, 40 - 1);
+                psd->units_conv[40 - 1] = '\0';
+                strncpy (psd->units_abbrv, psd->unit, 20 - 1);
+                psd->units_abbrv[20 - 1] = '\0';
             }
 
 
@@ -544,7 +547,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
 
 IDX_entry *TCDS_Binary_Harmonic::GetIndexEntry(int n_index)
 {
-    return &m_IDX_array.Item(n_index);
+    return &m_IDX_array[n_index];
 }
 
 
@@ -552,7 +555,9 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
 {
     // Find the indicated Master station
     if(!strlen(pIDX->IDX_reference_name)) {
-        strncpy(pIDX->IDX_reference_name, get_station (pIDX->IDX_ref_dbIndex), MAXNAMELEN );
+        strncpy(pIDX->IDX_reference_name, get_station (pIDX->IDX_ref_dbIndex),
+                MAXNAMELEN - 1 );
+        pIDX->IDX_reference_name[MAXNAMELEN - 1] = '\0';
 
 //        TIDE_RECORD *ptiderec = (TIDE_RECORD *)calloc(sizeof(TIDE_RECORD), 1);
 //        read_tide_record (pIDX->IDX_ref_dbIndex, ptiderec);

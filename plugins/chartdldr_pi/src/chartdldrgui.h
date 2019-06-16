@@ -130,7 +130,7 @@ class ChartDldrPanel : public wxPanel
                 
 		ChartDldrPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL );
 		~ChartDldrPanel();
-                ChartDldrPanel() { }
+//                ChartDldrPanel() { }
                 
                 virtual void OnContextMenu( wxMouseEvent& event ) { event.Skip(); }
                 
@@ -153,10 +153,12 @@ class ChartDldrPrefsDlg : public wxDialog
 		wxStdDialogButtonSizer* m_sdbSizerBtns;
 		wxButton* m_sdbSizerBtnsOK;
 		wxButton* m_sdbSizerBtnsCancel;
-                wxButton* m_buttonChartDirectory;
-                wxTextCtrl* m_tcDefaultDir;
-                
-                void OnDirSelClick( wxCommandEvent& event );
+        wxButton* m_buttonChartDirectory;
+        wxButton* m_buttonDownloadMasterCatalog;
+        wxTextCtrl* m_tcDefaultDir;
+    
+        void OnDirSelClick( wxCommandEvent& event );
+        void OnDownloadMasterCatalog( wxCommandEvent& event );
                 
                 
 		// Virtual event handlers, overide them in your derived class

@@ -40,7 +40,7 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
-
+extern bool g_bPluginHandleAutopilotRoute;
 
 //----------------------------------------------------------------------------
 //    forward class declarations
@@ -82,7 +82,8 @@ public:
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
-
+      void RemovePointFromRoute( RoutePoint* point, Route* route, ChartCanvas *cc );
+          
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);
@@ -191,11 +192,11 @@ public:
       void ReloadRoutepointIcons();
       
       bool DoesIconExist(const wxString & icon_key) const;
-      wxBitmap GetIconBitmapForList(int index);
+      wxBitmap GetIconBitmapForList(int index, int height);
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);
 
-      wxImageList *Getpmarkicon_image_list( double scale = 1.0 );
+      wxImageList *Getpmarkicon_image_list( int nominal_height );
       
       bool AddRoutePoint(RoutePoint *prp);
       bool RemoveRoutePoint(RoutePoint *prp);
@@ -223,6 +224,7 @@ private:
       SortedArrayOfMarkIcon    *m_pExtendedIconArray;
       
       int         m_bitmapSizeForList;
+      int         m_iconListHeight;
       ColorScheme m_cs;
 };
 

@@ -20,20 +20,20 @@ SET(TITLE_NAME ChartDownloader)
 SET(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "2")
+SET(VERSION_MINOR "3")
+SET(VERSION_PATCH "0")
+SET(VERSION_DATE "2018-01-13")
+
+IF( NOT CMAKE_BUILD_TYPE )
+  SET( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+       FORCE )
+ENDIF( NOT CMAKE_BUILD_TYPE )
+
+MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_MACOSX_RPATH "ON")
-
-# Definitions
-add_definitions (
--D_FILE_OFFSET_BITS=64
--D_LARGEFILE_SOURCE
--DLIBUNRAR_BUILD
--DRARDLL
--DUNRAR
--DSILENT
-)
 
 INCLUDE("cmake/PluginConfigure.cmake")
 
@@ -49,96 +49,158 @@ SET(SRC_CHARTDLDR
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
+            )
             
-            src/unrar/rar.cpp
-            src/unrar/strlist.cpp
-            src/unrar/strfn.cpp
-            src/unrar/pathfn.cpp
-            src/unrar/smallfn.cpp
-            src/unrar/global.cpp
-            src/unrar/file.cpp
-            src/unrar/filefn.cpp
-            src/unrar/filcreat.cpp
-            src/unrar/archive.cpp
-            src/unrar/arcread.cpp
-            src/unrar/unicode.cpp
-            src/unrar/system.cpp
-            src/unrar/isnt.cpp
-            src/unrar/crypt.cpp
-            src/unrar/crc.cpp
-            src/unrar/rawread.cpp
-            src/unrar/encname.cpp
-            src/unrar/resource.cpp
-            src/unrar/match.cpp
-            src/unrar/timefn.cpp
-            src/unrar/rdwrfn.cpp
-            src/unrar/consio.cpp
-            src/unrar/options.cpp
-            src/unrar/errhnd.cpp
-            src/unrar/rarvm.cpp
-            src/unrar/secpassword.cpp
-            src/unrar/rijndael.cpp
-            src/unrar/getbits.cpp
-            src/unrar/sha1.cpp
-            src/unrar/sha256.cpp
-            src/unrar/blake2s.cpp
-            src/unrar/hash.cpp
-            src/unrar/extinfo.cpp
-            src/unrar/extract.cpp
-            src/unrar/volume.cpp
-            src/unrar/list.cpp
-            src/unrar/find.cpp
-            src/unrar/unpack.cpp
-            src/unrar/headers.cpp
-            src/unrar/threadpool.cpp
-            src/unrar/rs16.cpp
-            src/unrar/cmddata.cpp
-            src/unrar/ui.cpp
-            src/unrar/filestr.cpp
-            src/unrar/scantree.cpp
-            #src/unrar/dll.cpp
-            src/unrar/qopen.cpp
-        )
-
-
 IF(QT_ANDROID)
-           SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
-           SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
 ENDIF(QT_ANDROID)
 
+SET(SRC_UNARR
+    src/unarr/common/conv.c
+    src/unarr/common/crc32.c
+    src/unarr/common/custalloc.c
+    src/unarr/common/allocator.h
+    src/unarr/common/unarr.c
+    src/unarr/common/unarr-imp.h
+    src/unarr/common/stream.c
+    src/unarr/_7z/_7z.h
+    src/unarr/_7z/_7z.c
+    src/unarr/lzmasdk/Ppmd7Dec.c
+    src/unarr/lzmasdk/Ppmd8.h
+    src/unarr/lzmasdk/7zTypes.h
+    src/unarr/lzmasdk/Precomp.h
+    src/unarr/lzmasdk/CpuArch.h
+    src/unarr/lzmasdk/Ppmd7.c
+    src/unarr/lzmasdk/LzmaDec.c
+    src/unarr/lzmasdk/Ppmd8.c
+    src/unarr/lzmasdk/Ppmd.h
+    src/unarr/lzmasdk/Ppmd7.h
+    src/unarr/lzmasdk/CpuArch.c
+    src/unarr/lzmasdk/LzmaDec.h
+    src/unarr/lzmasdk/Ppmd8Dec.c
+    src/unarr/rar/filter-rar.c
+    src/unarr/rar/huffman-rar.c
+    src/unarr/rar/parse-rar.c
+    src/unarr/rar/rar.h
+    src/unarr/rar/rarvm.c
+    src/unarr/rar/uncompress-rar.c
+    src/unarr/rar/rarvm.h
+    src/unarr/rar/lzss.h
+    src/unarr/rar/rar.c
+    src/unarr/unarr.h
+    src/unarr/tar/tar.h
+    src/unarr/tar/parse-tar.c
+    src/unarr/tar/tar.c
+    src/unarr/zip/uncompress-zip.c
+    src/unarr/zip/inflate.c
+    src/unarr/zip/zip.c
+    src/unarr/zip/parse-zip.c
+    src/unarr/zip/zip.h
+    src/unarr/zip/inflate.h
+)
 
-IF(UNIX)
- INCLUDE("cmake/FindTinyXML.cmake")
- FIND_PACKAGE(TinyXML QUIET)
-ENDIF(UNIX)
 
-INCLUDE_DIRECTORIES(src/unrar/)
+IF(UNIX AND NOT APPLE)
+  INCLUDE("cmake/FindTinyXML.cmake")
+  FIND_PACKAGE(TinyXML QUIET)
+ENDIF(UNIX AND NOT APPLE)
+
+IF(APPLE)
+  #Homebrew does not link libarchive to /usr/local by default to avoid conflict with the system-wide one (which in turn does not provide includes...)
+  #We do not want the systemwide vrsion as it is too old and misses support for many archive formats
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+ENDIF()
+IF(WIN32)
+  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
+  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
+ENDIF()
+
+OPTION(CHARTDLDR_USE_UNARR "Use unarr to extract RAR archives instead of libarchive" ON)
+IF(CHARTDLDR_USE_UNARR)
+    ADD_DEFINITIONS(-DCHARTDLDR_RAR_UNARR)
+ENDIF()
+
+ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+
+FIND_PACKAGE(LibArchive)
+IF(LibArchive_FOUND)
+  message(STATUS "Chartdldr_pi going to use LibArchive...")
+  INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
+  #Unset the unrar sources as we will not need them
+  ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)
+ENDIF(LibArchive_FOUND)
+
+INCLUDE_DIRECTORIES(src/unarr/)
+PKG_SEARCH_MODULE(UNARR libunarr unarr)
+IF (UNARR_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+  message (STATUS "Building with system unarr")
+  INCLUDE_DIRECTORIES(${UNARR_INCLUDE_DIR})
+  SET(SRC_UNARR  "")
+ELSE ()
+  message (STATUS "Building with bundled unarr")
+  ADD_LIBRARY(UNARR ${SRC_UNARR})
+  INCLUDE_DIRECTORIES(src/unarr)
+ENDIF ()
+
+IF(QT_ANDROID)
+  ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
+  ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
+ENDIF(QT_ANDROID)
 
 IF(TINYXML_FOUND)
- message (STATUS "Chartdldr_pi building with system tinyxml")
- INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
- ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR})
- TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES})
+  message (STATUS "Chartdldr_pi building with system tinyxml")
+  INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
+  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES})
 ELSE(TINYXML_FOUND)
- message (STATUS "Chartdldr_pi building with embedded tinyxml")
- INCLUDE_DIRECTORIES(src/tinyxml/)
- SET(SRC_LTINYXML
-            src/tinyxml/tinyxml.cpp
-            src/tinyxml/tinyxmlparser.cpp
-            src/tinyxml/tinyxmlerror.cpp
- )
- ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR} ${SRC_LTINYXML})
+  message (STATUS "Chartdldr_pi building with bundled tinyxml")
+  INCLUDE_DIRECTORIES(src/tinyxml/)
+  SET(SRC_LTINYXML
+             src/tinyxml/tinyxml.cpp
+             src/tinyxml/tinyxmlparser.cpp
+             src/tinyxml/tinyxmlerror.cpp
+  )
+  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_LTINYXML} ${SRC_CHARTDLDR})
 ENDIF(TINYXML_FOUND)
 ADD_DEFINITIONS(-DTIXML_USE_STL)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
+    # FIXME: This is to broad, needs better handling after 5.0.0
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
+    target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-unused-variable)
+endif ()
+IF (UNARR_LIBRARIES)
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${UNARR_LIBRARIES})
+ENDIF()
+
+IF(LibArchive_FOUND)
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LibArchive_LIBRARIES})
+ELSE(LibArchive_FOUND)
+  #We do not have libarchive, try to make unarr more powerful...
+  #ADD_DEFINITIONS(-DHAVE_7Z) #TODO if we decide it is needed, quite a bit more work here
+  FIND_PACKAGE(ZLIB)
+  IF(ZLIB_FOUND)
+    ADD_DEFINITIONS(-DHAVE_ZLIB)
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${ZLIB_LIBRARIES})
+  ENDIF(ZLIB_FOUND)
+  FIND_PACKAGE(BZip2)
+  IF(BZIP2_FOUND)
+    ADD_DEFINITIONS(-DHAVE_BZIP2)
+    INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIRS})
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${BZIP2_LIBRARIES})
+  ENDIF(BZIP2_FOUND)
+ENDIF(LibArchive_FOUND)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
 IF (QT_ANDROID )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
 ENDIF(QT_ANDROID)
-
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

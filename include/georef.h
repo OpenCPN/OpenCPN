@@ -110,6 +110,7 @@ extern "C" void toSM(double lat, double lon, double lat0, double lon0, double *x
 extern "C" double toSMcache_y30(double lat0);
 extern "C" void toSMcache(double lat, double lon, double y30, double lon0, double *x, double *y);
 extern "C" void fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon);
+extern "C" void fromSMR(double x, double y, double lat0, double lon0, double axis_meters, double *lat, double *lon);
 
 extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y);
 extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat, double *lon);
@@ -144,6 +145,7 @@ extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double l
 extern "C" void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
                                                 double *dlat, double *dlon);
 extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
+extern "C" double DistLoxodrome(double slat, double slon, double dlat, double dlon);
 
 extern "C" int GetDatumIndex(const char *str);
 extern "C" void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index);

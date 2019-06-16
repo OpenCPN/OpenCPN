@@ -92,7 +92,7 @@ wxColour wxCheckedListCtrl::GetBgColourFromAdditionalState(int additionalstate)
 {
 	if ((additionalstate & wxLIST_STATE_ENABLED) &&
 		this->IsEnabled())
-		return *wxWHITE;
+		return wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW );
 #ifdef __WXMSW__
 	return wxColour(212, 208, 200);
 #else

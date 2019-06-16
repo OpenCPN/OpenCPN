@@ -80,9 +80,6 @@ class GribReader
 
       int	   getDewpointDataStatus(int levelType,int levelValue);
 
-        // Rectangle de la zone couverte par les données
-      bool getZoneExtension (double *x0,double *y0, double *x1,double *y1);
-
       enum GribFileDataStatus {DATA_IN_FILE, NO_DATA_IN_FILE, COMPUTED_DATA};
 
       void  copyFirstCumulativeRecord   ();

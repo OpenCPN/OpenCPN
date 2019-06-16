@@ -302,4 +302,8 @@
   <string name="install_proposed_location">Dossier de stockage proposé :</string>
   <string name="install_button_install_charts">Installez les cartes</string>
   <string name="install_done">Effectué.</string>
+
+  <string name="permission_granted">Accès accordée à la carte SD.</string>
+  <string name="sdcard_permission_help">OpenCPN nécessite des autorisations pour accéder à la carte SD\n\n Dans l’écran suivant, sélectionnez le répertoire racine de la carte SD pour permettre le plein accès.\n\n Ce choix sera stocké pour une utilisation future.</string>
+
 </resources>

@@ -59,7 +59,7 @@ case the_dtd:\
   return &((the_class&)element);
 
 wxSVGTransformable* wxSVGTransformable::GetSVGTransformable(wxSVGElement& element) {
-  if (&element == NULL || element.GetType() != wxSVGXML_ELEMENT_NODE) {
+  if (element.GetType() != wxSVGXML_ELEMENT_NODE) {
       return NULL;
   }
   switch (element.GetDtd()) {

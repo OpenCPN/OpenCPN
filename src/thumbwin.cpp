@@ -69,8 +69,8 @@ void ThumbWin::Resize( void )
 {
     if( pThumbChart ) {
         if( pThumbChart->GetThumbData()->pDIBThumb ) {
-            int newheight = __min(m_max_size.y, pThumbChart->GetThumbData()->pDIBThumb->GetHeight());
-            int newwidth = __min(m_max_size.x, pThumbChart->GetThumbData()->pDIBThumb->GetWidth());
+            int newheight = std::min(m_max_size.y, pThumbChart->GetThumbData()->pDIBThumb->GetHeight());
+            int newwidth = std::min(m_max_size.x, pThumbChart->GetThumbData()->pDIBThumb->GetWidth());
             SetSize( 0, 0, newwidth, newheight );
         }
     }

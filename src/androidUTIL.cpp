@@ -39,7 +39,7 @@
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetListDialog.h"
-#include "routeprop.h"
+//#include "routeprop.h"
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
@@ -56,6 +56,9 @@
 #include "multiplexer.h"
 #include "chartdbs.h"
 #include "glChartCanvas.h"
+#include "chcanv.h"
+#include "MarkInfo.h"
+#include "RoutePropDlgImpl.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -85,7 +88,7 @@ class androidUtilHandler;
 
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern const wxEventType wxEVT_DOWNLOAD_EVENT;
+//extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
 wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
@@ -93,17 +96,15 @@ wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
 extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
 extern AISTargetListDialog       *g_pAISTargetList;
-extern MarkInfoImpl              *pMarkPropDialog;
-extern RouteProp                 *pRoutePropDialog;
+//extern MarkInfoImpl              *pMarkPropDialog;
+extern RoutePropDlgImpl          *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
-extern MarkInfoImpl              *pMarkInfoDialog;
 extern S57QueryDialog            *g_pObjectQueryDialog;
 extern options                   *g_options;
 extern bool                       g_bSleep;
 androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
-extern ChartCanvas               *cc1;
 extern about                     *g_pAboutDlg;
 extern bool                      g_bFullscreen;
 extern OCPNPlatform              *g_Platform;
@@ -175,8 +176,6 @@ extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;
 extern int              g_iSoundDeviceIndex;
 extern bool             g_bFullscreenToolbar;
-extern bool             g_bTransparentToolbar;
-extern bool             g_bTransparentToolbarInOpenGLOK;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -246,7 +245,6 @@ extern s52plib          *ps52plib;
 extern wxString         g_locale;
 extern bool             g_bportable;
 extern bool             g_bdisable_opengl;
-extern wxString         *pHome_Locn;
 
 extern ChartGroupArray  *g_pGroupArray;
 
@@ -277,6 +275,8 @@ extern float            g_ChartScaleFactorExp;
 
 extern Multiplexer      *g_pMUX;
 extern bool             b_inCloseWindow;
+extern bool             g_config_display_size_manual;
+extern MarkInfoDlg      *g_pMarkInfoDialog;
 
 wxString callActivityMethod_vs(const char *method);
 
@@ -318,6 +318,8 @@ wxString        g_deviceInfo;
 int             s_androidMemTotal;
 int             s_androidMemUsed;
 bool            g_backEnabled;
+
+bool            s_optionsActive;
 
 extern int ShowNavWarning();
 extern bool     g_btrackContinuous;
@@ -372,19 +374,24 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 
             // AIS Target Query
             if( g_pais_query_dialog_active ) {
+                qDebug() << "AISB";
+
                 bool bshown = g_pais_query_dialog_active->IsShown();
                 g_pais_query_dialog_active->Hide();
                 g_pais_query_dialog_active->RecalculateSize();
                 if(bshown){
+                    qDebug() << "AISC";
                     g_pais_query_dialog_active->Show();
                     g_pais_query_dialog_active->Raise();
                 }
             }
-            
+
             // Route Props
-            if(RouteProp::getInstanceFlag()){
+            if(RoutePropDlgImpl::getInstanceFlag()){
+                qDebug() << "RPDIA";
                 bool bshown = pRoutePropDialog->IsShown();
                 if(bshown){
+                    qDebug() << "RPDIB";
                     pRoutePropDialog->Hide();
                     pRoutePropDialog->RecalculateSize();
                     pRoutePropDialog->Show();
@@ -394,8 +401,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     pRoutePropDialog = NULL;
                 }
             }
-          
-
+#if 0            
             // Track Props
             if(TrackPropDlg::getInstanceFlag()){
                 bool bshown = pTrackPropDialog->IsShown();
@@ -410,27 +416,27 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
             
-            
+#endif            
             // Mark Props
-            if(MarkInfoImpl::getInstanceFlag()){
-                bool bshown = pMarkPropDialog->IsShown();
-                if(bshown){
-                    pMarkPropDialog->Hide();
-                    pMarkPropDialog->RecalculateSize();
-                    pMarkPropDialog->Show();
-                }
-                else{
-                    pMarkPropDialog->Destroy();
-                    pMarkPropDialog = NULL;
-                }
-            }
+//             if(MarkInfoImpl::getInstanceFlag()){
+//                 bool bshown = pMarkPropDialog->IsShown();
+//                 if(bshown){
+//                     pMarkPropDialog->Hide();
+//                     pMarkPropDialog->RecalculateSize();
+//                     pMarkPropDialog->Show();
+//                 }
+//                 else{
+//                     pMarkPropDialog->Destroy();
+//                     pMarkPropDialog = NULL;
+//                 }
+//             }
             
-            if(pMarkPropDialog){
-                bool bshown = pMarkPropDialog->IsShown();
-                pMarkPropDialog->Hide();
-                pMarkPropDialog->RecalculateSize();
+            if(g_pMarkInfoDialog){
+                bool bshown = g_pMarkInfoDialog->IsShown();
+                g_pMarkInfoDialog->Hide();
+                g_pMarkInfoDialog->RecalculateSize();
                 if(bshown){
-                    pMarkPropDialog->Show();
+                    g_pMarkInfoDialog->Show();
                 }
                 
             }
@@ -446,25 +452,33 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
             // Options dialog
-            if(g_options){
-                bool bshown = g_options->IsShown();
-                g_options->Hide();
-                g_options->RecalculateSize();
-                if(bshown){
-                    g_options->ShowModal();
-                }
-            }
+//             if(g_options){
+//                 ///v5qDebug() << "optionsA";
+//                 bool bshown = g_options->IsActive();
+//                 g_options->Hide();
+//                 g_options->RecalculateSize();
+//                 //if(s_optionsActive)
+//                 {
+//                     qDebug() << "optionsB";
+//                     g_options->Raise();
+//                 }
+//             }
             
             // AIS Target List dialog
             if(g_pAISTargetList){
+                qDebug() << "ATLA";
                 bool bshown = g_pAISTargetList->IsShown();
                 g_pAISTargetList->Hide();
                 g_pAISTargetList->RecalculateSize();
                 if(bshown){
+                    qDebug() << "ATLB";
                     g_pAISTargetList->Show();
+                    g_pAISTargetList->Raise();
                 }
             }
-            
+ 
+#if 0
+///v5
             // Tide/Current window
             if( cc1 && cc1->getTCWin()){
                 bool bshown = cc1->getTCWin()->IsShown();
@@ -475,7 +489,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     cc1->getTCWin()->Refresh();
                 }
             }
-            
+#endif            
             // Route Manager dialog
             if(RouteManagerDialog::getInstanceFlag()){
                 bool bshown = pRouteManagerDialog->IsShown();
@@ -495,7 +509,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             if(g_pAboutDlg){
                 bool bshown = g_pAboutDlg->IsShown();
                 g_pAboutDlg->Hide();
-                g_pAboutDlg->RecalculateSize();
+                ///v5g_pAboutDlg->RecalculateSize();
                 if(bshown){
                     g_pAboutDlg->Show();
                 }
@@ -584,7 +598,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "cancel:"   .. user cancelled Dialog.
                     //  "color: ".
                     if(!s){
-                        qDebug() << "isColorPickerDialogFinished returned null";
+///v5                        qDebug() << "isColorPickerDialogFinished returned null";
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -633,7 +647,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "ACTIVE"   ......Post command not done yet.
                     //  A valid XML response body.
                     if(!s){
-                        qDebug() << "checkPostAsync returned null";
+///v5                        qDebug() << "checkPostAsync returned null";
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -662,7 +676,7 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event){
 
     g_GUIScaleFactor = -5;
     g_ChartScaleFactor = -5;
-    gFrame->SetToolbarScale();
+    ///v5gFrame->SetToolbarScale();
     gFrame->SetGPSCompassScale();
     
     s_androidMemUsed  = 80;
@@ -992,6 +1006,13 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
+        qDebug() << "onConfigChange";
+
+        if(g_options){
+            qDebug() << "OptionsConfigChange: " << g_options->IsActive();
+            s_optionsActive = g_options->IsActive();
+        }
+        
         wxLogMessage(_T("onConfigChange"));
         GetAndroidDisplaySize();
         
@@ -1015,9 +1036,10 @@ extern "C"{
         
         wxMouseEvent evt(wxEVT_MOUSEWHEEL);
         evt.m_wheelRotation = dir;
-        if(cc1 && cc1->GetEventHandler()){
-            cc1->GetEventHandler()->AddPendingEvent(evt);
-        }
+///v5
+//         if(cc1 && cc1->GetEventHandler()){
+//             cc1->GetEventHandler()->AddPendingEvent(evt);
+//         }
         
         return 77;
     }
@@ -1027,7 +1049,7 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
 
-        gFrame->ToggleToolbar();
+        ///v5gFrame->ToggleToolbar();
             
         return 88;
     }
@@ -1054,7 +1076,8 @@ extern "C"{
         }
         
         g_running = false;
-        
+
+        qDebug() << "onStop return 98";
         return 98;
     }
 }
@@ -1100,7 +1123,8 @@ extern "C"{
         if(bGPSEnabled)
             androidGPSService( GPS_ON );
         
-
+#if 0
+///v5        
         if(cc1){
             glChartCanvas *glc = cc1->GetglCanvas();
             QGLWidget *glw = glc->GetHandle();
@@ -1121,7 +1145,7 @@ extern "C"{
                  }
             }
         }
-        
+#endif        
         wxCommandEvent evt0(wxEVT_COMMAND_MENU_SELECTED);
         evt0.SetId( ID_CMD_CLOSE_ALL_DIALOGS );
         if(gFrame && gFrame->GetEventHandler())
@@ -1220,10 +1244,10 @@ extern "C"{
         wxLogMessage(msg1);
         
         // If in Route Create, disable all other menu items
-        if( gFrame && (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
-            wxLogMessage(_T("invokeMenuItem A"));
-            return 72;
-        }
+         if( gFrame && (gFrame->GetFocusCanvas()->m_routeState > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
+             wxLogMessage(_T("invokeMenuItem A"));
+             return 72;
+         }
 
         wxLogMessage(_T("invokeMenuItem B"));
         
@@ -1302,9 +1326,9 @@ extern "C"{
         
         wxString s;
         
-        if(cc1){
+        if(gFrame->GetPrimaryCanvas()){
             LLBBox vbox;
-            vbox = cc1->GetVP().GetBBox();
+            vbox = gFrame->GetPrimaryCanvas()->GetVP().GetBBox();
             s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxLat(), vbox.GetMaxLon(), vbox.GetMinLat(), vbox.GetMinLon());  
         }
                     
@@ -1320,8 +1344,8 @@ extern "C"{
     {
         wxString s;
         
-        if(cc1){
-            ViewPort vp = cc1->GetVP();
+        if(gFrame->GetPrimaryCanvas()){
+            ViewPort vp = gFrame->GetPrimaryCanvas()->GetVP();
             s.Printf(_T("%g;%g;%g;%g;%g;"), vp.clat, vp.clon, vp.view_scale_ppm, gLat, gLon);  
             
         }
@@ -2188,11 +2212,11 @@ double GetAndroidDisplaySize()
         screen_size = ::wxGetDisplaySize();
     }
         
-    wxLogMessage(_T("Metrics:") + return_string);
+    ///v5wxLogMessage(_T("Metrics:") + return_string);
     wxString msg;
     
     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
-    wxLogMessage(msg);
+    ///v5wxLogMessage(msg);
     
     double density = 1.0;
     long androidWidth = 2;
@@ -2251,13 +2275,14 @@ double GetAndroidDisplaySize()
     else{        
         msg.Printf(_T("Android Auto Display Size (mm, est.): %g   ldpi: %g  density: %g"), ret, ldpi, density);
     }
-    wxLogMessage(msg);
+    ///v5wxLogMessage(msg);
     
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
     g_ActionBarHeight = wxMax(abh, 50);
     
+    //qDebug() << "GetAndroidDisplaySize" << ldpi << g_androidDPmm;
 
     return ret;
 }
@@ -2270,18 +2295,20 @@ int getAndroidActionBarHeight()
 double getAndroidDPmm()
 {
     // Returns an estimate based on the pixel density reported
-    if( g_androidDPmm < 0.01){
+    ///v5if( g_androidDPmm < 0.01){
         GetAndroidDisplaySize();
-    }
+    //}
+    
+    //qDebug() << "getAndroidDPmm" << g_androidDPmm;
     
     // User override?
-    if(g_config_display_size_mm > 0){
+    if(g_config_display_size_manual && (g_config_display_size_mm > 0) ){
         double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
         double size_mm = g_config_display_size_mm;
         size_mm = wxMax(size_mm, 50);
         size_mm = wxMin(size_mm, 400);
         double ret = maxDim / size_mm;
-//        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
         return ret;
     }
         
@@ -2381,9 +2408,9 @@ void androidConfirmSizeCorrection()
  
     wxLogMessage(_T("androidConfirmSizeCorrection"));
     wxSize targetSize = getAndroidDisplayDimensions();
-//    qDebug() << "Confirming" << targetSize.y << config_size.y;
+    qDebug() << "Confirming" << targetSize.y << config_size.y;
     if(config_size != targetSize){
-//        qDebug() << "Correcting";
+        qDebug() << "Correcting";
         gFrame->SetSize(targetSize);
         config_size = targetSize;
     }
@@ -2784,7 +2811,7 @@ wxString BuildAndroidSettingsString( void )
 
         for(unsigned int i=0 ; i < chart_dir_array.GetCount() ; i++){
             result += _T("ChartDir:");
-            result += chart_dir_array.Item(i);
+            result += chart_dir_array[i];
             result += _T(";");
         }
     }
@@ -4008,6 +4035,9 @@ void setChoiceStyleSheet( wxChoice *win, int refDim)
 
 void setMenuStyleSheet( wxMenu *win, const wxFont& font)
 {
+    if(!win)
+        return;
+    
     int points = font.GetPointSize();
     int fontPix = points / g_Platform->getFontPointsperPixel();
      
@@ -4053,8 +4083,11 @@ wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned i
     wxCharBuffer abuf = filename.ToUTF8();
     if( abuf.data() ){                            // OK conversion?
         std::string s(abuf.data());              
-//        qDebug() << s.c_str();
+        //qDebug() << "loadAndroidSVG" << s.c_str();
     }
+    else{
+        qDebug() << "loadAndroidSVG FAIL";
+    }        
     
     // Destination file location
     wxString save_file_dir = g_Platform->GetPrivateDataDir() + _T("/") + _T("icons");

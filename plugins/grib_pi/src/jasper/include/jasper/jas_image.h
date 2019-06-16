@@ -93,7 +93,7 @@ extern "C" {
  */
 
 /* The threshold at which image data is no longer stored in memory. */
-#define JAS_IMAGE_INMEMTHRESH	(16 * 1024 * 1024)
+#define JAS_IMAGE_INMEMTHRESH	(32 * 1024 * 1024)
 
 /*
  * Component types

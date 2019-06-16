@@ -42,9 +42,15 @@ class GribV2Record : public GribRecord
 
         ~GribV2Record();
 
+        // return a new record for next data set
+        GribV2Record *GribV2NextDataSet(ZUFILE* file, int id_);
+        bool hasMoreDataSet() const;
+
     private:
-        zuint  periodSeconds(zuchar unit, zuint P1, zuchar P2, zuchar range);
+        zuint  periodSeconds(zuchar unit, zuint P1, zuint P2, zuchar range);
+        void   readDataSet(ZUFILE* file);
         class  GRIBMessage *grib_msg;
+
         //-----------------------------------------
         void    translateDataType();  // adapte les codes des différents centres météo
 

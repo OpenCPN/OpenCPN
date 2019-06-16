@@ -24,8 +24,6 @@
  **************************************************************************/
 
 #include <iostream>
-using namespace std; // FIXME: 'using namespace' must not be used in header files
-
 
 #ifndef __ROUTEPRINTOUT_H__
 #define __ROUTEPRINTOUT_H__
@@ -41,6 +39,7 @@ using namespace std; // FIXME: 'using namespace' must not be used in header file
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
+#include "chart1.h"
 
 class MyRoutePrintout : public MyPrintout {
 public:

@@ -25,7 +25,7 @@
 #ifndef __TCWIN_H__
 #define __TCWIN_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/datetime.h>
 #include <wx/timer.h>
 #include <wx/list.h>
@@ -42,7 +42,7 @@ class wxListBox;
 
 WX_DECLARE_LIST(wxPoint, SplineList);           // for spline curve points
 
-class TCWin: public wxDialog
+class TCWin: public wxFrame
 {
 public:
       TCWin(ChartCanvas *parent, int x, int y, void *pvIDX);

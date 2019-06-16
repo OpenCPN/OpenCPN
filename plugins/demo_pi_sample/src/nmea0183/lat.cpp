@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -81,11 +81,11 @@ void LATITUDE::Set( double position, const wxString& north_or_south )
    Latitude = position;
    wxString ts = north_or_south;
 
-   if ( ts.Trim(false)[ 0 ] == _T('N') )
+   if ( !ts.IsEmpty() && ts.Trim(false)[ 0 ] == _T('N') )
    {
       Northing = North;
    }
-   else if (ts.Trim(false)[ 0 ] == _T('S') )
+   else if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == _T('S') )
    {
       Northing = South;
    }
@@ -108,12 +108,13 @@ void LATITUDE::Write( SENTENCE& sentence )
             neg = 1;
             }
     d = (int) Latitude;
-    m = (int) ((Latitude - (double) d) * 60000.0);
+    double m0 = (Latitude - (double) d) * 60000.0;
+    m = (int)wxRound(m0);
 
     if (neg)
             d = -d;
 
-    temp_string.Printf(_T("%d%02d.%03d"), d, m / 1000, m % 1000);
+    temp_string.Printf(_T("%02d%02d.%03d"), d, m / 1000, m % 1000);
 
    sentence += temp_string;
 

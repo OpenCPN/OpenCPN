@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  * $Id: dashboard_pi.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -32,6 +32,7 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <cmath>
 // xw 2.8
 #include <wx/filename.h>
 
@@ -54,6 +55,7 @@ int g_iDashDepthUnit;
 int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
 int g_iUTCOffset;
+double g_dDashDBTOffset;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -378,6 +380,11 @@ wxString GetUUID(void)
       return str;
 }
 
+wxString MakeName()
+{
+    return _T("DASH_") + GetUUID();
+}
+
 //---------------------------------------------------------------------------------------------------------
 //
 //          PlugIn initialization and de-init
@@ -633,6 +640,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             * 0.3048;
                     else if( m_NMEA0183.Dbt.DepthFathoms != 999. ) depth =
                             m_NMEA0183.Dbt.DepthFathoms * 1.82880;
+                    depth += g_dDashDBTOffset;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, toUsrDistance_Plugin( depth / 1852.0, g_iDashDepthUnit ), getUsrDistanceUnit_Plugin( g_iDashDepthUnit ) );
                 }
             }
@@ -650,6 +658,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     double depth = 999.;
                     if( m_NMEA0183.Dpt.DepthMeters != 999. ) depth = m_NMEA0183.Dpt.DepthMeters;
                     if( m_NMEA0183.Dpt.OffsetFromTransducerMeters != 999. ) depth += m_NMEA0183.Dpt.OffsetFromTransducerMeters;
+                    depth += g_dDashDBTOffset;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, toUsrDistance_Plugin( depth / 1852.0, g_iDashDepthUnit ), getUsrDistanceUnit_Plugin( g_iDashDepthUnit ) );
                 }
             }
@@ -734,9 +743,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         }
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
-            if( m_NMEA0183.Parse() ) {
-                if( mPriVar >= 2 ) {
-                    if( !wxIsNaN( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
+            if( m_NMEA0183.Parse() )
+            {
+                if( mPriVar >= 2 ) 
+                {
+                    // Any device sending VAR=0.0 can be assumed to not really know
+                    // what the actual variation is, so in this case we use WMM if available
+                    if( (!std::isnan( m_NMEA0183.Hdg.MagneticVariationDegrees )) &&
+                               0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees)
+                    {
                         mPriVar = 2;
                         if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
                             mVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
@@ -751,15 +766,20 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 3) ){
+                if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 3) ){
                         mPriHeadingT = 4;
-                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("\u00B0"));
+                        double heading = mHdm + mVar;
+                        if (heading < 0)
+                            heading += 360;
+                        else if (heading >= 360.0)
+                            heading -= 360;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
                         mHDT_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
@@ -773,15 +793,20 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M") );
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
-                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 2) ){
+                if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) ) {
+                    if( !std::isnan( mVar )  && (mPriHeadingT > 2) ){
                         mPriHeadingT = 3;
-                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("\u00B0"));
+                        double heading = mHdm + mVar;
+                        if (heading < 0)
+                            heading += 360;
+                        else if (heading >= 360.0)
+                            heading -= 360;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
                         mHDT_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
@@ -798,7 +823,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 _T("\u00B0T") );
                     }
                 }
-                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Hdt.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -909,7 +934,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         if( mPriTWA >= 1 ) {
                             mPriTWA = 1;
 							wxString m_twaunit;
-							double m_twaangle;
+							double m_twaangle;						
 							if (m_NMEA0183.Mwv.WindAngle >180) {
 								m_twaunit = _T("\u00B0L");
 								m_twaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
@@ -986,16 +1011,21 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                     }
 
-                    if( mPriVar >= 3 ) {
-                        if( !wxIsNaN( m_NMEA0183.Rmc.MagneticVariation ) ){
+                    if( mPriVar >= 3 )
+                    {
+                        // Any device sending VAR=0.0 can be assumed to not really know
+                        // what the actual variation is, so in this case we use WMM if available
+                        if( (!std::isnan( m_NMEA0183.Rmc.MagneticVariation)) &&
+                                   0.0 != m_NMEA0183.Rmc.MagneticVariation )
+                        {
                             mPriVar = 3;
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
                                 mVar = m_NMEA0183.Rmc.MagneticVariation;
-                            else if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                            else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
                                 mVar = -m_NMEA0183.Rmc.MagneticVariation;
                             mVar_Watchdog = gps_watchdog_timeout_ticks;
 
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, _T("\u00B0"));
                         }
                     }
 
@@ -1039,9 +1069,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                 }
 
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
-                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesTrue) )
+                if( !std::isnan(m_NMEA0183.Vhw.DegreesTrue) )
                     mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
             }
@@ -1210,15 +1240,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         PlugIn_Position_Fix_Ex gpd;
         if( DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator) ) {
 
-            if( !wxIsNaN(gpd.Lat) )
+            if( !std::isnan(gpd.Lat) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM") );
 
-            if( !wxIsNaN(gpd.Lon) )
+            if( !std::isnan(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
             SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
             SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0") );
-            if( !wxIsNaN(gpd.Hdt) ) {
+            if( !std::isnan(gpd.Hdt) ) {
                 SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
                 mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -1244,7 +1274,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
     }
     if( mPriVar >= 1 ) {
-        if( !wxIsNaN( pfix.Var ) ){
+        if( !std::isnan( pfix.Var ) ){
             mPriVar = 1;
             mVar = pfix.Var;
             mVar_Watchdog = gps_watchdog_timeout_ticks;
@@ -1488,6 +1518,7 @@ void dashboard_pi::UpdateAuiStatus( void )
         wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
+///v5<<<<<<< HEAD
 
 #ifdef __WXQT__        
         if(pane.IsShown()){
@@ -1497,9 +1528,12 @@ void dashboard_pi::UpdateAuiStatus( void )
             m_pauimgr->Update();
         }
 #endif        
+//=======
+//>>>>>>> v5.0.0
         
     }
-
+    m_pauimgr->Update();
+    
     //    We use this callback here to keep the context menu selection in sync with the window state
 
     SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
@@ -1549,6 +1583,8 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
         g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
+        pConf->Read( _T("DepthOffset"), &g_dDashDBTOffset, 0 );
+
         pConf->Read( _T("DistanceUnit"), &g_iDashDistanceUnit, 0 );
         pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
 
@@ -1584,7 +1620,7 @@ bool dashboard_pi::LoadConfig( void )
 #endif                
             }
 
-            DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+            DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
             cont->m_bPersVisible = true;
             m_ArrayOfDashboardWindow.Add(cont);
             
@@ -1595,7 +1631,7 @@ bool dashboard_pi::LoadConfig( void )
             for( int i = 0; i < d_cnt; i++ ) {
                 pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
                 wxString name;
-                pConf->Read( _T("Name"), &name, GetUUID() );
+                pConf->Read( _T("Name"), &name, MakeName() );
                 wxString caption;
                 pConf->Read( _T("Caption"), &caption, _("Dashboard") );
                 wxString orient;
@@ -1667,6 +1703,7 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("SpeedUnit"), g_iDashSpeedUnit );
         pConf->Write( _T("SOGDamp"), g_iDashSOGDamp );
         pConf->Write( _T("DepthUnit"), g_iDashDepthUnit );
+        pConf->Write( _T("DepthOffset"), g_dDashDBTOffset );
         pConf->Write( _T("DistanceUnit"), g_iDashDistanceUnit );
         pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
         pConf->Write( _T("UTCOffset"), g_iUTCOffset );
@@ -1723,7 +1760,7 @@ void dashboard_pi::ApplyConfig( void )
                 wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                     !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                         sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
-                        
+            
             m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
                 //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
@@ -1806,8 +1843,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 
     wxNotebook *itemNotebook = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
             wxNB_TOP );
-    itemBoxSizerMainPanel->Add( itemNotebook, 1,
-            wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
+    itemBoxSizerMainPanel->Add( itemNotebook, 1, wxALL | wxEXPAND, border_size );
 
     wxPanel *itemPanelNotebook01 = new wxPanel( itemNotebook, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
@@ -2088,11 +2124,34 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxStaticText* itemStaticTextDepthU = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Depth units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticTextDepthU, 0, wxEXPAND | wxALL, border_size );
-    wxString m_DepthUnitChoices[] = { _("Meters"), _("Feet"), _("Fathoms"), _("Centimeters"), _("Inches") };
+    wxString m_DepthUnitChoices[] = { _("Meters"), _("Feet"), _("Fathoms"), _("Inches"), _("Centimeters") };
     int m_DepthUnitNChoices = sizeof( m_DepthUnitChoices ) / sizeof( wxString );
     m_pChoiceDepthUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_DepthUnitNChoices, m_DepthUnitChoices, 0 );
     m_pChoiceDepthUnit->SetSelection( g_iDashDepthUnit - 3);
     itemFlexGridSizer04->Add( m_pChoiceDepthUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
+    wxString dMess = wxString::Format(_("Depth Offset (%s):"),m_DepthUnitChoices[g_iDashDepthUnit-3]);
+    wxStaticText* itemStaticDepthO = new wxStaticText(itemPanelNotebook02, wxID_ANY, dMess,
+        wxDefaultPosition, wxDefaultSize, 0);
+    double DepthOffset;
+    switch (g_iDashDepthUnit - 3) {
+    case 1:
+        DepthOffset = g_dDashDBTOffset * 3.2808399;
+        break;
+    case 2:
+        DepthOffset = g_dDashDBTOffset * 0.54680665;
+        break;
+    case 3:
+        DepthOffset = g_dDashDBTOffset * 39.3700787;
+        break;
+    case 4:
+        DepthOffset = g_dDashDBTOffset * 100;
+        break;
+    default:
+        DepthOffset = g_dDashDBTOffset;
+    }
+    itemFlexGridSizer04->Add(itemStaticDepthO, 0, wxEXPAND | wxALL, border_size);
+    m_pSpinDBTOffset = new wxSpinCtrlDouble(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -100, 100, DepthOffset, 0.1);
+    itemFlexGridSizer04->Add(m_pSpinDBTOffset, 0, wxALIGN_RIGHT | wxALL, 0);
 
     wxStaticText* itemStaticText0b = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Distance units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -2165,6 +2224,23 @@ void DashboardPreferencesDialog::SaveDashboardConfig()
     g_iDashSOGDamp = m_pSpinSOGDamp->GetValue();
     g_iUTCOffset = m_pChoiceUTCOffset->GetSelection() - 24;
     g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
+    double DashDBTOffset = m_pSpinDBTOffset->GetValue();
+    switch (g_iDashDepthUnit - 3) {
+    case 1:
+        g_dDashDBTOffset = DashDBTOffset / 3.2808399;
+        break;
+    case 2:
+        g_dDashDBTOffset = DashDBTOffset / 0.54680665;
+        break;
+    case 3:
+        g_dDashDBTOffset = DashDBTOffset / 39.3700787;
+        break;
+    case 4:
+        g_dDashDBTOffset = DashDBTOffset / 100;
+        break;
+    default:
+        g_dDashDBTOffset = DashDBTOffset;
+    }
     g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
     g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
@@ -2237,7 +2313,7 @@ void DashboardPreferencesDialog::OnDashboardAdd( wxCommandEvent& event )
     // Data is index in m_Config
     m_pListCtrlDashboards->SetItemData( idx, m_Config.GetCount() );
     wxArrayInt ar;
-    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
     dwc->m_bIsVisible = true;
     m_Config.Add( dwc );
 }
@@ -2810,6 +2886,10 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 #else    
     
 
+    wxAuiPaneInfo &pane = m_pauimgr->GetPane( this );
+    if ( pane.IsOk( ) && pane.IsDocked( ) ) {
+        contextMenu->Append( ID_DASH_UNDOCK, _( "Undock" ) );
+    }
     wxMenuItem* btnVertical = contextMenu->AppendRadioItem( ID_DASH_VERTICAL, _("Vertical") );
     btnVertical->Check( itemBoxSizer->GetOrientation() == wxVERTICAL );
     wxMenuItem* btnHorizontal = contextMenu->AppendRadioItem( ID_DASH_HORIZONTAL, _("Horizontal") );
@@ -2831,8 +2911,7 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 {
     if( event.GetId() < ID_DASH_PREFS ) { // Toggle dashboard visibility
         m_plugin->ShowDashboard( event.GetId()-1, event.IsChecked() );
-        if( m_plugin )
-            SetToolbarItemState( m_plugin->GetToolbarItemId(), m_plugin->GetDashboardWindowShownCount() != 0 );
+        SetToolbarItemState( m_plugin->GetToolbarItemId(), m_plugin->GetDashboardWindowShownCount() != 0 );
     }
 
     switch( event.GetId() ){
@@ -2861,6 +2940,10 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
             m_Container->m_sOrientation = _T("H");
             break;
         }
+        case ID_DASH_UNDOCK: {
+            ChangePaneOrientation( GetSizerOrientation( ), true );
+            return;     // Nothing changed so nothing need be saved
+        }
     }
     m_plugin->SaveConfig();
 }
@@ -2885,7 +2968,7 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
     //wxSize sz = GetSize( orient, wxDefaultSize );
     wxSize sz = GetMinSize();
     // We must change Name to reset AUI perpective
-    m_Container->m_sName = GetUUID();
+    m_Container->m_sName = MakeName();
     m_pauimgr->AddPane( this, wxAuiPaneInfo().Name( m_Container->m_sName ).Caption(
         m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
         !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(

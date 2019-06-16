@@ -42,7 +42,7 @@
 #include "ocpCursor.h"
 #include "S57QueryDialog.h"
 #include "GoToPositionDialog.h"
-#include "CM93DSlide.h"
+#include "DetailSlider.h"
 #include "RolloverWin.h"
 #include "AISTargetQueryDialog.h"
 #include "timers.h"

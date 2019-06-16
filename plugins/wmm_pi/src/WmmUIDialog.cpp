@@ -98,6 +98,9 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	
 	sbSboat->Add( gSboat, 1, wxEXPAND, 0 );
+///v5
+#if 0        
+<<<<<<< HEAD
 
         wxBoxSizer *varBox = new wxBoxSizer(wxHORIZONTAL);
         sbSboat->Add( varBox, 0, wxEXPAND, 0 );
@@ -118,6 +121,35 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
         bSframe->AddSpacer(5);
         
         
+=======
+#endif
+	
+	wxFlexGridSizer* gSizer3;
+	gSizer3 = new wxFlexGridSizer( 1, 2, 0, 0 );
+	gSizer3->AddGrowableCol( 1 );
+	gSizer3->SetFlexibleDirection( wxBOTH );
+	gSizer3->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_staticText13 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText13->Wrap( -1 );
+	m_staticText13->SetToolTip( _("Magnetic Variation") );
+	m_staticText13->SetMinSize( wxSize( 50,-1 ) );
+	
+	gSizer3->Add( m_staticText13, 0, wxALL, 5 );
+	
+	m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
+	m_tbD->SetMaxLength( 0 ); 
+	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
+	
+	gSizer3->Add( m_tbD, 1, wxEXPAND, 5 );
+	
+	
+	sbSboat->Add( gSizer3, 0, wxEXPAND, 0 );
+	
+	
+	bSframe->Add( sbSboat, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+	
+///v5>>>>>>> v5.0.0
 	sbScursor = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Cursor") ), wxVERTICAL );
         bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
         
@@ -188,6 +220,9 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_tcI->SetMaxLength( 0 ); 
 	gScursor->Add( m_tcI, 0, wxEXPAND, 5 );
 	
+///v5
+#if 0        
+<<<<<<< HEAD
         wxBoxSizer *varBoxCursor = new wxBoxSizer(wxHORIZONTAL);
         sbScursor->Add( varBoxCursor, 0, wxEXPAND, 0 );
         
@@ -204,6 +239,36 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 
         bSframe->AddSpacer(5);
         
+=======
+#endif
+	
+	sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+	
+	wxFlexGridSizer* gSizer4;
+	gSizer4 = new wxFlexGridSizer( 2, 2, 0, 0 );
+	gSizer4->AddGrowableCol( 1 );
+	gSizer4->SetFlexibleDirection( wxBOTH );
+	gSizer4->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_staticText131 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText131->Wrap( -1 );
+	m_staticText131->SetToolTip( _("Magnetic Variation") );
+	m_staticText131->SetMinSize( wxSize( 50,-1 ) );
+	
+	gSizer4->Add( m_staticText131, 0, wxALL, 5 );
+	
+	m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
+	m_tcD->SetMaxLength( 0 ); 
+	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
+	
+	gSizer4->Add( m_tcD, 0, wxEXPAND, 5 );
+	
+	
+	sbScursor->Add( gSizer4, 0, wxEXPAND, 0 );
+	
+	
+	bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+///v5>>>>>>> v5.0.0
 	
 	
 	
@@ -246,6 +311,61 @@ WmmUIDialogBase::~WmmUIDialogBase()
 	
 }
 
+WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+	
+	wxString m_rbViewTypeChoices[] = { _("Extended"), _("Variation only") };
+	int m_rbViewTypeNChoices = sizeof( m_rbViewTypeChoices ) / sizeof( wxString );
+	m_rbViewType = new wxRadioBox( this, wxID_ANY, _("View"), wxDefaultPosition, wxDefaultSize, m_rbViewTypeNChoices, m_rbViewTypeChoices, 2, wxRA_SPECIFY_COLS );
+	m_rbViewType->SetSelection( 1 );
+	bSizer2->Add( m_rbViewType, 0, wxALL|wxEXPAND, 5 );
+	
+	m_cbShowPlotOptions = new wxCheckBox( this, wxID_ANY, _("Show Plot Options"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_cbShowPlotOptions, 0, wxALL, 5 );
+	
+	m_cbShowAtCursor = new wxCheckBox( this, wxID_ANY, _("Show also data at cursor position"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_cbShowAtCursor, 0, wxALL, 5 );
+	
+        m_cbShowIcon = new wxCheckBox( this, wxID_ANY, _("Show toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
+        bSizer2->Add( m_cbShowIcon, 0, wxALL, 5 );
+        
+        m_cbLiveIcon = new wxCheckBox( this, wxID_ANY, _("Show data in toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_cbLiveIcon, 0, wxALL, 5 );
+	
+	wxStaticBoxSizer* sbSizer4;
+	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Window transparency") ), wxVERTICAL );
+	
+	m_sOpacity = new wxSlider( this, wxID_ANY, 255, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_INVERSE );
+	sbSizer4->Add( m_sOpacity, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
+	
+	
+	bSizer2->Add( sbSizer4, 1, wxALL|wxEXPAND, 5 );
+	
+	m_sdbSizer1 = new wxStdDialogButtonSizer();
+	m_sdbSizer1OK = new wxButton( this, wxID_OK );
+	m_sdbSizer1->AddButton( m_sdbSizer1OK );
+	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
+	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
+	m_sdbSizer1->Realize();
+	
+	bSizer2->Add( m_sdbSizer1, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
+	
+	
+	this->SetSizer( bSizer2 );
+	this->Layout();
+	bSizer2->Fit( this );
+	
+	this->Centre( wxBOTH );
+}
+
+WmmPrefsDialog::~WmmPrefsDialog()
+{
+}
+
 WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -253,7 +373,7 @@ WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindow
 	wxGridSizer* gSizer2;
 	gSizer2 = new wxGridSizer( 0, 3, 0, 0 );
 	
-	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Declination"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Variation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbDeclination->SetValue(true); 
 	gSizer2->Add( m_cbDeclination, 0, wxALL, 5 );
 	

@@ -170,6 +170,8 @@ public class QtApplication extends Application
 
     public static Object invokeDelegateMethod(Method m, Object... args)
     {
+        Log.i("OpenCPN", "invokeDelegateMethod " + m.getName());
+
         try {
             return m.invoke(m_delegateObject, args);
         } catch (Exception e) {

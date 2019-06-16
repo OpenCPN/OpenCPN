@@ -303,9 +303,13 @@ OGRErr OGRS57Layer::CreateFeature( OGRFeature *poFeature )
     if( iRCNMFld != -1 )
     {
         if( !poFeature->IsFieldSet( iRCNMFld ) )
+        {
             poFeature->SetField( iRCNMFld, nRCNM );
+        }
         else
+        {
             CPLAssert( poFeature->GetFieldAsInteger( iRCNMFld ) == nRCNM );
+        }
     }
 
 /* -------------------------------------------------------------------- */
@@ -316,9 +320,13 @@ OGRErr OGRS57Layer::CreateFeature( OGRFeature *poFeature )
         int iOBJLFld = poFeature->GetFieldIndex( "OBJL" );
 
         if( !poFeature->IsFieldSet( iOBJLFld ) )
+        {
             poFeature->SetField( iOBJLFld, nOBJL );
+        }
         else
+        {
             CPLAssert( poFeature->GetFieldAsInteger( iOBJLFld ) == nOBJL );
+        }
     }
 
 /* -------------------------------------------------------------------- */

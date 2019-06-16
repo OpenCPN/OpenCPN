@@ -34,6 +34,7 @@
 #include "dychart.h"
 #include "ocpn_plugin.h"
 #include "chcanv.h"
+#include "chart1.h"
 #include "linmath.h"
 
 #ifdef __MSVC__
@@ -53,15 +54,21 @@
 #include "wx28compat.h"
 #include "cutil.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
+#endif
+
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
-extern ChartCanvas *cc1;
 
 #ifdef USE_ANDROID_GLES2
 extern GLint color_tri_shader_program;
 extern GLint circle_filled_shader_program;
 extern GLint texture_2D_shader_program;
 #endif
+
+extern MyFrame *gFrame;
 
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
@@ -227,8 +234,10 @@ void ocpnDC::SetGLAttrs( bool highQuality )
 
  // Enable anti-aliased polys, at best quality
     if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLPolygonSmoothing )
+            glEnable( GL_POLYGON_SMOOTH );
         glEnable( GL_BLEND );
     } else {
         glDisable(GL_LINE_SMOOTH);
@@ -405,7 +414,7 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
         
         matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)cc1->GetpVP()->vp_transform); 
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform); 
         
         wxColor c = pen.GetColour();    
         float colorv[4];
@@ -470,7 +479,7 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
         
         matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)cc1->GetpVP()->vp_transform); 
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform); 
         
         wxColor c = pen.GetColour();    
         float colorv[4];
@@ -516,7 +525,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
 #ifndef __WXQT__
             glEnable( GL_BLEND );
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
 #endif            
 
             if( pen_width > 1.0 ) {
@@ -553,7 +563,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
             glEnableVertexAttribArray(pos);
             
             GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-            glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)cc1->GetpVP()->vp_transform); 
+            glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform); 
             
             float colorv[4];
             colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -783,8 +793,6 @@ void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
 
     glEnd();
 
-    glPopAttrib();
-
     delete [] cpoints;
  #endif
  #endif    
@@ -837,9 +845,15 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
             DrawGLThickLines( n, points, xoffset, yoffset, m_pen, b_hiqual );
             
             if( b_hiqual ) {
-                glDisable( GL_LINE_STIPPLE );
-                glDisable( GL_POLYGON_SMOOTH );
-                glDisable( GL_BLEND );
+//<<<<<<< HEAD
+//                glDisable( GL_LINE_STIPPLE );
+//                glDisable( GL_POLYGON_SMOOTH );
+//                glDisable( GL_BLEND );
+//=======
+                if( g_GLOptions.m_GLLineSmoothing )
+                    glEnable( GL_LINE_SMOOTH );
+                //                SetGLStipple(m_pen.GetStyle());
+//>>>>>>> v5.0.0
             }
             
             return;
@@ -871,7 +885,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), workBuf);
         glEnableVertexAttribArray(pos);
         GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)cc1->GetpVP()->vp_transform); 
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform); 
                 
         float colorv[4];
         colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -1112,15 +1126,19 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
         Q[3][0] = xoffset;
         Q[3][1] = yoffset;
         
-        mat4x4 X;
-        mat4x4_mul(X, (float (*)[4])cc1->GetpVP()->vp_transform, Q);
+///v5         mat4x4 X;
+//         mat4x4_mul(X, (float (*)[4])cc1->GetpVP()->vp_transform, Q);
+//         
+//         GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
+//         glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X ); 
         
-        GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X ); 
-        
+         mat4x4 X;
+         mat4x4_mul(X, (float (*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform, Q);
+         GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
+         glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X ); 
+ 
         // Perform the actual drawing.
         glDrawArrays(GL_TRIANGLE_FAN, 0, workBufIndex/2);
-        
 
         // Border color
         float bcolorv[4];
@@ -1190,7 +1208,8 @@ void ocpnDC::DrawCircle( wxCoord x, wxCoord y, wxCoord radius )
     //  Circle center point
     GLint centerloc = glGetUniformLocation(circle_filled_shader_program,"circle_center");
     float ctrv[2];
-    ctrv[0] = x; ctrv[1] = cc1->GetSize().y - y;
+    ctrv[0] = x;
+    ctrv[1] = gFrame->GetPrimaryCanvas()->GetSize().y - y; 
     glUniform2fv(centerloc, 1, ctrv);
     
     //  Circle color
@@ -1217,9 +1236,8 @@ void ocpnDC::DrawCircle( wxCoord x, wxCoord y, wxCoord radius )
     GLint borderWidthloc = glGetUniformLocation(circle_filled_shader_program,"border_width");
     glUniform1f(borderWidthloc, m_pen.GetWidth());
     
-    
-    GLint matloc = glGetUniformLocation(circle_filled_shader_program,"MVMatrix");
-    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)(cc1->GetpVP()->vp_transform) ); 
+     GLint matloc = glGetUniformLocation(circle_filled_shader_program,"MVMatrix");
+     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)(gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform) ); 
         
         // Perform the actual drawing.
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1355,8 +1373,7 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
             Q[3][1] = yoffset;
             
             mat4x4 X;
-            mat4x4_mul(X, (float (*)[4])cc1->GetpVP()->vp_transform, Q);
-            
+            mat4x4_mul(X, (float (*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform, Q);
             GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
             glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X ); 
             
@@ -1392,7 +1409,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
 #else        
         
         if( ConfigureBrush() ) {
-            glEnable( GL_POLYGON_SMOOTH );
+            if( g_GLOptions.m_GLPolygonSmoothing )
+                glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
@@ -1401,7 +1419,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         }
 
         if( ConfigurePen() ) {
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
@@ -1603,11 +1622,12 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
             gluTessBeginPolygon( m_tobj, this );
             gluTessBeginContour( m_tobj );
 
-            ViewPort *pvp = cc1->GetpVP();
+            ViewPort *pvp = gFrame->GetPrimaryCanvas()->GetpVP();
             
             for( int i = 0; i < n; i++ ) {
                 double *p = new double[6];
                 
+
                 if(fabs(pvp->rotation) > 0.01){
                     float cx = pvp->pix_width/2.;
                     float cy = pvp->pix_height/2.;
@@ -1670,7 +1690,7 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
         }
 
         for( unsigned int i=0; i<gTesselatorVertices.Count(); i++ )
-            delete (GLvertex*)gTesselatorVertices.Item(i);
+            delete (GLvertex*)gTesselatorVertices[i];
         gTesselatorVertices.Clear();
         
         gluDeleteTess(tobj);
@@ -1685,17 +1705,17 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 #if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) {
         wxGraphicsPath gpath = pgc->CreatePath();
-        gpath.MoveToPoint( points[0].x + xoffset, points[0].y + yoffset );
+        gpath.MoveToPoint( points[0].x * scale + xoffset, points[0].y  * scale + yoffset );
         for( int i = 1; i < n; i++ )
-            gpath.AddLineToPoint( points[i].x + xoffset, points[i].y + yoffset );
-        gpath.AddLineToPoint( points[0].x + xoffset, points[0].y + yoffset );
+            gpath.AddLineToPoint( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
+        gpath.AddLineToPoint( points[0].x * scale + xoffset, points[0].y * scale + yoffset );
 
         pgc->SetPen( GetPen() );
         pgc->SetBrush( GetBrush() );
         pgc->DrawPath( gpath );
 
         for( int i = 0; i < n; i++ )
-            dc->CalcBoundingBox( points[i].x + xoffset, points[i].y + yoffset );
+            dc->CalcBoundingBox( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
     } else
 #endif
         DrawPolygon( n, points, xoffset, yoffset, scale );
@@ -1734,22 +1754,22 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
             unsigned char *d = image.GetData();
             unsigned char *a = image.GetAlpha();
 
-            unsigned char mr, mg, mb;
-            if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ){
-                printf("trying to use mask to draw a bitmap without alpha or mask\n" );
-            }
-
 #ifdef __WXOSX__            
             if(image.HasMask())
                 a=0;
 #endif
+            unsigned char mr, mg, mb;
+            if( !a && !image.GetOrFindMaskColour( &mr, &mg, &mb ) ){
+                printf("trying to use mask to draw a bitmap without alpha or mask\n" );
+            }
+
             
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
                         unsigned char r, g, b;
-                        int off = ( y * image.GetWidth() + x );
+                        int off = ( y * w + x );
                         r = d[off * 3 + 0];
                         g = d[off * 3 + 1];
                         b = d[off * 3 + 2];

@@ -98,12 +98,17 @@ public:
     bool            SaveConfig(void);
     bool            ProcessFile(const wxString& aFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now());
     bool            ExtractZipFiles(const wxString& aZipFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveZip = false);
-    bool            ExtractRarFiles(const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveRar = false);
+#ifdef DLDR_USE_LIBARCHIVE
+    bool            ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveArchive = false);
+#endif
+#if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
+    bool            ExtractUnarrFiles(const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveRar = false);
+#endif
 
     void            UpdatePrefs(ChartDldrPrefsDlgImpl *dialog);
     
 //    Public properties
-    wxArrayOfChartSources *m_chartSources;
+    wxArrayOfChartSources *m_pChartSources;
     wxWindow       *m_parent_window;
     ChartCatalog   *m_pChartCatalog;
     ChartSource    *m_pChartSource;
@@ -166,9 +171,8 @@ private:
     bool            DownloadChart( wxString url, wxString file, wxString title );
     bool            downloadInProgress;
     int             to_download;
-    int             downloading;
-	int             updatingAll;
-    int             failed_downloads;
+
+    int             updatingAll;
     bool            cancelled;
     bool            DownloadIsCancel;
     chartdldr_pi   *pPlugIn;
@@ -183,6 +187,9 @@ private:
     bool            m_bTransferSuccess;
     wxString        m_totalsize;
     wxString        m_transferredsize;
+    int		    m_failed_downloads;
+    int             m_downloading;
+
     void            DisableForDownload( bool enabled );
     bool            m_bconnected;
 
@@ -222,9 +229,9 @@ protected:
     void            InvertCheckAllCharts( );
     
 public:
-    ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
+    //ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();
-    ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+    ChartDldrPanelImpl( chartdldr_pi* plugin = NULL, wxWindow* parent = NULL, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
     void            SelectCatalog( int item );
     void            onDLEvent(OCPN_downloadEvent &ev);
     void            CancelDownload() { Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent); cancelled = true; m_bconnected = false;}
