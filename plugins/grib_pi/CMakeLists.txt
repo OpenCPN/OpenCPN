@@ -104,8 +104,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-            src/TexFont.h
-            src/TexFont.cpp
+            src/pi_TexFont.h
+            src/pi_TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/CustomGrid.h
@@ -117,7 +117,11 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-
+            src/pi_ocpndc.cpp
+            src/pi_ocpndc.h
+            src/pi_shaders.cpp
+            src/pi_shaders.h
+ 
             ../../src/wxJSON/jsonval.cpp
             ../../src/wxJSON/jsonreader.cpp
             ../../src/wxJSON/jsonwriter.cpp
@@ -190,7 +194,7 @@ IF (QT_ANDROID )
         # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
 
         # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
+        /home/dsr/Projects/opencpn/build-opencpn-Production_build_Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Release/libopencpn.so                
 
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
@@ -201,15 +205,15 @@ IF (QT_ANDROID )
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
-
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+        
         ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
-
+        
 ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
@@ -239,6 +243,15 @@ ENDIF(WIN32)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+
+IF (QT_ANDROID )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv1_CM" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv2" )
+    
+ENDIF(QT_ANDROID)
 
 IF(NOT WIN32)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )

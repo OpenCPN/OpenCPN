@@ -57,6 +57,9 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 
 extern int   m_DialogStyle;
 
+grib_pi *g_pi;
+bool g_bpause;
+
 //---------------------------------------------------------------------------------------------------------
 //
 //    Grib PlugIn Implementation

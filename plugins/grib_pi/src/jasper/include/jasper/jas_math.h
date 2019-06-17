@@ -118,7 +118,7 @@ extern "C" {
 inline static int jas_safe_size_mul(size_t x, size_t y, size_t *result)
 {
         /* Check if overflow would occur */
-        if (x && y > SIZE_MAX / x) {
+        if (x && y > __SIZE_MAX__ / x) {
                 /* Overflow would occur. */
                 return 0;
         }

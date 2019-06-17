@@ -49,6 +49,8 @@
 #include "GribOverlayFactory.h"
 #include "GribUIDialog.h"
 
+class GribPreferencesDialog;
+
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
@@ -112,6 +114,7 @@ public:
       wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
       wxPoint GetCursorDataXY() { return m_CursorDataxy; }
       int  GetTimeZone() { return m_bTimeZone; }
+      void SetTimeZone(int tz);
       int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
@@ -119,9 +122,14 @@ public:
       GRIBOverlayFactory *m_pGRIBOverlayFactory;
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
+      void UpdatePrefs(GribPreferencesDialog *Pref);
+      
       int   m_MenuItem;
       bool  m_DialogStyleChanged;
 
+      wxSize           m_coreToolbarSize;
+      wxPoint          m_coreToolbarPosn;
+      
 private:
       bool LoadConfig(void);
       bool SaveConfig(void);
@@ -168,7 +176,7 @@ private:
 };
 
 //----------------------------------------------------------------------------------------
-// Prefrence dialog definition
+// Preference dialog definition
 //----------------------------------------------------------------------------------------
 
 class GribPreferencesDialog : public GribPreferencesDialogBase
@@ -178,6 +186,8 @@ public:
     : GribPreferencesDialogBase(pparent) {}
     ~GribPreferencesDialog() {}
 
+    void OnOKClick(wxCommandEvent& event);
+    
 private:
     void OnStartOptionChange(wxCommandEvent& event);
 };
