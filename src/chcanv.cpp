@@ -7741,83 +7741,83 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                 
             if( DraggingAllowed ) {
                                                     
-                                                    if( !undo->InUndoableAction() ) {
-                                                        undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
-                                                                                    Undo_NeedsCopy, m_pFoundPoint );
-                                                    }
+                if( !undo->InUndoableAction() ) {
+                    undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
+                                                Undo_NeedsCopy, m_pFoundPoint );
+                }
                                                     
-                                                    // Get the update rectangle for the union of the un-edited routes
-                                                    wxRect pre_rect;
+                // Get the update rectangle for the union of the un-edited routes
+                wxRect pre_rect;
                                                     
-                                                    if( !g_bopengl && m_pEditRouteArray ) {
-                                                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                                                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                                                            //      Need to validate route pointer
-                                                            //      Route may be gone due to drgging close to ownship with
-                                                            //      "Delete On Arrival" state set, as in the case of
-                                                            //      navigating to an isolated waypoint on a temporary route
-                                                            if( g_pRouteMan->IsRouteValid(pr) ) {
-                                                                wxRect route_rect;
-                                                                pr->CalculateDCRect( m_dc_route, this, &route_rect );
-                                                                pre_rect.Union( route_rect );
-                                                            }
-                                                        }
-                                                    }
-
-                                                    double new_cursor_lat = m_cursor_lat;
-                                                    double new_cursor_lon = m_cursor_lon;
-
-                                                    if( CheckEdgePan( x, y, true, 5, 2 ) )
-                                                        GetCanvasPixPoint( x, y, new_cursor_lat, new_cursor_lon );
-
-                                                                           // update the point itself
-                                                    if( g_btouch ) {
-                                                        //m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
-                                                        m_pRoutePointEditTarget->SetPointFromDraghandlePoint(this, mouse_x, mouse_y);
-                                                        // update the Drag Handle entry in the pSelect list
-                                                        pSelect->ModifySelectablePoint( new_cursor_lat, new_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
-                                                        m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
-                                                        m_pFoundPoint->m_slon = m_pRoutePointEditTarget->m_lon;
-                                                    }
-                                                    else{
-                                                        m_pRoutePointEditTarget->m_lat = new_cursor_lat;    // update the RoutePoint entry
-                                                        m_pRoutePointEditTarget->m_lon = new_cursor_lon;
-                                                        m_pFoundPoint->m_slat = new_cursor_lat;             // update the SelectList entry
-                                                        m_pFoundPoint->m_slon = new_cursor_lon;
-                                                    }
-   
-                                                   
-                                                    //    Update the MarkProperties Dialog, if currently shown
-                                                    if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties( true );
-                                                    }
+                if( !g_bopengl && m_pEditRouteArray ) {
+                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                        //      Need to validate route pointer
+                        //      Route may be gone due to drgging close to ownship with
+                        //      "Delete On Arrival" state set, as in the case of
+                        //      navigating to an isolated waypoint on a temporary route
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            wxRect route_rect;
+                            pr->CalculateDCRect( m_dc_route, this, &route_rect );
+                            pre_rect.Union( route_rect );
+                        }
+                    }
+                }
+                
+                double new_cursor_lat = m_cursor_lat;
+                double new_cursor_lon = m_cursor_lon;
+                
+                if( CheckEdgePan( x, y, true, 5, 2 ) )
+                    GetCanvasPixPoint( x, y, new_cursor_lat, new_cursor_lon );
+                
+                // update the point itself
+                if( g_btouch ) {
+                    //m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
+                    m_pRoutePointEditTarget->SetPointFromDraghandlePoint(this, mouse_x, mouse_y);
+                    // update the Drag Handle entry in the pSelect list
+                    pSelect->ModifySelectablePoint( new_cursor_lat, new_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
+                    m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
+                    m_pFoundPoint->m_slon = m_pRoutePointEditTarget->m_lon;
+                }
+                else{
+                    m_pRoutePointEditTarget->m_lat = new_cursor_lat;    // update the RoutePoint entry
+                    m_pRoutePointEditTarget->m_lon = new_cursor_lon;
+                    m_pFoundPoint->m_slat = new_cursor_lat;             // update the SelectList entry
+                    m_pFoundPoint->m_slon = new_cursor_lon;
+                }
+                
+                
+                //    Update the MarkProperties Dialog, if currently shown
+                if( ( NULL != g_pMarkInfoDialog ) && ( g_pMarkInfoDialog->IsShown() ) ) {
+                    if( m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint() ) g_pMarkInfoDialog->UpdateProperties( true );
+                }
                                                     
-                                                    if(g_bopengl) {
-                                                        //InvalidateGL();
-                                                        Refresh( false );
-                                                    } else {
-                                                        // Get the update rectangle for the edited route
-                                                        wxRect post_rect;
+                if(g_bopengl) {
+                    //InvalidateGL();
+                    Refresh( false );
+                } else {
+                    // Get the update rectangle for the edited route
+                    wxRect post_rect;
                                                         
-                                                        if( m_pEditRouteArray ) {
-                                                            for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                                                                Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                                                                if( g_pRouteMan->IsRouteValid(pr) ) {
-                                                                    wxRect route_rect;
-                                                                    pr->CalculateDCRect( m_dc_route, this, &route_rect );
-                                                                    post_rect.Union( route_rect );
-                                                                }
-                                                            }
-                                                        }
-                                                        
-                                                        //    Invalidate the union region
-                                                        pre_rect.Union( post_rect );
-                                                        RefreshRect( pre_rect, false );
-                                                    }
-                                                    gFrame->RefreshCanvasOther( this );
-                                                    m_bRoutePoinDragging = true;
-                                                }
-                                                ret = true;
+                    if( m_pEditRouteArray ) {
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                wxRect route_rect;
+                                pr->CalculateDCRect( m_dc_route, this, &route_rect );
+                                post_rect.Union( route_rect );
+                            }
+                        }
+                    }
+                    
+                    //    Invalidate the union region
+                    pre_rect.Union( post_rect );
+                    RefreshRect( pre_rect, false );
+                }
+                gFrame->RefreshCanvasOther( this );
+                m_bRoutePoinDragging = true;
+            }
+            ret = true;
         }     // if Route Editing
         
         else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
