@@ -476,7 +476,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 } 
             }
             
-            // Options dialog
+///v5            // Options dialog
 //             if(g_options){
 //                 ///v5qDebug() << "optionsA";
 //                 bool bshown = g_options->IsActive();
@@ -728,20 +728,6 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
     }
 
     if(timer_sequence == 2){
-        //qDebug() << "sequence 2";
-        // ..For each canvas...
-//         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-//             ChartCanvas *cc = g_canvasArray.Item(i);
-//             if( cc && cc->GetToolbar()) {
-//                 g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
-//                 SetAllToolbarScale();
-//                 cc->GetToolbar()->RePosition();
-//                 cc->GetToolbar()->SetGeometry(cc->GetCompass()->IsShown(), cc->GetCompass()->GetRect());
-//                 cc->GetToolbar()->Realize();
-//                 cc->GetToolbar()->Refresh( false );
-//             }
-//         }
-        
         timer_sequence++;
         m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
         return;
@@ -749,7 +735,6 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
 
     if(timer_sequence == 3){
         qDebug() << "sequence 3";
-        ///g_Platform->onStagedResizeFinal();
         androidConfirmSizeCorrection();
 
         timer_sequence++;
@@ -759,15 +744,10 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
     
     if(timer_sequence == 4){
         qDebug() << "sequence 4";
- //       if( g_MainToolbar )
- //           g_MainToolbar->Raise();
-
-    ///v5
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-//            if(cc && cc->GetMUIBar())
-//                cc->GetMUIBar()->Raise();  
-        }
+        
+        //  Raise the resized options dialog.
+        //  This has no effect if the dialog is not already shown.
+        g_options->Raise();
 
         resizeAndroidPersistents();
         return;
@@ -1121,11 +1101,6 @@ extern "C"{
     {
         qDebug() << "onConfigChange";
 
-        if(g_options){
-            qDebug() << "OptionsConfigChange: " << g_options->IsActive();
-            s_optionsActive = g_options->IsActive();
-        }
-        
         wxLogMessage(_T("onConfigChange"));
         GetAndroidDisplaySize();
         
