@@ -329,6 +329,7 @@ class GribPreferencesDialogBase : public wxDialog
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnStartOptionChange( wxCommandEvent& event ) { event.Skip(); }
+                virtual void OnOKClick(wxCommandEvent& event){ event.Skip(); }
 
 
 	public:

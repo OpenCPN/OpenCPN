@@ -94,6 +94,7 @@ grib_pi::grib_pi(void *ppimgr)
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       m_GUIScaleFactor = -1.;
+      g_pi = this;
 }
 
 grib_pi::~grib_pi(void)
@@ -276,24 +277,39 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbLoadOptions->SetSelection( m_bLoadLastOpenFile );
     Pref->m_rbStartOptions->SetSelection( m_bStartOptions );
 
-     if( Pref->ShowModal() == wxID_OK ) {
-         m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
-         m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
-         m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
-         m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
-         m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
+#ifdef __OCPN__ANDROID__
+    if( m_parent_window ){
+         int xmax = m_parent_window->GetSize().GetWidth();
+         int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+         Pref->SetSize( xmax, ymax );
+         Pref->Layout();
+         Pref->Move(0,0);
+    }
+    Pref->Show();
+#else
+    Pref->ShowModal();
+#endif    
+}
 
-          if( m_pGRIBOverlayFactory )
-              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
+void grib_pi::UpdatePrefs( GribPreferencesDialog* Pref )
+{
+    m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
+    m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
+    m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
+    m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
+    m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
 
-         int updatelevel = 0;
+    if( m_pGRIBOverlayFactory )
+        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
 
-         if( m_bStartOptions != Pref->m_rbStartOptions->GetSelection() ) {
+    int updatelevel = 0;
+
+    if( m_bStartOptions != Pref->m_rbStartOptions->GetSelection() ) {
              m_bStartOptions = Pref->m_rbStartOptions->GetSelection();
              updatelevel = 1;
-         }
+    }
 
-         if( m_bTimeZone != Pref->m_rbTimeFormat->GetSelection() ) {
+    if( m_bTimeZone != Pref->m_rbTimeFormat->GetSelection() ) {
              m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
              if( m_pGRIBOverlayFactory )
                 m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
@@ -328,12 +344,14 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                  m_pGribCtrlBar->ComputeBestForecastForNow();
                  break;
              }
-         }
+    }
 
-         SaveConfig();
-     }
-     delete Pref;
+    SaveConfig();
+
 }
+
+
+
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 {   // Make sure drag bar (title bar) or grabber always screen
@@ -834,4 +852,12 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
         OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed\nThis can decrease accuracy!"),
                 _("Warning!"));
     }
+}
+
+void GribPreferencesDialog::OnOKClick(wxCommandEvent& event)
+{ 
+    if(g_pi)
+        g_pi->UpdatePrefs( this );
+    Close();
+    
 }
