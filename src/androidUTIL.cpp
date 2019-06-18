@@ -59,6 +59,7 @@
 #include "chcanv.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
+#include "MUIBar.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -278,6 +279,9 @@ extern bool             b_inCloseWindow;
 extern bool             g_config_display_size_manual;
 extern MarkInfoDlg      *g_pMarkInfoDialog;
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr g_canvasArray;
+
 wxString callActivityMethod_vs(const char *method);
 
 
@@ -326,6 +330,7 @@ extern bool     g_btrackContinuous;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
+#define ANDROID_RESIZE_TIMER 4387
 
 #define ACTION_NONE                     -1
 #define ACTION_RESIZE_PERSISTENTS       1
@@ -341,7 +346,9 @@ class androidUtilHandler : public wxEvtHandler
     
     void onTimerEvent(wxTimerEvent &event);
     void onStressTimer(wxTimerEvent &event);
-        
+    void OnResizeTimer(wxTimerEvent &event);
+    void OnCmdEvent( wxCommandEvent& event );
+
     wxString GetStringResult(){ return m_stringResult; }
     
     wxTimer     m_eventTimer;
@@ -349,20 +356,38 @@ class androidUtilHandler : public wxEvtHandler
     bool        m_done;
     wxString    m_stringResult;
     wxTimer     m_stressTimer;
+    wxTimer     m_resizeTimer;
+    int         timer_sequence;
     
     DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
 EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
+EVT_TIMER ( ANDROID_RESIZE_TIMER, androidUtilHandler::OnResizeTimer )
+EVT_MENU(-1, androidUtilHandler::OnCmdEvent)
+
 END_EVENT_TABLE()
 
 androidUtilHandler::androidUtilHandler()
 {
     m_eventTimer.SetOwner( this, ANDROID_EVENT_TIMER );
     m_stressTimer.SetOwner( this, ANDROID_STRESS_TIMER );
-    
+    m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
+ 
 }
+
+       
+void androidUtilHandler::OnCmdEvent( wxCommandEvent& event )
+{
+    switch( event.GetId() ){
+        case ID_CMD_TRIGGER_RESIZE:
+            timer_sequence = 0;
+            m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+            break;
+    }
+}
+
 
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
@@ -669,6 +694,94 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
     }
     
 }
+
+void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
+{
+    if(timer_sequence == 0){
+    //  On QT, we need to clear the status bar item texts to prevent the status bar from
+    //  growing the parent frame due to unexpected width changes.
+//         if( m_pStatusBar != NULL ){
+//             int widths[] = { 2,2,2,2,2 };
+//            m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+// 
+//             for(int i=0 ; i <  m_pStatusBar->GetFieldsCount() ; i++){
+//                 m_pStatusBar->SetStatusText(_T(""), i);
+//             }
+//         }
+        qDebug() << "sequence 0";
+
+        timer_sequence++;
+        //  This timer step needs to be long enough to allow Java induced size change to take effect
+        //  in another thread.
+        m_resizeTimer.Start(1000, wxTIMER_ONE_SHOT);
+        return;
+    }
+
+
+
+    if(timer_sequence == 1){
+        qDebug() << "sequence 1" << config_size.x;
+        gFrame->SetSize(config_size);
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+
+    if(timer_sequence == 2){
+        //qDebug() << "sequence 2";
+        // ..For each canvas...
+//         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+//             ChartCanvas *cc = g_canvasArray.Item(i);
+//             if( cc && cc->GetToolbar()) {
+//                 g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
+//                 SetAllToolbarScale();
+//                 cc->GetToolbar()->RePosition();
+//                 cc->GetToolbar()->SetGeometry(cc->GetCompass()->IsShown(), cc->GetCompass()->GetRect());
+//                 cc->GetToolbar()->Realize();
+//                 cc->GetToolbar()->Refresh( false );
+//             }
+//         }
+        
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+
+    if(timer_sequence == 3){
+        qDebug() << "sequence 3";
+        ///g_Platform->onStagedResizeFinal();
+        androidConfirmSizeCorrection();
+
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+    
+    if(timer_sequence == 4){
+        qDebug() << "sequence 4";
+ //       if( g_MainToolbar )
+ //           g_MainToolbar->Raise();
+
+    ///v5
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+//            if(cc && cc->GetMUIBar())
+//                cc->GetMUIBar()->Raise();  
+        }
+
+        resizeAndroidPersistents();
+        return;
+    }
+
+}
+
+
+
+
+
+
+
+
 
 int stime;
 
@@ -1020,12 +1133,10 @@ extern "C"{
         
         config_size = new_size;
         
-        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-        evt.SetId( ID_CMD_TRIGGER_RESIZE );
-        if(gFrame && gFrame->GetEventHandler()){
-            gFrame->GetEventHandler()->AddPendingEvent(evt);
-        }
-                
+         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+         evt.SetId( ID_CMD_TRIGGER_RESIZE );
+             g_androidUtilHandler->AddPendingEvent(evt);
+
         return 77;
     }
 }
@@ -2404,7 +2515,7 @@ void androidConfirmSizeCorrection()
 {
     //  There is some confusion about the ActionBar size during configuration changes.
     //  We need to confirm the calculated display size, and fix it if necessary.
-    //  This happens during staged resize events processed by gFrame->TriggerResize()
+    //  This happens during staged resize events 
  
     wxLogMessage(_T("androidConfirmSizeCorrection"));
     wxSize targetSize = getAndroidDisplayDimensions();

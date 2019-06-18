@@ -778,7 +778,7 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     wxSize s = gFrame->GetSize();
     m_recoversize = s;
     s.y--;
-    gFrame->TriggerResize(s);
+    ///gFrame->TriggerResize(s);
     Raise();
 #endif    
 
@@ -862,7 +862,7 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     wxSize s = gFrame->GetSize();               // check for rotation
     if(1/*m_recoversize.x == s.x*/){
         s.y--;
-        gFrame->TriggerResize(s);
+        ///gFrame->TriggerResize(s);
     }
     
     Raise();

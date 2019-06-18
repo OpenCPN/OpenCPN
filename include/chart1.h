@@ -398,9 +398,6 @@ class MyFrame: public wxFrame
 
     bool DropMarker( bool atOwnShip = true );
     
-    void TriggerResize(wxSize sz);
-    void OnResizeTimer(wxTimerEvent &event);
-    
     void TriggerRecaptureTimer();
     bool SetGlobalToolbarViz( bool viz );
 

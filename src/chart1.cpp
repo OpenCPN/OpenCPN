@@ -2662,14 +2662,13 @@ EVT_MOVE(MyFrame::OnMove)
 EVT_ICONIZE(MyFrame::OnIconize)
 EVT_MENU(-1, MyFrame::OnToolLeftClick)
 EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
-//EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
-//EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
-//EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
-//EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
+EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
+EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
+EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
+EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
-EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
 EVT_TIMER(RECAPTURE_TIMER, MyFrame::OnRecaptureTimer)
 EVT_TIMER(TOOLBAR_ANIMATE_TIMER, MyFrame::OnToolbarAnimateTimer)
 EVT_COMMAND(wxID_ANY, BELLS_PLAYED_EVTYPE, MyFrame::OnBellsFinished)
@@ -4039,97 +4038,7 @@ void MyFrame::OnRecaptureTimer(wxTimerEvent &event)
 }
 
 
-int timer_sequence;
-void MyFrame::TriggerResize(wxSize sz)
-{
-#ifdef __OCPN__ANDROID__
-    m_newsize = sz;
 
-    timer_sequence = 0;
-    ///m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-
-    ///resizeAndroidPersistents();
-
-#endif
-}
-
-
-void MyFrame::OnResizeTimer(wxTimerEvent &event)
-{
-    if(timer_sequence == 0){
-    //  On QT, we need to clear the status bar item texts to prevent the status bar from
-    //  growing the parent frame due to unexpected width changes.
-        if( m_pStatusBar != NULL ){
-            int widths[] = { 2,2,2,2,2 };
-           m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
-
-            for(int i=0 ; i <  m_pStatusBar->GetFieldsCount() ; i++){
-                m_pStatusBar->SetStatusText(_T(""), i);
-            }
-        }
-
-        timer_sequence++;
-        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-        return;
-    }
-
-
-
-    if(timer_sequence == 1){
-        ///v5SetSize(m_newsize);
-        timer_sequence++;
-        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-        return;
-    }
-
-    if(timer_sequence == 2){
-        //qDebug() << "sequence 2";
-        // ..For each canvas...
-//         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-//             ChartCanvas *cc = g_canvasArray.Item(i);
-//             if( cc && cc->GetToolbar()) {
-//                 g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
-//                 SetAllToolbarScale();
-//                 cc->GetToolbar()->RePosition();
-//                 cc->GetToolbar()->SetGeometry(cc->GetCompass()->IsShown(), cc->GetCompass()->GetRect());
-//                 cc->GetToolbar()->Realize();
-//                 cc->GetToolbar()->Refresh( false );
-//             }
-//         }
-        
-        timer_sequence++;
-        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-        return;
-    }
-
-    if(timer_sequence == 3){
-        //qDebug() << "sequence 3";
-        g_Platform->onStagedResizeFinal();
-
-        timer_sequence++;
-        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-        return;
-    }
-    
-    if(timer_sequence == 4){
-        //qDebug() << "sequence 4";
- //       if( g_MainToolbar )
- //           g_MainToolbar->Raise();
-
-    ///v5
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-//            if(cc && cc->GetMUIBar())
-//                cc->GetMUIBar()->Raise();  
-        }
-
-#ifdef __OCPN__ANDROID__
-        resizeAndroidPersistents();
-#endif
-        return;
-    }
-
-}
 
 
 void MyFrame::SetCanvasSizes( wxSize frameSize )
@@ -4817,13 +4726,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
-            break;
-        }
-
-        case ID_CMD_TRIGGER_RESIZE:{
-            #ifdef __OCPN__ANDROID__
-            TriggerResize( getAndroidConfigSize() );
-            #endif
             break;
         }
 

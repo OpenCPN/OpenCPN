@@ -107,7 +107,6 @@ public:
     unsigned int GetSelectRadiusPix();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
-    void onStagedResizeFinal();
     
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);

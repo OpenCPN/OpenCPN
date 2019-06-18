@@ -1925,14 +1925,6 @@ unsigned int OCPNPlatform::GetSelectRadiusPix()
     return GetDisplayDPmm() * (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);
 }
 
-void OCPNPlatform::onStagedResizeFinal()
-{
-#ifdef __OCPN__ANDROID__
-    androidConfirmSizeCorrection();
-#endif
-    
-}
-
 bool OCPNPlatform::GetFullscreen()
 {
     bool bret = false;
