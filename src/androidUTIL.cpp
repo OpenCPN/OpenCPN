@@ -2301,8 +2301,10 @@ double GetAndroidDisplaySize()
     ///v5wxLogMessage(_T("Metrics:") + return_string);
     wxString msg;
     
-    msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
-    ///v5wxLogMessage(msg);
+    //int ssx, ssy;
+    //::wxDisplaySize(&ssx, &ssy);
+    //msg.Printf(_T("wxDisplaySize(): %d %d"), ssx, ssy);
+    //wxLogMessage(msg);
     
     double density = 1.0;
     long androidWidth = 2;
