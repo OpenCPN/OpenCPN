@@ -46,7 +46,8 @@ protected:
     void m_btnBackOnButtonClick( wxCommandEvent& event ) { m_htmlWinHelp->HistoryBack(); m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack()); }
 #endif
     void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { m_btnBack->Enable(); event.Skip(); }
-
+    
+    void RecalculateSize( void );
     
 public:
     ~AboutFrameImpl() {};

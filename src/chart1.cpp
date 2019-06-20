@@ -81,6 +81,7 @@
 #include "concanv.h"
 #include "options.h"
 #include "AboutFrameImpl.h"
+#include "about.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
 #include "ais.h"
@@ -645,6 +646,7 @@ bool                      g_bNeedDBUpdate;
 bool                      g_bPreserveScaleOnX;
 
 AboutFrameImpl            *g_pAboutDlg;
+about                     *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;
@@ -2500,7 +2502,7 @@ extern ocpnGLOptions g_GLOptions;
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
     g_pauimgr->Update();
-    
+
     return TRUE;
 }
 
@@ -3802,6 +3804,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     delete g_pageSetupData;
 
     if( g_pAboutDlg ) g_pAboutDlg->Destroy();
+    if( g_pAboutDlgLegacy ) g_pAboutDlgLegacy->Destroy();
 
 //      Explicitely Close some children, especially the ones with event handlers
 //      or that call GUI methods
@@ -4067,7 +4070,7 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
 #endif            
             break;
             
-            
+             
         case 1:
 #if 0            
             cc = g_canvasArray.Item(1);
@@ -4590,13 +4593,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case wxID_ABOUT:
         case ID_ABOUT: {
             g_MainToolbar->HideTooltip();
-            if( !g_pAboutDlg ) {
-                g_pAboutDlg = new AboutFrameImpl( this );
-                //g_pAboutDlg->();
-            } else {
-                g_pAboutDlg->SetFocus();
-            }
-            g_pAboutDlg->Show();
+            g_Platform->DoHelpDialog();
             break;
         }
 
@@ -6849,7 +6846,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     //qDebug() << "OnInitTimer" << m_iInitCount;
 
     InitTimer.Stop();
-    
+
     switch(m_iInitCount++) {
         case 0:
         {

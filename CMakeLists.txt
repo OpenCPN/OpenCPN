@@ -1553,6 +1553,7 @@ SET(SRCS
         src/undo.cpp
         src/AboutFrame.cpp
         src/AboutFrameImpl.cpp
+        src/about.cpp
         src/ais.cpp
         src/pluginmanager.cpp
         src/wxJSON/jsonwriter.cpp

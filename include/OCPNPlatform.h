@@ -158,6 +158,8 @@ public:
 #define PLATFORM_CAP_PLUGINS   1
 #define PLATFORM_CAP_FASTPAN   2
     void LaunchLocalHelp();
+    void DoHelpDialog( void );
+
     int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
     void platformLaunchDefaultBrowser( wxString URL );
 

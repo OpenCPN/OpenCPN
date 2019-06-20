@@ -48,6 +48,8 @@
 #include "s52s57.h"
 #include "options.h"
 #include "Select.h"
+#include "AboutFrameImpl.h"
+#include "about.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -275,7 +277,8 @@ extern wxArrayString             g_locale_catalog_array;
 
 #endif
 extern int                       options_lastPage;
-
+extern AboutFrameImpl            *g_pAboutDlg;
+extern about                     *g_pAboutDlgLegacy;
 
 
 
@@ -2482,6 +2485,26 @@ bool OCPNPlatform::isPlatformCapable( int flag){
 #endif    
 }    
     
+void OCPNPlatform::DoHelpDialog( void ) {
+#ifndef __OCPN__ANDROID__
+    if( !g_pAboutDlg ) {
+        g_pAboutDlg = new AboutFrameImpl( gFrame );
+        } else {
+            g_pAboutDlg->SetFocus();
+        }
+    g_pAboutDlg->Show();
+    
+#else
+    if( !g_pAboutDlgLegacy )
+        g_pAboutDlgLegacy = new about( gFrame, GetSharedDataDir() );
+    else
+        g_pAboutDlg->SetFocus();
+    g_pAboutDlgLegacy->Show();
+
+
+#endif    
+    
+}
     
 void OCPNPlatform::LaunchLocalHelp( void ) {
  

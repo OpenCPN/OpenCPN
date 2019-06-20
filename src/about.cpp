@@ -38,13 +38,12 @@
 #include <wx/clipbrd.h>
 #include <wx/html/htmlwin.h>
 #include <wx/tokenzr.h>
-#include <version.h>
+#include <config.h>
 
 #include "about.h"
 #include "chart1.h"
 #include "chcanv.h"
 #include "styles.h"
-#include "version.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 
@@ -55,17 +54,19 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern about *g_pAboutDlg;
 extern bool g_bresponsive;
 
-wxString OpenCPNVersion =
-    wxString::Format( wxT("\n      Version %i.%i.%i Build "),
-                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
-    + wxString::FromAscii(VERSION_DATE);
+wxString OpenCPNVersion =  wxString::Format( wxT("\n      Version %s"), VERSION_FULL);
+    
+    //%i.%i.%i Build "),
+    //                  VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
+    //+ wxString::FromAscii(VERSION_DATE);
 
-    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.18<br>Base %i.%i.%i<br>Base Build Date %s"),
-                                     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
+wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.18<br>Base %s"), VERSION_FULL);
+    //%i.%i.%i<br>Base Build Date %s"),
+      //                               VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2018 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2019 The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
@@ -231,7 +232,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 
 void about::SetColorScheme( void )
 {
-    DimeControl( this );
+    ///v5DimeControl( this );
     wxColor bg = GetBackgroundColour();
     if(pAboutHTMLCtl) pAboutHTMLCtl->SetBackgroundColour( bg );
     if(pLicenseHTMLCtl)pLicenseHTMLCtl->SetBackgroundColour( bg );
