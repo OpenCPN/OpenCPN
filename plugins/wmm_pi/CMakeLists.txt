@@ -51,6 +51,10 @@ SET(SRC_WMM
     src/WmmUIDialog.cpp
     src/TexFont.cpp
     src/TexFont.h
+    src/pi_ocpndc.cpp
+    src/pi_ocpndc.h
+    src/pi_shaders.cpp
+    src/pi_shaders.h
 	)
 
 IF(WIN32)
