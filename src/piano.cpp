@@ -250,12 +250,19 @@ void Piano::BuildGLTexture()
 
     wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_srBrush, m_rBrush, m_tileBrush, m_utileBrush, m_unavailableBrush };
 
+    m_ref = h;
+    m_pad = h / 7;                  // spacing between buttons
+    m_radius = h / 4;
+    m_texPitch = ((2*m_ref) + (2*m_pad));
+
     m_tex_piano_height = h;
-    m_texw = 64;
+    m_texw = m_texPitch * 3;
+    
     m_texh = ((sizeof brushes) / (sizeof *brushes)) * h;
-    m_texh += 4*16; // for icons;
+    m_texh += 4 * m_ref; // for icons;
 
     m_texh = NextPow2(m_texh);
+    m_texw= NextPow2(m_texw);
 
     if(!m_tex)
         glGenTextures( 1, &m_tex );
@@ -271,30 +278,31 @@ void Piano::BuildGLTexture()
     dc.SetBrush(tbackBrush);
     dc.DrawRectangle(0, 0, m_texw, m_texh);
 
-    // draw the needed rectangles with minimal width
-    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.0));    //0.5 mm nominal, but not less than 1 pixel
+    
+    // draw the needed rectangles 
+    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), nominal_line_width_pix, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
     for(unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
         unsigned int x = 0, y = h * b;
 
         dc.SetBrush(brushes[b]);
 
-        int u = 3, v = 2;
-        dc.DrawRectangle(x+u, y+v, 3, h-2*v);
-        x+=3+2*u;
+        int v = 2;
+        dc.DrawRectangle(x + m_pad, y+v, 2*m_ref, h-2*v);
+         
+        x += m_texPitch;
+        dc.DrawRoundedRectangle(x + m_pad, y+v, 2*m_ref, h-2*v, m_radius);
         
-        dc.DrawRoundedRectangle(x+u, y+v, 9, h-2*v, 4);
-        x+=9+2*u;
+        int w = m_ref / 6;      // border width of eclipsed chart
 
-        int w = 3;
-        dc.DrawRoundedRectangle(x+u, y+v, 12, h-2*v, 4);
+        x += m_texPitch;
+        dc.DrawRoundedRectangle(x + m_pad, y+v, 2*m_ref, h-2*v, m_radius);
         dc.SetBrush( m_backBrush );
-        dc.DrawRoundedRectangle(x+u+w, y+v+w, 12-2*w, h-2*v-2*w, 3);
-        x+=12+2*u;
-
-        if(x >= m_texw)
-            printf("texture too small\n");
+        dc.DrawRoundedRectangle(x + m_pad +w, y+v+w, (2*m_ref)-(2*w), h-2*v-2*w, m_radius * (h-2*v-2*w) / (h-2*v));  // slightly smaller radius
     }
+    
+
     dc.SelectObject( wxNullBitmap );
 
     wxImage image = bmp.ConvertToImage();
@@ -318,7 +326,6 @@ void Piano::BuildGLTexture()
 
     for(unsigned int i = 0; i < (sizeof bitmaps) / (sizeof *bitmaps); i++) {
         int iw = bitmaps[i]->GetWidth(), ih = bitmaps[i]->GetHeight();
-        wxASSERT(ih <= 16);
 
         wxImage im = bitmaps[i]->ConvertToImage();
         unsigned char *data = new unsigned char[4*iw*ih], *d = data, *e = im.GetData(), *a = im.GetAlpha();
@@ -327,7 +334,7 @@ void Piano::BuildGLTexture()
             *d = *a, d++, a++;
         }
 
-        int off = ((sizeof brushes) / (sizeof *brushes))*h + 16*i;
+        int off = ((sizeof brushes) / (sizeof *brushes))*h + m_ref*i;
         glTexSubImage2D( GL_TEXTURE_2D, 0, 0, off, iw, ih, GL_RGBA, GL_UNSIGNED_BYTE, data );
         delete [] data;
     }
@@ -372,10 +379,9 @@ void Piano::DrawGL(int off)
 
         wxRect box = KeyRect[i];
         float y = h*b, v1 = (y+.5)/m_texh, v2 = (y+h-.5)/m_texh;
-        // u contains the pixel coordinates in the texture for the three possible rectangles
-        const float u[3][6] = {{0, 3, 4, 4, 5, 8},
-                               {9, 14, 15, 15, 18, 23},
-                               {24, 31, 32, 32, 34, 41}};
+        
+        // texcord contains the texture pixel coordinates in the texture for the three rectangle parts
+        const float texcord[6] = {0, (float)m_ref-1, (float)m_ref, (float)m_ref, (float)m_ref+1, (float)m_texPitch-1};
         int uindex;
         if(m_brounded) {
             if(InArray(m_eclipsed_index_array, key_db_index))
@@ -392,10 +398,16 @@ void Piano::DrawGL(int off)
 
         // the minimal width rectangles are texture mapped to the
         // width needed by mapping 3 quads: left middle and right
-        const int x[6] = {x1 - 3, x1 + w, x2 - w, x2+3};
+        int x[6] = {x1 - 3, x1 + m_ref, x2 - m_ref, x2+3};
+
+        // adjust for very narrow keys
+        if(x[1] > x[2]){
+            int avg = (x[1] + x[2])/2;
+            x[1] = x[2] = avg;
+        }
 
         for(int i=0; i<3; i++ ) {
-            float u1 = (u[uindex][2*i]+.5)/m_texw, u2 = (u[uindex][2*i+1]+.5)/m_texw;
+            float u1 = ((uindex * m_texPitch) + texcord[2*i]+.5)/m_texw, u2 = ((uindex * m_texPitch) + texcord[2*i+1]+.5)/m_texw;
             int x1 = x[i], x2 = x[i+1];
             texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1, coords[vc++] = y1;
             texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2, coords[vc++] = y1;
@@ -428,7 +440,10 @@ void Piano::DrawGL(int off)
     glEnable(GL_TEXTURE_2D);
 
 #ifdef USE_ANDROID_GLES2
+    glEnable(GL_BLEND);
     m_parentCanvas->GetglCanvas()->RenderTextures(coords, texcoords, vc/2, m_parentCanvas->GetpVP());
+    glDisable(GL_BLEND);
+
 #else
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -538,7 +553,7 @@ void Piano::ShowBusy( bool busy )
 void Piano::SetKeyArray( std::vector<int> array )
 {
     m_key_array = array;
-    FormatKeys();
+    ///v5FormatKeys();
 }
 
 void Piano::SetNoshowIndexArray( std::vector<int> array )
@@ -650,12 +665,11 @@ void Piano::FormatKeys( void )
         
 //    Build the Key Regions
 
-        KeyRect.Empty();
-        KeyRect.Alloc( nKeys );
+        KeyRect.clear();
         m_width = 0;
         for( int i = 0; i < nKeys; i++ ) {
             wxRect r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
-            KeyRect.Add( r );
+            KeyRect.push_back( r );
             m_width = r.x + r.width;
         }
     }

@@ -128,7 +128,8 @@ private:
       int         m_click_sel_dbindex;
       int         m_action;
       
-      RectArray KeyRect;
+      //RectArray KeyRect;
+      std::vector<wxRect> KeyRect;
       
       wxBitmap    *m_pVizIconBmp;
       wxBitmap    *m_pInVizIconBmp;
@@ -141,7 +142,7 @@ private:
       bool        m_bleaving;
 
       GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
-//      int         m_ref, m_pad, m_radius, m_texPitch;
+      int         m_ref, m_pad, m_radius, m_texPitch;
       
       int         m_width;
       
