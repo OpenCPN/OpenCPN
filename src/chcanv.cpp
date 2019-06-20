@@ -370,6 +370,24 @@ wxDialog                *g_pcurtain;
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
 
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
+class OCPNStopWatch
+{
+public:
+    OCPNStopWatch() { Reset(); }
+    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+
+    double GetTime() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+
+private:
+    timespec tp;
+};
+#endif
+
 
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
@@ -898,6 +916,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Compass->Show(m_bShowCompassWin);
 
     m_bToolbarEnable = false;
+    m_pianoFrozen = false;
 }
 
 ChartCanvas::~ChartCanvas()
@@ -2307,9 +2326,14 @@ void ChartCanvas::SetDisplaySizeMM( double size )
 #endif
     
      wxString msg;
-     msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sd.x, sd.y);
+     msg.Printf(_T("Metrics:  m_display_size_mm: %g     g_Platform->getDisplaySize():  %d:%d   "), m_display_size_mm, sd.x, sd.y);
      wxLogMessage(msg);
     
+    int ssx, ssy;
+    ::wxDisplaySize(&ssx, &ssy);
+    msg.Printf(_T("wxDisplaySize(): %d %d"), ssx, ssy);
+    wxLogMessage(msg);
+
      m_focus_indicator_pix = /*std::round*/wxRound(1 * GetPixPerMM());
 
 }
@@ -4916,6 +4940,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon )
 bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double skew,
                                 double rotation, int projection, bool b_adjust, bool b_refresh )
 {
+    OCPNStopWatch sw;
+    
     bool b_ret = false;
 
     if(skew > PI) /* so our difference tests work, put in range of +-Pi */
@@ -5028,6 +5054,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         if(!g_bopengl)
             VPoint.b_MercatorProjectionOverride = false;
+
     }
 
     //  Handle the quilted case
@@ -5055,7 +5082,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             if( g_bFullScreenQuilt ) {
                 current_ref_stack_index = m_pQuilt->GetRefChartdbIndex();
             }
-            
+    
             //We might need a new Reference Chart
             bool b_needNewRef = false;
 
@@ -5077,7 +5104,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             if( !renderable )
                 b_needNewRef = true;
             
-                          
 
             //    Need new refchart?
             if( b_needNewRef ) {
@@ -5139,7 +5165,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 m_pQuilt->SetReferenceChart( new_ref_index ); //maybe???
 
             }
-
             if(!g_bopengl) {
                 // Preset the VPoint projection type to match what the quilt projection type will be
                 int ref_db_index = m_pQuilt->GetRefChartdbIndex(), proj;
@@ -5176,7 +5201,23 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 //                unsigned long hash1 = m_pQuilt->GetXStackHash();
  
 //                wxStopWatch sw;
+
+#ifdef __OCPN__ANDROID__
+                // This is an optimization for panning on touch screen systems.
+                //  The quilt composition is deferred until the OnPaint() message gets finally
+                //  removed and processed from the message queue.
+                // Takes advantage of the fact that touch-screen pan gestures are usually short in distance,
+                //  so not requiring a full quilt rebuild until the pan gesture is complete.       
+                if( last_vp.view_scale_ppm != scale_ppm ){
+                    m_pQuilt->Compose( VPoint );
+                }
+                else{
+                    m_pQuilt->Invalidate();
+                }
+#else
                 m_pQuilt->Compose( VPoint );
+#endif
+                
 //                printf("comp time %ld\n", sw.Time());
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
@@ -5310,7 +5351,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         m_scaleText = text;
         if(m_muiBar)
             m_muiBar->UpdateDynamicValues();
-        
+
         if( m_bShowScaleInStatusBar && parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
                 // Check to see if the text will fit in the StatusBar field...
                 bool b_noshow = false;
@@ -12707,6 +12748,8 @@ void ChartCanvas::HandlePianoRollover( int selected_index, int selected_dbIndex 
 
 void ChartCanvas::UpdateCanvasControlBar( void )
 {
+    if(m_pianoFrozen)
+        return;
     
     if( !GetpCurrentStack() ) return;
     if( !ChartData) return;
@@ -12745,7 +12788,8 @@ void ChartCanvas::UpdateCanvasControlBar( void )
         }
         
     }
-    
+
+
     //    Set up the TMerc and Skew arrays
     std::vector<int>  piano_skew_chart_index_array;
     std::vector<int>  piano_tmerc_chart_index_array;
@@ -12772,20 +12816,22 @@ void ChartCanvas::UpdateCanvasControlBar( void )
                         piano_skew_chart_index_array.push_back(piano_chart_index_array[ino] );
                     
     }
+
     m_Piano->SetSkewIndexArray( piano_skew_chart_index_array );
     m_Piano->SetTmercIndexArray( piano_tmerc_chart_index_array );
     m_Piano->SetPolyIndexArray( piano_poly_chart_index_array );
-    m_Piano->FormatKeys();
     
+
     wxString new_hash = m_Piano->GenerateAndStoreNewHash();
     if(new_hash != old_hash) {
+        m_Piano->FormatKeys();
         //SetChartThumbnail( -1 );
         HideChartInfoWindow();
         m_Piano->ResetRollover();
         SetQuiltChartHiLiteIndex( -1 );
         m_brepaint_piano = true;
     }
-    
+
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,
     // and notify the platform.
     int mask = 0;
@@ -12802,7 +12848,7 @@ void ChartCanvas::UpdateCanvasControlBar( void )
                 mask |= 2;
         }
     }
-    
+
     wxString s_indicated;
     if(sel_type == CHART_TYPE_CM93COMP)
         s_indicated = _T("cm93");
@@ -12814,7 +12860,6 @@ void ChartCanvas::UpdateCanvasControlBar( void )
     }
     
     g_Platform->setChartTypeMaskSel(mask, s_indicated);
-    
 }
 
 void ChartCanvas::FormatPianoKeys( void )

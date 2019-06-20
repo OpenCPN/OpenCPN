@@ -374,6 +374,8 @@ public:
       void ApplyGlobalSettings();
       void SetShowGPSCompassWindow( bool bshow );
 
+      void FreezePiano(){ m_pianoFrozen = true; }
+      void ThawPiano(){ m_pianoFrozen = false; }
       
       //Todo build more accessors
       bool        m_bFollow;
@@ -893,7 +895,8 @@ private:
       wxString     m_alertString;
       wxRect       m_scaleBarRect;
       bool         m_bShowCompassWin;
-
+      bool         m_pianoFrozen;
+      
 DECLARE_EVENT_TABLE()
 };
 

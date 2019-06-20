@@ -679,6 +679,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 //      }
 #endif
 
+
     //qDebug() << "OnSize: " <<  GetSize().x << GetSize().y;
     SetCurrent(*m_pcontext);
     
@@ -1191,6 +1192,7 @@ void glChartCanvas::BuildFBO( )
 
 void glChartCanvas::SetupOpenGL()
 {
+   
     SetCurrent(*m_pcontext);
 
     char *str = (char *) glGetString( GL_RENDERER );
@@ -1606,6 +1608,7 @@ no_compression:
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
+
     wxPaintDC dc( this );
 
     if(!m_pcontext)
@@ -4262,7 +4265,7 @@ int n_render;
 void glChartCanvas::Render()
 {
     if( !m_bsetup || !m_pParentCanvas->m_pQuilt ||
-        ( m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt->IsComposed() ) ||
+        ( m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt ) ||
         ( !m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_singleChart ) ) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
         SwapBuffers();
@@ -4287,7 +4290,7 @@ void glChartCanvas::Render()
     bool recompose = false;
     if(m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt && !m_pParentCanvas->m_pQuilt->IsComposed()){
         m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
-        ///v5gFrame->UpdateControlBar();
+        m_pParentCanvas->UpdateCanvasControlBar();
         recompose = true;
     }
     
@@ -4919,8 +4922,6 @@ void glChartCanvas::Render()
         }
     }
 
-
-    
     // Render MBTiles as overlay
     std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
     unsigned int im = stackIndexArray.size();
@@ -6027,38 +6028,30 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             if(m_binPan){
                 if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit){
                     //qDebug() << "slowpan" << dx << dy;
+                    
+                    m_pParentCanvas->FreezePiano();
                     m_pParentCanvas->PanCanvas( dx, -dy );
+                    m_pParentCanvas->ThawPiano();
+
                 }
                 else{
-                    //qDebug() << "fastpan" << dx << dy;
                     FastPan( dx, dy );
                 }
                 
                 
                 panx -= dx;
                 pany -= dy;
-                m_pParentCanvas->ClearbFollow();
-            
-            #ifdef __OCPN__ANDROID__
-                androidSetFollowTool(false);
-            #endif        
+                if(m_pParentCanvas->m_bFollow){
+                    m_pParentCanvas->ClearbFollow();
+                }
             }
             break;
             
         case GestureFinished:
             //qDebug() << "panGestureFinished";
 
-            if(g_GLOptions.m_bUseCanvasPanning){
-                //qDebug() << "panfinish";
-                if(m_binPan){
-                    m_pParentCanvas->PanCanvas( -panx, pany );
-                }
-            }
-
-            #ifdef __OCPN__ANDROID__
-                androidSetFollowTool(false);
-            #endif        
-            
+            m_pParentCanvas->UpdateCanvasControlBar();
+ 
             m_binPan = false;
             m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
             
@@ -6075,6 +6068,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     m_bgestureGuard = true;
     m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
+    //qDebug() << "panGestureDone";
     
 }
 
