@@ -1002,25 +1002,12 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // the next smaller scale chart.  Makes a nicer image...
     // However, we don't want excessive underzoom, for performance reasons.
     // So make sure any adjusted min_scale is not more than twice the already established value
-#if 0
-<<<<<<< HEAD
-    if(index_array.GetCount() > 1){
-        for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
-            int scale_min_this = min_scale.Item(i);
-            int scale_max_next = max_scale.Item(i+1);
-            int min_scale_test = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
-            min_scale_test = wxMin(min_scale_test, min_scale.Item(i) * 2 );
-            min_scale.Item(i) = min_scale_test;
-//              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
-=======
-#endif
     if(scales.size() > 1){
         for(unsigned i=0 ; i < scales.size()-1 ; i++){
             int min_scale_test = wxMax(scales[i].min, scales[i+1].max+1);
             min_scale_test = wxMin(min_scale_test, scales[i].min * 2);
             scales[i].min = min_scale_test;
 //              min_scale[i] = wxMax(min_scale[i], max_scale.Item(i+1) + 1);
-//>>>>>>> v5.0.0
         }
     }
 
