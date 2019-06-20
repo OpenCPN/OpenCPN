@@ -75,10 +75,8 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     m_ptoolbar->AddTool( ID_RMINUS, _T("RangeMinus"), m_bmRMinus, m_bmRMinus );
     
  
-    SetCanToggleOrientation( false );
     EnableRolloverBitmaps( false );
     DisableTooltips();
-    SetGrabberEnable( false );
 
     m_nDensity = 0;
     SetDensityToolBitmap(m_nDensity);

@@ -449,8 +449,6 @@ public:
       void SetToolbarOrientation( long orient );
       long GetToolbarOrientation();
       
-      void SubmergeToolbar(void);
-      void SurfaceToolbar(void);
       void ToggleToolbar( bool b_smooth = false );
       bool IsToolbarShown();
       void DestroyToolbar();

@@ -895,7 +895,6 @@ void BuildiENCToolbar( bool bnew )
             
             g_iENCToolbar = new iENCToolbar( gFrame,  posn, wxTB_HORIZONTAL, tool_scale_factor );
             g_iENCToolbar->SetColorScheme(global_color_scheme);
-            g_iENCToolbar->EnableSubmerge( false );
         }
     }
     else{
@@ -5888,24 +5887,10 @@ void MyFrame::InvalidateAllCanvasUndo()
 
 void MyFrame::SubmergeAllCanvasToolbars( void )
 {
-    // .. for each canvas...
-    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if(cc)
-            cc->SubmergeToolbar( );
-    }
 }
 
 void MyFrame::SurfaceAllCanvasToolbars( void )
 {
-    if(g_bshowToolbar){
-        // .. for each canvas...
-        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-            ChartCanvas *cc = g_canvasArray.Item(i);
-            if(cc && cc->GetToolbarEnable())
-                cc->SurfaceToolbar( );
-        }
-    }
 
 #ifndef __WXQT__
        //  removed to show MUIBars on MSVC
@@ -6061,15 +6046,6 @@ int MyFrame::DoOptionsDialog()
 
     prev_locale = g_locale;
 
-    bool b_sub = false;
-    if( g_MainToolbar && g_MainToolbar->IsShown() ) {
-        wxRect bx_rect = g_options->GetScreenRect();
-        wxRect tb_rect = g_MainToolbar->GetScreenRect();
-        if( tb_rect.Intersects( bx_rect ) ) b_sub = true;
-
-        if( b_sub ) g_MainToolbar->Submerge();
-    }
-
 #if defined(__WXOSX__) || defined(__WXQT__)
     bool b_restoreAIS = false;
     if( g_pAISTargetList  && g_pAISTargetList->IsShown() ){
@@ -6157,11 +6133,7 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowPos = g_options->lastWindowPos;
     options_lastWindowSize = g_options->lastWindowSize;
 
-    if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
-        g_MainToolbar->Surface();
-        SurfaceAllCanvasToolbars();
-        GetPrimaryCanvas()->SetFocus();
-    }
+    GetPrimaryCanvas()->SetFocus();
 
 #ifdef __WXGTK__
     Raise();                      // I dunno why...
@@ -6303,11 +6275,6 @@ int MyFrame::DoOptionsDialog()
         }
     }
     
-    if( g_MainToolbar ) {
-        if( IsFullScreen() && !g_bFullscreenToolbar )
-            g_MainToolbar->Submerge();
-    }
-
 #if defined(__WXOSX__) || defined(__WXQT__)
     if( b_restoreAIS ){
         g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
@@ -10628,7 +10595,6 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         //qDebug() << "RequestNewMasterToolbar";
         g_MainToolbar = new ocpnFloatingToolbarDialog( this,
                                                        wxPoint( -1, -1/*g_maintoolbar_x, g_maintoolbar_y*/ ), wxTB_VERTICAL, g_toolbar_scalefactor );
-        g_MainToolbar->SetGrabberEnable( false );
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
@@ -10643,13 +10609,9 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     
     if( g_MainToolbar ) {
         CreateMasterToolbar();
-        if (g_MainToolbar->isSubmergedToGrabber()) {
-            g_MainToolbar->SubmergeToGrabber();
-        } else {
-            g_MainToolbar->RePosition();
-            g_MainToolbar->SetColorScheme(global_color_scheme);
-            g_MainToolbar->Show(b_reshow && g_bshowToolbar);
-        }
+        g_MainToolbar->RePosition();
+        g_MainToolbar->SetColorScheme(global_color_scheme);
+        g_MainToolbar->Show(b_reshow && g_bshowToolbar);
     }
     
     if(btbRebuild){

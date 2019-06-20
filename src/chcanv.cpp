@@ -2776,7 +2776,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             
             SetCursor( *pCursorArrow );
             
-            SurfaceToolbar();
             InvalidateGL();
             Refresh( false );
         }
@@ -3154,14 +3153,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
                 SetCursor( *pCursorArrow );
 
-                SurfaceToolbar();
                 gFrame->RefreshAllCanvas();
             }
 
             if( m_routeState )         // creating route?
             {
                 FinishRoute();
-                SurfaceToolbar();
                 InvalidateGL();
                 Refresh( false );
             }
@@ -7022,13 +7019,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         {
             wxPoint p = ClientToScreen( wxPoint( x, y ) );
             
-            // Submerge the toolbar if necessary
-            if( m_toolBar ) {
-                wxRect rect = m_toolBar->GetScreenRect();
-                rect.Inflate( 20 );
-                if( rect.Contains( p.x, p.y ) )
-                    m_toolBar->Submerge();
-            }
         }
     }
     
@@ -8457,8 +8447,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
             
-            if( m_toolBar && !m_toolBar->IsToolbarShown())
-                SurfaceToolbar();
             ret = true;
         }
         
@@ -8475,8 +8463,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            if( m_toolBar && !m_toolBar->IsToolbarShown())
-                SurfaceToolbar();
             ret = true;
         }
 
@@ -12081,18 +12067,6 @@ long ChartCanvas::GetToolbarOrientation()
         return 0;
 }
 
-void ChartCanvas::SubmergeToolbar( void )
-{
-    if( m_toolBar )
-        m_toolBar->Submerge();
-}
-
-void ChartCanvas::SurfaceToolbar( void )
-{
-    if( m_toolBar )
-        m_toolBar->Surface();
-}
-
 bool ChartCanvas::IsToolbarShown()
 {
     bool rv = false;
@@ -12103,15 +12077,6 @@ bool ChartCanvas::IsToolbarShown()
 
 void ChartCanvas::ToggleToolbar( bool b_smooth )
 {
-    if( m_toolBar ) {
-        if( m_toolBar->IsShown() ){
-            SubmergeToolbar();
-        }
-        else{
-            SurfaceToolbar();
-            m_toolBar->Raise();
-        }
-    }
 }
 
 void ChartCanvas::DestroyToolbar()
@@ -12161,13 +12126,9 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
         m_toolBar->m_toolbar_scale_tools_shown = toolbar_scale_tools_shown;
         
         m_toolBar->CreateMyToolbar();
-        if (m_toolBar->isSubmergedToGrabber()) {
-            m_toolBar->SubmergeToGrabber();
-        } else {
-            m_toolBar->RePosition();
-            m_toolBar->SetColorScheme(global_color_scheme);
-            m_toolBar->Show(b_reshow && m_bToolbarEnable);
-        }
+        m_toolBar->RePosition();
+        m_toolBar->SetColorScheme(global_color_scheme);
+        m_toolBar->Show(b_reshow && m_bToolbarEnable);
     }
 
     return m_toolBar;
@@ -12187,9 +12148,6 @@ void ChartCanvas::UpdateToolbarColorScheme( ColorScheme cs )
             if( m_toolBar->IsToolbarShown() ) {
                 m_toolBar->DestroyToolBar();
                 m_toolBar->CreateMyToolbar();
-                if (m_toolBar->isSubmergedToGrabber()) 
-                    m_toolBar->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
-                
             }
         }
     }
