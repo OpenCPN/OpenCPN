@@ -2128,8 +2128,6 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
 ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSourceDlg( parent )
 {
-    qDebug() << "ChartDldrGuiAddSourceDlg";
-    
     wxFileName fn;
     fn.SetPath(*GetpSharedDataLocation());
     fn.AppendDir(_T("plugins"));
@@ -2205,8 +2203,6 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
     if( !fn.FileExists() )
     {
-         qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesA";
-
         fn.SetPath(*GetpSharedDataLocation());
         fn.AppendDir(_T("plugins"));
         fn.AppendDir(_T("chartdldr_pi"));
@@ -2214,8 +2210,6 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
         fn.SetFullName(_T("chart_sources.xml"));
         if( !fn.FileExists() )
         {
-                    qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesB";
-
             wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
             return false;
         }
@@ -2223,11 +2217,8 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     wxString path = fn.GetFullPath();
     TiXmlDocument * doc = new TiXmlDocument();
     bool ret = doc->LoadFile(path.mb_str(), TIXML_ENCODING_UTF8);
-    qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesB5" << path.mb_str() << ret;
     if( ret )
     {
-                qDebug() << "ChartDldrGuiAddSourceDlg::LoadSourcesC";
-
         TiXmlElement * root = doc->RootElement();
         wxString rootName = wxString::FromUTF8( root->Value() );
         TiXmlNode *child;
@@ -2238,8 +2229,6 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
                 LoadSections(tree, child);
         }
     }
-    else
-        qDebug() << doc->ErrorDesc();
     
     doc->Clear();
     wxDELETE(doc);

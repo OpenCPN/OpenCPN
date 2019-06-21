@@ -60,6 +60,7 @@
 #include "GL/gl_private.h"
 #else
 #include "GL/gl.h"
+#include "GL/glu.h"
 #endif
 
 #ifdef USE_ANDROID_GLES2
@@ -391,8 +392,8 @@ void piDrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool 
         /* wx draws a nice rounded end in dc mode, so replicate
            this for opengl mode, should this be done for the dashed mode case? */
         if(pen.GetCap() == wxCAP_ROUND) {
-            DrawEndCap( x1, y1, t1, angle);
-            DrawEndCap( x2, y2, t1, angle + M_PI);
+             piDrawEndCap( x1, y1, t1, angle);
+             piDrawEndCap( x2, y2, t1, angle + M_PI);
         }
 
     }
@@ -799,8 +800,8 @@ void piDrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
     }
  
     if(pen.GetCap() == wxCAP_ROUND) {
-        DrawEndCap( x0, y0, t1, a0);
-        DrawEndCap( x0, y0, t1, a0 + M_PI);
+        piDrawEndCap( x0, y0, t1, a0);
+        piDrawEndCap( x0, y0, t1, a0 + M_PI);
      }
 
     glEnd();
@@ -989,11 +990,12 @@ void pi_ocpnDC::DrawGLLineArray( int n, float *vertex_array, float *color_array,
             }
             
 #ifndef USE_ANDROID_GLES2        
-            
-            glBegin( GL_LINE_STRIP );
-            for( int i = 0; i < n; i++ )
-                glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
-            glEnd();
+
+// TODO
+//             glBegin( GL_LINE_STRIP );
+//             for( int i = 0; i < n; i++ )
+//                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
+//             glEnd();
             
 #else
             glUseProgram(pi_colorv_tri_shader_program);
@@ -1676,7 +1678,7 @@ void pi_ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset
         gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &ocpnDCvertexCallback );
         gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &ocpnDCbeginCallback );
         gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &ocpnDCendCallback );
-        gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &ocpnDCcombineCallback );
+        gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &pi_ocpnDCcombineCallback );
         gluTessCallback( tobj, GLU_TESS_ERROR, (_GLUfuncptr) &ocpnDCerrorCallback );
 
         gluTessNormal( tobj, 0, 0, 1);

@@ -22,7 +22,6 @@
  **************************************************************************/
 
 #include "pi_shaders.h"
-#include "qdebug.h"
 
 #include "linmath.h"
 
@@ -380,7 +379,7 @@ bool pi_loadShaders()
         if (!success) {
             glGetShaderInfoLog(pi_circle_filled_vertex_shader, INFOLOG_LEN, NULL, infoLog);
             printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
+            //qDebug() << infoLog;
             ret_val = false;
         }
     }
@@ -394,7 +393,7 @@ bool pi_loadShaders()
         if (!success) {
             glGetShaderInfoLog(pi_circle_filled_fragment_shader, INFOLOG_LEN, NULL, infoLog);
             printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
+            //qDebug() << infoLog;
             ret_val = false;
         }
     }
@@ -409,7 +408,7 @@ bool pi_loadShaders()
         if (!success) {
             glGetProgramInfoLog(pi_circle_filled_shader_program, INFOLOG_LEN, NULL, infoLog);
             printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-            qDebug() << infoLog;
+            //qDebug() << infoLog;
             ret_val = false;
         }
     }
