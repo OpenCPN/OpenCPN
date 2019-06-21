@@ -2,6 +2,7 @@
    License: LGPLv3 */
 
 #include <stdlib.h>
+#include <limits.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -29,7 +30,7 @@ void *ar_malloc(size_t size)
 void *ar_calloc(size_t count, size_t size)
 {
     void *ptr = NULL;
-    if (size <= __SIZE_MAX__ / count)
+    if (size <= SIZE_MAX / count)
         ptr = ar_malloc(count * size);
     if (ptr)
         memset(ptr, 0, count * size);
