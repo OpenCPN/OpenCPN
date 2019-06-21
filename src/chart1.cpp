@@ -3322,7 +3322,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(1));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           cc->SetToolbarOrientation( g_maintoolbar_orient);
+           cc->SetToolbarOrientation( wxTB_HORIZONTAL/*g_maintoolbar_orient*/);
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
            cc->SetShowGPS( true );
@@ -4263,7 +4263,9 @@ void MyFrame::ODoSetSize( void )
     if( g_MainToolbar){
         wxSize szBefore = g_MainToolbar->GetSize();
         g_MainToolbar->RePosition();
-        g_MainToolbar->SetGeometry(false, wxRect());
+        //g_MainToolbar->SetGeometry(false, wxRect());
+        g_MainToolbar->SetGeometry(GetPrimaryCanvas()->GetCompass()->IsShown(), GetPrimaryCanvas()->GetCompass()->GetRect());
+
         g_MainToolbar->Realize();
         if(szBefore != g_MainToolbar->GetSize())
             g_MainToolbar->Refresh(true);
@@ -6067,6 +6069,7 @@ int MyFrame::DoOptionsDialog()
     g_MainToolbar->Submerge();
 #endif        
 
+    //qDebug() << "SetInitialPage" <<  options_lastPage << options_subpage;
     g_options->SetInitialPage(options_lastPage, options_subpage );
 
     if(!g_bresponsive){
@@ -6130,6 +6133,8 @@ int MyFrame::DoOptionsDialog()
         g_MainToolbar->EnableTooltips();
 
     options_lastPage = g_options->lastPage;
+    options_subpage = g_options->lastSubPage;
+    
     options_lastWindowPos = g_options->lastWindowPos;
     options_lastWindowSize = g_options->lastWindowSize;
 
@@ -6340,11 +6345,11 @@ int MyFrame::DoOptionsDialog()
     
     //  If we had a config chage, then schedule a re-entry to the settings dialog
     if(rr & CONFIG_CHANGED){
-        options_subpage = 3;            // Back to the "templates" page
+ //       options_subpage = 0;            // Back to the "templates" page
         ScheduleSettingsDialog();
     }
-    else
-        options_subpage = 0;
+//    else
+//        options_subpage = 0;
 
     ///v5 needed for Android, not sure if the right place...
     // what raises maintoolbar?
@@ -6810,8 +6815,6 @@ void MyFrame::PositionIENCToolbar()
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
-    //qDebug() << "OnInitTimer" << m_iInitCount;
-
     InitTimer.Stop();
 
     switch(m_iInitCount++) {
@@ -10592,15 +10595,14 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     }
     
     if( !g_MainToolbar ) {
-        //qDebug() << "RequestNewMasterToolbar";
-        g_MainToolbar = new ocpnFloatingToolbarDialog( this,
-                                                       wxPoint( -1, -1/*g_maintoolbar_x, g_maintoolbar_y*/ ), wxTB_VERTICAL, g_toolbar_scalefactor );
+        long orient = g_Platform->GetDefaultToolbarOrientation();
+        g_MainToolbar = new ocpnFloatingToolbarDialog( this, wxPoint( -1, -1 ), orient, g_toolbar_scalefactor );
         g_MainToolbar->SetCornerRadius( 5 );
         g_MainToolbar->SetBackGroundColorString( _T("GREY3")  );
         g_MainToolbar->SetToolbarHideMethod( TOOLBAR_HIDE_TO_FIRST_TOOL );
         g_MainToolbar->SetToolConfigString(g_toolbarConfig);
         g_MainToolbar->EnableRolloverBitmaps( false );
-        
+
         g_MainToolbar->CreateConfigMenu();
 
         g_bmasterToolbarFull = true;

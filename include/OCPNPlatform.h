@@ -119,6 +119,8 @@ public:
     bool AllowAlertDialog(const wxString& class_name);
     double GetDisplayDensityFactor();
     double m_pt_per_pixel;
+    long GetDefaultToolbarOrientation();
+    
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------

@@ -357,7 +357,7 @@ class options : private Uncopyable,
 
   size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
   size_t m_pageUI, m_pagePlugins;
-  int lastPage;
+  int lastPage, lastSubPage;
   wxPoint lastWindowPos;
   wxSize lastWindowSize;
   wxButton *m_ApplyButton, *m_OKButton, *m_CancelButton;

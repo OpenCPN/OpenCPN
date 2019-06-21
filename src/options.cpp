@@ -1505,14 +1505,15 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     nb->AddPage(sw, title);
   } else if ((sw = dynamic_cast<wxScrolledWindow*>(page))) {
     wxString toptitle = m_pListbook->GetPageText(parent);
-    wxNotebook* nb = new wxNotebook(m_pListbook, wxID_ANY, wxDefaultPosition,
-                                    wxDefaultSize, wxNB_TOP);
+    wxNotebook* nb = new wxNotebook(m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP);
     /* Only remove the tab from listbook, we still have original content in
      * {page} */
     m_pListbook->InsertPage(parent, nb, toptitle, FALSE, parent);
     m_pListbook->RemovePage(parent + 1);
     wxString previoustitle = page->GetName();
     page->Reparent(nb);
+    nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(options::OnNBPageChange), NULL,  this);
+
     nb->AddPage(page, previoustitle);
     /* wxNotebookPage is hidden under wxGTK after RemovePage/Reparent
      * we must explicitely Show() it */
@@ -3561,10 +3562,8 @@ void options::ClearConfigList()
              wxWindow *win = node->GetData();
              wxPanel *pcp = wxDynamicCast(win, wxPanel);
              if(pcp){
-                //qDebug() << "Destroy pcpA";
                 ConfigPanel *cPanel = wxDynamicCast(pcp, ConfigPanel);
                 if(cPanel){
-                    //qDebug() << "Destroy pcpB";
                     cPanel->Destroy();
                 }
              }
@@ -3593,6 +3592,8 @@ void options::BuildConfigList()
             }
         }
     }
+    
+    m_boxSizerConfigs->Layout();
     
     m_selectedConfigPanelGUID = _T("");
     SetConfigButtonState();
@@ -3671,14 +3672,20 @@ void options::OnApplyConfig( wxCommandEvent &event)
     
     //  Clear all selections
     if(m_scrollWinConfigList){
-        wxWindowList kids = m_scrollWinConfigList->GetChildren();
-        for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item(i);
-            wxWindow *win = node->GetData();
-            wxPanel *panel = wxDynamicCast(win, wxPanel);
-            panel->SetBackgroundColour(m_panelBackgroundUnselected);
-        }
+         wxWindowList kids = m_scrollWinConfigList->GetChildren();
+         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+             wxWindowListNode *node = kids.Item(i);
+             wxWindow *win = node->GetData();
+             wxPanel *pcp = wxDynamicCast(win, wxPanel);
+             if(pcp){
+                ConfigPanel *cPanel = wxDynamicCast(pcp, ConfigPanel);
+                if(cPanel){
+                    cPanel->SetBackgroundColour(m_panelBackgroundUnselected);
+                }
+             }
+         }
     }
+    
     m_selectedConfigPanelGUID = wxEmptyString;
     
     m_returnChanges |= CONFIG_CHANGED;
@@ -6234,29 +6241,27 @@ void options::CreateControls(void) {
   vectorPanel->SetSizeHints(ps57Ctl);
 }
 
-// <<<<<<< HEAD
-// void options::SetInitialPage(int page_sel) {
-//   
-//   if(page_sel < (int)m_pListbook->GetPageCount())
-//     m_pListbook->SetSelection(page_sel);
-//   else
-//     m_pListbook->SetSelection(0);
-//   
-// =======
-void options::SetInitialPage(int page_sel, int sub_page) {
-  m_pListbook->SetSelection(page_sel);
+void options::SetInitialPage(int page_sel, int sub_page)
+{
+  if(page_sel < (int)m_pListbook->GetPageCount())
+     m_pListbook->SetSelection(page_sel);
+  else
+     m_pListbook->SetSelection(0);
 
-//>>>>>>> v5.0.0
-  for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
-    wxNotebookPage* pg = m_pListbook->GetPage(i);
-    wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
-    if (nb){
-        if(i == (size_t) page_sel){
-            if(sub_page >= 0)
-                nb->SetSelection(sub_page);
+  if(sub_page >= 0){
+    for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
+        wxNotebookPage* pg = m_pListbook->GetPage(i);
+        wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
+        if (nb){
+            if(i == (size_t) page_sel){
+                if(sub_page < (int)nb->GetPageCount())
+                    nb->SetSelection(sub_page);
+                else
+                    nb->SetSelection(0);
+            }
+            else
+                nb->ChangeSelection(0);
         }
-        else
-            nb->ChangeSelection(0);
     }
   }
 }
@@ -7973,16 +7978,12 @@ void options::OnXidOkClick(wxCommandEvent& event) {
 
 void options::Finish(void) {
   //  Required to avoid intermittent crash on wxGTK
-  m_pListbook->ChangeSelection(0);
+   m_pListbook->ChangeSelection(0);
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
     wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
     if (nb) nb->ChangeSelection(0);
   }
-
-  //delete pActiveChartsList;
-  //delete ps57CtlListBox;
-  //delete tcDataSelected;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -8573,6 +8574,24 @@ void options::OnPageChange(wxListbookEvent& event) {
 }
 
 void options::OnNBPageChange(wxNotebookEvent& event) {
+  // In the case where wxNotebooks are nested, we need to identify the subpage
+  // But otherwise do nothing
+  if(event.GetEventObject()){
+      if(dynamic_cast<wxWindow*>(event.GetEventObject())){
+          wxWindow *win = dynamic_cast<wxWindow*>(event.GetEventObject());
+          wxWindow *parent = dynamic_cast<wxWindow*>(win->GetParent());
+          if(dynamic_cast<wxNotebook*>(parent)){
+            lastSubPage = event.GetSelection();
+            return;
+          }
+          if(dynamic_cast<wxListbook*>(parent)){
+            lastSubPage = event.GetSelection();
+            return;
+          }
+
+      }
+  }
+  // Must be top level notebook
   DoOnPageChange(event.GetSelection());
 }
 

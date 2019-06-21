@@ -1126,13 +1126,10 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;
-    ///v5g_uiStyle = wxT("Traditional");
-    ///v5g_useMUI = true;
-    ///v5g_b_overzoom_x = true;
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
-    g_toolbarConfig = _T("X...X.XX.......XX.XXXXXXXXXXX");
+    g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
     g_bPermanentMOBIcon = false;
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
@@ -1178,9 +1175,15 @@ void OCPNPlatform::SetDefaultOptions( void )
         //Status Bar
         wxString str = _T("en_US-b25a3899");
         wxString pval = _T("StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)");
-        
         pConfig->Write (str, pval );
         FontMgr::Get().LoadFontNative( &str, &pval );
+
+        //Dialog
+        str = _T("en_US-9c3b3a0d");
+        pval = _T("DialogStatusBar:Roboto,18,-1,5,50,0,0,0,0,0:rgb(0, 0, 0)");
+        pConfig->Write (str, pval );
+        FontMgr::Get().LoadFontNative( &str, &pval );
+        
         
         qDebug() << "SetDefaultOptions.Config";
     }
@@ -1776,6 +1779,14 @@ double OCPNPlatform::GetDisplayDensityFactor()
 #endif
 }
     
+long OCPNPlatform::GetDefaultToolbarOrientation()
+{
+#ifndef __OCPN__ANDROID__
+    return wxTB_VERTICAL;
+#else
+    return wxTB_HORIZONTAL;
+#endif    
+}
 
 int OCPNPlatform::GetStatusBarFieldCount()
 {
@@ -2068,17 +2079,16 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     // unless overridden by user, we declare the "best" tool size
     // to be roughly the same as the ActionBar height.
     //  This may be approximated in a device orientation-independent way as:
-    //   50pixels * DENSITY
+    //   45pixels * DENSITY
     double premult = 1.0;
     if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
         double target_size = 9.0;                // mm
-    
         double basic_tool_size_mm = tool_size / GetDisplayDPmm();
         premult = target_size / basic_tool_size_mm;
         
     }
     else{
-        premult = wxMax(50 * getAndroidDisplayDensity(), 50) / tool_size;       // make sure not too small
+        premult = wxMax(45 * getAndroidDisplayDensity(), 45) / tool_size;       // make sure not too small
     }            
     
     //Adjust the scale factor using the global GUI scale parameter, ranging from 0.5 -> 2.0
