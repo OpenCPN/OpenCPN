@@ -1565,12 +1565,12 @@ bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& V
     return true;
 }
 
-OCPNStopWatch sw;
+//OCPNStopWatch sw;
 
 bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                        const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay )
 {
-    sw.Reset();
+    //sw.Reset();
     //qDebug() << "DoRenderRegionViewOnGL" << sw.GetTime();
     
     if(!m_RAZBuilt) return false;

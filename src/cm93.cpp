@@ -5526,7 +5526,7 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
 
 int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
 {
-    OCPNStopWatch sw;
+//    OCPNStopWatch sw;
     
 
       if ( g_bDebugCM93 )
