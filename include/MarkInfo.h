@@ -243,9 +243,9 @@ class MarkInfoDlg : public wxFrame
         wxFlexGridSizer*        gbSizerInnerProperties;
         wxNotebook*             m_notebookProperties;
         wxObject*               m_contextObject;
-        wxPanel*                m_PanelBasicProperties;
-        wxPanel*                m_PanelDescription;
-        wxPanel*                m_PanelExtendedProperties;
+        wxScrolledWindow*       m_panelBasicProperties;
+        wxPanel*                m_panelDescription;
+        wxPanel*                m_panelExtendedProperties;
         wxSimpleHtmlListBox*    m_htmlList;
         wxSize                  m_defaultClientSize;
         wxSpinCtrl*             m_SpinWaypointRangeRingsNumber;
@@ -291,6 +291,9 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textWaypointRangeRingsStep;
         wxTextCtrl*             m_textCtrlPlSpeed;
         wxBitmap               _img_MUI_settings_svg;
+        wxButton*               m_sdbSizerButtonsCancel;
+        wxButton*               m_sdbSizerButtonsOK;
+ 
 #ifndef __OCPN__ANDROID__
         wxDatePickerCtrl*       m_EtaDatePickerCtrl;
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;

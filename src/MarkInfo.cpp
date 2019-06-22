@@ -300,97 +300,192 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
 void MarkInfoDlg::initialize_images(void)
 { 
     wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
-    _img_MUI_settings_svg = LoadSVG(iconDir + _T("MUI_settings.svg"), 32, 32);
+    _img_MUI_settings_svg = LoadSVG(iconDir + _T("MUI_settings.svg"), 2 * GetCharHeight(), 2 * GetCharHeight());
     
     return;
 }
 
+
+    
 void MarkInfoDlg::Create()
 {
-    //(*Initialize(waypoint_propertiesDialog)
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    SetFont( *qFont );
+    int metric = GetCharHeight();
     
-    bMainSizer = new wxBoxSizer( wxVERTICAL );
-     
-    m_notebookProperties = new wxNotebook(this, wxID_ANY);
-    m_PanelBasicProperties = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize,  wxTAB_TRAVERSAL);
+#ifdef __OCPN__ANDROID__
+    //  Set Dialog Font by custom crafted Qt Stylesheet.
+    
+    wxString wqs = getFontQtStylesheet(qFont);
+    wxCharBuffer sbuf = wqs.ToUTF8();
+    QString qsb = QString(sbuf.data());
+    
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
+    
+    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+    
+    wxScreenDC sdc;
+    if(sdc.IsOk())
+        sdc.GetTextExtent(_T("W"), NULL, &metric, NULL, NULL, qFont);
+    
+#endif
+    
+    wxBoxSizer* bSizer1;
+    bSizer1 = new wxBoxSizer( wxVERTICAL );
+    SetSizer( bSizer1 );
+    bSizer1->SetSizeHints( this );   // set size hints to honour minimum size
+
+    m_notebookProperties = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+    m_panelBasicProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
+                                                   wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
     #ifdef __OCPN__ANDROID__
-        m_PanelBasicProperties->GetHandle()->setStyleSheet( getQtStyleSheet());
+    m_panelBasicProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
     #endif
-    fSizerBasicProperties = new wxFlexGridSizer(0, 1, 0, 0);
     
-//////////////////////////////////////////////////BASIC/////////////////////////////////////////////////
+    m_panelBasicProperties->SetScrollRate(0, 2);
+
+    m_notebookProperties->AddPage( m_panelBasicProperties, _("Basic"), true );
+
+    bSizerBasicProperties = new wxBoxSizer( wxVERTICAL );
+    m_panelBasicProperties->SetSizer( bSizerBasicProperties );
+
+    wxStaticBoxSizer* sbSizerProperties;
+    sbSizerProperties = new wxStaticBoxSizer(
+            new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Properties") ), wxVERTICAL );
+
+    wxBoxSizer* bSizerInnerProperties = new wxBoxSizer( wxHORIZONTAL );
+
+//    m_bitmapIcon = new wxStaticBitmap( m_panelBasicProperties, wxID_ANY, wxNullBitmap,
+//            wxDefaultPosition, wxDefaultSize, 0 );
+//    bSizerInnerProperties->Add( m_bitmapIcon, 0, wxALL, 5 );
+//    m_bitmapIcon->Show( false );
     
-    sbSizerBasicProperties = new wxStaticBoxSizer(wxVERTICAL, m_PanelBasicProperties, _("Properties"));
-    m_staticTextLayer = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("This waypoint is part of a layer and can\'t be edited"));
-    sbSizerBasicProperties->Add(m_staticTextLayer, 0, wxALL|wxEXPAND, 5);
+    wxBoxSizer* bSizerTextProperties;
+    bSizerTextProperties = new wxBoxSizer( wxVERTICAL );
 
-    gbSizerInnerProperties = new wxFlexGridSizer(3, 0, 0);
-    gbSizerInnerProperties->AddGrowableCol(2);
+    m_staticTextLayer = new wxStaticText( m_panelBasicProperties, wxID_ANY,
+            _("This waypoint is part of a layer and can't be edited"), wxDefaultPosition,
+            wxDefaultSize, 0 );
+    m_staticTextLayer->Enable( false );
 
-    m_checkBoxShowName = new wxCheckBox(m_PanelBasicProperties, ID_SHOWNAMECHECKBOXBASIC, wxEmptyString);
-    m_checkBoxShowName->SetValue(false);
-    gbSizerInnerProperties->Add(m_checkBoxShowName, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_staticTextName = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("Name"));
-    gbSizerInnerProperties->Add(m_staticTextName, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_textName = new wxTextCtrl(m_PanelBasicProperties, ID_NAMECTRL);
-    gbSizerInnerProperties->Add(m_textName, 0, wxALL|wxEXPAND, 5);
+    bSizerTextProperties->Add( m_staticTextLayer, 0, wxALL, 5 );
 
-    gbSizerInnerProperties->Add( 0, 0, 1, wxEXPAND, 0 );
-    m_staticTextIcon = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("Icon"));
-    gbSizerInnerProperties->Add(m_staticTextIcon, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_bcomboBoxIcon = new OCPNIconCombo( m_PanelBasicProperties, ID_BITMAPCOMBOCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
-    m_bcomboBoxIcon->SetPopupMaxHeight(g_Platform->getDisplaySize().y / 2);        
+    wxBoxSizer* bSizerName;
+    bSizerName = new wxBoxSizer( wxHORIZONTAL );
+
+    m_staticTextName = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Name"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    //m_staticTextName->Wrap( -1 );
+    bSizerName->Add( m_staticTextName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer* bSizerNameValue = new wxBoxSizer( wxVERTICAL );
+ 
+    m_textName = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition,
+             wxDefaultSize, 0 );
+    bSizerNameValue->Add( m_textName, 0, wxALL | wxEXPAND, 5 );
+    bSizerName->Add( bSizerNameValue, 1, wxEXPAND, 5 );
+    bSizerTextProperties->Add( bSizerName, 0, wxEXPAND, 5 );
+
+    m_checkBoxShowName = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show name"),
+            wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
+    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+
+    ///
+    wxBoxSizer* bSizer8 = new wxBoxSizer( wxHORIZONTAL );
+    bSizerTextProperties->Add( bSizer8, 0, wxEXPAND, 5 );
+    
+    m_staticTextIcon = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Icon"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer8->Add( m_staticTextIcon, 0, wxALL, 5 );
+
+    m_bcomboBoxIcon = new OCPNIconCombo( m_panelBasicProperties, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+    
+    m_bcomboBoxIcon->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
     //  Accomodate scaling of icon
-    int min_size = GetCharHeight() * 2;
+    int min_size = metric * 2;
     min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
     m_bcomboBoxIcon->SetMinSize( wxSize(-1, min_size) );
-    gbSizerInnerProperties->Add(m_bcomboBoxIcon, 0, wxALL|wxEXPAND, 5);
     
-    gbSizerInnerProperties->Add( 0, 0, 1, wxEXPAND, 0 );
-    m_staticTextLatitude = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("Latitude"));
-    gbSizerInnerProperties->Add(m_staticTextLatitude, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_textLatitude = new wxTextCtrl(m_PanelBasicProperties, wxID_ANY);
-    gbSizerInnerProperties->Add(m_textLatitude, 0, wxALL|wxEXPAND, 5);
+    bSizer8->Add( m_bcomboBoxIcon, 1, wxALL, 5 );
+
+    bSizerTextProperties->AddSpacer(5);
     
-    gbSizerInnerProperties->Add( 0, 0, 1, wxEXPAND, 5 );
-    m_staticTextLongitude = new wxStaticText(m_PanelBasicProperties, wxID_ANY, _("Longitude"));
-    gbSizerInnerProperties->Add(m_staticTextLongitude, 0, wxALIGN_CENTRE_VERTICAL, 0);
-    m_textLongitude = new wxTextCtrl(m_PanelBasicProperties, wxID_ANY);
-    gbSizerInnerProperties->Add(m_textLongitude, 0, wxALL|wxEXPAND, 5);
+    wxFlexGridSizer *LLGrid = new wxFlexGridSizer( 0, 2, 1, 1 );
+    LLGrid->AddGrowableCol( 1 );
+    bSizerTextProperties->Add( LLGrid, 0, wxEXPAND, 0 );
     
-    sbS_Description = new wxStaticBoxSizer( wxHORIZONTAL, m_PanelBasicProperties, _("Description"));
-    m_textDescription = new wxTextCtrl( sbS_Description->GetStaticBox(), ID_DESCR_CTR_BASIC, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    sbS_Description->Add( m_textDescription, 1, wxBOTTOM|wxLEFT|wxEXPAND, 5 );
-    m_buttonExtDescription = new wxButton( sbS_Description->GetStaticBox(), ID_BTN_DESC_BASIC, _T("\u2261"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
-    sbS_Description->Add( m_buttonExtDescription, 0, wxEXPAND, 5 );
-    sbS_Description->SetSizeHints( sbS_Description->GetStaticBox() );
+    int w,h;
+    GetTextExtent(_T("179 59.9999 W"), &w, &h);
     
-    wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_PanelBasicProperties, _("Links")  );
-    m_htmlList = new  	wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    m_staticTextLatitude = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Latitude"));
+    LLGrid->Add( m_staticTextLatitude, 0, wxALL | wxALIGN_LEFT, 0 );
+
+    m_textLatitude = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,
+                                     wxDefaultPosition, wxSize(w + 20, -1), 0 );
+    LLGrid->Add( m_textLatitude, 1, wxALL , 5 );
+
+    m_staticTextLongitude = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Longitude"));
+    LLGrid->Add( m_staticTextLongitude, 0, wxALL  | wxALIGN_LEFT, 0 );
+ 
+    m_textLongitude = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,  wxDefaultPosition, wxSize(w + 20, -1), 0 );
+    LLGrid->Add( m_textLongitude, 1, wxALL , 5 );
+
+    bSizerTextProperties->AddSpacer(15);
+    
+    m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerTextProperties->Add( m_staticTextDescription, 0, wxALL, 5 );
+
+    wxBoxSizer* bSizer14;
+    bSizer14 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_textDescription = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
+    m_textDescription->SetMinSize( wxSize( -1, 80 ) );
+    bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
+
+    m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _("..."),  wxDefaultPosition, wxSize( 20, -1 ), 0 );
+    bSizer14->Add( m_buttonExtDescription, 0, wxALL | wxEXPAND, 5 );
+
+    bSizerTextProperties->Add( bSizer14, 1, wxEXPAND, 5 );
+
+    bSizerInnerProperties->Add( bSizerTextProperties, 1, wxEXPAND, 5 );
+
+    sbSizerProperties->Add( bSizerInnerProperties, 1, wxEXPAND, 5 );
+
+    bSizerBasicProperties->Add( sbSizerProperties, 3, wxALL | wxEXPAND, 5 );
+
+    wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_panelBasicProperties, _("Links")  );
+    bSizerBasicProperties->Add( sbS_SizerLinks1, 1, wxALL | wxEXPAND, 5 );
+    m_htmlList = new    wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
-
-    sbS_SizerLinks1->SetSizeHints( sbS_Description->GetStaticBox() );
-  
-    sbSizerBasicProperties->Add(gbSizerInnerProperties, 1, wxEXPAND, 5);
-    sbSizerBasicProperties->Add(sbS_Description, 1, wxEXPAND, 5);
-    sbSizerBasicProperties->Add(sbS_SizerLinks1, 1, wxEXPAND, 5);
-    m_PanelBasicProperties->Layout();
-
-        
-//////////////////////////////////////////////////////DESCRIPTION ///////////////////////////////////////////////////////
-        
-    m_PanelDescription = new wxPanel(m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    sbSizerDescription = new wxStaticBoxSizer(wxVERTICAL, m_PanelDescription, _("Description"));
-    m_textCtrlExtDescription = new wxTextCtrl( sbSizerDescription->GetStaticBox(), ID_DESCR_CTR_DESC, wxEmptyString,
-            wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    sbSizerDescription->Add( m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5 );
     
+    m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+    wxBoxSizer* bSizer15;
+    bSizer15 = new wxBoxSizer( wxVERTICAL );
+
+    m_textCtrlExtDescription = new wxTextCtrl( m_panelDescription, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+    bSizer15->Add( m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5 );
+
+    m_panelDescription->SetSizer( bSizer15 );
+    m_notebookProperties->AddPage( m_panelDescription, _("Description"), false );
     
+
 /////////////////////////////////////////////////////// EXTENDED ///////////////////////////////////////////////////////
     
-    m_PanelExtendedProperties = new wxPanel(m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_panelExtendedProperties = new wxPanel(m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxBoxSizer* fSizerExtProperties = new wxBoxSizer(wxVERTICAL);
-    sbSizerExtProperties = new wxStaticBoxSizer(wxVERTICAL, m_PanelExtendedProperties, _("Extended Properties"));
+    m_panelExtendedProperties->SetSizer(fSizerExtProperties);
+    m_notebookProperties->AddPage(m_panelExtendedProperties, _("Extended"), false);
+
+    #ifdef __OCPN__ANDROID__
+    m_panelExtendedProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
+    #endif
+
+    
+    sbSizerExtProperties = new wxStaticBoxSizer(wxVERTICAL, m_panelExtendedProperties, _("Extended Properties"));
     wxFlexGridSizer* gbSizerInnerExtProperties = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerExtProperties->AddGrowableCol(2);
     gbSizerInnerExtProperties->SetFlexibleDirection( wxBOTH );
@@ -502,23 +597,13 @@ void MarkInfoDlg::Create()
     
     fSizerExtProperties->Add(sbSizerExtProperties, 1, wxALL|wxEXPAND);
 
-    sbSizerExtProperties->Fit(sbSizerExtProperties->GetStaticBox() );
-    sbSizerExtProperties->SetSizeHints(sbSizerExtProperties->GetStaticBox());
-    
-    RecalculateSize();
-    
-    m_PanelBasicProperties->SetSizer(sbSizerBasicProperties);
-    m_PanelDescription->SetSizer(sbSizerDescription);
-    m_PanelExtendedProperties->SetSizer(fSizerExtProperties);
-    
-    sbSizerDescription->Fit(m_PanelDescription);
-    
-    m_notebookProperties->AddPage(m_PanelBasicProperties, _("Basic"), false);
-    m_notebookProperties->AddPage(m_PanelDescription, _("Description"), false);
-    m_notebookProperties->AddPage(m_PanelExtendedProperties, _("Extended"), false);
-    bMainSizer->Add(m_notebookProperties, 1, wxLEFT|wxTOP|wxEXPAND, 5);
-    
+
+//-----------------    
+    bSizer1->Add( m_notebookProperties, 1, wxEXPAND | wxALL, 5 );
+
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    bSizer1->Add( btnSizer, 0, wxEXPAND, 0);
+
     //Get and convert picture.
     initialize_images();
     DefaultsBtn = new wxBitmapButton( this, ID_DEFAULT, _img_MUI_settings_svg, wxDefaultPosition, _img_MUI_settings_svg.GetSize(), 0);
@@ -530,24 +615,25 @@ void MarkInfoDlg::Create()
     m_sdbSizerButtons->AddButton(new wxButton(this, wxID_CANCEL, _("Cancel")));
     m_sdbSizerButtons->Realize();
     btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
-    bMainSizer->Add( btnSizer, 0, wxEXPAND, 0);
-    SetSizer(bMainSizer);
-    Layout();
-     
-     // Connect Events
-    m_textLatitude->Connect( wxEVT_CONTEXT_MENU,
-            wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
-    m_textLongitude->Connect( wxEVT_CONTEXT_MENU,
-            wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
-    // catch the right up event...
-    m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
-    m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
-#ifndef __OCPN__ANDROID__
-    m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
-    m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
-#endif
-    m_comboBoxTideStation->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnTideStationCombobox ), NULL, this );
+
+
+    SetMinSize(wxSize(-1, 600));
+    
+    // Connect Events
+//     m_textLatitude->Connect( wxEVT_CONTEXT_MENU,  wxCommandEventHandler( MarkInfoDlg::OnRightClick ), NULL, this );
+//     m_textLongitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
+
+    m_textDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MarkInfoDlg::OnDescChangedBasic ), NULL, this );
+    m_buttonExtDescription->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MarkInfoDlg::OnExtDescriptionClick ), NULL, this );
+
+    this->Connect( ID_RCLK_MENU_COPY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
+    this->Connect( ID_RCLK_MENU_COPY_LL, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
+    this->Connect( ID_RCLK_MENU_PASTE, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
+    this->Connect( ID_RCLK_MENU_PASTE_LL, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
+
+    m_textCtrlExtDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MarkInfoDlg::OnDescChangedExt ), NULL, this );
 }
+
 
 void MarkInfoDlg::OnClose( wxCloseEvent& event )
 { 
@@ -614,22 +700,39 @@ void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
 
 void MarkInfoDlg::RecalculateSize( void )
 {
-    wxSize b = sbSizerBasicProperties->GetMinSize();
-    wxSize e = sbSizerExtProperties->GetMinSize();
-    wxSize w =  wxSize( std::max(b.x, e.x), std::max(b.y, e.y));
-    m_PanelBasicProperties->SetSize(w);
-    sbSizerBasicProperties->FitInside(m_PanelBasicProperties);
-    m_PanelDescription->SetSize(w);
-    sbSizerDescription->FitInside(m_PanelDescription);
-    m_PanelExtendedProperties->SetSize(w);
     
+    Layout();
+
+    wxSize dsize = GetParent()->GetClientSize();
+    //qDebug() << "dsize" << dsize.x << dsize.y;
+    
+    
+    wxSize esize;
+
+    esize.x = GetCharHeight() * 20;
+    esize.y = GetCharHeight() * 40;
+    //qDebug() << "esizeA" << esize.x << esize.y;
+    
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    SetSize(wxSize(esize.x, esize.y));
+    //qDebug() << "esize" << esize.x << esize.y;
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    //qDebug() << "fsize" << fsize.x << fsize.y;
+    
+    //  And finally, not too tall...
+    fsize.y = wxMin(fsize.y, (25 * GetCharHeight()));
+    
+    SetSize(wxSize(-1, fsize.y));
+
     m_defaultClientSize = GetClientSize();
     
-#ifdef __OCPN__ANDROID__
-    CentreOnScreen();
-#endif    
-
+    Center();
 }
+
 
 
 
@@ -766,14 +869,14 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
 
 void MarkInfoDlg::OnDescChangedExt( wxCommandEvent& event )
 {
-    if( m_PanelDescription->IsShownOnScreen() ){
+    if( m_panelDescription->IsShownOnScreen() ){
         m_textDescription->ChangeValue( m_textCtrlExtDescription->GetValue() );
     }
     event.Skip();
 }
 void MarkInfoDlg::OnDescChangedBasic( wxCommandEvent& event )
 {
-    if( m_PanelBasicProperties->IsShownOnScreen() ){
+    if( m_panelBasicProperties->IsShownOnScreen() ){
         m_textCtrlExtDescription->ChangeValue( m_textDescription->GetValue() );
     }
     event.Skip();
@@ -789,13 +892,13 @@ void MarkInfoDlg::OnExtDescriptionClick( wxCommandEvent& event )
 
 void MarkInfoDlg::OnShowWaypointNameSelectBasic( wxCommandEvent& event )
 {
-    if( m_PanelBasicProperties->IsShownOnScreen() )
+    if( m_panelBasicProperties->IsShownOnScreen() )
         m_checkBoxShowNameExt->SetValue( m_checkBoxShowName->GetValue() );
     event.Skip();
 }
 void MarkInfoDlg::OnShowWaypointNameSelectExt( wxCommandEvent& event )
 {
-    if( m_PanelExtendedProperties->IsShownOnScreen() )
+    if( m_panelExtendedProperties->IsShownOnScreen() )
         m_checkBoxShowName->SetValue( m_checkBoxShowNameExt->GetValue() );
     event.Skip();
 }
@@ -984,6 +1087,7 @@ void MarkInfoDlg::OnCopyPasteLatLon( wxCommandEvent& event )
 void MarkInfoDlg::DefautlBtnClicked( wxCommandEvent& event )
 {
     SaveDefaultsDialog* SaveDefaultDlg = new SaveDefaultsDialog( this );
+    SaveDefaultDlg->Center();
     DimeControl( SaveDefaultDlg );
     SaveDefaultDlg->ShowWindowModalThenDo([this,SaveDefaultDlg](int retcode){
         if ( retcode == wxID_OK ) {
@@ -1447,7 +1551,9 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     bSizer1->Add(StdDialogButtonSizer1, 0, wxALL|wxEXPAND, 5);
 
     SetSizer(bSizer1);
+    Fit();
     Layout();
+    Center();
 }
 
 void MarkInfoDlg::ShowTidesBtnClicked( wxCommandEvent& event )
