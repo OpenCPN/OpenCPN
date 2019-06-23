@@ -3592,14 +3592,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     if( !rzRules->obj->m_chart_context->chart )
         return RenderLS(rzRules, rules, vp);    // this is where S63 PlugIn gets caught
-//<<<<<<< HEAD
-
-//=======
     
     if(( vp->GetBBox().GetMaxLon() >= 180.) || (vp->GetBBox().GetMinLon() <= -180.))
         return RenderLS(rzRules, rules, vp);    // cm03 has trouble at IDL        
     
-//>>>>>>> v5.0.0
     bool b_useVBO = false;
     float *vertex_buffer = 0;
 
@@ -3607,7 +3603,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         b_useVBO = true;
 
     if( !b_useVBO ){
-#if 0        
         if( rzRules->obj->m_chart_context->chart ){
             vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();
         }
@@ -3615,20 +3610,14 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer;
         }
 
-
         if(!vertex_buffer)
             return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
-#else
-        vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer; 
-            
-#endif            
     }
 
 
 #ifdef ocpnUSE_GL
 
     char *str = (char*) rules->INSTstr;
-//<<<<<<< HEAD
 
 #ifdef USE_ANDROID_GLES2
     if( (!strncmp( str, "DASH", 4 ) ) || ( !strncmp( str, "DOTT", 4 ) ) )
@@ -3636,8 +3625,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif
 
 
-//=======
-//>>>>>>> v5.0.0
     LLBBox BBView = vp->GetBBox();
 
     //  Allow a little slop in calculating whether a segment
@@ -3747,7 +3734,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     }
 
 
-
 #ifdef USE_ANDROID_GLES2
     glUseProgram(S52color_tri_shader_program);
 
@@ -3760,36 +3746,33 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     float angle = 0;
 
+    // We cannot use the prepared shader uniforms, as we can (and should for performance) do the per-object transforms 
+    // all at once in the shader matrix. 
+    // But we also must restore the prepared matrix for later rendering of other object classes.
+    
     // Build Transform matrix
     //  First, the VP transform
     mat4x4 I, Q;
     mat4x4_identity(I);
 
-    // Scale
+    // Scale per object
     I[0][0] *= rzRules->obj->x_rate;
     I[1][1] *= rzRules->obj->y_rate;
 
-    // Translate
+    // Translate per object
     I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - rzRules->obj->x_origin) * vp->view_scale_ppm ;
     I[3][1] = -(rzRules->sm_transform_parms->northing_vp_center - rzRules->obj->y_origin) * -vp->view_scale_ppm ;
 
-    // Translate
-    //I[3][0] = -rzRules->sm_transform_parms->easting_vp_center * vp->view_scale_ppm;
-    //I[3][1] = -rzRules->sm_transform_parms->northing_vp_center * -vp->view_scale_ppm;
-
-    // Scale
+    // Scale for screen
     I[0][0] *= vp->view_scale_ppm;
     I[1][1] *= -vp->view_scale_ppm;
 
     //Rotate
     mat4x4_rotate_Z(Q, I, angle);
 
-    // Translate
+    // Translate for screen
     Q[3][0] += vp->pix_width / 2;
     Q[3][1] += vp->pix_height / 2;
-
-//    mat4x4 X;
-//    mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
 
     GLint matloc = glGetUniformLocation(S52color_tri_shader_program,"TransformMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
@@ -3894,6 +3877,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
     glPopMatrix();
 #else
+    // Restore shader TransForm Matrix to identity.
     mat4x4 IM;
     mat4x4_identity(IM);
     GLint matlocf = glGetUniformLocation(S52color_tri_shader_program,"TransformMatrix");
