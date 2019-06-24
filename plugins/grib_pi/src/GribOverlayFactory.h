@@ -67,6 +67,8 @@ public:
     }
 
     unsigned int m_iTexture, m_iTextureDim[2]; /* opengl mode */
+    unsigned int m_iTexDataDim[2];
+    
     wxBitmap *m_pDCBitmap; /* dc mode */
     unsigned char *m_pRGBA;
 

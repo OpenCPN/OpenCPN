@@ -608,10 +608,18 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in, 
 
     /* for some reason r g b values are inverted, but not alpha,
        this fixes it, but I would like to find the actual cause */
+#ifndef __OCPN__ANDROID__
     data[0] = 255-r;
     data[1] = 255-g;
     data[2] = 255-b;
     data[3] = a;
+#else
+    data[0] = r;
+    data[1] = g;
+    data[2] = b;
+    data[3] = a;
+#endif
+    
 }
 
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR)
@@ -648,6 +656,46 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     if( tw > 1024 || th > 1024 )
         return false;
 
+    pGO->m_iTexDataDim[0] = tw;
+    pGO->m_iTexDataDim[1] = th;
+
+#ifdef USE_ANDROID_GLES2 
+    int width_pot = tw;
+    int height_pot = th;
+    
+    // If required by platform, grow the texture to next larger NPOT size.
+    //  Retain actual data size in class storage, for later render scaling
+    //if( b_pot )
+    {
+        int xp = tw;
+        if(((xp != 0) && !(xp & (xp - 1))))     // detect already exact POT
+            width_pot = xp;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            width_pot = 1 << a;
+        }
+            
+        xp = th;
+        if(((xp != 0) && !(xp & (xp - 1))))
+            height_pot = xp;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            height_pot = 1 << a;
+        }
+    }
+
+    tw = width_pot;
+    th = height_pot;
+#endif    
+    
     unsigned char *data = new unsigned char[tw*th*4];
     if (samples == 0) {
         for( int j = 0; j < pGR->getNj(); j++ ) {
@@ -2415,8 +2463,112 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 }
 
 #ifdef ocpnUSE_GL
-void GRIBOverlayFactory::DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double xs, double ys ){
+//      Render a texture
+//      x/y : origin in screen pixels of UPPER RIGHT corner of render rectangle
+//      width/height : in screen pixels
+void GRIBOverlayFactory::DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double width, double height ){
+
 #ifdef __OCPN__ANDROID__
+
+    glEnable(texture_format);
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+    
+    float coords[8];
+
+    coords[0] = -width; coords[1] = -height;
+    coords[2] = 0; coords[3] = -height;
+    coords[4] = 0; coords[5] = 0;
+    coords[6] = -width; coords[7] = 0;
+    
+    extern int pi_texture_2D_shader_program;
+    glUseProgram( pi_texture_2D_shader_program );
+    
+    // Get pointers to the attributes in the program.
+    GLint mPosAttrib = glGetAttribLocation( pi_texture_2D_shader_program, "aPos" );
+    GLint mUvAttrib  = glGetAttribLocation( pi_texture_2D_shader_program, "aUV" );
+    
+    // Set up the texture sampler to texture unit 0
+    GLint texUni = glGetUniformLocation( pi_texture_2D_shader_program, "uTex" );
+    glUniform1i( texUni, 0 );
+    
+    // Disable VBO's (vertex buffer objects) for attributes.
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    
+    // Set the attribute mPosAttrib with the vertices in the screen coordinates...
+    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
+    // ... and enable it.
+    glEnableVertexAttribArray( mPosAttrib );
+    
+    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
+    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
+    // ... and enable it.
+    glEnableVertexAttribArray( mUvAttrib );
+    
+    // Rotate 
+    float angle = 0;
+    mat4x4 I, Q;
+    mat4x4_identity(I);
+    mat4x4_rotate_Z(Q, I, angle);
+    
+    // Translate
+     Q[3][0] = x;
+     Q[3][1] = y;
+    
+    
+    GLint matloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
+    
+    // Select the active texture unit.
+    glActiveTexture( GL_TEXTURE0 );
+    
+    // Perform the actual drawing.
+    
+    // For some reason, glDrawElements is busted on Android
+    // So we do this a hard ugly way, drawing two triangles...
+    #if 0
+    GLushort indices1[] = {0,1,3,2}; 
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
+    #else
+    
+    float co1[8];
+    co1[0] = coords[0];
+    co1[1] = coords[1];
+    co1[2] = coords[2];
+    co1[3] = coords[3];
+    co1[4] = coords[6];
+    co1[5] = coords[7];
+    co1[6] = coords[4];
+    co1[7] = coords[5];
+    
+    float tco1[8];
+    tco1[0] = uv[0];
+    tco1[1] = uv[1];
+    tco1[2] = uv[2];
+    tco1[3] = uv[3];
+    tco1[4] = uv[6];
+    tco1[5] = uv[7];
+    tco1[6] = uv[4];
+    tco1[7] = uv[5];
+    
+    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
+    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisable(GL_BLEND);
+    glDisable(texture_format);
+    
+    // Restore identity matrix
+    mat4x4_identity(I);
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
+    
+    #endif
+    
 #else
 
     glColor4f(1, 1, 1, 1);
@@ -2430,10 +2582,10 @@ void GRIBOverlayFactory::DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR,
     }
 
     glBegin(GL_QUADS);
-        glTexCoord2d(uv[0], uv[1]), glVertex2f(x-xs, y-ys);
-        glTexCoord2d(uv[2], uv[3]), glVertex2f(x   , y-ys);
+        glTexCoord2d(uv[0], uv[1]), glVertex2f(x-width, y-height);
+        glTexCoord2d(uv[2], uv[3]), glVertex2f(x   , y-height);
         glTexCoord2d(uv[4], uv[5]), glVertex2f(x   , y);
-        glTexCoord2d(uv[6], uv[7]), glVertex2f(x-xs, y);
+        glTexCoord2d(uv[6], uv[7]), glVertex2f(x-width, y);
     glEnd();
 
 #endif    
@@ -2485,6 +2637,9 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     double latstep = fabs(pGR->getDj()) / (th-2-1) * (pGR->getNj()-1);
     double lonstep = pGR->getDi() / (tw-2*!repeat-1) * (pGR->getNi()-1);
     
+    double potNormX = (double)pGO->m_iTexDataDim[0] / tw;
+    double potNormY = (double)pGO->m_iTexDataDim[1] / th;
+    
     double clon = (lon_min + pGR->getLonMax())/2;
     
     for(double y = 0; y < vp->pix_height+ys/2; y += ys) {
@@ -2501,8 +2656,8 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                     lon -= 360;
             }
 
-            lva[i][j][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
-            lva[i][j][1] = ((lat - lat_min) / latstep          + 1.5) / th;
+            lva[i][j][0] = (((lon - lon_min) / lonstep - repeat + 1.5) / tw) * potNormX;
+            lva[i][j][1] = (((lat - lat_min) / latstep          + 1.5) / th) * potNormY;
 
             if(pGR->getDj() < 0)
                 lva[i][j][1] = 1 - lva[i][j][1];
@@ -2532,7 +2687,7 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                        uv[6] = u3; uv[7] = v3;
 
                        DrawSingleGLTexture( pGO, pGR, uv, x, y, xs, ys );
-                       
+
                 }
             }
 
