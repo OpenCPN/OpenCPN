@@ -3860,7 +3860,21 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     glDrawArrays(GL_LINE_STRIP, 0, point_count);
                 }
                 else{
+#if 1 
+                    unsigned char *buffer = (unsigned char *)vertex_buffer;
+                    buffer += seg_vbo_offset;
+                    float *bufBase = (float *)buffer;
+                    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), bufBase);
+                    glEnableVertexAttribArray(pos);
+                    glDrawArrays(GL_LINE_STRIP, 0, point_count);
+
+#else
+                    unsigned char *buffer = (unsigned char *)vertex_buffer;
+                    float *bufBase = (float *)buffer;
+                    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), bufBase);
+                    glEnableVertexAttribArray(pos);
                     glDrawArrays(GL_LINE_STRIP, seg_vbo_offset/(2 * sizeof(float)), point_count);
+#endif                    
                 }
 
 #endif
