@@ -1477,9 +1477,9 @@ void WayPointman::ProcessDefaultIcons()
     if(!bcacheLoaded)
     {
         g_Platform->ShowBusySpinner();
-#ifdef __OCPN__ANDROID__
-        androidDisplayToast( _("Processing icons"));
-#endif        
+//#ifdef __OCPN__ANDROID__
+//        androidDisplayToast( _("Processing icons"));
+//#endif        
 
 
         for( int ifile = 0; ifile < n_files; ifile++ ) {
