@@ -225,6 +225,22 @@ void LineBuffer::Finalize()
         lines[i++] = *it;
 };
 
+int  adjustSpacing( int dialogSetSpacing )
+{
+#ifdef __OCPN__ANDROID__
+    // Treat the slider control as a percentage value.
+    // Maximum space (100%) is established as one-half of the smaller of screen dismensions x and y.
+    wxSize sz = GetOCPNCanvasWindow()->GetClientSize();
+    int sizeMin = wxMin(sz.x, sz.y);
+    int space = ((double)dialogSetSpacing) * (sizeMin / 2) / 100;
+    //qDebug() << "Space: " << dialogSetSpacing << sizeMin << space;
+    return space;
+
+#else
+    return dialogSetSpacing;
+#endif
+}
+
 
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
@@ -1199,7 +1215,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     if( m_Settings.Settings[settings].m_bBarbArrFixSpac ) {
 
         //set spacing between arrows
-        int space = m_Settings.Settings[settings].m_iBarbArrSpacing;
+        int space = adjustSpacing( m_Settings.Settings[settings].m_iBarbArrSpacing);
 
         PlugIn_ViewPort uvp = *vp;
         uvp.rotation = uvp.skew = 0;
@@ -1489,7 +1505,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     if( m_Settings.Settings[settings].m_bDirArrFixSpac ) {						//fixed spacing
 
         //Set spacing between arrows
-        int space = m_Settings.Settings[settings].m_iDirArrSpacing;
+        int space = adjustSpacing( m_Settings.Settings[settings].m_iDirArrSpacing );
 
         for( int i = 0; i < m_ParentSize.GetWidth(); i+= (space + arrowSize) ) {
             for( int j = 0; j < m_ParentSize.GetHeight(); j+= (space + arrowSize) ) {
@@ -1741,7 +1757,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 	if( m_Settings.Settings[settings].m_bNumFixSpac ) {						//fixed spacing
 
 		//Set spacing between numbers
-		int space = m_Settings.Settings[settings].m_iNumbersSpacing;
+                int space = adjustSpacing( m_Settings.Settings[settings].m_iNumbersSpacing);
 
 		PlugIn_ViewPort uvp = *vp;
 		uvp.rotation = uvp.skew = 0;
