@@ -289,7 +289,7 @@ bool AndroidUnzip(wxString zipFile, wxString destDir, int nStrip, bool bRemoveZi
     bool bDone = false;
     while (!bDone){
         wxMilliSleep(1000);
-        wxSafeYield(NULL, true);
+        //wxSafeYield(NULL, true);
         
         qDebug() << "unzip poll";
         

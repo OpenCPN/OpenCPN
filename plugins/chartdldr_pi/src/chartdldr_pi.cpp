@@ -206,7 +206,8 @@ int chartdldr_pi::Init( void )
         wxString s1 = st.GetNextToken();
         wxString s2 = st.GetNextToken();
         wxString s3 = st.GetNextToken();
-        m_pChartSources->Add(new ChartSource(s1, s2, s3));
+        if(!s2.IsEmpty())                       // scrub empty sources.
+            m_pChartSources->Add(new ChartSource(s1, s2, s3));
     }
     return (
             WANTS_PREFERENCES         |
@@ -605,17 +606,11 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 
 void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 {
-    ///v5qDebug() << "OnContextMenu";
     
     wxMenu menu;
-    wxPoint point = event.GetPosition();
-#ifdef NEW_LIST    
-    wxPoint p1 = ((wxWindow *)m_scrollWinChartList)->GetPosition();
-#else
-    if( m_clCharts->GetItemCount() == 0 )
-        return;
-    wxPoint p1 = ((wxWindow *)m_clCharts)->GetPosition();
-#endif    
+    
+    wxPoint mouseScreen = wxGetMousePosition();
+    wxPoint mouseClient = ScreenToClient(mouseScreen);
 
 #ifdef __OCPN__ANDROID__    
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
@@ -653,8 +648,8 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
      
     menu.Connect(wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick, NULL, this);
     // and then display
-    ///v5qDebug() << "POPUP";
-    PopupMenu(&menu, p1.x + point.x, p1.y + point.y);
+    PopupMenu(&menu, mouseClient.x, mouseClient.y);
+
 }
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
@@ -801,6 +796,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             
             ChartPanel *pC = new ChartPanel(m_scrollWinChartList, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), 
                                             pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle(), status, latest, this, bcheck );
+            pC->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
             
             m_boxSizerCharts->Add( pC, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 );
             m_panelArray.Add( pC );
@@ -1325,15 +1321,11 @@ void ChartDldrPanelImpl::DownloadCharts()
         wxMessageBox(_("No charts selected for download."));
         return;
     }
+
     ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
-    if( m_clCharts->GetCheckedItemCount() == 0 && !updatingAll )
-    {
-        wxMessageBox(_("No charts selected for download."));
-        return;
-    }
 
     cancelled = false;
-    to_download = m_clCharts->GetCheckedItemCount();
+    to_download = GetCheckedChartCount();
     m_downloading = 0;
     m_failed_downloads = 0;
     DisableForDownload( false );
@@ -1344,12 +1336,12 @@ void ChartDldrPanelImpl::DownloadCharts()
     wxFileName downloaded_p;
     int idx = -1;
 
-    for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
+    for( int i = 0; i < GetChartCount(); i++ )
     {
         if( cancelled )
             break;
         //Prepare download queues
-        if( !m_clCharts->IsChecked(i) )
+        if( !isChartChecked(i) )
             continue;
 
         m_bTransferComplete = false;
@@ -1436,22 +1428,28 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 #endif
         if (idx >= 0) {
             pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
-                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
-
+                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
+ 
             cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
-                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
+                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
             idx = -1;
         }
 
         while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
         {
-            m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                         m_downloading, to_download, m_failed_downloads,
-                                                         m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            if(m_failed_downloads)
+                m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                                                                 m_downloading, to_download, m_failed_downloads,
+                                                                 m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            else
+                m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
+                                                                     m_downloading, to_download,
+                                                                     m_transferredsize.c_str(), m_totalsize.c_str() ) );
+
+            //if(g_pi && g_pi->m_dldrpanel)
+                //g_pi->m_dldrpanel->Raise();
             wxYield();
             wxMilliSleep(30);
-//            if( !IsShownOnScreen() )
-//                cancelled = true;
         }
         
         if(cancelled){
@@ -1482,10 +1480,14 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
     m_bDnldCharts->SetLabel( _("Download selected charts") );
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
-    if( m_failed_downloads > 0 && !updatingAll )
+    if( m_failed_downloads > 0 && !updatingAll && !cancelled )
         wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
                 , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
+        
+    if( cancelled )
+        wxMessageBox( _("Chart download cancelled."), _("Chart Downloader"), wxOK | wxICON_INFORMATION );
+        
     if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
