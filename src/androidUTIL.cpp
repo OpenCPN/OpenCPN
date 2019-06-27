@@ -39,7 +39,6 @@
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetListDialog.h"
-//#include "routeprop.h"
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
@@ -106,7 +105,7 @@ extern bool                       g_bSleep;
 androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
-extern about                     *g_pAboutDlg;
+extern about                     *g_pAboutDlgLegacy;
 extern bool                      g_bFullscreen;
 extern OCPNPlatform              *g_Platform;
 
@@ -413,10 +412,8 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 
             // Route Props
             if(RoutePropDlgImpl::getInstanceFlag()){
-                qDebug() << "RPDIA";
                 bool bshown = pRoutePropDialog->IsShown();
                 if(bshown){
-                    qDebug() << "RPDIB";
                     pRoutePropDialog->Hide();
                     pRoutePropDialog->RecalculateSize();
                     pRoutePropDialog->Show();
@@ -426,7 +423,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     pRoutePropDialog = NULL;
                 }
             }
-#if 0            
+
             // Track Props
             if(TrackPropDlg::getInstanceFlag()){
                 bool bshown = pTrackPropDialog->IsShown();
@@ -441,20 +438,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
             
-#endif            
             // Mark Props
-//             if(MarkInfoImpl::getInstanceFlag()){
-//                 bool bshown = pMarkPropDialog->IsShown();
-//                 if(bshown){
-//                     pMarkPropDialog->Hide();
-//                     pMarkPropDialog->RecalculateSize();
-//                     pMarkPropDialog->Show();
-//                 }
-//                 else{
-//                     pMarkPropDialog->Destroy();
-//                     pMarkPropDialog = NULL;
-//                 }
-//             }
             
             if(g_pMarkInfoDialog){
                 bool bshown = g_pMarkInfoDialog->IsShown();
@@ -476,18 +460,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 } 
             }
             
-///v5            // Options dialog
-//             if(g_options){
-//                 ///v5qDebug() << "optionsA";
-//                 bool bshown = g_options->IsActive();
-//                 g_options->Hide();
-//                 g_options->RecalculateSize();
-//                 //if(s_optionsActive)
-//                 {
-//                     qDebug() << "optionsB";
-//                     g_options->Raise();
-//                 }
-//             }
             
             // AIS Target List dialog
             if(g_pAISTargetList){
@@ -531,12 +503,12 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
             // About dialog
-            if(g_pAboutDlg){
-                bool bshown = g_pAboutDlg->IsShown();
-                g_pAboutDlg->Hide();
-                ///v5g_pAboutDlg->RecalculateSize();
+            if(g_pAboutDlgLegacy){
+                bool bshown = g_pAboutDlgLegacy->IsShown();
                 if(bshown){
-                    g_pAboutDlg->Show();
+                    g_pAboutDlgLegacy->Hide();
+                    g_pAboutDlgLegacy->RecalculateSize();
+                    g_pAboutDlgLegacy->Show();
                 }
             }
             

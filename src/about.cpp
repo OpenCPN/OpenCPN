@@ -51,7 +51,7 @@
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern about *g_pAboutDlg;
+extern about *g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
 wxString OpenCPNVersion =  wxString::Format( wxT("\n      Version %s"), VERSION_FULL);
@@ -375,14 +375,14 @@ void about::RecalculateSize( void )
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 44;
     
-    wxSize dsize = GetParent()->GetClientSize();
-    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
-    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    wxSize dsize = GetParent()->GetSize();
+    esize.y = wxMin(esize.y, dsize.y - (0 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (0 * GetCharHeight()));
     SetClientSize(esize);
     
     wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
-    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    fsize.y = wxMin(fsize.y, dsize.y - (0 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (0 * GetCharHeight()));
     
     SetSize(fsize);
     
@@ -567,7 +567,7 @@ void about::OnClose( wxCloseEvent& event )
     gFrame->Raise();
     #endif
     Destroy();
-    g_pAboutDlg = NULL;
+    g_pAboutDlgLegacy = NULL;
 }
 
 void about::OnDonateClick( wxCommandEvent& event )
