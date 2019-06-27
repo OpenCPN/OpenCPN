@@ -279,6 +279,7 @@ extern wxArrayString             g_locale_catalog_array;
 extern int                       options_lastPage;
 extern AboutFrameImpl            *g_pAboutDlg;
 extern about                     *g_pAboutDlgLegacy;
+extern wxColour                   g_colourTrackLineColour;
 
 
 
@@ -1184,6 +1185,11 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write (str, pval );
         FontMgr::Get().LoadFontNative( &str, &pval );
         
+        // Set track default color to magenta
+        pConfig->SetPath ( _T ( "/Settings/Others" ) );
+        pConfig->Write (_T("TrackLineColour"), _T("#C545C3"));
+        g_colourTrackLineColour.Set(197,69,195);
+
         
         qDebug() << "SetDefaultOptions.Config";
     }
@@ -1194,7 +1200,8 @@ void OCPNPlatform::SetDefaultOptions( void )
 }
 
 //      Setup global options on upgrade detected
-//      The global config object (pConfig) is available, so direct updates are also allowed
+//      The global config object (pConfig) has already been loaded, so updates here override values set by config
+//      Direct updates to config for next boot are also allowed
 
 void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
 {
@@ -1202,7 +1209,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
 
         qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
 
-        if( (wxNOT_FOUND != vNew.Find(_T("4.6.1"))) && (wxNOT_FOUND != vOld.Find(_T("4.5.1"))) ){            // upgrade
+        if( wxNOT_FOUND != vNew.Find(_T("4.8.4")) ){            // upgrade
             qDebug() << "Upgrade detected" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
             
             // Set some S52/S57 options
@@ -1220,6 +1227,9 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         
             FontMgr::Get().Shutdown();      // Restart the font manager
         }
+        
+        // Set track default color to magenta
+        g_colourTrackLineColour.Set(197,69,195);
         
         // This is ugly hack
         // TODO

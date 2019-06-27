@@ -663,7 +663,7 @@ int MyConfig::LoadMyConfig()
     g_TrackDeltaDistance = 0.10;
     g_route_line_width = 2;
     g_track_line_width = 2;
-    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    g_colourTrackLineColour = wxColour( 243, 229, 47 );         //Yellow
     
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
@@ -1472,19 +1472,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
-//<<<<<<< HEAD
-//     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
-//     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
-//     g_colourTrackLineColour = wxColour( 197, 69, 195 );  //CHMGD
-//     wxString l_wxsTrackLineColour;
-//     Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour );
-//     g_colourTrackLineColour.Set( l_wxsTrackLineColour );
-// 
-//     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
-//     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale, 100 );
-//     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale, 100 );
-//     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
-//=======
     Read( _T ( "RouteLineWidth" ), &g_route_line_width );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width );
 
@@ -1495,7 +1482,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon );
     Read( _T ( "DefaultRPIcon" ), &g_default_routepoint_icon );
-//>>>>>>> v5.0.0
 
     SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = GetNumberOfEntries();
