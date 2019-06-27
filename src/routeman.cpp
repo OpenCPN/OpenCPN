@@ -1054,11 +1054,15 @@ void Routeman::SetColorScheme( ColorScheme cs )
     int scaled_line_width = g_route_line_width;
     int track_scaled_line_width = g_track_line_width;
     if(g_btouch){
-        double size_mult =  g_ChartScaleFactorExp; // * 1.5;
-        double sline_width = wxRound(size_mult * scaled_line_width);
-        double tsline_width = wxRound( size_mult * track_scaled_line_width );
-        scaled_line_width = wxMax( sline_width, 1);
-        track_scaled_line_width = wxMax( tsline_width, 1 );
+        double nominal_line_width_pix = wxMax(1.5, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+        
+        double sline_width = wxMax(nominal_line_width_pix, g_route_line_width);
+        sline_width *= g_ChartScaleFactorExp;
+        scaled_line_width = wxMax( sline_width, 2);
+
+        double tsline_width = wxMax(nominal_line_width_pix, g_track_line_width);
+        tsline_width *= g_ChartScaleFactorExp;
+        track_scaled_line_width = wxMax( tsline_width, 2);
     }
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
