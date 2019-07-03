@@ -173,6 +173,7 @@ extern bool                      g_bAIS_ACK_Timeout;
 extern double                    g_AckTimeout_Mins;
 extern bool                      g_bShowAreaNotices;
 extern bool                      g_bDrawAISSize;
+extern bool                      g_bDrawAISRealtime;
 extern bool                      g_bShowAISName;
 extern int                       g_Show_Target_Name_Scale;
 extern bool                      g_bWplIsAprsPosition;
@@ -984,6 +985,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bskew_comp = false;
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
+    g_bDrawAISRealtime = false;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;

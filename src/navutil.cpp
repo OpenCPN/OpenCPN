@@ -223,6 +223,7 @@ extern wxString         g_AisTargetList_column_spec;
 extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bDrawAISRealtime;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
@@ -1101,6 +1102,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
+    Read( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
@@ -2513,6 +2515,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
+    Write( _T ( "bDrawAISRealtime" ), g_bDrawAISRealtime );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
@@ -3067,6 +3070,7 @@ void SwitchInlandEcdisMode( bool Switch )
             if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
             pConfig->SetPath( _T ( "/Settings/AIS" ) );
             pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
+            pConfig->Read( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
         }
         if (gFrame) gFrame->RequestNewToolbars(true);
     }        

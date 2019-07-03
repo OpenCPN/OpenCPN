@@ -60,6 +60,7 @@ Multiplexer::Multiplexer()
 
 Multiplexer::~Multiplexer()
 {
+    Disconnect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     ClearStreams();
     delete m_pdatastreams;
 }

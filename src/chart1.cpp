@@ -591,6 +591,7 @@ double                    g_AckTimeout_Mins;
 bool                      g_bShowScaled;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
+bool                      g_bDrawAISRealtime;
 bool                      g_bShowAISName;
 int                       g_Show_Target_Name_Scale;
 bool                      g_bWplIsAprsPosition;
