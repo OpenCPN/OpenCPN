@@ -1923,7 +1923,7 @@ double  OCPNPlatform::GetDisplaySizeMM()
     
     wxString msg;
     msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
-    wxLogMessage(msg);
+   // wxLogMessage(msg);
     
     return ret;
 }
