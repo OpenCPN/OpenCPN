@@ -195,6 +195,7 @@ extern wxString         g_AisTargetList_column_spec;
 extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bDrawAISRealtime;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
@@ -1142,6 +1143,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     conf->Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     conf->Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
+    conf->Write( _T ( "bDrawAISRealtime" ), g_bDrawAISRealtime );
     conf->Write( _T ( "bShowAISName" ), g_bShowAISName );
     conf->Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     conf->Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
@@ -1581,6 +1583,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T(  "AISShowScaled"), &g_bShowScaled );
     CHECK_INT( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     CHECK_INT( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
+    CHECK_INT( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
     CHECK_INT( _T ( "bShowAISName" ), &g_bShowAISName );
     CHECK_INT( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     CHECK_INT( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
