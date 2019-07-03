@@ -390,12 +390,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         if( gicon.GetHeight() != sheight )
             gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
 
-// <<<<<<< HEAD
-//     if(style->HasBackground() ) {
-//         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
-//     } else {
-//         iconBm = gicon;
-// =======
         if( style->HasBackground() ) {
             iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
         } else {
@@ -407,7 +401,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         mdc.SelectObject( wxNullBitmap );
         
         m_lastgpsIconName = gpsIconName;
-//>>>>>>> v5.0.0
     }
 
 #if defined(ocpnUSE_GLES)   // GLES does not do ocpnDC::DrawBitmap(), so use texture
