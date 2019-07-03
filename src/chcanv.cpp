@@ -9311,6 +9311,9 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 {
     if( !m_bShowOutlines ) return;
 
+    if(!ChartData)
+        return;
+    
     int nEntry = ChartData->GetChartTableEntries();
 
     for( int i = 0; i < nEntry; i++ ) {

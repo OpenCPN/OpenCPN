@@ -165,7 +165,7 @@ const LLRegion &QuiltCandidate::GetCandidateRegion()
         std::vector<float> vec = ChartData->GetReducedPlyPoints(dbIndex);
         
         std::vector<float> vecr;
-        for(int i =0 ; i < vec.size()/2;  i++){
+        for(unsigned int i =0 ; i < vec.size()/2;  i++){
             float a = vec[i*2+1];
             vecr.push_back(a);
             a = vec[i*2];
@@ -652,7 +652,7 @@ bool Quilt::IsQuiltVector( void )
         if( cnode->GetData() ) {
             QuiltPatch *pqp = cnode->GetData();
 
-            if( ( pqp->b_Valid ) && ( !pqp->b_eclipsed ) ) {
+            if( ( pqp->b_Valid ) && ( !pqp->b_eclipsed ) && (pqp->dbIndex < ChartData->GetChartTableEntries())) {
                 const ChartTableEntry &ctei = ChartData->GetChartTableEntry( pqp->dbIndex );
 
                 if( ctei.GetChartFamily() == CHART_FAMILY_VECTOR ) {

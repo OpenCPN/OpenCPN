@@ -1130,7 +1130,7 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void)
 
 const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const
 {
-      if(index < m_nentries)
+      if(index < GetChartTableEntries())
           return active_chartTable[index];
       else
             return m_ChartTableEntryDummy;
@@ -1138,7 +1138,7 @@ const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const
 
 ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const
 {
-    if(index < m_nentries)
+    if(index < GetChartTableEntries())
           return &active_chartTable[index];
       else
             return (ChartTableEntry *)&m_ChartTableEntryDummy;
