@@ -666,7 +666,8 @@ class options : private Uncopyable,
   wxBoxSizer *m_boxSizerConfigs;
   wxColour m_panelBackgroundUnselected;
   wxString m_selectedConfigPanelGUID;
-  
+  wxSize  m_colourPickerDefaultSize;
+
   DECLARE_EVENT_TABLE()
 };
 

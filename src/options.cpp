@@ -1425,6 +1425,12 @@ void options::Init(void) {
   
   m_sconfigSelect_single = NULL;
   m_sconfigSelect_twovertical = NULL;
+
+  m_colourPickerDefaultSize = wxSize(-1, -1);
+#ifdef __OCPN__ANDROID__  
+  m_colourPickerDefaultSize = wxSize(6 * dialogFont->GetPixelSize().y, dialogFont->GetPixelSize().y * 2);
+#endif  
+
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -3017,9 +3023,9 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   wxStaticText* colourText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Colour"));
   radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  m_colourOwnshipRangeRingColour = new wxColourPickerCtrl( itemPanelShip, wxID_STATIC, *wxRED,
-                  wxDefaultPosition, wxDefaultSize, 0,  wxDefaultValidator, _T( "ID_COLOUROSRANGECOLOUR" ));
-  radarGrid->Add(m_colourOwnshipRangeRingColour, 1,  wxALIGN_RIGHT, border_size);
+  m_colourOwnshipRangeRingColour = new wxColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED,
+                  wxDefaultPosition, m_colourPickerDefaultSize, 0,  wxDefaultValidator, _T( "ID_COLOUROSRANGECOLOUR" ));
+  radarGrid->Add(m_colourOwnshipRangeRingColour, 0, wxALIGN_RIGHT, border_size);
   
   //  Tracks
   wxStaticBox* trackText =
@@ -3066,7 +3072,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticText( itemPanelShip, wxID_STATIC, _("Track Colour"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
   m_colourTrackLineColour = new wxColourPickerCtrl(
-      itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, m_colourPickerDefaultSize, 0,
       wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
   hTrackGrid->Add(m_colourTrackLineColour, 1,
                          wxALIGN_RIGHT, border_size);
@@ -3283,7 +3289,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
 
   m_colourWaypointRangeRingsColour = new wxColourPickerCtrl(
-      itemPanelRoutes, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      itemPanelRoutes, wxID_ANY, *wxRED, wxDefaultPosition, m_colourPickerDefaultSize, 0,
       wxDefaultValidator, _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
@@ -8605,10 +8611,10 @@ void options::DoOnPageChange(size_t page) {
   lastPage = i;
 
   if (0 == i) {  // Display
-    if(m_sconfigSelect_single)
-       m_sconfigSelect_single->Refresh( true );
-    if(m_sconfigSelect_twovertical)
-       m_sconfigSelect_twovertical->Refresh( true );
+//     if(m_sconfigSelect_single)
+//        m_sconfigSelect_single->Refresh( true );
+//     if(m_sconfigSelect_twovertical)
+//        m_sconfigSelect_twovertical->Refresh( true );
   }
   
   //    User selected Chart Page?
