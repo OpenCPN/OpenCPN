@@ -62,7 +62,7 @@ class ConfigMgr
         ConfigMgr(const ConfigMgr &) {}
         ConfigMgr & operator=(const ConfigMgr &) { return *this; }
         static ConfigMgr *instance;
-        
+
         void Init();
         bool LoadCatalog();
         bool SaveCatalog();
@@ -84,12 +84,17 @@ class ConfigPanel: public wxPanel
 public:
     ConfigPanel( OCPNConfigObject *config, wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize );
     ~ConfigPanel();
-    
+
     wxString GetConfigGUID();
     
 private:
-    void OnConfigPanelMouseSelected( wxMouseEvent &event);
+    void OnEraseBackground( wxEraseEvent &event );
+    void OnPaint( wxPaintEvent &event );
+    
     OCPNConfigObject *m_config;
+    
+    DECLARE_EVENT_TABLE()
+
 };
 
 #endif

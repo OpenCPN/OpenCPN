@@ -613,29 +613,34 @@ bool OCPNConfigCatalog::RemoveConfig( wxString GUID)
 //--------------------------------------------------------------------
 //   ConfigPanel implementation
 //--------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ConfigPanel, wxPanel)
+EVT_PAINT ( ConfigPanel::OnPaint )
+EVT_ERASE_BACKGROUND(ConfigPanel::OnEraseBackground)
+END_EVENT_TABLE()
     
 ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size)
-:wxPanel(parent, id, pos, size, wxSIMPLE_BORDER)
+:wxPanel(parent, id, pos, size, wxBORDER_NONE)
 
 {
+    int metric = GetCharHeight();
+    
     m_config = config;
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
     SetSizer(mainSizer);
     
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Title")));
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_title));
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Title")), 0,  wxLEFT | wxTOP, metric);
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_title), 0,   wxLEFT , metric);
     
-    mainSizer->Add(new wxStaticLine(this, wxID_ANY), 0, wxEXPAND | wxALL, 1);
+    mainSizer->Add(new wxStaticLine(this, wxID_ANY), 0, wxEXPAND | wxALL, metric);
     
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Description")));
-    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_description));
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, _("Description")), 0,   wxLEFT , metric);
+    mainSizer->Add(new wxStaticText(this, wxID_ANY, config->m_description), 0,   wxLEFT , metric);
     
     SetMinSize(wxSize(-1, 6 * GetCharHeight()) );
     
     wxColour colour;
     GetGlobalColor(_T("COMP1"), &colour);
     SetBackgroundColour(colour);
-    //Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
     
 }
 
@@ -643,10 +648,27 @@ ConfigPanel::~ConfigPanel()
 {
 }
 
-void ConfigPanel::OnConfigPanelMouseSelected( wxMouseEvent &event)
+void ConfigPanel::OnEraseBackground( wxEraseEvent &event )
 {
-//     SetBackgroundColour(*wxRED);
-//     event.Skip();
+}
+
+void ConfigPanel::OnPaint( wxPaintEvent &event )
+{
+    int width, height;
+    GetSize( &width, &height );
+    wxPaintDC dc( this );
+    int metric = GetCharHeight() / 6;
+    
+    dc.SetPen(wxPen(*wxLIGHT_GREY));
+    dc.SetBrush(wxBrush(*wxLIGHT_GREY));
+    dc.DrawRectangle(GetVirtualSize());
+        
+    dc.SetBrush(wxBrush(GetBackgroundColour()));
+    dc.SetPen( wxPen( wxColor(0, 0, 0), metric ));
+    
+    dc.DrawRoundedRectangle( metric, metric, width-metric*2, height-metric*2, metric);
+
+
 }
 
 wxString ConfigPanel::GetConfigGUID()
