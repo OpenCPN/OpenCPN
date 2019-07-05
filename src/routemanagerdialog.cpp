@@ -859,13 +859,13 @@ void RouteManagerDialog::RecalculateSize()
     sz.y = 30 * char_height;
     
     wxSize dsize = GetParent()->GetClientSize();
-    sz.y = wxMin(sz.y, dsize.y - (1 * char_height));
-    sz.x = wxMin(sz.x, dsize.x - (1 * char_height));
+    sz.y = wxMin(sz.y, dsize.y - (0 * char_height));
+    sz.x = wxMin(sz.x, dsize.x - (0 * char_height));
     SetClientSize(sz);
     
     wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (1 * char_height));
-    fsize.x = wxMin(fsize.x, dsize.x - (1 * char_height));
+    fsize.y = wxMin(fsize.y, dsize.y - (0 * char_height));
+    fsize.x = wxMin(fsize.x, dsize.x - (0 * char_height));
     SetSize(fsize);
     
     CentreOnParent();

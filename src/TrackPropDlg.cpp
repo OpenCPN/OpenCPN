@@ -185,13 +185,13 @@ void TrackPropDlg::RecalculateSize( void )
     esize.y = GetCharHeight() * 40;
 
     wxSize dsize = GetParent()->GetClientSize();
-    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
-    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    esize.y = wxMin(esize.y, dsize.y - (0 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (0 * GetCharHeight()));
     SetClientSize(esize);
 
     wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
-    fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+    fsize.y = wxMin(fsize.y, dsize.y - (0 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (0 * GetCharHeight()));
     SetSize(fsize);
 
     if(m_bcompact){
