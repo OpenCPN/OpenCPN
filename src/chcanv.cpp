@@ -1005,6 +1005,7 @@ void ChartCanvas::CanvasApplyLocale()
 
 void ChartCanvas::SetupGlCanvas( )
 {
+#ifndef __OCPN__ANDROID__    
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
@@ -1034,6 +1035,45 @@ void ChartCanvas::SetupGlCanvas( )
         }
     }
 #endif
+#endif
+
+#ifdef __OCPN__ANDROID__   //ocpnUSE_GL
+    if ( !g_bdisable_opengl )
+    {
+        if(g_bopengl){
+            //qDebug() << "SetupGlCanvas";
+            wxLogMessage( _T("Creating glChartCanvas") );
+
+        // We use one context for all GL windows, so that textures etc will be automatically shared
+            if(IsPrimaryCanvas()){
+                qDebug() << "Creating Primary glChartCanvas";
+                
+//             wxGLContextAttrs ctxAttr;
+//             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
+//             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
+                m_glcc = new glChartCanvas(this);
+
+                wxGLContext *pctx = new wxGLContext(m_glcc);
+                m_glcc->SetContext(pctx);
+                g_pGLcontext = pctx;                // Save a copy of the common context
+            }
+            else{
+                qDebug() << "Creating Secondary glChartCanvas";
+                //QGLContext *pctx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetQGLContext();
+                //qDebug() << "pctx: " << pctx;
+                
+                m_glcc = new glChartCanvas(this, NULL, gFrame->GetPrimaryCanvas()->GetglCanvas());
+                wxGLContext *pctx = new wxGLContext(m_glcc);
+                m_glcc->SetContext(pctx);
+ 
+                //g_pGLcontext->SetCurrent(m_glcc);
+                
+                //m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+            }
+        }
+    }
+#endif
+
 }
  
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )

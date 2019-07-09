@@ -566,16 +566,27 @@ BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas ) EVT_PAINT ( glChartCanvas::OnPai
 END_EVENT_TABLE()
 
 glChartCanvas::glChartCanvas( wxWindow *parent ) :
-#if !wxCHECK_VERSION(3,0,0)
-    wxGLCanvas( parent, wxID_ANY, wxDefaultPosition, wxSize( 256, 256 ),
-            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
-#else
     wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
-                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
+
+{    
+    Init();
+}
+
+#ifdef __OCPN__ANDROID__
+glChartCanvas::glChartCanvas( wxWindow *parent, QGLContext *pctx, wxGLCanvas *share ) :
+    wxGLCanvas( parent, wxID_ANY, pctx, share, wxDefaultPosition, wxSize( 256, 256 ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
+
+{    
+    Init();
+}
 #endif
-                        
-    m_bsetup( false )
+
+void glChartCanvas::Init()
 {
+    m_bsetup = false;
+
     m_pParentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
     
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing
@@ -714,12 +725,16 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     GetClientSize( &m_pParentCanvas->m_canvas_width, &m_pParentCanvas->m_canvas_height );
 
 #ifdef USE_ANDROID_GLES2
+    int xoffset = 0;
+    if(m_pParentCanvas->m_canvasIndex >0)
+        xoffset = 300;
+    
     //  Set the shader viewport transform matrix
     mat4x4 m;
     ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4_identity(m);
     mat4x4_scale_aniso((float (*)[4])vp->vp_transform, m, 2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height, 1.0);
-    mat4x4_translate_in_place((float (*)[4])vp->vp_transform, -vp->pix_width/2, -vp->pix_height/2, 0);
+    mat4x4_translate_in_place((float (*)[4])vp->vp_transform, xoffset-vp->pix_width/2, -vp->pix_height/2, 0);
 #endif
 
 }
@@ -4286,7 +4301,8 @@ void glChartCanvas::Render()
        // Do any setup required...
     loadShaders();
     configureShaders( m_pParentCanvas->VPoint);
-
+    
+    //qDebug() << "Render(): " << m_pParentCanvas->m_canvasIndex;
     bool recompose = false;
     if(m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt && !m_pParentCanvas->m_pQuilt->IsComposed()){
         m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
@@ -4539,7 +4555,7 @@ void glChartCanvas::Render()
                     ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
                                                 m_cache_tex[m_cache_page], 0 );
-                    
+
                     m_fbo_offsetx = 0;
                     m_fbo_offsety = 0;
                     m_fbo_swidth = sx;
