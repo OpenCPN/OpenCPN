@@ -771,7 +771,6 @@ bool             g_btrackContinuous;
 unsigned int     g_canvasConfig;
 bool             g_useMUI;
 bool             g_bmasterToolbarFull = true;
-bool             g_bEffects = true;
 
 int              g_memUsed;
 SENCThreadManager *g_SencThreadManager;
@@ -2436,8 +2435,7 @@ extern ocpnGLOptions g_GLOptions;
 
 #ifdef __OCPN__ANDROID__
     //  We need a resize to pick up height adjustment after building android ActionBar
-    ///v5if(pConfig->m_bShowMenuBar)
-        gFrame->SetSize(getAndroidDisplayDimensions());
+    gFrame->SetSize(getAndroidDisplayDimensions());
     androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow);
 #endif
 
@@ -4026,7 +4024,6 @@ void MyFrame::ProcessCanvasResize( void )
 
     PositionIENCToolbar();
     
-    ///v5TriggerRecaptureTimer();
 }
 
 void MyFrame::TriggerRecaptureTimer()
@@ -4678,8 +4675,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_MARK_MOB:
         case ID_MOB: {
-            ///v5ActivateMOB();
-            GetPrimaryCanvas()->PanCanvas(0, 50);
+            ActivateMOB();
             break;
         }
 
@@ -6072,26 +6068,27 @@ int MyFrame::DoOptionsDialog()
     //qDebug() << "SetInitialPage" <<  options_lastPage << options_subpage;
     g_options->SetInitialPage(options_lastPage, options_subpage );
 
-    if(!g_bresponsive){
+
+#ifndef __OCPN__ANDROID__  //    if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
         if( options_lastWindowPos != wxPoint(0,0) ) {
             g_options->Move( options_lastWindowPos );
-///v5            g_options->SetSize( options_lastWindowSize );
+            g_options->SetSize( options_lastWindowSize );
         } else {
             g_options->Center();
         }
         if( options_lastWindowSize != wxSize(0,0) ) {
-///v5            g_options->SetSize( options_lastWindowSize );
+            g_options->SetSize( options_lastWindowSize );
         }
-    }
+#endif        
 
     if( g_MainToolbar)
         g_MainToolbar->DisableTooltips();
 
-    #ifdef __OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
     androidEnableBackButton( false );
     androidEnableOptionsMenu( false );
-    #endif
+#endif
         
     // Record current canvas config
     unsigned int last_canvasConfig = g_canvasConfig;
@@ -6343,7 +6340,7 @@ int MyFrame::DoOptionsDialog()
     
     g_boptionsactive = false;
     
-    //  If we had a config chage, then schedule a re-entry to the settings dialog
+    //  If we had a config chamge, then schedule a re-entry to the settings dialog
     if(rr & CONFIG_CHANGED){
  //       options_subpage = 0;            // Back to the "templates" page
         ScheduleSettingsDialog();
@@ -6351,8 +6348,6 @@ int MyFrame::DoOptionsDialog()
 //    else
 //        options_subpage = 0;
 
-    ///v5 needed for Android, not sure if the right place...
-    // what raises maintoolbar?
         // ..For each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
@@ -7144,7 +7139,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             GetPrimaryCanvas()->SetFocus();
             g_focusCanvas = GetPrimaryCanvas();
             
-///v5   // make toolbars disappear.  Look around for other gframe->Raise...
 #ifndef __OCPN__ANDROID__
             gFrame->Raise();
 #endif
@@ -10486,7 +10480,6 @@ void MyFrame::applySettingsString( wxString settings)
     if( g_MainToolbar )
         g_MainToolbar->Raise();
 
-    ///v5
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
          if(cc && cc->GetMUIBar())
@@ -10617,7 +10610,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
     }
     
     if(btbRebuild){
-        g_MainToolbar->SetAutoHide( false /*///v5g_bAutoHideToolbar*/);
+        g_MainToolbar->SetAutoHide( false );
         g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
     }
     

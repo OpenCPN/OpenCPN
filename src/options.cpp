@@ -3483,7 +3483,7 @@ void options::CreatePanel_Configs(size_t parent, int border_size, int group_item
 {
     m_DisplayConfigsPage = AddPage(parent, _("Templates"));
     
-    ///v5if (m_bcompact) {
+    //if (m_bcompact) {
     //}
     //else
     {
@@ -3775,67 +3775,6 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pSkewComp = new wxCheckBox(m_ChartDisplayPage, ID_SKEWCOMPBOX,
                                _("De-skew Raster Charts"));
     boxCharts->Add(pSkewComp, inputFlags);
-
-// <<<<<<< HEAD
-//     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                       _("Disable Full Screen Quilting"));
-//     boxCharts->Add(pFullScreenQuilt, inputFlags);
-// 
-//     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                        _("Suppress blur/fog effects on overzoom"));
-//     boxCharts->Add(pOverzoomEmphasis, inputFlags);
-// 
-//     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                     _("Suppress scaled vector charts on overzoom"));
-//     boxCharts->Add(pOZScaleVector, inputFlags);
-// #ifdef __OCPN__ANDROID__
-//     pOverzoomEmphasis->Hide();
-//     pOZScaleVector->Hide();
-// #endif
-//     
-//     // Control Options
-//     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
-//     itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
-// =======
-//     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                       _("Disable Full Screen Quilting"));
-//     boxCharts->Add(pFullScreenQuilt, inputFlags);
-//>>>>>>> v5.0.0
-
-//     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                        _("Suppress blur/fog effects on overzoom"));
-//     boxCharts->Add(pOverzoomEmphasis, inputFlags);
-// 
-//     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-//                                     _("Suppress scaled vector charts on overzoom"));
-//     boxCharts->Add(pOZScaleVector, inputFlags);
-
-//     // Control Options
-//     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
-//     itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
-// 
-//     pWayPointPreventDragging = new wxCheckBox(
-//         m_ChartDisplayPage, ID_DRAGGINGCHECKBOX, _("Lock Waypoints"));
-//     pWayPointPreventDragging->SetValue(FALSE);
-//     boxCtrls->Add(pWayPointPreventDragging, inputFlags);
-// 
-//     pConfirmObjectDeletion = new wxCheckBox(
-//         m_ChartDisplayPage, ID_DELETECHECKBOX, _("Confirm deletion"));
-//     pConfirmObjectDeletion->SetValue(FALSE);
-//     boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
-
-/*    
-    pTransparentToolbar =
-        new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
-                       _("Enable Transparent Toolbar"));
-    itemBoxSizerUI->Add(pTransparentToolbar, 0, wxALL, border_size);
-    if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
-      pTransparentToolbar->Disable();
-*/
-
-#ifdef __OCPN__ANDROID__
-      ///v5pTransparentToolbar->Hide();
-#endif
 
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -4632,9 +4571,7 @@ void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
 
     m_UIcomplete = FALSE;
 
-///v5#ifdef __OCPN__ANDROID__
   CompletePanel();
-// #endif
 
 }
 
@@ -6211,7 +6148,7 @@ void options::CreateControls(void) {
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
 #else
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
-///v5  CreatePanel_NMEA_Compact(m_pageConnections, border_size, group_item_spacing);
+//CreatePanel_NMEA_Compact(m_pageConnections, border_size, group_item_spacing);
 #endif
 
   //    SetDefaultConnectionParams();
@@ -9667,10 +9604,7 @@ void options::SetNMEAFormToSerial(void) {
   ShowNMEASerial(TRUE);
 
   m_pNMEAForm->FitInside();
-///v5  
-//  m_pNMEAForm->Layout();
-//  Fit();
-//  Layout();
+  Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -9682,10 +9616,7 @@ void options::SetNMEAFormToNet(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-///v5  
-//  m_pNMEAForm->Layout();
-//  Fit();
-//  Layout();
+  Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -9697,10 +9628,7 @@ void options::SetNMEAFormToGPS(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-///v5  
-//  m_pNMEAForm->Layout();
-//  Fit();
-//  Layout();
+  Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -9712,10 +9640,7 @@ void options::SetNMEAFormToBT(void) {
   ShowNMEABT(TRUE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-///v5  
-//  m_pNMEAForm->Layout();
-//Fit();
-//  Layout();
+  Fit();
   RecalculateSize();
   SetDSFormRWStates();
 }
@@ -9727,10 +9652,7 @@ void options::ClearNMEAForm(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   m_pNMEAForm->FitInside();
-///v5
-//  m_pNMEAForm->Layout();
-//  Fit();
-//  Layout();
+  Fit();
   RecalculateSize();
 }
 

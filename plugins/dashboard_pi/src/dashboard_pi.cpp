@@ -1518,7 +1518,6 @@ void dashboard_pi::UpdateAuiStatus( void )
         wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
-///v5<<<<<<< HEAD
 
 #ifdef __WXQT__        
         if(pane.IsShown()){
@@ -1528,8 +1527,6 @@ void dashboard_pi::UpdateAuiStatus( void )
             m_pauimgr->Update();
         }
 #endif        
-//=======
-//>>>>>>> v5.0.0
         
     }
     m_pauimgr->Update();

@@ -90,7 +90,6 @@ public:
     void Update( ConnectionParams *ConnectionParams);
  
     bool GetSelected(){ return m_bSelected; }
-    ///v5int GetUnselectedHeight(){ return m_unselectedHeight; }
     ConnectionParams *m_pConnectionParams;
     
 private:
@@ -98,7 +97,6 @@ private:
     bool m_bSelected;
     wxStaticText *m_pName;
     wxColour m_boxColour;
-    ///v5int m_unselectedHeight;
     wxCheckBox *m_cbEnable;
     wxStaticText *t2;
     wxStaticText *t4;

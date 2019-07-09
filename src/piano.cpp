@@ -65,7 +65,6 @@ extern bool g_btouch;
 extern int  g_GUIScaleFactor;
 extern bool g_bopengl;
 
-///v5extern Piano                     *g_Piano;
 extern OCPNPlatform              *g_Platform;
 
 
@@ -553,7 +552,6 @@ void Piano::ShowBusy( bool busy )
 void Piano::SetKeyArray( std::vector<int> array )
 {
     m_key_array = array;
-    ///v5FormatKeys();
 }
 
 void Piano::SetNoshowIndexArray( std::vector<int> array )

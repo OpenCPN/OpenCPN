@@ -208,7 +208,6 @@ public:
     int viewport[4];
     double mvmatrix[16], projmatrix[16];
 
-///v5 moved to public    
     void SetupOpenGL();
 
 protected:

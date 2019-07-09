@@ -576,7 +576,6 @@ END_EVENT_TABLE()
 
 void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 {
-    ///v5qDebug() << "POPUP CLICK";
     
     switch( evt.GetId() )
     {
@@ -682,18 +681,8 @@ void ChartDldrPanelImpl::SetSource( int id )
     {
         ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
         wxYield();
-///v5<<<<<< HEAD
-#if 0        
-        ChartSource *cs = pPlugIn->m_chartSources->Item(id);
-        
-        wxString label = _("Charts");
-        label += _T(": ") + m_csTitle;
-        m_chartsLabel->SetLabel(label);
-        
-=======
-#endif
+
         ChartSource *cs = pPlugIn->m_pChartSources->Item(id);
-///>>>>>>> v5.0.0
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
@@ -1389,43 +1378,6 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         long handle;
         OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
 
-///v5
-#if 0
-<<<<<<< HEAD
-                while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
-                {
-                    if(failed_downloads)
-                        m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                                 downloading, to_download, failed_downloads,
-                                                                 m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                    else
-                        m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
-                                                                     downloading, to_download,
-                                                                     m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                        
-                    wxMilliSleep(1000);
-                    wxYield();
-//                    if( !IsShownOnScreen() )
-//                        cancelled = true;
-                }
-                
-                if(cancelled){
-                    OCPN_cancelDownloadFileBackground( handle );
-                }
-                    
-                if( m_bTransferSuccess && !cancelled )
-                {
-                    wxFileName myfn(path);
-                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
-                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
-                } else {
-                    if( wxFileExists( path ) )
-                        wxRemoveFile( path );
-                    failed_downloads++;
-                }
-            }
-=======
-#endif
         if (idx >= 0) {
             pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
                                        pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
@@ -1466,7 +1418,6 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
             if( wxFileExists( path ) )
                 wxRemoveFile( path );
             m_failed_downloads++;
-///v5>>>>>>> v5.0.0
         }
     }
     if (idx >= 0) {
@@ -1779,33 +1730,6 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
     return true;
 }
 
-///v5
-#if 0
-<<<<<<< HEAD
-bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
-{
- #ifndef __OCPN__ANDROID__    
-     wxString cmd;
-     if( aStripPath )
-         cmd = _T("e");
-     else
-         cmd = _T("x");
-     int argc = 5;
- 
-     char command[2];
-     strncpy(command, (const char*)cmd.mb_str(wxConvUTF8), 1);
-     command[1] = 0;
-
-    char file[1024];
-    strncpy(file, (const char*)aRarFile.mb_str(wxConvUTF8), 1023);
-    file[1023] = 0;
-
-    char target[1024];
-    strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
-    target[1023] = 0;
-#endif    
-=======
-#endif
 
 #ifdef DLDR_USE_LIBARCHIVE
 static int copy_data(struct archive *ar, struct archive *aw)
@@ -1829,7 +1753,6 @@ static int copy_data(struct archive *ar, struct archive *aw)
         }
     }
 }
-///v5>>>>>>> v5.0.0
 
 bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveArchive)
 {

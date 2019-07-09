@@ -806,15 +806,14 @@ void ocpnFloatingToolbarDialog::Realize()
                 }
             }
 
-///v5#ifndef __WXQT__
+#ifndef __OCPN__ANDROID__
             if(shape.GetWidth() && shape.GetHeight())
                 SetShape( wxRegion( shape, *wxWHITE, 10 ) );
-//#endif
+#endif
         }
         else{
-///v5#if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)       
+#if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)       
             if(m_cornerRadius) {
-                //qDebug() <<"Shape" << GetSize().x << GetSize().y;
                 wxBitmap m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
                 wxMemoryDC sdc( m_MaskBmp );
                 sdc.SetBackground( *wxWHITE_BRUSH );
@@ -833,29 +832,9 @@ void ocpnFloatingToolbarDialog::Realize()
                 rMap->SetMask( &mask);
                     
                 wxRegion r = wxRegion( *rMap );
-                //qDebug() <<"ShapeA" << r.IsOk();
                 SetShape( r );
-#if 0
-                wxBitmap m_MaskBmp = wxBitmap( GetSize().x, GetSize().y );
-                wxMemoryDC sdc( m_MaskBmp );
-                sdc.SetBackground( *wxWHITE_BRUSH );
-                sdc.Clear();
-                sdc.SetBrush( *wxBLACK_BRUSH );
-                sdc.SetPen( *wxBLACK_PEN );
-                sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), m_cornerRadius );
-                sdc.SelectObject( wxNullBitmap );
-                wxRect rc(0,0,50, 200);
-                wxRegion r = wxRegion( rc );
-                qDebug() <<"ShapeA" << r.IsOk();
-                SetShape( r );
-
-//                wxRegion r = wxRegion( m_MaskBmp, *wxWHITE, 0 );
-//                qDebug() <<"ShapeA" << r.IsOk();
-                //SetShape( wxRegion( m_MaskBmp, *wxWHITE, 0 ) );
-#endif                
             }
- //#endif
-            
+#endif            
         }
     }
 }
@@ -2236,7 +2215,6 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 }
 #else
                 bmp = loadAndroidSVG( svgFile,tool->m_width, tool->m_height );
-///v5                bmp = m_style->BuildPluginIcon( &bmp, toggleFlag, m_sizefactor );
                 bmp = m_style->BuildPluginIcon( bmp, TOOLICON_NORMAL );
 #endif
 #endif           

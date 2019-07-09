@@ -59,6 +59,7 @@
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "MUIBar.h"
+#include "toolbar.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -278,6 +279,8 @@ extern bool             b_inCloseWindow;
 extern bool             g_config_display_size_manual;
 extern MarkInfoDlg      *g_pMarkInfoDialog;
 
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
+
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
@@ -475,7 +478,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
  
 #if 0
-///v5
             // Tide/Current window
             if( cc1 && cc1->getTCWin()){
                 bool bshown = cc1->getTCWin()->IsShown();
@@ -595,7 +597,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "cancel:"   .. user cancelled Dialog.
                     //  "color: ".
                     if(!s){
-///v5                        qDebug() << "isColorPickerDialogFinished returned null";
+                        qDebug() << "isColorPickerDialogFinished returned null";
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -644,7 +646,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "ACTIVE"   ......Post command not done yet.
                     //  A valid XML response body.
                     if(!s){
-///v5                        qDebug() << "checkPostAsync returned null";
+                        qDebug() << "checkPostAsync returned null";
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -741,7 +743,6 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event){
 
     g_GUIScaleFactor = -5;
     g_ChartScaleFactor = -5;
-    ///v5gFrame->SetToolbarScale();
     gFrame->SetGPSCompassScale();
     
     s_androidMemUsed  = 80;
@@ -1094,10 +1095,10 @@ extern "C"{
         
         wxMouseEvent evt(wxEVT_MOUSEWHEEL);
         evt.m_wheelRotation = dir;
-///v5
-//         if(cc1 && cc1->GetEventHandler()){
-//             cc1->GetEventHandler()->AddPendingEvent(evt);
-//         }
+
+        if(gFrame->GetPrimaryCanvas()){
+            gFrame->GetPrimaryCanvas()->GetEventHandler()->AddPendingEvent(evt);
+        }
         
         return 77;
     }
@@ -1107,7 +1108,9 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
 
-        ///v5gFrame->ToggleToolbar();
+//         if(g_MainToolbar){
+//             g_MainToolbar->Show( !g_MainToolbar->IsShown() );
+//         }
             
         return 88;
     }
@@ -1181,29 +1184,6 @@ extern "C"{
         if(bGPSEnabled)
             androidGPSService( GPS_ON );
         
-#if 0
-///v5        
-        if(cc1){
-            glChartCanvas *glc = cc1->GetglCanvas();
-            QGLWidget *glw = glc->GetHandle();
-//            qDebug() << glw;
-            if(glw){
-                 QGLContext *context = glw->context();
-//                 qDebug() << context;
-                 if(context){
-//                     qDebug() << context->isValid();
-                     if(context->isValid())
-                         ret = 1;
-                     else{
-                         wxLogMessage(_T("OpenGL Lost Context"));
-                         qDebug() << "OpenGL Lost Context";
-                         ret = 0;
-                     }
- 
-                 }
-            }
-        }
-#endif        
         wxCommandEvent evt0(wxEVT_COMMAND_MENU_SELECTED);
         evt0.SetId( ID_CMD_CLOSE_ALL_DIALOGS );
         if(gFrame && gFrame->GetEventHandler())
@@ -2270,7 +2250,6 @@ double GetAndroidDisplaySize()
         screen_size = ::wxGetDisplaySize();
     }
         
-    ///v5wxLogMessage(_T("Metrics:") + return_string);
     wxString msg;
     
     //int ssx, ssy;
@@ -2335,7 +2314,6 @@ double GetAndroidDisplaySize()
     else{        
         msg.Printf(_T("Android Auto Display Size (mm, est.): %g   ldpi: %g  density: %g"), ret, ldpi, density);
     }
-    ///v5wxLogMessage(msg);
     
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
@@ -2355,9 +2333,7 @@ int getAndroidActionBarHeight()
 double getAndroidDPmm()
 {
     // Returns an estimate based on the pixel density reported
-    ///v5if( g_androidDPmm < 0.01){
-        GetAndroidDisplaySize();
-    //}
+    GetAndroidDisplaySize();
     
     //qDebug() << "getAndroidDPmm" << g_androidDPmm;
     

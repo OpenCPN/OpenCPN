@@ -98,31 +98,6 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	
 	sbSboat->Add( gSboat, 1, wxEXPAND, 0 );
-///v5
-#if 0        
-<<<<<<< HEAD
-
-        wxBoxSizer *varBox = new wxBoxSizer(wxHORIZONTAL);
-        sbSboat->Add( varBox, 0, wxEXPAND, 0 );
-        
-        m_staticText13 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
-        //m_staticText13->Wrap( -1 );
-        m_staticText13->SetToolTip( _("Magnetic Variation") );
-        varBox->Add( m_staticText13, 1, wxALL, 5 );
-        
-        m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
-        m_tbD->SetMaxLength( 0 ); 
-        //m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
-        
-        varBox->Add( m_tbD, 3, wxEXPAND, 5 );
-        
-        
-        
-        bSframe->AddSpacer(5);
-        
-        
-=======
-#endif
 	
 	wxFlexGridSizer* gSizer3;
 	gSizer3 = new wxFlexGridSizer( 1, 2, 0, 0 );
@@ -149,7 +124,6 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSframe->Add( sbSboat, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
 	
-///v5>>>>>>> v5.0.0
 	sbScursor = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Cursor") ), wxVERTICAL );
         bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
         
@@ -220,28 +194,6 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_tcI->SetMaxLength( 0 ); 
 	gScursor->Add( m_tcI, 0, wxEXPAND, 5 );
 	
-///v5
-#if 0        
-<<<<<<< HEAD
-        wxBoxSizer *varBoxCursor = new wxBoxSizer(wxHORIZONTAL);
-        sbScursor->Add( varBoxCursor, 0, wxEXPAND, 0 );
-        
-        m_staticText131 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
-        //m_staticText131->Wrap( -1 );
-        m_staticText131->SetToolTip( _("Magnetic Variation") );
-        varBoxCursor->Add( m_staticText131, 1, wxALL, 5 );
-        
-        m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
-        m_tcD->SetMaxLength( 0 ); 
-        //m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
-        
-        varBoxCursor->Add( m_tcD, 3, wxEXPAND, 5 );
-
-        bSframe->AddSpacer(5);
-        
-=======
-#endif
-	
 	sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
 	
 	wxFlexGridSizer* gSizer4;
@@ -268,7 +220,6 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	
 	bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-///v5>>>>>>> v5.0.0
 	
 	
 	

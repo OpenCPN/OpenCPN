@@ -2269,14 +2269,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                         loadcell_key++;
                   }
-//<<<<<<< HEAD
-//#ifndef __OCPN__ANDROID__
-//=======
-                  
-//#ifndef __OCPN__ANDROID__
-///v5  this probably relates to VBO, not Android
-                  AssembleLineGeometry();
-//#endif
+
+                    AssembleLineGeometry();
+
                       //  Set up the chart context
                     m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
                     m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
@@ -6559,12 +6554,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
 
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
-//<<<<<<< HEAD
-//#endif
-//=======
 
           //TODO this needs fixing for multicanvas
-//>>>>>>> v5.0.0
+
           if(glChartCanvas::HasNormalizedViewPort(vp)) {
               glcc->MultMatrixViewPort(vp);
               nvp = glChartCanvas::NormalizedViewPort(vp);

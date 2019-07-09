@@ -100,10 +100,6 @@ extern int                g_iWpt_ScaMin;
 extern bool               g_bUseWptScaMin;
 extern bool               g_bShowWptName;
 
-///v5extern wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height );
-
-
-///v5
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {

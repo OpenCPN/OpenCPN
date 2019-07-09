@@ -821,7 +821,8 @@ int PolyTessGeo::BuildTessGLU()
 int PolyTessGeo::BuildTess(void)
 {
     return 1;
-///v5
+//  This alternate tesselator has problems with disjoint regions.  Could be faster, however.
+//  TODO needs work    
 #if 0    
     //  Setup the tesselator
     

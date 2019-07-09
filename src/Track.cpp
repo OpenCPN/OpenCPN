@@ -657,14 +657,12 @@ void Track::Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             radius = 0;
     }
 
-    ///v5  This does not seem right merge with master...
 #ifndef USE_ANDROID_GLES2
     if(dc.GetDC() || radius)
 #else
     if(1)
 #endif    
     {
-//    if( dc.GetDC() || radius ) {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();

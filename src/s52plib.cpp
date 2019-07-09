@@ -8590,7 +8590,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif
                     b_temp_vbo = (rzRules->obj->auxParm0 == -5);   // Must we use a temporary VBO?  Probably slower than simple glDrawArrays
 
-                    GLuint vboId;
+                    GLuint vboId = 0;
                     // generate a new VBO and get the associated ID
                     glGenBuffers(1, &vboId);
 

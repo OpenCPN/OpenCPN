@@ -1534,7 +1534,6 @@ MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & ke
 
     wxImage img = LoadSVGIcon(fileName, -1, -1 );
     double bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
-    ///v5qDebug() << "icons" << nominal_legacy_icon_size_pixels << pix_factor << bm_size << g_Platform->GetDisplayDPmm();   
     
     wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size );
     wxRect rClip = CropImageOnAlpha(image);

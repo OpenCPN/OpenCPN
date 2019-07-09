@@ -1280,7 +1280,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
             
             rasterSymbolsTextureSize = wxSize(w, h);
 
-            ///v5glDisable( GL_TEXTURE_2D );
+            glDisable( GL_TEXTURE_2D );
             
             free(e);
         } 

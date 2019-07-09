@@ -46,7 +46,7 @@
 #include "styles.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
-
+#include "navutil.h"
 
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
@@ -232,7 +232,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 
 void about::SetColorScheme( void )
 {
-    ///v5DimeControl( this );
+    DimeControl( this );
     wxColor bg = GetBackgroundColour();
     if(pAboutHTMLCtl) pAboutHTMLCtl->SetBackgroundColour( bg );
     if(pLicenseHTMLCtl)pLicenseHTMLCtl->SetBackgroundColour( bg );

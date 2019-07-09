@@ -58,7 +58,6 @@
 //------------------------------------------------------------------------------
 
 extern OCPNPlatform              *g_Platform;
-extern bool                      g_bEffects;
 extern ChartCanvas               *g_focusCanvas;
 extern ocpnStyle::StyleManager*   g_StyleManager;
 
@@ -449,10 +448,6 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor, wxWindow
 {
     m_parentCanvas = parent;
     m_orientation = orientation;
-#ifdef __OCPN__ANDROID__
-///v5   Probably want only MUIbar effects flag.    
-    g_bEffects =false;
-#endif    
     
     //SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     //wxWindow::Create(parent, id, pos, size, style, name);
@@ -493,6 +488,10 @@ void MUIBar::Init()
     
     CanvasOptionTimer.SetOwner( this, CANVAS_OPTIONS_TIMER );
     m_coAnimateByBitmaps = false;
+    m_bEffects = true;
+#ifdef __OCPN__ANDROID__
+    m_bEffects =false;
+#endif    
     
 }
 
@@ -901,7 +900,7 @@ void MUIBar::PullCanvasOptions()
     int coy = m_COTopOffset;
         m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
 
-    if(!g_bEffects){
+    if(!m_bEffects){
         m_canvasOptions->Move(m_targetCOPos);
         m_canvasOptions->Show();
         return;
@@ -945,7 +944,7 @@ void MUIBar::PullCanvasOptions()
 
 void MUIBar::PushCanvasOptions()
 {
-    if(!g_bEffects){
+    if(!m_bEffects){
         m_canvasOptions->Hide();
         return;
     }

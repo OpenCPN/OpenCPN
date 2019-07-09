@@ -32,6 +32,7 @@
 #include "routeprintout.h"
 #include "chcanv.h"
 #include "tcmgr.h"
+#include "ocpn_plugin.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
@@ -385,7 +386,6 @@ void RoutePropDlgImpl::UpdatePoints()
             crs = _("Arrived");
         }
 
-///v5        data.push_back( wxVariant(in == 0 ? "---" : std::to_string(in)) );
         if(in == 0)
             data.push_back( wxVariant("---"));
         else{
@@ -817,14 +817,14 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu( wxDataViewEve
     
     if( ! m_pRoute->m_bIsInLayer ) {
 #ifdef __OCPN__ANDROID__
-        ///v5wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+        wxFont *pf = OCPNGetFont(_T("Menu"), 0);
         // add stuff
         wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
-        ///v5editItem->SetFont(*pf);
+        editItem->SetFont(*pf);
         menu.Append(editItem);
         
         wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
-        ///v5delItem->SetFont(*pf);
+        delItem->SetFont(*pf);
         menu.Append(delItem);
 #else
         wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );

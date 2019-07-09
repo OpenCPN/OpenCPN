@@ -143,7 +143,6 @@ extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
-///v5extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
 extern std::vector<int> g_quilt_noshow_index_array;
@@ -187,15 +186,12 @@ extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
-//<<<<<<< HEAD
-//extern int              g_nCPUCount;
-//extern bool             g_running;
+extern int              g_nCPUCount;
+extern bool             g_running;
 
-//=======
 extern unsigned int     g_canvasConfig;
 extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
-//>>>>>>> v5.0.0
 
 ocpnGLOptions g_GLOptions;
 
@@ -682,21 +678,16 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
 #ifdef __OCPN__ANDROID__ 
-///v5
-//      if(!g_running){
-//          wxLogMessage(_T("Got OnSize event while NOT running"));
-//          event.Skip();
-//          return;
-//      }
+     if(!g_running){
+         wxLogMessage(_T("Got OnSize event while NOT running"));
+         event.Skip();
+         return;
+     }
 #endif
 
 
-    //qDebug() << "OnSize: " <<  GetSize().x << GetSize().y;
     SetCurrent(*m_pcontext);
     
-//     if( !m_bsetup ) 
-//         SetupOpenGL();
-
     
     if( !g_bopengl ) {
         SetSize( GetSize().x, GetSize().y );
@@ -1366,8 +1357,10 @@ void glChartCanvas::SetupOpenGL()
         g_b_EnableVBO = false;
 #endif
 
+//#ifdef __OCPN__ANDROID__
     g_b_EnableVBO = false;
-
+//#endif
+    
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
@@ -4340,10 +4333,6 @@ void glChartCanvas::Render()
     }
     wxPaintDC( this );
 
-    //  If we are in the middle of a fast pan, we don't want the FBO coordinates to be reset
-    ///v5if(m_binPinch || m_binPan)
-        ///return;
-        
     ViewPort VPoint = m_pParentCanvas->VPoint;
     ocpnDC gldc( *this );
 
@@ -4742,7 +4731,6 @@ void glChartCanvas::Render()
                         RenderCharts(m_gldc, update_region);
                         //qDebug() << "RenderTime3" << sw.GetTime();
                      
-                     ///v5RenderOverlayObjects(m_gldc, screen_region);
                     
                      //qDebug() << "RenderTime4" << sw.GetTime();
                      
@@ -4767,7 +4755,6 @@ void glChartCanvas::Render()
                 glClear(GL_COLOR_BUFFER_BIT);
             
                 RenderCharts(m_gldc, screen_region);
-                ///v5RenderOverlayObjects(m_gldc, screen_region);
 
                 //qDebug() << "RenderTimeFULL" << sw.GetTime();
                 
@@ -6925,7 +6912,7 @@ void glChartCanvas::RenderScene()
     m_fbo_swidth = sx;
     m_fbo_sheight = sy;
     RenderCharts(gldc, screen_region);
-    ///v5RenderOverlayObjects(gldc, screen_region);
+    //RenderOverlayObjects(gldc, screen_region);
                         
     // Disable Render to FBO
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );

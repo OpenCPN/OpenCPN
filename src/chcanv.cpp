@@ -9224,11 +9224,6 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     delete m_canvasMenu;
     m_canvasMenu = NULL;
 
-#ifdef __WXQT__
-    ///V5gFrame->SurfaceToolbar();
-    //g_MainToolbar->Raise();
-#endif
-    
     return true;
 }
 
@@ -10757,8 +10752,6 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
     
     if( GetQuiltMode() ) {
 
-///v5
-/*
         // disable Overzoom indicator for MBTiles
         int refIndex = GetQuiltRefChartdbIndex();
         if(refIndex >= 0){
@@ -10772,7 +10765,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
                 }
             }
         }
- */
+ 
         if( zoom_factor <= 3.9 )
             return NULL;
     } else {
