@@ -21,7 +21,7 @@ Build-Depends: debhelper (>= 11),
  libwxgtk3.0-dev,
  libwxsvg-dev,
  portaudio19-dev
-Standards-Version: 4.3.0
+Standards-Version: 4.4.0
 Homepage: https://opencpn.org
 Vcs-Browser: https://salsa.debian.org/debian-gis-team/opencpn
 Vcs-Git: https://salsa.debian.org/debian-gis-team/opencpn.git

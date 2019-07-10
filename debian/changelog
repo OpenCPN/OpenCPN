@@ -2,6 +2,7 @@ opencpn (4.8.8+dfsg.1-2) UNRELEASED; urgency=medium
 
   * Team upload.
   * Update gbp.conf to use --source-only-changes by default.
+  * Bump Standards-Version to 4.4.0, no changes.
 
  -- Bas Couwenberg <sebastic@debian.org>  Sun, 07 Jul 2019 09:03:06 +0200
 
