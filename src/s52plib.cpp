@@ -535,42 +535,11 @@ void s52plib::SetPPMM( float ppmm )
 void s52plib::DestroyLUP( LUPrec *pLUP )
 {
     Rules *top = pLUP->ruleList;
-//<<<<<<< HEAD
-#if 0
-    while( top != NULL ) {
-        Rules *Rtmp = top->next;
-
-        if( top->INST0 ) free( top->INST0 ); // free the Instruction string head
-
-        if( top->b_private_razRule ) // need to free razRule?
-        {
-            Rule *pR = top->razRule;
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-
-            free( pR->vector.LVCT );
-
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-
-            free( pR->colRef.SCRF );
-
-            ClearRulesCache( pR );
-
-            free( pR );
-        }
-
-        free( top );
-        top = Rtmp;
-    }
-
-    delete pLUP->ATTCArray;
-#endif    
-//=======
     DestroyRulesChain(top);
     
     for(unsigned int i = 0 ; i < pLUP->ATTArray.size() ; i++)
         free (pLUP->ATTArray[i]);
     
-//>>>>>>> v5.0.0
     delete pLUP->INST;
 }
 
@@ -578,33 +547,17 @@ void s52plib::DestroyRulesChain( Rules *top )
 {
     while( top != NULL ) {
         Rules *Rtmp = top->next;
-//<<<<<<< HEAD
-
-//        if( top->INST0 )
-//            free( top->INST0 ); // free the Instruction string head
-//=======
-        
         free( top->INST0 ); // free the Instruction string head
-//>>>>>>> v5.0.0
 
         if( top->b_private_razRule ) // need to free razRule?
         {
             Rule *pR = top->razRule;
-//<<<<<<< HEAD
-//            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-
-//            free( pR->vector.LVCT );
-
-//            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-
-//=======
             delete pR->exposition.LXPO;
             
             free( pR->vector.LVCT );
             
             delete pR->bitmap.SBTM;
             
-//>>>>>>> v5.0.0
             free( pR->colRef.SCRF );
 
             ClearRulesCache( pR );
@@ -855,13 +808,8 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
 
     for( unsigned int i = 0; i < count; ++i ) {
         LUPrec *LUPCandidate = LUPArray->Item( startIndex + i );
-//<<<<<<< HEAD
-
-//        if( !LUPCandidate->ATTCArray )
-//=======
         
         if( !LUPCandidate->ATTArray.size() )
-//>>>>>>> v5.0.0
             continue;        // this LUP has no attributes coded
 
         countATT = 0;
@@ -871,15 +819,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
         for( unsigned int iLUPAtt = 0; iLUPAtt < LUPCandidate->ATTArray.size(); iLUPAtt++ ) {
 
             // Get the LUP attribute name
-//<<<<<<< HEAD
-//            wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
-//            char *slatc = NULL;
-//            wxCharBuffer buffer=LATTC.ToUTF8();
-//            slatc = buffer.data();
-            //  Get the LUP attribute value as a string
-//=======
             char *slatc = LUPCandidate->ATTArray[iLUPAtt];
-//>>>>>>> v5.0.0
 
             if( slatc && (strlen(slatc) < 6) )
                 goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
@@ -2116,25 +2056,6 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 int yp = y;
 
                 if(fabs(vp->rotation) > 0.01){
-//<<<<<<< HEAD
-/*
-                    float cx = vp->pix_width/2.;
-                    float cy = vp->pix_height/2.;
-                    float c = cosf(vp->rotation );
-                    float s = sinf(vp->rotation );
-                    float xn = x - cx;
-                    float yn = y - cy;
-                    xp =  xn*c - yn*s + cx;
-                    yp =  xn*s + yn*c + cy;
-                }
-                
-                
-                
-                xp+= xadjust;
-                yp+= yadjust;
-
-*/
-//=======
                     float c = cosf(-vp->rotation );
                     float s = sinf(-vp->rotation );
                     float x = xadjust;
@@ -2148,8 +2069,6 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                     yp+= yadjust;
                 }
                 
-                
-//>>>>>>> v5.0.0
                 pRectDrawn->SetX( xp );
                 pRectDrawn->SetY( yp );
                 pRectDrawn->SetWidth( ptext->text_width );
@@ -2605,14 +2524,8 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 else
                     fontweight = wxFONTWEIGHT_BOLD;
             }
-//<<<<<<< HEAD
-
-//            wxFont *specFont = wxTheFontList->FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
-//=======
              
-            wxFont *specFont = FindOrCreateFont_PlugIn( text->bsize, wxFONTFAMILY_SWISS,
-//>>>>>>> v5.0.0
-                                                               wxFONTSTYLE_NORMAL, fontweight );
+            wxFont *specFont = FindOrCreateFont_PlugIn( text->bsize, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, fontweight );
 
             //Get the width of a single average character in the spec font
             wxScreenDC dc;
@@ -2660,13 +2573,8 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 // In no case should font size be less than 10, since it becomes unreadable
                 fontSize = wxMax(10, fontSize);
 
-//<<<<<<< HEAD
-//                text->pFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"), fontSize );
-                
-//=======
                 text->pFont = FindOrCreateFont_PlugIn( fontSize, wxFONTFAMILY_SWISS,
                         templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
-//>>>>>>> v5.0.0
             }
         }
 
@@ -3284,11 +3192,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             float tx1 = texrect.x, ty1 = texrect.y;
             float tx2 = tx1 + w, ty2 = ty1 + h;
 
-//<<<<<<< HEAD
-
 #ifndef USE_ANDROID_GLES2
-//=======
-//>>>>>>> v5.0.0
             glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
             if(g_texture_rectangle_format == GL_TEXTURE_2D) {
                 wxSize size = ChartSymbols::GLTextureSize();
@@ -3912,12 +3816,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-//<<<<<<< HEAD
-    // catch cm93 and legacy PlugIns (e.g.s63_pi)
-//    if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list)
-//        return RenderLSLegacy(rzRules, rules, vp);
-
-//=======
     // catch legacy PlugIns (e.g.s63_pi)
     if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
         return RenderLSLegacy(rzRules, rules, vp);
@@ -3926,7 +3824,6 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
         return 0;
     
-//>>>>>>> v5.0.0
     S52color *c;
     int w;
 
@@ -4255,17 +4152,10 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 
     if( rzRules->obj->m_n_lsindex ) {
-//<<<<<<< HEAD
-//        VE_Hash *ve_hash;
-//        VC_Hash *vc_hash;
-//        ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash();             // This is cm93
-//        vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash();
-//=======
         VE_Hash *ve_hash; 
         VC_Hash *vc_hash; 
         ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash;             // This is cm93 
         vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
-//>>>>>>> v5.0.0
 
 
         //  Get the current display priority
@@ -5014,17 +4904,10 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 
         //  Allocate some storage for converted points
-//<<<<<<< HEAD
-//        wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) );
-//        double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) );
-
-//        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();;
-//=======
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
         double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
         
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
-//>>>>>>> v5.0.0
         line_segment_element *ls = rzRules->obj->m_ls_list;
 
         unsigned int index = 0;
@@ -5170,18 +5053,10 @@ int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2
     //      Reduce the LOD of this linestring
     std::vector<int> index_keep;
     if(nPoints > 5 && (LOD_meters > .01)){
-//<<<<<<< HEAD
-//        index_keep.Clear();
-//        index_keep.Add(0);
-//        index_keep.Add(nPoints-1);
-//        index_keep.Add(nPoints-2);
-
-//=======
 	index_keep.push_back(0);
 	index_keep.push_back(nPoints-1);
 	index_keep.push_back(nPoints-2);
         
-//>>>>>>> v5.0.0
         DouglasPeucker(source, 1, nPoints-2, LOD_meters, &index_keep);
 
     }
@@ -5191,13 +5066,7 @@ int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2
         for(int i = 0 ; i < nPoints ; i++)
             index_keep[i] = i;
     }
-//<<<<<<< HEAD
-
-//    wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.GetCount() ) * sizeof(wxPoint2DDouble) );
-//=======
-    
     wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.size() ) * sizeof(wxPoint2DDouble) ); 
-//>>>>>>> v5.0.0
     *dest = pReduced;
 
     double *ppr = source;
@@ -5206,27 +5075,16 @@ int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2
     {
         double x = *ppr++;
         double y = *ppr++;
-//<<<<<<< HEAD
-
-//        for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-//            if(index_keep.Item(j) == ip){
-//=======
         
         for(unsigned int j=0 ; j < index_keep.size() ; j++){
             if(index_keep[j] == ip){
-//>>>>>>> v5.0.0
                 pReduced[ir++] = wxPoint2DDouble(x, y);
                 break;
             }
         }
     }
-//<<<<<<< HEAD
-
-//    return index_keep.GetCount();
-//=======
     
     return index_keep.size();
-//>>>>>>> v5.0.0
 }
 
 
@@ -5260,19 +5118,11 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         priority_current = rzRules->obj->m_DPRI;
 
     if( rzRules->obj->m_n_lsindex ) {
-//<<<<<<< HEAD
-
-//        VE_Hash *ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash();
-//        VC_Hash *vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash();
-
-//=======
         
         VE_Hash *ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash; 
         VC_Hash *vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
         
-//>>>>>>> v5.0.0
         VE_Element *ptedge = (*ve_hash)[0];
-        
         
         unsigned int nls_max;
         if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load
@@ -5487,13 +5337,8 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         PI_connector_segment *pcs;
 
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
-//<<<<<<< HEAD
         PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
 
-//=======
-//        ls = rzRules->obj->m_ls_list_legacy;
-        
-//>>>>>>> v5.0.0
         while(ls){
                 if( ls->priority == priority_current  ) {
 
@@ -8490,15 +8335,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                                 free(p_tp->p_vertex);
                                 p_tp->p_vertex = (double *)p_run;
-//<<<<<<< HEAD
-
-//                                p_run += p_tp->nVert * 2 * sizeof(float);
-
-//=======
-                                
                                 p_run += p_tp->nVert * 2;
                                 
-//>>>>>>> v5.0.0
                                 p_tp = p_tp->p_next; // pick up the next in chain
                             }
                     }
@@ -10757,33 +10595,6 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
         
         //  If a modern (> OCPN 4.4) version of the core is active,
         //  we may rely upon having been updated on S52PLIB state by means of PlugIn messaging scheme.
-//<<<<<<< HEAD
-#if 0        
-        if( (m_coreVersionMajor >= 4) && (m_coreVersionMinor >= 5) ){
-            
-            // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
-            bool bTextOn = m_bShowS57Text;
-            bool bSoundingsOn = m_bShowSoundg;
-            enum _DisCat old = m_nDisplayCategory;
-            
-            PLIB_LoadS57Config();
-            
-            //  And then reset the temp values that were overwritten by config load
-            m_bShowS57Text = bTextOn;
-            m_bShowSoundg = bSoundingsOn;
-            m_nDisplayCategory = old;
-            
-            OBJLElement *pOLE = NULL;
-            
-            // Detect and manage "LIGHTS" toggle
-            bool bshow_lights = !m_lightsOff;
-            if(!bshow_lights)                     // On, going off
-                AddObjNoshow("LIGHTS");
-            else{                                   // Off, going on
-                RemoveObjNoshow("LIGHTS");
-            }
-#endif
-//=======
         if( ((m_coreVersionMajor == 4) && (m_coreVersionMinor >= 5)) || m_coreVersionMajor > 4 ){
             
             // Retain compatibility with O4.8.x
@@ -10803,8 +10614,6 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
             else
                 PLIB_LoadS57GlobalConfig();
             
-//>>>>>>> v5.0.0
-            
             // Pick up any changes in Mariner's Standard object list
             PLIB_LoadS57ObjectConfig();
 
@@ -10822,41 +10631,6 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
             // Handle Anchor area toggle
             if( (m_nDisplayCategory == OTHER) || (m_nDisplayCategory == MARINERS_STANDARD) ){
                 bool bAnchor = m_anchorOn;
-//<<<<<<< HEAD
-#if 0                
-                
-                if(!bAnchor){
-                    for( unsigned int c = 0; c < num; c++ ) {
-                        AddObjNoshow(categories[c]);
-                    }
-                }
-                else{
-                    for( unsigned int c = 0; c < num; c++ ) {
-                        RemoveObjNoshow(categories[c]);
-                    }
-                }
-            }
-            else{                               // if not category OTHER, then anchor-related features are always shown.
-                for( unsigned int c = 0; c < num; c++ ) {
-                    RemoveObjNoshow(categories[c]);
-                }
-            }
-                
-            // Handle Quality of data toggle
-            bool bQuality = m_qualityOfDataOn;
-            if(!bQuality){
-                AddObjNoshow("M_QUAL");
-            }
-            else{
-                RemoveObjNoshow("M_QUAL");
-                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                    OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
-                        pOLE->nViz = 1;         // force on
-                        break;
-#endif                        
-//=======
-                
                 
                 if(!bAnchor){
                     for( unsigned int c = 0; c < num; c++ )
@@ -10878,7 +10652,6 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
                             }
                         }
                         if( cnt == num ) break;
-//>>>>>>> v5.0.0
                     }
                 }
             }

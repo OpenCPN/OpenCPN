@@ -1202,15 +1202,6 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
 int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
                                     wxString &LastUpdateDate, bool b_copyfiles )
 {
-    
-//<<<<<<< HEAD
-//    int retval = m_UPDN;
-    
-    //       wxString DirName000 = file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-    //       wxDir dir(DirName000);
-//    wxArrayString *UpFiles = new wxArrayString;
-//    int upmax = s57chart::GetUpdateFileArray( file000, UpFiles, m_date000, m_edtn000);
-//=======
     int retval = 0;
     wxFileName last_up_added;
     
@@ -1219,54 +1210,9 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
     m_UpFiles = new wxArrayString;
     retval = s57chart::GetUpdateFileArray( file000, m_UpFiles, m_date000, m_edtn000);
     int upmax = retval;
-//>>>>>>> v5.0.0
     
     if( m_UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
-//<<<<<<< HEAD
-#if 0
-        //      to perform all the updates. 
-        
-        //      The update file extensions should start with one greater than the DSID:UPDN value.
-        //      This will accomodate the  "re-issue" policy exercised by some HOs.
-        
-        //  It is to be considered a WARNING if the update chain is broken,
-        //  With appropriate user dialog and logfile messages
-        
-        if( b_copyfiles ) {
-            
-            //  Empty the target directory of any files which might contaminate the ingestion.
-            //  Especially, old update files that have apparently later extensions than we are looking for
-
-            wxArrayString files_to_erase;
-            wxString fileTemplate = file000.GetName() + _T(".???");
-            
-            wxDir::GetAllFiles(CopyDir, &files_to_erase, fileTemplate, wxDIR_FILES);
-            for(unsigned int i=0 ; i < files_to_erase.GetCount() ; i++){
-                wxString f = files_to_erase[i];
-                ::wxRemoveFile(files_to_erase[i]);
-            }
-            
-
-            //      Copy the 000 file to the SENC directory
-            wxString cp0_ufile = CopyDir;
-            if( cp0_ufile.Last() != wxFileName::GetPathSeparator() )
-                cp0_ufile.Append( wxFileName::GetPathSeparator() );
-            cp0_ufile.Append( file000.GetFullName() );
-            bool cpok0 = wxCopyFile( file000.GetFullPath(), cp0_ufile );
-            if( !cpok0 ) {
-                wxString msg( _T("   Cannot copy temporary working ENC file ") );
-                msg.Append( file000.GetFullPath() );
-                msg.Append( _T(" to ") );
-                msg.Append( cp0_ufile );
-                wxLogMessage( msg );
-            }
-            
-            // Now copy the updates
-            for( int iff = m_UPDN + 1; iff < upmax + 1; iff++ ) {
-                wxFileName ufile( file000 );
-#endif                
-//=======
         //      to perform all the updates.  However, some NOAA ENC distributions are
         //      not complete, as apparently some interim updates have been  withdrawn.
         //      Example:  as of 20 Dec, 2005, the update set for US5MD11M.000 includes
@@ -1301,7 +1247,6 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                 }
                 
                 wxFileName ufile( targetFile );
-//>>>>>>> v5.0.0
                 wxString sext;
                 sext.Printf( _T("%03d"), iff );
                 ufile.SetExt( sext );
@@ -1376,12 +1321,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
         //      Extract the date field from the last of the update files
         //      which is by definition a valid, present update file....
         
-//<<<<<<< HEAD
-        
-//        wxFileName lastfile( file000 );
-//=======
         wxFileName lastfile( last_up_added );
-//>>>>>>> v5.0.0
         wxString last_sext;
         last_sext.Printf( _T("%03d"), upmax );
         lastfile.SetExt( last_sext );
@@ -1412,13 +1352,6 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
         }
     }
     
-//<<<<<<< HEAD
-//    delete UpFiles;
-    
-//    if(upmax > retval)
-//        retval = upmax;
-//=======
-//>>>>>>> v5.0.0
     return retval;
 }
 

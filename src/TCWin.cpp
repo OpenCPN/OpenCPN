@@ -78,13 +78,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_x = x;
     m_y = y;
     
-//<<<<<<< HEAD
-//    m_created = false;
-//    m_tList = NULL;
-//    m_ptextctrl = NULL;
-    
-//=======
-//>>>>>>> v5.0.0
     RecalculateSize();
      
     wxFrame::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,

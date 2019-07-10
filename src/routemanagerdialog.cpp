@@ -1983,22 +1983,10 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
 
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
         m_pWptListCtrl->EnsureVisible( m_lastWptItem );
-// <<<<<<< HEAD
-//     
-//     int iwidth, iheight;
-//     wxImageList *list = pWayPointMan->Getpmarkicon_image_list();
-//     if(list->GetImageCount()){
-//         list->GetSize(0, iwidth, iheight);
-//         m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
-//     }
-//     else
-//         iwidth = 10;
-// =======
 
     if(pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetImageCount()) {
         int iwidth, iheight;
         pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetSize(0, iwidth, iheight);
-//>>>>>>> v5.0.0
         
         m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
     }

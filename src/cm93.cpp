@@ -2204,12 +2204,8 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
       }
 
       //    Create an array of CellIndexes covering the current viewport
-//<<<<<<< HEAD
-//      ArrayOfInts vpcells = GetVPCellArray ( vpt );
-//=======
       std::vector<int> vpcells = GetVPCellArray ( vpt );
 
-//>>>>>>> v5.0.0
       //    Check the member array to see if all these viewport cells have been loaded
       bool bcell_is_in;
       bool recalc_depth = false;
@@ -2231,12 +2227,8 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             {
 #ifndef __OCPN__ANDROID__
                 OCPNPlatform::ShowBusySpinner();
-//<<<<<<< HEAD
 #endif
-//                int cell_index = vpcells.Item ( i );
-//=======
                   int cell_index = vpcells[i];
-//>>>>>>> v5.0.0
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
@@ -2293,9 +2285,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                             }
                         }
                     }
-//>>>>>>> v5.0.0
                 OCPNPlatform::HideBusySpinner();
-//#endif                
             }
       }
       

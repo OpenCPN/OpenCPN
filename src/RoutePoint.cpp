@@ -37,22 +37,6 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "glChartCanvas.h"
-#if 0
-<<<<<<< HEAD
-#include "glChartCanvas.h"
-
-extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
-extern ChartCanvas *cc1;
-extern Routeman *g_pRouteMan;
-extern wxRect g_blink_rect;
-extern Multiplexer *g_pMUX;
-extern MyFrame *gFrame;
-extern bool g_btouch;
-extern bool g_bresponsive;
-=======
-#endif
 #include "Select.h"
 #include "chart1.h"
 
@@ -65,7 +49,6 @@ extern Multiplexer  *g_pMUX;
 extern MyFrame      *gFrame;
 extern bool         g_btouch;
 extern bool         g_bresponsive;
-//>>>>>>> v5.0.0
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double       g_n_arrival_circle_radius;
 extern int          g_iWaypointRangeRingsNumber;

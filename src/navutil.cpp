@@ -784,14 +784,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
 
-//<<<<<<< HEAD
-//    Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
-//    Read( _T ( "DefaultFontFacename"), &g_default_font_facename, _T("") );
-    
-//    Read( _T ( "TrackContinuous" ), &g_btrackContinuous, 0 );
-//=======
     Read( _T ( "UseModernUI5" ), &g_useMUI );
-//>>>>>>> v5.0.0
     
     Read( _T( "NCPUCount" ), &g_nCPUCount);    
 
@@ -912,20 +905,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "InitialStackIndex" ), &g_restore_stackindex );
     Read( _T ( "InitialdBIndex" ), &g_restore_dbindex );
 
-//<<<<<<< HEAD
-//     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive, 0 );
-//     Read( _T ( "MobileTouch" ), &g_btouch, 0 );
-//     Read( _T ( "EnableRolloverBlock" ), &g_bRollover, 1 );
-//     
-//     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier, 0 );
-//     g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
-//     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
-//=======
     Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor );
 
     Read( _T ( "MobileTouch" ), &g_btouch );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive );
-//>>>>>>> v5.0.0
 
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
@@ -954,7 +937,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     Read( _T ( "ShowLayers" ), &g_bShowLayers );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
@@ -1009,18 +991,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "VisNameInLayers" ), &g_VisiNameinLayers );
     Read( _T ( "InvisNameInLayers" ), &g_InVisiNameinLayers );
 
-//<<<<<<< HEAD
-//    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 0 );
-    
-    // Improve touch screen reaction to piano (chart bar) buttons
-//    if(g_btouch)
-//        g_bPreserveScaleOnX = false;
-    
-//    g_locale = _T("en_US");
-//=======
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
-//>>>>>>> v5.0.0
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
     
@@ -1211,13 +1183,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
-//<<<<<<< HEAD
-//    if ( g_bInlandEcdis ) global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
-//    else{
-//        Read( _T ( "nColorScheme" ), &read_int, 1 );
-//=======
     if(Read( _T ( "nColorScheme" ), &read_int ))
-//>>>>>>> v5.0.0
         global_color_scheme = (ColorScheme) read_int;
     
     if(! bAsTemplate ){

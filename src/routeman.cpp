@@ -1341,11 +1341,7 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Activity-Fishing.svg"), _T("fish"), _T("Fish") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Mooring-Buoy.svg"), _T("float"), _T("Float") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Service-Food.svg"), _T("food"), _T("Food") ); if(pmi)pmi->preScaled = true;
-//<<<<<<< HEAD
-//    pmi = ProcessLegacyIcon( iconDir + _T("Service-Fuel-Pump-Diesel+Petrol.svg"), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
-//=======
     pmi = ProcessLegacyIcon( iconDir + _T("Service-Fuel-Pump-Diesel-Petrol.svg"), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
-//>>>>>>> v5.0.0
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Green.svg"), _T("greenlite"), _T("Green Light") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Sea-Floor-Sea-Weed.svg"), _T("kelp"), _T("Kelp") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-TypeA.svg"), _T("light"), _T("Light Type A") ); if(pmi)pmi->preScaled = true;
@@ -1385,11 +1381,6 @@ void WayPointman::ProcessDefaultIcons()
      
     int n_files = wxDir::GetAllFiles( iconDir, &FileList );
     
-// <<<<<<< HEAD
-//     float target_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
-//     bm_size = target_size_pixels;  
-//     bm_size *= g_ChartScaleFactorExp;
-// =======
     // If the scale factor is not unity, measure the first icon in the list
     //  So that we may apply the scale factor exactly to all
     if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
@@ -1408,8 +1399,6 @@ void WayPointman::ProcessDefaultIcons()
         }
     }
 
-//>>>>>>> v5.0.0
-    
     for( int ifile = 0; ifile < n_files; ifile++ ) {
         wxString name = FileList[ifile];
             

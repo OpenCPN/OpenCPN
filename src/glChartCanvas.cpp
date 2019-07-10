@@ -2847,15 +2847,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     // all functions called with m_pParentCanvas-> are still slow because they go through ocpndc
     AISDrawAreaNotices( dc, m_pParentCanvas->GetVP(), m_pParentCanvas );
 
-//<<<<<<< HEAD
-//    AISDrawAreaNotices( dc, cc1->GetVP(), cc1 );
-
-//    cc1->DrawAnchorWatchPoints( dc );
-//    AISDraw( dc, cc1->GetVP(), cc1 );
-//=======
     m_pParentCanvas->DrawAnchorWatchPoints( dc );
     AISDraw( dc, m_pParentCanvas->GetVP(), m_pParentCanvas );
-//>>>>>>> v5.0.0
     ShipDraw( dc );
     m_pParentCanvas->AlertDraw( dc );
 
@@ -3491,23 +3484,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     //  render the quilt
         ChartBase *chart = m_pParentCanvas->m_pQuilt->GetFirstChart();
 
-#if 0        
-    //  Check the first, smallest scale chart
-<<<<<<< HEAD
-    // This kicks in at very small scale (ZOOM OUT)
-//     if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
-//          if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ){
-//              chart = NULL;
-//              //qDebug() << "NoRender1";
-//          }
-//      }
-=======
-    if(chart) {
-        //            if( ! m_pParentCanvas->IsChartLargeEnoughToRender( chart, vp ) )
-//            chart = NULL;
-    }
->>>>>>> v5.0.0
-#endif
 
     OCPNStopWatch qsw;
      
@@ -3516,18 +3492,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     LLRegion rendered_region;
     while( chart ) {
             
-// <<<<<<< HEAD
-// 
-//          if(chart->GetChartType() == CHART_TYPE_CM93COMP){
-//              if(vp.chart_scale > 5e7){
-//                  chart = cc1->m_pQuilt->GetNextChart();
-//                  continue;
-//              }
-//          }
-//                 
-//          
-//         QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-// =======
         //  This test does not need to be done for raster charts, since
         //  we can assume that texture binding is acceptably fast regardless of the render region,
         //  and that the quilt zoom methods choose a reasonable reference chart.
@@ -3540,7 +3504,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         }
 
         QuiltPatch *pqp = m_pParentCanvas->m_pQuilt->GetCurrentPatch();
-//>>>>>>> v5.0.0
         if( pqp->b_Valid ) {
             LLRegion get_region = pqp->ActiveRegion;
             bool b_rendered = false;
@@ -3883,65 +3846,6 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region, int transp
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
 {
-#if 0    
-<<<<<<< HEAD
-#ifndef USE_ANDROID_GLES2    
-    
-=======
-//TODO stack from parent    
-#if 0    
->>>>>>> v5.0.0
-    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-    if( color.IsOk() )
-        glColor3ub( color.Red(), color.Green(), color.Blue() );
-    else
-        glColor3ub( 163, 180, 183 );
-
-    int index = -1;
-    ChartTableEntry *pt;
-    for(int i=0; i<pCurrentStack->nEntry; i++) {
-#if 0
-        ChartBase *c = OpenChartFromStack(pCurrentStack, i, HEADER_ONLY);
-        if(c == chart) {
-            index = pCurrentStack->GetDBIndex(i);
-            pt = (ChartTableEntry *) &ChartData->GetChartTableEntry( index );
-            break;
-        }
-#else
-        int j = pCurrentStack->GetDBIndex(i);
-        assert (j >= 0);
-        pt = (ChartTableEntry *) &ChartData->GetChartTableEntry( j );
-        if(pt->GetpsFullPath()->IsSameAs(chart->GetFullPath())){
-            index = j;
-            break;
-        }
-#endif
-    }
-
-    if(index == -1)
-        return;
-
-    if( ChartData->GetDBChartType( index ) != CHART_TYPE_CM93COMP ) {
-        // Maybe it's a good idea to cache the glutesselator results to improve performance
-        LLRegion region(pt->GetnPlyEntries(), pt->GetpPlyTable());
-        DrawRegion(vp, region);
-    } else {
-        wxRect rect(0, 0, vp.pix_width, vp.pix_height);
-        int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
-        glBegin( GL_QUADS );
-        glVertex2i( x1, y1 );
-        glVertex2i( x2, y1 );
-        glVertex2i( x2, y2 );
-        glVertex2i( x1, y2 );
-        glEnd();
-    }
-<<<<<<< HEAD
-#endif
-
-=======
-#endif    
->>>>>>> v5.0.0
-#endif
 }
 
 /* render world chart, but only in this rectangle */
@@ -4760,43 +4664,6 @@ void glChartCanvas::Render()
                 
                 m_cache_page = !m_cache_page; /* page flip */
   
-#if 0  
-=======
-                        glPushMatrix();
-                        
-                        glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-                        RenderCharts(gldc, screen_region);
-                        
-                        glPopMatrix();
-
-                        glViewport( 0, 0, (GLint) sx, (GLint) sy );
-                    }
-                    else{
-#if 0                        
-                        // Should not really need to clear the screen, but consider this case:
-                        // A previous installation of OCPN loaded some PlugIn charts, so setting their coverage in the database.
-                        // In this installation, the PlugIns are not available, for whatever reason.
-                        // As a result, some areas on screen will not be rendered by the PlugIn, and
-                        // The backing chart is eclipsed by the unrendered chart coverage region.
-                        //  Result: leftover garbage in the unrendered regions.
-
-                        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-                        if( color.IsOk() )
-                            glClearColor( color.Red() / 256., color.Green()/256., color.Blue()/256., 1.0 );
-                        else
-                            glClearColor(0, 0., 0, 1.0);
-                        glClear(GL_COLOR_BUFFER_BIT);
-#endif
-
-                        m_fbo_offsetx = 0;
-                        m_fbo_offsety = 0;
-                        m_fbo_swidth = sx;
-                        m_fbo_sheight = sy;
-                        wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
-                        RenderCharts(gldc, screen_region);
-                    }
->>>>>>> v5.0.0
-#endif
                     
             } // full page render
 
@@ -5067,16 +4934,6 @@ void glChartCanvas::Render()
     }
 #endif
 
-// <<<<<<< HEAD
-//     DrawEmboss(cc1->EmbossDepthScale() );
-//     DrawEmboss(cc1->EmbossOverzoomIndicator( m_gldc ) );
-// 
-//     if( cc1->m_pRouteRolloverWin )
-//         cc1->m_pRouteRolloverWin->Draw(m_gldc);
-// 
-//     if( cc1->m_pAISRolloverWin )
-//         cc1->m_pAISRolloverWin->Draw(m_gldc);
-// =======
     DrawEmboss(m_pParentCanvas->EmbossDepthScale() );
     DrawEmboss(m_pParentCanvas->EmbossOverzoomIndicator( gldc ) );
 
@@ -5088,7 +4945,6 @@ void glChartCanvas::Render()
 
     if( m_pParentCanvas->m_pAISRolloverWin )
         m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
-//>>>>>>> v5.0.0
 
     //  On some platforms, the opengl context window is always on top of any standard DC windows,
     //  so we need to draw the Chart Info Window and the Thumbnail as overlayed bmps.
@@ -5182,14 +5038,8 @@ void glChartCanvas::Render()
     g_glTextureManager->TextureCrunch(0.8);
     g_glTextureManager->FactoryCrunch(0.6);
     
-// <<<<<<< HEAD
-//     cc1->PaintCleanup();
-//     
-//     m_bforcefull = false;
-// =======
     m_pParentCanvas->PaintCleanup();
     //OCPNPlatform::HideBusySpinner();
-//>>>>>>> v5.0.0
     
     n_render++;
 }
@@ -5391,190 +5241,6 @@ void glChartCanvas::FastPan(int dx, int dy)
     m_canvasregion.Union(tx0, ty0, sx, sy);
 #endif
 }
-
-#if 0
-void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, float sheight)
-{
-    float sx = GetSize().x;
-    float sy = GetSize().y;
-    
-    float tx, ty, tx0, ty0;
-    //if( GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format )
-    //  tx = sx, ty = sy;
-    //else
-    tx = 1, ty = 1;
-    
-    tx0 = ty0 = 0.;
-    
-    tx0 = offset_x;
-    ty0 = offset_y;
-    tx =  offset_x + swidth;
-    ty =  offset_y + sheight;
-    
-    
-    int w, h;
-    GetClientSize( &w, &h );
-    
-    glViewport( 0, 0, (GLint) w, (GLint) h );
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity();
-    
-    glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    
-    
-    if( s_b_useStencil ) {
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0xff );
-        glClear( GL_STENCIL_BUFFER_BIT );
-        glDisable( GL_STENCIL_TEST );
-    }
-    
-    
-    float vx0 = 0;
-    float vy0 = 0;
-    float vy = sy;
-    float vx = sx;
-    
-    glBindTexture( g_texture_rectangle_format, 0);
-    
-    // Render the cached texture as quad to screen
-    glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-    glEnable( g_texture_rectangle_format );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-    
-    
-    glBegin( GL_QUADS );
-    glTexCoord2f( tx0/m_cache_tex_x, ty/m_cache_tex_y );  glVertex2f( vx0,  vy0 );
-    glTexCoord2f( tx/m_cache_tex_x,  ty/m_cache_tex_y );  glVertex2f( vx,   vy0 );
-    glTexCoord2f( tx/m_cache_tex_x,  ty0/m_cache_tex_y ); glVertex2f( vx,   vy );
-    glTexCoord2f( tx0/m_cache_tex_x, ty0/m_cache_tex_y ); glVertex2f( vx0,  vy );
-    glEnd();
-    
-    glDisable( g_texture_rectangle_format );
-    glBindTexture( g_texture_rectangle_format, 0);
-
-    //  When zooming out, if we go too far, then the frame buffer is repeated on-screen due
-    //  to address wrapping in the frame buffer.
-    //  Detect this case, and render some simple solid covering quads to avoid a confusing display.
-    if( (m_fbo_sheight > m_cache_tex_y) || (m_fbo_swidth > m_cache_tex_x) ){
-        wxColour color = GetGlobalColor(_T("GREY1"));
-        glColor3ub(color.Red(), color.Green(), color.Blue());
-        
-        if( m_fbo_sheight > m_cache_tex_y ){
-            float h1 = sy * (1.0 - m_cache_tex_y/m_fbo_sheight) / 2.;
-            
-            glBegin( GL_QUADS );
-            glVertex2f( 0,  0 );
-            glVertex2f( w,  0 );
-            glVertex2f( w, h1 );
-            glVertex2f( 0, h1 );
-            glEnd();
-            
-            glBegin( GL_QUADS );
-            glVertex2f( 0,  sy );
-            glVertex2f( w,  sy );
-            glVertex2f( w, sy - h1 );
-            glVertex2f( 0, sy - h1 );
-            glEnd();
-            
-        }
-        
-        // horizontal axis
-        if( m_fbo_swidth > m_cache_tex_x ){
-            float w1 = sx * (1.0 - m_cache_tex_x/m_fbo_swidth) / 2.;
-            
-            glBegin( GL_QUADS );
-            glVertex2f( 0,  0 );
-            glVertex2f( w1,  0 );
-            glVertex2f( w1, sy );
-            glVertex2f( 0, sy );
-            glEnd();
-            
-            glBegin( GL_QUADS );
-            glVertex2f( sx,  0 );
-            glVertex2f( sx - w1,  0 );
-            glVertex2f( sx - w1, sy );
-            glVertex2f( sx, sy );
-            glEnd();
-            
-        }
-    }
-    
-    
-    // horizontal
-    if(m_fbo_offsetx < 0){
-        wxColour color = GetGlobalColor(_T("GREY1"));
-        glColor3ub(color.Red(), color.Green(), color.Blue());
-        float w1 = -offset_x  * sx / swidth;
-        
-        glBegin( GL_QUADS );
-        glVertex2f( 0,  0 );
-        glVertex2f( w1,  0 );
-        glVertex2f( w1, sy );
-        glVertex2f( 0, sy );
-        glEnd();
-    }
-
-
-    
-    if(m_fbo_offsetx + m_fbo_swidth > m_cache_tex_x){
-        wxColour color = GetGlobalColor(_T("GREY1"));
-        glColor3ub(color.Red(), color.Green(), color.Blue());
-        float w1 = ((offset_x + swidth) - m_cache_tex_x) * ( sx / swidth);
-        
-        glBegin( GL_QUADS );
-        glVertex2f( sx,  0 );
-        glVertex2f( sx - w1,  0 );
-        glVertex2f( sx - w1, sy );
-        glVertex2f( sx, sy );
-        glEnd();
-    }
-
-<<<<<<< HEAD
-=======
-void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
-{
-   
-    if( m_pParentCanvas->isRouteEditing() || m_pParentCanvas->isMarkEditing() )
-        return;
->>>>>>> v5.0.0
-    
-    
-    // Vertical
-    if(m_fbo_offsety < 0){
-        wxColour color = GetGlobalColor(_T("GREY1"));
-        glColor3ub(color.Red(), color.Green(), color.Blue());
-        float w1 = -offset_y  * sy / sheight;
-        
-        glBegin( GL_QUADS );
-        glVertex2f( 0,  sy );
-        glVertex2f( sx,  sy );
-        glVertex2f( sx, sy - w1 );
-        glVertex2f( 0,  sy - w1 );
-        glEnd();
-    }
-    
-    
-    
-    if(m_fbo_offsety + m_fbo_sheight > m_cache_tex_y){
-        wxColour color = GetGlobalColor(_T("GREY1"));
-        glColor3ub(color.Red(), color.Green(), color.Blue());
-        float w1 = ((offset_y + sheight) - m_cache_tex_y) * ( sy / sheight);
-         
-        glBegin( GL_QUADS );
-        glVertex2f( 0,  0 );
-        glVertex2f( 0,  w1 );
-        glVertex2f( sx, w1 );
-        glVertex2f( sx, 0 );
-        glEnd();
-    }
-    
-    SwapBuffers();
-    
-}
-#endif
 
 void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, float sheight)
 {
@@ -6099,7 +5765,6 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         total_zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
     else
 #if 0        
-<<<<<<< HEAD
         total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zout_gain);
 
     double projected_scale = cc1->GetVP().chart_scale / total_zoom_val;
@@ -6123,7 +5788,6 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
  
     double projected_scale = m_pParentCanvas->GetVP().chart_scale / total_zoom_val;
     
-//>>>>>>> v5.0.0
     switch(event.GetState()){
         case GestureStarted:
             first_zout = false;
@@ -6260,13 +5924,11 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             }
 
 
-//=======
 //                if( projected_scale < 3e8)
 //                    m_pParentCanvas->ZoomCanvas( total_zoom_val, false );
 //                else
 //                    m_pParentCanvas->ZoomCanvas(m_pParentCanvas->GetVP().chart_scale / 3e8, false);
             
-//>>>>>>> v5.0.0
              m_binPinch = false;
              m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
              break;

@@ -300,14 +300,7 @@ void RoutePropDlgImpl::RecalculateSize(void) {
   wxPoint screen_pos = GetParent()->GetScreenPosition();
   int xp = (canvas_size.x - fsize.x) / 2;
   int yp = (canvas_size.y - fsize.y) / 2;
-// <<<<<<< HEAD
-//   wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
-//   Move(xxp.x + xp, xxp.y + yp);
-// 
-// =======
   Move(screen_pos.x + xp, screen_pos.y + yp);
-  
-//>>>>>>> v5.0.0
   
 }
 

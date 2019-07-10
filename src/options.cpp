@@ -1305,14 +1305,8 @@ void options::RecalculateSize(void) {
   wxPoint screen_pos = GetParent()->GetScreenPosition();
   int xp = (canvas_size.x - fsize.x) / 2;
   int yp = (canvas_size.y - fsize.y) / 2;
-// <<<<<<< HEAD
-//   wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
-//   Move(xxp.x + xp, xxp.y + yp);
-// 
-// =======
   Move(screen_pos.x + xp, screen_pos.y + yp);
   
-//>>>>>>> v5.0.0
   
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
@@ -3963,11 +3957,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-// <<<<<<< HEAD
-//         wxSize(sz.x / 2, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-// =======
         wxSize(300, 50), SLIDER_STYLE);
-//>>>>>>> v5.0.0
 
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom );
@@ -3977,11 +3967,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-// <<<<<<< HEAD
-//         wxSize(sz.x / 2, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-// =======
         wxSize(300, 50), SLIDER_STYLE);
-//>>>>>>> v5.0.0
     
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom_Vector );
@@ -4590,16 +4576,11 @@ void ChartGroupsUI::CompletePanel(void)
   wxBoxSizer* activeListSizer = new wxBoxSizer(wxVERTICAL);
   sizerCharts->Add(activeListSizer, 1, wxALL | wxEXPAND, 5);
 
-// <<<<<<< HEAD
 #ifdef __OCPN__ANDROID__  
-   allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
-                            wxDefaultSize, wxVSCROLL);
+  allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
 #else   
-// =======
-  allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
-                           wxDefaultSize);
+  allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,  wxDefaultSize);
 #endif  
-//>>>>>>> v5.0.0
   activeListSizer->Add(allAvailableCtl, 1, wxEXPAND);
 
   m_pAddButton = new wxButton(m_panel, ID_GROUPINSERTDIR, _("Add"));
@@ -4638,12 +4619,7 @@ void ChartGroupsUI::CompletePanel(void)
   wxBoxSizer* page0BoxSizer = new wxBoxSizer(wxHORIZONTAL);
   allActiveGroup->SetSizer(page0BoxSizer);
 
-// <<<<<<< HEAD
-//   defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
-// =======
-  defaultAllCtl = new wxGenericDirCtrl(
-      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize);
-//>>>>>>> v5.0.0
+  defaultAllCtl = new wxGenericDirCtrl(allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize);
 
   //    Set the Font for the All Active Chart Group tree to be italic, dimmed
   iFont = new wxFont(*dialogFont);
@@ -5675,41 +5651,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->SetFlexibleDirection( wxBOTH );
   sliderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
   
-// <<<<<<< HEAD
-//   wxSize sz = g_Platform->getDisplaySize();
-//   int slider_width = wxMax(m_fontHeight * 4, sz.x / 2);
-//   
-//   int slider_height = 50;
-//   if(g_btouch)
-//       slider_height = g_Platform->GetDisplayDPmm() * 6.0;
-//   
-//   m_pSlider_GUI_Factor = new wxSlider(itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-//       wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-//   m_pSlider_GUI_Factor->Hide();
-//   
-//   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), 0, wxEXPAND);
-//                                        
-//   miscOptions->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
-//   m_pSlider_GUI_Factor->Show();
-// 
-// #ifdef __WXQT__
-//   prepareSlider( m_pSlider_GUI_Factor);
-// #endif
-// 
-//   m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-//       wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-//   m_pSlider_Chart_Factor->Hide();
-//   
-//   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), 0, wxEXPAND);
-//   
-//   miscOptions->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
-//   m_pSlider_Chart_Factor->Show();
-// 
-// #ifdef __WXQT__
-//   prepareSlider(m_pSlider_Chart_Factor);
-// #endif
-// 
-// =======
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
@@ -5754,7 +5695,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
-//>>>>>>> v5.0.0
   miscOptions->AddSpacer(20);
 }
       
@@ -6701,17 +6641,6 @@ void options::SetInitialVectorSettings(void)
                 nset = 3;
                 break;
         }
-// <<<<<<< HEAD
-// 
-//         pDispCat->SetSelection(nset);
-//         
-//         if( ps57CtlListBox )
-//             ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-//         itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-//         itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-//         itemButtonSetStd->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-// 
-// =======
         
         if(pDispCat)
             pDispCat->SetSelection(nset);
@@ -6726,8 +6655,6 @@ void options::SetInitialVectorSettings(void)
         itemButtonSelectList->Enable(benableMarStd);
         itemButtonSetStd->Enable(benableMarStd);
         
-                
-//>>>>>>> v5.0.0
         //  Other Display Filters
         if(pCheck_SOUNDG) pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
         if(pCheck_ATONTEXT) pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
@@ -6940,16 +6867,6 @@ void options::OnChartDirListSelect(wxCommandEvent& event) {
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
-// <<<<<<< HEAD
-//   const bool select =  pDispCat->GetSelection() == 3;
-//   ps57CtlListBox->Enable(select);
-//   itemButtonClearList->Enable(select);
-//   itemButtonSelectList->Enable(select);
-//   itemButtonSetStd->Enable(select);
-// 
-// 
-// =======
-    
     if(!g_useMUI){
         if(pDispCat){
             const bool select = pDispCat->GetSelection() == 3;
@@ -6959,7 +6876,6 @@ void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
             itemButtonSetStd->Enable(select);
         }
     }
-//>>>>>>> v5.0.0
   event.Skip();
 }
 
@@ -7360,24 +7276,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
-// <<<<<<< HEAD
-// 
-//   if (itemIndex >= 0) {
-//     int params_index = m_lcSources->GetItemData(itemIndex);
-//     ConnectionParams* cpo = g_pConnectionParams->Item(params_index);
-//     if (cpo) {
-//       lastAddr = cpo->NetworkAddress;
-//       lastPort = cpo->NetworkPort;
-//       lastNetProtocol = cpo->NetProtocol;
-//     }
-// =======
   
   if (mSelectedConnection) {
     ConnectionParams* cpo = mSelectedConnection;
     lastAddr = cpo->NetworkAddress;
     lastPort = cpo->NetworkPort;
     lastNetProtocol = cpo->NetProtocol;
-//>>>>>>> v5.0.0
   }
 
   if (!connectionsaved) {
@@ -7727,22 +7631,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
       ps52plib->GenerateStateHash();
     }
 
-// <<<<<<< HEAD
-//     enum _DisCat nset = OTHER;
-//      switch (pDispCat->GetSelection()) {
-//        case 0:
-//          nset = DISPLAYBASE;
-//          break;
-//        case 1:
-//          nset = STANDARD;
-//          break;
-//        case 2:
-//          nset = OTHER;
-//          break;
-//        case 3:
-//          nset = MARINERS_STANDARD;
-//          break;
-// =======
     if(pDispCat) {
         enum _DisCat nset = OTHER;
         switch (pDispCat->GetSelection()) {
@@ -7760,7 +7648,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
             break;
         }
         ps52plib->SetDisplayCategory(nset);
-//>>>>>>> v5.0.0
     }
 
     if(pCheck_SOUNDG) ps52plib->m_bShowSoundg = pCheck_SOUNDG->GetValue();
@@ -7972,13 +7859,6 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
-// <<<<<<< HEAD
-// 
-//     m_returnChanges = PARSE_ENC;
-//     Finish();
-// }
-// 
-// =======
     gFrame->GetPrimaryCanvas()->EnablePaint(false);
     
     extern void ParseAllENC(wxWindow* parent);
@@ -7991,7 +7871,6 @@ void options::OnButtonParseENC(wxCommandEvent &event)
     gFrame->GetPrimaryCanvas()->EnablePaint(true);
     
 }   
-//>>>>>>> v5.0.0
 
 #ifdef USE_LZMA
 #include <lzma.h>

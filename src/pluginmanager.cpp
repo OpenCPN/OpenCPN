@@ -1512,38 +1512,6 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                 {
                     switch(pic->m_api_version)
                     {
-// <<<<<<< HEAD
-//                     case 106:
-//                     {
-//                         opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             ppi->RenderOverlay(*pdc, &pivp);
-//                         break;
-//                     }
-//                     case 107:
-//                     {
-//                         opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             ppi->RenderOverlay(*pdc, &pivp);
-//                         break;
-//                     }
-//                     case 108:
-//                     case 109:
-//                     case 110:
-//                     case 111:
-//                     case 112:
-//                     case 113:
-//                     case 114:
-// 		    case 115:
-//                     {
-//                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             ppi->RenderOverlay(*pdc, &pivp);
-//                         break;
-//                     }
-//                     default:
-//                         break;
-// =======
                         case 106:
                         {
                             opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
@@ -1581,7 +1549,6 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         }
                         default:
                             break;
-//>>>>>>> v5.0.0
                     }
                 }
                 else
@@ -1605,41 +1572,6 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
 
                     switch(pic->m_api_version)
                     {
-// <<<<<<< HEAD
-//                     case 106:
-//                     {
-//                         opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             b_rendered = ppi->RenderOverlay(mdc, &pivp);
-//                         break;
-//                     }
-//                     case 107:
-//                     {
-//                         opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             b_rendered = ppi->RenderOverlay(mdc, &pivp);
-//                         break;
-//                     }
-//                     case 108:
-//                     case 109:
-//                     case 110:
-//                     case 111:
-//                     case 112:
-//                     case 113:
-//                     case 114:
-//                     case 115:
-//                     {
-//                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-//                         if(ppi)
-//                             b_rendered = ppi->RenderOverlay(mdc, &pivp);
-//                         break;
-//                     }
-//                     default:
-//                     {
-//                         b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
-//                         break;
-//                     }
-// =======
                         case 106:
                         {
                             opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
@@ -1679,7 +1611,6 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
                             break;
                         }
-//>>>>>>> v5.0.0
                     }
 
                     mdc.SelectObject(wxNullBitmap);
@@ -1724,24 +1655,6 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                         break;
                     }
 
-// <<<<<<< HEAD
-//                 case 108:
-//                 case 109:
-//                 case 110:
-//                 case 111:
-//                 case 112:
-//                 case 113:
-//                 case 114:
-//                 case 115:
-//                 {
-//                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
-//                     if(ppi)
-//                         ppi->RenderGLOverlay(pcontext, &pivp);
-//                     break;
-//                 }
-//                 default:
-//                     break;
-// =======
                     case 108:
                     case 109:
                     case 110:
@@ -1766,7 +1679,6 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                     }
                     default:
                         break;
-//>>>>>>> v5.0.0
                 }
             }
         }

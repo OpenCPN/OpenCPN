@@ -2586,12 +2586,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     //      Full initialization from here
 
     if( !m_bbase_file_attr_known ) {
-//<<<<<<< HEAD
-//        if( !GetBaseFileAttr( fn ) ) ret_value = INIT_FAIL_REMOVE;
-//=======
         if( !GetBaseFileAttr( m_TempFilePath ) )
             ret_value = INIT_FAIL_REMOVE;
-//>>>>>>> v5.0.0
         else
             m_bbase_file_attr_known = true;
     }
@@ -4015,13 +4011,9 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_pix_per_meter;
     m_LOD_meters = meters_per_pixel_max_scale * g_SENC_LOD_pixels;
 
-//<<<<<<< HEAD
-//    Osenc senc;
-//=======
     //  Establish a common reference point for the chart
     ref_lat = ( m_FullExtent.NLAT + m_FullExtent.SLAT ) / 2.;
     ref_lon = ( m_FullExtent.WLON + m_FullExtent.ELON ) / 2.;
-//>>>>>>> v5.0.0
 
     if(!m_disableBackgroundSENC){
         if(g_SencThreadManager){
