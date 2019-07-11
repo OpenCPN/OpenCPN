@@ -1578,7 +1578,12 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             pConfig->DeleteConfigTrack( m_pSelectedTrack );
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            if( TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
+                ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {
+                pTrackPropDialog->Hide();
+            }
+
+            if( RoutePropDlgImpl::getInstanceFlag() && pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
                 pRouteManagerDialog->UpdateTrkListCtrl();
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }

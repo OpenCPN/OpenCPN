@@ -9290,12 +9290,14 @@ void ChartCanvas::FinishRoute( void )
         if( m_pMouseRoute )
             m_pMouseRoute->SetHiLite(0);
 
-        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
+        if( RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-            pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateRouteListCtrl();
+        }
 
     }
     m_bAppendingRoute = false;

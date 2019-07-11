@@ -4332,7 +4332,7 @@ void MyFrame::DestroyPersistentDialogs()
         g_pais_query_dialog_active = NULL;
     }
 
-    if( RouteProp::getInstanceFlag() && pRoutePropDialog ) {
+    if( RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog ) {
         pRoutePropDialog->Hide();
         pRoutePropDialog->Destroy();
         pRoutePropDialog = NULL;
