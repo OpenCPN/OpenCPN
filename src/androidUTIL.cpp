@@ -273,6 +273,7 @@ extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
 extern float            g_ChartScaleFactorExp;
+extern bool             g_config_display_size_manual;
 
 extern Multiplexer      *g_pMUX;
 extern bool             b_inCloseWindow;
@@ -2354,7 +2355,8 @@ double getAndroidDPmm()
         size_mm = wxMax(size_mm, 50);
         size_mm = wxMin(size_mm, 400);
         double ret = maxDim / size_mm;
-        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        //qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        
         return ret;
     }
         
