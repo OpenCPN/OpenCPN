@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.4.2, 2019-06-14T23:32:42. -->
+<!-- Written by QtCreator 3.4.2, 2019-07-11T01:14:35. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -75,8 +75,8 @@
       <value type="bool" key="QtProjectManager.QMakeBuildStep.LinkQmlDebuggingLibrary">false</value>
       <value type="bool" key="QtProjectManager.QMakeBuildStep.LinkQmlDebuggingLibraryAuto">true</value>
       <value type="QString" key="QtProjectManager.QMakeBuildStep.QMakeArguments">wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-wxQt_Build=build_android_gles2 OCPN_Base=/home/dsr/Projects/opencpn_clone/OpenCPN
-OCPN_Build=build_android_t</value>
+wxQt_Build=build_android_gles2_dbg OCPN_Base=/home/dsr/Projects/opencpn_clone/OpenCPN
+OCPN_Build=build_android_multi</value>
       <value type="bool" key="QtProjectManager.QMakeBuildStep.QMakeForced">false</value>
       <value type="bool" key="QtProjectManager.QMakeBuildStep.SeparateDebugInfo">false</value>
       <value type="bool" key="QtProjectManager.QMakeBuildStep.UseQtQuickCompiler">false</value>

@@ -89,7 +89,8 @@ CONFIG += mobility
 CONFIG += debug
 MOBILITY =
 
-ANDROID_EXTRA_LIBS = $$PWD/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+#ANDROID_EXTRA_LIBS = $$PWD/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+ANDROID_EXTRA_LIBS = /home/dsr/Projects/opencpn_android/opencpn/buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 # To execute the assetbridge runtime code, we make a custom modification to the android Activity method.
 
@@ -293,9 +294,10 @@ sound_deployment.files += $$PWD/../data/sounds/2bells.wav
 sound_deployment.path = /assets/files/sounds
 INSTALLS += sound_deployment
 
-doc_deployment.files += $$PWD/../data/doc
-doc_deployment.path = /assets/files/doc
-INSTALLS += doc_deployment
+#  REduce to speed dev upload
+#doc_deployment.files += $$PWD/../data/doc
+#doc_deployment.path = /assets/files/doc
+#INSTALLS += doc_deployment
 
 
 # wxWidgets Core locale(s)
@@ -413,6 +415,7 @@ svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/setting.svg
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/slider.svg
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/stop.svg
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/zoomto.svg
+svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/grib_panel_icon.png
 INSTALLS += svg_grib_plugin_deployment
 #------------------------------------------------------------------------------------
 
