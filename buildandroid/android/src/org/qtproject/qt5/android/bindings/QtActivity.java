@@ -69,6 +69,7 @@ import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
 
+/*
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -78,6 +79,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+*/
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.OutputStreamWriter;
@@ -465,6 +467,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private String g_postResult = "";
     private boolean g_postActive = false;
     PostTask g_postTask;
+    private boolean m_inExit = false;
 
     //BroadcastReceiver which receives broadcasted Intents
     private final BroadcastReceiver mLocaleChangeReceiver = new BroadcastReceiver() {
@@ -951,7 +954,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     }
 
     public String terminateApp(){
-        //Log.i("OpenCPN", "terminateApp");
+        Log.i("OpenCPN", "terminateApp");
         finish();
         return "";
     }
@@ -1528,7 +1531,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 s += "\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
                 s += "\n" + getPackageName();
 
-        //Log.i("OpenCPN", s);
+        Log.i("OpenCPN", s);
 
         return s;
     }
@@ -2232,7 +2235,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
 
-
+/*
     public String doHttpPostX( final String url, final String parameters ){
 
         // Creating an instance of HttpClient.
@@ -2258,10 +2261,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 }
 
 
-           /**
-            * UrlEncodedFormEntity encodes form parameters and produce an
-            * output like param1=value1&param2=value2
-            */
                 try{
                     httpost.setEntity(new UrlEncodedFormEntity(nvps));
                 }catch(Exception e) {
@@ -2298,7 +2297,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
        }
 
 
-
+*/
     public String downloadFile( final String url, final String destination ){
 
         Log.i("OpenCPN", "downloadFile " + url + " to " + destination);
@@ -5025,32 +5024,38 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
             return false;
         }
 
-                if(keyCode==KeyEvent.KEYCODE_BACK){
-                    Log.i("OpenCPN", "Back UP, TLWCount " + nativeLib.getTLWCount());
 
-                    if(!m_backButtonEnable)
-                        return false;
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+               //Log.i("OpenCPN", "TLWCount " + nativeLib.getTLWCount());
 
-                    if(nativeLib.getTLWCount() <= 3){
+               if(!m_backButtonEnable)
+                    return false;
 
-                       if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
-                              toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
-                              toast.show();
-                              this.lastBackPressTime = System.currentTimeMillis();
-                              return false;
-                        } else {
-                        this.lastBackPressTime = System.currentTimeMillis();
-                        if (toast != null)
-                         toast.cancel();
-                        }
-                    }
+               if(nativeLib.getTLWCount() <= 2){
+
+               if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
+                      toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
+                      toast.show();
+                      this.lastBackPressTime = System.currentTimeMillis();
+                      return false;
+                } else {
+                    Log.i("OpenCPN", "Processing double-back key");
+                    this.lastBackPressTime = System.currentTimeMillis();
+                    if (toast != null)
+                        toast.cancel();
+
+                    // Set a marker, to avoid calling onStop delegate during exit (Qt bug)
+                    m_inExit = true;
                 }
+            }
+        }
 
         if (QtApplication.m_delegateObject != null  && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyUp, keyCode, event);
         else
             return super.onKeyUp(keyCode, event);
     }
+
     public boolean super_onKeyUp(int keyCode, KeyEvent event)
     {
         return super.onKeyUp(keyCode, event);
@@ -5245,7 +5250,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         unregisterReceiver(mGattUpdateReceiver);
 
         super.onPause();
-        QtApplication.invokeDelegate();
+        if(!m_inExit)
+            QtApplication.invokeDelegate();
 
         Log.i("OpenCPN", "onPause done");
 
@@ -5459,8 +5465,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         Log.i("OpenCPN", "onStop calling super");
 
         super.onStop();
-        //Log.i("OpenCPN", "onStop invokeDelegate");
-        //QtApplication.invokeDelegate();
+        if(!m_inExit)
+            QtApplication.invokeDelegate();
 
         Log.i("OpenCPN", "onStop Done");
 
@@ -5814,9 +5820,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     @Override
     public boolean onGenericMotionEvent(MotionEvent event)
     {
-//        Log.i("DEBUGGER_TAG", "onGenericMotionEvent");
-//        Toast.makeText(getApplicationContext(), "onGenericMotionEvent",Toast.LENGTH_LONG).show();
-
         if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER)) {
             switch (event.getAction()) {
               case MotionEvent.ACTION_SCROLL:

@@ -29,6 +29,7 @@
 #endif //precompiled headers
 
 #include <wx/tokenzr.h>
+#include <wx/aui/aui.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -331,6 +332,8 @@ bool            s_optionsActive;
 extern int ShowNavWarning();
 extern bool     g_btrackContinuous;
 
+int doAndroidPersistState();
+
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
 #define ANDROID_RESIZE_TIMER 4387
@@ -341,6 +344,8 @@ extern bool     g_btrackContinuous;
 #define ACTION_COLORDIALOG_END          4
 #define ACTION_POSTASYNC_END            5
 
+#define SCHEDULED_EVENT_CLEAN_EXIT      5498
+
 class androidUtilHandler : public wxEvtHandler
 {
  public:
@@ -349,9 +354,8 @@ class androidUtilHandler : public wxEvtHandler
     
     void onTimerEvent(wxTimerEvent &event);
     void onStressTimer(wxTimerEvent &event);
-    void OnResizeTimer(wxTimerEvent &event);
-    void OnCmdEvent( wxCommandEvent& event );
-
+    void OnScheduledEvent( wxCommandEvent& event );
+    
     wxString GetStringResult(){ return m_stringResult; }
     
     wxTimer     m_eventTimer;
@@ -753,6 +757,23 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event){
     
     if(600 == stime++) androidTerminate();
     
+}
+
+void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
+{
+    switch( event.GetId() ){
+        
+        case SCHEDULED_EVENT_CLEAN_EXIT:
+//             gFrame->FrameTimer1.Stop();
+//             gFrame->FrameCOGTimer.Stop();
+// 
+//             doAndroidPersistState();
+//             androidTerminate();
+            break;
+            
+        default:
+            break;
+    }
 }
 
 
@@ -4236,10 +4257,164 @@ bool AndroidSecureCopyFile(wxString in, wxString out)
     return bret;
 }
 
+int doAndroidPersistState()
+{
+    qDebug() << "doAndroidPersistState() starting...";
+    wxLogMessage( _T("doAndroidPersistState() starting...") );
+
+    // We save perspective before closing to restore position next time
+    // Pane is not closed so the child is not notified (OnPaneClose)
+    if(g_pauimgr){
+        if( g_pAISTargetList ) {
+            wxAuiPaneInfo &pane = g_pauimgr->GetPane( g_pAISTargetList );
+            g_AisTargetList_perspective = g_pauimgr->SavePaneInfo( pane );
+            g_pauimgr->DetachPane( g_pAISTargetList );
+
+            pConfig->SetPath( _T ( "/AUI" ) );
+            pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
+        }
+    }
+
+
+ 
+    //    Deactivate the PlugIns, allowing them to save state
+    if( g_pi_manager ) {
+        g_pi_manager->DeactivateAllPlugIns();
+    }
+
+    /*
+     Automatically drop an anchorage waypoint, if enabled
+     On following conditions:
+     1.  In "Cruising" mode, meaning that speed has at some point exceeded 3.0 kts.
+     2.  Current speed is less than 0.5 kts.
+     3.  Opencpn has been up at least 30 minutes
+     4.  And, of course, opencpn is going down now.
+     5.  And if there is no anchor watch set on "anchor..." icon mark           // pjotrc 2010.02.15
+     */
+    if( g_bAutoAnchorMark ) {
+        bool watching_anchor = false;                                           // pjotrc 2010.02.15
+        if( pAnchorWatchPoint1 )                                               // pjotrc 2010.02.15
+        watching_anchor = ( pAnchorWatchPoint1->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        if( pAnchorWatchPoint2 )                                               // pjotrc 2010.02.15
+        watching_anchor |= ( pAnchorWatchPoint2->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+
+        wxDateTime now = wxDateTime::Now();
+        wxTimeSpan uptime = now.Subtract( g_start_time );
+
+        if( !watching_anchor && ( g_bCruising ) && ( gSog < 0.5 )
+                && ( uptime.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) )     // pjotrc 2010.02.15
+                {
+            //    First, delete any single anchorage waypoint closer than 0.25 NM from this point
+            //    This will prevent clutter and database congestion....
+
+            wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+            while( node ) {
+                RoutePoint *pr = node->GetData();
+                if( pr->GetName().StartsWith( _T("Anchorage") ) ) {
+                    double a = gLat - pr->m_lat;
+                    double b = gLon - pr->m_lon;
+                    double l = sqrt( ( a * a ) + ( b * b ) );
+
+                    // caveat: this is accurate only on the Equator
+                    if( ( l * 60. * 1852. ) < ( .25 * 1852. ) ) {
+                        pConfig->DeleteWayPoint( pr );
+                        pSelect->DeleteSelectablePoint( pr, SELTYPE_ROUTEPOINT );
+                        delete pr;
+                        break;
+                    }
+                }
+
+                node = node->GetNext();
+            }
+
+            wxString name = now.Format();
+            name.Prepend( _("Anchorage created ") );
+            RoutePoint *pWP = new RoutePoint( gLat, gLon, _T("anchorage"), name, GPX_EMPTY_STRING );
+            pWP->m_bShowName = false;
+            pWP->m_bIsolatedMark = true;
+
+            pConfig->AddNewWayPoint( pWP, -1 );       // use auto next num
+        }
+    }
+
+
+    if( pCurrentStack ) {
+        g_restore_stackindex = pCurrentStack->CurrentStackEntry;
+        g_restore_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
+        if(cc1 && cc1->GetQuiltMode())
+            g_restore_dbindex = cc1->GetQuiltReferenceChartIndex();
+    }
+
+    if( g_MainToolbar ) {
+        wxPoint tbp = g_MainToolbar->GetPosition();
+        wxPoint tbp_incanvas = cc1->ScreenToClient( tbp );
+        g_maintoolbar_x = tbp_incanvas.x;
+        g_maintoolbar_y = tbp_incanvas.y;
+        g_maintoolbar_orient = g_MainToolbar->GetOrient();
+    }
+
+    if(g_iENCToolbar){
+        wxPoint locn = g_iENCToolbar->GetPosition();
+        wxPoint tbp_incanvas = cc1->ScreenToClient( locn );
+        g_iENCToolbarPosY = tbp_incanvas.y;
+        g_iENCToolbarPosX = tbp_incanvas.x;
+    }
+    
+    pConfig->UpdateSettings();
+    pConfig->UpdateNavObj();
+
+    delete pConfig->m_pNavObjectChangesSet;
+
+    //Remove any leftover Routes and Waypoints from config file as they were saved to navobj before
+    pConfig->DeleteGroup( _T ( "/Routes" ) );
+    pConfig->DeleteGroup( _T ( "/Marks" ) );
+    pConfig->Flush();
+
+    delete pConfig;             // All done
+    pConfig = NULL;
+
+
+    //    Unload the PlugIns
+    //      Note that we are waiting until after the canvas is destroyed,
+    //      since some PlugIns may have created children of canvas.
+    //      Such a PlugIn must stay intact for the canvas dtor to call DestoryChildren()
+
+    if(ChartData)
+        ChartData->PurgeCachePlugins();
+
+    if( g_pi_manager ) {
+        g_pi_manager->UnLoadAllPlugIns();
+        delete g_pi_manager;
+        g_pi_manager = NULL;
+    }
+
+    wxLogMessage( _T("doAndroidPersistState() finished cleanly.") );
+    qDebug() << "doAndroidPersistState() finished cleanly.";
+
+    wxLogMessage( _T("Closing logfile, Terminating App.") );
+    
+    wxLog::FlushActive();
+    g_Platform->CloseLogFile();
+
+    return 0;
+}
 
 
 
 
+extern "C"{
+    JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit";
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( SCHEDULED_EVENT_CLEAN_EXIT );
+        if(g_androidUtilHandler ){
+            g_androidUtilHandler->AddPendingEvent(evt);
+        }
+        
+        return 1;
+    }
+}       
 
 
 
