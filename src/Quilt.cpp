@@ -165,7 +165,7 @@ const LLRegion &QuiltCandidate::GetCandidateRegion()
         std::vector<float> vec = ChartData->GetReducedPlyPoints(dbIndex);
         
         std::vector<float> vecr;
-        for(unsigned int i =0 ; i < vec.size()/2;  i++){
+        for(size_t i =0 ; i < vec.size()/2;  i++){
             float a = vec[i*2+1];
             vecr.push_back(a);
             a = vec[i*2];
@@ -324,7 +324,7 @@ bool Quilt::IsChartS57Overlay( int db_index )
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry( db_index );
     if( CHART_FAMILY_VECTOR == cte.GetChartFamily() ){
-        return  s57chart::IsCellOverlayType( cte.GetpFullPath() );
+        return  s57chart::IsCellOverlayType( cte.GetFullSystemPath() );
     }
     else
 #endif
@@ -1677,7 +1677,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
 
-            if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
+            if(s57chart::IsCellOverlayType(cte.GetFullSystemPath() )){
                 b_has_overlays = true;
                 break;;
             }
@@ -1754,7 +1754,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //  Overlays will be picked up in the next pass, if any are found
 #ifdef USE_S57
             if(  CHART_FAMILY_VECTOR == m_reference_family ) {
-                if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
+                if(s57chart::IsCellOverlayType(cte.GetFullSystemPath() )){
                     continue;
                 }
             }
@@ -1846,7 +1846,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                         pqc->b_include = false; // skip this chart, no true overlap
 #ifdef USE_S57
                     else {
-                        bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
+                        bool b_overlay = s57chart::IsCellOverlayType(cte.GetFullSystemPath() );
                         if( b_overlay )
                             pqc->b_include = true;
                     }
@@ -1854,7 +1854,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     //  If the reference chart happens to be an overlay (e.g. 3UABUOYS.000),
                     //  we dont want it to eclipse any smaller scale standard useage charts.
                     const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
-                    if(s57chart::IsCellOverlayType(cte_ref.GetpFullPath() )){
+                    if(s57chart::IsCellOverlayType(cte_ref.GetFullSystemPath() )){
                         pqc->b_include = true;
                     }
 #endif
@@ -2105,7 +2105,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 #ifdef USE_S57            
         
         if(cte.GetChartFamily() == CHART_FAMILY_VECTOR){
-            piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
+            piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetFullSystemPath());
         }
 #endif                
         if(!piqp->b_overlay)    

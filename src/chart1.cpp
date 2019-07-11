@@ -1389,7 +1389,7 @@ void ParseAllENC(wxWindow* parent)
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
         
-        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        wxString filename = cte.GetFullSystemPath();
         
         compress_target *pct = new compress_target;
         pct->distance = distance;
@@ -6448,7 +6448,7 @@ bool MyFrame::CheckGroup( int igroup )
 
         for( unsigned int ic = 0; ic < (unsigned int) ChartData->GetChartTableEntries(); ic++ ) {
             ChartTableEntry *pcte = ChartData->GetpChartTableEntry( ic );
-            wxString chart_full_path( pcte->GetpFullPath(), wxConvUTF8 );
+            wxString chart_full_path = pcte->GetFullSystemPath();
 
             if( chart_full_path.StartsWith( element_root ) ) {
                 b_chart_in_group = true;
@@ -6481,7 +6481,7 @@ bool MyFrame::ScrubGroupArray()
             for( unsigned int ic = 0; ic < (unsigned int) ChartData->GetChartTableEntries();
                     ic++ ) {
                 ChartTableEntry *pcte = ChartData->GetpChartTableEntry( ic );
-                wxString chart_full_path( pcte->GetpFullPath(), wxConvUTF8 );
+                wxString chart_full_path = pcte->GetFullSystemPath();
 
                 if( chart_full_path.StartsWith( element_root ) ) {
                     b_chart_in_element = true;

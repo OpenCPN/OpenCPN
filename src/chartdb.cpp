@@ -842,9 +842,7 @@ bool ChartDB::CopyStack(ChartStack *pa, ChartStack *pb)
 wxString ChartDB::GetFullPath(ChartStack *ps, int stackindex)
 {
       int dbIndex = ps->GetDBIndex(stackindex);
-      wxASSERT( dbIndex >= 0 );
-
-      return wxString(GetChartTableEntry(dbIndex).GetpFullPath(),  wxConvUTF8);
+      return GetChartTableEntry(dbIndex).GetFullSystemPath();
 }
 
 //-------------------------------------------------------------------
@@ -895,11 +893,8 @@ int ChartDB::GetStackEntry(ChartStack *ps, wxString fp)
 {
       for(int i=0 ; i<ps->nEntry ; i++)
       {
-            int dbindex = ps->GetDBIndex( i );
-            wxASSERT(dbindex >= 0);
-
-            const ChartTableEntry &entry = GetChartTableEntry( dbindex );
-            if(fp.IsSameAs( wxString(entry.GetpFullPath(),  wxConvUTF8)) )
+            const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(i));
+            if(fp.IsSameAs( entry.GetFullSystemPath()) )
                   return i;
       }
 
@@ -1174,7 +1169,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 //      printf("Opening chart %d   lock: %d\n", dbindex, m_b_locked);
 
       const ChartTableEntry &cte = GetChartTableEntry(dbindex);
-      wxString ChartFullPath(cte.GetpFullPath(), wxConvUTF8 );
+      wxString ChartFullPath = cte.GetFullSystemPath();
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
       ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
       

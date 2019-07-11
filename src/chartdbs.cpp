@@ -161,12 +161,12 @@ void ChartTableEntry::SetScale( int scale )
        rounding = 5 *pow(10, log10(Scale) -2);
 }
 
-ChartTableEntry::ChartTableEntry(ChartBase &theChart)
+ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString& utf8Path)
 {
     Clear();
 
-    char *pt = (char *)malloc(strlen(theChart.GetFullPath().mb_str(wxConvUTF8)) + 1);
-    strcpy(pt, theChart.GetFullPath().mb_str(wxConvUTF8));
+    char *pt = (char *)malloc(strlen(utf8Path.mb_str(wxConvUTF8)) + 1);
+    strcpy(pt, utf8Path.mb_str(wxConvUTF8));
     pFullPath = pt;
 
 
@@ -189,7 +189,12 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     m_pfilename = new wxString;           // create and populate helper members
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
-    *m_psFullPath = theChart.GetFullPath();
+    *m_psFullPath = utf8Path;
+    m_fullSystemPath = utf8Path;
+        
+#ifdef __OCPN__ANDROID__
+        m_fullSystemPath = wxString(utf8Path.mb_str(wxConvUTF8));
+#endif       
     
     Extent ext;
     theChart.GetChartExtent(&ext);
@@ -468,8 +473,6 @@ int ChartTableEntry::GetChartFamily() const
 }
 
 
-
-
 bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
 {
     char path[4096], *cp;
@@ -495,7 +498,11 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
         *m_pfilename = fn.GetFullName();
         m_psFullPath = new wxString;
         *m_psFullPath = fullfilename;
+        m_fullSystemPath = fullfilename;
         
+#ifdef __OCPN__ANDROID__
+        m_fullSystemPath = wxString(fullfilename.mb_str(wxConvUTF8));
+#endif       
         // Read the table entry
         ChartTableEntry_onDisk_18 cte;
         is.Read(&cte, sizeof(ChartTableEntry_onDisk_18));
@@ -1244,7 +1251,7 @@ bool ChartDatabase::Read(const wxString &filePath)
     active_chartTable.Alloc(entries);
     active_chartTable_pathindex.clear();
     while (entries-- && entry.Read(this, ifs)) {
-        active_chartTable_pathindex[wxString(entry.GetpFullPath(), wxConvUTF8)] = ind++;
+        active_chartTable_pathindex[entry.GetFullSystemPath()] = ind++;
         active_chartTable.Add(entry);
     }
 
@@ -1343,29 +1350,16 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
       unsigned int target_width = 60;
 
       const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
+      
       if(1)       //TODO why can't this be cte.GetbValid()?
       {
             wxString line;
             line = _(" ChartFile:  ");
-            wxString longline(cte.GetpFullPath(), wxConvUTF8);
-/*
-            if(CHART_TYPE_CM93COMP == cte.GetChartType())
-            {
-                  //    Remove filename and two trailing directories
-                  //    to make it pretty....
-                  wxString path;
-                  const wxString full_path(cte.GetpFullPath(), wxConvUTF8);
-                  wxFileName::SplitPath(full_path, &path, NULL, NULL);
+            wxString longline = *(cte.GetpsFullPath());
 
-                  wxFileName fn(path);
-                  fn.RemoveLastDir();
-                  longline = fn.GetPath();
-                  longline += _T("...");
-            }
-*/
             if(longline.Len() > target_width)
             {
-                  line += SplitPath(wxString(cte.GetpFullPath(), wxConvUTF8), _T("/,\\"), target_width, 15, &ncr);
+                  line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
                   max_width = wxMax(max_width, target_width+4);
                   lc += ncr;
             }
@@ -1608,7 +1602,7 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgress
       //    And once more, setting the Entry index field
       active_chartTable_pathindex.clear();
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++) {
-          active_chartTable_pathindex[wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8)] = i;
+          active_chartTable_pathindex[active_chartTable[i].GetFullSystemPath()] = i;
           active_chartTable[i].SetEntryOffset( i );
       }
 
@@ -1668,6 +1662,10 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProg
 {
       //    Extract the true dir name and magic number from the compound string
       wxString dir_path = dir_info.fullpath;
+#ifdef __OCPN__ANDROID__
+      dir_path = wxString(dir_info.fullpath.mb_str(wxConvUTF8));
+#endif      
+      
       wxString old_magic = dir_info.magic_number;
       wxString new_magic = old_magic;
       dir_magic = old_magic;              // provisionally the same
@@ -1695,7 +1693,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProg
       //    Quick scan the directory to see if it has changed
       //    If not, there is no need to scan again.....
       if(!b_skipDetectDirChange)
-            b_dirchange = DetectDirChange(dir_path, old_magic, new_magic, pprog);
+            b_dirchange = DetectDirChange(dir_path, dir_info.fullpath, old_magic, new_magic, pprog);
 
       if( !bForce && !b_dirchange)
       {
@@ -1717,7 +1715,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProg
             for(int ic=0 ; ic<nEntries ; ic++)
             {
 
-                wxFileName fn(wxString(active_chartTable[ic].GetpFullPath(), wxConvUTF8));
+                wxFileName fn(active_chartTable[ic].GetFullSystemPath());
 
                   while(fn.GetDirCount() >= dir_path_count)
                   {
@@ -1742,13 +1740,13 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProg
       //    Look for all possible defined chart classes
       for(unsigned int i = 0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
       {
-            nAdd += SearchDirAndAddCharts(dir_path, m_ChartClassDescriptorArray[i], pprog);
+            nAdd += SearchDirAndAddCharts(dir_info.fullpath, m_ChartClassDescriptorArray.Item(i), pprog);
       }
 
       return nAdd;
 }
 
-bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog)
+bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString& prog_label, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog)
 {
       if(pprog)
             pprog->SetTitle(_("OpenCPN Directory Scan...."));
@@ -1772,7 +1770,7 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       for(int ifile=0 ; ifile < n_files ; ifile++)
       {
             if(pprog && (ifile % (n_files / 60 + 1)) == 0)
-                  pprog->Update(wxMin((ifile * 100) /n_files, 100), dir_path);
+                  pprog->Update(wxMin((ifile * 100) /n_files, 100), prog_label);
 
             wxFileName file(FileList[ifile]);
 
@@ -2014,10 +2012,16 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       msg += chart_desc.m_search_mask;
       wxLogMessage(msg);
 
-      if(!wxDir::Exists(dir_name_base))
-            return 0;
 
       wxString dir_name = dir_name_base;
+
+#ifdef __OCPN__ANDROID__      
+      dir_name = wxString(dir_name_base.mb_str(wxConvUTF8));  // android
+#endif
+
+      if(!wxDir::Exists(dir_name))
+            return 0;
+      
       wxString filespec = chart_desc.m_search_mask.Upper();
       wxString lowerFileSpec = chart_desc.m_search_mask.Lower();
       wxString filespecXZ = filespec + _T(".xz");
@@ -2115,7 +2119,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       ChartCollisionsHashMap collision_map; 
       int nEntry = active_chartTable.GetCount();
       for(int i=0 ; i<nEntry ; i++) {
-          wxString table_file_name(active_chartTable[i].GetpFullPath(), wxConvUTF8);
+          wxString table_file_name = active_chartTable[i].GetFullSystemPath();
           wxFileName table_file(table_file_name);
           collision_map[table_file.GetFullName()] = i;
       }
@@ -2128,6 +2132,25 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             wxFileName file(FileList[ifile]);
             wxString full_name = file.GetFullPath();
             wxString file_name = file.GetFullName();
+            wxString utf8_path = full_name;
+            
+#ifdef __OCPN__ANDROID__
+            // The full path (full_name) is the broken Android files system interpretation, which does not display well onscreen.
+            // So, here we reconstruct a full path spec in UTF-8 encoding for later use in string displays.
+            // This utf-8 string will be used to construct the chart database entry if required.
+            wxFileName fnbase(dir_name_base);
+            int nDirs = fnbase.GetDirCount();
+
+            wxFileName file_target(FileList[ifile]);
+            
+            for(int i = 0 ; i < nDirs+1; i++)   // strip off the erroneous intial directories
+                file_target.RemoveDir(0);
+            
+            wxString leftover_path = file_target.GetFullPath();
+            utf8_path = dir_name_base + leftover_path;  // reconstruct a fully utf-8 version
+#endif            
+
+
             //    Validate the file name again, considering MSW's semi-random treatment of case....
             // TODO...something fishy here - may need to normalize saved name?
             if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
@@ -2138,7 +2161,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             }
 
             if( pprog && ( ( ifile % nFileProgressQuantum ) == 0 ) )
-                  pprog->Update( static_cast<int>( ifile * rFileProgressRatio ), full_name );
+                  pprog->Update( static_cast<int>( ifile * rFileProgressRatio ), utf8_path );
 
             ChartTableEntry *pnewChart = NULL;
             bool bAddFinal = true;
@@ -2154,7 +2177,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
             if( collision ) {
                 pEntry = &active_chartTable[collision_ptr->second];
-                table_file_name = wxString::FromUTF8(pEntry->GetpFullPath());
+                table_file_name = pEntry->GetFullSystemPath();
                 file_path_is_same = bthis_dir_in_dB && full_name.IsSameAs(table_file_name);
 
                 // If the chart full file paths are exactly the same, select the newer one.
@@ -2185,7 +2208,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 // Produce the same output without actually calling `CreateChartTableEntry()`.
                 wxLogMessage(wxString::Format(_T("Loading chart data for %s"), msg_fn.c_str()));
             } else {
-                pnewChart = CreateChartTableEntry(full_name, chart_desc);
+                pnewChart = CreateChartTableEntry(full_name, utf8_path, chart_desc);
                 if(!pnewChart)
                 {
                     bAddFinal = false;
@@ -2285,7 +2308,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
     wxString msg_fn(full_name);
     msg_fn.Replace(_T("%"), _T("%%"));
     
-    pnewChart = CreateChartTableEntry(full_name, chart_desc);
+    pnewChart = CreateChartTableEntry(full_name, full_name, chart_desc);
     if(!pnewChart)
     {
         bAddFinal = false;
@@ -2453,7 +2476,7 @@ bool ChartDatabase::AddSingleChart( wxString &ChartFullPath, bool b_force_full_s
  
     //  Get a new magic number
     wxString new_magic;
-    DetectDirChange(dir_name, _T(""), new_magic, 0);
+    DetectDirChange(dir_name, _T(""), _T(""), new_magic, 0);
         
     
     //    Update (clone) the CDI array
@@ -2509,7 +2532,7 @@ bool ChartDatabase::RemoveSingleChart( wxString &ChartFullPath )
  
     //  Walk the chart table, looking for the target
     for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++) {
-        if( !strcmp( ChartFullPath.mb_str(), GetChartTableEntry(i).GetpFullPath() ) ){
+        if( ChartFullPath.IsSameAs(GetChartTableEntry(i).GetFullSystemPath() ) ){
             active_chartTable.RemoveAt(i);
             break;
         }
@@ -2574,7 +2597,7 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath, ChartClassDescript
 // Create Chart Table entry by reading chart header info, etc.
 ///////////////////////////////////////////////////////////////////////
 
-ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc)
+ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, wxString &utf8Path, ChartClassDescriptor &chart_desc)
 {
       wxString msg_fn(filePath);
       msg_fn.Replace(_T("%"), _T("%%"));
@@ -2594,7 +2617,7 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, 
       }
 
 
-      ChartTableEntry *ret_val = new ChartTableEntry(*pch);
+      ChartTableEntry *ret_val = new ChartTableEntry(*pch, utf8Path);
       ret_val->SetValid(true);
 
       delete pch;
@@ -2660,7 +2683,7 @@ wxString ChartDatabase::GetDBChartFileName(int dbIndex)
 {
     if((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
       {
-          return wxString(active_chartTable[dbIndex].GetpFullPath(), wxConvUTF8);
+          return wxString(active_chartTable[dbIndex].GetFullSystemPath());
       }
       else
             return _T("");

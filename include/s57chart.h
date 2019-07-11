@@ -228,7 +228,7 @@ public:
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
 
       char GetUsageChar(void){ return m_usage_char; }
-      static bool IsCellOverlayType(char *pFullPath);
+      static bool IsCellOverlayType(const wxString &pFullPath);
       
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;

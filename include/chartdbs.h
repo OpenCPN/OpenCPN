@@ -187,7 +187,7 @@ private:
 struct ChartTableEntry
 {
     ChartTableEntry() { Clear(); }
-    ChartTableEntry(ChartBase &theChart);
+    ChartTableEntry(ChartBase &theChart, wxString& utf8Path);
     ~ChartTableEntry();
 
     bool IsEqualTo(const ChartTableEntry &cte) const;
@@ -214,7 +214,6 @@ struct ChartTableEntry
     
     const LLBBox &GetBBox() const { return m_bbox; } 
     
-    char *GetpFullPath() const { return pFullPath; }
     float GetLonMax() const { return LonMax; }
     float GetLonMin() const { return LonMin; }
     float GetLatMax() const { return LatMax; }
@@ -228,7 +227,8 @@ struct ChartTableEntry
     bool GetbValid(){ return bValid;}
     void SetEntryOffset(int n) { EntryOffset = n;}
     const wxString *GetpFileName(void) const { return m_pfilename; }
-    wxString *GetpsFullPath(void){ return m_psFullPath; }
+    wxString *GetpsFullPath(void) const { return m_psFullPath; }
+    wxString GetFullSystemPath() const { return m_fullSystemPath; }
     
     const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
     void ClearGroupArray(void) { m_GroupArray.clear(); }
@@ -244,8 +244,10 @@ struct ChartTableEntry
     bool	Scale_eq( int b ) const { return abs ( Scale - b) <= rounding; }
     bool        Scale_ge( int b ) const { return  Scale_eq( b ) || Scale > b; }
     bool        Scale_gt( int b ) const { return  Scale > b && !Scale_eq( b ); }
+    char *GetpFullPath() const { return pFullPath; }
 
   private:
+
     int         EntryOffset;
     int         ChartType;
     int         ChartFamily;
@@ -273,6 +275,8 @@ struct ChartTableEntry
     std::vector<int> m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
+    wxString    m_fullSystemPath;
+    
     LLBBox m_bbox;
     bool        m_bavail;
     
@@ -369,7 +373,7 @@ protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
     void SetValid(bool valid) { bValid = valid; }
-    ChartTableEntry *CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc);
+    ChartTableEntry *CreateChartTableEntry(const wxString &filePath, wxString &utf8Path, ChartClassDescriptor &chart_desc);
 
     ArrayOfChartClassDescriptor    m_ChartClassDescriptorArray;
     ArrayOfCDI    m_dir_array;
@@ -380,7 +384,7 @@ private:
     int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog);
 
     int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProgressDialog *pprog, wxString& dir_magic, bool bForce);
-    bool DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog);
+    bool DetectDirChange(const wxString & dir_path, const wxString & prog_label, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog);
 
     bool AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog,
                    int isearch, bool bthis_dir_in_dB );
