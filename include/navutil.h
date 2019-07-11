@@ -171,12 +171,12 @@ public:
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
+      virtual void UpdateNavObj(bool bRecreate = false);
 
       bool LoadLayers(wxString &path);
       int LoadMyConfigRaw( bool bAsTemplate = false );
       
       void CreateRotatingNavObjBackup();
-      virtual void UpdateNavObj();
       
       wxString                m_sNavObjSetFile;
       wxString                m_sNavObjSetChangesFile;
