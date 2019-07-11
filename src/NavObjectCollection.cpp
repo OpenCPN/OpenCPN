@@ -29,6 +29,10 @@
 #include "Track.h"
 #include "Route.h"
 
+#ifdef __OCPN__ANDROID__
+#include <QDebug>
+#endif
+
 extern WayPointman *pWayPointMan;
 extern Routeman    *g_pRouteMan;
 extern MyConfig    *pConfig;
@@ -1505,6 +1509,7 @@ NavObjectChanges::NavObjectChanges()
 : NavObjectCollection1()
 {
     m_changes_file = 0;
+    m_bdirty = false;
 }
 
 
@@ -1515,8 +1520,7 @@ NavObjectChanges::NavObjectChanges(wxString file_name)
     m_filename = file_name;
     
     m_changes_file = fopen(m_filename.mb_str(), "a");
-    
-    
+    m_bdirty = false;
 }
 
 NavObjectChanges::~NavObjectChanges()
@@ -1544,6 +1548,7 @@ void NavObjectChanges::AddRoute( Route *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrack( Track *pr, const char *action )
@@ -1560,6 +1565,7 @@ void NavObjectChanges::AddTrack( Track *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
@@ -1576,6 +1582,7 @@ void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const wxString& parent_GUID )
@@ -1596,6 +1603,7 @@ void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 

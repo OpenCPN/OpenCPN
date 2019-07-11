@@ -2755,7 +2755,17 @@ void MyConfig::UpdateNavObj( bool bRecreate )
 
 }
 
-static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName )
+bool MyConfig::IsChangesFileDirty()
+{
+    if(m_pNavObjectChangesSet){
+        return m_pNavObjectChangesSet->m_bdirty;
+    }
+    else{
+        return true;
+    }
+}
+
+bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
     wxFileName ret;
     wxString path;

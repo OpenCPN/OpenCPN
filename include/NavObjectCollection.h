@@ -133,6 +133,8 @@ public:
     
     wxString    m_filename;
     FILE *      m_changes_file;
+    bool        m_bdirty;
+
     
 };
 
