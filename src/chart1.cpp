@@ -4332,13 +4332,13 @@ void MyFrame::DestroyPersistentDialogs()
         g_pais_query_dialog_active = NULL;
     }
 
-    if( pRoutePropDialog ) {
+    if( RouteProp::getInstanceFlag() && pRoutePropDialog ) {
         pRoutePropDialog->Hide();
         pRoutePropDialog->Destroy();
         pRoutePropDialog = NULL;
     }
 
-    if( pTrackPropDialog ) {
+    if( TrackPropDlg::getInstanceFlag() && pTrackPropDialog ) {
         pTrackPropDialog->Hide();
         pTrackPropDialog->Destroy();
         pTrackPropDialog = NULL;
@@ -4753,19 +4753,16 @@ void MyFrame::closeAllOpenDialogs()
     if(g_pObjectQueryDialog)
         g_pObjectQueryDialog->Close();
     
-    if( pRoutePropDialog ) {
-        pRoutePropDialog->Destroy();
-        pRoutePropDialog = NULL;
+    if( RouteProp::getInstanceFlag() && pRoutePropDialog ) {
+        pRoutePropDialog->Hide();
     }
     
-    if( pTrackPropDialog ) {
-        pTrackPropDialog->Destroy();
-        pTrackPropDialog = NULL;
+    if(TrackPropDlg::getInstanceFlag() && pTrackPropDialog ){
+        pTrackPropDialog->Hide();
     }
     
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->Destroy();
-        pMarkPropDialog = NULL;
+    if( MarkInfoImpl::getInstanceFlag() && pMarkPropDialog ) {
+        pMarkPropDialog->Hide();
     }
     
 }
