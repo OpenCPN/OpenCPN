@@ -73,6 +73,8 @@
 #include "androidUTIL.h"
 #endif
 
+void appendOSDirSlash(wxString* pString);
+
 extern MyFrame          *gFrame;
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
@@ -1375,7 +1377,7 @@ void WayPointman::ProcessDefaultIcons()
     else
         m_pExtendedIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
     
-
+#if 0
     wxArrayString FileList;
     double bm_size = -1;
      
@@ -1412,6 +1414,92 @@ void WayPointman::ProcessDefaultIcons()
                 pmi->preScaled = true;
         }
     }
+#else
+   // Look for cached icons
+    
+    wxString iconCacheDir = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&iconCacheDir);
+    iconCacheDir.append(_T("iconCache"));
+    appendOSDirSlash(&iconCacheDir);
+    
+    //  Create the cache dir here if necessary
+    if(!wxDir::Exists(iconCacheDir))
+        wxFileName::Mkdir(iconCacheDir);
+ 
+    
+    wxArrayString FileList;
+    double bm_size = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
+    bm_size *= g_ChartScaleFactorExp;
+    
+    bool bcacheLoaded = false;
+    
+    int n_files = wxDir::GetAllFiles( iconDir, &FileList );
+    
+    // To expedite icon loading, look in the iconCache first
+    wxArrayString cacheFileList;
+    int n_cache_files = wxDir::GetAllFiles( iconCacheDir, &cacheFileList );
+    if(n_cache_files){
+        
+        bool bReload = false;
+        //  Load a cached icon file and get it's size for comparison
+        for( int ifile = 0; ifile < n_cache_files; ifile++ ) {
+            wxString name = cacheFileList[ifile];
+        
+            wxImage imagePNG;
+            if(imagePNG.LoadFile(name)){
+                int w = imagePNG.GetWidth();
+                if(fabs(w - bm_size) > 1)
+                    bReload = true;
+                break;
+            }
+        }
+        
+        // If cached files are the proper size(scale)...
+        if(!bReload){
+            for( int ifile = 0; ifile < n_cache_files; ifile++ ) {
+                wxString name = cacheFileList[ifile];
+            
+                wxFileName fn( name );
+                wxString iconname = fn.GetName();
+            
+                wxImage imagePNG;
+                if(imagePNG.LoadFile(name)){
+                    MarkIcon * pmi = ProcessExtendedIcon( imagePNG, iconname, iconname );
+                    if(pmi)
+                        pmi->preScaled = true;
+                    bcacheLoaded = true;  //At least one icon was loaded
+                }
+            }
+        }
+    }
+    
+    //  Cache was unusable, so load from original
+    if(!bcacheLoaded)
+    {
+        g_Platform->ShowBusySpinner();
+
+        for( int ifile = 0; ifile < n_files; ifile++ ) {
+            wxString name = FileList[ifile];
+                
+            wxFileName fn( name );
+            wxString iconname = fn.GetName();
+            wxBitmap icon1;
+                
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+                
+                // Cache the icon as .png file
+                wxString filePNG = iconCacheDir + iconname + _T(".png");
+                iconSVG.SaveFile(filePNG, wxBITMAP_TYPE_PNG);
+                MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
+                if(pmi)
+                    pmi->preScaled = true;
+            }
+        }
+        g_Platform->HideBusySpinner();
+
+    }
+#endif
 
 
     // Walk the two sorted lists, adding icons to the un-sorted master list
