@@ -4212,7 +4212,17 @@ unsigned int androidColorPicker( unsigned int initialColor)
     return 0;
 }
 
-
+bool AndroidSecureCopyFile(wxString in, wxString out)
+{
+    bool bret = true;
+    
+    wxString result = callActivityMethod_s2s("SecureFileCopy", in, out);
+ 
+    if(wxNOT_FOUND == result.Find(_T("OK")))
+        bret = false;
+    
+    return bret;
+}
 
 
 

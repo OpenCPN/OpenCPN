@@ -122,6 +122,7 @@ extern wxString doAndroidPOST( const wxString &url, wxString &parms, int timeout
 extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
+bool AndroidSecureCopyFile(wxString in, wxString out);
 
 bool androidPlaySound( wxString soundfile );
 

@@ -85,6 +85,10 @@
 #include "glChartCanvas.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef __WXOSX__
 #include "DarkMode.h"
 #endif
@@ -2790,7 +2794,16 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+        
+#endif
+        
         delete pgpx;
 
         return true;
@@ -2804,7 +2817,13 @@ bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
         delete pgpx;
 
         return true;
@@ -2818,7 +2837,15 @@ bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const w
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
+        
         delete pgpx;
 
         return true;
@@ -2910,7 +2937,16 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
 
-        pgpx->SaveFile( fn.GetFullPath() );
+        // Android 5+ requires special handling to support native app file writes to SDCard
+        // We need to use a two step copy process using a guaranteed accessible location for the first step.
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
+        pgpx->SaveFile(fn.GetFullPath());
+#endif        
+        
         delete pgpx;
         ::wxEndBusyCursor();
 
