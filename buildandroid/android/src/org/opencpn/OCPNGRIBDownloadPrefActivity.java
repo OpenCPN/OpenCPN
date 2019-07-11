@@ -471,7 +471,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         Time tm = new Time(Time.getCurrentTimezone());
         tm.setToNow();
         tm.switchTimezone("UTC");
-        String startTime = tm.format("%Y%m%d");
+        String startTimeGFS = tm.format("%Y%m%d");
         int tHours = tm.hour;
         int hour6 = (tHours / 6) * 6;
 
@@ -486,15 +486,17 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             else
                 tp.set(29, tm.month-1, tm.year);
 
-            startTime = tp.format("%Y%m%d");
+            startTimeGFS = tp.format("%Y%m%d");
 
             hour6 = 18;
         }
         else
             hour6 -= 6;
 
-        startTime = startTime.concat(String.format("%02d", hour6));
-        String T0 = startTime.substring( startTime.length()-2, startTime.length());
+        startTimeGFS += "%2F";
+        startTimeGFS = startTimeGFS.concat(String.format("%02d", hour6));
+        String T0 = startTimeGFS.substring( startTimeGFS.length()-2, startTimeGFS.length());
+//        Log.i("OpenCPN", "startTimeGFS: " + startTimeGFS + "   T0: " + T0);
 
         int loop_count = (days * 24) / time_step;
 //        String msga = String.format( "%d %d %d\n", days, time_step, loop_count);
@@ -512,7 +514,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         String gfsFilterPl = "";
         String namePrefix ="";
 
-        String baseUrl = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_";
+        String baseUrl = "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_";
         String dname = "gfs";
 
         if(model.equals("GFS25")){
@@ -643,7 +645,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 + "&rightlon=" + String.format("%d", lon_max)
                 + "&toplat=" + String.format("%d", lat_max)
                 + "&bottomlat=" + String.format("%d", lat_min)
-                + "&dir=%2F" + dname + "." + startTime;
+                + "&dir=%2F" + dname + "." + startTimeGFS;
 
             Log.i("OpenCPN", "URL_FETCH: " + URL_FETCH);
 
@@ -654,7 +656,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-//            Log.i("OpenCPN", "localFileName: " + fullFileName);
+            Log.i("OpenCPN", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);

@@ -115,16 +115,54 @@ public class DownloadService extends IntentService {
 
                 }
                 else{
+                    Log.i("OpenCPN", "URL is http:");
                     URLConnection connection = url.openConnection();
                     connection.connect();
+
+                    int code =((HttpURLConnection)connection).getResponseCode();
+                    Log.i("OpenCPN", "response code: " + Integer.toString(code));
+
+                    if (code/100 == 3) {
+                         String loc = connection.getHeaderField("Location");
+                         Log.i("OpenCPN", "Redirect: " + loc);
+
+                         URL urlRedirect = new URL(loc);
+
+                         connection = urlRedirect.openConnection();
+                         connection.connect();
+
+                         int codeRedirect =((HttpURLConnection)connection).getResponseCode();
+                         Log.i("OpenCPN", "response code on redirect: " + Integer.toString(codeRedirect));
+
+                    }
                     fileLength = connection.getContentLength();
                     input = new BufferedInputStream(connection.getInputStream());
                 }
 
             }
             else{
+                Log.i("OpenCPN", "DownloadService: later than KitKat");
+
                 URLConnection connection = url.openConnection();
                 connection.connect();
+
+                int code =((HttpURLConnection)connection).getResponseCode();
+                Log.i("OpenCPN", "response code: " + Integer.toString(code));
+
+                if (code/100 == 3) {
+                     String loc = connection.getHeaderField("Location");
+                     Log.i("OpenCPN", "Redirect: " + loc);
+
+                     URL urlRedirect = new URL(loc);
+
+                     connection = urlRedirect.openConnection();
+                     connection.connect();
+
+                     int codeRedirect =((HttpURLConnection)connection).getResponseCode();
+                     Log.i("OpenCPN", "response code on redirect: " + Integer.toString(codeRedirect));
+
+                }
+
 
                 // this will be useful so that you can show a typical 0-100% progress bar
                 fileLength = connection.getContentLength();

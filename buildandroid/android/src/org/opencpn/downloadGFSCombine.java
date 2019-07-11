@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.FileInputStream;
+import java.net.URLConnection;
+import javax.net.ssl.HttpsURLConnection;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -63,7 +65,7 @@ public class downloadGFSCombine extends Activity {
 
         Bundle extras = getIntent().getExtras();
         destinationFileName = extras.getString("GRIB_dest_file");
-        Log.d("GRIB DOWNLOAD", "destinationFileName: " + destinationFileName);
+        Log.d("OpenCPN", "GRIB destinationFileName: " + destinationFileName);
 //        fileURL = extras.getString("URL");
         URLList = getIntent().getStringArrayListExtra("URLList");
         fileNameList = getIntent().getStringArrayListExtra("fileNameList");
@@ -74,10 +76,10 @@ public class downloadGFSCombine extends Activity {
 //        String fileDownloaded = dFile.getAbsolutePath();
 
 //        if(null != fileName)
-//            Log.i("GRIB DOWNLOAD", fileDownloaded);
+//            Log.i("OpenCPN", fileDownloaded);
 
 
-//        Log.i("GRIB DOWNLOAD", fileURL);
+//        Log.i("OpenCPN", fileURL);
 
         if(!haveNetworkConnection()){
             Intent i = getIntent(); //get the intent that called this activity
@@ -86,7 +88,7 @@ public class downloadGFSCombine extends Activity {
         }
         else{
         //executing the asynctask
-            Log.i("GRIB DOWNLOAD", " new DFA");
+            Log.i("OpenCPN", " GRIB new DFA");
             new DownloadFileAsync().execute(URLList);
         }
     }
@@ -96,7 +98,7 @@ public class downloadGFSCombine extends Activity {
 
         @Override
         protected void onPreExecute() {
-            Log.i("GRIB DOWNLOAD", "onPreExecute");
+            Log.i("OpenCPN", "GRIB onPreExecute");
             
             super.onPreExecute();
             showDialog(DIALOG_DOWNLOAD_PROGRESS);
@@ -114,7 +116,7 @@ public class downloadGFSCombine extends Activity {
             if(null != stat){
 
                 //  We now concatenate the GRIB2 files
-                Log.d("GRIB DOWNLOAD", "destinationFileName: " + destinationFileName);
+                Log.d("OpenCPN", "GRIB destinationFileName: " + destinationFileName);
                 FileOutputStream outputStream = null;
                 try{
                     outputStream = new FileOutputStream(destinationFileName, true);    // appending
@@ -122,7 +124,7 @@ public class downloadGFSCombine extends Activity {
                         File dFile = new File(fileNameList.get(i));
                         if(dFile.exists()){
                             InputStream inputStream = new FileInputStream(fileNameList.get(i));
-                            Log.d("GRIB DOWNLOAD", "concatenate " + fileNameList.get(i) + " to " + destinationFileName);
+                            Log.d("OpenCPN", "GRIB concatenate " + fileNameList.get(i) + " to " + destinationFileName);
                             copyFile(inputStream, outputStream);
 
                         //  Delete the temprary file
@@ -131,7 +133,7 @@ public class downloadGFSCombine extends Activity {
 
                     }
                 }catch (Exception e) {
-                    Log.d("GRIB DOWNLOAD Copy Exception", e.getMessage());
+                    Log.d("OpenCPN Grib Copy Exception", e.getMessage());
                     m_result = ERROR_EXCEPTION;
                 }finally {
                 }
@@ -147,61 +149,101 @@ public class downloadGFSCombine extends Activity {
             int nFilesOK = 0;
             for(int i=0 ; i < urlList.size() ; i++){
 
-                Log.d("GRIB DOWNLOAD",urlList.get(i));
-                Log.d("GRIB DOWNLOAD",fileNameList.get(i));
+                Log.d("OpenCPN",urlList.get(i));
+                Log.d("OpenCPN",fileNameList.get(i));
 
                 int nProgressChunk = 100/urlList.size();
                 int progressOffset = nProgressChunk * i;
 
-                HttpURLConnection c;
+                HttpsURLConnection c;
+
                 InputStream in;
-
-                 try {
-                    //connecting to url
-                    URL u = new URL(urlList.get(i));
-                    c = (HttpURLConnection) u.openConnection();
-                    c.setRequestProperty("Accept-Encoding", "identity");
-                    c.setRequestMethod("GET");
-                    c.setDoOutput(true);
-                    c.connect();
-
-                    in = c.getInputStream();
-
-                    } catch (Exception e) {
-                        Log.d("GRIB DOWNLOAD ExceptionA", e.getMessage());
-
-                        // This file may not be downloadable.  If any files have been downloaded,
-                        // then we declare this to be a "partial" download, and simply exit with warning.
-                        if(nFilesOK > 0){
-                            if(e.getMessage().equals(urlList.get(i))){
-                                Log.i("GRIB DOWNLOAD", "partial");
-                                m_result = WARNING_PARTIAL;
-                                return null;
-                            }
-                        }
-                        else{
-                            Log.i("GRIB DOWNLOAD", "ERROR_NO_CONNECTION");
-                            if(e.getMessage().contains("resolve"))
-                                m_result = ERROR_NO_RESOLVE;
-                            else
-                                m_result = ERROR_NO_CONNECTION;
-                            return null;
-                        }
-                        return null;
-                    }
+                int lenghtOfFile = -1;
 
 
                 try {
-                    int http_status = c.getResponseCode();
-                    String statusMsg = String.format("Status: %d\n", http_status);
-                    Log.i("GRIB DOWNLOAD", statusMsg);
+                    URL u = new URL(urlList.get(i));
 
-                    //lenghtOfFile is used for calculating download progress
-                    int lenghtOfFile = c.getContentLength();
+                    if(u.getProtocol().equalsIgnoreCase("https")){
+                        Log.d("OpenCPN", "OpenCPN Grib URL is https");
 
-                    String msg = String.format("Connection made, file length: %d\n", lenghtOfFile);
-                    Log.i("GRIB DOWNLOAD", msg);
 
+                         //connecting to url
+                        c = (HttpsURLConnection)u.openConnection();
+                        c.setRequestProperty("Accept-Encoding", "identity");
+                        c.setRequestMethod("GET");
+                        c.setDoOutput(true);
+                        c.connect();
+
+                        in = c.getInputStream();
+
+                   }
+                else{
+                       Log.d("OpenCPN", "OpenCPN Grib URL is http");
+
+                        //connecting to url
+                       HttpURLConnection c1 = (HttpURLConnection)u.openConnection();
+                       c1.setRequestProperty("Accept-Encoding", "identity");
+                       c1.setRequestMethod("GET");
+                       c1.setDoOutput(true);
+                       c1.connect();
+
+                        int http_status = c1.getResponseCode();
+                        String statusMsg = String.format("GRIB Status: %d\n", http_status);
+                        Log.i("OpenCPN", statusMsg);
+
+                        if (http_status/100 == 3) {
+                           String loc = c1.getHeaderField("Location");
+                           Log.i("OpenCPN", "Redirect: " + loc);
+
+                           URL urlRedirect = new URL(loc);
+
+                         c = (HttpsURLConnection)urlRedirect.openConnection();
+                         c.setRequestProperty("Accept-Encoding", "identity");
+                         c.setRequestMethod("GET");
+                         c.setDoOutput(true);
+                         c.connect();
+
+                         int codeRedirect = c.getResponseCode();
+                         Log.i("OpenCPN", "response code on redirect: " + Integer.toString(codeRedirect));
+
+                         in = c.getInputStream();
+
+                         }
+                         else{
+                             in = c1.getInputStream();
+
+                         }
+                     }
+
+                }
+
+                catch (Exception e) {
+                                        Log.d("OpenCPN Grib ExceptionA1", e.getMessage());
+
+                                        // This file may not be downloadable.  If any files have been downloaded,
+                                        // then we declare this to be a "partial" download, and simply exit with warning.
+                                            if(nFilesOK > 0){
+                                                if(e.getMessage().equals(urlList.get(i))){
+                                                    Log.i("OpenCPN", "GRIB partial");
+                                                    m_result = WARNING_PARTIAL;
+                                                    return null;
+                                                }
+                                            }
+                                            else{
+                                                Log.i("OpenCPN", "GRIB ERROR_NO_CONNECTION");
+                                                if(e.getMessage().contains("resolve"))
+                                                    m_result = ERROR_NO_RESOLVE;
+                                                else
+                                                    m_result = ERROR_NO_CONNECTION;
+                                                return null;
+
+                                            }
+                                            return null;
+                }
+
+
+                try{
                     //this is where the file will be seen after the download
                     File nFile = new File(fileNameList.get(i));
                     File nDir = nFile.getParentFile();
@@ -249,7 +291,7 @@ public class downloadGFSCombine extends Activity {
 
                         publishProgress(progressOffset + prog);
                         String bmsg = String.format("%d / %d    %d %d\n", total, lenghtOfFile,  progressOffset, prog);
-//                        Log.i("GRIB", "Pub: " + bmsg);
+//                        Log.i("OpenCPN", "GRIB Pub: " + bmsg);
 
                         f.write(buffer, 0, len1);
                     }
@@ -271,11 +313,9 @@ public class downloadGFSCombine extends Activity {
                     nFilesOK++;
 
                 } catch (Exception e) {
-                    Log.d("GRIB DOWNLOAD ExceptionB", e.getMessage());
+                    Log.d("OpenCPN GRIB ExceptionB", e.getMessage());
                     m_result = ERROR_EXCEPTION;
 
-                } finally {
-                  c.disconnect();
                 }
 
             }  //for
@@ -287,13 +327,13 @@ public class downloadGFSCombine extends Activity {
 
         protected void onProgressUpdate(Integer... progress) {
              String msg = String.format("%d\n", progress[0]);
-//             Log.d("GRIB DOWNLOAD Progress",msg);
+//             Log.d("OpenCPN GRIB Progress",msg);
              mProgressDialog.setProgress(progress[0]);
         }
 
         @Override
         protected void onPostExecute(String unused) {
-            Log.i("GRIB DOWNLOAD", "onPostExecute");
+            Log.i("OpenCPN", "GRIB onPostExecute");
 
             //dismiss the dialog after the file was downloaded
             if(mDialogShown){
@@ -301,7 +341,7 @@ public class downloadGFSCombine extends Activity {
                     dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
                 }
                 catch(java.lang.IllegalArgumentException exception){
-                    Log.d("GRIB DOWNLOAD onPostExecute", "dialog illegal arg exception");
+                    Log.d("OpenCPN", "GRIB dialog illegal arg exception");
                 }
             }
 
