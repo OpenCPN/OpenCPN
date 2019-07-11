@@ -2789,6 +2789,16 @@ static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName 
     return ret;
 }
 
+bool MyConfig::IsChangesFileDirty()
+{
+    if(m_pNavObjectChangesSet){
+        return m_pNavObjectChangesSet->m_bdirty;
+    }
+    else{
+        return true;
+    }
+}
+
 
 bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {

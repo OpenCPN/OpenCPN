@@ -7595,6 +7595,23 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
+    
+#ifdef __OCPN__ANDROID__
+
+    // Update the navobj file on a fixed schedule (5 minutes)
+    // This will do nothing if the navobj.changes file is empty and clean
+    if((g_tick % 300) == 0){
+        if(pConfig && pConfig->IsChangesFileDirty()){
+            wxStopWatch update_sw;
+            pConfig->UpdateNavObj( true );
+            wxString msg = wxString::Format(_("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
+            wxLogMessage( msg );
+            qDebug() << msg.mb_str();
+        }
+    }
+
+#endif
+
     if (g_unit_test_2)
         FrameTimer1.Start( TIMER_GFRAME_1*3, wxTIMER_CONTINUOUS );
     else 

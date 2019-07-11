@@ -172,6 +172,7 @@ public:
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
       virtual void UpdateNavObj(bool bRecreate = false);
+      virtual bool IsChangesFileDirty();
 
       bool LoadLayers(wxString &path);
       int LoadMyConfigRaw( bool bAsTemplate = false );
