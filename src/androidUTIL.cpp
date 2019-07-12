@@ -4419,10 +4419,9 @@ int doAndroidPersistState()
         }
     }
 
-
-    if( pCurrentStack ) {
-        g_restore_stackindex = pCurrentStack->CurrentStackEntry;
-        g_restore_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
+    if( gFrame->GetPrimaryCanvas()->GetpCurrentStack() ) {
+        g_restore_stackindex = gFrame->GetPrimaryCanvas()->GetpCurrentStack()->CurrentStackEntry;
+        g_restore_dbindex = gFrame->GetPrimaryCanvas()->GetpCurrentStack()->GetCurrentEntrydbIndex();
         if(gFrame->GetPrimaryCanvas() && gFrame->GetPrimaryCanvas()->GetQuiltMode())
             g_restore_dbindex = gFrame->GetPrimaryCanvas()->GetQuiltReferenceChartIndex();
     }
