@@ -1835,6 +1835,14 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name)
       wxDir dirt(dir_name);
       wxString candidate;
 
+      if(dirt.IsOpened())
+        wxLogMessage(_T("check_cm93 opened dir OK:  ") + dir_name);
+      else{
+        wxLogMessage(_T("check_cm93 NOT OPENED OK:  ") + dir_name);
+        wxLogMessage(_T("check_cm93 returns false.") + dir_name);
+        return false;
+      }
+
       bool b_maybe_found_cm93 = false;
       bool b_cont = dirt.GetFirst(&candidate);
 
@@ -1858,32 +1866,35 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name)
             if(wxDir::Exists(dir_next))
             {
                   wxDir dir_n(dir_next);
-                  wxString candidate_n;
+                  if(dirt.IsOpened()){
 
-                  wxRegEx test_n(_T("^[A-Ga-g]"));
-                  bool b_probably_found_cm93 = false;
-                  bool b_cont_n = dir_n.IsOpened() && dir_n.GetFirst(&candidate_n);
-                 while(b_cont_n)
-                  {
-                        if(test_n.Matches(candidate_n) && (candidate_n.Len() == 1))
-                        {
-                              b_probably_found_cm93 = true;
-                              break;
-                        }
-                        b_cont_n = dir_n.GetNext(&candidate_n);
-                  }
+                    wxString candidate_n;
 
-                  if(b_probably_found_cm93)           // found a directory that looks
-                                                      //like {dir_name}/12345678/A
-                                                      //probably cm93
-                  {
-                        // make sure the dir exists
-                        wxString dir_luk = dir_next;
-                        dir_luk += _T("/");
-                        dir_luk += candidate_n;
-                        if(wxDir::Exists(dir_luk))
-                              return true;
+                    wxRegEx test_n(_T("^[A-Ga-g]"));
+                    bool b_probably_found_cm93 = false;
+                    bool b_cont_n = dir_n.IsOpened() && dir_n.GetFirst(&candidate_n);
+                    while(b_cont_n)
+                    {
+                            if(test_n.Matches(candidate_n) && (candidate_n.Len() == 1))
+                            {
+                                b_probably_found_cm93 = true;
+                                break;
+                            }
+                            b_cont_n = dir_n.GetNext(&candidate_n);
+                    }
 
+                    if(b_probably_found_cm93)           // found a directory that looks
+                                                        //like {dir_name}/12345678/A
+                                                        //probably cm93
+                    {
+                            // make sure the dir exists
+                            wxString dir_luk = dir_next;
+                            dir_luk += _T("/");
+                            dir_luk += candidate_n;
+                            if(wxDir::Exists(dir_luk))
+                                return true;
+
+                    }
                   }
             }
       }
