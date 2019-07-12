@@ -1360,8 +1360,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
             Q[3][1] = yoffset;
             
             mat4x4 X;
-            mat4x4_mul(X, (float (*)[4])cc1->GetpVP()->vp_transform, Q);
-            
+            mat4x4_mul(X, (float (*)[4])gFrame->GetPrimaryCanvas()->GetpVP()->vp_transform, Q);
+
             GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
             glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)X ); 
             
