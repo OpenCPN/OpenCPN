@@ -1573,11 +1573,15 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgress
             ChartDirInfo dir_info = dir_array[j];
 
             wxString dir_magic;
-            if( !wxDir::FindFirst(dir_info.fullpath, "poly-*-1.dat").empty() ) {
-            //If some polygons exist in the directory, set it as the one to use for GSHHG
-            //TODO: We should probably compare the version and maybe resolutions available with what is currently used...
-                gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
+            
+            if(dir_info.fullpath.Find(_T("GSHHG")) != wxNOT_FOUND){
+                if( !wxDir::FindFirst(dir_info.fullpath, "poly-*-1.dat").empty() ) {
+                    //If some polygons exist in the directory, set it as the one to use for GSHHG
+                    //TODO: We should probably compare the version and maybe resolutions available with what is currently used...
+                    gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
+                }
             }
+            
             TraverseDirAndAddCharts(dir_info, pprog, dir_magic, lbForce);
 
         //  Update the dir_list entry, even if the magic values are the same
