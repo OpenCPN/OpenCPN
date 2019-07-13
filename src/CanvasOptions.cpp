@@ -240,6 +240,10 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     boxENC->Add(m_pDispCat, 0, wxLEFT, 4*GetCharWidth());
     m_pDispCat->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
+#ifdef __OCPN__ANDROID__
+    GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+#endif
+
     RefreshControlValues();
     
     SetAutoLayout( true );
