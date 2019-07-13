@@ -1083,6 +1083,8 @@ WX_DEFINE_OBJARRAY(ArrayOfChartClassDescriptor);
 ChartDatabase::ChartDatabase()
 {
       bValid = false;
+      m_b_busy = false;
+      
       m_ChartTableEntryDummy.Clear();
 
       UpdateChartClassDescriptorArray();
@@ -1543,6 +1545,7 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgress
       m_dir_array = dir_array;
 
       bValid = false;               // database is not useable right now...
+      m_b_busy = true;
 
       //  Mark all charts provisionally invalid
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
@@ -1613,6 +1616,7 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgress
       m_nentries = active_chartTable.GetCount();
       
       bValid = true;
+      m_b_busy = false;
       return true;
 }
 

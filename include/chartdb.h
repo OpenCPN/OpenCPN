@@ -154,7 +154,6 @@ public:
       void ClearCacheInUseFlags(void);
       void PurgeCacheUnusedCharts( double factor );
 
-      bool IsBusy(){ return m_b_busy; }
 protected:
       virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
 
@@ -174,7 +173,6 @@ private:
       int              m_ticks;
 
       bool              m_b_locked;
-      bool              m_b_busy;
 
       wxCriticalSection m_critSect;
       wxMutex           m_cache_mutex;

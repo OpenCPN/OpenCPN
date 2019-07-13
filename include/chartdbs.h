@@ -369,6 +369,8 @@ public:
     std::vector<float> GetReducedPlyPoints(int dbIndex);
     std::vector<float> GetReducedAuxPlyPoints(int dbIndex, int iTable);
 
+    bool IsBusy(){ return m_b_busy; }
+
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
@@ -377,6 +379,7 @@ protected:
 
     ArrayOfChartClassDescriptor    m_ChartClassDescriptorArray;
     ArrayOfCDI    m_dir_array;
+    bool              m_b_busy;
 
 private:
     bool IsChartDirUsed(const wxString &theDir);
