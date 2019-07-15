@@ -69,7 +69,8 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     ySpot = 0;
 
     m_pTCRolloverWin = NULL;
-
+    m_ptextctrl = NULL;
+    
     long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
@@ -386,7 +387,7 @@ void TCWin::RecalculateSize()
     if( yc < 0 ) yc = (parent_size.y - m_tc_size.y) / 2;
     if( xc < 0 ) xc = (parent_size.x - m_tc_size.x) / 2;
 
-    // Recalculate the graph size
+   // Recalculate the graph size
     int x_graph = m_tc_size.x * 1 / 10;
     int y_graph = m_tc_size.y * 32 / 100;
     int x_graph_w = m_tc_size.x * 8 / 10;
@@ -397,7 +398,6 @@ void TCWin::RecalculateSize()
     }
 #endif    
     ///m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
-    
     
     // Recalculate text window sizes
     if( m_created && m_tList ){
@@ -420,14 +420,14 @@ void TCWin::RecalculateSize()
     }
 #endif    
 
-    wxSize texc_size = wxSize( ( m_tc_size.x * 60 / 100 ), ( m_tc_size.y *29 / 100 ) );
-    if( m_created && m_tList && !m_tList->IsShown()){
-        texc_size = wxSize( ( m_tc_size.x * 90 / 100 ), ( m_tc_size.y *29 / 100 ) );
-    }
-    if(m_ptextctrl)
+    if(m_ptextctrl){
+        wxSize texc_size = wxSize( ( m_tc_size.x * 60 / 100 ), ( m_tc_size.y *29 / 100 ) );
+        if( m_created && m_tList && !m_tList->IsShown()){
+            texc_size = wxSize( ( m_tc_size.x * 90 / 100 ), ( m_tc_size.y *29 / 100 ) );
+        }
         m_ptextctrl->SetSize(texc_size);
+    }
 
-    
     if( pParent )
         pParent->ClientToScreen( &xc, &yc );
     m_position = wxPoint( xc, yc );
