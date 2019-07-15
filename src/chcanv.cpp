@@ -11360,7 +11360,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
-    float icon_pixelRefDim = 45;
 
 #if 0
     float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *25 / 1000; // Intended physical rendered size onscreen
@@ -11369,10 +11368,29 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif
 
+#if 0
     // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
     //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
     float nominal_icon_size_pixels = 48;  // 3 x 16
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+#endif
+
+    //  Yet another method goes like this:
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a symbol about 16 mm tall
+    float icon_pixelRefDim = 45;
+    double symHeight = icon_pixelRefDim / GetPixPerMM();           // from draw instructions, symbol is xx pix high
+    double targetHeight0 = 16.0;  
+    
+    // But we want to scale the size down for smaller displays
+    double displaySize = m_display_size_mm;
+    displaySize = wxMax(displaySize, 100);
+    
+    float targetHeight = wxMin(targetHeight0, displaySize / 15);
+    
+    double pix_factor = targetHeight / symHeight;
+
     
     scale_factor *= pix_factor;
     
