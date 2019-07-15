@@ -1140,7 +1140,7 @@ void glChartCanvas::BuildFBO( )
 {
     
     if( m_b_BuiltFBO ) {
-        return;
+        //return;
         glDeleteTextures( 2, m_cache_tex );
         glDeleteFramebuffers( 1, &m_fb0 );
         glDeleteRenderbuffers( 1, &m_renderbuffer );

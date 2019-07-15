@@ -379,7 +379,6 @@ class androidUtilHandler : public wxEvtHandler
     void onTimerEvent(wxTimerEvent &event);
     void onStressTimer(wxTimerEvent &event);
     void OnResizeTimer(wxTimerEvent &event);
-    void OnCmdEvent( wxCommandEvent& event );
     void OnScheduledEvent( wxCommandEvent& event );
 
     wxString GetStringResult(){ return m_stringResult; }
@@ -399,7 +398,6 @@ BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
 EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
 EVT_TIMER ( ANDROID_RESIZE_TIMER, androidUtilHandler::OnResizeTimer )
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, androidUtilHandler::OnScheduledEvent )
-EVT_MENU(-1, androidUtilHandler::OnCmdEvent)
 
 END_EVENT_TABLE()
 
@@ -412,18 +410,6 @@ androidUtilHandler::androidUtilHandler()
 }
 
        
-void androidUtilHandler::OnCmdEvent( wxCommandEvent& event )
-{
-    switch( event.GetId() ){
-        case ID_CMD_TRIGGER_RESIZE:
-            timer_sequence = 0;
-            m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-            break;
-    }
-}
-
-
-
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 {
 //    qDebug() << "onTimerEvent";
@@ -797,6 +783,12 @@ void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
 //             doAndroidPersistState();
 //             androidTerminate();
             break;
+
+        case ID_CMD_TRIGGER_RESIZE:
+            qDebug() << "Trigger Resize";
+            timer_sequence = 0;
+            m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+            break;
             
         default:
             break;
@@ -1127,7 +1119,7 @@ extern "C"{
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
-        
+        qDebug() << "NewSize: " << new_size.x << new_size.y;
         config_size = new_size;
         
          wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
