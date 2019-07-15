@@ -48,6 +48,7 @@ deploy:
     branch:
     - master
     - v5.0.x
+    - v5.0.1_Mac
     tags: false
 
 notifications:
