@@ -495,18 +495,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
  
-#if 0
             // Tide/Current window
-            if( cc1 && cc1->getTCWin()){
-                bool bshown = cc1->getTCWin()->IsShown();
-                cc1->getTCWin()->Hide();
-                cc1->getTCWin()->RecalculateSize();
+            if( gFrame->GetPrimaryCanvas()->getTCWin()){
+                bool bshown = gFrame->GetPrimaryCanvas()->getTCWin()->IsShown();
+                gFrame->GetPrimaryCanvas()->getTCWin()->Hide();
+                gFrame->GetPrimaryCanvas()->getTCWin()->RecalculateSize();
                 if(bshown){
-                    cc1->getTCWin()->Show();
-                    cc1->getTCWin()->Refresh();
+                    gFrame->GetPrimaryCanvas()->getTCWin()->Show();
+                    gFrame->GetPrimaryCanvas()->getTCWin()->Refresh();
                 }
             }
-#endif            
+            
             // Route Manager dialog
             if(RouteManagerDialog::getInstanceFlag()){
                 bool bshown = pRouteManagerDialog->IsShown();
