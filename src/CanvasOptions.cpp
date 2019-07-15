@@ -98,7 +98,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     int group_item_spacing = 0;
     int interGroupSpace = border_size * 2;
     
-    wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
+    wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Expand().Border(wxALL, group_item_spacing);
     wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
     
     wxScrolledWindow *pDisplayPanel = m_sWindow;
