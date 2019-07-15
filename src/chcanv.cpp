@@ -5031,6 +5031,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
 
+    bool bwasValid = VPoint.IsValid();
     VPoint.Validate();                     // Mark this ViewPoint as OK
 
     //  Has the Viewport scale changed?  If so, invalidate the vp
@@ -5244,8 +5245,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 //  The quilt composition is deferred until the OnPaint() message gets finally
                 //  removed and processed from the message queue.
                 // Takes advantage of the fact that touch-screen pan gestures are usually short in distance,
-                //  so not requiring a full quilt rebuild until the pan gesture is complete.       
-                if( last_vp.view_scale_ppm != scale_ppm ){
+                //  so not requiring a full quilt rebuild until the pan gesture is complete.
+                if( (last_vp.view_scale_ppm != scale_ppm) || !bwasValid ){
+ //                   qDebug() << "Force compose";
                     m_pQuilt->Compose( VPoint );
                 }
                 else{
