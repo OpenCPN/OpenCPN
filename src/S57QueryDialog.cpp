@@ -203,6 +203,11 @@ void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
     S57ExtraQueryInfoDlg* ExtraObjInfoDlg = new S57ExtraQueryInfoDlg( GetParent(), wxID_ANY, _("Extra Object Info"), wxPoint(GetPosition().x+20, GetPosition().y+20 ), wxSize( g_S57_extradialog_sx, g_S57_extradialog_sy ) );
     ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
     ExtraObjInfoDlg->SetColorScheme();
+
+#ifdef __OCPN__ANDROID__
+    ExtraObjInfoDlg->SetSize(GetSize().x - 40, GetSize().y - 40);
+#endif
+
     ExtraObjInfoDlg->Show(true);
 }
 
