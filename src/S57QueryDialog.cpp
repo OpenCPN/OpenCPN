@@ -120,8 +120,8 @@ void S57QueryDialog::RecalculateSize( void )
     }
     
     wxSize dsize = GetParent()->GetClientSize();
-    esize.y = wxMin(esize.y, dsize.y - (6 * GetCharHeight()));
-    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    esize.y = wxMin(esize.y, dsize.y - (1 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetSize(esize);
     
     wxSize fsize = GetSize();
