@@ -442,7 +442,7 @@ void MarkInfoDlg::Create()
     m_textDescription->SetMinSize( wxSize( -1, 80 ) );
     bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
 
-    m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _("..."),  wxDefaultPosition, wxSize( 20, -1 ), 0 );
+    m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _T("..."),  wxDefaultPosition, wxSize( 20, -1 ), 0 );
     bSizer14->Add( m_buttonExtDescription, 0, wxALL | wxEXPAND, 5 );
 
     bSizerTextProperties->Add( bSizer14, 1, wxEXPAND, 5 );
