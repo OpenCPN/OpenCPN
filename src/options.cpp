@@ -4799,7 +4799,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
-    
+ 
+#ifndef __OCPN__ANDROID__    
     // MultiChart selection panel 
     wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
     wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
@@ -4825,6 +4826,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
     
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+#endif
     
   } else {
       
@@ -4923,6 +4925,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, inputFlags);
+
+#ifndef __OCPN__ANDROID__    
     
         // MultiChart selection panel 
     wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
@@ -4950,8 +4954,9 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
 
+#endif
   }
- 
+
 }
 
 void options::CreatePanel_Units(size_t parent, int border_size,
@@ -6171,12 +6176,14 @@ void options::OnCanvasConfigSelectClick( int ID, bool selected)
 {
     switch(ID){
         case ID_SCREENCONFIG1:
-            m_sconfigSelect_twovertical->SetSelected(false);
+            if(m_sconfigSelect_twovertical)
+                m_sconfigSelect_twovertical->SetSelected(false);
             m_screenConfig = 0;
             break;
 
         case ID_SCREENCONFIG2:
-            m_sconfigSelect_single->SetSelected(false);
+            if(m_sconfigSelect_single)
+                m_sconfigSelect_single->SetSelected(false);
             m_screenConfig = 1;
             break;
     }
@@ -6196,12 +6203,16 @@ void options::SetInitialSettings(void) {
   switch(g_canvasConfig){
       case 0:
       default:
-          m_sconfigSelect_single->SetSelected(true);
-          m_sconfigSelect_twovertical->SetSelected(false);
+          if(m_sconfigSelect_single)
+            m_sconfigSelect_single->SetSelected(true);
+          if(m_sconfigSelect_twovertical)
+            m_sconfigSelect_twovertical->SetSelected(false);
           break;
       case 1:
-          m_sconfigSelect_single->SetSelected(false);
-          m_sconfigSelect_twovertical->SetSelected(true);
+          if(m_sconfigSelect_single)
+            m_sconfigSelect_single->SetSelected(false);
+          if(m_sconfigSelect_twovertical)
+            m_sconfigSelect_twovertical->SetSelected(true);
           break;
   }
   m_screenConfig = g_canvasConfig;
@@ -8428,10 +8439,10 @@ void options::DoOnPageChange(size_t page) {
   lastPage = i;
 
   if (0 == i) {  // Display
-//     if(m_sconfigSelect_single)
-//        m_sconfigSelect_single->Refresh( true );
-//     if(m_sconfigSelect_twovertical)
-//        m_sconfigSelect_twovertical->Refresh( true );
+     if(m_sconfigSelect_single)
+        m_sconfigSelect_single->Refresh( true );
+     if(m_sconfigSelect_twovertical)
+        m_sconfigSelect_twovertical->Refresh( true );
   }
   
   //    User selected Chart Page?
