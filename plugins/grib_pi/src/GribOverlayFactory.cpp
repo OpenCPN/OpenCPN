@@ -264,7 +264,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
         GdkScreen *screen = gdk_screen_get_default();
         m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) / wxGetDisplaySize().x;
 #else
-        m_pixelMM = (double)wxGetDisplaySizeMM().x / wxGetDisplaySize().x;
+        m_pixelMM = (double)PlugInGetDisplaySizeMM() / wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y);
 #endif
          m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
     }
@@ -2391,6 +2391,8 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
     if(m_Settings.Settings[settings].m_iBarbedColour == 1)
         arrowColor = GetGraphicColor(settings, vkn);
 
+    float penWidth = .4 / m_pixelMM;
+    
     if( m_pdc ) {
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
@@ -2404,7 +2406,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
 #ifdef ocpnUSE_GL
     else{
         if(m_oDC){
-            wxPen pen( arrowColor, 2 );
+            wxPen pen( arrowColor, penWidth );
             m_oDC->SetPen( pen );
         }
         else
