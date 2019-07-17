@@ -2233,82 +2233,6 @@ bool MyApp::OnInit()
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( );
     if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
-#if 0        
-<<<<<<< HEAD
-        bDBUpdateInProgress = true;
-
-        if( ChartDirArray.GetCount() ) {
-//              Create and Save a new Chart Database based on the hints given in the config file
-
-            /*
-             wxString msg1(_("OpenCPN needs to update the chart database from config file entries...."));
-
-             OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),wxICON_INFORMATION | wxOK );
-             int dlg_ret;
-             dlg_ret = mdlg.ShowModal();
-             */
-            delete ChartData;
-            ChartData = new ChartDB( );
-
-            wxString line( _("Rebuilding chart database from configuration file entries...") );
-            /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
-             * to be localized properly. See {wxWidgets}src/generic/progdlgg.cpp:190 */
-            wxString dummy1 =  _("Elapsed time : ");
-            wxString dummy1a = _("Elapsed time:");
-            wxString dummy2 =  _("Estimated time : ");
-            wxString dummy2a = _("Estimated time:");
-            wxString dummy3 =  _("Remaining time : ");
-            wxString dummy3a = _("Remaining time:");
-            wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
-                    NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
-
-            ChartData->Create( ChartDirArray, pprog );
-            ChartData->SaveBinary(ChartListFileName);
-
-            delete pprog;
-        }
-
-        else            // No chart database, no config hints, so bail to Options....
-        {
-            wxLogMessage(
-                    _T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:")
-                            + ChartListFileName );
-
-            wxString msg1(
-                    _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
-
- ///           OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
-
-
-///            gFrame->DoOptionsDialog();
-
-            b_SetInitialPoint = true;
-
-        }
-
-        bDBUpdateInProgress = false;
-
-        //    As a favor to new users, poll the database and
-        //    move the initial viewport so that a chart will come up.
-
-        if( b_SetInitialPoint ) {
-            double clat, clon;
-            if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon, CHART_FAMILY_RASTER ) ) {
-                gLat = clat;
-                gLon = clon;
-                gFrame->ClearbFollow();
-            } else {
-                if( ChartData->GetCentroidOfLargestScaleChart( &clat, &clon,
-                        CHART_FAMILY_VECTOR ) ) {
-                    gLat = clat;
-                    gLon = clon;
-                    gFrame->ClearbFollow();
-                }
-            }
-        }
-
-=======
-#endif
         g_bNeedDBUpdate = true;
     }
 
@@ -3303,7 +3227,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            cc->ApplyCanvasConfig(g_canvasConfigArray.Item(1));
            
            cc->SetDisplaySizeMM(g_display_size_mm);
-           cc->SetToolbarOrientation( wxTB_HORIZONTAL/*g_maintoolbar_orient*/);
+           cc->SetToolbarOrientation( g_maintoolbar_orient); //wxTB_HORIZONTAL
            cc->ConfigureChartBar();
            cc->SetColorScheme( global_color_scheme );
            cc->SetShowGPS( true );
@@ -7601,7 +7525,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if(pConfig && pConfig->IsChangesFileDirty()){
             wxStopWatch update_sw;
             pConfig->UpdateNavObj( true );
-            wxString msg = wxString::Format(_("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
+            wxString msg = wxString::Format(_T("OpenCPN periodic navobj update took %ld ms."), update_sw.Time());
             wxLogMessage( msg );
             qDebug() << msg.mb_str();
         }
