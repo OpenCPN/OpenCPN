@@ -211,6 +211,11 @@ public:
     void SetupOpenGL();
 
 protected:
+    void RenderS57TextOverlay( ViewPort &VPoint);
+    void RenderMBTilesOverlay( ViewPort &VPoint);
+    void RenderScene( bool bRenderCharts = true, bool bRenderOverlays = true);
+    
+
     void RenderGLAlertMessage();
 
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
@@ -227,7 +232,6 @@ protected:
     void RenderNoDTA(ViewPort &vp, ChartBase *chart);
     void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 
-    void RenderOverlayObjects(ocpnDC &dc, const OCPNRegion &rect_region);
     void DrawFloatingOverlayObjects( ocpnDC &dc );
     void DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp);
 
@@ -240,7 +244,6 @@ protected:
     
     void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
     
-    void RenderScene();
     void RendertoTexture(GLint tex);
     
     void fboFade(GLint tex0, GLint tex1);

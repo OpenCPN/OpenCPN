@@ -4766,92 +4766,13 @@ void glChartCanvas::Render()
         RenderCharts(m_gldc, screen_region);
     }
 
-       //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
-    if( VPoint.b_quilt ) {
-        if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+    // Done with base charts.
+    // Now the overlays
+    
+    RenderS57TextOverlay( VPoint );
+    RenderMBTilesOverlay( VPoint );
 
-            ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
-            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
-                //        Clear the text Global declutter list
-                if(chart){
-                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
-                    if(ChPI)
-                        ChPI->ClearPLIBTextList();
-                    else
-                        ps52plib->ClearTextList();
-                }
-                
-                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
-                ViewPort vpx = VPoint;
-                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
-                
-                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-                RenderQuiltViewGLText( vpx, screen_region );
-            }
-        }
-    }
-
-    // Render MBTiles as overlay
-    std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
-    unsigned int im = stackIndexArray.size();
-    // XXX should
-    // assert(!VPoint.b_quilt && im == 0)
-    if( VPoint.b_quilt && im > 0 ) {
-        bool regionVPBuilt = false;
-        OCPNRegion screen_region;
-        LLRegion screenLLRegion;
-        LLBBox screenBox;
-        ViewPort vp;
-
-        std::vector<int> tiles_to_show;
-        for( unsigned int is = 0; is < im; is++ ) {
-            const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
-                continue;
-            }
-            if(cte.GetChartType() == CHART_TYPE_MBTILES){
-                tiles_to_show.push_back(stackIndexArray[is]);
-                if(!regionVPBuilt){
-                    screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-                    screenLLRegion = VPoint.GetLLRegion( screen_region );
-                    screenBox = screenLLRegion.GetBox();
-
-                    vp = VPoint;
-                    wxPoint p;
-                    p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
-                    VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
-                    
-                    regionVPBuilt = true;
-                }
-
-            }
-        }
-
-        // We need to show the tilesets in reverse order to have the largest scale on top
-        for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
-                            rit != tiles_to_show.rend(); ++rit) {
-            ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
-            ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
-            if(pcmbt){
-                pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
-                
-                //Light up the piano key if the chart was rendered
-                std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
-                bool bfound = false;
-            
-                if(std::find(piano_active_array_tiles.begin(), piano_active_array_tiles.end(), *rit) != piano_active_array_tiles.end()) {
-                    bfound = true;
-                }
-
-                if(!bfound){
-                    piano_active_array_tiles.push_back( *rit );
-                    m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
-                }
-            }
-        }
-    }
- 
-     
+    
     // Render static overlay objects
     for(OCPNRegionIterator upd ( screen_region ); upd.HaveRects(); upd.NextRect()) {
          LLRegion region = VPoint.GetLLRegion(upd.GetRect());
@@ -4898,20 +4819,6 @@ void glChartCanvas::Render()
             barPoints[3].x = 0; barPoints[3].y = rect_pix;
     
             gldc.DrawPolygon( 4, barPoints, 0, 0, 1, 0);
-#if 0            
-            wxColour colour = GetGlobalColor(_T("BLUE4"));
-            glColor3ub(colour.Red(), colour.Green(), colour.Blue() );
-                
-            float rect_pix = m_pParentCanvas->m_focus_indicator_pix;
-
-            int xw = m_pParentCanvas->GetClientSize().x;
-            glBegin(GL_QUADS);
-            glVertex2i(0, 0);
-            glVertex2i(xw, 0);
-            glVertex2i(xw, rect_pix);
-            glVertex2i(0, rect_pix);
-            glEnd();
-#endif            
         }
     }
 
@@ -5043,6 +4950,96 @@ void glChartCanvas::Render()
     n_render++;
 }
 
+void glChartCanvas::RenderS57TextOverlay( ViewPort &VPoint)
+{
+    //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
+    if( VPoint.b_quilt ) {
+        if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+
+            ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
+            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI)
+                        ChPI->ClearPLIBTextList();
+                    else
+                        ps52plib->ClearTextList();
+                }
+                
+                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
+                ViewPort vpx = VPoint;
+                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
+                
+                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                RenderQuiltViewGLText( vpx, screen_region );
+            }
+        }
+    }
+}
+
+void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
+{
+       // Render MBTiles as overlay
+    std::vector<int> stackIndexArray = m_pParentCanvas->m_pQuilt->GetExtendedStackIndexArray();
+    unsigned int im = stackIndexArray.size();
+    // XXX should
+    // assert(!VPoint.b_quilt && im == 0)
+    if( VPoint.b_quilt && im > 0 ) {
+        bool regionVPBuilt = false;
+        OCPNRegion screen_region;
+        LLRegion screenLLRegion;
+        LLBBox screenBox;
+        ViewPort vp;
+
+        std::vector<int> tiles_to_show;
+        for( unsigned int is = 0; is < im; is++ ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
+            if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                tiles_to_show.push_back(stackIndexArray[is]);
+                if(!regionVPBuilt){
+                    screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                    screenLLRegion = VPoint.GetLLRegion( screen_region );
+                    screenBox = screenLLRegion.GetBox();
+
+                    vp = VPoint;
+                    wxPoint p;
+                    p.x = VPoint.pix_width / 2;  p.y = VPoint.pix_height / 2;
+                    VPoint.GetLLFromPix( p, &vp.clat, &vp.clon);
+                    
+                    regionVPBuilt = true;
+                }
+
+            }
+        }
+
+        // We need to show the tilesets in reverse order to have the largest scale on top
+        for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
+                            rit != tiles_to_show.rend(); ++rit) {
+            ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+            ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
+            if(pcmbt){
+                pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);
+                
+                //Light up the piano key if the chart was rendered
+                std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
+                bool bfound = false;
+            
+                if(std::find(piano_active_array_tiles.begin(), piano_active_array_tiles.end(), *rit) != piano_active_array_tiles.end()) {
+                    bfound = true;
+                }
+
+                if(!bfound){
+                    piano_active_array_tiles.push_back( *rit );
+                    m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
+                }
+            }
+        }
+    }
+}
 
 
 void glChartCanvas::RenderCanvasBackingChart( ocpnDC &dc, OCPNRegion valid_region)
@@ -5576,7 +5573,7 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 }
 
     
-    void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x, float post_y)
+void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x, float post_y)
 {
     //qDebug() << "FastZoom" << factor << post_x << post_y << m_nRun;
     
@@ -5803,6 +5800,10 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             m_cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
             m_cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
 
+            // Render the full charts with overlay objects onto the frame buffer.
+            SetCurrent(*m_pcontext);
+            RenderScene( );
+
             zoom_inc = 1.0;
             break;
 
@@ -5865,7 +5866,6 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
 
         case GestureFinished:{
-//<<<<<<< HEAD
 //            qDebug() << "finish totalzoom" << total_zoom_val << projected_scale;
 
             float cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
@@ -6526,7 +6526,7 @@ void glChartCanvas::RenderColorRect(wxRect r, wxColor &color)
 #endif
 }
 
-void glChartCanvas::RenderScene()
+void glChartCanvas::RenderScene( bool bRenderCharts, bool bRenderOverlays )
 {
     //qDebug() << "RenderScene";
     
@@ -6572,41 +6572,20 @@ void glChartCanvas::RenderScene()
     m_fbo_offsety = 0;
     m_fbo_swidth = sx;
     m_fbo_sheight = sy;
-    RenderCharts(gldc, screen_region);
-    //RenderOverlayObjects(gldc, screen_region);
-                        
-    // Disable Render to FBO
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-
-
-    //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
-#ifdef USE_S57        
-    if( VPoint.b_quilt ) {
-        if(m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
-
-            ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
-            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
-                //        Clear the text Global declutter list
-                if(chart){
-                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
-                    if(ChPI)
-                        ChPI->ClearPLIBTextList();
-                    else
-                        ps52plib->ClearTextList();
-                }
-                
-                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
-                ViewPort vpx = VPoint;
-                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
-                
-                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
-                RenderQuiltViewGLText( vpx, screen_region );
-            }
-        }
+    
+    if(bRenderCharts)
+        RenderCharts(gldc, screen_region);
+    
+    if(bRenderOverlays){
+        RenderS57TextOverlay( m_pParentCanvas->VPoint );
+        RenderMBTilesOverlay( m_pParentCanvas->VPoint );
+        DrawStaticRoutesTracksAndWaypoints( m_pParentCanvas->VPoint );
+        DrawDynamicRoutesTracksAndWaypoints( VPoint );
+        DrawFloatingOverlayObjects( m_gldc );
     }
-#endif
-
+    
+    // All done, so disable Render to FBO
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         
 #endif
         
