@@ -33,6 +33,8 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
+#include <wx/colourdata.h>
+
 #if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
  #include <wx/timectrl.h>
@@ -228,6 +230,53 @@ enum {
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
+
+
+
+class WXDLLIMPEXP_CORE OCPNColourPickerCtrl : public wxBitmapButton
+{
+public:
+    OCPNColourPickerCtrl();
+    OCPNColourPickerCtrl(wxWindow *parent,
+                   wxWindowID id,
+                   const wxColour& initial = *wxBLACK,
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxDefaultSize,
+                   long style = 0,
+                   const wxValidator& validator = wxDefaultValidator,
+                   const wxString& name = _T(""));
+
+    bool Create(wxWindow *parent,
+                wxWindowID id,
+                const wxColour& initial = *wxBLACK,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = 0,
+                const wxValidator& validator = wxDefaultValidator,
+                const wxString& name = _T(""));
+
+    void OnButtonClick(wxCommandEvent& WXUNUSED(ev));
+    void InitColourData();
+    void SetColour( wxColour& c);
+    wxColour GetColour( void );
+    
+protected:
+    virtual void UpdateColour();
+    wxSize DoGetBestSize() const;
+
+private:
+    wxBitmap m_bitmap;
+    wxColour m_colour;
+    wxColourData ms_data;
+
+};
+
+
+
+
+
+
+
 
 class Uncopyable {
  protected:
@@ -562,9 +611,9 @@ class options : private Uncopyable,
   wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
-  wxColourPickerCtrl *m_colourOwnshipRangeRingColour;
+  OCPNColourPickerCtrl *m_colourOwnshipRangeRingColour;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
-  wxColourPickerCtrl *m_colourTrackLineColour;;
+  OCPNColourPickerCtrl *m_colourTrackLineColour;;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
   wxCheckBox *pSogCogFromLLCheckBox;
@@ -581,7 +630,7 @@ class options : private Uncopyable,
 #endif  
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
-  wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
+  OCPNColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxChoice *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;

@@ -3017,7 +3017,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   wxStaticText* colourText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Colour"));
   radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  m_colourOwnshipRangeRingColour = new wxColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED,
+  m_colourOwnshipRangeRingColour = new OCPNColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED,
                   wxDefaultPosition, m_colourPickerDefaultSize, 0,  wxDefaultValidator, _T( "ID_COLOUROSRANGECOLOUR" ));
   radarGrid->Add(m_colourOwnshipRangeRingColour, 0, wxALIGN_RIGHT, border_size);
   
@@ -3065,7 +3065,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   wxStaticText* trackColourText =
       new wxStaticText( itemPanelShip, wxID_STATIC, _("Track Colour"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
-  m_colourTrackLineColour = new wxColourPickerCtrl(
+  m_colourTrackLineColour = new OCPNColourPickerCtrl(
       itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, m_colourPickerDefaultSize, 0,
       wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
   hTrackGrid->Add(m_colourTrackLineColour, 1,
@@ -3282,7 +3282,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
       itemPanelRoutes, wxID_STATIC, _("Waypoint Range Ring Colours"));
   waypointradarGrid->Add(waypointrangeringsColour, 1, wxEXPAND | wxALL, 1);
 
-  m_colourWaypointRangeRingsColour = new wxColourPickerCtrl(
+  m_colourWaypointRangeRingsColour = new OCPNColourPickerCtrl(
       itemPanelRoutes, wxID_ANY, *wxRED, wxDefaultPosition, m_colourPickerDefaultSize, 0,
       wxDefaultValidator, _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
@@ -10479,3 +10479,140 @@ void CanvasConfigSelect::OnPaint( wxPaintEvent &event )
 }
 
 #endif  // ocpnUSE_GL
+
+// ============================================================================
+// OCPNColourPickerCtrl implementation
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// OCPNColourPickerCtrl
+// ----------------------------------------------------------------------------
+
+OCPNColourPickerCtrl::OCPNColourPickerCtrl(wxWindow *parent,
+                   wxWindowID id,
+                   const wxColour& initial,
+                   const wxPoint& pos,
+                   const wxSize& size,
+                   long style,
+                   const wxValidator& validator,
+                   const wxString& name)
+{
+    Create(parent, id, initial, pos, size, style, validator, name);
+}
+
+bool OCPNColourPickerCtrl::Create( wxWindow *parent, wxWindowID id,
+                        const wxColour &col, const wxPoint &pos,
+                        const wxSize &size, long style,
+                        const wxValidator& validator, const wxString &name)
+{
+    m_bitmap = wxBitmap( 60, 13 );
+
+    // create this button
+    if (!wxBitmapButton::Create( parent, id, m_bitmap, pos,
+                           size, style | wxBU_AUTODRAW, validator, name ))
+    {
+        wxFAIL_MSG( wxT("OCPNColourPickerCtrl creation failed") );
+        return false;
+    }
+
+    // and handle user clicks on it
+    Connect(GetId(), wxEVT_BUTTON,
+            wxCommandEventHandler(OCPNColourPickerCtrl::OnButtonClick),
+            NULL, this);
+
+    m_colour = col;
+    UpdateColour();
+    InitColourData();
+
+    return true;
+}
+
+void OCPNColourPickerCtrl::InitColourData()
+{
+#if 0    
+    ms_data.SetChooseFull(true);
+    unsigned char grey = 0;
+    for (int i = 0; i < 16; i++, grey += 16)
+    {
+        // fill with grey tones the custom colors palette
+        wxColour colour(grey, grey, grey);
+        ms_data.SetCustomColour(i, colour);
+    }
+#endif    
+}
+
+void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
+{
+#ifdef __OCPN__ANDROID__
+  unsigned int cco = 0;
+  cco |= 0xff;  cco  = cco << 8;
+  cco |= m_colour.Red(); cco = cco << 8; 
+  cco |= m_colour.Green(); cco = cco << 8; 
+  cco |= m_colour.Blue();  
+  unsigned int cc = androidColorPicker( cco);
+
+  wxColour cnew;
+  unsigned char blue = (unsigned char) cc % 256;
+  unsigned char green = (unsigned char) (cc >> 8) % 256;;
+  unsigned char red = (unsigned char) (cc >> 16) % 256;
+  cnew.Set(red, green, blue);
+  
+  SetColour(cnew);
+
+#else    
+    // update the wxColouData to be shown in the dialog
+    ms_data.SetColour(m_colour);
+
+    // create the colour dialog and display it
+    wxColourDialog dlg(this, &ms_data);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+         ms_data = dlg.GetColourData();
+         SetColour(ms_data.GetColour());
+    }
+#endif    
+}
+
+void OCPNColourPickerCtrl::UpdateColour()
+{
+    wxMemoryDC dc(m_bitmap);
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush(m_colour) );
+    dc.DrawRectangle( 0,0,m_bitmap.GetWidth(),m_bitmap.GetHeight() );
+
+
+    dc.SelectObject( wxNullBitmap );
+    SetBitmapLabel( m_bitmap );
+}
+
+void OCPNColourPickerCtrl::SetColour( wxColour& c)
+{
+    m_colour = c;
+    m_bitmap = wxBitmap(GetSize().x - 20, GetSize().y - 20);
+    UpdateColour();
+}
+
+
+wxColour OCPNColourPickerCtrl::GetColour( void )
+{
+    return m_colour;
+}
+
+wxSize OCPNColourPickerCtrl::DoGetBestSize() const
+{
+    wxSize sz(wxBitmapButton::DoGetBestSize());
+#ifdef __WXMAC__
+    sz.y += 6;
+#else
+    sz.y += 2;
+#endif
+    sz.x += 30;
+    if ( HasFlag(wxCLRP_SHOW_LABEL) )
+        return sz;
+
+    // if we have no label, then make this button a square
+    // (like e.g. native GTK version of this control) ???
+    // sz.SetWidth(sz.GetHeight());
+    return sz;
+}
+
