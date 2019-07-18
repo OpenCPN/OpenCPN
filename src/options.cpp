@@ -4662,7 +4662,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
                                   int group_item_spacing) {
   pDisplayPanel = AddPage(parent, _("General"));
 
-  if (!m_bcompact) {
+  if ( !m_bcompact) {
     wxFlexGridSizer* generalSizer = new wxFlexGridSizer(2);
     generalSizer->SetHGap(border_size);
     //    generalSizer->AddGrowableCol( 0, 1 );
@@ -4828,20 +4828,28 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
 #endif
     
-  } else {
-      
+  } else {      // compact follows
+    wxFlexGridSizer* generalSizer = new wxFlexGridSizer(2);
+    generalSizer->SetHGap(border_size);
+    //    generalSizer->AddGrowableCol( 0, 1 );
+    //    generalSizer->AddGrowableCol( 1, 1 );
+    //    pDisplayPanel->SetSizer( generalSizer );
+
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
+    // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     pDisplayPanel->SetSizer(wrapperSizer);
-
-    wxBoxSizer* generalSizer = wrapperSizer;
+    wrapperSizer->Add(generalSizer, 1, wxALL | wxALIGN_CENTER, border_size);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
+    if(!g_useMUI){
     // Nav Mode
-    // generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY,
-    // _("Navigation Mode") ), groupLabelFlags );
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Navigation Mode")),
+        groupLabelFlags);
     wxBoxSizer* boxNavMode = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxNavMode, groupInputFlags);
 
@@ -4859,79 +4867,115 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pCBLookAhead =
         new wxCheckBox(pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode"));
-    boxNavMode->Add(pCBLookAhead, inputFlags);
+    boxNavMode->Add(pCBLookAhead, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 
     // Control Options
-    // generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart
-    // Display") ), groupLabelFlags );
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Chart Display")),
+        groupLabelFlags);
     wxBoxSizer* boxCharts = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxCharts, groupInputFlags);
 
     pCDOQuilting = new wxCheckBox(pDisplayPanel, ID_QUILTCHECKBOX1,
                                   _("Enable Chart Quilting"));
-    boxCharts->Add(pCDOQuilting, inputFlags);
+    boxCharts->Add(pCDOQuilting, verticleInputFlags);
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
                                     _("Preserve scale when switching charts"));
-    boxCharts->Add(pPreserveScale, inputFlags);
+    boxCharts->Add(pPreserveScale, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-
+    }
+    
     // Control Options
+    generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Controls")),
+                      groupLabelFlags);
     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxCtrls, groupInputFlags);
 
     pSmoothPanZoom = new wxCheckBox(pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                     _("Smooth Panning / Zooming"));
-    boxCtrls->Add(pSmoothPanZoom, inputFlags);
-
-#ifdef __OCPN__ANDROID__
-    pSmoothPanZoom->Hide();
-#endif
-
+    boxCtrls->Add(pSmoothPanZoom, verticleInputFlags);
     pEnableZoomToCursor =
         new wxCheckBox(pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor"));
     pEnableZoomToCursor->SetValue(FALSE);
-    boxCtrls->Add(pEnableZoomToCursor, inputFlags);
+    boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
 #ifdef __OCPN__ANDROID__
+    pSmoothPanZoom->Hide();
     pEnableZoomToCursor->Hide();
 #endif
 
-#ifndef __OCPN__ANDROID__
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-#endif
 
+    if(!g_useMUI){
     // Display Options
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Display Features")),
+        groupLabelFlags);
     wxBoxSizer* boxDisp = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDisp, groupInputFlags);
 
     pSDisplayGrid =
         new wxCheckBox(pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid"));
-    boxDisp->Add(pSDisplayGrid, inputFlags);
+    boxDisp->Add(pSDisplayGrid, verticleInputFlags);
 
     pCDOOutlines = new wxCheckBox(pDisplayPanel, ID_OUTLINECHECKBOX1,
                                   _("Show Chart Outlines"));
-    boxDisp->Add(pCDOOutlines, inputFlags);
+    boxDisp->Add(pCDOOutlines, verticleInputFlags);
 
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
-    boxDisp->Add(pSDepthUnits, inputFlags);
-
-#ifndef __OCPN__ANDROID__    
+    boxDisp->Add(pSDepthUnits, verticleInputFlags);
+      
+    }
     
-        // MultiChart selection panel 
+    // CUSTOMIZATION - LIVE ETA OPTION
+    // -------------------------------
+    // Add a checkbox to activate live ETA option in status bar, and
+    // Add a text field to set default boat speed (for calculation when
+    // no GPS or when the boat is at the harbor).
+      
+    // Spacer
+    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, border_size * 4);
+    
+    // New menu status bar
+    generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar")),
+                      groupLabelFlags);
+    wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
+    generalSizer->Add(boxDispStatusBar, groupInputFlags);
+      
+    // Add option for live ETA
+    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA at Cursor"));
+    boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
+      
+    // Add text input for default boat speed
+    // (for calculation, in case GPS speed is null)
+    wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
+    boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
+    defaultBoatSpeedSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
+                               groupLabelFlagsHoriz);
+    pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
+                                        wxSize(50, -1), wxTE_RIGHT);
+    defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL, group_item_spacing);
+    
+    // --------------------------------------
+    // END OF CUSTOMIZATION - LIVE ETA OPTION
+ 
+#ifndef __OCPN__ANDROID__    
+    // MultiChart selection panel 
     wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
     wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
-    generalSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
+    wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
     
     //  The standard screen configs...
     wxString iconDir = g_Platform->GetSharedDataDir();
@@ -4953,8 +4997,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
     
     itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-
 #endif
+
   }
 
 }
