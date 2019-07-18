@@ -478,6 +478,9 @@ void MUIBar::Init()
 {
     m_zinButton = NULL;
     m_zoutButton = NULL;
+    m_followButton = NULL;
+    m_menuButton = NULL;
+    
     m_canvasOptions = NULL;
     m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
     m_backcolorString = _T("GREY3");
@@ -545,7 +548,8 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
-        
+ #ifndef __OCPN__ANDROID__        
+       
         m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 0, wxSHAPED);
     
@@ -561,16 +565,12 @@ void MUIBar::CreateControls()
         barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL );
         barSizer->AddSpacer(5);
         
-        
-//         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-//         barSizer->Add(pl1, 1);
-        
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
                                         iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 0, wxSHAPED);
         
         barSizer->AddSpacer(2);
-        
+#endif        
         m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 0,  wxSHAPED);
     }
@@ -582,7 +582,8 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
-        
+
+#ifndef __OCPN__ANDROID__        
         m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 1, wxSHAPED);
         
@@ -590,22 +591,13 @@ void MUIBar::CreateControls()
         barSizer->Add(m_zoutButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
-#if 0        
-        //  Scale 
-        m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
-        m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
-        barSizer->Add(m_scaleTextBox, 1, wxALIGN_CENTER_VERTICAL );
-        
-#endif
-
-//         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-//         barSizer->Add(pl1, 1);
         
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
                                         iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
+#endif        
         
         m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
@@ -709,12 +701,14 @@ void MUIBar::UpdateDynamicValues()
     else
         scaleString.Printf(_T("1:%4.1f MM"), scale / 1e6);
     
-    m_scaleTextBox->SetLabel(scaleString);
+    if(m_scaleTextBox)
+        m_scaleTextBox->SetLabel(scaleString);
 }
 
 void MUIBar::SetFollowButtonState( int state )
 {
-    m_followButton->SetState( state );
+    if(m_followButton)
+        m_followButton->SetState( state );
 }
 
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
