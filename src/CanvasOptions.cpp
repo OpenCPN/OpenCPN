@@ -95,7 +95,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     m_sWindow->SetScrollRate(0, 5);
     
     int border_size = 4;
-    int group_item_spacing = 0;
+    int group_item_spacing = 2;
     int interGroupSpace = border_size * 2;
     
     wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Expand().Border(wxALL, group_item_spacing);
