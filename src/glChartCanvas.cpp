@@ -4652,11 +4652,10 @@ void glChartCanvas::Render()
                 m_fbo_swidth = sx;
                 m_fbo_sheight = sy;
 
-                //glClearColor(0.f, 0.f, 0.5f, 1.0f);
-                wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-                glClearColor( color.Red() / 256., color.Green() / 256. , color.Blue()/ 256. ,1.0 );
-                
-                glClear(GL_COLOR_BUFFER_BIT);
+                // Do not need to clear screen, especially annoying on pinch zoom
+                //wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+                //glClearColor( color.Red() / 256., color.Green() / 256. , color.Blue()/ 256. ,1.0 );
+                //glClear(GL_COLOR_BUFFER_BIT);
             
                 RenderCharts(m_gldc, screen_region);
 
