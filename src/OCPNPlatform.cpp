@@ -1794,7 +1794,7 @@ long OCPNPlatform::GetDefaultToolbarOrientation()
 #ifndef __OCPN__ANDROID__
     return wxTB_VERTICAL;
 #else
-    return wxTB_HORIZONTAL;
+    return wxTB_VERTICAL;
 #endif    
 }
 
