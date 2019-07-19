@@ -4150,10 +4150,12 @@ void glChartCanvas::RenderGLAlertMessage()
         m_gldc.SetFont( *pfont);
 
         int w, h;
-        m_gldc.GetTextExtent( msg, &w, &h);
+        wxScreenDC sdc;
+        sdc.GetTextExtent(msg, &w, &h, NULL, NULL, pfont);
+
         h += 2;
         w += 4;
-        int yp = m_pParentCanvas->VPoint.pix_height - 20 - h;
+        int yp = m_pParentCanvas->VPoint.pix_height - GetChartbarHeight() - h - (h/4);
         
         wxRect sbr = m_pParentCanvas->GetScaleBarRect();
         int xp = sbr.x+sbr.width + 5;
