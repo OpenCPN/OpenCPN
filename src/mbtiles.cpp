@@ -1001,7 +1001,6 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
     }
     else{
         glEnable(GL_TEXTURE_2D);
-        glColor4f(1, 1, 1, 1);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1052,7 +1051,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
     
     int viewZoom = m_maxZoom;
     double zoomMod = 2.0;              // decrease to get more detail, nominal 4?, 2 works OK for NOAA.

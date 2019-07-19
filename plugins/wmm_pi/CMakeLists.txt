@@ -49,13 +49,14 @@ SET(SRC_WMM
     src/EGM9615.h
     src/WmmUIDialog.h
     src/WmmUIDialog.cpp
-    src/TexFont.cpp
-    src/TexFont.h
+    src/pi_TexFont.cpp
+    src/pi_TexFont.h
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
     src/pi_shaders.cpp
     src/pi_shaders.h
-	)
+    )
+
 
 IF(WIN32)
 SET(SRC_JSON

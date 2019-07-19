@@ -465,7 +465,7 @@ IF(QT_ANDROID)
   SET(USE_GLES2 ON )
 
   SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-  add_subdirectory(src/glshim)
+  #add_subdirectory(src/glshim)
   
 ENDIF(QT_ANDROID)
 

@@ -829,6 +829,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glTexParameteri( texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
+#ifndef USE_ANDROID_GLES2    
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -840,7 +841,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
-
+#else
+    glTexImage2D(texture_format, 0, GL_RGBA, tw, th,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
+    
     delete [] data;
 
     pGO->m_iTexture = texture;
@@ -1858,7 +1863,9 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
                 m_pdc->DrawBitmap(label, p.x, p.y, true);
     } else {
 #ifdef ocpnUSE_GL
-		glEnable( GL_BLEND );
+#ifndef USE_ANDROID_GLES2
+        
+        glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glColor4ub(back_color.Red(), back_color.Green(),
 					back_color.Blue(), m_Settings.m_iOverlayTransparency);
@@ -1893,6 +1900,38 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
         glEnable(GL_TEXTURE_2D);
         m_TexFontNumbers.RenderString( label, p.x, p.y );
         glDisable(GL_TEXTURE_2D);
+#else
+        
+        #ifdef __WXQT__
+        wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+        #else
+        wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        #endif
+        
+        wxString label = getLabelString(value, settings);
+
+        m_oDC->SetFont(font);
+        int w, h;
+        m_oDC->GetTextExtent(label, &w, &h);
+        
+        int label_offsetx = 5, label_offsety = 1;
+        int x = p.x - label_offsetx, y = p.y - label_offsety;
+        w += 2*label_offsetx, h += 2*label_offsety;
+        
+        
+        m_oDC->SetBrush( wxBrush( back_color ) );
+        m_oDC->DrawRoundedRectangle( x, y, w, h, 0);
+            
+            /* draw bounding rectangle */
+        m_oDC->SetPen( wxPen( wxColour(0,0,0), 1 ) );
+        m_oDC->DrawLine(x,   y,   x+w, y);
+        m_oDC->DrawLine(x+w, y,   x+w, y+h);
+        m_oDC->DrawLine(x+w, y+h, x,   y+h);
+        m_oDC->DrawLine(x  , y+h, x,   y);
+        
+        m_oDC->DrawText(label, p.x, p.y);
+        
+#endif         
 #endif
 	}
 }
@@ -2360,8 +2399,8 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-        glLineWidth(arrowWidth);
+//         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+//         glLineWidth(arrowWidth);
     }
 
     drawLineBuffer(m_DoubleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2378,8 +2417,8 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-        glLineWidth(arrowWidth);
+//         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+//         glLineWidth(arrowWidth);
     }
 
     drawLineBuffer(m_SingleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2409,8 +2448,8 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
             wxPen pen( arrowColor, penWidth );
             m_oDC->SetPen( pen );
         }
-        else
-            glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+//         else
+//             glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
     }
 #endif
 

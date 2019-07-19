@@ -1062,9 +1062,9 @@ void ChartCanvas::SetupGlCanvas( )
                 //QGLContext *pctx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetQGLContext();
                 //qDebug() << "pctx: " << pctx;
                 
-                m_glcc = new glChartCanvas(this, NULL, gFrame->GetPrimaryCanvas()->GetglCanvas());
-                wxGLContext *pctx = new wxGLContext(m_glcc);
-                m_glcc->SetContext(pctx);
+//                m_glcc = new glChartCanvas(this, NULL, gFrame->GetPrimaryCanvas()->GetglCanvas());
+//                wxGLContext *pctx = new wxGLContext(m_glcc);
+//                m_glcc->SetContext(pctx);
  
                 //g_pGLcontext->SetCurrent(m_glcc);
                 

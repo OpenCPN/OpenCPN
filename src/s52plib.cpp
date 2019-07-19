@@ -3286,7 +3286,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                 // Normalize the sybmol texture coordinates against the next higher POT size
                 wxSize size = ChartSymbols::GLTextureSize();
-#if 1
+#if 0
                                 int i=1;
                                 while(i < size.x) i <<= 1;
                                 int rb_x = i;

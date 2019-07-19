@@ -23,8 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <wx/wx.h>
-// #include <GL/gl.h>
-// #include <GL/glu.h>
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -36,7 +34,10 @@
 #include "../glshim/include/GLES/gl2.h"
 #include "linmath.h"
 #include "pi_shaders.h"
+#else
+#include <GL/gl.h>
 #endif
+
 
 TexFont::TexFont( )
 {
@@ -305,10 +306,8 @@ void TexFont::RenderGlyph( int c )
     
     // For some reason, glDrawElements is busted on Android
     // So we do this a hard ugly way, drawing two triangles...
-    #if 0
-    GLushort indices1[] = {0,1,3,2}; 
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
-    #else
+    //GLushort indices1[] = {0,1,3,2}; 
+    //glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
     
     float co1[8];
     co1[0] = coords[0];
@@ -335,14 +334,13 @@ void TexFont::RenderGlyph( int c )
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
-    
+#endif          //GLES2   
     
     
     
     m_dx += tgic.advance;
-    
-#endif    
 }
+
 
 void TexFont::RenderString( const char *string, int x, int y )
 {
@@ -402,5 +400,3 @@ void TexFont::RenderString( const wxString &string, int x, int y )
 {
     RenderString((const char*)string.ToUTF8(), x, y);
 }
-
-#endif     //#ifdef ocpnUSE_GL

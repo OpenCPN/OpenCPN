@@ -570,13 +570,15 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
 }
 
 #ifdef __OCPN__ANDROID__
-glChartCanvas::glChartCanvas( wxWindow *parent, QGLContext *pctx, wxGLCanvas *share ) :
+#if 0
+    glChartCanvas::glChartCanvas( wxWindow *parent, QGLContext *pctx, wxGLCanvas *share ) :
     wxGLCanvas( parent, wxID_ANY, pctx, share, wxDefaultPosition, wxSize( 256, 256 ),
                         wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
 
 {    
     Init();
 }
+#endif
 #endif
 
 void glChartCanvas::Init()
@@ -2526,7 +2528,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glEnable( GL_LINE_SMOOTH );
         if( g_GLOptions.m_GLPolygonSmoothing )
             glEnable( GL_POLYGON_SMOOTH );
-        glEnableClientState(GL_VERTEX_ARRAY);
     
         if( m_pParentCanvas->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
         {
@@ -2620,6 +2621,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             }
 
             /* establish ship color */
+/*
             if( m_pParentCanvas->m_pos_image_user )
                 glColor4ub(255, 255, 255, 255);
             else if( SHIP_NORMAL == m_pParentCanvas->m_ownship_state )
@@ -2628,7 +2630,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 glColor4ub(255, 255, 0, 255);
             else
                 glColor4ub(128, 128, 128, 255);
-
+*/
             float scale_factor_y = 1.0;
             float scale_factor_x = 1.0;
         
@@ -2665,7 +2667,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, ownship_tex);
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   
                 //We choose to render the ownship bitmap at roughly the same size( in pixels ) as the DC mode renderer.
                 // For ultra-high definition displays, we clamp the actual on-screen size to be no smaller than 7.0 mm
@@ -2705,7 +2706,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, ownship_tex);
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
             
                 float nominal_ownship_size_pixels_y = 84; 
                 float nominal_ownship_size_pixels_x = 22; 

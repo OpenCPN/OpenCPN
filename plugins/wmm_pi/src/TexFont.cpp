@@ -210,7 +210,7 @@ void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 void TexFont::RenderGlyph( wchar_t c )
 {
     /* degree symbol */
-    if(c == 0x00B0)
+    xif(c == 0x00B0)
         c = DEGREE_GLYPH;
     else
     if( c < MIN_GLYPH || c >= MAX_GLYPH) {
