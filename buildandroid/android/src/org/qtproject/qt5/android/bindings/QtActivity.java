@@ -178,6 +178,12 @@ import android.os.Message;
 import android.os.Handler;
 import android.support.v4.content.FileProvider;
 
+import android.widget.TextView;
+import android.graphics.Color;
+import android.text.style.ForegroundColorSpan;
+import android.text.SpannableString;
+import android.view.SubMenu;
+
 
 import org.opencpn.opencpn.R;
 
@@ -5605,6 +5611,20 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
         super.onPrepareOptionsMenu(menu);
+
+
+        // Fix action bar menu text color on some late-model Android devices
+        for (int i = 0; i <  menu.size(); i++){
+            MenuItem menuItem = menu.getItem(i);
+            if(menuItem != null){
+                CharSequence menuTitle = menuItem.getTitle();
+                SpannableString styledMenuTitle = new SpannableString(menuTitle);
+                styledMenuTitle.setSpan(new ForegroundColorSpan(Color.WHITE), 0, menuTitle.length(), 0);
+                menuItem.setTitle(styledMenuTitle);
+            }
+        }
+
+
         return optionsMenuEnabled;
     }
     public boolean super_onPrepareOptionsMenu(Menu menu)
