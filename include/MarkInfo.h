@@ -40,7 +40,6 @@
 #include <wx/clrpicker.h>
 #include <wx/odcombo.h>
 #include <wx/gbsizer.h>
-#include <wx/spinctrl.h>
 #include "LinkPropDlg.h"
 #include "Hyperlink.h"
 #include <wx/htmllbox.h>
@@ -250,7 +249,7 @@ class MarkInfoDlg : public wxFrame
         wxPanel*                m_panelExtendedProperties;
         wxSimpleHtmlListBox*    m_htmlList;
         wxSize                  m_defaultClientSize;
-        wxSpinCtrl*             m_SpinWaypointRangeRingsNumber;
+        wxChoice*               m_ChoiceWaypointRangeRingsNumber;
         wxStaticBitmap*         m_bitmapIcon;
         wxStaticBoxSizer*       sbS_Description;
         wxStaticBoxSizer*       sbSizerExtProperties;
@@ -311,7 +310,7 @@ class MarkInfoDlg : public wxFrame
         void OnShowWaypointNameSelectBasic( wxCommandEvent& event );
         void OnShowWaypointNameSelectExt( wxCommandEvent& event );
         void OnSelectScaMinExt( wxCommandEvent& event );
-        void OnWptRangeRingsNoChange( wxSpinEvent& event );
+        void OnWptRangeRingsNoChange( wxCommandEvent& event );
         void OnCopyPasteLatLon( wxCommandEvent& event );
         void OnWaypointRangeRingSelect( wxCommandEvent& event );
         void m_htmlListContextMenuBtn( wxCommandEvent &event );

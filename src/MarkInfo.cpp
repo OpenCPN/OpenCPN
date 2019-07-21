@@ -259,7 +259,7 @@ BEGIN_EVENT_TABLE( MarkInfoDlg, wxFrame )
      EVT_TEXT(ID_DESCR_CTR_BASIC, MarkInfoDlg::OnDescChangedBasic )
      EVT_TEXT(ID_LATCTRL, MarkInfoDlg::OnPositionCtlUpdated )
      EVT_TEXT(ID_LONCTRL, MarkInfoDlg::OnPositionCtlUpdated )
-     EVT_SPINCTRL(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
+     EVT_CHOICE(ID_WPT_RANGERINGS_NO, MarkInfoDlg::OnWptRangeRingsNoChange)
      // the HTML listbox's events
      EVT_HTML_LINK_CLICKED(wxID_ANY, MarkInfoDlg::OnHtmlLinkClicked)
      EVT_CLOSE(MarkInfoDlg::OnClose)
@@ -521,8 +521,13 @@ void MarkInfoDlg::Create()
     m_staticTextRR4 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Color"));
     gbRRExtProperties->Add(m_staticTextRR4, 0, wxLEFT, 5);
     
-    m_SpinWaypointRangeRingsNumber = new wxSpinCtrl( sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_VERTICAL, 0, 10, 0);
-    gbRRExtProperties->Add(m_SpinWaypointRangeRingsNumber, 0, wxALL|wxEXPAND, 5);
+    wxString rrAlt[] = {_("None"), _T( "1" ), _T( "2" ), _T( "3" ),
+                      _T( "4" ), _T( "5" ), _T( "6" ), _T( "7" ),
+                      _T( "8" ), _T( "9" ), _T( "10" )};
+    m_ChoiceWaypointRangeRingsNumber =  new wxChoice(sbSizerExtProperties->GetStaticBox(), ID_WPT_RANGERINGS_NO, wxDefaultPosition,  wxDefaultSize, 11, rrAlt);
+
+    
+    gbRRExtProperties->Add(m_ChoiceWaypointRangeRingsNumber, 0, wxALL|wxEXPAND, 5);
     m_textWaypointRangeRingsStep = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("0.05"), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_textWaypointRangeRingsStep, 0, wxALL|wxEXPAND, 5);
     m_staticTextRR3 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
@@ -901,11 +906,11 @@ void MarkInfoDlg::OnShowWaypointNameSelectExt( wxCommandEvent& event )
     event.Skip();
 }
 
-void MarkInfoDlg::OnWptRangeRingsNoChange( wxSpinEvent& event )
+void MarkInfoDlg::OnWptRangeRingsNoChange( wxCommandEvent& event )
 {
     if( !m_pRoutePoint->m_bIsInLayer ){
-        m_textWaypointRangeRingsStep->Enable( (bool)(m_SpinWaypointRangeRingsNumber->GetValue() != 0) );
-        m_PickColor->Enable( (bool)(m_SpinWaypointRangeRingsNumber->GetValue() != 0) );        
+        m_textWaypointRangeRingsStep->Enable( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );
+        m_PickColor->Enable( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );        
     }        
 }
 
@@ -1096,7 +1101,7 @@ void MarkInfoDlg::DefautlBtnClicked( wxCommandEvent& event )
                 g_default_wp_icon = *pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() );
             }
             if ( m_SaveDefaultDlg->RangRingsCB->GetValue() ) {
-                g_iWaypointRangeRingsNumber = m_SpinWaypointRangeRingsNumber->GetValue();
+                g_iWaypointRangeRingsNumber = m_ChoiceWaypointRangeRingsNumber->GetSelection();
                 if(m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
                     g_fWaypointRangeRingsStep = fromUsrDistance(value, -1) ;
                 g_colourWaypointRangeRingsColour = m_PickColor->GetColour();
@@ -1213,7 +1218,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         m_checkBoxScaMin->SetValue( m_pRoutePoint->GetUseSca() );
         m_textScaMin->SetValue( wxString::Format(wxT("%i"), (int)m_pRoutePoint->GetScaMin()) );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );
-        m_SpinWaypointRangeRingsNumber->SetValue( m_pRoutePoint->GetWaypointRangeRingsNumber() );
+        m_ChoiceWaypointRangeRingsNumber->SetSelection( m_pRoutePoint->GetWaypointRangeRingsNumber() );
         m_staticTextRR3->SetLabel( getUsrDistanceUnit() );
         wxString buf;
         buf.Printf( _T("%.3f"), toUsrDistance( m_pRoutePoint->GetWaypointRangeRingsStep(), -1) );
@@ -1286,7 +1291,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_checkBoxScaMin->Enable( false );
             m_textScaMin->SetEditable ( false );
             m_checkBoxShowNameExt->Enable( false );
-            m_SpinWaypointRangeRingsNumber->Enable( false );
+            m_ChoiceWaypointRangeRingsNumber->Enable( false );
             m_textWaypointRangeRingsStep->SetEditable( false );
             m_PickColor->Enable( false );
             DefaultsBtn->Enable( false );
@@ -1314,7 +1319,7 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             m_checkBoxScaMin->Enable( true );
             m_textScaMin->SetEditable ( true );
             m_checkBoxShowNameExt->Enable( true );
-            m_SpinWaypointRangeRingsNumber->Enable( true );
+            m_ChoiceWaypointRangeRingsNumber->Enable( true );
             m_textWaypointRangeRingsStep->SetEditable( true );
             m_PickColor->Enable( true );
             DefaultsBtn->Enable( true );
@@ -1351,9 +1356,8 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
             }
         }
         wxCommandEvent ev;
-        wxSpinEvent se;
         OnShowWaypointNameSelectBasic( ev );
-        OnWptRangeRingsNoChange( se );
+        OnWptRangeRingsNoChange( ev );
         OnSelectScaMinExt(ev);
         UpdateHtmlList();       
     }
@@ -1417,8 +1421,8 @@ bool MarkInfoDlg::SaveChanges()
         if(icon_name && icon_name->Length())
             m_pRoutePoint->SetIconName( *icon_name );
         m_pRoutePoint->ReLoadIcon();
-        m_pRoutePoint->SetShowWaypointRangeRings( (bool)(m_SpinWaypointRangeRingsNumber->GetValue() != 0) );
-        m_pRoutePoint->SetWaypointRangeRingsNumber(m_SpinWaypointRangeRingsNumber->GetValue() );
+        m_pRoutePoint->SetShowWaypointRangeRings( (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0) );
+        m_pRoutePoint->SetWaypointRangeRingsNumber(m_ChoiceWaypointRangeRingsNumber->GetSelection() );
         double value;
         if(m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
             m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1) );
@@ -1519,8 +1523,8 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     stIcon->Wrap( -1 );
     fgSizer1->Add( stIcon, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
     
-    s = ( g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ?
-         _("Do use") + wxString::Format(_T(" (%i) "), g_pMarkInfoDialog->m_SpinWaypointRangeRingsNumber->GetValue() ): _("Don't use") );
+    s = ( g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection() ?
+         _("Do use") + wxString::Format(_T(" (%i) "), g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection() ): _("Don't use") );
     RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings"));
     fgSizer1->Add(RangRingsCB, 0, wxALL, 5);
     stRR = new wxStaticText( this, wxID_ANY, _T("[") + s +_T("]"), wxDefaultPosition, wxDefaultSize, 0 );
