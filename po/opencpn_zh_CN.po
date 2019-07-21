@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-12 14:30-0400\n"
-"PO-Revision-Date: 2019-03-18 02:54\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"POT-Creation-Date: 2019-07-17 17:38-0400\n"
+"PO-Revision-Date: 2019-07-21 01:17\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -16,16 +16,16 @@ msgstr ""
 "X-Crowdin-Language: zh-CN\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/AboutFrame.h:89 include/AboutFrameImpl.h:54 src/chart1.cpp:5575
-#: src/chart1.cpp:9908 src/toolbar.cpp:1390
+#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5626
+#: src/chart1.cpp:10239 src/toolbar.cpp:1042
 msgid "About OpenCPN"
 msgstr "关于OpenCPN"
 
-#: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1114
-#: src/routemanagerdialog.cpp:1163 src/routemanagerdialog.cpp:1812
-#: src/routemanagerdialog.cpp:1919 src/routemanagerdialog.cpp:2238
-#: src/routemanagerdialog.cpp:2271 src/routemanagerdialog.cpp:2410
-#: src/routemanagerdialog.cpp:2559 src/toolbar.cpp:3149
+#: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1063
+#: src/routemanagerdialog.cpp:1112 src/routemanagerdialog.cpp:1762
+#: src/routemanagerdialog.cpp:1869 src/routemanagerdialog.cpp:2188
+#: src/routemanagerdialog.cpp:2221 src/routemanagerdialog.cpp:2360
+#: src/routemanagerdialog.cpp:2509 src/toolbar.cpp:2832
 msgid "OpenCPN Alert"
 msgstr "OpenCPN报警"
 
@@ -34,13 +34,13 @@ msgid "OpenCPN AIS Alert"
 msgstr "OpenCPN AIS报警"
 
 #: include/AISTargetQueryDialog.h:48 include/AISTargetQueryDialog.h:60
-#: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53
-#: src/canvasMenu.cpp:393 src/canvasMenu.cpp:399 src/chcanv.cpp:8763
+#: include/S57QueryDialog.h:44 include/S57QueryDialog.h:54
+#: src/canvasMenu.cpp:396 src/canvasMenu.cpp:402 src/chcanv.cpp:8846
 msgid "Object Query"
 msgstr "对象查询"
 
-#: include/GoToPositionDialog.h:40 src/AISTargetListDialog.cpp:644
-#: src/canvasMenu.cpp:422
+#: include/GoToPositionDialog.h:40 src/AISTargetListDialog.cpp:648
+#: src/canvasMenu.cpp:425
 msgid "Center view"
 msgstr "中心视图"
 
@@ -48,9 +48,9 @@ msgstr "中心视图"
 msgid "Link Properties"
 msgstr "链接属性"
 
-#: include/options.h:70 src/chart1.cpp:5570 src/chart1.cpp:5811
-#: src/chart1.cpp:6833 src/chart1.cpp:9869 src/options.cpp:3620
-#: src/options.cpp:3862 src/toolbar.cpp:1317
+#: include/options.h:73 src/chart1.cpp:5621 src/chart1.cpp:5834
+#: src/chart1.cpp:6897 src/chart1.cpp:10200 src/options.cpp:4049
+#: src/toolbar.cpp:969
 msgid "Options"
 msgstr "选项"
 
@@ -58,25 +58,25 @@ msgstr "选项"
 msgid "Print Route Selection"
 msgstr "打印航线所选部分"
 
-#: include/RoutePropDlg.h:136 include/RoutePropDlgImpl.h:81
-#: src/canvasMenu.cpp:1529 src/chcanv.cpp:7453 src/RoutePropDlgImpl.cpp:417
+#: include/RoutePropDlg.h:138 include/RoutePropDlgImpl.h:83
+#: src/canvasMenu.cpp:1557 src/chcanv.cpp:7540 src/RoutePropDlgImpl.cpp:474
 msgid "Route Properties"
 msgstr "航线属性"
 
-#: include/S57QueryDialog.h:92 include/S57QueryDialog.h:98
+#: include/S57QueryDialog.h:93 include/S57QueryDialog.h:99
 #: src/S57QueryDialog.cpp:203
 msgid "Extra Object Info"
 msgstr "额外目标信息"
 
-#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:640 src/canvasMenu.cpp:728
-#: src/canvasMenu.cpp:778 src/canvasMenu.cpp:1420 src/canvasMenu.cpp:1431
-#: src/canvasMenu.cpp:1444 src/canvasMenu.cpp:1456
-#: src/routemanagerdialog.cpp:1440 src/routemanagerdialog.cpp:2381
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:643 src/canvasMenu.cpp:731
+#: src/canvasMenu.cpp:781 src/canvasMenu.cpp:1448 src/canvasMenu.cpp:1459
+#: src/canvasMenu.cpp:1472 src/canvasMenu.cpp:1484
+#: src/routemanagerdialog.cpp:1393 src/routemanagerdialog.cpp:2331
 msgid "Send to GPS"
 msgstr "发送至GPS"
 
-#: include/TrackPropDlg.h:178 src/TrackPropDlg.cpp:1065
-#: src/TrackPropDlg.cpp:1078
+#: include/TrackPropDlg.h:188 src/TrackPropDlg.cpp:1056
+#: src/TrackPropDlg.cpp:1069
 msgid "Track properties"
 msgstr "航迹属性"
 
@@ -84,7 +84,7 @@ msgstr "航迹属性"
 msgid "< Back"
 msgstr "< 后退"
 
-#: src/AboutFrame.cpp:47 src/options.cpp:7383
+#: src/AboutFrame.cpp:47 src/options.cpp:7759
 msgid "OpenCPN"
 msgstr "OpenCPN"
 
@@ -142,22 +142,22 @@ msgstr "帮助"
 msgid "License"
 msgstr "许可证"
 
-#: src/AboutFrameImpl.cpp:79
+#: src/AboutFrameImpl.cpp:78
 msgid "OpenCPN Help documentation is not available locally."
-msgstr ""
+msgstr "OpenCPN无本地帮助文档。"
 
-#: src/AboutFrameImpl.cpp:80
+#: src/AboutFrameImpl.cpp:79
 msgid "Would you like to visit the opencpn.org website for more information?"
-msgstr ""
+msgstr "需要访问opencpn.org网页获取更多信息吗?"
 
-#: src/AboutFrameImpl.cpp:82 src/AISTargetQueryDialog.cpp:176
-#: src/chart1.cpp:2775 src/chart1.cpp:6147 src/chart1.cpp:10877
-#: src/chart1.cpp:10912 src/LinkPropDlg.cpp:129 src/navutil.cpp:3037
-#: src/options.cpp:716 src/options.cpp:3475 src/options.cpp:7772
-#: src/options.cpp:7809 src/options.cpp:9601 src/pluginmanager.cpp:524
-#: src/pluginmanager.cpp:1233 src/pluginmanager.cpp:1275
-#: src/pluginmanager.cpp:1303 src/pluginmanager.cpp:1337 src/Route.cpp:1154
-#: src/RoutePoint.cpp:1082 src/tcmgr.cpp:762
+#: src/AboutFrameImpl.cpp:81 src/AISTargetQueryDialog.cpp:176
+#: src/chart1.cpp:2797 src/chart1.cpp:6190 src/chart1.cpp:11259
+#: src/chart1.cpp:11294 src/LinkPropDlg.cpp:133 src/navutil.cpp:3107
+#: src/options.cpp:750 src/options.cpp:3671 src/options.cpp:8146
+#: src/options.cpp:8183 src/options.cpp:10095 src/pluginmanager.cpp:544
+#: src/pluginmanager.cpp:1261 src/pluginmanager.cpp:1303
+#: src/pluginmanager.cpp:1331 src/pluginmanager.cpp:1365 src/Route.cpp:1197
+#: src/RoutePoint.cpp:1127 src/tcmgr.cpp:762
 msgid "OpenCPN Info"
 msgstr "OpenCPN信息"
 
@@ -221,9 +221,9 @@ msgstr "预留13"
 msgid "Reserved 14"
 msgstr "预留14"
 
-#: src/ais.cpp:162 src/AIS_Target_Data.cpp:404 src/ConnectionParams.cpp:493
-#: src/ConnectionParams.cpp:588 src/ConnectionParams.cpp:644
-#: src/ConnectionParams.cpp:666
+#: src/ais.cpp:162 src/AIS_Target_Data.cpp:404 src/ConnectionParams.cpp:494
+#: src/ConnectionParams.cpp:589 src/ConnectionParams.cpp:645
+#: src/ConnectionParams.cpp:667
 msgid "Undefined"
 msgstr "未定义"
 
@@ -324,7 +324,7 @@ msgid "Tanker"
 msgstr "油轮"
 
 #: src/ais.cpp:196 src/AIS_Target_Data.cpp:390 src/AIS_Target_Data.cpp:675
-#: src/AIS_Target_Data.cpp:735 src/AIS_Target_Data.cpp:909 src/chartdbs.cpp:1448
+#: src/AIS_Target_Data.cpp:735 src/AIS_Target_Data.cpp:909 src/chartdbs.cpp:1456
 msgid "Unknown"
 msgstr "未知"
 
@@ -1032,7 +1032,7 @@ msgstr "取消-取消区域，以信息链接ID识别"
 msgid "Undefined (default)"
 msgstr "未定义(默认)"
 
-#: src/ais.cpp:1677 src/ais.cpp:1678
+#: src/ais.cpp:1695 src/ais.cpp:1696
 msgid "AIS Target Name"
 msgstr "AIS目标名称"
 
@@ -1305,27 +1305,27 @@ msgstr "水翼船"
 msgid "%02X"
 msgstr "%02X"
 
-#: src/AIS_Decoder.cpp:2587
+#: src/AIS_Decoder.cpp:2584
 msgid "AIS Alert"
 msgstr "AIS报警"
 
-#: src/AISTargetAlertDialog.cpp:158 src/AISTargetAlertDialog.cpp:249
+#: src/AISTargetAlertDialog.cpp:162 src/AISTargetAlertDialog.cpp:253
 msgid "AISTargetAlert"
 msgstr "AIS目标报警"
 
-#: src/AISTargetAlertDialog.cpp:200
+#: src/AISTargetAlertDialog.cpp:203
 msgid "&Silence Alert"
 msgstr "&静默报警"
 
-#: src/AISTargetAlertDialog.cpp:207
+#: src/AISTargetAlertDialog.cpp:211
 msgid "&Acknowledge"
 msgstr "&确认"
 
-#: src/AISTargetAlertDialog.cpp:213
+#: src/AISTargetAlertDialog.cpp:217
 msgid "&Jump To"
 msgstr "&跳至"
 
-#: src/AISTargetAlertDialog.cpp:219 src/AISTargetQueryDialog.cpp:305
+#: src/AISTargetAlertDialog.cpp:223 src/AISTargetQueryDialog.cpp:305
 #: src/undo.cpp:81
 msgid "Create Waypoint"
 msgstr "创建航路点"
@@ -1336,12 +1336,12 @@ msgid "SAR Aircraft"
 msgstr "SAR航空器"
 
 #: src/AIS_Target_Data.cpp:345 src/AIS_Target_Data.cpp:354
-#: src/AISTargetListDialog.cpp:527 src/options.cpp:587 src/options.cpp:910
+#: src/AISTargetListDialog.cpp:531 src/options.cpp:610 src/options.cpp:944
 msgid "MMSI"
 msgstr "移动识别码"
 
 #: src/AIS_Target_Data.cpp:346 src/AIS_Target_Data.cpp:355
-#: src/AISTargetListDialog.cpp:535
+#: src/AISTargetListDialog.cpp:539
 msgid "Class"
 msgstr "船级"
 
@@ -1358,13 +1358,13 @@ msgid "Flag"
 msgstr "船旗"
 
 #: src/AIS_Target_Data.cpp:372 src/AIS_Target_Data.cpp:753
-#: src/AISTargetListDialog.cpp:143 src/AISTargetListDialog.cpp:155
+#: src/AISTargetListDialog.cpp:147 src/AISTargetListDialog.cpp:159
 #: src/OCPNListCtrl.cpp:136
 msgid "Active"
 msgstr "活动的"
 
 #: src/AIS_Target_Data.cpp:373 src/AIS_Target_Data.cpp:754
-#: src/AISTargetListDialog.cpp:144 src/AISTargetListDialog.cpp:156
+#: src/AISTargetListDialog.cpp:148 src/AISTargetListDialog.cpp:160
 #: src/OCPNListCtrl.cpp:137
 msgid "Testing"
 msgstr "测试中"
@@ -1390,8 +1390,8 @@ msgstr "报告间隔"
 msgid "Report as of"
 msgstr "报告为"
 
-#: src/AIS_Target_Data.cpp:528 src/RoutePropDlgImpl.cpp:669
-#: src/TrackPropDlg.cpp:280 src/TrackPropDlg.cpp:1192
+#: src/AIS_Target_Data.cpp:528 src/RoutePropDlgImpl.cpp:737
+#: src/TrackPropDlg.cpp:276 src/TrackPropDlg.cpp:1183
 msgid "Destination"
 msgstr "目的地"
 
@@ -1407,13 +1407,13 @@ msgstr "右"
 msgid "Left"
 msgstr "左"
 
-#: src/AIS_Target_Data.cpp:623 src/options.cpp:4752 src/options.cpp:4860
-#: src/RoutePropDlg.cpp:213 src/TrackPropDlg.cpp:224 src/TrackPropDlg.cpp:1194
+#: src/AIS_Target_Data.cpp:623 src/options.cpp:4997 src/options.cpp:5113
+#: src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:220 src/TrackPropDlg.cpp:1185
 msgid "Speed"
 msgstr "速度"
 
 #: src/AIS_Target_Data.cpp:624 src/routeprintout.cpp:111
-#: src/routeprintout.cpp:400 src/RoutePropDlg.cpp:219
+#: src/routeprintout.cpp:400 src/RoutePropDlg.cpp:230
 msgid "Course"
 msgstr "航向"
 
@@ -1425,11 +1425,11 @@ msgstr "朝向"
 msgid "Turn Rate"
 msgstr "旋转率"
 
-#: src/AIS_Target_Data.cpp:640 src/AISTargetListDialog.cpp:567
+#: src/AIS_Target_Data.cpp:640 src/AISTargetListDialog.cpp:571
 msgid "Range"
 msgstr "量程"
 
-#: src/AIS_Target_Data.cpp:641 src/RoutePropDlg.cpp:203 src/TrackPropDlg.cpp:219
+#: src/AIS_Target_Data.cpp:641 src/RoutePropDlg.cpp:214 src/TrackPropDlg.cpp:215
 msgid "Bearing"
 msgstr "方位"
 
@@ -1438,7 +1438,7 @@ msgid "in "
 msgstr "in "
 
 #: src/AIS_Target_Data.cpp:655 src/AIS_Target_Data.cpp:796
-#: src/AISTargetListDialog.cpp:590
+#: src/AISTargetListDialog.cpp:594
 msgid "CPA"
 msgstr "船只会遇"
 
@@ -1462,7 +1462,7 @@ msgstr "高度"
 msgid " COG Unavailable"
 msgstr " COG未知"
 
-#: src/AIS_Target_Data.cpp:797 src/navutil.cpp:4195
+#: src/AIS_Target_Data.cpp:797 src/navutil.cpp:4270
 msgid "in"
 msgstr "in"
 
@@ -1482,7 +1482,7 @@ msgstr ""
 msgid "Aid to Navigation"
 msgstr "航行辅助"
 
-#: src/AIS_Target_Data.cpp:893 src/options.cpp:3900 src/options.cpp:4111
+#: src/AIS_Target_Data.cpp:893 src/options.cpp:4087 src/options.cpp:4290
 #: src/CanvasOptions.cpp:238
 msgid "Base"
 msgstr "基地"
@@ -2456,7 +2456,7 @@ msgstr "乌拉圭"
 msgid "Venezuela"
 msgstr "委内瑞拉"
 
-#: src/AISTargetListDialog.cpp:148 src/AISTargetListDialog.cpp:160
+#: src/AISTargetListDialog.cpp:152 src/AISTargetListDialog.cpp:164
 #: src/OCPNListCtrl.cpp:88 src/OCPNListCtrl.cpp:97 src/OCPNListCtrl.cpp:129
 #: src/OCPNListCtrl.cpp:143 src/OCPNListCtrl.cpp:148 src/OCPNListCtrl.cpp:160
 #: src/OCPNListCtrl.cpp:166 src/OCPNListCtrl.cpp:178 src/OCPNListCtrl.cpp:186
@@ -2464,100 +2464,102 @@ msgstr "委内瑞拉"
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:303 src/chart1.cpp:1437 src/chart1.cpp:6454
-#: src/chart1.cpp:11362 src/chart1.cpp:12352 src/chcanv.cpp:10814
-#: src/chcanv.cpp:10845 src/ChInfoWin.cpp:56 src/concanv.cpp:103
-#: src/ConnectionParams.cpp:405 src/ConnectionParams.cpp:702
-#: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1472 src/OCPNPlatform.cpp:1897
-#: src/OCPNPlatform.cpp:1937 src/options.cpp:879 src/options.cpp:1237
-#: src/options.cpp:2130 src/options.cpp:8411 src/options.cpp:9636
-#: src/options.cpp:9780 src/Osenc.cpp:1662 src/routemanagerdialog.cpp:338
-#: src/TCWin.cpp:81 src/TCWin.cpp:195 src/toolbar.cpp:3247
-#: src/TrackPropDlg.cpp:104 src/TrackPropDlg.cpp:243 src/TrackPropDlg.cpp:539
-#: src/CanvasOptions.cpp:82 src/MarkInfo.cpp:269
+#: src/AISTargetListDialog.cpp:307 src/chart1.cpp:1430 src/chart1.cpp:6506
+#: src/chart1.cpp:11744 src/chart1.cpp:12704 src/chcanv.cpp:10918
+#: src/chcanv.cpp:10949 src/ChInfoWin.cpp:56 src/cm93.cpp:7310
+#: src/concanv.cpp:103 src/ConnectionParams.cpp:320 src/ConnectionParams.cpp:404
+#: src/ConnectionParams.cpp:704 src/glChartCanvas.cpp:4149
+#: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1592 src/OCPNPlatform.cpp:2017
+#: src/OCPNPlatform.cpp:2057 src/options.cpp:913 src/options.cpp:1401
+#: src/options.cpp:2309 src/options.cpp:8846 src/options.cpp:9078
+#: src/options.cpp:10130 src/options.cpp:10274 src/Osenc.cpp:1661
+#: src/routemanagerdialog.cpp:283 src/RoutePropDlg.cpp:21 src/TCWin.cpp:89
+#: src/TCWin.cpp:245 src/toolbar.cpp:2930 src/TrackPropDlg.cpp:105
+#: src/TrackPropDlg.cpp:239 src/TrackPropDlg.cpp:538 src/CanvasOptions.cpp:82
+#: src/MarkInfo.cpp:274 src/MarkInfo.cpp:308
 msgid "Dialog"
 msgstr "对话框"
 
-#: src/AISTargetListDialog.cpp:321 src/canvasMenu.cpp:582 src/chart1.cpp:5546
+#: src/AISTargetListDialog.cpp:325 src/canvasMenu.cpp:585 src/chart1.cpp:5597
 msgid "AIS target list"
 msgstr "AIS目标列表"
 
-#: src/AISTargetListDialog.cpp:503
+#: src/AISTargetListDialog.cpp:507
 msgid "Trk"
 msgstr "航迹"
 
-#: src/AISTargetListDialog.cpp:511 src/routeprintout.cpp:385
-#: src/RoutePropDlg.cpp:27 src/RoutePropDlgImpl.cpp:667 src/TrackPropDlg.cpp:260
-#: src/TrackPropDlg.cpp:565 src/TrackPropDlg.cpp:1190 src/MarkInfo.cpp:325
+#: src/AISTargetListDialog.cpp:515 src/routeprintout.cpp:385
+#: src/RoutePropDlg.cpp:37 src/RoutePropDlgImpl.cpp:735 src/TrackPropDlg.cpp:256
+#: src/TrackPropDlg.cpp:560 src/TrackPropDlg.cpp:1181 src/MarkInfo.cpp:373
 msgid "Name"
 msgstr "名字"
 
-#: src/AISTargetListDialog.cpp:519
+#: src/AISTargetListDialog.cpp:523
 msgid "Call"
 msgstr "呼叫"
 
-#: src/AISTargetListDialog.cpp:543 src/ConnectionParams.cpp:441
-#: src/ConnectionParams.cpp:536 src/options.cpp:1955 src/options.cpp:2626
+#: src/AISTargetListDialog.cpp:547 src/ConnectionParams.cpp:442
+#: src/ConnectionParams.cpp:537 src/options.cpp:2135 src/options.cpp:2805
 msgid "Type"
 msgstr "类型"
 
-#: src/AISTargetListDialog.cpp:551
+#: src/AISTargetListDialog.cpp:555
 msgid "Nav Status"
 msgstr "航行状态"
 
-#: src/AISTargetListDialog.cpp:559
+#: src/AISTargetListDialog.cpp:563
 msgid "Brg"
 msgstr "方位"
 
-#: src/AISTargetListDialog.cpp:575
+#: src/AISTargetListDialog.cpp:579
 msgid "CoG"
 msgstr "对地航向"
 
-#: src/AISTargetListDialog.cpp:583
+#: src/AISTargetListDialog.cpp:587
 msgid "SoG"
 msgstr "对地航速"
 
-#: src/AISTargetListDialog.cpp:597
+#: src/AISTargetListDialog.cpp:601
 msgid "TCPA"
 msgstr "最近会遇时间"
 
-#: src/AISTargetListDialog.cpp:637
+#: src/AISTargetListDialog.cpp:641
 msgid "Target info"
 msgstr "目标信息"
 
-#: src/AISTargetListDialog.cpp:650
+#: src/AISTargetListDialog.cpp:654
 msgid "Create WPT"
 msgstr "创建航路点"
 
-#: src/AISTargetListDialog.cpp:656
+#: src/AISTargetListDialog.cpp:660
 msgid "Hide All Tracks"
 msgstr "隐藏所有航迹"
 
-#: src/AISTargetListDialog.cpp:662
+#: src/AISTargetListDialog.cpp:666
 msgid "Show All Tracks"
 msgstr "显示所有航迹"
 
-#: src/AISTargetListDialog.cpp:668
+#: src/AISTargetListDialog.cpp:672
 msgid "Toggle track"
 msgstr "切换航迹"
 
-#: src/AISTargetListDialog.cpp:674
+#: src/AISTargetListDialog.cpp:678
 msgid "Copy MMSI"
 msgstr "复制MMSI"
 
-#: src/AISTargetListDialog.cpp:680
+#: src/AISTargetListDialog.cpp:684
 msgid "AutoSort"
 msgstr "自动分类"
 
-#: src/AISTargetListDialog.cpp:690
+#: src/AISTargetListDialog.cpp:694
 msgid "Limit range: NM"
 msgstr "量程极限：海里"
 
-#: src/AISTargetListDialog.cpp:703
+#: src/AISTargetListDialog.cpp:707
 msgid "Target Count"
 msgstr "目标计数"
 
-#: src/AISTargetListDialog.cpp:713 src/wxcurl/dialog.cpp:399
+#: src/AISTargetListDialog.cpp:717 src/wxcurl/dialog.cpp:399
 msgid "Close"
 msgstr "关闭"
 
@@ -2576,11 +2578,11 @@ msgstr "此目标当前所捕获的航迹已经纪律.\n"
 msgid "AISTargetQuery"
 msgstr "AIS目标查询"
 
-#: src/AISTargetQueryDialog.cpp:312 src/cm93.cpp:6887
-#: src/GoToPositionDialog.cpp:147 src/options.cpp:531 src/options.cpp:637
-#: src/options.cpp:5681 src/routeprintout.cpp:430 src/TCWin.cpp:153
-#: src/TCWin.cpp:164 src/toolbar.cpp:3311 src/TrackPropDlg.cpp:500
-#: src/TrackPropDlg.cpp:838
+#: src/AISTargetQueryDialog.cpp:312 src/cm93.cpp:7374
+#: src/GoToPositionDialog.cpp:147 src/options.cpp:554 src/options.cpp:660
+#: src/options.cpp:6053 src/routeprintout.cpp:430 src/TCWin.cpp:199
+#: src/TCWin.cpp:215 src/toolbar.cpp:2994 src/TrackPropDlg.cpp:499
+#: src/TrackPropDlg.cpp:830
 msgid "OK"
 msgstr "确认"
 
@@ -2588,305 +2590,314 @@ msgstr "确认"
 msgid "Stop Tracking"
 msgstr "停止航迹"
 
-#: src/androidUTIL.cpp:1763
+#: src/androidUTIL.cpp:2045
+msgid "OpenCPN Help is not installed.\n"
+"Would you like to install from Google PlayStore now?"
+msgstr ""
+
+#: src/androidUTIL.cpp:2806
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
 msgstr "安卓设备有内置GPS，但禁用.\n"
 "                       访问安卓“设置/位置“对话框以启用GPS"
 
-#: src/androidUTIL.cpp:1906
+#: src/androidUTIL.cpp:2955
 msgid "Nothing found"
 msgstr "未有发现"
 
-#: src/canvasMenu.cpp:267 src/canvasMenu.cpp:283 src/options.cpp:830
+#: src/androidUTIL.cpp:4553 src/chart1.cpp:3661
+msgid "Anchorage created "
+msgstr "锚泊已创建"
+
+#: src/canvasMenu.cpp:269 src/canvasMenu.cpp:286 src/concanv.cpp:212
+#: src/options.cpp:864
 msgid "Menu"
 msgstr "菜单"
 
-#: src/canvasMenu.cpp:304
+#: src/canvasMenu.cpp:307
 msgid "End Route"
 msgstr "结束航线"
 
-#: src/canvasMenu.cpp:309
+#: src/canvasMenu.cpp:312
 msgid "Measure Off"
 msgstr "测量结束"
 
-#: src/canvasMenu.cpp:311
+#: src/canvasMenu.cpp:314
 msgid "Measure"
 msgstr "测量"
 
-#: src/canvasMenu.cpp:318
+#: src/canvasMenu.cpp:321
 msgid "Undo"
 msgstr "撤回"
 
-#: src/canvasMenu.cpp:324
+#: src/canvasMenu.cpp:327
 msgid "Redo"
 msgstr "重做"
 
-#: src/canvasMenu.cpp:387
+#: src/canvasMenu.cpp:390
 msgid "Max Detail Here"
 msgstr "此处参见最大细节"
 
-#: src/canvasMenu.cpp:388 src/canvasMenu.cpp:403
+#: src/canvasMenu.cpp:391 src/canvasMenu.cpp:406
 msgid "Scale In"
 msgstr "放大比例尺"
 
-#: src/canvasMenu.cpp:389 src/canvasMenu.cpp:404
+#: src/canvasMenu.cpp:392 src/canvasMenu.cpp:407
 msgid "Scale Out"
 msgstr "缩小比例尺"
 
-#: src/canvasMenu.cpp:411
+#: src/canvasMenu.cpp:414
 msgid "Drop Mark"
 msgstr "防止标志"
 
-#: src/canvasMenu.cpp:412
+#: src/canvasMenu.cpp:415
 msgid "New Route..."
 msgstr "新航线……"
 
-#: src/canvasMenu.cpp:415
+#: src/canvasMenu.cpp:418
 msgid "Move Boat Here"
 msgstr "船只移动到此处"
 
-#: src/canvasMenu.cpp:419
+#: src/canvasMenu.cpp:422
 msgid "Navigate To Here"
 msgstr "航行至此"
 
-#: src/canvasMenu.cpp:426 src/chart1.cpp:5471
+#: src/canvasMenu.cpp:429 src/chart1.cpp:5522
 msgid "Course Up Mode"
 msgstr "光标向上模式"
 
-#: src/canvasMenu.cpp:429
+#: src/canvasMenu.cpp:432
 msgid "Chart Up Mode"
 msgstr "海图向上模式"
 
-#: src/canvasMenu.cpp:431 src/chart1.cpp:5144 src/chart1.cpp:5470
-#: src/chart1.cpp:7570
+#: src/canvasMenu.cpp:434 src/chart1.cpp:5159 src/chart1.cpp:5521
+#: src/chart1.cpp:7712
 msgid "North Up Mode"
 msgstr "北向上模式"
 
-#: src/canvasMenu.cpp:439 src/canvasMenu.cpp:446
+#: src/canvasMenu.cpp:442 src/canvasMenu.cpp:449
 msgid "Toggle Full Screen"
 msgstr "切换至全屏"
 
-#: src/canvasMenu.cpp:451 src/canvasMenu.cpp:608 src/canvasMenu.cpp:625
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:611 src/canvasMenu.cpp:628
 msgid "Zero XTE"
 msgstr "零XTE"
 
-#: src/canvasMenu.cpp:458
+#: src/canvasMenu.cpp:461
 msgid "Paste Waypoint"
 msgstr "粘贴航路点"
 
-#: src/canvasMenu.cpp:462 src/canvasMenu.cpp:470
+#: src/canvasMenu.cpp:465 src/canvasMenu.cpp:473
 msgid "Paste Route"
 msgstr "粘贴航线"
 
-#: src/canvasMenu.cpp:466 src/canvasMenu.cpp:471
+#: src/canvasMenu.cpp:469 src/canvasMenu.cpp:474
 msgid "Paste Track"
 msgstr "粘贴航迹"
 
-#: src/canvasMenu.cpp:479
+#: src/canvasMenu.cpp:482
 msgid "CM93 Offset Dialog..."
 msgstr "CM93补偿对话框……"
 
-#: src/canvasMenu.cpp:502 src/options.cpp:4353 src/options.cpp:4401
-#: src/options.cpp:8386
+#: src/canvasMenu.cpp:505 src/options.cpp:4543 src/options.cpp:4601
 msgid "Chart Groups"
 msgstr "海图组"
 
-#: src/canvasMenu.cpp:508
+#: src/canvasMenu.cpp:513
 msgid "temporary"
 msgstr "暂时"
 
-#: src/canvasMenu.cpp:511
+#: src/canvasMenu.cpp:516
 msgid "All Active Charts"
 msgstr "所有活动海图"
 
-#: src/canvasMenu.cpp:547 src/CanvasOptions.cpp:174
+#: src/canvasMenu.cpp:550 src/CanvasOptions.cpp:174
 msgid "AIS"
 msgstr "自动识别系统"
 
-#: src/canvasMenu.cpp:548
+#: src/canvasMenu.cpp:551
 msgid "Target Query..."
 msgstr "目标查询……"
 
-#: src/canvasMenu.cpp:551
+#: src/canvasMenu.cpp:554
 msgid "Hide Target CPA"
 msgstr "隐藏目标CPA"
 
-#: src/canvasMenu.cpp:553
+#: src/canvasMenu.cpp:556
 msgid "Show Target CPA"
 msgstr "显示目标CPA"
 
-#: src/canvasMenu.cpp:555
+#: src/canvasMenu.cpp:558
 msgid "Target List..."
 msgstr "目标列表..."
 
-#: src/canvasMenu.cpp:558
+#: src/canvasMenu.cpp:561
 msgid "Hide Target Track"
 msgstr "隐藏目标航迹"
 
-#: src/canvasMenu.cpp:560
+#: src/canvasMenu.cpp:563
 msgid "Show Target Track"
 msgstr "显示目标航迹"
 
-#: src/canvasMenu.cpp:563
+#: src/canvasMenu.cpp:566
 msgid "Copy Target MMSI"
 msgstr "复制目标航迹"
 
-#: src/canvasMenu.cpp:568 src/canvasMenu.cpp:574
+#: src/canvasMenu.cpp:571 src/canvasMenu.cpp:577
 msgid "Object Query..."
 msgstr "目标查询……"
 
-#: src/canvasMenu.cpp:590
+#: src/canvasMenu.cpp:593
 msgid "Unnamed Route"
 msgstr "未命名航线"
 
-#: src/canvasMenu.cpp:599
+#: src/canvasMenu.cpp:602
 msgid "Layer Route"
 msgstr "航线图层"
 
-#: src/canvasMenu.cpp:600 src/canvasMenu.cpp:617 src/canvasMenu.cpp:671
-#: src/canvasMenu.cpp:675 src/canvasMenu.cpp:698 src/canvasMenu.cpp:705
-#: src/canvasMenu.cpp:762 src/canvasMenu.cpp:766 src/options.cpp:1505
-#: src/MarkInfo.cpp:315
+#: src/canvasMenu.cpp:603 src/canvasMenu.cpp:620 src/canvasMenu.cpp:674
+#: src/canvasMenu.cpp:678 src/canvasMenu.cpp:701 src/canvasMenu.cpp:708
+#: src/canvasMenu.cpp:765 src/canvasMenu.cpp:769 src/options.cpp:1685
+#: src/MarkInfo.cpp:351
 msgid "Properties"
 msgstr "属性"
 
-#: src/canvasMenu.cpp:605 src/canvasMenu.cpp:622 src/canvasMenu.cpp:715
+#: src/canvasMenu.cpp:608 src/canvasMenu.cpp:625 src/canvasMenu.cpp:718
 msgid "Activate Next Waypoint"
 msgstr "激活下一航路点"
 
-#: src/canvasMenu.cpp:607 src/canvasMenu.cpp:624 src/routemanagerdialog.cpp:1059
+#: src/canvasMenu.cpp:610 src/canvasMenu.cpp:627 src/routemanagerdialog.cpp:1008
 msgid "Deactivate"
 msgstr "取消激活"
 
-#: src/canvasMenu.cpp:611 src/canvasMenu.cpp:628 src/canvasMenu.cpp:701
-#: src/canvasMenu.cpp:708 src/routemanagerdialog.cpp:1053
+#: src/canvasMenu.cpp:614 src/canvasMenu.cpp:631 src/canvasMenu.cpp:704
+#: src/canvasMenu.cpp:711 src/routemanagerdialog.cpp:1002
 msgid "Activate"
 msgstr "激活"
 
-#: src/canvasMenu.cpp:616 src/chcanv.cpp:3780 src/chcanv.cpp:9635
-#: src/concanv.cpp:142 src/concanv.cpp:161 src/concanv.cpp:203
+#: src/canvasMenu.cpp:619 src/chcanv.cpp:3853 src/chcanv.cpp:9719
+#: src/concanv.cpp:139 src/concanv.cpp:158 src/concanv.cpp:200
 msgid "Route"
 msgstr "航线"
 
-#: src/canvasMenu.cpp:631
+#: src/canvasMenu.cpp:634
 msgid "Insert Waypoint"
 msgstr "插入航路点"
 
-#: src/canvasMenu.cpp:632 src/undo.cpp:90
+#: src/canvasMenu.cpp:635 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "附加航路点"
 
-#: src/canvasMenu.cpp:633 src/canvasMenu.cpp:676 src/canvasMenu.cpp:721
-#: src/canvasMenu.cpp:771
+#: src/canvasMenu.cpp:636 src/canvasMenu.cpp:679 src/canvasMenu.cpp:724
+#: src/canvasMenu.cpp:774
 msgid "Copy as KML"
 msgstr "复制为KML"
 
-#: src/canvasMenu.cpp:634 src/canvasMenu.cpp:677 src/canvasMenu.cpp:724
-#: src/canvasMenu.cpp:774 src/options.cpp:826 src/options.cpp:9485
-#: src/RoutePropDlg.cpp:266 src/TrackPropDlg.cpp:750 src/MarkInfo.cpp:831
+#: src/canvasMenu.cpp:637 src/canvasMenu.cpp:680 src/canvasMenu.cpp:727
+#: src/canvasMenu.cpp:777 src/options.cpp:860 src/options.cpp:9979
+#: src/RoutePropDlg.cpp:277 src/TrackPropDlg.cpp:742 src/MarkInfo.cpp:948
 msgid "Delete"
 msgstr "删除"
 
-#: src/canvasMenu.cpp:635
+#: src/canvasMenu.cpp:638
 msgid "Reverse..."
 msgstr "反向..."
 
-#: src/canvasMenu.cpp:649 src/canvasMenu.cpp:737
+#: src/canvasMenu.cpp:652 src/canvasMenu.cpp:740
 msgid "Send to new GPS"
 msgstr "发送至新GPS"
 
-#: src/canvasMenu.cpp:670
+#: src/canvasMenu.cpp:673
 msgid "Layer Track"
 msgstr "航迹图层"
 
-#: src/canvasMenu.cpp:674 src/chcanv.cpp:3900
+#: src/canvasMenu.cpp:677 src/chcanv.cpp:3973
 msgid "Track"
 msgstr "航迹"
 
-#: src/canvasMenu.cpp:688 src/canvasMenu.cpp:752
+#: src/canvasMenu.cpp:691 src/canvasMenu.cpp:755
 msgid "Unnamed Waypoint"
 msgstr "未命名航路点"
 
-#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:761
+#: src/canvasMenu.cpp:700 src/canvasMenu.cpp:764
 msgid "Layer Waypoint"
 msgstr "航路点图层"
 
-#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:765
+#: src/canvasMenu.cpp:707 src/canvasMenu.cpp:768
 msgid "Waypoint"
 msgstr "航路点"
 
-#: src/canvasMenu.cpp:719
+#: src/canvasMenu.cpp:722
 msgid "Remove from Route"
 msgstr "从航线中移除"
 
-#: src/canvasMenu.cpp:769
+#: src/canvasMenu.cpp:772
 msgid "Navigate To This"
 msgstr "航行至此"
 
-#: src/canvasMenu.cpp:788
+#: src/canvasMenu.cpp:791
 msgid "Clear Anchor Watch"
 msgstr "清除锚泊监测"
 
-#: src/canvasMenu.cpp:798
+#: src/canvasMenu.cpp:801
 msgid "Set Anchor Watch"
 msgstr "设置锚泊监测"
 
-#: src/canvasMenu.cpp:836
+#: src/canvasMenu.cpp:839
 msgid "Main Menu"
 msgstr "主菜单"
 
-#: src/canvasMenu.cpp:848
+#: src/canvasMenu.cpp:851
 msgid "Show Tide Information"
 msgstr "显示潮汐信息"
 
-#: src/canvasMenu.cpp:854
+#: src/canvasMenu.cpp:857
 msgid "Show Current Information"
 msgstr "显示海流信息"
 
-#: src/canvasMenu.cpp:999
+#: src/canvasMenu.cpp:1018
 msgid "Temporary GOTO Route"
 msgstr "临时目的地航线"
 
-#: src/canvasMenu.cpp:1000 src/canvasMenu.cpp:1058
-#: src/routemanagerdialog.cpp:2330
+#: src/canvasMenu.cpp:1019 src/canvasMenu.cpp:1082
+#: src/routemanagerdialog.cpp:2280
 msgid "Here"
 msgstr "这里"
 
-#: src/canvasMenu.cpp:1002
+#: src/canvasMenu.cpp:1021
 msgid "There"
 msgstr "那里"
 
-#: src/canvasMenu.cpp:1054 src/routemanagerdialog.cpp:1988
-#: src/routemanagerdialog.cpp:2326
+#: src/canvasMenu.cpp:1078 src/routemanagerdialog.cpp:1938
+#: src/routemanagerdialog.cpp:2276
 msgid "(Unnamed Waypoint)"
 msgstr "(未命名航路点)"
 
-#: src/canvasMenu.cpp:1055 src/routemanagerdialog.cpp:2327
+#: src/canvasMenu.cpp:1079 src/routemanagerdialog.cpp:2277
 msgid "Go to "
 msgstr "至 "
 
-#: src/canvasMenu.cpp:1262 src/routemanagerdialog.cpp:1249
+#: src/canvasMenu.cpp:1288 src/routemanagerdialog.cpp:1198
 msgid "Rename Waypoints?"
 msgstr "重命名航路点？"
 
-#: src/canvasMenu.cpp:1285
+#: src/canvasMenu.cpp:1311
 msgid "Are you sure you want to delete this route?"
 msgstr "确实删除此航路点吗?"
 
-#: src/canvasMenu.cpp:1286
+#: src/canvasMenu.cpp:1312
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN航路点删除"
 
-#: src/canvasMenu.cpp:1541
+#: src/canvasMenu.cpp:1569
 msgid "Are you sure you want to delete this track?"
 msgstr "确定要删除此标志吗？"
 
-#: src/canvasMenu.cpp:1542 src/routeman.cpp:986
+#: src/canvasMenu.cpp:1570 src/routeman.cpp:1003
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN航迹删除"
 
-#: src/chart1.cpp:907
+#: src/chart1.cpp:911
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
 "See the GNU General Public License for more details.\n\n"
@@ -2900,371 +2911,371 @@ msgstr "\n"
 "不要将OpenCPN用于人命和财产安全用途.\n\n"
 "点击“确认”继续，点击“取消”退出\n"
 
-#: src/chart1.cpp:938
+#: src/chart1.cpp:927
+msgid "OpenCPN for Android"
+msgstr ""
+
+#: src/chart1.cpp:943
 msgid "Welcome to OpenCPN"
 msgstr "欢迎使用OpenCPN"
 
-#: src/chart1.cpp:985
+#: src/chart1.cpp:990
 msgid "Show usage syntax."
 msgstr "显示使用语法。"
 
-#: src/chart1.cpp:986
+#: src/chart1.cpp:991
 msgid "Run in portable mode."
 msgstr "以免安装模式运行。"
 
-#: src/chart1.cpp:987
+#: src/chart1.cpp:992
 msgid "Switch to full screen mode on start."
 msgstr "启动时转换至全屏。"
 
-#: src/chart1.cpp:988
+#: src/chart1.cpp:993
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr "禁用OpenGL视频加速。这一设置会沿用。"
 
-#: src/chart1.cpp:991
+#: src/chart1.cpp:996
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr "演示幻灯 <num> 海图然后退出。0及负值 <num> 指明无限制."
 
-#: src/chart1.cpp:1440
+#: src/chart1.cpp:1433
 msgid "OpenCPN ENC Prepare"
 msgstr "OpenCPN电子海图准备"
 
-#: src/chart1.cpp:1470
+#: src/chart1.cpp:1463
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "自本船距离:  %4.0f 海里"
 
-#: src/chart1.cpp:1501
+#: src/chart1.cpp:1494
 msgid "ENC Completed."
 msgstr "ENC完成."
 
-#: src/chart1.cpp:1812 src/chart1.cpp:1818
+#: src/chart1.cpp:1801 src/chart1.cpp:1807
 msgid "Failed to initialize the user interface. "
 msgstr "用户界面初始化失败."
 
-#: src/chart1.cpp:1813
+#: src/chart1.cpp:1802
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN不能启动."
 
-#: src/chart1.cpp:1814
+#: src/chart1.cpp:1803
 msgid "The necessary configuration files were not found. "
 msgstr "未发现必需的配置文件."
 
-#: src/chart1.cpp:1815
+#: src/chart1.cpp:1804
 msgid "See the log file at "
 msgstr "参见日志文件"
 
-#: src/chart1.cpp:1815
+#: src/chart1.cpp:1804
 msgid " for details."
 msgstr " 如需细节。"
 
-#: src/chart1.cpp:2113
+#: src/chart1.cpp:2105
 msgid " -- [Portable(-p) executing from "
 msgstr " --[自某处手动执行(-p)] "
 
-#: src/chart1.cpp:2201
+#: src/chart1.cpp:2188
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "从Windows注册表重新获取初始海图目录"
 
-#: src/chart1.cpp:2386
+#: src/chart1.cpp:2406
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN初始化时间%ld ms."
 
-#: src/chart1.cpp:2773
+#: src/chart1.cpp:2795
 msgid "OpenCPN needs to update the chart database from config file entries...."
-msgstr ""
+msgstr "OpenCPN需要从配置文件录入处更新海图库……"
 
-#: src/chart1.cpp:2782
+#: src/chart1.cpp:2804
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "自配置文件设置重建海图数据库..."
 
-#: src/chart1.cpp:2785
+#: src/chart1.cpp:2807
 msgid "Elapsed time : "
 msgstr "已用时间: "
 
-#: src/chart1.cpp:2786
+#: src/chart1.cpp:2808
 msgid "Estimated time : "
 msgstr "预计时间: "
 
-#: src/chart1.cpp:2787
+#: src/chart1.cpp:2809
 msgid "Remaining time : "
 msgstr "剩余时间: "
 
-#: src/chart1.cpp:2788 src/chart1.cpp:6449 src/chart1.cpp:6457
+#: src/chart1.cpp:2810 src/chart1.cpp:6501 src/chart1.cpp:6509
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN海图更新"
 
-#: src/chart1.cpp:2985 src/chcanv.cpp:11731
+#: src/chart1.cpp:3007 src/chcanv.cpp:11869
 msgid "AIS Target Query"
 msgstr "AIS目标查询"
 
-#: src/chart1.cpp:3621
-msgid "Anchorage created "
-msgstr "锚泊已创建"
-
-#: src/chart1.cpp:4125 src/chcanv.cpp:5308 src/OCPNPlatform.cpp:1680
+#: src/chart1.cpp:4106 src/chcanv.cpp:5402 src/OCPNPlatform.cpp:1808
 msgid "StatusBar"
 msgstr "状态条"
 
-#: src/chart1.cpp:4575 src/chart1.cpp:4690
+#: src/chart1.cpp:4562 src/chart1.cpp:4701
 msgid "Show Toolbar"
 msgstr "显示工具栏"
 
-#: src/chart1.cpp:4577 src/chart1.cpp:4692 src/chart1.cpp:9862
+#: src/chart1.cpp:4564 src/chart1.cpp:4703 src/chart1.cpp:10193
 msgid "Hide Toolbar"
 msgstr "隐藏工具栏"
 
-#: src/chart1.cpp:4906 src/chart1.cpp:4962
+#: src/chart1.cpp:4917 src/chart1.cpp:4975
 msgid "MAN OVERBOARD"
 msgstr "有人落水"
 
-#: src/chart1.cpp:4925
+#: src/chart1.cpp:4936
 msgid "1.0 NM along COG"
 msgstr "1海里COG航向"
 
-#: src/chart1.cpp:4936
+#: src/chart1.cpp:4947
 msgid "Temporary MOB Route"
 msgstr "临时有人落水航线"
 
-#: src/chart1.cpp:4937
+#: src/chart1.cpp:4948
 msgid "Assumed 1 Mile Point"
 msgstr "假定1海里点"
 
-#: src/chart1.cpp:4985
+#: src/chart1.cpp:4998
 msgid "Disable Tracking"
 msgstr "禁用航迹记录"
 
-#: src/chart1.cpp:5010 src/chart1.cpp:8256 src/chart1.cpp:8385
+#: src/chart1.cpp:5023 src/chart1.cpp:8873 src/chart1.cpp:9002
 msgid "(Unnamed Track)"
 msgstr "（未命名航迹）"
 
-#: src/chart1.cpp:5059 src/chart1.cpp:5468 src/chart1.cpp:9887
-#: src/toolbar.cpp:1373
+#: src/chart1.cpp:5072 src/chart1.cpp:5519 src/chart1.cpp:10218
+#: src/toolbar.cpp:1025
 msgid "Enable Tracking"
 msgstr "启用航迹记录"
 
-#: src/chart1.cpp:5467 src/toolbar.cpp:1310
+#: src/chart1.cpp:5518 src/toolbar.cpp:962
 msgid "Auto Follow"
 msgstr "自动跟随"
 
-#: src/chart1.cpp:5474 src/chart1.cpp:5477 src/toolbar.cpp:1275
+#: src/chart1.cpp:5525 src/chart1.cpp:5528 src/toolbar.cpp:927
 msgid "Zoom In"
 msgstr "放大"
 
-#: src/chart1.cpp:5475 src/chart1.cpp:5478 src/toolbar.cpp:1281
+#: src/chart1.cpp:5526 src/chart1.cpp:5529 src/toolbar.cpp:933
 msgid "Zoom Out"
 msgstr "缩小"
 
-#: src/chart1.cpp:5481
+#: src/chart1.cpp:5532
 msgid "Larger Scale Chart"
 msgstr "大比例尺海图"
 
-#: src/chart1.cpp:5482
+#: src/chart1.cpp:5533
 msgid "Smaller Scale Chart"
 msgstr "小比例尺海图"
 
-#: src/chart1.cpp:5485
+#: src/chart1.cpp:5536
 msgid "Exit OpenCPN"
 msgstr "退出OpenCPN"
 
-#: src/chart1.cpp:5487
+#: src/chart1.cpp:5538
 msgid "&Navigate"
 msgstr "&航行"
 
-#: src/chart1.cpp:5492 src/chart1.cpp:5495 src/options.cpp:4515
-#: src/options.cpp:4671 src/CanvasOptions.cpp:157
+#: src/chart1.cpp:5543 src/chart1.cpp:5546 src/options.cpp:4718
+#: src/options.cpp:4875 src/CanvasOptions.cpp:157
 msgid "Enable Chart Quilting"
 msgstr "启用海图补接"
 
-#: src/chart1.cpp:5493 src/chart1.cpp:5496 src/options.cpp:4559
-#: src/options.cpp:4712 src/CanvasOptions.cpp:165
+#: src/chart1.cpp:5544 src/chart1.cpp:5547 src/options.cpp:4761
+#: src/options.cpp:4922 src/CanvasOptions.cpp:165
 msgid "Show Chart Outlines"
 msgstr "显示海图轮廓"
 
-#: src/chart1.cpp:5498 src/options.cpp:5276
+#: src/chart1.cpp:5549 src/options.cpp:5536
 msgid "Show Chart Bar"
 msgstr "显示海图条"
 
-#: src/chart1.cpp:5503 src/chart1.cpp:5510 src/toolbar.cpp:1332
+#: src/chart1.cpp:5554 src/chart1.cpp:5561 src/toolbar.cpp:984
 msgid "Show ENC text"
 msgstr "显示ENC文本"
 
-#: src/chart1.cpp:5504 src/chart1.cpp:5511
+#: src/chart1.cpp:5555 src/chart1.cpp:5562
 msgid "Show ENC Lights"
 msgstr "显示ENC灯塔"
 
-#: src/chart1.cpp:5505 src/chart1.cpp:5512
+#: src/chart1.cpp:5556 src/chart1.cpp:5563
 msgid "Show ENC Soundings"
 msgstr "显示ENC测深线"
 
-#: src/chart1.cpp:5506 src/chart1.cpp:5513
+#: src/chart1.cpp:5557 src/chart1.cpp:5564
 msgid "Show ENC Anchoring Info"
 msgstr "显示ENC锚泊信息"
 
-#: src/chart1.cpp:5507 src/chart1.cpp:5514
+#: src/chart1.cpp:5558 src/chart1.cpp:5565
 msgid "Show ENC Data Quality"
 msgstr "显示ENC数据质量"
 
-#: src/chart1.cpp:5508 src/chart1.cpp:5515
+#: src/chart1.cpp:5559 src/chart1.cpp:5566
 msgid "Show Navobjects"
 msgstr "显示航海目标"
 
-#: src/chart1.cpp:5519 src/chcanv.cpp:1183 src/toolbar.cpp:1354
+#: src/chart1.cpp:5570 src/chcanv.cpp:1250 src/toolbar.cpp:1006
 msgid "Show Tides"
 msgstr "显示潮汐"
 
-#: src/chart1.cpp:5520 src/chcanv.cpp:1219 src/toolbar.cpp:1348
+#: src/chart1.cpp:5571 src/chcanv.cpp:1286 src/toolbar.cpp:1000
 #: src/CanvasOptions.cpp:198
 msgid "Show Currents"
 msgstr "显示海流"
 
-#: src/chart1.cpp:5523 src/chart1.cpp:5525 src/chart1.cpp:9892
-#: src/toolbar.cpp:1380
+#: src/chart1.cpp:5574 src/chart1.cpp:5576 src/chart1.cpp:10223
+#: src/toolbar.cpp:1032
 msgid "Change Color Scheme"
 msgstr "改变色彩方案"
 
-#: src/chart1.cpp:5530 src/chart1.cpp:5532
+#: src/chart1.cpp:5581 src/chart1.cpp:5583
 msgid "Enter Full Screen"
 msgstr "进入全屏"
 
-#: src/chart1.cpp:5534
+#: src/chart1.cpp:5585
 msgid "&View"
 msgstr "&查看"
 
-#: src/chart1.cpp:5538 src/toolbar.cpp:1438
+#: src/chart1.cpp:5589 src/toolbar.cpp:1090
 msgid "Show AIS Targets"
 msgstr "显示AIS目标"
 
-#: src/chart1.cpp:5539 src/chcanv.cpp:12161 src/toolbar.cpp:1429
+#: src/chart1.cpp:5590 src/chcanv.cpp:12271 src/toolbar.cpp:1081
 msgid "Attenuate less critical AIS targets"
 msgstr "弱化次关键AIS目标"
 
-#: src/chart1.cpp:5541
+#: src/chart1.cpp:5592
 msgid "Hide Moored AIS Targets"
 msgstr "隐藏系泊的AIS目标"
 
-#: src/chart1.cpp:5542
+#: src/chart1.cpp:5593
 msgid "Show AIS Target Tracks"
 msgstr "显示AIS目标航迹"
 
-#: src/chart1.cpp:5543
+#: src/chart1.cpp:5594
 msgid "Show CPA Alert Dialogs"
 msgstr "显示CPA报警对话框"
 
-#: src/chart1.cpp:5544
+#: src/chart1.cpp:5595
 msgid "Sound CPA Alarms"
 msgstr "CPA报警声音"
 
-#: src/chart1.cpp:5547
+#: src/chart1.cpp:5598
 msgid "&AIS"
 msgstr "&AIS"
 
-#: src/chart1.cpp:5551 src/chart1.cpp:5553
+#: src/chart1.cpp:5602 src/chart1.cpp:5604
 msgid "Measure Distance"
 msgstr "测量距离"
 
-#: src/chart1.cpp:5557
+#: src/chart1.cpp:5608
 msgid "Route && Mark Manager..."
 msgstr "航线 && 标志管理器……"
 
-#: src/chart1.cpp:5558 src/chart1.cpp:9875 src/toolbar.cpp:1303
+#: src/chart1.cpp:5609 src/chart1.cpp:10206 src/toolbar.cpp:955
 msgid "Create Route"
 msgstr "创建航线"
 
-#: src/chart1.cpp:5560
+#: src/chart1.cpp:5611
 msgid "Drop Mark at Boat"
 msgstr "船位处放置标志"
 
-#: src/chart1.cpp:5561
+#: src/chart1.cpp:5612
 msgid "Drop Mark at Cursor"
 msgstr "光标处放置标志"
 
-#: src/chart1.cpp:5564 src/chart1.cpp:5568 src/chart1.cpp:9917
-#: src/toolbar.cpp:1399
+#: src/chart1.cpp:5615 src/chart1.cpp:5619 src/chart1.cpp:10278
+#: src/toolbar.cpp:1051
 msgid "Drop MOB Marker"
 msgstr "投放有人落水标志"
 
-#: src/chart1.cpp:5566 src/pluginmanager.cpp:4257
+#: src/chart1.cpp:5617 src/pluginmanager.cpp:4303
 msgid "Preferences"
 msgstr "首选项"
 
-#: src/chart1.cpp:5573
+#: src/chart1.cpp:5624
 msgid "&Tools"
 msgstr "&工具"
 
-#: src/chart1.cpp:5576
+#: src/chart1.cpp:5627
 msgid "OpenCPN Help"
 msgstr "OpenCPN帮助"
 
-#: src/chart1.cpp:5577
+#: src/chart1.cpp:5628
 msgid "&Help"
 msgstr "&帮助"
 
-#: src/chart1.cpp:6146
+#: src/chart1.cpp:6189
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "重启OpenCPN以激活语言或样式更改."
 
-#: src/chart1.cpp:7563
+#: src/chart1.cpp:7705
 msgid "Rotated Mode"
 msgstr "旋转的模式"
 
-#: src/chart1.cpp:8123 src/routeprintout.cpp:493
+#: src/chart1.cpp:8740 src/routeprintout.cpp:493
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "打印故障。\n"
 "可能目前打印机设置不正确？"
 
-#: src/chart1.cpp:8305 src/chart1.cpp:8366 src/routemanagerdialog.cpp:989
+#: src/chart1.cpp:8922 src/chart1.cpp:8983 src/routemanagerdialog.cpp:939
 msgid "(Unnamed Route)"
 msgstr "（未命名航线）"
 
-#: src/chart1.cpp:8921
+#: src/chart1.cpp:9538
 msgid " Ship "
 msgstr " 船只  "
 
-#: src/chart1.cpp:9174 src/chart1.cpp:9224
+#: src/chart1.cpp:9791 src/chart1.cpp:9843
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS有人落水"
 
-#: src/chart1.cpp:9188 src/options.cpp:2718
+#: src/chart1.cpp:9805 src/options.cpp:2897
 msgid "Own ship"
 msgstr "本船"
 
-#: src/chart1.cpp:9199
+#: src/chart1.cpp:9816
 msgid "Temporary AISMOB Route"
 msgstr "临时AIS有人落水航线"
 
-#: src/chart1.cpp:9200
+#: src/chart1.cpp:9817
 msgid "Present own ship"
 msgstr "当前本船"
 
-#: src/chart1.cpp:9268
+#: src/chart1.cpp:9887
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS有人落水更新"
 
-#: src/chart1.cpp:9881 src/routemanagerdialog.cpp:335 src/toolbar.cpp:1366
+#: src/chart1.cpp:10212 src/routemanagerdialog.cpp:280 src/toolbar.cpp:1018
 msgid "Route & Mark Manager"
 msgstr "航线&标志管理器"
 
-#: src/chart1.cpp:9903 src/toolbar.cpp:1360
+#: src/chart1.cpp:10234 src/toolbar.cpp:1012
 msgid "Print Chart"
 msgstr "打印海图"
 
-#: src/chart1.cpp:9917 src/toolbar.cpp:1399
+#: src/chart1.cpp:10278 src/toolbar.cpp:1051
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl键+空格键)"
 
-#: src/chart1.cpp:10872
+#: src/chart1.cpp:11254
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN需要获取串行口NMEA数据.\n"
 
-#: src/chart1.cpp:10874
+#: src/chart1.cpp:11256
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "系统没有发现串行端口.\n"
 "必须安装船型端口(自加载正确内核模块)或插入USB穿行设备.\n"
 
-#: src/chart1.cpp:10900
+#: src/chart1.cpp:11282
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3276,327 +3287,331 @@ msgstr "当前不允许获取本系统串行端口.\n\n"
 "可以在Linux执行下述命令行:\n\n"
 "                sudo usermod -a -G "
 
-#: src/chartdbs.cpp:1337
+#: src/chartdbs.cpp:1359
 msgid " ChartFile:  "
 msgstr " 海图文件: "
 
-#: src/chartdbs.cpp:1374
+#: src/chartdbs.cpp:1382
 msgid " Name:  "
 msgstr " 名字: "
 
-#: src/chartdbs.cpp:1402 src/chartdbs.cpp:1404 src/chcanv.cpp:5268
-#: src/chcanv.cpp:5270 src/chcanv.cpp:5273 src/chcanv.cpp:5277
-#: src/chcanv.cpp:5280 src/chcanv.cpp:5317 src/routemanagerdialog.cpp:638
+#: src/chartdbs.cpp:1410 src/chartdbs.cpp:1412 src/chcanv.cpp:5362
+#: src/chcanv.cpp:5364 src/chcanv.cpp:5367 src/chcanv.cpp:5371
+#: src/chcanv.cpp:5374 src/chcanv.cpp:5411 src/routemanagerdialog.cpp:583
 msgid "Scale"
 msgstr "比例尺"
 
-#: src/chartdbs.cpp:1414
+#: src/chartdbs.cpp:1422
 msgid " ID:  "
 msgstr " 识别码;  "
 
-#: src/chartdbs.cpp:1422
+#: src/chartdbs.cpp:1430
 msgid " Depth Units:  "
 msgstr " 深度单位:  "
 
-#: src/chartdbs.cpp:1430
+#: src/chartdbs.cpp:1438
 msgid " Soundings:  "
 msgstr " 测深点:  "
 
-#: src/chartdbs.cpp:1438
+#: src/chartdbs.cpp:1446
 msgid " Datum:  "
 msgstr " 基准:  "
 
-#: src/chartdbs.cpp:1446
+#: src/chartdbs.cpp:1454
 msgid " Projection:  "
 msgstr " 投影方式:  "
 
-#: src/chartdbs.cpp:1450
+#: src/chartdbs.cpp:1458
 msgid "Mercator"
 msgstr "墨卡托投影"
 
-#: src/chartdbs.cpp:1452
+#: src/chartdbs.cpp:1460
 msgid "Transverse Mercator"
 msgstr "墨卡托投影方式"
 
-#: src/chartdbs.cpp:1454
+#: src/chartdbs.cpp:1462
 msgid "Polyconic"
 msgstr "多圆锥投影方式"
 
-#: src/chartdbs.cpp:1456
+#: src/chartdbs.cpp:1464
 msgid "Web Mercator (EPSG:3857)"
 msgstr "网络墨卡托（EPSG:3857）"
 
-#: src/chartdbs.cpp:1465
+#: src/chartdbs.cpp:1473
 msgid " Source Edition:  "
 msgstr " 资源版本:  "
 
-#: src/chartdbs.cpp:1473
+#: src/chartdbs.cpp:1481
 msgid " Updated:  "
 msgstr " 跟新:  "
 
-#: src/chartdbs.cpp:1702
+#: src/chartdbs.cpp:1719
 msgid "OpenCPN Chart Scan...."
 msgstr "OpenCPN海图扫描……"
 
-#: src/chartdbs.cpp:1743
+#: src/chartdbs.cpp:1760
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN目录扫描……"
 
-#: src/chartdbs.cpp:2074
+#: src/chartdbs.cpp:2134
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN添加海图……"
 
-#: src/chcanv.cpp:1185
+#: src/chcanv.cpp:1252
 msgid "Hide Tides"
 msgstr "隐藏潮汐"
 
-#: src/chcanv.cpp:1221
+#: src/chcanv.cpp:1288
 msgid "Hide Currents"
 msgstr "隐藏海流"
 
-#: src/chcanv.cpp:1317 src/chcanv.cpp:1332
+#: src/chcanv.cpp:1386 src/chcanv.cpp:1401
 msgid "Group \""
 msgstr "组 \""
 
-#: src/chcanv.cpp:1322
+#: src/chcanv.cpp:1391
 msgid "\" is empty."
 msgstr "\" 空的."
 
-#: src/chcanv.cpp:1324 src/chcanv.cpp:1339
+#: src/chcanv.cpp:1393 src/chcanv.cpp:1408
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN组通知"
 
-#: src/chcanv.cpp:1337
+#: src/chcanv.cpp:1406
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" 是空的，转至“所有活动海图”组。"
 
-#: src/chcanv.cpp:3782 src/chcanv.cpp:9637
+#: src/chcanv.cpp:3855 src/chcanv.cpp:9721
 msgid "Layer Route: "
 msgstr "航线图层:"
 
-#: src/chcanv.cpp:3784 src/chcanv.cpp:3905
+#: src/chcanv.cpp:3857 src/chcanv.cpp:3978
 msgid "(unnamed)"
 msgstr "(未命名)"
 
-#: src/chcanv.cpp:3788 src/chcanv.cpp:3909
+#: src/chcanv.cpp:3861 src/chcanv.cpp:3982
 msgid "Total Length: "
 msgstr "总长度:"
 
-#: src/chcanv.cpp:3789
+#: src/chcanv.cpp:3862
 msgid "Leg: from "
 msgstr "区段：起自 "
 
-#: src/chcanv.cpp:3790
+#: src/chcanv.cpp:3863
 msgid " to "
 msgstr " 至 "
 
-#: src/chcanv.cpp:3902
+#: src/chcanv.cpp:3975
 msgid "Layer Track: "
 msgstr "航迹图层："
 
-#: src/chcanv.cpp:7539 src/chcanv.cpp:7991
+#: src/chcanv.cpp:7626 src/chcanv.cpp:8078
 msgid "Use nearby waypoint?"
 msgstr "使用附近航路点？"
 
-#: src/chcanv.cpp:7540 src/chcanv.cpp:7592 src/chcanv.cpp:7992
-#: src/chcanv.cpp:8042
+#: src/chcanv.cpp:7627 src/chcanv.cpp:7679 src/chcanv.cpp:8079
+#: src/chcanv.cpp:8129
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN航向创建"
 
-#: src/chcanv.cpp:7585 src/chcanv.cpp:8037
+#: src/chcanv.cpp:7672 src/chcanv.cpp:8124
 msgid "For this leg the Great Circle route is "
 msgstr "本区段大圆航线为 "
 
-#: src/chcanv.cpp:7586 src/chcanv.cpp:8038
+#: src/chcanv.cpp:7673 src/chcanv.cpp:8125
 msgid " shorter than rhumbline.\n\n"
 msgstr " 短于航程线.\n\n"
 
-#: src/chcanv.cpp:7587 src/chcanv.cpp:8039
+#: src/chcanv.cpp:7674 src/chcanv.cpp:8126
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "本区段加入大圆航线点吗?"
 
-#: src/chcanv.cpp:8759 src/chcanv.cpp:8767 src/S57QueryDialog.cpp:89
-#: src/S57QueryDialog.cpp:245
+#: src/chcanv.cpp:8842 src/chcanv.cpp:8850 src/S57QueryDialog.cpp:89
+#: src/S57QueryDialog.cpp:250
 msgid "ObjectQuery"
 msgstr "目标查询"
 
-#: src/chcanv.cpp:8868 src/chcanv.cpp:8871 src/routemanagerdialog.cpp:2210
-#: src/routemanagerdialog.cpp:2213 src/RoutePropDlgImpl.cpp:747
+#: src/chcanv.cpp:8952 src/chcanv.cpp:8955 src/routemanagerdialog.cpp:2160
+#: src/routemanagerdialog.cpp:2163 src/RoutePropDlgImpl.cpp:815
 msgid "Waypoint Properties"
 msgstr "航路点属性"
 
-#: src/chcanv.cpp:8868 src/routemanagerdialog.cpp:2210
-#: src/RoutePropDlgImpl.cpp:421
+#: src/chcanv.cpp:8952 src/routemanagerdialog.cpp:2160
+#: src/RoutePropDlgImpl.cpp:478
 msgid "Layer"
 msgstr "图层"
 
-#: src/chcanv.cpp:8952
+#: src/chcanv.cpp:9036
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "所粘贴的航路点处已经有一个航路点，粘贴的航路点与其合并吗?\n\n"
 
-#: src/chcanv.cpp:8953
+#: src/chcanv.cpp:9037
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "回答“否”将在相同位置创建一个新的航路点."
 
-#: src/chcanv.cpp:8954
+#: src/chcanv.cpp:9038
 msgid "Merge waypoint?"
 msgstr "合并航路点?"
 
-#: src/chcanv.cpp:9010
+#: src/chcanv.cpp:9094
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "所粘贴的航路点处已经有航路点，粘贴的航路点与它们合并吗?\n\n"
 
-#: src/chcanv.cpp:9011
+#: src/chcanv.cpp:9095
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "回答“否”将为此航线创建所有新的航路点."
 
-#: src/chcanv.cpp:9012
+#: src/chcanv.cpp:9096
 msgid "Merge waypoints?"
 msgstr "合并航路点?"
 
-#: src/chcanv.cpp:9501 src/chcanv.cpp:9532 src/RolloverWin.cpp:129
-#: src/RolloverWin.cpp:226 src/RolloverWin.cpp:347
+#: src/chcanv.cpp:9585 src/chcanv.cpp:9616 src/RolloverWin.cpp:136
+#: src/RolloverWin.cpp:236 src/RolloverWin.cpp:375
 msgid "RouteLegInfoRollover"
 msgstr "航线区段信息翻转"
 
-#: src/chcanv.cpp:10831 src/options.cpp:4765 src/options.cpp:4873
+#: src/chcanv.cpp:10286
+msgid "MBTile requires OpenGL to be enabled"
+msgstr ""
+
+#: src/chcanv.cpp:10935 src/options.cpp:5013 src/options.cpp:5126
 msgid "Feet"
 msgstr "英尺"
 
-#: src/chcanv.cpp:10832 src/options.cpp:4744 src/options.cpp:4765
-#: src/options.cpp:4852 src/options.cpp:4873
+#: src/chcanv.cpp:10936 src/options.cpp:4986 src/options.cpp:5013
+#: src/options.cpp:5105 src/options.cpp:5126
 msgid "Meters"
 msgstr "米"
 
-#: src/chcanv.cpp:10833 src/options.cpp:4765 src/options.cpp:4873
+#: src/chcanv.cpp:10937 src/options.cpp:5013 src/options.cpp:5126
 msgid "Fathoms"
 msgstr "寻"
 
-#: src/chcanv.cpp:10836
+#: src/chcanv.cpp:10940
 msgid "OverZoom"
 msgstr "超过缩放范围"
 
-#: src/chcanv.cpp:11227 src/chcanv.cpp:11228
+#: src/chcanv.cpp:11331 src/chcanv.cpp:11332
 msgid "ExtendedTideIcon"
 msgstr "延伸潮汐图标"
 
-#: src/chcanv.cpp:11518
+#: src/chcanv.cpp:11640
 msgid "CurrentValue"
 msgstr "当前值"
 
-#: src/chcanv.cpp:12160
+#: src/chcanv.cpp:12270
 msgid "Show all AIS Targets"
 msgstr "显示所有AIS目标"
 
-#: src/chcanv.cpp:12162 src/toolbar.cpp:1341 src/toolbar.cpp:1431
-#: src/toolbar.cpp:1434
+#: src/chcanv.cpp:12272 src/toolbar.cpp:993 src/toolbar.cpp:1083
+#: src/toolbar.cpp:1086
 msgid "Hide AIS Targets"
 msgstr "隐藏AIS目标"
 
-#: src/chcanv.cpp:12812
+#: src/chcanv.cpp:12926
 msgid "Show This Chart"
 msgstr "显示此海图"
 
-#: src/chcanv.cpp:12817
+#: src/chcanv.cpp:12931
 msgid "Hide This Chart"
 msgstr "隐藏此海图"
 
-#: src/cm93.cpp:6830
+#: src/cm93.cpp:7308
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "OpenCPN CM93窗格偏移调节"
 
-#: src/cm93.cpp:6847
+#: src/cm93.cpp:7334
 msgid "Cell"
 msgstr "窗格"
 
-#: src/cm93.cpp:6850
+#: src/cm93.cpp:7337
 msgid "M_COVR ID"
 msgstr ""
 
-#: src/cm93.cpp:6853
+#: src/cm93.cpp:7340
 msgid "Cell Scale"
 msgstr "窗格比例尺"
 
-#: src/cm93.cpp:6856
+#: src/cm93.cpp:7343
 msgid "wgsox"
 msgstr ""
 
-#: src/cm93.cpp:6859
+#: src/cm93.cpp:7346
 msgid "wgsoy"
 msgstr ""
 
-#: src/cm93.cpp:6862 src/cm93.cpp:6873
+#: src/cm93.cpp:7349 src/cm93.cpp:7360
 msgid "User X Offset"
 msgstr "用户X轴补偿"
 
-#: src/cm93.cpp:6865 src/cm93.cpp:6880
+#: src/cm93.cpp:7352 src/cm93.cpp:7367
 msgid "User Y Offset"
 msgstr "用户Y轴补偿"
 
-#: src/cm93.cpp:6873 src/cm93.cpp:6880 src/options.cpp:4018 src/options.cpp:4028
-#: src/options.cpp:4038 src/options.cpp:4232 src/options.cpp:4241
-#: src/options.cpp:4249 src/options.cpp:6325
+#: src/cm93.cpp:7360 src/cm93.cpp:7367 src/options.cpp:4205 src/options.cpp:4215
+#: src/options.cpp:4225 src/options.cpp:4421 src/options.cpp:4428
+#: src/options.cpp:4435 src/options.cpp:6721
 msgid "meters"
 msgstr "米"
 
-#: src/concanv.cpp:98 src/concanv.cpp:144 src/concanv.cpp:163
-#: src/concanv.cpp:205 src/concanv.cpp:213
+#: src/concanv.cpp:98 src/concanv.cpp:141 src/concanv.cpp:160
+#: src/concanv.cpp:202 src/concanv.cpp:229
 msgid "This Leg"
 msgstr "本区段"
 
-#: src/concanv.cpp:110 src/concanv.cpp:114 src/concanv.cpp:118
-#: src/concanv.cpp:122 src/concanv.cpp:126 src/concanv.cpp:573
+#: src/concanv.cpp:107 src/concanv.cpp:111 src/concanv.cpp:115
+#: src/concanv.cpp:119 src/concanv.cpp:123 src/concanv.cpp:585
 msgid "Console Legend"
 msgstr "面板图例"
 
-#: src/concanv.cpp:110 src/concanv.cpp:114 src/concanv.cpp:118
-#: src/concanv.cpp:122 src/concanv.cpp:126 src/concanv.cpp:574
+#: src/concanv.cpp:107 src/concanv.cpp:111 src/concanv.cpp:115
+#: src/concanv.cpp:119 src/concanv.cpp:123 src/concanv.cpp:586
 msgid "Console Value"
 msgstr "面板数值"
 
-#: src/concanv.cpp:214
+#: src/concanv.cpp:230
 msgid "Full Route"
 msgstr "全航线"
 
-#: src/concanv.cpp:215
+#: src/concanv.cpp:231
 msgid "Show Highway"
 msgstr "显示捷径"
 
-#: src/concanv.cpp:338
+#: src/concanv.cpp:350
 msgid "XTE         L"
 msgstr "XTE左"
 
-#: src/concanv.cpp:340
+#: src/concanv.cpp:352
 msgid "XTE         R"
 msgstr "XTE右"
 
-#: src/concanv.cpp:356 src/concanv.cpp:429
+#: src/concanv.cpp:368 src/concanv.cpp:441
 msgid "TTG  @VMG"
-msgstr ""
+msgstr "有效航速时剩余时间"
 
-#: src/concanv.cpp:358 src/concanv.cpp:432
+#: src/concanv.cpp:370 src/concanv.cpp:444
 msgid "TTG  @SOG"
-msgstr ""
+msgstr "对地航速时剩余时间"
 
-#: src/concanv.cpp:404
+#: src/concanv.cpp:416
 msgid "%Dd %H:%M"
 msgstr "%日 %时:%分"
 
-#: src/concanv.cpp:430
+#: src/concanv.cpp:442
 msgid "ETA  @VMG"
-msgstr ""
+msgstr "有效航速时预抵时间"
 
-#: src/concanv.cpp:433
+#: src/concanv.cpp:445
 msgid "ETA  @SOG"
-msgstr ""
+msgstr "对地航速时预抵时间"
 
-#: src/ConnectionParams.cpp:156 src/ConnectionParams.cpp:470
-#: src/ConnectionParams.cpp:647 src/options.cpp:1514 src/options.cpp:2151
+#: src/ConnectionParams.cpp:156 src/ConnectionParams.cpp:471
+#: src/ConnectionParams.cpp:648 src/options.cpp:1694 src/options.cpp:2330
 msgid "Serial"
 msgstr "系列"
 
-#: src/ConnectionParams.cpp:158 src/ConnectionParams.cpp:565
-#: src/ConnectionParams.cpp:671 src/options.cpp:1519 src/options.cpp:2156
+#: src/ConnectionParams.cpp:158 src/ConnectionParams.cpp:566
+#: src/ConnectionParams.cpp:672 src/options.cpp:1699 src/options.cpp:2335
 msgid "Network"
 msgstr "网络"
 
@@ -3612,15 +3627,15 @@ msgstr "BT"
 msgid "Internal"
 msgstr "内部的"
 
-#: src/ConnectionParams.cpp:187 src/options.cpp:1600 src/options.cpp:2238
+#: src/ConnectionParams.cpp:187 src/options.cpp:1780 src/options.cpp:2417
 msgid "TCP"
 msgstr "TCP"
 
-#: src/ConnectionParams.cpp:189 src/options.cpp:1606 src/options.cpp:2244
+#: src/ConnectionParams.cpp:189 src/options.cpp:1786 src/options.cpp:2423
 msgid "UDP"
 msgstr "UDP"
 
-#: src/ConnectionParams.cpp:191 src/options.cpp:1612 src/options.cpp:2250
+#: src/ConnectionParams.cpp:191 src/options.cpp:1792 src/options.cpp:2429
 msgid "GPSD"
 msgstr "GPSD"
 
@@ -3668,68 +3683,48 @@ msgstr "出的"
 msgid ", Out: None"
 msgstr ", Out: 无"
 
-#: src/ConnectionParams.cpp:421 src/options.cpp:2626 src/pluginmanager.cpp:4352
-#: src/pluginmanager.cpp:4363
+#: src/ConnectionParams.cpp:422 src/options.cpp:2805 src/pluginmanager.cpp:4418
+#: src/pluginmanager.cpp:4429
 msgid "Enable"
 msgstr "启用"
 
-#: src/ConnectionParams.cpp:449 src/ConnectionParams.cpp:544
+#: src/ConnectionParams.cpp:450 src/ConnectionParams.cpp:545
 msgid "Direction"
 msgstr "方向"
 
-#: src/ConnectionParams.cpp:453 src/ConnectionParams.cpp:548
-#: src/options.cpp:1590 src/options.cpp:1671 src/options.cpp:2229
-#: src/options.cpp:2321
+#: src/ConnectionParams.cpp:454 src/ConnectionParams.cpp:549
+#: src/options.cpp:1770 src/options.cpp:1851 src/options.cpp:2408
+#: src/options.cpp:2500
 msgid "Protocol"
 msgstr "协议"
 
-#: src/ConnectionParams.cpp:457
+#: src/ConnectionParams.cpp:458
 msgid "Serial Port"
 msgstr "串口"
 
-#: src/ConnectionParams.cpp:461 src/options.cpp:1654 src/options.cpp:2304
+#: src/ConnectionParams.cpp:462 src/options.cpp:1834 src/options.cpp:2483
 msgid "Baudrate"
 msgstr "波特率"
 
-#: src/ConnectionParams.cpp:465 src/ConnectionParams.cpp:560
-#: src/options.cpp:1687 src/options.cpp:2337 src/options.cpp:2627
+#: src/ConnectionParams.cpp:466 src/ConnectionParams.cpp:561
+#: src/options.cpp:1867 src/options.cpp:2516 src/options.cpp:2806
 msgid "Priority"
 msgstr "优先"
 
-#: src/ConnectionParams.cpp:523 src/ConnectionParams.cpp:618
-#: src/ConnectionParams.cpp:654 src/ConnectionParams.cpp:678
+#: src/ConnectionParams.cpp:524 src/ConnectionParams.cpp:619
+#: src/ConnectionParams.cpp:655 src/ConnectionParams.cpp:679
 msgid "Comment: "
 msgstr "评论："
 
-#: src/ConnectionParams.cpp:552
+#: src/ConnectionParams.cpp:553
 msgid "Network Address"
 msgstr "网络地址"
 
-#: src/ConnectionParams.cpp:556
+#: src/ConnectionParams.cpp:557
 msgid "Network Port"
 msgstr "网络端口"
 
-#: src/ConnectionParams.cpp:751
-msgid "Chart Edition:"
-msgstr "海图版本："
-
-#: src/ConnectionParams.cpp:757
-msgid "Order Reference:"
-msgstr "定购参考："
-
-#: src/ConnectionParams.cpp:763
-msgid "Purchase date:"
-msgstr "购置日期："
-
-#: src/ConnectionParams.cpp:769
-msgid "Expiration date:"
-msgstr "到期日："
-
-#: src/ConnectionParams.cpp:775
-msgid "Status:"
-msgstr "状态："
-
-#: src/DetailSlider.cpp:87 src/options.cpp:4049 src/options.cpp:4260
+#: src/DetailSlider.cpp:87 src/options.cpp:4236 src/options.cpp:4447
 msgid "CM93 Detail Level"
 msgstr "CM93细节水平"
 
@@ -3741,56 +3736,55 @@ msgstr "栅格海图缩放/比例尺权重"
 msgid "Vectorchart Zoom/Scale Weighting"
 msgstr "矢量海图缩放/比例尺权重"
 
-#: src/glChartCanvas.cpp:773
-msgid "Failed to initialize OpenGL"
-msgstr "初始化OpenGL失败"
-
-#: src/glChartCanvas.cpp:1606 src/s52plib.cpp:2165 src/s52plib.cpp:2285
-#: src/s52plib.cpp:2464
+#: src/glChartCanvas.cpp:2161 src/s52plib.cpp:2311 src/s52plib.cpp:2336
+#: src/s52plib.cpp:2444 src/s52plib.cpp:2621
 msgid "ChartTexts"
 msgstr "海图文本"
 
-#: src/glChartCanvas.cpp:4039
+#: src/glChartCanvas.cpp:5014
 msgid "Waiting for raster chart compression thread exit."
 msgstr "等待栅格海图线程退出."
 
-#: src/GoToPositionDialog.cpp:120 src/RoutePropDlg.cpp:205
-#: src/TrackPropDlg.cpp:220 src/MarkInfo.cpp:342
+#: src/GoToPositionDialog.cpp:120 src/RoutePropDlg.cpp:216
+#: src/TrackPropDlg.cpp:216 src/MarkInfo.cpp:419
 msgid "Latitude"
 msgstr "经度"
 
-#: src/GoToPositionDialog.cpp:130 src/RoutePropDlg.cpp:207
-#: src/TrackPropDlg.cpp:221 src/MarkInfo.cpp:348
+#: src/GoToPositionDialog.cpp:130 src/RoutePropDlg.cpp:218
+#: src/TrackPropDlg.cpp:217 src/MarkInfo.cpp:426
 msgid "Longitude"
 msgstr "纬度"
 
-#: src/GoToPositionDialog.cpp:143 src/options.cpp:528 src/options.cpp:634
-#: src/routeprintout.cpp:426 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:3307
-#: src/TrackPropDlg.cpp:496 src/TrackPropDlg.cpp:834
+#: src/GoToPositionDialog.cpp:143 src/LinkPropDlg.cpp:80 src/navutil.cpp:3725
+#: src/options.cpp:551 src/options.cpp:657 src/options.cpp:6057
+#: src/options.cpp:9983 src/options.cpp:10192 src/routeprintout.cpp:426
+#: src/RoutePropDlg.cpp:345 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2990
+#: src/TrackPropDlg.cpp:495 src/TrackPropDlg.cpp:826 src/MarkInfo.cpp:611
+#: src/MarkInfo.cpp:1545
 msgid "Cancel"
 msgstr "取消"
 
-#: src/kml.cpp:444
+#: src/kml.cpp:446
 msgid "OpenCPN Route"
 msgstr "OpenCPN航线"
 
-#: src/kml.cpp:489
+#: src/kml.cpp:491
 msgid "OpenCPN Track"
 msgstr "OpenCPN航迹"
 
-#: src/kml.cpp:537
+#: src/kml.cpp:539
 msgid "OpenCPN Waypoint"
 msgstr "OpenCPN航路点"
 
-#: src/kml.cpp:608
+#: src/kml.cpp:625
 msgid "Choose Format for Copy"
 msgstr "选择复制格式"
 
-#: src/kml.cpp:615
+#: src/kml.cpp:632
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML标准（Google Earth及其它）"
 
-#: src/kml.cpp:618
+#: src/kml.cpp:635
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "带有扩展航路点数据（QtVlm)的KML"
 
@@ -3810,176 +3804,172 @@ msgstr "域名"
 msgid "Local file..."
 msgstr "本地文件."
 
-#: src/LinkPropDlg.cpp:118
+#: src/LinkPropDlg.cpp:122
 msgid "Choose a file"
 msgstr "选择一个文件"
 
-#: src/LinkPropDlg.cpp:129
+#: src/LinkPropDlg.cpp:133
 msgid "Link not complete, can't be saved."
 msgstr "链接未完成，无法保存。"
 
-#: src/navutil.cpp:1694 src/navutil.cpp:3006 src/options.cpp:612
-#: src/options.cpp:773
+#: src/navutil.cpp:1707 src/navutil.cpp:3076 src/options.cpp:635
+#: src/options.cpp:807
 msgid "Persistent"
 msgstr "持久的"
 
-#: src/navutil.cpp:2740 src/navutil.cpp:2818
+#: src/navutil.cpp:2768 src/navutil.cpp:2879
 msgid "Export GPX file"
 msgstr "导出GPX文件"
 
-#: src/navutil.cpp:2753
+#: src/navutil.cpp:2781
 msgid "Overwrite existing file?"
 msgstr "覆盖现有文件？"
 
-#: src/navutil.cpp:2911 src/navutil.cpp:2945
+#: src/navutil.cpp:2981 src/navutil.cpp:3015
 msgid "Import GPX file"
 msgstr "导入GPX文件"
 
-#: src/navutil.cpp:3006
+#: src/navutil.cpp:3076
 msgid "Temporary"
 msgstr "临时"
 
-#: src/navutil.cpp:3037
+#: src/navutil.cpp:3107
 msgid "duplicate waypoints detected during import and ignored."
 msgstr "导入时检测到重复航路点，已忽略。"
 
-#: src/navutil.cpp:3556
+#: src/navutil.cpp:3630
 msgid "&Font family:"
 msgstr "&字体组："
 
-#: src/navutil.cpp:3562 src/navutil.cpp:3564
+#: src/navutil.cpp:3636 src/navutil.cpp:3638
 msgid "The font family."
 msgstr "字体组。"
 
-#: src/navutil.cpp:3569
+#: src/navutil.cpp:3643
 msgid "&Style:"
 msgstr "&类型："
 
-#: src/navutil.cpp:3573 src/navutil.cpp:3575
+#: src/navutil.cpp:3647 src/navutil.cpp:3649
 msgid "The font style."
 msgstr "字体类型。"
 
-#: src/navutil.cpp:3580
+#: src/navutil.cpp:3654
 msgid "&Weight:"
 msgstr "&粗细："
 
-#: src/navutil.cpp:3584 src/navutil.cpp:3586
+#: src/navutil.cpp:3658 src/navutil.cpp:3660
 msgid "The font weight."
 msgstr "字体粗细."
 
-#: src/navutil.cpp:3593
+#: src/navutil.cpp:3667
 msgid "C&olour:"
 msgstr "&颜色："
 
-#: src/navutil.cpp:3603 src/navutil.cpp:3605
+#: src/navutil.cpp:3677 src/navutil.cpp:3679
 msgid "The font colour."
 msgstr "字体颜色。"
 
-#: src/navutil.cpp:3611
+#: src/navutil.cpp:3685
 msgid "&Point size:"
 msgstr "&点大小："
 
-#: src/navutil.cpp:3616 src/navutil.cpp:3618
+#: src/navutil.cpp:3690 src/navutil.cpp:3692
 msgid "The font point size."
 msgstr "字体点大小。"
 
-#: src/navutil.cpp:3625
+#: src/navutil.cpp:3699
 msgid "&Underline"
 msgstr "&下划线"
 
-#: src/navutil.cpp:3628 src/navutil.cpp:3630
+#: src/navutil.cpp:3702 src/navutil.cpp:3704
 msgid "Whether the font is underlined."
 msgstr "字体是否下划线。"
 
-#: src/navutil.cpp:3637
+#: src/navutil.cpp:3711
 msgid "Preview:"
 msgstr "预览："
 
-#: src/navutil.cpp:3642 src/navutil.cpp:3644
+#: src/navutil.cpp:3716 src/navutil.cpp:3718
 msgid "Shows the font preview."
 msgstr "显示字体预览。"
 
-#: src/navutil.cpp:3651 src/options.cpp:5685
-msgid "&Cancel"
-msgstr "&取消"
-
-#: src/navutil.cpp:3653
+#: src/navutil.cpp:3728
 msgid "Click to cancel the font selection."
 msgstr "点击取消字体选择。"
 
-#: src/navutil.cpp:3656
+#: src/navutil.cpp:3731
 msgid "&OK"
 msgstr "&确认"
 
-#: src/navutil.cpp:3658 src/navutil.cpp:3660
+#: src/navutil.cpp:3733 src/navutil.cpp:3735
 msgid "Click to confirm the font selection."
 msgstr "点击确认字体选择。"
 
-#: src/navutil.cpp:4177
+#: src/navutil.cpp:4252
 msgid "NMi"
 msgstr "海里"
 
-#: src/navutil.cpp:4180
+#: src/navutil.cpp:4255
 msgid "mi"
 msgstr "mi"
 
-#: src/navutil.cpp:4183
+#: src/navutil.cpp:4258
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4186
+#: src/navutil.cpp:4261
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:4189
+#: src/navutil.cpp:4264
 msgid "ft"
 msgstr "ft"
 
-#: src/navutil.cpp:4192
+#: src/navutil.cpp:4267
 msgid "fa"
 msgstr "fa"
 
-#: src/navutil.cpp:4198
+#: src/navutil.cpp:4273
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:4266
+#: src/navutil.cpp:4341
 msgid "kts"
 msgstr "kts"
 
-#: src/navutil.cpp:4269
+#: src/navutil.cpp:4344
 msgid "mph"
 msgstr "mph"
 
-#: src/navutil.cpp:4272 src/options.cpp:4754 src/options.cpp:4862
+#: src/navutil.cpp:4347 src/options.cpp:4999 src/options.cpp:5115
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:4275 src/options.cpp:4754 src/options.cpp:4862
+#: src/navutil.cpp:4350 src/options.cpp:4999 src/options.cpp:5115
 msgid "m/s"
 msgstr "m/s"
 
-#: src/navutil.cpp:4292
+#: src/navutil.cpp:4367
 #, c-format
 msgid "%dd "
 msgstr ""
 
-#: src/navutil.cpp:4293
+#: src/navutil.cpp:4368
 #, c-format
 msgid "%2dH %2dM"
 msgstr ""
 
-#: src/navutil.cpp:4294
+#: src/navutil.cpp:4369
 #, c-format
 msgid "%2dM %2dS"
 msgstr ""
 
-#: src/navutil.cpp:4307 src/RoutePropDlgImpl.cpp:292
-#: src/RoutePropDlgImpl.cpp:297
+#: src/navutil.cpp:4382 src/RoutePropDlgImpl.cpp:341
+#: src/RoutePropDlgImpl.cpp:346
 msgid "N/A"
 msgstr "不适用"
 
-#: src/NMEALogWindow.cpp:64
+#: src/NMEALogWindow.cpp:71
 msgid "NMEA Debug Window"
 msgstr "NMEA调试窗口"
 
@@ -4001,18 +3991,17 @@ msgstr "不能加载声音数据自 '%s'."
 msgid "Sound file '%s' is in unsupported format."
 msgstr "声音文件 '%s' 是不支持的格式."
 
-#: src/options.cpp:503 src/ConfigMgr.cpp:625
+#: src/options.cpp:526 src/ConfigMgr.cpp:631
 msgid "Title"
 msgstr "标题"
 
-#: src/options.cpp:510 src/routeprintout.cpp:117 src/routeprintout.cpp:414
-#: src/RoutePropDlg.cpp:217 src/RoutePropDlg.cpp:235 src/TrackPropDlg.cpp:726
-#: src/ConfigMgr.cpp:630 src/MarkInfo.cpp:353 src/MarkInfo.cpp:375
-#: src/MarkInfo.cpp:508
+#: src/options.cpp:533 src/routeprintout.cpp:117 src/routeprintout.cpp:414
+#: src/RoutePropDlg.cpp:228 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:721
+#: src/ConfigMgr.cpp:636 src/MarkInfo.cpp:434 src/MarkInfo.cpp:469
 msgid "Description"
 msgstr "描述"
 
-#: src/options.cpp:518
+#: src/options.cpp:541
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
@@ -4020,109 +4009,109 @@ msgstr "根据当前设置创建一个私有配置模板.\n"
 "这一模板将被保存，并且可在以后任何时候调用.\n"
 "               "
 
-#: src/options.cpp:582
+#: src/options.cpp:605
 msgid "MMSI Extended Properties"
 msgstr "NMEA扩展属性"
 
-#: src/options.cpp:596
+#: src/options.cpp:619
 msgid "Tracking"
 msgstr "航迹记录"
 
-#: src/options.cpp:601
+#: src/options.cpp:624
 msgid "Default tracking"
 msgstr "默认航迹记录"
 
-#: src/options.cpp:606
+#: src/options.cpp:629
 msgid "Always track"
 msgstr "总是记录航迹"
 
-#: src/options.cpp:609
+#: src/options.cpp:632
 msgid " Never track"
 msgstr " 从不记录航迹"
 
-#: src/options.cpp:618
+#: src/options.cpp:641
 msgid "Ignore this MMSI"
 msgstr "忽略此MMSI"
 
-#: src/options.cpp:622
+#: src/options.cpp:645
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "将此MMSI 视为 SART/PLB(AIS) 有人落水."
 
-#: src/options.cpp:625
+#: src/options.cpp:648
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "为此MMSI将AIVDM转换为AIVDO"
 
-#: src/options.cpp:628
+#: src/options.cpp:651
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "此MMSI为跟从者 - 无需CPA报警"
 
-#: src/options.cpp:716
+#: src/options.cpp:750
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "MMSI一般为9个数字的号码.\n"
 "请检查输入值，必要的取消."
 
-#: src/options.cpp:761 src/options.cpp:2752 src/RoutePropDlg.cpp:168
-#: src/RoutePropDlg.cpp:184 src/TrackPropDlg.cpp:392 src/TrackPropDlg.cpp:410
-#: src/TrackPropDlg.cpp:618 src/TrackPropDlg.cpp:628
+#: src/options.cpp:795 src/options.cpp:2931 src/RoutePropDlg.cpp:179
+#: src/RoutePropDlg.cpp:195 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:406
+#: src/TrackPropDlg.cpp:613 src/TrackPropDlg.cpp:623
 msgid "Default"
 msgstr "默认"
 
-#: src/options.cpp:764 src/routemanagerdialog.cpp:1983
-#: src/routemanagerdialog.cpp:2159
+#: src/options.cpp:798 src/routemanagerdialog.cpp:1933
+#: src/routemanagerdialog.cpp:2109
 msgid "Always"
 msgstr "总是"
 
-#: src/options.cpp:767
+#: src/options.cpp:801
 msgid "Never"
 msgstr "从不"
 
-#: src/options.cpp:804 src/options.cpp:852
+#: src/options.cpp:838 src/options.cpp:886
 msgid "Edit MMSI Properties"
 msgstr "编辑MMSI属性"
 
-#: src/options.cpp:821 src/options.cpp:4949 src/options.cpp:4956
+#: src/options.cpp:855 src/options.cpp:5202 src/options.cpp:5209
 msgid "MMSI Properties"
 msgstr "MMSI属性"
 
-#: src/options.cpp:823 src/RoutePropDlg.cpp:258 src/RoutePropDlg.cpp:282
-#: src/TrackPropDlg.cpp:742 src/TrackPropDlg.cpp:769 src/MarkInfo.cpp:832
+#: src/options.cpp:857 src/RoutePropDlg.cpp:269 src/RoutePropDlg.cpp:293
+#: src/TrackPropDlg.cpp:736 src/TrackPropDlg.cpp:761 src/MarkInfo.cpp:949
 msgid "Edit"
 msgstr "编辑"
 
-#: src/options.cpp:918
+#: src/options.cpp:952
 msgid "Track Mode"
 msgstr "航迹模式"
 
-#: src/options.cpp:926
+#: src/options.cpp:960
 msgid "Ignore"
 msgstr "忽略"
 
-#: src/options.cpp:935
+#: src/options.cpp:969
 msgid "MOB"
 msgstr "有人落水"
 
-#: src/options.cpp:943
+#: src/options.cpp:977
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: src/options.cpp:951
+#: src/options.cpp:985
 msgid "Ship name"
 msgstr "船只名称"
 
-#: src/options.cpp:959
+#: src/options.cpp:993
 msgid "Follower"
 msgstr "跟从者"
 
-#: src/options.cpp:963
+#: src/options.cpp:997
 msgid "New..."
 msgstr "新的..."
 
-#: src/options.cpp:986
+#: src/options.cpp:1020
 msgid "Add MMSI Properties"
 msgstr "添加MMSI属性"
 
-#: src/options.cpp:1255
+#: src/options.cpp:1434
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -4140,7 +4129,7 @@ msgstr "设备不可用，OpenCPN不能使用当前状态的该设备。\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "获取更多信息，参见公开文档中的LINUX_DEVICES.md文件.\n"
 
-#: src/options.cpp:1267
+#: src/options.cpp:1446
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -4160,1269 +4149,1277 @@ msgstr "\n"
 "            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "获取更多信息，参见公开文档中的LINUX_DEVICES.md文件.\n"
 
-#: src/options.cpp:1293 src/options.cpp:7715 src/routeman.cpp:848
-#: src/routeman.cpp:929
+#: src/options.cpp:1472 src/options.cpp:8089 src/routeman.cpp:865
+#: src/routeman.cpp:946
 msgid "OpenCPN Warning"
 msgstr "OpenCPN警报"
 
-#: src/options.cpp:1398 src/options.cpp:2004
+#: src/options.cpp:1578 src/options.cpp:2183
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:1408 src/options.cpp:2014 src/options.cpp:4460
+#: src/options.cpp:1588 src/options.cpp:2193 src/options.cpp:4663
 msgid "General"
 msgstr "通用的"
 
-#: src/options.cpp:1417
+#: src/options.cpp:1597
 msgid "Filter NMEA COG/SOG"
 msgstr "筛选NMEA COG/SOG"
 
-#: src/options.cpp:1427 src/options.cpp:2032
+#: src/options.cpp:1607 src/options.cpp:2211
 msgid "Filter period (sec)"
 msgstr "筛选间隔(秒)"
 
-#: src/options.cpp:1448 src/options.cpp:2052
+#: src/options.cpp:1628 src/options.cpp:2231
 msgid "Show NMEA Debug Window"
 msgstr "显示NMEA调试窗口"
 
-#: src/options.cpp:1454
+#: src/options.cpp:1634
 msgid "Use Furuno GP3X for uploads"
 msgstr "使用古野GP3X更新"
 
-#: src/options.cpp:1460
+#: src/options.cpp:1640
 msgid "Use GRMN for uploads"
 msgstr "使用GRMN更新"
 
-#: src/options.cpp:1466 src/options.cpp:2071
+#: src/options.cpp:1646 src/options.cpp:2250
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "ECAPB输出语句使用磁方位"
 
-#: src/options.cpp:1477 src/options.cpp:2082
+#: src/options.cpp:1657 src/options.cpp:2261
 msgid "Data Connections"
 msgstr "数据连接"
 
-#: src/options.cpp:1491 src/options.cpp:4390 src/options.cpp:9484
-#: src/RoutePropDlg.cpp:279 src/TrackPropDlg.cpp:766
+#: src/options.cpp:1671 src/options.cpp:4586 src/options.cpp:9978
+#: src/RoutePropDlg.cpp:290 src/TrackPropDlg.cpp:758
 msgid "Add"
 msgstr "添加"
 
-#: src/options.cpp:1495
+#: src/options.cpp:1675
 msgid "Remove"
 msgstr "移除"
 
-#: src/options.cpp:1525 src/options.cpp:2162
+#: src/options.cpp:1705 src/options.cpp:2341
 msgid "Built-in GPS"
 msgstr "内置GPS"
 
-#: src/options.cpp:1534
+#: src/options.cpp:1714
 msgid "Built-in Bluetooth"
 msgstr "内置蓝牙"
 
-#: src/options.cpp:1538 src/options.cpp:2175 src/options.cpp:8904
+#: src/options.cpp:1718 src/options.cpp:2354 src/options.cpp:9363
 msgid "BT Scan"
 msgstr "BT扫描"
 
-#: src/options.cpp:1546
+#: src/options.cpp:1726
 msgid "BT Sources"
 msgstr "BT源"
 
-#: src/options.cpp:1622 src/options.cpp:2257
+#: src/options.cpp:1802 src/options.cpp:2436
 msgid "Address"
 msgstr "地址"
 
-#: src/options.cpp:1630 src/options.cpp:1645 src/options.cpp:2266
-#: src/options.cpp:2295 src/options.cpp:2626
+#: src/options.cpp:1810 src/options.cpp:1825 src/options.cpp:2445
+#: src/options.cpp:2474 src/options.cpp:2805
 msgid "DataPort"
 msgstr "数据端口"
 
-#: src/options.cpp:1660 src/options.cpp:2310
+#: src/options.cpp:1840 src/options.cpp:2489
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1660 src/options.cpp:2310
+#: src/options.cpp:1840 src/options.cpp:2489
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1660 src/options.cpp:2310
+#: src/options.cpp:1840 src/options.cpp:2489
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1660 src/options.cpp:2310
+#: src/options.cpp:1840 src/options.cpp:2489
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1660 src/options.cpp:2310
+#: src/options.cpp:1840 src/options.cpp:2489
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1661 src/options.cpp:2311
+#: src/options.cpp:1841 src/options.cpp:2490
 msgid "4800"
 msgstr ""
 
-#: src/options.cpp:1661 src/options.cpp:2311
+#: src/options.cpp:1841 src/options.cpp:2490
 msgid "9600"
 msgstr ""
 
-#: src/options.cpp:1661 src/options.cpp:2311
+#: src/options.cpp:1841 src/options.cpp:2490
 msgid "19200"
 msgstr ""
 
-#: src/options.cpp:1661 src/options.cpp:2311
+#: src/options.cpp:1841 src/options.cpp:2490
 msgid "38400"
 msgstr ""
 
-#: src/options.cpp:1661 src/options.cpp:2311
+#: src/options.cpp:1841 src/options.cpp:2490
 msgid "57600"
 msgstr ""
 
-#: src/options.cpp:1662 src/options.cpp:2312
+#: src/options.cpp:1842 src/options.cpp:2491
 msgid "115200"
 msgstr ""
 
-#: src/options.cpp:1662 src/options.cpp:2312
+#: src/options.cpp:1842 src/options.cpp:2491
 msgid "230400"
 msgstr ""
 
-#: src/options.cpp:1662 src/options.cpp:2312
+#: src/options.cpp:1842 src/options.cpp:2491
 msgid "460800"
 msgstr ""
 
-#: src/options.cpp:1662 src/options.cpp:2312
+#: src/options.cpp:1842 src/options.cpp:2491
 msgid "921600"
 msgstr ""
 
-#: src/options.cpp:1676 src/options.cpp:2326
+#: src/options.cpp:1856 src/options.cpp:2505
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:1676 src/options.cpp:2326
+#: src/options.cpp:1856 src/options.cpp:2505
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:1677 src/options.cpp:2327
+#: src/options.cpp:1857 src/options.cpp:2506
 msgid "Seatalk"
 msgstr "Seaktalk"
 
-#: src/options.cpp:1692 src/options.cpp:2342
+#: src/options.cpp:1872 src/options.cpp:2521
 msgid "0"
 msgstr ""
 
-#: src/options.cpp:1692 src/options.cpp:2342
+#: src/options.cpp:1872 src/options.cpp:2521
 msgid "1"
 msgstr ""
 
-#: src/options.cpp:1692 src/options.cpp:2342
+#: src/options.cpp:1872 src/options.cpp:2521
 msgid "2"
 msgstr ""
 
-#: src/options.cpp:1692 src/options.cpp:2342
+#: src/options.cpp:1872 src/options.cpp:2521
 msgid "3"
 msgstr ""
 
-#: src/options.cpp:1692 src/options.cpp:2342
+#: src/options.cpp:1872 src/options.cpp:2521
 msgid "4"
 msgstr ""
 
-#: src/options.cpp:1693 src/options.cpp:2343
+#: src/options.cpp:1873 src/options.cpp:2522
 msgid "5"
 msgstr ""
 
-#: src/options.cpp:1693 src/options.cpp:2343
+#: src/options.cpp:1873 src/options.cpp:2522
 msgid "6"
 msgstr ""
 
-#: src/options.cpp:1693 src/options.cpp:2343
+#: src/options.cpp:1873 src/options.cpp:2522
 msgid "7"
 msgstr ""
 
-#: src/options.cpp:1693 src/options.cpp:2343
+#: src/options.cpp:1873 src/options.cpp:2522
 msgid "8"
 msgstr ""
 
-#: src/options.cpp:1693 src/options.cpp:2343
+#: src/options.cpp:1873 src/options.cpp:2522
 msgid "9"
 msgstr ""
 
-#: src/options.cpp:1704 src/options.cpp:2369
+#: src/options.cpp:1884 src/options.cpp:2548
 msgid "Control checksum"
 msgstr "校验码控制"
 
-#: src/options.cpp:1708 src/options.cpp:2373
+#: src/options.cpp:1888 src/options.cpp:2552
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "如勾选，只有带有有效校验码的语句才能通过"
 
-#: src/options.cpp:1712
+#: src/options.cpp:1892
 msgid "Use GRMN mode for input"
 msgstr "使用GRMN模式输入"
 
-#: src/options.cpp:1721 src/options.cpp:2386
+#: src/options.cpp:1901 src/options.cpp:2565
 msgid "Receive Input on this Port"
 msgstr "用此端口接收输入值"
 
-#: src/options.cpp:1725 src/options.cpp:2392
+#: src/options.cpp:1905 src/options.cpp:2571
 msgid "Output on this port"
 msgstr "用此端口输出"
 
-#: src/options.cpp:1733 src/options.cpp:2397
+#: src/options.cpp:1913 src/options.cpp:2576
 msgid "Talker ID"
 msgstr "TALKER ID"
 
-#: src/options.cpp:1744 src/options.cpp:2408
+#: src/options.cpp:1924 src/options.cpp:2587
 msgid "APB bearing precision"
 msgstr "APB方位准确性"
 
-#: src/options.cpp:1765 src/options.cpp:2428
+#: src/options.cpp:1945 src/options.cpp:2607
 msgid "Input filtering"
 msgstr "输入筛选"
 
-#: src/options.cpp:1771 src/options.cpp:2434 src/options.cpp:9533
+#: src/options.cpp:1951 src/options.cpp:2613 src/options.cpp:10027
 msgid "Accept only sentences"
 msgstr "仅接受语句"
 
-#: src/options.cpp:1775 src/options.cpp:2438 src/options.cpp:9533
+#: src/options.cpp:1955 src/options.cpp:2617 src/options.cpp:10027
 msgid "Ignore sentences"
 msgstr "忽略语句"
 
-#: src/options.cpp:1798 src/options.cpp:2462
+#: src/options.cpp:1978 src/options.cpp:2641
 msgid "Output filtering"
 msgstr "输出筛选"
 
-#: src/options.cpp:1805 src/options.cpp:2469 src/options.cpp:9531
+#: src/options.cpp:1985 src/options.cpp:2648 src/options.cpp:10025
 msgid "Transmit sentences"
 msgstr "发送语句"
 
-#: src/options.cpp:1809 src/options.cpp:2473 src/options.cpp:9531
+#: src/options.cpp:1989 src/options.cpp:2652 src/options.cpp:10025
 msgid "Drop sentences"
 msgstr "放置语句"
 
-#: src/options.cpp:1955
+#: src/options.cpp:2135
 msgid "On"
 msgstr "On"
 
-#: src/options.cpp:1955
+#: src/options.cpp:2135
 msgid "Data Port"
 msgstr "数据端口"
 
-#: src/options.cpp:1955
+#: src/options.cpp:2135
 msgid "Prio"
 msgstr "Prio"
 
-#: src/options.cpp:1956
+#: src/options.cpp:2136
 msgid "Parm"
 msgstr "Parm"
 
-#: src/options.cpp:1956
+#: src/options.cpp:2136
 msgid "I/O"
 msgstr "输入/输出"
 
-#: src/options.cpp:1956 src/options.cpp:2628
+#: src/options.cpp:2136 src/options.cpp:2807
 msgid "Filters"
 msgstr "筛选器"
 
-#: src/options.cpp:2026
+#: src/options.cpp:2205
 msgid "Filter NMEA Course and Speed data"
 msgstr "筛选NMEA航线和航速数据"
 
-#: src/options.cpp:2058
+#: src/options.cpp:2237
 msgid "Format uploads for Furuno GP3X"
 msgstr "为古野GP3X格式化上传"
 
-#: src/options.cpp:2064
+#: src/options.cpp:2243
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "使用GRMN（主机）模式上传"
 
-#: src/options.cpp:2117
+#: src/options.cpp:2296
 msgid "Add Connection"
 msgstr "添加连接"
 
-#: src/options.cpp:2121
+#: src/options.cpp:2300
 msgid "Remove Connection"
 msgstr "移除连接"
 
-#: src/options.cpp:2140 src/options.cpp:9405
+#: src/options.cpp:2319 src/options.cpp:9899
 msgid "Edit Selected Connection"
 msgstr "编辑所选连接"
 
-#: src/options.cpp:2171
+#: src/options.cpp:2350
 msgid "Built-in Bluetooth SPP"
 msgstr "内置蓝牙SPP"
 
-#: src/options.cpp:2185
+#: src/options.cpp:2364
 msgid "Bluetooth Data Sources"
 msgstr "蓝牙数据源"
 
-#: src/options.cpp:2276 src/options.cpp:2360
+#: src/options.cpp:2455 src/options.cpp:2539
 msgid "User Comment"
 msgstr "用户评论"
 
-#: src/options.cpp:2377
+#: src/options.cpp:2556
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "使用Garmin(GRMN)模式收入"
 
-#: src/options.cpp:2392
+#: src/options.cpp:2571
 msgid "as autopilot or NMEA repeater"
 msgstr "用作自动舵或者NMEA转发器"
 
-#: src/options.cpp:2397
+#: src/options.cpp:2576
 msgid "blank = default ID"
 msgstr "空=默认ID"
 
-#: src/options.cpp:2414
+#: src/options.cpp:2593
 msgid "x"
 msgstr ""
 
-#: src/options.cpp:2414
+#: src/options.cpp:2593
 msgid "x.x"
 msgstr ""
 
-#: src/options.cpp:2414
+#: src/options.cpp:2593
 msgid "x.xx"
 msgstr ""
 
-#: src/options.cpp:2415
+#: src/options.cpp:2594
 msgid "x.xxx"
 msgstr ""
 
-#: src/options.cpp:2415
+#: src/options.cpp:2594
 msgid "x.xxxx"
 msgstr ""
 
-#: src/options.cpp:2627
+#: src/options.cpp:2806
 msgid "Parameters"
 msgstr "参数"
 
-#: src/options.cpp:2627
+#: src/options.cpp:2806
 msgid "Connection"
 msgstr "连接"
 
-#: src/options.cpp:2725 src/CanvasOptions.cpp:154
+#: src/options.cpp:2904 src/CanvasOptions.cpp:154
 msgid "Display Options"
 msgstr "显示选项"
 
-#: src/options.cpp:2735
+#: src/options.cpp:2914
 msgid "COG Predictor Length (min)"
 msgstr "COG前伸长度（分钟）"
 
-#: src/options.cpp:2742
+#: src/options.cpp:2921
 msgid "Heading Predictor Length (NMi)"
 msgstr "朝向前伸长度（海里）"
 
-#: src/options.cpp:2749
+#: src/options.cpp:2928
 msgid "Ship Icon Type"
 msgstr "船只图标类型"
 
-#: src/options.cpp:2752
+#: src/options.cpp:2931
 msgid "Real Scale Bitmap"
 msgstr "真实比例尺位图"
 
-#: src/options.cpp:2753
+#: src/options.cpp:2932
 msgid "Real Scale Vector"
 msgstr "真是比例尺矢量图"
 
-#: src/options.cpp:2767
+#: src/options.cpp:2946
 msgid "Length Over All (m)"
 msgstr "总长（米）"
 
-#: src/options.cpp:2773
+#: src/options.cpp:2952
 msgid "Width Over All (m)"
 msgstr "总宽度（米）"
 
-#: src/options.cpp:2779
+#: src/options.cpp:2958
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS自船艏补偿长度（米）"
 
-#: src/options.cpp:2785
+#: src/options.cpp:2964
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS自船中补偿长度（米）"
 
-#: src/options.cpp:2791
+#: src/options.cpp:2970
 msgid "Minimum Screen Size (mm)"
 msgstr "最小屏幕大小（毫米）"
 
-#: src/options.cpp:2803
+#: src/options.cpp:2982
 msgid "Show range rings"
 msgstr "显示量程同心环"
 
-#: src/options.cpp:2806 src/options.cpp:2942 src/options.cpp:3287
+#: src/options.cpp:2985 src/options.cpp:3123 src/options.cpp:3472
 msgid "None"
 msgstr "无"
 
-#: src/options.cpp:2820 src/options.cpp:3079
+#: src/options.cpp:2999 src/options.cpp:3260
 msgid "Distance between rings"
 msgstr "雷达同心圆间距"
 
-#: src/options.cpp:2829 src/options.cpp:3090
+#: src/options.cpp:3008 src/options.cpp:3271
 msgid "Distance Unit"
 msgstr "距离单位"
 
-#: src/options.cpp:2832 src/options.cpp:2940 src/options.cpp:4743
-#: src/options.cpp:4851
+#: src/options.cpp:3011 src/options.cpp:3121 src/options.cpp:4985
+#: src/options.cpp:5104
 msgid "Nautical miles"
 msgstr "海里"
 
-#: src/options.cpp:2832 src/options.cpp:2940 src/options.cpp:4744
-#: src/options.cpp:4852
+#: src/options.cpp:3011 src/options.cpp:3121 src/options.cpp:4986
+#: src/options.cpp:5105
 msgid "Kilometers"
 msgstr "公里"
 
-#: src/options.cpp:2838
+#: src/options.cpp:3017
 msgid "Range Ring Colour"
 msgstr "量程同心环颜色"
 
-#: src/options.cpp:2847 src/routemanagerdialog.cpp:498
+#: src/options.cpp:3026 src/routemanagerdialog.cpp:443
 msgid "Tracks"
 msgstr "航迹"
 
-#: src/options.cpp:2853
+#: src/options.cpp:3032
 msgid "Automatic Daily Tracks at midnight"
 msgstr "零点时自动记录每日航迹"
 
-#: src/options.cpp:2860
+#: src/options.cpp:3040
 msgid "Automatic Daily Tracks at"
 msgstr "自动记录每日航迹从"
 
-#: src/options.cpp:2865
+#: src/options.cpp:3046
 msgid "Computer"
 msgstr "计算机"
 
-#: src/options.cpp:2868 src/RoutePropDlg.cpp:134 src/TrackPropDlg.cpp:354
-#: src/TrackPropDlg.cpp:361 src/TrackPropDlg.cpp:682
+#: src/options.cpp:3049 src/RoutePropDlg.cpp:145 src/TrackPropDlg.cpp:350
+#: src/TrackPropDlg.cpp:357 src/TrackPropDlg.cpp:677
 msgid "UTC"
 msgstr "国际协调时"
 
-#: src/options.cpp:2871
+#: src/options.cpp:3052
 msgid "LMT"
 msgstr "本地时间"
 
-#: src/options.cpp:2882
+#: src/options.cpp:3063
 msgid "Highlight Tracks"
 msgstr "突出显示航迹"
 
-#: src/options.cpp:2885
+#: src/options.cpp:3066
 msgid "Track Colour"
 msgstr "航迹色彩"
 
-#: src/options.cpp:2899
+#: src/options.cpp:3080
 msgid "Tracking Precision"
 msgstr "航迹记录准确性"
 
-#: src/options.cpp:2902
+#: src/options.cpp:3083
 msgid "Low"
 msgstr "低"
 
-#: src/options.cpp:2902
+#: src/options.cpp:3083
 msgid "Medium"
 msgstr "中"
 
-#: src/options.cpp:2902
+#: src/options.cpp:3083
 msgid "High"
 msgstr "高"
 
-#: src/options.cpp:2909
+#: src/options.cpp:3090
 msgid "Calculate values"
 msgstr "计算数值"
 
-#: src/options.cpp:2918
+#: src/options.cpp:3099
 msgid "Calculate SOG and COG from position changes"
 msgstr "计算位置变化后的SOG和COG"
 
-#: src/options.cpp:2922
+#: src/options.cpp:3103
 msgid "Min seconds between updates"
 msgstr "跟新之间的最小秒数"
 
-#: src/options.cpp:2934
+#: src/options.cpp:3115
 msgid "Routes/Points"
 msgstr "航线/点"
 
-#: src/options.cpp:2948
+#: src/options.cpp:3129
 msgid "New Routes"
-msgstr ""
+msgstr "新航线"
 
-#: src/options.cpp:2962 src/options.cpp:3021
+#: src/options.cpp:3143 src/options.cpp:3202
 msgid "Waypoint default icon"
 msgstr "航路点默认图标"
 
-#: src/options.cpp:2965 src/options.cpp:3024
+#: src/options.cpp:3146 src/options.cpp:3205 src/MarkInfo.cpp:398
 msgid "Combo!"
 msgstr ""
 
-#: src/options.cpp:2986
+#: src/options.cpp:3167
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "航路点抵达半径（海里）"
 
-#: src/options.cpp:2995
+#: src/options.cpp:3176
 msgid "Advance route waypoint on arrival only"
 msgstr "仅作为到达用驶抵航线航路点"
 
-#: src/options.cpp:3006
+#: src/options.cpp:3187
 msgid "New Waypoints"
-msgstr ""
+msgstr "新航路点"
 
-#: src/options.cpp:3044
+#: src/options.cpp:3225
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr "只在海图比例尺大于1时显示航路点："
 
-#: src/options.cpp:3052
+#: src/options.cpp:3233
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr "忽略基于能见度的海图比例尺设置并总是显示"
 
-#: src/options.cpp:3064
+#: src/options.cpp:3245
 msgid "Waypoint range rings"
 msgstr "航路点量程同心环"
 
-#: src/options.cpp:3101
+#: src/options.cpp:3282
 msgid "Waypoint Range Ring Colours"
 msgstr "航路点量程同心环颜色"
 
-#: src/options.cpp:3120
+#: src/options.cpp:3301
 msgid "Control Options"
 msgstr "控制选项"
 
-#: src/options.cpp:3129
+#: src/options.cpp:3310
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "锁定航路点(除非航路点属性对话框可视)"
 
-#: src/options.cpp:3135
+#: src/options.cpp:3316
 msgid "Confirm deletion of tracks and routes"
 msgstr "删除航迹和航线确认"
 
-#: src/options.cpp:3194
+#: src/options.cpp:3375
 msgid "Chart Files"
 msgstr "海图文件"
 
-#: src/options.cpp:3200
+#: src/options.cpp:3381
 msgid "Directories"
 msgstr "目录"
 
-#: src/options.cpp:3231
+#: src/options.cpp:3416
 msgid "Add Directory..."
 msgstr "添加目录……"
 
-#: src/options.cpp:3235 src/options.cpp:4333 src/RoutePropDlgImpl.cpp:751
+#: src/options.cpp:3420 src/options.cpp:4525 src/RoutePropDlgImpl.cpp:819
 msgid "Remove Selected"
 msgstr "移除选定"
 
-#: src/options.cpp:3241
+#: src/options.cpp:3426
 msgid "Compress Selected"
 msgstr "压缩选定"
 
-#: src/options.cpp:3249
+#: src/options.cpp:3434
 msgid "Update Control"
 msgstr "更新控制"
 
-#: src/options.cpp:3257
+#: src/options.cpp:3442
 msgid "Scan Charts and Update Database"
 msgstr "扫描海图并更新数据库"
 
-#: src/options.cpp:3260
+#: src/options.cpp:3445
 msgid "Force Full Database Rebuild"
 msgstr "强制数据亏重建"
 
-#: src/options.cpp:3263
+#: src/options.cpp:3448
 msgid "Prepare all ENC Charts"
 msgstr "准备所有ENC海图"
 
-#: src/options.cpp:3283
+#: src/options.cpp:3468
 msgid " [Modified]"
 msgstr " [更正的]"
 
-#: src/options.cpp:3293
+#: src/options.cpp:3478
 msgid "Templates"
 msgstr "模板"
 
-#: src/options.cpp:3304
+#: src/options.cpp:3490
 msgid "Template Status"
 msgstr "模板状态"
 
-#: src/options.cpp:3311
+#: src/options.cpp:3497
 msgid "Last Applied Template Title:"
 msgstr "最后一个引用的模板名称："
 
-#: src/options.cpp:3323
+#: src/options.cpp:3509
 msgid "Saved Templates"
 msgstr "已保存模板"
 
-#: src/options.cpp:3346
+#: src/options.cpp:3532
 msgid "Create Config..."
 msgstr "创建配置……"
 
-#: src/options.cpp:3354
+#: src/options.cpp:3540
 msgid "Delete Selected Config..."
 msgstr "删除所选配置……"
 
-#: src/options.cpp:3358
+#: src/options.cpp:3544
 msgid "Apply Selected Config"
 msgstr "使用所选配置"
 
-#: src/options.cpp:3416
+#: src/options.cpp:3612
 msgid "Create Config"
 msgstr "创建配置"
 
-#: src/options.cpp:3475
+#: src/options.cpp:3671
 msgid "Problem applying selected configuration."
 msgstr "使用所选配置时问题。"
 
-#: src/options.cpp:3548 src/RoutePropDlg.cpp:312 src/TrackPropDlg.cpp:783
+#: src/options.cpp:3750 src/RoutePropDlg.cpp:323 src/TrackPropDlg.cpp:775
 msgid "Advanced"
 msgstr "高级"
 
-#: src/options.cpp:3565
+#: src/options.cpp:3770
 msgid "De-skew Raster Charts"
 msgstr "相位补偿栅格海图"
 
-#: src/options.cpp:3611 src/options.cpp:3853
+#: src/options.cpp:3781 src/options.cpp:4040
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "使用加速图形(OpenGL)"
 
-#: src/options.cpp:3629 src/options.cpp:3745
+#: src/options.cpp:3787
+msgid "OpenGL Options"
+msgstr ""
+
+#: src/options.cpp:3800 src/options.cpp:3930
 msgid "Chart Rotation Averaging Time"
 msgstr "海图旋转平均时间"
 
-#: src/options.cpp:3642 src/options.cpp:3758 src/options.cpp:5298
+#: src/options.cpp:3812 src/options.cpp:3943 src/options.cpp:5558
 msgid "seconds"
 msgstr "秒"
 
-#: src/options.cpp:3650 src/options.cpp:3765
+#: src/options.cpp:3818 src/options.cpp:3950
 msgid "Chart Zoom/Scale Weighting"
 msgstr "海图缩放/比例尺权重"
 
-#: src/options.cpp:3666 src/options.cpp:3814
-msgid "Physical Screen Width"
-msgstr "物理屏宽度"
-
-#: src/options.cpp:3671 src/options.cpp:3819
-msgid "Auto"
-msgstr "自动"
-
-#: src/options.cpp:3675 src/options.cpp:3823
-msgid "Manual:"
-msgstr "手动:"
-
-#: src/options.cpp:3685 src/options.cpp:3831
-msgid "mm"
-msgstr "毫米"
-
-#: src/options.cpp:3716 src/options.cpp:4509
-msgid "Chart Display"
-msgstr "海图显示"
-
-#: src/options.cpp:3722
-msgid "Show Skewed Raster Charts as North-Up"
-msgstr "显示倾斜栅格海图为北向上"
-
-#: src/options.cpp:3771
+#: src/options.cpp:3823 src/options.cpp:3958
 msgid "Raster"
 msgstr "栅格图"
 
-#: src/options.cpp:3781
+#: src/options.cpp:3838 src/options.cpp:3968
 msgid "Vector"
 msgstr "扇形"
 
-#: src/options.cpp:3794
+#: src/options.cpp:3854 src/options.cpp:4001
+msgid "Physical Screen Width"
+msgstr "物理屏宽度"
+
+#: src/options.cpp:3859 src/options.cpp:4006
+msgid "Auto"
+msgstr "自动"
+
+#: src/options.cpp:3862 src/options.cpp:4010
+msgid "Manual:"
+msgstr "手动:"
+
+#: src/options.cpp:3871 src/options.cpp:4018
+msgid "mm"
+msgstr "毫米"
+
+#: src/options.cpp:3901 src/options.cpp:4712
+msgid "Chart Display"
+msgstr "海图显示"
+
+#: src/options.cpp:3907
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr "显示倾斜栅格海图为北向上"
+
+#: src/options.cpp:3981
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "数值低时，同等缩放水平显示低细节海图.\n"
 "数值高时，同等缩放水平显示多细节海图."
 
-#: src/options.cpp:3847
+#: src/options.cpp:4034
 msgid "Graphics"
 msgstr "图形"
 
-#: src/options.cpp:3880
+#: src/options.cpp:4067
 msgid "Vector Chart Display"
 msgstr "矢量海图显示"
 
-#: src/options.cpp:3899 src/options.cpp:4110 src/CanvasOptions.cpp:237
+#: src/options.cpp:4086 src/options.cpp:4289 src/CanvasOptions.cpp:237
 msgid "Display Category"
 msgstr "显示分类"
 
-#: src/options.cpp:3900 src/options.cpp:4111 src/CanvasOptions.cpp:238
+#: src/options.cpp:4087 src/options.cpp:4290 src/CanvasOptions.cpp:238
 msgid "Standard"
 msgstr "标准"
 
-#: src/options.cpp:3900 src/options.cpp:4111 src/CanvasOptions.cpp:238
+#: src/options.cpp:4087 src/options.cpp:4290 src/CanvasOptions.cpp:238
 msgid "All"
 msgstr "所有"
 
-#: src/options.cpp:3900 src/options.cpp:4111
+#: src/options.cpp:4087 src/options.cpp:4290
 msgid "Mariner's Standard"
 msgstr "船用标准"
 
-#: src/options.cpp:3912 src/options.cpp:5043 src/options.cpp:5691
+#: src/options.cpp:4099 src/options.cpp:5296 src/options.cpp:6063
 msgid "Display"
 msgstr "显示"
 
-#: src/options.cpp:3918 src/options.cpp:4126
+#: src/options.cpp:4105 src/options.cpp:4306
 msgid "Depth Soundings"
 msgstr "测量深度"
 
-#: src/options.cpp:3923 src/options.cpp:4131
+#: src/options.cpp:4110 src/options.cpp:4311
 msgid "Chart Information Objects"
 msgstr "海图信息目标"
 
-#: src/options.cpp:3929
+#: src/options.cpp:4116
 msgid "Buoys/Lights"
 msgstr "浮标/灯塔"
 
-#: src/options.cpp:3934 src/options.cpp:4139 src/CanvasOptions.cpp:217
+#: src/options.cpp:4121 src/options.cpp:4319 src/CanvasOptions.cpp:217
 msgid "Buoy/Light Labels"
 msgstr "浮标/灯塔标签"
 
-#: src/options.cpp:3938 src/options.cpp:4144 src/CanvasOptions.cpp:225
+#: src/options.cpp:4125 src/options.cpp:4324 src/CanvasOptions.cpp:225
 msgid "Light Descriptions"
 msgstr "灯塔描述"
 
-#: src/options.cpp:3942 src/options.cpp:4148
+#: src/options.cpp:4129 src/options.cpp:4328
 msgid "Extended Light Sectors"
 msgstr "延伸扇形灯塔"
 
-#: src/options.cpp:3947
+#: src/options.cpp:4134
 msgid "Chart Texts"
 msgstr "海图文本"
 
-#: src/options.cpp:3952 src/options.cpp:4156
+#: src/options.cpp:4139 src/options.cpp:4336
 msgid "National text on chart"
 msgstr "海图上的本国文本"
 
-#: src/options.cpp:3957 src/options.cpp:4161
+#: src/options.cpp:4144 src/options.cpp:4341
 msgid "Important Text Only"
 msgstr "仅重要文本"
 
-#: src/options.cpp:3962 src/options.cpp:4166
+#: src/options.cpp:4149 src/options.cpp:4346
 msgid "De-Cluttered Text"
 msgstr "清理文本"
 
-#: src/options.cpp:3966
+#: src/options.cpp:4153
 msgid "Chart Detail"
 msgstr "海图细节"
 
-#: src/options.cpp:3969 src/options.cpp:4171
+#: src/options.cpp:4156 src/options.cpp:4351
 msgid "Reduced Detail at Small Scale"
 msgstr "小比例尺时减少的细节"
 
-#: src/options.cpp:3978 src/options.cpp:4187
+#: src/options.cpp:4165 src/options.cpp:4367
 msgid "Graphics Style"
 msgstr "图形样式"
 
-#: src/options.cpp:3981 src/options.cpp:4190
+#: src/options.cpp:4168 src/options.cpp:4369
 msgid "Paper Chart"
 msgstr "纸海图"
 
-#: src/options.cpp:3981 src/options.cpp:4190
+#: src/options.cpp:4168 src/options.cpp:4369
 msgid "Simplified"
 msgstr "简化的"
 
-#: src/options.cpp:3987 src/options.cpp:4196
+#: src/options.cpp:4174 src/options.cpp:4379
 msgid "Boundaries"
 msgstr "疆界"
 
-#: src/options.cpp:3990 src/options.cpp:4199
+#: src/options.cpp:4177 src/options.cpp:4381
 msgid "Plain"
 msgstr "平原"
 
-#: src/options.cpp:3990 src/options.cpp:4199
+#: src/options.cpp:4177 src/options.cpp:4381
 msgid "Symbolized"
 msgstr "象征的"
 
-#: src/options.cpp:3996 src/options.cpp:4205
+#: src/options.cpp:4183 src/options.cpp:4391
 msgid "Colors"
 msgstr "颜色"
 
-#: src/options.cpp:3999 src/options.cpp:4208
+#: src/options.cpp:4186 src/options.cpp:4394
 msgid "2 Color"
 msgstr "2色"
 
-#: src/options.cpp:3999 src/options.cpp:4208
+#: src/options.cpp:4186 src/options.cpp:4394
 msgid "4 Color"
 msgstr "4色"
 
-#: src/options.cpp:4010 src/options.cpp:4226
+#: src/options.cpp:4197 src/options.cpp:4416
 msgid "Shallow Depth"
 msgstr "浅水深度"
 
-#: src/options.cpp:4021 src/options.cpp:4235
+#: src/options.cpp:4208 src/options.cpp:4424
 msgid "Safety Depth"
 msgstr "安全水深"
 
-#: src/options.cpp:4031 src/options.cpp:4244
+#: src/options.cpp:4218 src/options.cpp:4431
 msgid "Deep Depth"
 msgstr "深水深度"
 
-#: src/options.cpp:4069 src/options.cpp:4280
+#: src/options.cpp:4256 src/options.cpp:4467
 msgid "User Standard Objects"
 msgstr "用户标准对象"
 
-#: src/options.cpp:4087 src/options.cpp:4287 src/options.cpp:9482
+#: src/options.cpp:4266 src/options.cpp:4473 src/options.cpp:9976
 msgid "Select All"
 msgstr "选择所有"
 
-#: src/options.cpp:4089 src/options.cpp:4289 src/options.cpp:9483
+#: src/options.cpp:4268 src/options.cpp:4475 src/options.cpp:9977
 msgid "Clear All"
 msgstr "清除所有"
 
-#: src/options.cpp:4094
+#: src/options.cpp:4273 src/options.cpp:4480
 msgid "Reset to STANDARD"
 msgstr "还原至标准"
 
-#: src/options.cpp:4309
+#: src/options.cpp:4501
 msgid "Tides && Currents"
 msgstr "潮汐&&海流"
 
-#: src/options.cpp:4314
+#: src/options.cpp:4506
 msgid "Active Datasets"
 msgstr "活动数据组"
 
-#: src/options.cpp:4331
+#: src/options.cpp:4523
 msgid "Add Dataset..."
 msgstr "添加数据组……"
 
-#: src/options.cpp:4376
+#: src/options.cpp:4570
 msgid "All Available Charts"
 msgstr "所有可用海图"
 
-#: src/options.cpp:4392
+#: src/options.cpp:4588
 msgid "Remove Chart"
 msgstr "移除海图"
 
-#: src/options.cpp:4416
+#: src/options.cpp:4617
 msgid "All Charts"
 msgstr "所有海图"
 
-#: src/options.cpp:4434
+#: src/options.cpp:4634
 msgid "New Group..."
 msgstr "新组..."
 
-#: src/options.cpp:4436
+#: src/options.cpp:4635
 msgid "Delete Group"
 msgstr "删除组"
 
-#: src/options.cpp:4482 src/CanvasOptions.cpp:131
+#: src/options.cpp:4685 src/CanvasOptions.cpp:131
 msgid "Navigation Mode"
 msgstr "航行模式"
 
-#: src/options.cpp:4490 src/options.cpp:4647 src/CanvasOptions.cpp:137
+#: src/options.cpp:4693 src/options.cpp:4851 src/CanvasOptions.cpp:137
 msgid "North Up"
 msgstr "北向上模式"
 
-#: src/options.cpp:4493 src/options.cpp:4650 src/CanvasOptions.cpp:141
+#: src/options.cpp:4696 src/options.cpp:4854 src/CanvasOptions.cpp:141
 msgid "Course Up"
 msgstr "航向向上模式"
 
-#: src/options.cpp:4500 src/options.cpp:4657 src/CanvasOptions.cpp:145
+#: src/options.cpp:4703 src/options.cpp:4861 src/CanvasOptions.cpp:145
 msgid "Look Ahead Mode"
 msgstr "视线向前模式"
 
-#: src/options.cpp:4519 src/options.cpp:4675
+#: src/options.cpp:4722 src/options.cpp:4879
 msgid "Preserve scale when switching charts"
 msgstr "海图转换时保留比例尺大小"
 
-#: src/options.cpp:4528
+#: src/options.cpp:4731
 msgid "Controls"
 msgstr "控制"
 
-#: src/options.cpp:4534 src/options.cpp:4689
+#: src/options.cpp:4737 src/options.cpp:4891
 msgid "Smooth Panning / Zooming"
 msgstr "平滑计划/缩放"
 
-#: src/options.cpp:4538 src/options.cpp:4693
+#: src/options.cpp:4740 src/options.cpp:4899
 msgid "Zoom to Cursor"
 msgstr "缩放至光标"
 
-#: src/options.cpp:4549
+#: src/options.cpp:4751
 msgid "Display Features"
 msgstr "显示性能"
 
-#: src/options.cpp:4555 src/options.cpp:4708 src/CanvasOptions.cpp:161
+#: src/options.cpp:4757 src/options.cpp:4918 src/CanvasOptions.cpp:161
 msgid "Show Grid"
 msgstr "显示网格"
 
-#: src/options.cpp:4563 src/options.cpp:4716 src/CanvasOptions.cpp:169
+#: src/options.cpp:4765 src/options.cpp:4926 src/CanvasOptions.cpp:169
 msgid "Show Depth Units"
 msgstr "显示深度单位"
 
-#: src/options.cpp:4579
+#: src/options.cpp:4781
 msgid "Status Bar Option"
 msgstr "状态栏选项"
 
-#: src/options.cpp:4585
+#: src/options.cpp:4787
 msgid "Live ETA at Cursor"
 msgstr "光标处即时ETA"
 
-#: src/options.cpp:4592
+#: src/options.cpp:4794
 msgid "Default Boat Speed "
 msgstr "默认船速"
 
-#: src/options.cpp:4602
+#: src/options.cpp:4805 src/options.cpp:4932
 msgid "Canvas Layout"
 msgstr "画布布局"
 
-#: src/options.cpp:4724
+#: src/options.cpp:4964
 msgid "Units"
 msgstr "单位"
 
-#: src/options.cpp:4741 src/options.cpp:4849 src/routeprintout.cpp:114
-#: src/routeprintout.cpp:407 src/RoutePropDlg.cpp:63 src/RoutePropDlg.cpp:201
-#: src/TrackPropDlg.cpp:218 src/MarkInfo.cpp:417
+#: src/options.cpp:4983 src/options.cpp:5102 src/routeprintout.cpp:114
+#: src/routeprintout.cpp:407 src/RoutePropDlg.cpp:73 src/RoutePropDlg.cpp:212
+#: src/TrackPropDlg.cpp:214 src/MarkInfo.cpp:516
 msgid "Distance"
 msgstr "距离"
 
-#: src/options.cpp:4743 src/options.cpp:4851
+#: src/options.cpp:4985 src/options.cpp:5104
 msgid "Statute miles"
 msgstr "法定英里"
 
-#: src/options.cpp:4754 src/options.cpp:4862
+#: src/options.cpp:4999 src/options.cpp:5115
 msgid "Knots"
 msgstr "节"
 
-#: src/options.cpp:4754 src/options.cpp:4862
+#: src/options.cpp:4999 src/options.cpp:5115
 msgid "Mph"
 msgstr "迈"
 
-#: src/options.cpp:4762 src/options.cpp:4870
+#: src/options.cpp:5010 src/options.cpp:5123
 msgid "Depth"
 msgstr "深度"
 
-#: src/options.cpp:4777 src/options.cpp:4885
+#: src/options.cpp:5028 src/options.cpp:5138
 msgid "Lat/Long"
 msgstr "纬度/经度"
 
-#: src/options.cpp:4779 src/options.cpp:4887
+#: src/options.cpp:5030 src/options.cpp:5140
 msgid "Degrees, Decimal Minutes"
 msgstr "度数，小数点分钟数"
 
-#: src/options.cpp:4780 src/options.cpp:4888
+#: src/options.cpp:5031 src/options.cpp:5141
 msgid "Decimal Degrees"
 msgstr "小数点度数"
 
-#: src/options.cpp:4781 src/options.cpp:4889
+#: src/options.cpp:5032 src/options.cpp:5142
 msgid "Degrees, Minutes, Seconds"
 msgstr "度，分，秒"
 
-#: src/options.cpp:4793 src/options.cpp:4901
+#: src/options.cpp:5047 src/options.cpp:5154
 msgid "Bearings"
 msgstr "方位"
 
-#: src/options.cpp:4798
+#: src/options.cpp:5052
 msgid "Show true"
 msgstr "显示真实的"
 
-#: src/options.cpp:4801
-msgid "Show magnetic bearings and headings"
-msgstr "显示磁方位及朝向"
+#: src/options.cpp:5056
+msgid "Show magnetic"
+msgstr ""
 
-#: src/options.cpp:4807
+#: src/options.cpp:5069
 msgid "Assumed magnetic variation"
 msgstr "假定磁变"
 
-#: src/options.cpp:4829 src/options.cpp:4932
+#: src/options.cpp:5081 src/options.cpp:5185
 msgid "deg (-W, +E)"
 msgstr "度 (-西, +东)"
 
-#: src/options.cpp:4909
+#: src/options.cpp:5162
 msgid "Show true bearings and headings"
 msgstr "显示真方位及朝向"
 
-#: src/options.cpp:4912
+#: src/options.cpp:5165
 msgid "Show magnetic bearings and headings."
 msgstr "显示磁方位及朝向。"
 
-#: src/options.cpp:4923 src/options.cpp:5890
+#: src/options.cpp:5176 src/options.cpp:6280
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "WMM插件计算出的磁变"
 
-#: src/options.cpp:4937
+#: src/options.cpp:5190
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " 如手动设置磁变,\n"
 " 必须禁用WMM插件."
 
-#: src/options.cpp:4972
+#: src/options.cpp:5225
 msgid "AIS Targets"
 msgstr "AIS目标"
 
-#: src/options.cpp:4979
+#: src/options.cpp:5232
 msgid "CPA Calculation"
 msgstr "CPA计算"
 
-#: src/options.cpp:4989
+#: src/options.cpp:5242
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "无(T)CPA报警，如果目标量程大于 (海里)"
 
-#: src/options.cpp:4996
+#: src/options.cpp:5249
 msgid "Warn if CPA less than (NMi)"
 msgstr "报警，如果CPA小于(海里)"
 
-#: src/options.cpp:5008
+#: src/options.cpp:5261
 msgid "...and TCPA is less than (min)"
 msgstr "...并且TCPA少于(分钟)"
 
-#: src/options.cpp:5016
+#: src/options.cpp:5269
 msgid "Lost Targets"
 msgstr "目标丢失"
 
-#: src/options.cpp:5025
+#: src/options.cpp:5278
 msgid "Mark targets as lost after (min)"
 msgstr "目标视作丢失，在（分钟）后"
 
-#: src/options.cpp:5032
+#: src/options.cpp:5285
 msgid "Remove lost targets after (min)"
 msgstr "移除丢失目标，在（分钟）后"
 
-#: src/options.cpp:5052
+#: src/options.cpp:5305
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "显示目标COG前伸箭头，长度（分钟）"
 
-#: src/options.cpp:5060
+#: src/options.cpp:5313
 msgid "Show target tracks, length (min)"
 msgstr "显示目标航迹，长度(分钟)"
 
-#: src/options.cpp:5068
+#: src/options.cpp:5321
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "抑制锚泊/系泊目标，最大速度（节)"
 
-#: src/options.cpp:5076
+#: src/options.cpp:5329
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "允许次关键目标衰减，如果多于...个目标的话"
 
-#: src/options.cpp:5084
+#: src/options.cpp:5337
 msgid "Show area notices (from AIS binary messages)"
 msgstr "显示区域通告（从AIS二进制信息）"
 
-#: src/options.cpp:5091
+#: src/options.cpp:5344
 msgid "Show AIS targets real size"
 msgstr "显示AIS目标真实大小"
 
-#: src/options.cpp:5098
+#: src/options.cpp:5351
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "比例尺大于1时显示带有AIS目标的名称:"
 
-#: src/options.cpp:5106
+#: src/options.cpp:5359
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "WPL语句视作ARPS位置报告"
 
-#: src/options.cpp:5116
+#: src/options.cpp:5369
 msgid "Rollover"
 msgstr "翻转"
 
-#: src/options.cpp:5122
+#: src/options.cpp:5375
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"船只名称\" MMSI（呼号）"
 
-#: src/options.cpp:5126
+#: src/options.cpp:5379
 msgid "[Class] Type (Status)"
 msgstr "[船级]类型（状态）"
 
-#: src/options.cpp:5129
+#: src/options.cpp:5382
 msgid "SOG COG"
 msgstr "对地速度 对地航向"
 
-#: src/options.cpp:5132
+#: src/options.cpp:5385
 msgid "CPA TCPA"
 msgstr "最小会遇距离 最近会遇时间"
 
-#: src/options.cpp:5137
+#: src/options.cpp:5390
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA报警"
 
-#: src/options.cpp:5146
+#: src/options.cpp:5399
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "显示CPA/TCPA报警对话框"
 
-#: src/options.cpp:5150
+#: src/options.cpp:5403
 msgid "Select Alert Sound"
 msgstr "选择报警声音"
 
-#: src/options.cpp:5156
+#: src/options.cpp:5409
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "CPA/TCPA报警及DSC/SART应急时播放声音."
 
-#: src/options.cpp:5160
+#: src/options.cpp:5413
 msgid "Test Alert Sound"
 msgstr "测试报警声响"
 
-#: src/options.cpp:5165
+#: src/options.cpp:5418
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr "抑制锚泊/系泊目标警报"
 
-#: src/options.cpp:5172
+#: src/options.cpp:5425
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "启用目标报警确认超时(分钟)"
 
-#: src/options.cpp:5184
+#: src/options.cpp:5437
 msgid "General Options"
 msgstr "通用选项"
 
-#: src/options.cpp:5192
+#: src/options.cpp:5445
 msgid "Language"
 msgstr "语言"
 
-#: src/options.cpp:5201
+#: src/options.cpp:5457
 msgid "Fonts"
 msgstr "字体"
 
-#: src/options.cpp:5226
+#: src/options.cpp:5482
 msgid "Choose Font..."
 msgstr "选择字体..."
 
-#: src/options.cpp:5231
+#: src/options.cpp:5487
 msgid "Choose Font Color..."
 msgstr "选择字体颜色..."
 
-#: src/options.cpp:5235
+#: src/options.cpp:5491
 msgid "Sample"
 msgstr "样品"
 
-#: src/options.cpp:5242
+#: src/options.cpp:5498
 msgid "Toolbar and Window Style"
 msgstr "工具栏及窗口样式"
 
-#: src/options.cpp:5260
+#: src/options.cpp:5516
 msgid "Interface Options"
 msgstr "界面选项"
 
-#: src/options.cpp:5266
+#: src/options.cpp:5522
 msgid "Show Status Bar"
 msgstr "显示状态条"
 
-#: src/options.cpp:5271
+#: src/options.cpp:5527
 msgid "Show Menu Bar"
 msgstr "显示菜单栏"
 
-#: src/options.cpp:5281
+#: src/options.cpp:5541
 msgid "Show Compass/GPS Status Window"
 msgstr "显示指南针/GPS状态窗口"
 
-#: src/options.cpp:5289
+#: src/options.cpp:5549
 msgid "Enable Toolbar auto-hide"
 msgstr "启用工具栏自动隐藏"
 
-#: src/options.cpp:5305
+#: src/options.cpp:5565
 msgid "Play Ships Bells"
 msgstr "播放船钟"
 
-#: src/options.cpp:5315
+#: src/options.cpp:5575
 msgid "Audio Play command:"
 msgstr "声音播放命令："
 
-#: src/options.cpp:5331
+#: src/options.cpp:5593
 msgid "Unknown device :"
 msgstr "未知设备："
 
-#: src/options.cpp:5349
+#: src/options.cpp:5611
 msgid "Sound Device"
 msgstr "声音设备"
 
-#: src/options.cpp:5357
+#: src/options.cpp:5619
 msgid "Enable Touchscreen interface"
 msgstr "启用触摸屏界面"
 
-#: src/options.cpp:5361
+#: src/options.cpp:5623
 msgid "Enable Scaled Graphics interface"
 msgstr "启用成比例的图形界面"
 
-#: src/options.cpp:5365
-msgid "Use Settings for Inland ECDIS Version 2.3"
-msgstr "内陆2.3版本ECDIS用户设置"
+#: src/options.cpp:5632
+msgid "Enable route/AIS info block"
+msgstr ""
 
-#: src/options.cpp:5370
+#: src/options.cpp:5636
+msgid "Use Inland ECDIS V2.3"
+msgstr ""
+
+#: src/options.cpp:5645
 msgid "Use dark window decorations"
 msgstr "使用深色窗口方案"
 
-#: src/options.cpp:5391
+#: src/options.cpp:5666
 msgid "User Interface scale factor"
 msgstr "用户界面比例尺大小"
 
-#: src/options.cpp:5405
+#: src/options.cpp:5680
 msgid "Chart Object scale factor"
 msgstr "海图目标比例尺大小"
 
-#: src/options.cpp:5419
+#: src/options.cpp:5694
 msgid "Ship scale factor"
 msgstr "船只比例尺大小"
 
-#: src/options.cpp:5660 src/options.cpp:5720
+#: src/options.cpp:5924 src/options.cpp:6091
 msgid "Connections"
 msgstr "连接"
 
-#: src/options.cpp:5688
+#: src/options.cpp:6060
 msgid "Apply"
 msgstr "应用"
 
-#: src/options.cpp:5697
+#: src/options.cpp:6069
 msgid "Charts"
 msgstr "海图"
 
-#: src/options.cpp:5729
+#: src/options.cpp:6101
 msgid "Ships"
 msgstr "船只"
 
-#: src/options.cpp:5735
+#: src/options.cpp:6110
 msgid "User Interface"
 msgstr "用户界面"
 
-#: src/options.cpp:5738 src/options.cpp:5739
+#: src/options.cpp:6113 src/options.cpp:6114
 msgid "Plugins"
 msgstr "插件"
 
-#: src/options.cpp:5896
+#: src/options.cpp:6286
 msgid "User set magnetic variation"
 msgstr "用户设置磁变"
 
-#: src/options.cpp:6325
+#: src/options.cpp:6721
 msgid "feet"
 msgstr "英尺"
 
-#: src/options.cpp:6325
+#: src/options.cpp:6721
 msgid "fathoms"
 msgstr "英寻"
 
-#: src/options.cpp:6566
+#: src/options.cpp:6931
 msgid "Add a directory containing chart files"
 msgstr "添加包含海图文件的目录"
 
-#: src/options.cpp:6800
+#: src/options.cpp:7163
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - 船长必须 > 0"
 
-#: src/options.cpp:6802
+#: src/options.cpp:7165
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - 船宽必须 > 0"
 
-#: src/options.cpp:6805
+#: src/options.cpp:7168
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - 自船中的GPS补偿必须在船只宽度以内"
 
-#: src/options.cpp:6809
+#: src/options.cpp:7172
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - 自船艏的GPS补偿必须在船只长度以内"
 
-#: src/options.cpp:6811
+#: src/options.cpp:7174
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " -船只图标的最小规格必须在1和100海里之间"
 
-#: src/options.cpp:6813
+#: src/options.cpp:7176
 msgid "The settings for own ship real size are not correct:"
 msgstr "本船真实大小的设置不正确:"
 
-#: src/options.cpp:6814 src/routemanagerdialog.cpp:1534
+#: src/options.cpp:7177 src/routemanagerdialog.cpp:1487
 msgid "OpenCPN info"
 msgstr "OpenCPN信息"
 
-#: src/options.cpp:7382
+#: src/options.cpp:7758
 msgid "The changes to the window decorations will take full effect the next time you start OpenCPN."
 msgstr "下次启动OpenCPN时窗口方案变更会全部生效。"
 
-#: src/options.cpp:7711
+#: src/options.cpp:8085
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -5432,15 +5429,15 @@ msgstr "压缩将改变桌面海图文件.\n"
 "压缩的海图可能在某些系统中需要较长时间装载及显示.\n"
 "它们可用unxz或7zip解压缩."
 
-#: src/options.cpp:7728 src/options.cpp:7779
+#: src/options.cpp:8102 src/options.cpp:8153
 msgid "OpenCPN Compress Charts"
 msgstr "OpenCPN压缩海图"
 
-#: src/options.cpp:7771
+#: src/options.cpp:8145
 msgid "No charts found to compress."
 msgstr "未发现可压缩海图。"
 
-#: src/options.cpp:7805
+#: src/options.cpp:8179
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -5449,43 +5446,43 @@ msgstr "压缩 %ld 海图\n"
 "从 %.1fMB 至 %.1fMB\n"
 "节省 %.1fMB (%.1f%%)"
 
-#: src/options.cpp:8188 src/options.cpp:8199
+#: src/options.cpp:8636 src/options.cpp:8647
 msgid "Select Sound File"
 msgstr "选择声音文件"
 
-#: src/options.cpp:8623
+#: src/options.cpp:9081
 msgid "Enter Group Name"
 msgstr "输入组名称"
 
-#: src/options.cpp:8623
+#: src/options.cpp:9081
 msgid "New Chart Group"
 msgstr "新海图组"
 
-#: src/options.cpp:8788 src/options.cpp:8802
+#: src/options.cpp:9247 src/options.cpp:9261
 msgid "Select Tide/Current Data"
 msgstr "选择潮汐/海流数据"
 
-#: src/options.cpp:8850
+#: src/options.cpp:9309
 msgid "Stop Scan"
 msgstr "停止扫描"
 
-#: src/options.cpp:9336
+#: src/options.cpp:9830
 msgid "Configure new connection"
 msgstr "配置新连接"
 
-#: src/options.cpp:9470
+#: src/options.cpp:9964
 msgid "Sentence Filter"
 msgstr "语句筛选器"
 
-#: src/options.cpp:9578
+#: src/options.cpp:10072
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
 msgstr "输入NMEA语句(2,3或5个字符)"
 
-#: src/options.cpp:9579
+#: src/options.cpp:10073
 msgid "Enter the NMEA sentence"
 msgstr "输入NMEA语句"
 
-#: src/options.cpp:9596
+#: src/options.cpp:10090
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5497,63 +5494,63 @@ msgstr "NMEA渔具一般3个字符 (比如RMC, GGA等)\n"
 "           可用特定的对话前置 如GP, A等)筛选出所有语句.\n\n"
 "           筛选器仅接受这三种格式."
 
-#: src/options.cpp:9643
+#: src/options.cpp:10137
 msgid "Texture Compression"
 msgstr "纹理压缩"
 
-#: src/options.cpp:9644
+#: src/options.cpp:10138
 msgid "Texture Compression with Caching"
 msgstr "带缓存的纹理压缩"
 
-#: src/options.cpp:9646
+#: src/options.cpp:10140
 msgid "Texture Compression Caching"
 msgstr "纹理压缩缓存"
 
-#: src/options.cpp:9648
+#: src/options.cpp:10142
 msgid "Texture Memory Size (MB)"
 msgstr "纹理存储空间（MB)"
 
-#: src/options.cpp:9652 src/options.cpp:9825
+#: src/options.cpp:10146 src/options.cpp:10319
 msgid "Size: "
 msgstr "规格："
 
-#: src/options.cpp:9654
+#: src/options.cpp:10148
 msgid "Rebuild Texture Cache"
 msgstr "重建纹理缓存"
 
-#: src/options.cpp:9656
+#: src/options.cpp:10150
 msgid "Clear Texture Cache"
 msgstr "清除纹理缓存"
 
-#: src/options.cpp:9660
+#: src/options.cpp:10154
 msgid "Show FPS"
 msgstr "显示FPS"
 
-#: src/options.cpp:9661
+#: src/options.cpp:10155
 msgid "Polygon Smoothing"
 msgstr "多边形平滑"
 
-#: src/options.cpp:9662
+#: src/options.cpp:10156
 msgid "Line Smoothing"
 msgstr "线条平滑"
 
-#: src/options.cpp:9664
+#: src/options.cpp:10158
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "OpenCPN软件（重启OpenCPN)"
 
-#: src/options.cpp:9666
+#: src/options.cpp:10160
 msgid "Use Accelerated Panning"
 msgstr "使用加速计划"
 
-#: src/options.cpp:9668
+#: src/options.cpp:10162
 msgid "Texture Settings"
 msgstr "纹理设置"
 
-#: src/options.cpp:9675
+#: src/options.cpp:10169
 msgid "Texture Cache"
 msgstr "纹理缓存"
 
-#: src/options.cpp:9682
+#: src/options.cpp:10176
 msgid "Miscellaneous"
 msgstr "杂项"
 
@@ -5565,7 +5562,7 @@ msgstr "S57包更新失败.\n"
 "ENC性能可能为完成或不准确.\n\n"
 "细节请见日志文件."
 
-#: src/Osenc.cpp:1172 src/Osenc.cpp:1179 src/s57chart.cpp:3722
+#: src/Osenc.cpp:1172 src/Osenc.cpp:1179 src/s57chart.cpp:3854
 msgid "OpenCPN Create SENC Warning"
 msgstr "OpenCN出啊年SENC报警"
 
@@ -5583,12 +5580,12 @@ msgstr "S57包更新失败.\n"
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC文件创建..."
 
-#: src/pluginmanager.cpp:524
+#: src/pluginmanager.cpp:544
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
 msgstr "插件 %s 和此版本的OpenCPN不兼容，请下载更新的版本."
 
-#: src/pluginmanager.cpp:1261
+#: src/pluginmanager.cpp:1289
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
@@ -5597,11 +5594,11 @@ msgstr "插件 %s (%s), 版本 %i.%i 已检测到.\n"
 " 已知此版本不稳定且不会加载.\n"
 " 请在opencpn.org网站更新此插件."
 
-#: src/pluginmanager.cpp:1262 src/pluginmanager.cpp:1268
+#: src/pluginmanager.cpp:1290 src/pluginmanager.cpp:1296
 msgid "Blacklisted plugin detected..."
 msgstr "检测到黑名单插件..."
 
-#: src/pluginmanager.cpp:1267
+#: src/pluginmanager.cpp:1295
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
@@ -5610,281 +5607,281 @@ msgstr "插件 %s (%s), 版本 %i.%i 已检测到.\n"
 " 本版本已知不稳定.\n"
 "请在opencpn.org现在此插件."
 
-#: src/pluginmanager.cpp:1300
+#: src/pluginmanager.cpp:1328
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
 msgstr "检测到不可读的插件库，检查文件许可性:\n"
 
-#: src/pluginmanager.cpp:1326
+#: src/pluginmanager.cpp:1354
 msgid "Incompatible plugin detected"
 msgstr "检测到不兼容的插件"
 
-#: src/pluginmanager.cpp:1329
+#: src/pluginmanager.cpp:1357
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr "插件 [ %s ] 版本 %i.%i"
 
-#: src/pluginmanager.cpp:1334
+#: src/pluginmanager.cpp:1362
 msgid ", and all previous versions,"
 msgstr ", 及所有以前版本,"
 
-#: src/pluginmanager.cpp:1335
+#: src/pluginmanager.cpp:1363
 msgid " is incompatible with this version of OpenCPN."
 msgstr " 和本OpenCPN版本不兼容."
 
-#: src/pluginmanager.cpp:4259 src/pluginmanager.cpp:4361
+#: src/pluginmanager.cpp:4305 src/pluginmanager.cpp:4427
 msgid "Disable"
 msgstr "禁用"
 
-#: src/RolloverWin.cpp:126 src/RolloverWin.cpp:223 src/RolloverWin.cpp:338
+#: src/RolloverWin.cpp:133 src/RolloverWin.cpp:233 src/RolloverWin.cpp:366
 msgid "AISRollover"
 msgstr "AIS翻转"
 
-#: src/RolloverWin.cpp:127 src/RolloverWin.cpp:224 src/RolloverWin.cpp:342
+#: src/RolloverWin.cpp:134 src/RolloverWin.cpp:234 src/RolloverWin.cpp:370
 msgid "TideCurrentGraphRollover"
 msgstr "潮汐海流画面翻转"
 
-#: src/Route.cpp:1147
+#: src/Route.cpp:1190
 msgid "Route Transmitted."
 msgstr "航线已传送."
 
-#: src/Route.cpp:1150
+#: src/Route.cpp:1193
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "航线上载出错.  Garmin GPS已连接"
 
-#: src/Route.cpp:1152
+#: src/Route.cpp:1195
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "航线加载出错，请检查日志文件..."
 
-#: src/routemanagerdialog.cpp:374
+#: src/routemanagerdialog.cpp:319
 msgid "Routes"
 msgstr "航线"
 
-#: src/routemanagerdialog.cpp:397 src/routemanagerdialog.cpp:509
-#: src/routemanagerdialog.cpp:608 src/routemanagerdialog.cpp:737
+#: src/routemanagerdialog.cpp:342 src/routemanagerdialog.cpp:454
+#: src/routemanagerdialog.cpp:553 src/routemanagerdialog.cpp:682
 #: src/TTYWindow.cpp:63
 msgid "Filter"
 msgstr "筛选"
 
-#: src/routemanagerdialog.cpp:430 src/routemanagerdialog.cpp:544
+#: src/routemanagerdialog.cpp:375 src/routemanagerdialog.cpp:489
 msgid "Show"
 msgstr "显示"
 
-#: src/routemanagerdialog.cpp:431
+#: src/routemanagerdialog.cpp:376
 msgid "Route Name"
 msgstr "航线名字"
 
-#: src/routemanagerdialog.cpp:432
+#: src/routemanagerdialog.cpp:377
 msgid "From <-> To"
 msgstr "从<->至"
 
-#: src/routemanagerdialog.cpp:447 src/routemanagerdialog.cpp:565
-#: src/routemanagerdialog.cpp:659
+#: src/routemanagerdialog.cpp:392 src/routemanagerdialog.cpp:510
+#: src/routemanagerdialog.cpp:604
 msgid "&Properties"
 msgstr "&属性"
 
-#: src/routemanagerdialog.cpp:452
+#: src/routemanagerdialog.cpp:397
 msgid "&Activate"
 msgstr "&激活"
 
-#: src/routemanagerdialog.cpp:459 src/routemanagerdialog.cpp:664
+#: src/routemanagerdialog.cpp:404 src/routemanagerdialog.cpp:609
 msgid "&Center View"
 msgstr "&中心视图"
 
-#: src/routemanagerdialog.cpp:466
+#: src/routemanagerdialog.cpp:411
 msgid "&Reverse"
 msgstr "&反向"
 
-#: src/routemanagerdialog.cpp:471 src/routemanagerdialog.cpp:570
-#: src/routemanagerdialog.cpp:669 src/routemanagerdialog.cpp:794
+#: src/routemanagerdialog.cpp:416 src/routemanagerdialog.cpp:515
+#: src/routemanagerdialog.cpp:614 src/routemanagerdialog.cpp:739
 msgid "&Delete"
 msgstr "&删除"
 
-#: src/routemanagerdialog.cpp:476 src/routemanagerdialog.cpp:575
-#: src/routemanagerdialog.cpp:679
+#: src/routemanagerdialog.cpp:421 src/routemanagerdialog.cpp:520
+#: src/routemanagerdialog.cpp:624
 msgid "&Export selected..."
 msgstr "&导出所选的..."
 
-#: src/routemanagerdialog.cpp:481 src/routemanagerdialog.cpp:684
+#: src/routemanagerdialog.cpp:426 src/routemanagerdialog.cpp:629
 msgid "&Send to GPS"
 msgstr "&发送至GPS"
 
-#: src/routemanagerdialog.cpp:488 src/routemanagerdialog.cpp:587
+#: src/routemanagerdialog.cpp:433 src/routemanagerdialog.cpp:532
 msgid "&Delete All"
 msgstr "&删除所有"
 
-#: src/routemanagerdialog.cpp:545
+#: src/routemanagerdialog.cpp:490
 msgid "Track Name"
 msgstr "航迹名字"
 
-#: src/routemanagerdialog.cpp:546
+#: src/routemanagerdialog.cpp:491
 msgid "Length"
 msgstr "长度"
 
-#: src/routemanagerdialog.cpp:560
+#: src/routemanagerdialog.cpp:505
 msgid "&Start Track"
 msgstr "&航迹开始"
 
-#: src/routemanagerdialog.cpp:580
+#: src/routemanagerdialog.cpp:525
 msgid "Route from Track"
 msgstr "从航迹制作航线"
 
-#: src/routemanagerdialog.cpp:597 src/TrackPropDlg.cpp:421
+#: src/routemanagerdialog.cpp:542 src/TrackPropDlg.cpp:417
 msgid "Waypoints"
 msgstr "航路点"
 
-#: src/routemanagerdialog.cpp:637 src/MarkInfo.cpp:331 src/MarkInfo.cpp:1379
+#: src/routemanagerdialog.cpp:582 src/MarkInfo.cpp:394 src/MarkInfo.cpp:1511
 msgid "Icon"
 msgstr "图标"
 
-#: src/routemanagerdialog.cpp:639
+#: src/routemanagerdialog.cpp:584
 msgid "Waypoint Name"
 msgstr "航路点名字"
 
-#: src/routemanagerdialog.cpp:640
+#: src/routemanagerdialog.cpp:585
 msgid "Distance from own ship"
 msgstr "自本船距离"
 
-#: src/routemanagerdialog.cpp:654
+#: src/routemanagerdialog.cpp:599
 msgid "&New"
 msgstr "&新增"
 
-#: src/routemanagerdialog.cpp:674
+#: src/routemanagerdialog.cpp:619
 msgid "&Go To"
 msgstr "&至"
 
-#: src/routemanagerdialog.cpp:691
+#: src/routemanagerdialog.cpp:636
 msgid "Delete All"
 msgstr "删除全部"
 
-#: src/routemanagerdialog.cpp:702
+#: src/routemanagerdialog.cpp:647
 msgid "I&mport GPX..."
 msgstr "&导入GPX……"
 
-#: src/routemanagerdialog.cpp:712
+#: src/routemanagerdialog.cpp:657
 msgid "Export All Visible..."
 msgstr "导出所有可视的..."
 
-#: src/routemanagerdialog.cpp:726
+#: src/routemanagerdialog.cpp:671
 msgid "Layers"
 msgstr "图层"
 
-#: src/routemanagerdialog.cpp:768
+#: src/routemanagerdialog.cpp:713
 msgid "Layer Name"
 msgstr "图层名"
 
-#: src/routemanagerdialog.cpp:769
+#: src/routemanagerdialog.cpp:714
 msgid "No. of items"
 msgstr "序号"
 
-#: src/routemanagerdialog.cpp:770
+#: src/routemanagerdialog.cpp:715
 msgid "Layer type"
 msgstr "图层类型"
 
-#: src/routemanagerdialog.cpp:784
+#: src/routemanagerdialog.cpp:729
 msgid "Create Temporary layer"
 msgstr "创建临时图层"
 
-#: src/routemanagerdialog.cpp:789
+#: src/routemanagerdialog.cpp:734
 msgid "Create Persistent layer"
 msgstr "创建固定图层"
 
-#: src/routemanagerdialog.cpp:799 src/TrackPropDlg.cpp:291
-#: src/TrackPropDlg.cpp:598 src/MarkInfo.cpp:393
+#: src/routemanagerdialog.cpp:744 src/TrackPropDlg.cpp:287
+#: src/TrackPropDlg.cpp:593 src/MarkInfo.cpp:492
 msgid "Show on chart"
 msgstr "在海图上显示"
 
-#: src/routemanagerdialog.cpp:803
+#: src/routemanagerdialog.cpp:748
 msgid "Show WPT names"
 msgstr "显示航路点名字"
 
-#: src/routemanagerdialog.cpp:808
+#: src/routemanagerdialog.cpp:753
 msgid "List contents"
 msgstr "内容列表"
 
-#: src/routemanagerdialog.cpp:994 src/routemanagerdialog.cpp:1260
+#: src/routemanagerdialog.cpp:944 src/routemanagerdialog.cpp:1209
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1114 src/routemanagerdialog.cpp:1812
-#: src/routemanagerdialog.cpp:2238
+#: src/routemanagerdialog.cpp:1063 src/routemanagerdialog.cpp:1762
+#: src/routemanagerdialog.cpp:2188
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "确定要删除所选目标吗?"
 
-#: src/routemanagerdialog.cpp:1162
+#: src/routemanagerdialog.cpp:1111
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "确认删除<所有>航线吗？"
 
-#: src/routemanagerdialog.cpp:1350
+#: src/routemanagerdialog.cpp:1299
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
 msgstr "一同将作为此航线一部分的共享航路点隐藏吗？"
 
-#: src/routemanagerdialog.cpp:1350
+#: src/routemanagerdialog.cpp:1299
 msgid "Question"
 msgstr "问题"
 
-#: src/routemanagerdialog.cpp:1470
+#: src/routemanagerdialog.cpp:1423
 msgid "&Merge Selected Tracks"
 msgstr "&合并所选航迹"
 
-#: src/routemanagerdialog.cpp:1472
+#: src/routemanagerdialog.cpp:1425
 msgid "Reduce Data..."
 msgstr "减少数据中..."
 
-#: src/routemanagerdialog.cpp:1474
+#: src/routemanagerdialog.cpp:1427
 msgid "&Copy as text"
 msgstr "&复制为文本"
 
-#: src/routemanagerdialog.cpp:1504
+#: src/routemanagerdialog.cpp:1457
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr "数据减少后，选择最大\n"
 "容错(米):"
 
-#: src/routemanagerdialog.cpp:1505
+#: src/routemanagerdialog.cpp:1458
 msgid "Reduce Data Precision"
 msgstr "降低数据准确度"
 
-#: src/routemanagerdialog.cpp:1532
+#: src/routemanagerdialog.cpp:1485
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr "航迹使用的数据量\n"
 " 已减少 %d%%."
 
-#: src/routemanagerdialog.cpp:1628
+#: src/routemanagerdialog.cpp:1581
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr "当前所用航迹未合并。结束后可将其合并。"
 
-#: src/routemanagerdialog.cpp:1885
+#: src/routemanagerdialog.cpp:1835
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN正将航迹转换为航线..."
 
-#: src/routemanagerdialog.cpp:1886
+#: src/routemanagerdialog.cpp:1836
 msgid "Processing Waypoints..."
 msgstr "航路点处理中..."
 
-#: src/routemanagerdialog.cpp:1896
+#: src/routemanagerdialog.cpp:1846
 msgid "Done."
 msgstr "完成。"
 
-#: src/routemanagerdialog.cpp:1918
+#: src/routemanagerdialog.cpp:1868
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "确认删除<所有>航迹吗？"
 
-#: src/routemanagerdialog.cpp:1984
+#: src/routemanagerdialog.cpp:1934
 msgid "Overruled"
 msgstr "无效的"
 
-#: src/routemanagerdialog.cpp:2271
+#: src/routemanagerdialog.cpp:2221
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "欲删除航路点在某航线中使用，确定要删除?"
 
-#: src/routemanagerdialog.cpp:2400
+#: src/routemanagerdialog.cpp:2350
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "确认删除<所有>航路点吗？"
 
-#: src/routemanagerdialog.cpp:2406
+#: src/routemanagerdialog.cpp:2356
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
@@ -5894,58 +5891,58 @@ msgstr "航线或锚泊警报仍在使用一些航路点.\n"
 "这将改变航线并禁用锚泊警报.\n"
 " 回答“否”将保留航线或者警报中使用的航路点."
 
-#: src/routemanagerdialog.cpp:2551
+#: src/routemanagerdialog.cpp:2501
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "确定删除此图层及<所有>内容？"
 
-#: src/routemanagerdialog.cpp:2555
+#: src/routemanagerdialog.cpp:2505
 msgid "The file will also be deleted from OpenCPN's layer directory."
 msgstr "本文件也将从OpenCPN图层目录中删除。"
 
-#: src/routemanagerdialog.cpp:2843
+#: src/routemanagerdialog.cpp:2793
 msgid "(Unnamed Layer)"
 msgstr "（未命名图层）"
 
-#: src/routeman.cpp:848 src/routeman.cpp:929
+#: src/routeman.cpp:865 src/routeman.cpp:946
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
 msgstr "试图删除活动AIS有人落水航线，确定吗？"
 
-#: src/routeman.cpp:1076
+#: src/routeman.cpp:1097
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "航路点可重命名以反映新的顺序，名称将为 '001', '002' 等等\n\n"
 "重命名航路点？"
 
-#: src/RoutePoint.cpp:584 src/RoutePoint.cpp:585 src/RoutePoint.cpp:756
-#: src/RoutePoint.cpp:757
+#: src/RoutePoint.cpp:585 src/RoutePoint.cpp:586 src/RoutePoint.cpp:757
+#: src/RoutePoint.cpp:758
 msgid "Marks"
 msgstr "标志"
 
-#: src/RoutePoint.cpp:1074
+#: src/RoutePoint.cpp:1119
 msgid "Waypoint(s) Transmitted."
 msgstr "航路点已发送."
 
-#: src/RoutePoint.cpp:1077
+#: src/RoutePoint.cpp:1122
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "航路点上载出错.  Garmin GPS已连接"
 
-#: src/RoutePoint.cpp:1079
+#: src/RoutePoint.cpp:1124
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "航路点加载失败。请检查日志文件..."
 
-#: src/RoutePoint.cpp:1147
+#: src/RoutePoint.cpp:1192
 msgid "The ScaMin value for new waypoints is set to"
 msgstr "新航路点的ScaMin值设置为"
 
-#: src/RoutePoint.cpp:1148
+#: src/RoutePoint.cpp:1193
 msgid "but current chartscale is"
 msgstr "但当前海图比例尺为"
 
-#: src/RoutePoint.cpp:1149
+#: src/RoutePoint.cpp:1194
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr "因此新航路点当前缩放水平时将不可见。"
 
-#: src/routeprintout.cpp:102 src/RoutePropDlg.cpp:197 src/TrackPropDlg.cpp:217
+#: src/routeprintout.cpp:102 src/RoutePropDlg.cpp:208 src/TrackPropDlg.cpp:213
 msgid "Leg"
 msgstr "区段"
 
@@ -5981,332 +5978,332 @@ msgstr "显示航路点描述."
 msgid "Route Print"
 msgstr "航线打印"
 
-#: src/RoutePropDlg.cpp:40 src/TrackPropDlg.cpp:578
+#: src/RoutePropDlg.cpp:50 src/TrackPropDlg.cpp:573
 msgid "From"
 msgstr "从"
 
-#: src/RoutePropDlg.cpp:47 src/TrackPropDlg.cpp:585
+#: src/RoutePropDlg.cpp:57 src/TrackPropDlg.cpp:580
 msgid "To"
 msgstr "至"
 
-#: src/RoutePropDlg.cpp:78
+#: src/RoutePropDlg.cpp:88
 msgid "Plan speed"
 msgstr "计划速度"
 
-#: src/RoutePropDlg.cpp:93
+#: src/RoutePropDlg.cpp:103
 msgid "Enroute"
 msgstr "上路"
 
-#: src/RoutePropDlg.cpp:108
+#: src/RoutePropDlg.cpp:118
 msgid "Departure"
 msgstr "离开"
 
-#: src/RoutePropDlg.cpp:130
+#: src/RoutePropDlg.cpp:141
 msgid "Time"
 msgstr "时间"
 
-#: src/RoutePropDlg.cpp:134
+#: src/RoutePropDlg.cpp:145
 msgid "Local@PC"
 msgstr "PC当地时间"
 
-#: src/RoutePropDlg.cpp:134
+#: src/RoutePropDlg.cpp:145
 msgid "LMT@Location"
 msgstr "所在地当地时间"
 
-#: src/RoutePropDlg.cpp:148 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:601
-#: src/MarkInfo.cpp:420
+#: src/RoutePropDlg.cpp:159 src/TrackPropDlg.cpp:370 src/TrackPropDlg.cpp:596
+#: src/MarkInfo.cpp:519
 msgid "Color"
 msgstr "颜色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:605
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:600
 msgid "Default color"
 msgstr "默认颜色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:605
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:600
 msgid "Black"
 msgstr "黑色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:605
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:600
 msgid "Dark Red"
 msgstr "暗红色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:605
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:600
 msgid "Dark Green"
 msgstr "墨绿色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:379 src/TrackPropDlg.cpp:606
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:601
 msgid "Dark Yellow"
 msgstr "深黄色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:379 src/TrackPropDlg.cpp:606
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:601
 msgid "Dark Blue"
 msgstr "深蓝色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:379 src/TrackPropDlg.cpp:606
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:601
 msgid "Dark Magenta"
 msgstr "暗洋红色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:379 src/TrackPropDlg.cpp:606
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:601
 msgid "Dark Cyan"
 msgstr "深青色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Light Gray"
 msgstr "浅灰色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Dark Gray"
 msgstr "深灰色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Red"
 msgstr "红色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Green"
 msgstr "绿色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Yellow"
 msgstr "黄色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:380 src/TrackPropDlg.cpp:607
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:602
 msgid "Blue"
 msgstr "蓝色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:381 src/TrackPropDlg.cpp:608
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:603
 msgid "Magenta"
 msgstr "洋红色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:381 src/TrackPropDlg.cpp:608
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:603
 msgid "Cyan"
 msgstr "青色"
 
-#: src/RoutePropDlg.cpp:152 src/TrackPropDlg.cpp:381 src/TrackPropDlg.cpp:608
+#: src/RoutePropDlg.cpp:163 src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:603
 msgid "White"
 msgstr "白色"
 
-#: src/RoutePropDlg.cpp:164 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:614
+#: src/RoutePropDlg.cpp:175 src/TrackPropDlg.cpp:384 src/TrackPropDlg.cpp:609
 msgid "Style"
 msgstr "样式"
 
-#: src/RoutePropDlg.cpp:168 src/TrackPropDlg.cpp:392 src/TrackPropDlg.cpp:618
+#: src/RoutePropDlg.cpp:179 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:613
 msgid "Solid"
 msgstr "实线"
 
-#: src/RoutePropDlg.cpp:168 src/TrackPropDlg.cpp:392 src/TrackPropDlg.cpp:618
+#: src/RoutePropDlg.cpp:179 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:613
 msgid "Dot"
 msgstr "点线"
 
-#: src/RoutePropDlg.cpp:168 src/TrackPropDlg.cpp:392 src/TrackPropDlg.cpp:618
+#: src/RoutePropDlg.cpp:179 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:613
 msgid "Long dash"
 msgstr "长横杠线"
 
-#: src/RoutePropDlg.cpp:168 src/TrackPropDlg.cpp:393 src/TrackPropDlg.cpp:618
+#: src/RoutePropDlg.cpp:179 src/TrackPropDlg.cpp:389 src/TrackPropDlg.cpp:613
 msgid "Short dash"
 msgstr "短横杠线"
 
-#: src/RoutePropDlg.cpp:168 src/TrackPropDlg.cpp:393 src/TrackPropDlg.cpp:618
+#: src/RoutePropDlg.cpp:179 src/TrackPropDlg.cpp:389 src/TrackPropDlg.cpp:613
 msgid "Dot dash"
 msgstr "点横杠线"
 
-#: src/RoutePropDlg.cpp:180 src/TrackPropDlg.cpp:406 src/TrackPropDlg.cpp:624
+#: src/RoutePropDlg.cpp:191 src/TrackPropDlg.cpp:402 src/TrackPropDlg.cpp:619
 msgid "Width"
 msgstr "宽度"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "1 px"
 msgstr "1像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "2px"
 msgstr "2像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "3 px"
 msgstr "3像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "4 px"
 msgstr "4像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "5 px"
 msgstr "5像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "6 px"
 msgstr "6像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "7 px"
 msgstr "7像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "8 px"
 msgstr "8像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "9 px"
 msgstr "8像素"
 
-#: src/RoutePropDlg.cpp:184
+#: src/RoutePropDlg.cpp:195
 msgid "10 px"
 msgstr "9像素"
 
-#: src/RoutePropDlg.cpp:199
+#: src/RoutePropDlg.cpp:210
 msgid "To waypoint"
 msgstr "至航路点"
 
-#: src/RoutePropDlg.cpp:209
+#: src/RoutePropDlg.cpp:220
 msgid "ETE"
 msgstr "预计驶离时间"
 
-#: src/RoutePropDlg.cpp:211
+#: src/RoutePropDlg.cpp:222
 msgid "ETA"
 msgstr "预抵时间"
 
-#: src/RoutePropDlg.cpp:215
+#: src/RoutePropDlg.cpp:226
 msgid "Next tide event"
 msgstr "下次潮汐数据"
 
-#: src/RoutePropDlg.cpp:221 src/MarkInfo.cpp:478
+#: src/RoutePropDlg.cpp:232 src/MarkInfo.cpp:577
 msgid "ETD"
 msgstr "预抵时间"
 
-#: src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:526 src/MarkInfo.cpp:507
+#: src/RoutePropDlg.cpp:241 src/TrackPropDlg.cpp:525 src/MarkInfo.cpp:344
 msgid "Basic"
 msgstr "基础"
 
-#: src/RoutePropDlg.cpp:243 src/TrackPropDlg.cpp:733 src/MarkInfo.cpp:360
+#: src/RoutePropDlg.cpp:254 src/TrackPropDlg.cpp:728 src/MarkInfo.cpp:456
 msgid "Links"
 msgstr "链接"
 
-#: src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:739
+#: src/RoutePropDlg.cpp:263 src/TrackPropDlg.cpp:734
 msgid "wxFB Website"
 msgstr "wxFB网页"
 
-#: src/RoutePropDlg.cpp:262 src/RoutePropDlg.cpp:298 src/TrackPropDlg.cpp:746
+#: src/RoutePropDlg.cpp:273 src/RoutePropDlg.cpp:309 src/TrackPropDlg.cpp:739
 msgid "Add new"
 msgstr "新增"
 
-#: src/RoutePropDlg.cpp:285 src/RoutePropDlgImpl.cpp:1116
-#: src/TrackPropDlg.cpp:772 src/TrackPropDlg.cpp:1453
+#: src/RoutePropDlg.cpp:296 src/RoutePropDlgImpl.cpp:1190
+#: src/TrackPropDlg.cpp:764 src/TrackPropDlg.cpp:1468
 msgid "Links are opened in the default browser."
 msgstr "链接已在默认浏览器打开。"
 
-#: src/RoutePropDlg.cpp:319 src/TrackPropDlg.cpp:468 src/TrackPropDlg.cpp:806
+#: src/RoutePropDlg.cpp:330 src/TrackPropDlg.cpp:464 src/TrackPropDlg.cpp:798
 msgid "Print"
 msgstr "打印"
 
-#: src/RoutePropDlg.cpp:322 src/TrackPropDlg.cpp:481
+#: src/RoutePropDlg.cpp:333 src/TrackPropDlg.cpp:477
 msgid "Extend"
 msgstr "延伸"
 
-#: src/RoutePropDlg.cpp:325 src/TrackPropDlg.cpp:476 src/TrackPropDlg.cpp:814
+#: src/RoutePropDlg.cpp:336 src/TrackPropDlg.cpp:472 src/TrackPropDlg.cpp:806
 msgid "Split"
 msgstr "拆分"
 
-#: src/RoutePropDlgImpl.cpp:85
+#: src/RoutePropDlgImpl.cpp:88
 msgid "MoTwilight"
 msgstr "暮光"
 
-#: src/RoutePropDlgImpl.cpp:87
+#: src/RoutePropDlgImpl.cpp:90
 msgid "Sunrise"
 msgstr "日升"
 
-#: src/RoutePropDlgImpl.cpp:89
+#: src/RoutePropDlgImpl.cpp:92
 msgid "Daytime"
 msgstr "白天"
 
-#: src/RoutePropDlgImpl.cpp:91
+#: src/RoutePropDlgImpl.cpp:94
 msgid "Sunset"
 msgstr "日落"
 
-#: src/RoutePropDlgImpl.cpp:93
+#: src/RoutePropDlgImpl.cpp:96
 msgid "EvTwilight"
 msgstr "黄昏"
 
-#: src/RoutePropDlgImpl.cpp:95
+#: src/RoutePropDlgImpl.cpp:98
 msgid "Nighttime"
 msgstr "夜间"
 
-#: src/RoutePropDlgImpl.cpp:330
+#: src/RoutePropDlgImpl.cpp:379
 msgid "Arrived"
 msgstr "已抵达"
 
-#: src/RoutePropDlgImpl.cpp:668 src/TrackPropDlg.cpp:270
-#: src/TrackPropDlg.cpp:1191
+#: src/RoutePropDlgImpl.cpp:736 src/TrackPropDlg.cpp:266
+#: src/TrackPropDlg.cpp:1182
 msgid "Depart From"
 msgstr "驶离自"
 
-#: src/RoutePropDlgImpl.cpp:670 src/TrackPropDlg.cpp:302
-#: src/TrackPropDlg.cpp:644 src/TrackPropDlg.cpp:1193
+#: src/RoutePropDlgImpl.cpp:738 src/TrackPropDlg.cpp:298
+#: src/TrackPropDlg.cpp:639 src/TrackPropDlg.cpp:1184
 msgid "Total distance"
 msgstr "总计距离"
 
-#: src/RoutePropDlgImpl.cpp:671
+#: src/RoutePropDlgImpl.cpp:739
 msgid "Speed (Kts)"
 msgstr "速度（节）"
 
-#: src/RoutePropDlgImpl.cpp:672 src/TrackPropDlg.cpp:1195
+#: src/RoutePropDlgImpl.cpp:740 src/TrackPropDlg.cpp:1186
 msgid "Departure Time"
 msgstr "开航时间"
 
-#: src/RoutePropDlgImpl.cpp:673 src/TrackPropDlg.cpp:658
-#: src/TrackPropDlg.cpp:1196
+#: src/RoutePropDlgImpl.cpp:741 src/TrackPropDlg.cpp:653
+#: src/TrackPropDlg.cpp:1187
 msgid "Time enroute"
 msgstr "航线所需时间"
 
-#: src/RoutePropDlgImpl.cpp:713
+#: src/RoutePropDlgImpl.cpp:781
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "确认移除此航路点吗？"
 
-#: src/RoutePropDlgImpl.cpp:714
+#: src/RoutePropDlgImpl.cpp:782
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN移除航路点"
 
-#: src/RoutePropDlgImpl.cpp:755
+#: src/RoutePropDlgImpl.cpp:823
 msgid "&Waypoint Properties..."
 msgstr "&航路点属性..."
 
-#: src/RoutePropDlgImpl.cpp:756
+#: src/RoutePropDlgImpl.cpp:824
 msgid "&Remove Selected"
 msgstr "&移除所选内容"
 
-#: src/RoutePropDlgImpl.cpp:762 src/TrackPropDlg.cpp:1243
+#: src/RoutePropDlgImpl.cpp:830 src/TrackPropDlg.cpp:1234
 msgid "&Copy all as text"
 msgstr "&全部复制为文本"
 
-#: src/RoutePropDlgImpl.cpp:833 src/TrackPropDlg.cpp:1159
+#: src/RoutePropDlgImpl.cpp:907 src/TrackPropDlg.cpp:1150
 msgid "_A"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:834 src/TrackPropDlg.cpp:1160
+#: src/RoutePropDlgImpl.cpp:908 src/TrackPropDlg.cpp:1151
 msgid "_B"
 msgstr ""
 
-#: src/RoutePropDlgImpl.cpp:877 src/TrackPropDlg.cpp:1134
+#: src/RoutePropDlgImpl.cpp:951 src/TrackPropDlg.cpp:1125
 msgid "_plus"
 msgstr "_加"
 
-#: src/RoutePropDlgImpl.cpp:948
+#: src/RoutePropDlgImpl.cpp:1022
 msgid "Invalid date/time!"
 msgstr "无效日期/时间！"
 
-#: src/RoutePropDlgImpl.cpp:952
+#: src/RoutePropDlgImpl.cpp:1026
 msgid "Unknown station!"
 msgstr "未知站台！"
 
-#: src/RoutePropDlgImpl.cpp:972
+#: src/RoutePropDlgImpl.cpp:1046
 msgid "Local"
 msgstr "当地"
 
-#: src/RoutePropDlgImpl.cpp:1114 src/TrackPropDlg.cpp:1451
+#: src/RoutePropDlgImpl.cpp:1188 src/TrackPropDlg.cpp:1466
 msgid "Links are opened for editing."
 msgstr "链接已打开，可以编辑。"
 
-#: src/s57chart.cpp:3721
+#: src/s57chart.cpp:3853
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n"
 "Check the logfile for details."
@@ -6314,11 +6311,11 @@ msgstr "S57包更新链未完成.\n"
 "ENC功能可能未完成或准确性欠佳.\n"
 "细节请见日志文件."
 
-#: src/s57chart.cpp:5430
+#: src/s57chart.cpp:5576
 msgid "this file is not available"
 msgstr "本文件不可用"
 
-#: src/s57chart.cpp:5520
+#: src/s57chart.cpp:5666
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<字体大小=-2>(扇形角度为海向真方位)</font><br>"
 
@@ -6338,193 +6335,193 @@ msgstr "进度..."
 msgid "It seems you have no tide/current harmonic data installed."
 msgstr "似乎没有安装潮汐/海流数据."
 
-#: src/TCWin.cpp:91
+#: src/TCWin.cpp:122
 msgid "Tide"
 msgstr "潮汐"
 
-#: src/TCWin.cpp:96
+#: src/TCWin.cpp:127
 msgid "Current"
 msgstr "海流"
 
-#: src/TCWin.cpp:167
+#: src/TCWin.cpp:218
 msgid "Prev"
 msgstr "前一个"
 
-#: src/TCWin.cpp:182
+#: src/TCWin.cpp:233
 msgid "Next"
 msgstr "下一个"
 
-#: src/TCWin.cpp:258
+#: src/TCWin.cpp:312
 msgid "Reference Station :"
 msgstr "参考站："
 
-#: src/TCWin.cpp:273
+#: src/TCWin.cpp:327
 msgid "Data Source :"
 msgstr "数据源:"
 
-#: src/TCWin.cpp:561
+#: src/TCWin.cpp:676
 msgid "HW"
 msgstr "HW"
 
-#: src/TCWin.cpp:561
+#: src/TCWin.cpp:676
 msgid "LW"
 msgstr "LW"
 
-#: src/TCWin.cpp:746
+#: src/TCWin.cpp:861
 msgid "Today"
 msgstr "今天"
 
-#: src/TCWin.cpp:747 src/TCWin.cpp:752
+#: src/TCWin.cpp:862 src/TCWin.cpp:867
 msgid "Tomorrow"
 msgstr "明天"
 
-#: src/toolbar.cpp:1287
+#: src/toolbar.cpp:939
 msgid "Shift to Larger Scale Chart"
 msgstr "跳至大比例尺海图"
 
-#: src/toolbar.cpp:1295
+#: src/toolbar.cpp:947
 msgid "Shift to Smaller Scale Chart"
 msgstr "跳至小比例尺海图"
 
-#: src/toolbar.cpp:1330
+#: src/toolbar.cpp:982
 msgid "Hide ENC text"
 msgstr "隐藏ENC文本"
 
-#: src/toolbar.cpp:1687 src/toolbar.cpp:1702 src/toolbar.cpp:1718
+#: src/toolbar.cpp:1339 src/toolbar.cpp:1354 src/toolbar.cpp:1370
 msgid "ToolTips"
 msgstr "工具提示"
 
-#: src/toolbar.cpp:3156
+#: src/toolbar.cpp:2839
 msgid "No, I don't want to hide it."
 msgstr "否，不用隐藏."
 
-#: src/toolbar.cpp:3159
+#: src/toolbar.cpp:2842
 msgid "No, and permanently remove the option to hide it."
 msgstr "否，永久移除隐藏选项."
 
-#: src/toolbar.cpp:3162
+#: src/toolbar.cpp:2845
 msgid "Yes, hide it."
 msgstr "时的，隐藏."
 
-#: src/toolbar.cpp:3168
+#: src/toolbar.cpp:2851
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "有人落水按钮是一个重要的安全功能.\n"
 "确认要隐藏吗?"
 
-#: src/toolbar.cpp:3264
+#: src/toolbar.cpp:2947
 msgid "Choose Toolbar Icons"
 msgstr "选择工具栏图标"
 
-#: src/TrackPropDlg.cpp:223
+#: src/TrackPropDlg.cpp:219
 msgid "Timestamp"
 msgstr "时间戳"
 
-#: src/TrackPropDlg.cpp:315 src/TrackPropDlg.cpp:651
+#: src/TrackPropDlg.cpp:311 src/TrackPropDlg.cpp:646
 msgid "Avg. speed"
 msgstr "均速"
 
-#: src/TrackPropDlg.cpp:329
+#: src/TrackPropDlg.cpp:325
 msgid "Time Enroute"
 msgstr "航线时间"
 
-#: src/TrackPropDlg.cpp:354 src/TrackPropDlg.cpp:364 src/TrackPropDlg.cpp:685
+#: src/TrackPropDlg.cpp:350 src/TrackPropDlg.cpp:360 src/TrackPropDlg.cpp:680
 msgid "Local @ PC"
 msgstr "计算机时间"
 
-#: src/TrackPropDlg.cpp:354 src/TrackPropDlg.cpp:367
+#: src/TrackPropDlg.cpp:350 src/TrackPropDlg.cpp:363
 msgid "LMT @ Location"
 msgstr "当地时间"
 
-#: src/TrackPropDlg.cpp:356 src/TrackPropDlg.cpp:678
+#: src/TrackPropDlg.cpp:352 src/TrackPropDlg.cpp:673
 msgid "Time shown as"
 msgstr "时间显示为"
 
-#: src/TrackPropDlg.cpp:410 src/TrackPropDlg.cpp:628
+#: src/TrackPropDlg.cpp:406 src/TrackPropDlg.cpp:623
 msgid "1 pixel"
 msgstr "1像素"
 
-#: src/TrackPropDlg.cpp:410 src/TrackPropDlg.cpp:628
+#: src/TrackPropDlg.cpp:406 src/TrackPropDlg.cpp:623
 msgid "2 pixels"
 msgstr "2个像素"
 
-#: src/TrackPropDlg.cpp:410 src/TrackPropDlg.cpp:628
+#: src/TrackPropDlg.cpp:406 src/TrackPropDlg.cpp:623
 msgid "3 pixels"
 msgstr "3个像素"
 
-#: src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+#: src/TrackPropDlg.cpp:407 src/TrackPropDlg.cpp:624
 msgid "4 pixels"
 msgstr "4个像素"
 
-#: src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+#: src/TrackPropDlg.cpp:407 src/TrackPropDlg.cpp:624
 msgid "5 pixels"
 msgstr "5个像素"
 
-#: src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+#: src/TrackPropDlg.cpp:407 src/TrackPropDlg.cpp:624
 msgid "6 pixels"
 msgstr "6个像素"
 
-#: src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+#: src/TrackPropDlg.cpp:407 src/TrackPropDlg.cpp:624
 msgid "7 pixels"
 msgstr "7个像素"
 
-#: src/TrackPropDlg.cpp:411 src/TrackPropDlg.cpp:629
+#: src/TrackPropDlg.cpp:407 src/TrackPropDlg.cpp:624
 msgid "8 pixels"
 msgstr "8个像素"
 
-#: src/TrackPropDlg.cpp:412 src/TrackPropDlg.cpp:630
+#: src/TrackPropDlg.cpp:408 src/TrackPropDlg.cpp:625
 msgid "9 pixels"
 msgstr "9个像素"
 
-#: src/TrackPropDlg.cpp:412 src/TrackPropDlg.cpp:630
+#: src/TrackPropDlg.cpp:408 src/TrackPropDlg.cpp:625
 msgid "10 pixels"
 msgstr "10个像素"
 
-#: src/TrackPropDlg.cpp:485 src/TrackPropDlg.cpp:823
+#: src/TrackPropDlg.cpp:481 src/TrackPropDlg.cpp:815
 msgid "To route"
 msgstr "至航线"
 
-#: src/TrackPropDlg.cpp:595
+#: src/TrackPropDlg.cpp:590
 msgid "Display parameters"
 msgstr "显示参数"
 
-#: src/TrackPropDlg.cpp:638
+#: src/TrackPropDlg.cpp:633
 msgid "Statistics"
 msgstr "统计"
 
-#: src/TrackPropDlg.cpp:672
+#: src/TrackPropDlg.cpp:667
 msgid "Recorded points"
 msgstr "已记录点"
 
-#: src/TrackPropDlg.cpp:688
+#: src/TrackPropDlg.cpp:683
 msgid "LMT @ Track Start"
 msgstr "LMT @ 航迹开始"
 
-#: src/TrackPropDlg.cpp:819
+#: src/TrackPropDlg.cpp:811
 msgid "Extend track"
 msgstr "延伸航迹"
 
-#: src/TrackPropDlg.cpp:827
+#: src/TrackPropDlg.cpp:819
 msgid "Export"
 msgstr "导出"
 
-#: src/TrackPropDlg.cpp:1018
+#: src/TrackPropDlg.cpp:1009
 msgid "%D Days, %H:%M"
 msgstr "%D 天, %H:%M"
 
-#: src/TrackPropDlg.cpp:1021
+#: src/TrackPropDlg.cpp:1012
 msgid "%H:%M"
 msgstr "%H:%M"
 
-#: src/TrackPropDlg.cpp:1195
+#: src/TrackPropDlg.cpp:1186
 msgid "(m/d/y h:m)"
 msgstr "(月/日/年 时:分)"
 
-#: src/TrackPropDlg.cpp:1301
+#: src/TrackPropDlg.cpp:1292
 msgid "track"
 msgstr "航迹"
 
-#: src/TrackPropDlg.cpp:1705
+#: src/TrackPropDlg.cpp:1721
 msgid "--"
 msgstr ""
 
@@ -6532,12 +6529,12 @@ msgstr ""
 msgid "Legend"
 msgstr "图例"
 
-#: src/TTYWindow.cpp:82 src/TTYWindow.cpp:167 src/wxcurl/dialog.cpp:250
+#: src/TTYWindow.cpp:82 src/TTYWindow.cpp:169 src/wxcurl/dialog.cpp:250
 #: src/wxcurl/dialog.cpp:420
 msgid "Pause"
 msgstr "暂停"
 
-#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:901
+#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:1018
 msgid "Copy"
 msgstr "复制"
 
@@ -6545,27 +6542,27 @@ msgstr "复制"
 msgid "Copy NMEA Debug window to clipboard."
 msgstr "复制NMEA调试窗口至粘贴板。"
 
-#: src/TTYWindow.cpp:124
+#: src/TTYWindow.cpp:126
 msgid "Message accepted"
 msgstr "信息已接受"
 
-#: src/TTYWindow.cpp:131
+#: src/TTYWindow.cpp:133
 msgid "Input message filtered, output message filtered and dropped"
 msgstr "输入信息已筛选，输出信息已筛选并投放"
 
-#: src/TTYWindow.cpp:138
+#: src/TTYWindow.cpp:140
 msgid "Input Message filtered and dropped"
 msgstr "输入信息已筛选并投放"
 
-#: src/TTYWindow.cpp:145
+#: src/TTYWindow.cpp:147
 msgid "Output Message"
 msgstr "输出信息"
 
-#: src/TTYWindow.cpp:152
+#: src/TTYWindow.cpp:154
 msgid "Information Message or Message with errors"
 msgstr "信息或者错误信息"
 
-#: src/TTYWindow.cpp:162 src/wxcurl/dialog.cpp:410
+#: src/TTYWindow.cpp:164 src/wxcurl/dialog.cpp:410
 msgid "Resume"
 msgstr "恢复"
 
@@ -6673,11 +6670,11 @@ msgstr "代理服务器密码："
 msgid "Proxy port:"
 msgstr "代理服务器端口："
 
-#: src/ConfigMgr.cpp:726
+#: src/ConfigMgr.cpp:748
 msgid "Recovery Template"
 msgstr "恢复模板"
 
-#: src/ConfigMgr.cpp:727
+#: src/ConfigMgr.cpp:749
 msgid "Apply this template to return to a known safe configuration"
 msgstr "使用本模板返回至已知安全配置"
 
@@ -6725,109 +6722,113 @@ msgstr "锚泊信息"
 msgid "User Standard"
 msgstr "用户标准"
 
-#: src/MarkInfo.cpp:316
+#: src/MarkInfo.cpp:364
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "本航路点是图层的一部分，不能编辑"
 
-#: src/MarkInfo.cpp:385
-msgid "Extended Properties"
-msgstr "扩展属性"
+#: src/MarkInfo.cpp:386
+msgid "Show name"
+msgstr ""
 
-#: src/MarkInfo.cpp:399
-msgid "Show at scale > 1 :"
-msgstr "比例尺>1时显示："
-
-#: src/MarkInfo.cpp:406
-msgid "Show waypoint name"
-msgstr "显示航路点名称"
-
-#: src/MarkInfo.cpp:410 src/MarkInfo.cpp:1387
-msgid "Range rings"
-msgstr "量距环"
-
-#: src/MarkInfo.cpp:415
-msgid "Number"
-msgstr "数字"
-
-#: src/MarkInfo.cpp:425
-msgid "0.05"
-msgstr "0.05"
-
-#: src/MarkInfo.cpp:439
-msgid "GUID"
-msgstr "GUID"
-
-#: src/MarkInfo.cpp:450
-msgid "Tide Station"
-msgstr "潮汐站"
-
-#: src/MarkInfo.cpp:457
-msgid "∿"
-msgstr "∿"
-
-#: src/MarkInfo.cpp:460
-msgid "Arrival Radius"
-msgstr "抵达半径"
-
-#: src/MarkInfo.cpp:468
-msgid "Planned Speed"
-msgstr "计划速度"
-
-#: src/MarkInfo.cpp:509
+#: src/MarkInfo.cpp:477
 msgid "Extended"
 msgstr "延伸的"
 
-#: src/MarkInfo.cpp:834
+#: src/MarkInfo.cpp:484
+msgid "Extended Properties"
+msgstr "扩展属性"
+
+#: src/MarkInfo.cpp:498
+msgid "Show at scale > 1 :"
+msgstr "比例尺>1时显示："
+
+#: src/MarkInfo.cpp:505
+msgid "Show waypoint name"
+msgstr "显示航路点名称"
+
+#: src/MarkInfo.cpp:509 src/MarkInfo.cpp:1519
+msgid "Range rings"
+msgstr "量距环"
+
+#: src/MarkInfo.cpp:514
+msgid "Number"
+msgstr "数字"
+
+#: src/MarkInfo.cpp:524
+msgid "0.05"
+msgstr "0.05"
+
+#: src/MarkInfo.cpp:538
+msgid "GUID"
+msgstr "GUID"
+
+#: src/MarkInfo.cpp:549
+msgid "Tide Station"
+msgstr "潮汐站"
+
+#: src/MarkInfo.cpp:556
+msgid "∿"
+msgstr "∿"
+
+#: src/MarkInfo.cpp:559
+msgid "Arrival Radius"
+msgstr "抵达半径"
+
+#: src/MarkInfo.cpp:567
+msgid "Planned Speed"
+msgstr "计划速度"
+
+#: src/MarkInfo.cpp:951
 msgid "Add New"
 msgstr "新增"
 
-#: src/MarkInfo.cpp:902
+#: src/MarkInfo.cpp:1019
 msgid "Copy lat/long"
 msgstr "复制纬度/经度"
 
-#: src/MarkInfo.cpp:903
+#: src/MarkInfo.cpp:1020
 msgid "Paste"
 msgstr "粘贴"
 
-#: src/MarkInfo.cpp:904
+#: src/MarkInfo.cpp:1021
 msgid "Paste lat/long"
 msgstr "粘贴纬度/经度"
 
-#: src/MarkInfo.cpp:1358
+#: src/MarkInfo.cpp:1490
 msgid "Save some defaults"
 msgstr "保存默认值"
 
-#: src/MarkInfo.cpp:1366
+#: src/MarkInfo.cpp:1498
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
 msgstr "检查当前航路点的哪些属性\n"
 " 可设置为新航路点默认值."
 
-#: src/MarkInfo.cpp:1371 src/MarkInfo.cpp:1386
+#: src/MarkInfo.cpp:1503 src/MarkInfo.cpp:1518
 msgid "Do use"
 msgstr "一定使用"
 
-#: src/MarkInfo.cpp:1371 src/MarkInfo.cpp:1386
+#: src/MarkInfo.cpp:1503 src/MarkInfo.cpp:1518
 msgid "Don't use"
 msgstr "不要使用"
 
-#: src/MarkInfo.cpp:1372
+#: src/MarkInfo.cpp:1504
 msgid "Show Waypoint Name"
 msgstr "显示航路点名称"
 
-#: src/MarkInfo.cpp:1394
+#: src/MarkInfo.cpp:1526
 msgid "Arrival radius"
 msgstr "抵达半径"
 
-#: src/MarkInfo.cpp:1401
+#: src/MarkInfo.cpp:1533
 msgid "Show only if"
 msgstr "仅在……时显示"
 
-#: src/MarkInfo.cpp:1402
+#: src/MarkInfo.cpp:1534
 msgid "Show always"
 msgstr "总是显示"
 
-#: src/MarkInfo.cpp:1403
+#: src/MarkInfo.cpp:1535
 msgid "Show only at scale"
 msgstr "在……比例尺时显示"
 

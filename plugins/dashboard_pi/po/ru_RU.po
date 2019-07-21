@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:53\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2019-06-04 15:09\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "Местоположение"
 
 #: src/dashboard_pi.cpp:109
 msgid "SOG"
-msgstr "Скорость"
+msgstr "Скорость (SOG)"
 
 #: src/dashboard_pi.cpp:111
 msgid "Speedometer"
@@ -35,11 +35,11 @@ msgstr "Спидометр"
 
 #: src/dashboard_pi.cpp:113
 msgid "COG"
-msgstr "Курс"
+msgstr "Ист. Курс (COG)"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag COG"
-msgstr "Магнитный курс"
+msgstr "Магн. Курс (COG)"
 
 #: src/dashboard_pi.cpp:117
 msgid "GPS Compass"
@@ -47,19 +47,19 @@ msgstr "GPS-компас"
 
 #: src/dashboard_pi.cpp:119
 msgid "True Compass"
-msgstr "Истинный компас"
+msgstr "Ист. Компас"
 
 #: src/dashboard_pi.cpp:121
 msgid "STW"
-msgstr "Относ. скорость"
+msgstr "Скорость (STW)"
 
 #: src/dashboard_pi.cpp:123
 msgid "True HDG"
-msgstr "Ист. путевой угол"
+msgstr "Ист. Путевой угол"
 
 #: src/dashboard_pi.cpp:125
 msgid "Mag HDG"
-msgstr "Магн. путевой угол"
+msgstr "Магн. Путевой угол"
 
 #: src/dashboard_pi.cpp:128
 msgid "App. Wind Angle & Speed"
@@ -115,7 +115,7 @@ msgstr "Ист. направл. и скор. ветра"
 
 #: src/dashboard_pi.cpp:160 src/dashboard_pi.cpp:162
 msgid "VMG"
-msgstr "Эффект. скорость"
+msgstr "Эффект. скорость (VMG)"
 
 #: src/dashboard_pi.cpp:164 src/dashboard_pi.cpp:166
 msgid "Rudder Angle"
@@ -219,11 +219,11 @@ msgstr "Ориентация:"
 
 #: src/dashboard_pi.cpp:1757 src/dashboard_pi.cpp:2268
 msgid "Vertical"
-msgstr "вертикальная"
+msgstr "Вертикально"
 
 #: src/dashboard_pi.cpp:1758 src/dashboard_pi.cpp:2270
 msgid "Horizontal"
-msgstr "горизонтальная"
+msgstr "Горизонтально"
 
 #: src/dashboard_pi.cpp:1765 src/dashboard_pi.cpp:1773 src/dashboard_pi.cpp:2190
 msgid "Instruments"
@@ -279,7 +279,7 @@ msgstr "Предел спидометра:"
 
 #: src/dashboard_pi.cpp:1861
 msgid "Speed Over Ground Damping Factor:"
-msgstr "Скорость относительно земли, коэффициент затухания:"
+msgstr "Коэффициент затухания SOG:"
 
 #: src/dashboard_pi.cpp:1867
 msgid "COG Damping Factor:"
@@ -372,11 +372,11 @@ msgstr "Выберите инструмент для добавления:"
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr "Отстыковка"
+msgstr "Отстыковать"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."
-msgstr "Предпочтения…"
+msgstr "Настройки..."
 
 #: src/dial.cpp:526 src/wind.cpp:66 src/wind_history.cpp:439
 msgid "NE"
@@ -412,7 +412,7 @@ msgstr " ист."
 
 #: src/instrument.cpp:240
 msgid " mag"
-msgstr " магн."
+msgstr " "
 
 #: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"

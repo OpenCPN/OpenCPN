@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:53\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2019-07-21 01:16\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag COG"
-msgstr "Mag COG"
+msgstr "Kurs magnetyczny"
 
 #: src/dashboard_pi.cpp:117
 msgid "GPS Compass"
@@ -55,11 +55,11 @@ msgstr "Prędkość po wodzie (STW)"
 
 #: src/dashboard_pi.cpp:123
 msgid "True HDG"
-msgstr "Kier. (HDG) rzecz."
+msgstr "Kierunek (HDG) rzeczywisty"
 
 #: src/dashboard_pi.cpp:125
 msgid "Mag HDG"
-msgstr "Kier. (HDG) magn."
+msgstr "Kierunek (HDG) magnetyczny"
 
 #: src/dashboard_pi.cpp:128
 msgid "App. Wind Angle & Speed"
@@ -183,7 +183,7 @@ msgstr "Czas Lokalny z CPU komputera"
 
 #: src/dashboard_pi.cpp:198
 msgid "Local Sunrise/Sunset"
-msgstr "Lokalny wschód/zachód Słońca"
+msgstr "Lokalny wschód/zachód słońca"
 
 #: src/dashboard_pi.cpp:395 src/dashboard_pi.cpp:510 src/dashboard_pi.cpp:1494
 #: src/dashboard_pi.cpp:1507 src/dashboard_pi.cpp:1693 src/dashboard_pi.cpp:1732
@@ -283,7 +283,7 @@ msgstr "Prędkość nad dnem, współczynnik opóźnienia:"
 
 #: src/dashboard_pi.cpp:1867
 msgid "COG Damping Factor:"
-msgstr "Kurs nad dnem, współczynnik opóźnienia:"
+msgstr "COG, współczynnik opóźnienia:"
 
 #: src/dashboard_pi.cpp:1873
 msgid "Local Time Offset From UTC:"
@@ -340,7 +340,7 @@ msgstr "centymetry"
 #: src/dashboard_pi.cpp:1909
 #, c-format
 msgid "Depth Offset (%s):"
-msgstr ""
+msgstr "Offset dla głębokości (%s):"
 
 #: src/dashboard_pi.cpp:1933
 msgid "Distance units:"
@@ -360,7 +360,7 @@ msgstr "kilometry"
 
 #: src/dashboard_pi.cpp:1942
 msgid "Wind speed units:"
-msgstr "Jednostki prędkości wiatru"
+msgstr "Jednostki prędkości wiatru:"
 
 #: src/dashboard_pi.cpp:2173
 msgid "Add instrument"
@@ -372,11 +372,11 @@ msgstr "Wybierz instrument do dodania:"
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr ""
+msgstr "Odcumuj"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."
-msgstr "Preferencje..."
+msgstr "Ustawienia..."
 
 #: src/dial.cpp:526 src/wind.cpp:66 src/wind_history.cpp:439
 msgid "NE"

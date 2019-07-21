@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:53\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2019-06-04 15:08\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
 "MIME-Version: 1.0\n"
@@ -372,7 +372,7 @@ msgstr "Selecione instrumento para adicionar:"
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr ""
+msgstr "Desancorar"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."

@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:56\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2019-06-04 15:10\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -366,26 +366,27 @@ msgstr "Permitir atualizações em bloco de todas as fontes e cartas configurada
 
 #: src/chartdldrgui.cpp:503
 msgid "Update chart source catalog"
-msgstr ""
+msgstr "Actualizar catálogo de origem de cartas"
 
 #: src/chartdldrgui.cpp:537
 msgid "Downloading chart sources"
-msgstr ""
+msgstr "Descarregando cartas"
 
 #: src/chartdldrgui.cpp:545
 #, c-format
 msgid "Failed to save: %s "
-msgstr ""
+msgstr "Erro a guardar: %s "
 
 #: src/chartdldrgui.cpp:545 src/chartdldrgui.cpp:552
 msgid "Chart downloader"
-msgstr ""
+msgstr "Descarregador de Cartas"
 
 #: src/chartdldrgui.cpp:551
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
-msgstr ""
+msgstr "Erro a descarregar: %s \n"
+"Verifique que existe uma ligação à internet a funcionar."
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"
