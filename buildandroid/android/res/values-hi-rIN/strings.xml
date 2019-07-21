@@ -242,8 +242,8 @@
   <string name="ocpn_grib_windspeedshowoverlay">पवन गति ओवरले दिखाएं</string>
   <string name="ocpn_grib_windspeedoverlaycolor">पवन गति ओवरले रंग</string>
   <!--  Grib Arrays   -->
-  <string name="ocpn_grib_model_array_item_gfs5">जीएफएस 0.50\u00बी0 एनओएए /एनईसीपी</string>
-  <string name="ocpn_grib_model_array_item_gfs1">जीएफएस 1.0\u00बी0 एनओएए/एनईसीपी</string>
+  <string name="ocpn_grib_model_array_item_gfs5">जीएफएस 0.50 बी0 एनओएए /एनईसीपी</string>
+  <string name="ocpn_grib_model_array_item_gfs1">जीएफएस 1.0 बी0 एनओएए/एनईसीपी</string>
   <string name="ocpn_grib_model_array_item_rtofs">आरटीओएफएस (अटलांटिक) एनओएए /एनईसीपी</string>
   <string name="ocpn_grib_model_array_item_ww3">वर्ल्डवाइडवेब3 लहर घड़ी एनओएए3 / एनसीईपी</string>
   <string name="ocpn_grib_timestep_array_item_1">१ घंटा</string>
