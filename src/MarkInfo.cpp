@@ -290,6 +290,8 @@ MarkInfoDlg::MarkInfoDlg( wxWindow* parent, wxWindowID id, const wxString& title
     m_pMyLinkList = NULL;
     SetColorScheme( (ColorScheme) 0 );
     m_pRoutePoint = NULL;
+    m_SaveDefaultDlg = NULL;
+
 }
 
 
@@ -1082,33 +1084,36 @@ void MarkInfoDlg::OnCopyPasteLatLon( wxCommandEvent& event )
 
 void MarkInfoDlg::DefautlBtnClicked( wxCommandEvent& event )
 {
-    SaveDefaultsDialog* SaveDefaultDlg = new SaveDefaultsDialog( this );
-    SaveDefaultDlg->Center();
-    DimeControl( SaveDefaultDlg );
-    SaveDefaultDlg->ShowWindowModalThenDo([this,SaveDefaultDlg](int retcode){
+    m_SaveDefaultDlg = new SaveDefaultsDialog( this );
+    m_SaveDefaultDlg->Center();
+    DimeControl( m_SaveDefaultDlg );
+    int retcode = m_SaveDefaultDlg->ShowModal();
+    
+    {
         if ( retcode == wxID_OK ) {
             double value;
-            if ( SaveDefaultDlg->IconCB->GetValue() ) {
+            if ( m_SaveDefaultDlg->IconCB->GetValue() ) {
                 g_default_wp_icon = *pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() );
             }
-            if ( SaveDefaultDlg->RangRingsCB->GetValue() ) {
+            if ( m_SaveDefaultDlg->RangRingsCB->GetValue() ) {
                 g_iWaypointRangeRingsNumber = m_SpinWaypointRangeRingsNumber->GetValue();
                 if(m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
                     g_fWaypointRangeRingsStep = fromUsrDistance(value, -1) ;
                 g_colourWaypointRangeRingsColour = m_PickColor->GetColour();
             }
-            if ( SaveDefaultDlg->ArrivalRCB->GetValue() )
+            if ( m_SaveDefaultDlg->ArrivalRCB->GetValue() )
                 if(m_textArrivalRadius->GetValue().ToDouble(&value))
                     g_n_arrival_circle_radius = fromUsrDistance(value, -1);
-            if ( SaveDefaultDlg->ScaleCB->GetValue() ) {
+            if ( m_SaveDefaultDlg->ScaleCB->GetValue() ) {
                 g_iWpt_ScaMin = wxAtoi( m_textScaMin->GetValue() );
                 g_bUseWptScaMin = m_checkBoxScaMin->GetValue() ;
             }
-            if ( SaveDefaultDlg->NameCB->GetValue() ) {
+            if ( m_SaveDefaultDlg->NameCB->GetValue() ) {
                 g_iWpt_ScaMin = m_checkBoxShowName->GetValue();
             }
         }
-    });
+        m_SaveDefaultDlg = NULL;
+    }
 }
 
 void MarkInfoDlg::OnMarkInfoCancelClick( wxCommandEvent& event )
@@ -1549,6 +1554,11 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent) : wxDialog(parent, w
     SetSizer(bSizer1);
     Fit();
     Layout();
+
+#ifdef __OCPN__ANDROID__
+    SetSize(parent->GetSize());
+#endif
+    
     Center();
 }
 

@@ -466,6 +466,10 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 g_pMarkInfoDialog->Hide();
                 g_pMarkInfoDialog->RecalculateSize();
                 if(bshown){
+                    if(g_pMarkInfoDialog->m_SaveDefaultDlg){
+                        g_pMarkInfoDialog->m_SaveDefaultDlg->Destroy();
+                        g_pMarkInfoDialog->m_SaveDefaultDlg = NULL;
+                    }
                     g_pMarkInfoDialog->Show();
                 }
                 

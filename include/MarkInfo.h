@@ -129,6 +129,8 @@ class   OCPNIconCombo;
 
 WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
 
+class SaveDefaultsDialog;
+
 /*!
  * OCPNIconCombo class declaration
  */
@@ -341,6 +343,9 @@ class MarkInfoDlg : public wxFrame
         wxSimpleHtmlListBox *GetSimpleBox()
             { return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox); }
         void OnHtmlCellClicked(wxHtmlCellEvent &event);
+        
+        SaveDefaultsDialog* m_SaveDefaultDlg;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
