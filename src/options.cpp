@@ -43,7 +43,6 @@
 #include <wx/display.h>
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
-#include <wx/clrpicker.h>
 #include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
 #include <wx/mediactrl.h>
@@ -9729,7 +9728,7 @@ void options::SetDefaultConnectionParams(void) {
   m_connection_enabled = TRUE;
 
   // Reset touch flag
-  connectionsaved = true;
+  connectionsaved = false;
 
 }
 
