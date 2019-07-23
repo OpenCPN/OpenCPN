@@ -5494,7 +5494,8 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, fLayout);
   m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size);
 
-  m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_SORT);
+  wxSize fontChoiceSize = wxSize( -1, m_fontHeight * 3 / 4);
+  m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition, fontChoiceSize, 0, NULL, wxCB_SORT);
 
   int nFonts = FontMgr::Get().GetNumFonts();
   for (int it = 0; it < nFonts; it++) {
