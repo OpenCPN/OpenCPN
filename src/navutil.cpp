@@ -803,9 +803,9 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
-    
-    Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
+    Read( _T ( "DefaultFontFacename"), &g_default_font_facename );
 
+    Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
 
     Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar );
     Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar );
