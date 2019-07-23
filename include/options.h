@@ -68,6 +68,7 @@ class OCPNCheckedListCtrl;
 //class OCPNFatCombo;
 class CanvasConfigSelect;
 class OCPNIconCombo;
+class OCPNColourPickerCtrl;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -230,47 +231,6 @@ enum {
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
-
-
-
-class WXDLLIMPEXP_CORE OCPNColourPickerCtrl : public wxBitmapButton
-{
-public:
-    OCPNColourPickerCtrl();
-    OCPNColourPickerCtrl(wxWindow *parent,
-                   wxWindowID id,
-                   const wxColour& initial = *wxBLACK,
-                   const wxPoint& pos = wxDefaultPosition,
-                   const wxSize& size = wxDefaultSize,
-                   long style = 0,
-                   const wxValidator& validator = wxDefaultValidator,
-                   const wxString& name = _T(""));
-
-    bool Create(wxWindow *parent,
-                wxWindowID id,
-                const wxColour& initial = *wxBLACK,
-                const wxPoint& pos = wxDefaultPosition,
-                const wxSize& size = wxDefaultSize,
-                long style = 0,
-                const wxValidator& validator = wxDefaultValidator,
-                const wxString& name = _T(""));
-
-    void OnButtonClick(wxCommandEvent& WXUNUSED(ev));
-    void InitColourData();
-    void SetColour( wxColour& c);
-    wxColour GetColour( void );
-    
-protected:
-    virtual void UpdateColour();
-    wxSize DoGetBestSize() const;
-
-private:
-    wxBitmap m_bitmap;
-    wxColour m_colour;
-    wxColourData ms_data;
-
-};
-
 
 
 

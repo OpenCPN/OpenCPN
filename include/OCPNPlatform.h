@@ -34,6 +34,9 @@
 
 #include <wx/log.h>
 #include <wx/stdpaths.h>
+#include <wx/clrpicker.h>
+#include <wx/colourdata.h>
+#include <wx/colordlg.h>
 
 #include <stdio.h>
 
@@ -201,6 +204,52 @@ private:
     int         m_monitorWidth, m_monitorHeight;
     bool        m_bdisableWindowsDisplayEnum;
 };
+
+
+//--------------------------------------------------------------------------
+//      Private colourPicker control
+//--------------------------------------------------------------------------
+
+class WXDLLIMPEXP_CORE OCPNColourPickerCtrl : public wxBitmapButton
+{
+public:
+    OCPNColourPickerCtrl();
+    OCPNColourPickerCtrl(wxWindow *parent,
+                   wxWindowID id,
+                   const wxColour& initial = *wxBLACK,
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxDefaultSize,
+                   long style = 0,
+                   const wxValidator& validator = wxDefaultValidator,
+                   const wxString& name = _T(""));
+
+    bool Create(wxWindow *parent,
+                wxWindowID id,
+                const wxColour& initial = *wxBLACK,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = 0,
+                const wxValidator& validator = wxDefaultValidator,
+                const wxString& name = _T(""));
+
+    void OnButtonClick(wxCommandEvent& WXUNUSED(ev));
+    void InitColourData();
+    void SetColour( wxColour& c);
+    wxColour GetColour( void );
+    
+protected:
+    virtual void UpdateColour();
+    wxSize DoGetBestSize() const;
+
+private:
+    wxBitmap m_bitmap;
+    wxColour m_colour;
+    wxColourData ms_data;
+
+};
+
+
+
 
 
 #endif          //guard

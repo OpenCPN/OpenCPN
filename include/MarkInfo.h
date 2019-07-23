@@ -63,6 +63,7 @@
 #define ID_RCLK_MENU_ADD_LINK    7025
 
 #include "tcmgr.h"
+#include "OCPNPlatform.h"
 
 /*!
  * Forward declarations
@@ -234,7 +235,7 @@ class MarkInfoDlg : public wxFrame
         wxCheckBox*             m_checkBoxShowNameExt;
         wxCheckBox*             m_checkBoxVisible;
         wxChoice*               m_choiceWaypointRangeRingsUnits;
-        wxColourPickerCtrl*     m_PickColor;
+        OCPNColourPickerCtrl*   m_PickColor;
         wxCheckBox*             m_cbEtaPresent;
         wxBoxSizer*             bMainSizer;
         wxFlexGridSizer*        fSizerBasicProperties;
