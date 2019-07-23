@@ -3822,9 +3822,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), inputFlags);
 
-    m_pSlider_Zoom = new wxSlider(
-        m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), SLIDER_STYLE);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
      prepareSlider(m_pSlider_Zoom);
@@ -3832,12 +3830,9 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
     
-    int slider_width = sz.x / 2;
-    int slider_height = dpmm * 6.0;
-
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), inputFlags);
     
-    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition, wxSize(300, 50), SLIDER_STYLE);
+    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
      prepareSlider(m_pSlider_Zoom_Vector);
@@ -3956,8 +3951,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     wxSize sz = g_Platform->getDisplaySize();
     
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
-    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), SLIDER_STYLE);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom );
@@ -3966,8 +3960,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
-    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), SLIDER_STYLE);
+    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
     
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom_Vector );
@@ -4230,15 +4223,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(0, border_size * 4);
 
 #ifdef USE_S57
-    int slider_width = wxMax(m_fontHeight * 4, 150);
 
     optionsColumn->Add(
         new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")),
         labelFlags);
     m_pSlider_CM93_Zoom = new wxSlider(
-        ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-        CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        SLIDER_STYLE);
+        ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -4441,15 +4431,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
 
 #ifdef USE_S57
     wxSize sz = g_Platform->getDisplaySize();
-    int slider_width = wxMax(m_fontHeight * 4, sz.x / 2);
 
     optionsColumn->Add(
         new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")),
         inputFlags);
-    m_pSlider_CM93_Zoom = new wxSlider(
-        ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-        CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        SLIDER_STYLE);
+    m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
+        CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, m_sliderSize,  SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -5700,11 +5687,8 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   sliderSizer->SetFlexibleDirection( wxBOTH );
   sliderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
   
-  int slider_width = wxMax(m_fontHeight * 4, 300);
-
   m_pSlider_GUI_Factor = new wxSlider(
-      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), SLIDER_STYLE);
+      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
   m_pSlider_GUI_Factor->Hide();
   sliderSizer->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
@@ -5717,8 +5701,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
 #endif
 
   m_pSlider_Chart_Factor = new wxSlider(
-      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), SLIDER_STYLE);
+      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
   sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
@@ -5730,9 +5713,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
    prepareSlider(m_pSlider_Chart_Factor);
 #endif
 
-  m_pSlider_Ship_Factor = new wxSlider(
-      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), SLIDER_STYLE);
+  m_pSlider_Ship_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
   m_pSlider_Ship_Factor->Hide();
   sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
@@ -5867,6 +5848,8 @@ void options::CreateControls(void) {
   GetTextExtent(_T("0"), NULL, &font_size_y, &font_descent, &font_lead);
   m_fontHeight = font_size_y + font_descent + font_lead;
   
+  m_sliderSize = wxSize(wxMin(m_fontHeight * 8, g_Platform->getDisplaySize().x / 2), m_fontHeight * 8 / 10);
+
   m_small_button_size =
       wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 

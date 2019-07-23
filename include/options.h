@@ -717,6 +717,8 @@ class options : private Uncopyable,
   wxString m_selectedConfigPanelGUID;
   wxSize  m_colourPickerDefaultSize;
 
+  wxSize m_sliderSize;
+  
   DECLARE_EVENT_TABLE()
 };
 
