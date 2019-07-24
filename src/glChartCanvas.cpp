@@ -2763,11 +2763,29 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 shipPoints[1].x = -5; shipPoints[1].y = -42;
                 shipPoints[2].x = -11; shipPoints[2].y = -28;
                 shipPoints[3].x = 0; shipPoints[3].y = -28;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, 0 );
+                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, scale_factor_x, icon_rad - PI/2 );
 
                 // draw with cross
-                dc.DrawLine( (-11 * scale_factor_x) + lShipMidPoint.x, lShipMidPoint.y, (11 * scale_factor_x) + lShipMidPoint.x, lShipMidPoint.y);
-                dc.DrawLine( lShipMidPoint.x, (-42 * scale_factor_x) + lShipMidPoint.y, lShipMidPoint.x, (42 * scale_factor_x) + lShipMidPoint.y);
+                double p1x = -11 * scale_factor_x;
+                double p2x =  11 * scale_factor_x;
+                double p1y = 0;
+                double p2y = 0;
+                double p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
+                double p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
+                double p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
+                double p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
+                dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);    
+
+                p1x = 0;
+                p2x = 0;
+                p1y = -42 * scale_factor_x;
+                p2y =  42 * scale_factor_x;
+                p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
+                p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
+                p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
+                p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
+                dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);    
+                
 
             }
 
