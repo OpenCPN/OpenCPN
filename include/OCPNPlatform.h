@@ -105,6 +105,8 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
+    double GetDisplayAreaCM2();
+
     void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
     unsigned int GetSelectRadiusPix();

@@ -1928,6 +1928,23 @@ double  OCPNPlatform::GetDisplaySizeMM()
     return ret;
 }
 
+double OCPNPlatform::GetDisplayAreaCM2()
+{
+    double size1 = GetDisplaySizeMM();
+    wxSize sz = getDisplaySize();
+    double ratio = 1.;
+    if(sz.x < sz.y)
+        ratio = (double)sz.x / (double)sz.y;   // <1
+    else
+        ratio = (double)sz.y / (double)sz.x;   // <1
+        
+    double area = size1 * (size1*ratio) / 100.;    
+    //qDebug() << "cm2" << size1 << ratio << sz.x << sz.y;    
+    return area;
+}
+
+    
+
 void OCPNPlatform::SetDisplaySizeMM( double sizeMM)
 {
     m_displaySizeMMOverride = sizeMM;
