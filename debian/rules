@@ -47,7 +47,8 @@ VERSION     = $(word 1,$(subst +, ,$(DEB_VERSION_UPSTREAM)))
 
 get-orig-source:
 	rm -rf utmp; mkdir utmp
-	uscan  --destdir=utmp  --force-download --safe
+	uscan  --destdir=utmp  --force-download --safe \
+	    --download-version=$(VERSION)
 	cd utmp; \
 	    rm -rf $$(find . -mindepth 1 -maxdepth 1 -type d); \
 	    tar xaf *-*.tar.*z; \
