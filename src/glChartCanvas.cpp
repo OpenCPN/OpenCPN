@@ -565,27 +565,38 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
                         wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
 
-{    
+{ 
+    m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
+
     Init();
 }
 
 #ifdef __OCPN__ANDROID__
-#if 0
-    glChartCanvas::glChartCanvas( wxWindow *parent, QGLContext *pctx, wxGLCanvas *share ) :
-    wxGLCanvas( parent, wxID_ANY, pctx, share, wxDefaultPosition, wxSize( 256, 256 ),
+glChartCanvas::glChartCanvas( wxWindow *parent, wxPoint position ) :
+    wxGLCanvas( parent, wxID_ANY, attribs, position, wxSize( 256, 256 ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
+
+{ 
+    m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
+
+    Init();
+}
+
+glChartCanvas::glChartCanvas( wxWindow *parent, wxPoint position, QGLContext *pctx, wxGLCanvas *share ) :
+    wxGLCanvas( parent, wxID_ANY, pctx, share, position, wxSize( 256, 256 ),
                         wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
 
 {    
+    m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
     Init();
 }
-#endif
 #endif
 
 void glChartCanvas::Init()
 {
     m_bsetup = false;
 
-    m_pParentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+//    m_pParentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
     
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing
     
@@ -687,7 +698,6 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
      }
 #endif
 
-
     SetCurrent(*m_pcontext);
     
     
@@ -705,7 +715,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     }
 
     /* expand opengl widget to fill viewport */
-    if( GetSize() != m_pParentCanvas->GetSize() ) {
+    //if( GetSize() != m_pParentCanvas->GetSize() )
+    {
 
         SetSize( m_pParentCanvas->GetSize() );
         if( m_bsetup ){
@@ -718,16 +729,19 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     GetClientSize( &m_pParentCanvas->m_canvas_width, &m_pParentCanvas->m_canvas_height );
 
 #ifdef USE_ANDROID_GLES2
-    int xoffset = 0;
-    if(m_pParentCanvas->m_canvasIndex >0)
-        xoffset = 300;
+    qDebug() << "OnSize()" << m_pParentCanvas->m_canvasIndex << m_pParentCanvas->m_canvas_width << m_pParentCanvas->m_canvas_height;
+
+    if(m_pParentCanvas->m_canvasIndex >0){
+        int xnew = gFrame->GetClientSize().x -m_pParentCanvas->m_canvas_width; 
+        SetPosition(wxPoint(xnew, 0));       
+    }
     
     //  Set the shader viewport transform matrix
     mat4x4 m;
     ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4_identity(m);
     mat4x4_scale_aniso((float (*)[4])vp->vp_transform, m, 2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height, 1.0);
-    mat4x4_translate_in_place((float (*)[4])vp->vp_transform, xoffset-vp->pix_width/2, -vp->pix_height/2, 0);
+    mat4x4_translate_in_place((float (*)[4])vp->vp_transform, -vp->pix_width/2, -vp->pix_height/2, 0);
 #endif
 
 }
@@ -4215,13 +4229,17 @@ void glChartCanvas::Render()
     if(m_binPinch)
         return;
     
+    //qDebug() << "Render" << m_pParentCanvas->m_canvasIndex << GetPosition().x << GetSize().x << m_pParentCanvas->GetPosition().x << m_pcontext;
+    
+    //if(m_pParentCanvas->m_canvasIndex == 0) return;
+    
        // Do any setup required...
-    loadShaders();
+    loadShaders(0/*m_pParentCanvas->m_canvasIndex*/);
     configureShaders( m_pParentCanvas->VPoint);
     
-    //qDebug() << "Render(): " << m_pParentCanvas->m_canvasIndex;
     bool recompose = false;
     if(m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt && !m_pParentCanvas->m_pQuilt->IsComposed()){
+        return;
         m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
         m_pParentCanvas->UpdateCanvasControlBar();
         recompose = true;
@@ -4261,7 +4279,7 @@ void glChartCanvas::Render()
     ocpnDC gldc( *this );
 
     int gl_width, gl_height;
-    GetClientSize( &gl_width, &gl_height );
+    m_pParentCanvas->GetClientSize( &gl_width, &gl_height );
 
 #ifdef __WXOSX__    
     gl_height = m_pParentCanvas->GetClientSize().y;
@@ -4270,6 +4288,7 @@ void glChartCanvas::Render()
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
     glViewport( 0, 0, (GLint) gl_width, (GLint) gl_height );
+       
 #ifndef USE_ANDROID_GLES2
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
@@ -5679,7 +5698,8 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
 
 void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
-    //qDebug() << "OnEvtPanGesture";
+    qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex << event.cursor_pos.x;
+
    
     if( m_pParentCanvas->isRouteEditing() || m_pParentCanvas->isMarkEditing() )
         return;

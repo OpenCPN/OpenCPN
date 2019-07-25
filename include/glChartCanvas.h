@@ -147,8 +147,9 @@ public:
     void SendJSONConfigMessage();
     
     glChartCanvas(wxWindow *parent);
-#ifdef __OCPN__ANDROID__    
-    glChartCanvas(wxWindow *parent, QGLContext *pctx, wxGLCanvas *share);
+#ifdef __OCPN__ANDROID__ 
+    glChartCanvas(wxWindow *parent, wxPoint position);
+    glChartCanvas(wxWindow *parent, wxPoint position, QGLContext *pctx, wxGLCanvas *share = NULL);
 #endif
     
     ~glChartCanvas();
@@ -209,6 +210,7 @@ public:
     double mvmatrix[16], projmatrix[16];
 
     void SetupOpenGL();
+    ChartCanvas *m_pParentCanvas;
 
 protected:
     void RenderS57TextOverlay( ViewPort &VPoint);
@@ -339,7 +341,6 @@ protected:
     int          m_currentTexWidth;
     int          m_currentTexHeight;
     
-    ChartCanvas *m_pParentCanvas;
     
     DECLARE_EVENT_TABLE()
 };

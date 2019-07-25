@@ -1051,24 +1051,29 @@ void ChartCanvas::SetupGlCanvas( )
 //             wxGLContextAttrs ctxAttr;
 //             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
 //             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
-                m_glcc = new glChartCanvas(this);
+                m_glcc = new glChartCanvas(gFrame, wxPoint(0,0));
 
                 wxGLContext *pctx = new wxGLContext(m_glcc);
                 m_glcc->SetContext(pctx);
                 g_pGLcontext = pctx;                // Save a copy of the common context
+                m_glcc->m_pParentCanvas = this;
             }
             else{
                 qDebug() << "Creating Secondary glChartCanvas";
-                //QGLContext *pctx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetQGLContext();
+                QGLContext *pctx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetQGLContext();
                 //qDebug() << "pctx: " << pctx;
                 
-//                m_glcc = new glChartCanvas(this, NULL, gFrame->GetPrimaryCanvas()->GetglCanvas());
-//                wxGLContext *pctx = new wxGLContext(m_glcc);
-//                m_glcc->SetContext(pctx);
- 
-                //g_pGLcontext->SetCurrent(m_glcc);
                 
-                //m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+                 m_glcc = new glChartCanvas(gFrame, wxPoint(0,0), pctx, gFrame->GetPrimaryCanvas()->GetglCanvas());   //Shared
+//                 m_glcc = new glChartCanvas(this, pctx);   //Shared
+//                 m_glcc = new glChartCanvas(this, wxPoint(900, 0));
+                 wxGLContext *pwxctx = new wxGLContext(m_glcc);
+                 m_glcc->SetContext(pwxctx);
+                m_glcc->m_pParentCanvas = this;
+
+                
+                
+                
             }
         }
     }
@@ -5240,7 +5245,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
  
 //                wxStopWatch sw;
 
-#ifdef __OCPN__ANDROID__
+#ifdef x__OCPN__ANDROID__
                 // This is an optimization for panning on touch screen systems.
                 //  The quilt composition is deferred until the OnPaint() message gets finally
                 //  removed and processed from the message queue.

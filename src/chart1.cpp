@@ -3210,6 +3210,11 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            
            cc = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc);
+
+#ifdef __OCPN__ANDROID__
+//            g_canvasConfigArray.Item(1)->canvasSize = wxSize(GetClientSize().x / 2, GetClientSize().y); 
+//            cc->SetSize(g_canvasConfigArray.Item(1)->canvasSize);
+#endif
            
            //  There is not yet a config descriptor for canvas 2, so create one by copy ctor from canvas {0}.
            if(g_canvasConfigArray.GetCount() < 2){
@@ -3237,8 +3242,13 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
-
-            
+           
+#ifdef __OCPN__ANDROID__
+           g_canvasConfigArray.Item(1)->canvasSize = wxSize(GetClientSize().x / 2, GetClientSize().y); 
+           g_pauimgr->GetPane( cc ).BestSize( GetClientSize().x / 2, GetClientSize().y );
+           cc->SetSize(GetClientSize().x / 2, GetClientSize().y);
+#endif
+           
            // If switching fromsingle canvas to 2-canvas mode dynamically,
            //  try to use the latest persisted size for the new second canvas.
            if(b_useStoredSize){
@@ -3249,10 +3259,10 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
                 if( ccw < GetClientSize().x / 10){
                     ccw = GetClientSize().x / 2;
                     cch = GetClientSize().y;
+           
+                    g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+                    cc->SetSize(ccw, cch);
                 }
-                
-                g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
-                cc->SetSize(ccw, cch);
             }
            
            break;
@@ -6818,9 +6828,11 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 }
             }
 
+#ifndef __OCPN__ANDROID__            
             if( !bno_load )
                 g_pauimgr->LoadPerspective( perspective, false );
-
+#endif
+            
 #if 0            
             // Undefine the canvas sizes as expressed by the loaded perspective
             for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
