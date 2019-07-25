@@ -1,11 +1,11 @@
 opencpn (4.8.8+dfsg.2-1) unstable; urgency=medium
 
-  [Sebastian Couwenberg]
+  [ Bas Couwenberg ]
   * Update gbp.conf to use --source-only-changes by default.
   * Bump Standards-Version to 4.4.0, no changes.
   * Update gbp.conf to source-only uploads
 
-  [Alec Leamas]
+  [ Alec Leamas ]
   * Drop minified js in source instead of binary packages =>
     new  source repacking.
   * Update get-orig-source to fetch actual version, not latest.
