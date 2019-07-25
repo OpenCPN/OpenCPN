@@ -24,8 +24,6 @@ override_dh_auto_install:
 	dh_auto_install
 	# Remove generated files without source.
 	rm -rf debian/tmp/usr/share/opencpn/doc/opencpn
-	rm debian/tmp/usr/share/opencpn/plugins/chartdldr_pi/data/doc/highlight.min.js
-	rm debian/tmp/usr/share/opencpn/plugins/chartdldr_pi/data/doc/MathJax.js
 	# Move plugin documentation to proper location
 	-mv debian/tmp/usr/share/opencpn/sounds/README.bells \
 	    debian/tmp/usr/share/opencpn/tcdata/README.harmonics \

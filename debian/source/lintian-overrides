@@ -3,7 +3,3 @@ testsuite-autopkgtest-missing
 
 # Used to work around #831870
 debian-rules-contains-unnecessary-get-orig-source-target
-
-# These files are not shipped in packages (removed in rules)
-source-is-missing */MathJax.js *
-source-is-missing */highlight.min.js
