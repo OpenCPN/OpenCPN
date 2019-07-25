@@ -39,6 +39,7 @@
     extern GLint texture_2DA_shader_program;
     
 
-bool loadShaders();
+bool loadShaders(int index = 0);
+void reConfigureShaders(int index = 0);
 
 #endif
