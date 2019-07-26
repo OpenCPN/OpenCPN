@@ -4787,31 +4787,34 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // END OF CUSTOMIZATION - LIVE ETA OPTION
  
 #ifndef __OCPN__ANDROID__    
-    // MultiChart selection panel 
-    wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
-    wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
-    wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
-    
-    //  The standard screen configs...
-    wxString iconDir = g_Platform->GetSharedDataDir();
-    appendOSDirSlash(&iconDir);
-    iconDir.append(_T("uidata"));
-    appendOSDirSlash(&iconDir);
-    iconDir.append(_T("MUI_flat"));
-    appendOSDirSlash(&iconDir);
-    int bmpSize = GetCharHeight() * 3;
-    
-    wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
-    m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
-    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
-    
-    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-    
-    bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
-    m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
-    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
-    
-    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+    // MultiChart selection panel
+    if(g_Platform->GetDisplayAreaCM2() > 100){    
+
+        wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
+        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
+        wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
+        
+        //  The standard screen configs...
+        wxString iconDir = g_Platform->GetSharedDataDir();
+        appendOSDirSlash(&iconDir);
+        iconDir.append(_T("uidata"));
+        appendOSDirSlash(&iconDir);
+        iconDir.append(_T("MUI_flat"));
+        appendOSDirSlash(&iconDir);
+        int bmpSize = GetCharHeight() * 3;
+        
+        wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
+        
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+        
+        bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
+        
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+    }
 #endif
     
   } else {      // compact follows
@@ -4957,32 +4960,34 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
  
-#ifndef __OCPN__ANDROID__    
-    // MultiChart selection panel 
-    wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
-    wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
-    wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
-    
-    //  The standard screen configs...
-    wxString iconDir = g_Platform->GetSharedDataDir();
-    appendOSDirSlash(&iconDir);
-    iconDir.append(_T("uidata"));
-    appendOSDirSlash(&iconDir);
-    iconDir.append(_T("MUI_flat"));
-    appendOSDirSlash(&iconDir);
-    int bmpSize = GetCharHeight() * 3;
-    
-    wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
-    m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
-    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
-    
-    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
-    
-    bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
-    m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
-    itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
-    
-    itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+#ifndef __OCPN__ANDROID__
+    if(g_Platform->GetDisplayAreaCM2() > 100){    
+        // MultiChart selection panel 
+        wxStaticBox* itemStaticBoxScreenConfig =  new wxStaticBox(pDisplayPanel, wxID_ANY, _("Canvas Layout"));
+        wxStaticBoxSizer* itemStaticBoxSizerScreenConfig = new wxStaticBoxSizer(itemStaticBoxScreenConfig, wxHORIZONTAL);
+        wrapperSizer->Add(itemStaticBoxSizerScreenConfig, 1, wxALL | wxEXPAND, 5);
+        
+        //  The standard screen configs...
+        wxString iconDir = g_Platform->GetSharedDataDir();
+        appendOSDirSlash(&iconDir);
+        iconDir.append(_T("uidata"));
+        appendOSDirSlash(&iconDir);
+        iconDir.append(_T("MUI_flat"));
+        appendOSDirSlash(&iconDir);
+        int bmpSize = GetCharHeight() * 3;
+        
+        wxBitmap bmp = LoadSVG( iconDir + _T("MUI_Sconfig_1.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_single = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG1, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_single, 0, wxALIGN_LEFT);
+        
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+        
+        bmp = LoadSVG( iconDir + _T("MUI_Sconfig_2.svg"), bmpSize, bmpSize );
+        m_sconfigSelect_twovertical = new CanvasConfigSelect( pDisplayPanel, this, ID_SCREENCONFIG2, bmp);
+        itemStaticBoxSizerScreenConfig->Add(m_sconfigSelect_twovertical, 0, wxALIGN_LEFT);
+        
+        itemStaticBoxSizerScreenConfig->AddSpacer(GetCharHeight());
+    }
 #endif
 
   }
