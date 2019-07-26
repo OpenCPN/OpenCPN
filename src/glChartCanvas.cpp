@@ -671,6 +671,7 @@ void glChartCanvas::Init()
 
 glChartCanvas::~glChartCanvas()
 {
+    unloadShaders();
 }
 
 void glChartCanvas::FlushFBO( void ) 
@@ -732,7 +733,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     qDebug() << "OnSize()" << m_pParentCanvas->m_canvasIndex << m_pParentCanvas->m_canvas_width << m_pParentCanvas->m_canvas_height;
 
     if(m_pParentCanvas->m_canvasIndex >0){
-        int xnew = gFrame->GetClientSize().x -m_pParentCanvas->m_canvas_width; 
+        int xnew = gFrame->GetClientSize().x -m_pParentCanvas->m_canvas_width;
+        //qDebug() << "XNEW" << xnew;
         SetPosition(wxPoint(xnew, 0));       
     }
     
@@ -748,6 +750,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    //qDebug() << "Mouse" <<  m_pParentCanvas->m_canvasIndex << event.GetPosition().x << wxGetMousePosition().x;
+    
     if(m_pParentCanvas->MouseEventOverlayWindows( event ))
         return;
 
@@ -841,7 +845,7 @@ bool glChartCanvas::buildFBOSize(int fboSize)
     m_cache_tex_x = wxMax(rb_x, rb_y);
     m_cache_tex_y = wxMax(rb_x, rb_y);
 
-    qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
+    //qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
 
 #else
     m_cache_tex_x = GetSize().x;
@@ -1035,7 +1039,7 @@ bool glChartCanvas::buildFBOSize(int fboSize)
     m_cache_tex_x = wxMax(rb_x, rb_y);
     m_cache_tex_y = wxMax(rb_x, rb_y);
 
-    qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
+    //qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
 
 
     int err = GL_NO_ERROR;
@@ -3385,7 +3389,7 @@ void glChartCanvas::Invalidate()
 {
     /* should probably use a different flag for this */
 
-    m_pParentCanvas->m_glcc->m_cache_vp.Invalidate();
+    m_cache_vp.Invalidate();
 
 }
 
@@ -4239,7 +4243,6 @@ void glChartCanvas::Render()
     
     bool recompose = false;
     if(m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt && !m_pParentCanvas->m_pQuilt->IsComposed()){
-        return;
         m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
         m_pParentCanvas->UpdateCanvasControlBar();
         recompose = true;
@@ -4360,6 +4363,7 @@ void glChartCanvas::Render()
             b_newview = true;
             b_full = true;
         }
+        
         
         // If no charts are to be rendered, we need to refresh the entire display
         //  This fixes a problem with routes/tracks/marks rendering on pans at very small scale.
@@ -4514,7 +4518,7 @@ void glChartCanvas::Render()
                 accelerated_pan = false;
             
             if(accelerated_pan) {
-//                qDebug() << "AccPan";
+                //qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
 
@@ -4985,7 +4989,8 @@ void glChartCanvas::Render()
     
     m_pParentCanvas->PaintCleanup();
     //OCPNPlatform::HideBusySpinner();
-    
+    m_bforcefull = false;
+
     n_render++;
 }
 
@@ -5698,7 +5703,7 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
 
 void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
-    qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex << event.cursor_pos.x;
+    //qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex << event.cursor_pos.x;
 
    
     if( m_pParentCanvas->isRouteEditing() || m_pParentCanvas->isMarkEditing() )
@@ -5773,6 +5778,8 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     m_bgestureGuard = true;
     m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
+    m_bforcefull = false;
+
     //qDebug() << "panGestureDone";
     
 }
@@ -6002,6 +6009,7 @@ void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
     m_bgestureGuard = false;
     m_bpinchGuard = false;
     m_binGesture = false;
+    m_bforcefull = false;
     
 }
 
@@ -6011,6 +6019,8 @@ void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event)
     
     // signal gesture is finished after a delay
     m_binGesture = false;
+    m_bforcefull = false;
+
 }
 
 

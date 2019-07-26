@@ -526,5 +526,37 @@ void reConfigureShaders(int index)
     texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[index];
     texture_2DA_shader_program = texture_2DA_shader_program_p[index];
     texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[index];
-}   
+}
+
+void unloadShaders()
+{
+    color_tri_fragment_shader = color_tri_fragment_shader_p[0] = color_tri_fragment_shader_p[1] = 0;
+    color_tri_shader_program = color_tri_shader_program_p[0]  = color_tri_shader_program_p[1] = 0;
+    color_tri_vertex_shader = color_tri_vertex_shader_p[0]= color_tri_vertex_shader_p[1] = 0;
+
+    texture_2D_fragment_shader = texture_2D_fragment_shader_p[0] = texture_2D_fragment_shader_p[1];
+    texture_2D_shader_program = texture_2D_shader_program_p[0] = texture_2D_shader_program_p[1] = 0;
+    texture_2D_vertex_shader = texture_2D_vertex_shader_p[0]  = texture_2D_vertex_shader_p[1] = 0;
+
+    fade_texture_2D_fragment_shader = fade_texture_2D_fragment_shader_p[0] = fade_texture_2D_fragment_shader_p[1] = 0;
+    fade_texture_2D_shader_program = fade_texture_2D_shader_program_p[0] = fade_texture_2D_shader_program_p[1] = 0;
+    fade_texture_2D_vertex_shader = fade_texture_2D_vertex_shader_p[0] = fade_texture_2D_vertex_shader_p[1] = 0;
+
+    circle_filled_shader_program = circle_filled_shader_program_p[0] = circle_filled_shader_program_p[1] = 0;
+    circle_filled_vertex_shader = circle_filled_vertex_shader_p[0] = circle_filled_vertex_shader_p[1] = 0;
+    circle_filled_fragment_shader = circle_filled_fragment_shader_p[0] = circle_filled_fragment_shader_p[1] = 0;
+
+    FBO_texture_2D_fragment_shader = FBO_texture_2D_fragment_shader_p[0] = FBO_texture_2D_fragment_shader_p[1] = 0; 
+    FBO_texture_2D_shader_program = FBO_texture_2D_shader_program_p[0] = FBO_texture_2D_shader_program_p[1] = 0;
+    FBO_texture_2D_vertex_shader = FBO_texture_2D_vertex_shader_p[0] = FBO_texture_2D_vertex_shader_p[1] = 0;
+
+    texture_2DA_fragment_shader = texture_2DA_fragment_shader_p[0] = texture_2DA_fragment_shader_p[1] = 0;
+    texture_2DA_shader_program = texture_2DA_shader_program_p[0] = texture_2DA_shader_program_p[1] = 0;
+    texture_2DA_vertex_shader = texture_2DA_vertex_shader_p[0] = texture_2DA_vertex_shader_p[1] = 0;
+    
+    bShadersLoaded[0] = bShadersLoaded[1] = false;
+
+}
+
+
 #endif

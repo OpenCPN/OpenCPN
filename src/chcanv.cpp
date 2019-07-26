@@ -1070,9 +1070,11 @@ void ChartCanvas::SetupGlCanvas( )
                  wxGLContext *pwxctx = new wxGLContext(m_glcc);
                  m_glcc->SetContext(pwxctx);
                 m_glcc->m_pParentCanvas = this;
+        
+                wxYield();
+                
+                qDebug() << "Creating Secondary glChartCanvas--after";
 
-                
-                
                 
             }
         }
@@ -1083,7 +1085,7 @@ void ChartCanvas::SetupGlCanvas( )
  
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ), false );
     
     // Special logic:
     //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
@@ -1105,7 +1107,7 @@ void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
     // Try to keep the global top-line menubar selections up to date with the current "focus" canvas
     gFrame->UpdateGlobalMenuItems( this );
 
-    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ), false );
 }
 
 
@@ -5245,7 +5247,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
  
 //                wxStopWatch sw;
 
-#ifdef x__OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
                 // This is an optimization for panning on touch screen systems.
                 //  The quilt composition is deferred until the OnPaint() message gets finally
                 //  removed and processed from the message queue.
@@ -6580,6 +6582,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
 
+    //qDebug() << "Canvas onsize" << m_canvas_width;
 #ifdef ocpnUSE_GL
     if( /*g_bopengl &&*/ m_glcc ) {
         m_glcc->OnSize( event );

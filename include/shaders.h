@@ -41,5 +41,6 @@
 
 bool loadShaders(int index = 0);
 void reConfigureShaders(int index = 0);
+void unloadShaders();
 
 #endif
