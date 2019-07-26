@@ -3135,8 +3135,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
     switch(g_canvasConfig){
         default:
         case 0:                                                 // a single canvas
-            //qDebug() << "CreateCanvasLayout Case 0";
-
             if(!g_canvasArray.GetCount() || !g_canvasConfigArray.Item(0)){
                 cc = new ChartCanvas( this, 0 );                         // the chart display canvas
                 g_canvasArray.Add(cc);
@@ -3153,8 +3151,6 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
                     //qDebug() << "CreateCanvasLayout GL1";
                     cc->SetupGlCanvas();
                 }
-
-                
             }
             
             g_canvasConfigArray.Item(0)->canvas = cc;
@@ -3242,11 +3238,11 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
-           
+
 #ifdef __OCPN__ANDROID__
            g_canvasConfigArray.Item(1)->canvasSize = wxSize(GetClientSize().x / 2, GetClientSize().y); 
            g_pauimgr->GetPane( cc ).BestSize( GetClientSize().x / 2, GetClientSize().y );
-           cc->SetSize(GetClientSize().x / 2, GetClientSize().y);
+//           cc->SetSize(GetClientSize().x / 2, GetClientSize().y);
 #endif
            
            // If switching fromsingle canvas to 2-canvas mode dynamically,
@@ -3254,7 +3250,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            if(b_useStoredSize){
                 int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
                 int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
-                
+
                 // Check for undefined size, and set a nice default size if necessary.
                 if( ccw < GetClientSize().x / 10){
                     ccw = GetClientSize().x / 2;
@@ -3265,6 +3261,7 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
                 }
             }
            
+
            break;
         }
             
@@ -5987,8 +5984,20 @@ int MyFrame::DoOptionsDialog()
     if( (g_canvasConfig != last_canvasConfig) || ( rr & GL_CHANGED) ){
         UpdateCanvasConfigDescriptors();
         
-        if( (g_canvasConfig > 0) && (last_canvasConfig == 0) )
-            CreateCanvasLayout(true);    
+        if( (g_canvasConfig > 0) && (last_canvasConfig == 0) ){
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc){
+                    g_pauimgr->DetachPane(cc);
+                    pthumbwin = NULL;           // TODO
+                    cc->DestroyToolbar();
+                    cc->Destroy();
+                }
+            }
+            g_canvasArray.Clear();
+            g_canvasConfigArray.RemoveAt(1);
+            CreateCanvasLayout(false);    
+        }
         else
             CreateCanvasLayout();
         
@@ -6828,10 +6837,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 }
             }
 
-#ifndef __OCPN__ANDROID__            
             if( !bno_load )
                 g_pauimgr->LoadPerspective( perspective, false );
-#endif
             
 #if 0            
             // Undefine the canvas sizes as expressed by the loaded perspective
