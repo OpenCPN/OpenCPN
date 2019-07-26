@@ -1087,6 +1087,12 @@ void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
     RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ), false );
     
+    // On Android, we get a KillFocus on just about every keystroke.
+    //  Why?
+#ifdef __OCPN__ANDROID__
+    return;
+#endif
+    
     // Special logic:
     //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
     //  So, we provide for this case by starting a timer if required to actually Finish() a route on a legitimate
