@@ -561,7 +561,7 @@ BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas ) EVT_PAINT ( glChartCanvas::OnPai
     EVT_MOUSE_EVENTS ( glChartCanvas::MouseEvent )
 END_EVENT_TABLE()
 
-glChartCanvas::glChartCanvas( wxWindow *parent ) :
+glChartCanvas::glChartCanvas( wxWindow *parent, wxGLCanvas *share ) :
     wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
                         wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
 
@@ -571,26 +571,6 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     Init();
 }
 
-#ifdef __OCPN__ANDROID__
-glChartCanvas::glChartCanvas( wxWindow *parent, wxPoint position ) :
-    wxGLCanvas( parent, wxID_ANY, attribs, position, wxSize( 256, 256 ),
-                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
-
-{ 
-    m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
-
-    Init();
-}
-
-glChartCanvas::glChartCanvas( wxWindow *parent, wxPoint position, QGLContext *pctx, wxGLCanvas *share ) :
-    wxGLCanvas( parent, wxID_ANY, pctx, share, position, wxSize( 256, 256 ),
-                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") )
-
-{    
-    m_pParentCanvas = dynamic_cast<ChartCanvas *>( parent );
-    Init();
-}
-#endif
 
 void glChartCanvas::Init()
 {
@@ -699,6 +679,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
      }
 #endif
 
+    if(!IsShown())
+        return;
+    
     SetCurrent(*m_pcontext);
     
     
@@ -735,7 +718,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     if(m_pParentCanvas->m_canvasIndex >0){
         int xnew = gFrame->GetClientSize().x -m_pParentCanvas->m_canvas_width;
         //qDebug() << "XNEW" << xnew;
-        SetPosition(wxPoint(xnew, 0));       
+        //SetPosition(wxPoint(xnew, 0));
+        SetSize( xnew, 0, m_pParentCanvas->m_canvas_width, m_pParentCanvas->m_canvas_height);
     }
     
     //  Set the shader viewport transform matrix
@@ -4243,9 +4227,13 @@ void glChartCanvas::Render()
     
     bool recompose = false;
     if(m_pParentCanvas->VPoint.b_quilt && m_pParentCanvas->m_pQuilt && !m_pParentCanvas->m_pQuilt->IsComposed()){
-        m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
-        m_pParentCanvas->UpdateCanvasControlBar();
-        recompose = true;
+        if(m_pParentCanvas->VPoint.IsValid()){
+            m_pParentCanvas->m_pQuilt->Compose(m_pParentCanvas->VPoint);
+            m_pParentCanvas->UpdateCanvasControlBar();
+            recompose = true;
+        }
+        else
+            return;
     }
     
     //  Check to see if the Compose() call forced a SENC build.

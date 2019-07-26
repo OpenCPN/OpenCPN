@@ -1580,6 +1580,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
     if(ChartData->IsBusy())             // This prevent recursion on chart loads that Yeild()
         return false;
 
+    if(!m_parent->GetpCurrentStack())
+        return false;
+
     if( m_bbusy )
         return false;
     OCPNStopWatch sw;

@@ -146,11 +146,7 @@ public:
     
     void SendJSONConfigMessage();
     
-    glChartCanvas(wxWindow *parent);
-#ifdef __OCPN__ANDROID__ 
-    glChartCanvas(wxWindow *parent, wxPoint position);
-    glChartCanvas(wxWindow *parent, wxPoint position, QGLContext *pctx, wxGLCanvas *share = NULL);
-#endif
+    glChartCanvas(wxWindow *parent, wxGLCanvas *share = NULL);
     
     ~glChartCanvas();
 
