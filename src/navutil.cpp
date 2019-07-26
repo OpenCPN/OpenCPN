@@ -610,7 +610,7 @@ int MyConfig::LoadMyConfig()
     g_ownship_predictor_minutes = 5;
     g_cog_predictor_width = 3;
     g_ownship_HDTpredictor_miles = 1;
-    g_n_ownship_min_mm = 1;
+    g_n_ownship_min_mm = 5;
     g_own_ship_sog_cog_calc_damp_sec = 1;
     g_bFullScreenQuilt = 1;
     g_track_rotate_time_type =  TIME_TYPE_COMPUTER;
@@ -718,7 +718,7 @@ int MyConfig::LoadMyConfig()
             g_detailslider_dialog_y =  5;
         
         g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
-        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 5);
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);

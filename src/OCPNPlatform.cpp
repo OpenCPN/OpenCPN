@@ -280,6 +280,7 @@ extern int                       options_lastPage;
 extern AboutFrameImpl            *g_pAboutDlg;
 extern about                     *g_pAboutDlgLegacy;
 extern wxColour                   g_colourTrackLineColour;
+extern int                        g_n_ownship_min_mm;
 
 
 
@@ -1023,7 +1024,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_nAWDefault = 50;
     g_nAWMax = 1852;
     gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
-    
+    g_n_ownship_min_mm = 8;
     
     // Initial S52/S57 options
     if(pConfig){
@@ -1219,7 +1220,8 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             }
                 
             g_ChartNotRenderScaleFactor = 2.0;
-        
+            g_n_ownship_min_mm = 8;
+
         //  Experience indicates a slightly larger default font size is better
             pConfig->DeleteGroup( _T ( "/Settings/QTFonts" ));
             g_default_font_size = 20;            
