@@ -235,7 +235,7 @@ class MarkInfoDlg : public wxFrame
         wxCheckBox*             m_checkBoxShowNameExt;
         wxCheckBox*             m_checkBoxVisible;
         wxChoice*               m_choiceWaypointRangeRingsUnits;
-        OCPNColourPickerCtrl*   m_PickColor;
+        wxColourPickerCtrl*   m_PickColor;
         wxCheckBox*             m_cbEtaPresent;
         wxBoxSizer*             bMainSizer;
         wxFlexGridSizer*        fSizerBasicProperties;

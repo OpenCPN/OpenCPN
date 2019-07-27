@@ -533,7 +533,7 @@ void MarkInfoDlg::Create()
     m_staticTextRR3 = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, getUsrDistanceUnit());
     gbRRExtProperties->Add(m_staticTextRR3, 0, wxALIGN_CENTRE_VERTICAL|wxALIGN_LEFT, 0);
     
-    m_PickColor = new OCPNColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxDefaultSize, 0);
+    m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxColour(0,0,0), wxDefaultPosition, wxDefaultSize, 0);
     gbRRExtProperties->Add(m_PickColor, 0, wxALL|wxEXPAND, 5);
     sbRangeRingsExtProperties->Add(gbRRExtProperties, 1, wxLEFT|wxTOP|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 
