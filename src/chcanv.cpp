@@ -5255,7 +5255,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
  
 //                wxStopWatch sw;
 
-#ifdef x__OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
                 // This is an optimization for panning on touch screen systems.
                 //  The quilt composition is deferred until the OnPaint() message gets finally
                 //  removed and processed from the message queue.
