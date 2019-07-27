@@ -4351,7 +4351,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_NAV_FOLLOW:{
-            TogglebFollow(gFrame->GetPrimaryCanvas());
+            if(gFrame->GetPrimaryCanvas())
+                gFrame->GetPrimaryCanvas()->TogglebFollow();
             break;
         }
 
@@ -5356,10 +5357,6 @@ void MyFrame::SetbFollow( ChartCanvas *cc )
     cc->SetCanvasToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
     
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(true);
-    #endif
-
     DoChartUpdate();
     cc->ReloadVP();
     SetChartUpdatePeriod( );
@@ -5370,10 +5367,6 @@ void MyFrame::ClearbFollow( ChartCanvas *cc )
     //    Center the screen on the GPS position, for lack of a better place
     vLat = gLat;
     vLon = gLon;
-
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(false);
-    #endif
 
     cc->m_bFollow = false;
     cc->SetCanvasToolbarItemState(ID_FOLLOW, false );

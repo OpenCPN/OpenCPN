@@ -4633,9 +4633,6 @@ void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
     
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(false);
-    #endif
    
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
@@ -4659,10 +4656,6 @@ void ChartCanvas::SetbFollow( void )
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     UpdateFollowButtonState();
-    
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(true);
-    #endif
     
     // Is the OWNSHIP on-screen?
     // If not, then reset the OWNSHIP offset to 0 (center screen)
@@ -4688,6 +4681,19 @@ void ChartCanvas::UpdateFollowButtonState( void )
                 m_muiBar->SetFollowButtonState( 1 );
         }
    }
+   
+#ifdef __OCPN__ANDROID__
+   if(!m_bFollow)
+      androidSetFollowTool(false);
+   else
+   {
+        if(m_bLookAhead)
+            androidSetFollowTool(true);
+        else
+            androidSetFollowTool(true);
+   }
+#endif
+
 }
 
 void ChartCanvas::JumpToPosition( double lat, double lon, double scale_ppm )

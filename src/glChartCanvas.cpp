@@ -5739,9 +5739,6 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
                 
                 panx -= dx;
                 pany -= dy;
-                if(m_pParentCanvas->m_bFollow){
-                    m_pParentCanvas->ClearbFollow();
-                }
             }
             break;
             
