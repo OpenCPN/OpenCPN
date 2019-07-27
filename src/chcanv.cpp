@@ -1053,7 +1053,7 @@ void ChartCanvas::SetupGlCanvas( )
 //             wxGLContextAttrs ctxAttr;
 //             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
 //             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
-                m_glcc = new glChartCanvas(gFrame);
+                m_glcc = new glChartCanvas(this);
 
                 wxGLContext *pctx = new wxGLContext(m_glcc);
                 m_glcc->SetContext(pctx);
@@ -4633,7 +4633,6 @@ void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
     
-   
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(false);
     #endif
