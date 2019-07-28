@@ -651,7 +651,9 @@ void glChartCanvas::Init()
 
 glChartCanvas::~glChartCanvas()
 {
+#ifdef __OCPN__ANDROID__    
     unloadShaders();
+#endif    
 }
 
 void glChartCanvas::FlushFBO( void ) 
