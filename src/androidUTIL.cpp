@@ -358,6 +358,8 @@ extern bool     g_btrackContinuous;
 
 int doAndroidPersistState();
 
+bool            bInConfigChange;
+
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
 #define ANDROID_RESIZE_TIMER 4387
@@ -535,6 +537,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
             
+            bInConfigChange = false;
             
             break;
  
@@ -791,6 +794,7 @@ void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
             qDebug() << "Trigger Resize";
             timer_sequence = 0;
             m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+            bInConfigChange = true;
             break;
             
         default:
@@ -1125,9 +1129,11 @@ extern "C"{
         qDebug() << "NewSize: " << new_size.x << new_size.y;
         config_size = new_size;
         
-         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-         evt.SetId( ID_CMD_TRIGGER_RESIZE );
-             g_androidUtilHandler->AddPendingEvent(evt);
+        if(!bInConfigChange){
+            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+            evt.SetId( ID_CMD_TRIGGER_RESIZE );
+                g_androidUtilHandler->AddPendingEvent(evt);
+        }
 
         return 77;
     }
