@@ -11,6 +11,16 @@
           android:title="@string/ocpn_action_follow"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_follow_active_green"
+          android:icon="@drawable/follow_active_green"
+          android:title="@string/ocpn_action_follow"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_follow_active_blue"
+          android:icon="@drawable/follow_active_blue"
+          android:title="@string/ocpn_action_follow"
+          android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/ocpn_action_routemanager"
           android:icon="@drawable/route_manager"
           android:title="@string/ocpn_action_routemanager"

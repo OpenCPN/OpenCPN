@@ -4684,13 +4684,13 @@ void ChartCanvas::UpdateFollowButtonState( void )
    
 #ifdef __OCPN__ANDROID__
    if(!m_bFollow)
-      androidSetFollowTool(false);
+      androidSetFollowTool(0);
    else
    {
         if(m_bLookAhead)
-            androidSetFollowTool(true);
+            androidSetFollowTool(2);
         else
-            androidSetFollowTool(true);
+            androidSetFollowTool(1);
    }
 #endif
 

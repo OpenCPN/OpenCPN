@@ -446,7 +446,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     MenuItem itemFollowInActive;
     MenuItem itemFollowActive;
-    private boolean m_isFollowActive = false;
+    MenuItem itemFollowActiveGreen;
+    MenuItem itemFollowActiveBlue;
+    private int m_nFollowState = 0;
 
     MenuItem itemTrackInActive;
     MenuItem itemTrackActive;
@@ -1834,8 +1836,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     private boolean m_showAction = false;
 
-    public String setFollowIconState( final int isActive){
-        m_isFollowActive = (isActive != 0);
+    public String setFollowIconState( final int state){
+        m_nFollowState = state;
 
 
            runOnUiThread(new Runnable() {
@@ -1849,7 +1851,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
            // testing playSound("/data/data/org.opencpn.opencpn/files/sounds/2bells.wav");
 
-           m_showAction = (isActive != 0);
+           m_showAction = (state != 0);
 
            return "OK";
        }
@@ -5140,15 +5142,35 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
         // Auto follow icon
-         itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
-         if( null != itemFollowActive) {
-             itemFollowActive.setVisible(m_isFollowActive);
+        itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
+        itemFollowActiveGreen = menu.findItem(R.id.ocpn_action_follow_active_green);
+        itemFollowActiveBlue = menu.findItem(R.id.ocpn_action_follow_active_blue);
+        itemFollowInActive = menu.findItem(R.id.ocpn_action_follow);
 
-          }
-         itemFollowInActive = menu.findItem(R.id.ocpn_action_follow);
-         if( null != itemFollowInActive) {
-              itemFollowInActive.setVisible(!m_isFollowActive);
-           }
+        if(m_nFollowState == 0){
+            itemFollowInActive.setVisible( true);
+            itemFollowActive.setVisible( false);
+            itemFollowActiveGreen.setVisible( false);
+            itemFollowActiveBlue.setVisible( false);
+        }
+        else if(m_nFollowState == 1){
+            itemFollowInActive.setVisible( false);
+            itemFollowActive.setVisible( false);
+            itemFollowActiveGreen.setVisible( true);
+            itemFollowActiveBlue.setVisible( false);
+        }
+        else if(m_nFollowState == 2){
+            itemFollowInActive.setVisible( false);
+            itemFollowActive.setVisible( false);
+            itemFollowActiveGreen.setVisible( false);
+            itemFollowActiveBlue.setVisible( true);
+        }
+        else{
+            itemFollowInActive.setVisible( false);
+            itemFollowActive.setVisible( false);
+            itemFollowActiveGreen.setVisible( false);
+            itemFollowActiveBlue.setVisible( false);
+        }
 
          // Track icon
          itemTrackActive = menu.findItem(R.id.ocpn_action_track_toggle_ison);

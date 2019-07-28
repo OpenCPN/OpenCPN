@@ -332,7 +332,7 @@ wxString        g_androidExtStorageDir;
 int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
-bool            g_follow_active;
+int             g_follow_state;
 bool            g_track_active;
 bool            bGPSEnabled;
 
@@ -2369,14 +2369,14 @@ extern void androidSetRouteAnnunciator(bool viz)
     callActivityMethod_is("setRouteAnnunciator", viz?1:0);
 }
 
-extern void androidSetFollowTool(bool bactive)
+extern void androidSetFollowTool(int state, bool forceUpdate)
 {
 //    qDebug() << "setFollowIconState" << bactive;
     
-    if(g_follow_active != bactive)
-        callActivityMethod_is("setFollowIconState", bactive?1:0);
+    if( (g_follow_state != state) || forceUpdate)
+        callActivityMethod_is("setFollowIconState", state);
     
-    g_follow_active = bactive;
+    g_follow_state = state;
 }
 
 extern void androidSetTrackTool(bool bactive)

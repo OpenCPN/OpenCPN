@@ -2343,7 +2343,7 @@ extern ocpnGLOptions g_GLOptions;
 #ifdef __OCPN__ANDROID__
     //  We need a resize to pick up height adjustment after building android ActionBar
     gFrame->SetSize(getAndroidDisplayDimensions());
-    androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow);
+    androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow? 1:0, true);
 #endif
 
     gFrame->Raise();

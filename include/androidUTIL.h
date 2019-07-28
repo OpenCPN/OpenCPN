@@ -103,7 +103,7 @@ extern int androidFileChooser( wxString *result, const wxString &initDir, const 
 
 extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
 extern void androidSetRouteAnnunciator(bool viz);
-extern void androidSetFollowTool(bool bactive);
+extern void androidSetFollowTool(int state, bool forceUpdate = false);
 extern void androidSetTrackTool(bool bactive);
 
 extern wxString androidGetHomeDir();
