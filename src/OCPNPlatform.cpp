@@ -2436,7 +2436,7 @@ wxArrayString OCPNPlatform::getBluetoothScanResults()
 bool OCPNPlatform::AllowAlertDialog(const wxString& class_name)
 {
 #ifdef __OCPN__ANDROID__
-    //  allow if TopLevelWindow count is <=2, implying normal runtime screen layout
+    //  allow if TopLevelWindow count is <=4, implying normal runtime screen layout
     int nTLW = 0;
     wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
     while (node)
@@ -2448,8 +2448,8 @@ bool OCPNPlatform::AllowAlertDialog(const wxString& class_name)
         node = node->GetNext();
     }
     
-//    qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW; 
-    return (g_running && !g_boptionsactive && (nTLW <= 2));
+    //qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW; 
+    return (g_running && !g_boptionsactive && (nTLW <= 4));
     
 #else
     return true;
