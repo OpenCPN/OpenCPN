@@ -450,7 +450,7 @@ void MarkInfoDlg::Create()
     wxBoxSizer* bSizer14;
     bSizer14 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_textDescription = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
+    m_textDescription = new wxTextCtrl( m_panelBasicProperties, ID_DESCR_CTR_BASIC, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
     m_textDescription->SetMinSize( wxSize( -1, 80 ) );
     bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
 
@@ -474,7 +474,7 @@ void MarkInfoDlg::Create()
     wxBoxSizer* bSizer15;
     bSizer15 = new wxBoxSizer( wxVERTICAL );
 
-    m_textCtrlExtDescription = new wxTextCtrl( m_panelDescription, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+    m_textCtrlExtDescription = new wxTextCtrl( m_panelDescription, ID_DESCR_CTR_DESC, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
     bSizer15->Add( m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5 );
 
     m_panelDescription->SetSizer( bSizer15 );
