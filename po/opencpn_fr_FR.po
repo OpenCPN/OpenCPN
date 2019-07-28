@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-21 01:12\n"
+"PO-Revision-Date: 2019-07-28 17:38\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -56,7 +56,7 @@ msgstr "Options :"
 
 #: include/routeprintout.h:91 src/routeprintout.cpp:360
 msgid "Print Route Selection"
-msgstr "Imprimer la route sélectionnée"
+msgstr "Route sélectionnée : Imprimer"
 
 #: include/RoutePropDlg.h:138 include/RoutePropDlgImpl.h:83
 #: src/canvasMenu.cpp:1557 src/chcanv.cpp:7540 src/RoutePropDlgImpl.cpp:474
@@ -1010,7 +1010,7 @@ msgstr "Observation de navire : Diverses informations - Décrites dans le texte 
 
 #: src/ais.cpp:426
 msgid "Route: Recommended route"
-msgstr "Route : Route recommandée"
+msgstr "Route : Recommandée"
 
 #: src/ais.cpp:427
 msgid "Route: Alternative route"
@@ -1018,7 +1018,7 @@ msgstr "Route : autre route"
 
 #: src/ais.cpp:428
 msgid "Route: Recommended route through ice"
-msgstr "Route : Route recommandée à travers les glaces"
+msgstr "Route : Recommandée à travers les glaces"
 
 #: src/ais.cpp:431
 msgid "Other - Define in associated text field"
@@ -2537,7 +2537,7 @@ msgstr "Traces : Cacher"
 
 #: src/AISTargetListDialog.cpp:666
 msgid "Show All Tracks"
-msgstr "Traces : Montrer"
+msgstr "Traces : Voir"
 
 #: src/AISTargetListDialog.cpp:672
 msgid "Toggle track"
@@ -2653,7 +2653,7 @@ msgstr "Placer une marque"
 
 #: src/canvasMenu.cpp:415
 msgid "New Route..."
-msgstr "Nouvelle route ..."
+msgstr "Route : Créer ..."
 
 #: src/canvasMenu.cpp:418
 msgid "Move Boat Here"
@@ -2722,7 +2722,7 @@ msgstr "Informations émises par cette cible ..."
 
 #: src/canvasMenu.cpp:554
 msgid "Hide Target CPA"
-msgstr "Masquer la CPA de cette cible"
+msgstr "Cacher la CPA de cette cible"
 
 #: src/canvasMenu.cpp:556
 msgid "Show Target CPA"
@@ -2734,7 +2734,7 @@ msgstr "Liste des cibles AIS ..."
 
 #: src/canvasMenu.cpp:561
 msgid "Hide Target Track"
-msgstr "Trace de cette cible : Masquer"
+msgstr "Trace de cette cible : Cacher"
 
 #: src/canvasMenu.cpp:563
 msgid "Show Target Track"
@@ -2858,7 +2858,7 @@ msgstr "Informations relatives aux courants : Voir"
 
 #: src/canvasMenu.cpp:1018
 msgid "Temporary GOTO Route"
-msgstr "Suivre cette route temporaire"
+msgstr "Route temporaire à suivre"
 
 #: src/canvasMenu.cpp:1019 src/canvasMenu.cpp:1082
 #: src/routemanagerdialog.cpp:2280
@@ -2884,7 +2884,7 @@ msgstr "Waypoint : Renommer ?"
 
 #: src/canvasMenu.cpp:1311
 msgid "Are you sure you want to delete this route?"
-msgstr "Etes vous certain de vouloir supprimer cette route ?"
+msgstr "Route : Voulez vous la supprimer ?"
 
 #: src/canvasMenu.cpp:1312
 msgid "OpenCPN Route Delete"
@@ -3020,7 +3020,7 @@ msgstr "Barre d'état"
 
 #: src/chart1.cpp:4562 src/chart1.cpp:4701
 msgid "Show Toolbar"
-msgstr "Barre d'icônes : Montrer"
+msgstr "Barre d'icônes : Voir"
 
 #: src/chart1.cpp:4564 src/chart1.cpp:4703 src/chart1.cpp:10193
 msgid "Hide Toolbar"
@@ -3128,7 +3128,7 @@ msgstr "Afficher les marées"
 #: src/chart1.cpp:5571 src/chcanv.cpp:1286 src/toolbar.cpp:1000
 #: src/CanvasOptions.cpp:198
 msgid "Show Currents"
-msgstr "Afficher les courants"
+msgstr "Les courants"
 
 #: src/chart1.cpp:5574 src/chart1.cpp:5576 src/chart1.cpp:10223
 #: src/toolbar.cpp:1032
@@ -3153,7 +3153,7 @@ msgstr "Cibles AIS peu critiques : Atténuer"
 
 #: src/chart1.cpp:5592
 msgid "Hide Moored AIS Targets"
-msgstr "Masquer les cibles AIS mouillées"
+msgstr "Cacher les cibles AIS mouillées"
 
 #: src/chart1.cpp:5593
 msgid "Show AIS Target Tracks"
@@ -3469,7 +3469,7 @@ msgstr "Fusionner les waypoint ?"
 #: src/chcanv.cpp:9585 src/chcanv.cpp:9616 src/RolloverWin.cpp:136
 #: src/RolloverWin.cpp:236 src/RolloverWin.cpp:375
 msgid "RouteLegInfoRollover"
-msgstr "Info affichées par survol d'un segment de route"
+msgstr "Segment de route : Info affichées par survol"
 
 #: src/chcanv.cpp:10286
 msgid "MBTile requires OpenGL to be enabled"
@@ -3511,7 +3511,7 @@ msgstr "Cacher les cibles AIS"
 
 #: src/chcanv.cpp:12926
 msgid "Show This Chart"
-msgstr "Montrer cette carte"
+msgstr "Voir cette carte"
 
 #: src/chcanv.cpp:12931
 msgid "Hide This Chart"
@@ -4491,7 +4491,7 @@ msgstr "Options d'affichage : Voir"
 
 #: src/options.cpp:2914
 msgid "COG Predictor Length (min)"
-msgstr "COG            : Taille de la flèche de prédiction de la route en minutes"
+msgstr "COG : Taille de la flèche de prédiction de la route en minutes"
 
 #: src/options.cpp:2921
 msgid "Heading Predictor Length (NMi)"
@@ -4626,7 +4626,7 @@ msgstr "Routes/Waypoint"
 
 #: src/options.cpp:3129
 msgid "New Routes"
-msgstr "Nouvelle route"
+msgstr "Route : Créer"
 
 #: src/options.cpp:3143 src/options.cpp:3202
 msgid "Waypoint default icon"
@@ -4642,7 +4642,7 @@ msgstr "Waypoint de destination : Rayon du cercle d'approche en mille(s) nautiqu
 
 #: src/options.cpp:3176
 msgid "Advance route waypoint on arrival only"
-msgstr "Anticiper le waypoint à l'arrivée seulement"
+msgstr "Arrivée seulement : Anticiper le waypoint "
 
 #: src/options.cpp:3187
 msgid "New Waypoints"
@@ -4674,7 +4674,7 @@ msgstr "Verrouiller les waypoint ( sauf si la fenêtre de propriétés de l'un d
 
 #: src/options.cpp:3316
 msgid "Confirm deletion of tracks and routes"
-msgstr "Confirmer la suppression des routes et des traces"
+msgstr "Confirmer la suppression des routes et traces"
 
 #: src/options.cpp:3375
 msgid "Chart Files"
@@ -5098,7 +5098,7 @@ msgstr "Relèvements"
 
 #: src/options.cpp:5052
 msgid "Show true"
-msgstr "Montrer Vrai M"
+msgstr "Voir Vrai M"
 
 #: src/options.cpp:5056
 msgid "Show magnetic"
@@ -5118,7 +5118,7 @@ msgstr "Relèvements et directions vrais : Voir"
 
 #: src/options.cpp:5165
 msgid "Show magnetic bearings and headings."
-msgstr "Relèvements et directions magnétiques : Voir."
+msgstr "Relèvements/directions mag. Voir."
 
 #: src/options.cpp:5176 src/options.cpp:6280
 msgid "WMM Plugin calculated magnetic variation"
@@ -5284,15 +5284,15 @@ msgstr "Barre des menus : Voir"
 
 #: src/options.cpp:5541
 msgid "Show Compass/GPS Status Window"
-msgstr "Indicateurs, Nord de la carte et état du GPS : Voir"
+msgstr "Indicateurs, Nord de la carte/état du GPS : Voir"
 
 #: src/options.cpp:5549
 msgid "Enable Toolbar auto-hide"
-msgstr "Masquer automatiq. la barre d'icônes"
+msgstr "Barre d'icônes : Cacher auto.. "
 
 #: src/options.cpp:5565
 msgid "Play Ships Bells"
-msgstr "Activer la cloche de bord"
+msgstr "Cloche de bord : Activer"
 
 #: src/options.cpp:5575
 msgid "Audio Play command:"
@@ -5336,7 +5336,7 @@ msgstr "Facteur d'échelle des objets affichables"
 
 #: src/options.cpp:5694
 msgid "Ship scale factor"
-msgstr "Facteur d'agrandissement du bateau"
+msgstr "Agrandissement du bateau"
 
 #: src/options.cpp:5924 src/options.cpp:6091
 msgid "Connections"
@@ -5461,7 +5461,7 @@ msgstr "Nouveau groupe de cartes"
 
 #: src/options.cpp:9247 src/options.cpp:9261
 msgid "Select Tide/Current Data"
-msgstr "Choisissez les données de marées et courants"
+msgstr "Données de marées/courants : Choix"
 
 #: src/options.cpp:9309
 msgid "Stop Scan"
@@ -5639,7 +5639,7 @@ msgstr "Info par survol d'une cible AIS"
 
 #: src/RolloverWin.cpp:134 src/RolloverWin.cpp:234 src/RolloverWin.cpp:370
 msgid "TideCurrentGraphRollover"
-msgstr "Info marées et courants par survol"
+msgstr "Info marées/courants par survol"
 
 #: src/Route.cpp:1190
 msgid "Route Transmitted."
@@ -5647,7 +5647,7 @@ msgstr "Route transmise."
 
 #: src/Route.cpp:1193
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr "Erreur au téléchargement de la route. Le GPS n'est pas connecté"
+msgstr "Route : Erreur au téléchargement. GPS non connecté"
 
 #: src/Route.cpp:1195
 msgid "Error on Route Upload.  Please check logfiles..."
@@ -5665,7 +5665,7 @@ msgstr "Filtrer"
 
 #: src/routemanagerdialog.cpp:375 src/routemanagerdialog.cpp:489
 msgid "Show"
-msgstr "Montrer"
+msgstr "Voir"
 
 #: src/routemanagerdialog.cpp:376
 msgid "Route Name"
@@ -5768,7 +5768,7 @@ msgstr "Couches"
 
 #: src/routemanagerdialog.cpp:713
 msgid "Layer Name"
-msgstr "Nom de la couche"
+msgstr "Nom"
 
 #: src/routemanagerdialog.cpp:714
 msgid "No. of items"
@@ -5806,7 +5806,7 @@ msgstr " - "
 #: src/routemanagerdialog.cpp:1063 src/routemanagerdialog.cpp:1762
 #: src/routemanagerdialog.cpp:2188
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Êtes vous certain de vouloir supprimer ce ou ces objet(s) ?"
+msgstr "Êtes vous certain de vouloir supprimer ce(s) objet(s) ?"
 
 #: src/routemanagerdialog.cpp:1111
 msgid "Are you sure you want to delete <ALL> routes?"
@@ -5857,7 +5857,7 @@ msgstr "La trace  active sélectionnée n'a pas été fusionnée\n"
 
 #: src/routemanagerdialog.cpp:1835
 msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN convertit la trace en route ...."
+msgstr "Conversion la trace en route ...."
 
 #: src/routemanagerdialog.cpp:1836
 msgid "Processing Waypoints..."
@@ -5888,14 +5888,14 @@ msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr "Il y a des waypointe utilisés dans des routes ou des alarmes de mouillage.\n"
+msgstr "Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage.\n"
 "Voulez-vous les supprimer aussi ?\n"
 "Cela va changer les routes ou désactiver les alarmes de mouillage.\n"
 "Répondre \"non\" maintient les waypoint utilisés dans les routes ou les alarmes."
 
 #: src/routemanagerdialog.cpp:2501
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr "Êtes vous certain de vouloir supprimer la ou les couche(s) sélectionnée(s) et  <TOUT > le(s) contenu(s) ?"
+msgstr "Êtes vous certain de vouloir supprimer le(s) couche(s) sélectionnée(s) et  <TOUT > le(s) contenu(s) ?"
 
 #: src/routemanagerdialog.cpp:2505
 msgid "The file will also be deleted from OpenCPN's layer directory."
@@ -5907,7 +5907,7 @@ msgstr "(Couche sans nom)"
 
 #: src/routeman.cpp:865 src/routeman.cpp:946
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
-msgstr "Vous essayez de supprimer une marque MOB. Voulez vous vraiment le faire ?"
+msgstr "Vous tentez de supprimer une marque MOB. Voulez vous vraiment le faire ?"
 
 #: src/routeman.cpp:1097
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
@@ -5926,11 +5926,11 @@ msgstr "Waypoint de route transmis."
 
 #: src/RoutePoint.cpp:1122
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr "Erreur d'envoi du waypoint.  Le GPS Garmin n'est pas connecté"
+msgstr "Waypoint : Erreur d'envoi. GPS Garmin non connecté"
 
 #: src/RoutePoint.cpp:1124
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Erreur d'envoi du waypoint. S'il vous plait, regardez dans les fichiers log ..."
+msgstr "Waypoint : Erreur d'envoi. S'il vous plait, regardez dans les fichiers log ..."
 
 #: src/RoutePoint.cpp:1192
 msgid "The ScaMin value for new waypoints is set to"
@@ -6327,7 +6327,7 @@ msgstr "GPS/Plotter Port"
 
 #: src/SendToGpsDlg.cpp:116
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Préparer le GPS pour l'envoi d'une Route/Waypoint, puis appuyer sur \"Envoyer\" ..."
+msgstr "Route/Waypoint : Préparer le GPS pour l'envoi puis appuyer sur \"Envoyer\" ..."
 
 #: src/SendToGpsDlg.cpp:120
 msgid "Progress..."
@@ -6335,7 +6335,7 @@ msgstr "Action en progression ..."
 
 #: src/tcmgr.cpp:761
 msgid "It seems you have no tide/current harmonic data installed."
-msgstr "Aucun fichier harmonic de données de prévision des marées et des courants ne semble installé."
+msgstr "Aucun fichier harmonic de données de prévision des marées/courants ne semble installé."
 
 #: src/TCWin.cpp:122
 msgid "Tide"
@@ -6408,7 +6408,7 @@ msgstr "Oui, cacher cette icône"
 #: src/toolbar.cpp:2851
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
-msgstr "Le bouton \"Homme à la mer\" (MOB) peut être un important facteur de sécurité.\n"
+msgstr "Le bouton \"Homme à la mer\" (MOB) est un important facteur de sécurité.\n"
 "Etes vous certain de vouloir le masquer ?"
 
 #: src/toolbar.cpp:2947
@@ -6481,7 +6481,7 @@ msgstr "10 pixels"
 
 #: src/TrackPropDlg.cpp:481 src/TrackPropDlg.cpp:815
 msgid "To route"
-msgstr "Trace -> Route"
+msgstr "Vers la route"
 
 #: src/TrackPropDlg.cpp:590
 msgid "Display parameters"
@@ -6698,11 +6698,11 @@ msgstr "Marées/Courants : Voir"
 
 #: src/CanvasOptions.cpp:194
 msgid "Show Tide stations"
-msgstr "Ports de référence"
+msgstr "Station de marée"
 
 #: src/CanvasOptions.cpp:206
 msgid "Vector Charts"
-msgstr "Cartes vectorielles : Montrer"
+msgstr "Cartes vectorielles : Voir"
 
 #: src/CanvasOptions.cpp:209
 msgid "Show text"
@@ -6710,7 +6710,7 @@ msgstr "Texte: Voir"
 
 #: src/CanvasOptions.cpp:213
 msgid "Show depths"
-msgstr "Profondeurs : Voir"
+msgstr "Profondeurs"
 
 #: src/CanvasOptions.cpp:221
 msgid "Lights"
@@ -6730,7 +6730,7 @@ msgstr "Ce waypoint, appartient à une couche, ne peut être édité"
 
 #: src/MarkInfo.cpp:386
 msgid "Show name"
-msgstr "Nom : Montrer"
+msgstr "Nom : Voir"
 
 #: src/MarkInfo.cpp:477
 msgid "Extended"
@@ -6742,7 +6742,7 @@ msgstr "Propriétés étendues"
 
 #: src/MarkInfo.cpp:498
 msgid "Show at scale > 1 :"
-msgstr "Montrer si échelle > 1 /"
+msgstr "Voir si échelle > 1 /"
 
 #: src/MarkInfo.cpp:505
 msgid "Show waypoint name"
