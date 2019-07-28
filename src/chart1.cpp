@@ -2386,13 +2386,13 @@ extern ocpnGLOptions g_GLOptions;
         if( !n_NavMessageShown || ( g_vs != g_config_version_string ) )
         {
             //qDebug() << "Showing NavWarning";
-//            wxMilliSleep(500);
-//             if( wxID_CANCEL == ShowNavWarning() ) {
-//                  qDebug() << "Closing due to NavWarning Cancel";
-//                  gFrame->Close();
-//                  androidTerminate();
-//                  return true;
-//             }
+            wxMilliSleep(500);
+            if( wxID_CANCEL == ShowNavWarning() ) {
+                  qDebug() << "Closing due to NavWarning Cancel";
+                  gFrame->Close();
+                  androidTerminate();
+                  return true;
+            }
             n_NavMessageShown = 1;
             g_config_version_string = g_vs;
             
