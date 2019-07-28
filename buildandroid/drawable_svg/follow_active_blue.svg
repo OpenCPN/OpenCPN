@@ -5334,10 +5334,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="35.9387"
-     inkscape:cy="30.911749"
-     inkscape:current-layer="layer2"
+     inkscape:zoom="11.313708"
+     inkscape:cx="14.2512"
+     inkscape:cy="15.911749"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
@@ -5398,7 +5398,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -5431,7 +5431,10 @@
      inkscape:groupmode="layer">
     <g
        id="g3119"
-       transform="translate(40.000002,-1020.3623)">
+       transform="translate(40.000002,-1020.3623)"
+       inkscape:export-filename="/home/dsr/Projects/opencpn_clone/OpenCPN/buildandroid/android/res/drawable-xxxhdpi/follow_active_blue.png"
+       inkscape:export-xdpi="359.98999"
+       inkscape:export-ydpi="359.98999">
       <rect
          style="fill:none;stroke:#939393;stroke-width:1.02100003;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;enable-background:new"
          id="rect3585-4"
