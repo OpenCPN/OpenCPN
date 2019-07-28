@@ -228,7 +228,7 @@ class MarkInfoDlg : public wxFrame
         wxBoxSizer*             bSizerLinks;
         wxButton*               m_buttonExtDescription;
         wxButton*               m_buttonLinksMenu;
-        wxButton*               m_buttonShowTides;
+        wxBitmapButton*         m_buttonShowTides;
         wxButton*               DefaultsBtn;
         wxCheckBox*             m_checkBoxScaMin;
         wxCheckBox*             m_checkBoxShowName;
@@ -284,7 +284,11 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textCtrlExtDescription;
         wxTextCtrl*             m_textCtrlGpx;
         wxTextCtrl*             m_textCtrlGuid;
+#ifdef __OCPN__ANDROID__        
+        wxChoice*               m_comboBoxTideStation;
+#else
         wxComboBox*             m_comboBoxTideStation;
+#endif        
         wxTextCtrl*             m_textDescription;
         wxTextCtrl*             m_textLatitude;
         wxTextCtrl*             m_textLongitude;
@@ -299,7 +303,11 @@ class MarkInfoDlg : public wxFrame
 #ifndef __OCPN__ANDROID__
         wxDatePickerCtrl*       m_EtaDatePickerCtrl;
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;
-#endif        
+#endif
+        wxArrayString           m_choiceTideChoices;
+        wxBitmap                m_bmTide;
+        int                     m_sizeMetric;
+        
         void initialize_images(void);
         void OnBitmapCombClick(wxCommandEvent& event);
         void OnPositionCtlUpdated( wxCommandEvent& event );

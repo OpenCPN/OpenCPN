@@ -74,6 +74,7 @@ extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
 extern bool                g_bShowTrue, g_bShowMag;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern MyFrame            *gFrame;
 extern OCPNPlatform       *g_Platform;
@@ -300,6 +301,13 @@ void MarkInfoDlg::initialize_images(void)
     wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/MUI_flat/");
     _img_MUI_settings_svg = LoadSVG(iconDir + _T("MUI_settings.svg"), 2 * GetCharHeight(), 2 * GetCharHeight());
     
+    
+     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+     wxBitmap tide = style->GetIcon( _T("tidesml") );
+     wxImage tide1 = tide.ConvertToImage();
+     wxImage tide1s = tide1.Scale(m_sizeMetric * 3/2 , m_sizeMetric * 3/2, wxIMAGE_QUALITY_HIGH);
+     m_bmTide = wxBitmap(tide1s);
+
     return;
 }
 
@@ -309,7 +317,7 @@ void MarkInfoDlg::Create()
 {
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
-    int metric = GetCharHeight();
+    m_sizeMetric = GetCharHeight();
     
 #ifdef __OCPN__ANDROID__
     //  Set Dialog Font by custom crafted Qt Stylesheet.
@@ -324,9 +332,11 @@ void MarkInfoDlg::Create()
     
     wxScreenDC sdc;
     if(sdc.IsOk())
-        sdc.GetTextExtent(_T("W"), NULL, &metric, NULL, NULL, qFont);
+        sdc.GetTextExtent(_T("W"), NULL, &m_sizeMetric, NULL, NULL, qFont);
     
 #endif
+
+    initialize_images();
     
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );
@@ -403,7 +413,7 @@ void MarkInfoDlg::Create()
     m_bcomboBoxIcon->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
     
     //  Accomodate scaling of icon
-    int min_size = metric * 2;
+    int min_size = m_sizeMetric * 2;
     min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
     m_bcomboBoxIcon->SetMinSize( wxSize(-1, min_size) );
     
@@ -557,10 +567,18 @@ void MarkInfoDlg::Create()
                                                wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_staticTextTideStation, 0, wxALIGN_CENTRE_VERTICAL, 5);
     
+#ifdef __OCPN__ANDROID__
+    m_choiceTideChoices.Add(_T(" "));
+    m_comboBoxTideStation = new wxChoice( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceTideChoices);
+
+    gbSizerInnerExtProperties1->Add(m_comboBoxTideStation, 0, wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL, 5);
+
+#else
     m_comboBoxTideStation = new wxComboBox( sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
     gbSizerInnerExtProperties1->Add(m_comboBoxTideStation, 0, wxALL|wxEXPAND|wxALIGN_CENTRE_VERTICAL, 5);
+#endif    
     
-    m_buttonShowTides = new wxButton( sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, _("\u223f"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    m_buttonShowTides = new wxBitmapButton( sbSizerExtProperties->GetStaticBox(), ID_BTN_SHOW_TIDES, m_bmTide, wxDefaultPosition, m_bmTide.GetSize(), 0);
     gbSizerInnerExtProperties1->Add(m_buttonShowTides, 0, wxALL|wxALIGN_CENTRE_VERTICAL, 5);
     
     m_staticTextArrivalRadius = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Arrival Radius") );
@@ -607,8 +625,6 @@ void MarkInfoDlg::Create()
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     bSizer1->Add( btnSizer, 0, wxEXPAND, 0);
 
-    //Get and convert picture.
-    initialize_images();
     DefaultsBtn = new wxBitmapButton( this, ID_DEFAULT, _img_MUI_settings_svg, wxDefaultPosition, _img_MUI_settings_svg.GetSize(), 0);
     btnSizer->Add(DefaultsBtn, 0, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
     btnSizer->Add(0, 0, 1, wxEXPAND);  //spacer
@@ -623,18 +639,16 @@ void MarkInfoDlg::Create()
     SetMinSize(wxSize(-1, 600));
     
     // Connect Events
-//     m_textLatitude->Connect( wxEVT_CONTEXT_MENU,  wxCommandEventHandler( MarkInfoDlg::OnRightClick ), NULL, this );
-//     m_textLongitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
-
-    m_textDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MarkInfoDlg::OnDescChangedBasic ), NULL, this );
-    m_buttonExtDescription->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MarkInfoDlg::OnExtDescriptionClick ), NULL, this );
-
-    this->Connect( ID_RCLK_MENU_COPY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
-    this->Connect( ID_RCLK_MENU_COPY_LL, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
-    this->Connect( ID_RCLK_MENU_PASTE, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
-    this->Connect( ID_RCLK_MENU_PASTE_LL, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnCopyPasteLatLon ) );
-
-    m_textCtrlExtDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MarkInfoDlg::OnDescChangedExt ), NULL, this );
+    m_textLatitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
+    m_textLongitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
+    m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
+    m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
+    //m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+    //m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
+    m_comboBoxTideStation->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( MarkInfoDlg::OnTideStationCombobox ), NULL, this );
+    
+    
+    
 }
 
 
