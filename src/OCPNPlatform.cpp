@@ -1210,7 +1210,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
 
         qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
 
-        if( wxNOT_FOUND != vNew.Find(_T("4.8.4")) ){            // upgrade
+        if( wxNOT_FOUND != vNew.Find(_T("5.0.0")) ){            // upgrade
             qDebug() << "Upgrade detected" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
             
             // Set some S52/S57 options
@@ -1221,6 +1221,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
                 
             g_ChartNotRenderScaleFactor = 2.0;
             g_n_ownship_min_mm = 8;
+            g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
 
         //  Experience indicates a slightly larger default font size is better
             pConfig->DeleteGroup( _T ( "/Settings/QTFonts" ));
