@@ -69,7 +69,7 @@ extern wxSize getAndroidDisplayDimensions( void );
 extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
-extern void androidForceFullRepaint();
+extern void androidForceFullRepaint( bool bskipConfirm = false);
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );

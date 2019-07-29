@@ -392,9 +392,10 @@ class androidUtilHandler : public wxEvtHandler
     wxTimer     m_stressTimer;
     wxTimer     m_resizeTimer;
     int         timer_sequence;
-    
+    int         m_bskipConfirm;
     DECLARE_EVENT_TABLE()
 };
+
 
 BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
 EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
@@ -409,6 +410,7 @@ androidUtilHandler::androidUtilHandler()
     m_stressTimer.SetOwner( this, ANDROID_STRESS_TIMER );
     m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
  
+    m_bskipConfirm = false;
 }
 
        
@@ -721,7 +723,9 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
         qDebug() << "sequence 1" << config_size.x;
         gFrame->SetSize(config_size);
         timer_sequence++;
-        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        if(!m_bskipConfirm)
+            m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        m_bskipConfirm = false;
         return;
     }
 
@@ -2717,7 +2721,7 @@ void androidConfirmSizeCorrection()
     }
 }
         
-void androidForceFullRepaint()
+void androidForceFullRepaint( bool b_skipConfirm)
 {
     
         wxLogMessage(_T("androidForceFullRepaint"));
@@ -2725,17 +2729,18 @@ void androidForceFullRepaint()
         wxSize tempSize = targetSize;
         tempSize.y--;
         gFrame->SetSize(tempSize);
-//        gFrame->SetSize(targetSize);
        
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
         config_size = new_size;
         
+        g_androidUtilHandler->m_bskipConfirm = b_skipConfirm;
+        
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( ID_CMD_TRIGGER_RESIZE );
         if(gFrame && gFrame->GetEventHandler()){
-            gFrame->GetEventHandler()->AddPendingEvent(evt);
+            g_androidUtilHandler->AddPendingEvent(evt);
         }
         
 }       
