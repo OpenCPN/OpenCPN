@@ -568,6 +568,18 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         return rv;
     }
 
+    public String getAndroidVersionCode()
+    {
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String rv = Integer.toString(pInfo.versionCode);
+            return rv;
+        } catch (PackageManager.NameNotFoundException e) {
+            return "0";
+        }
+    }
+
+
 
 
     public String buildSVGIcon(String inFile, String outFile, int width, int height){
