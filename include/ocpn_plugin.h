@@ -1326,6 +1326,10 @@ extern DECL_EXP int GetCanvasCount( );
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
 extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );
 
+// API 1.17
+//
+extern DECL_EXP wxRect GetMasterToolbarRect();
+
 enum SDDMFORMAT
 {
     DEGREES_DECIMAL_MINUTES = 0,

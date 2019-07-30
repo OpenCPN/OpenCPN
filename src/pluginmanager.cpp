@@ -7059,3 +7059,11 @@ int GetLatLonFormat()
 {
     return g_iSDMMFormat;
 }
+
+wxRect GetMasterToolbarRect()
+{
+    if(g_MainToolbar)
+        return g_MainToolbar->GetRect();
+    else
+        return wxRect(0,0,1,1);
+}
