@@ -40,7 +40,7 @@
 #include "grib_pi.h"
 
 #ifdef __WXQT__
-//#include "qdebug.h"
+#include "qdebug.h"
 #endif
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -158,7 +158,7 @@ int grib_pi::Init(void)
           m_CtrlBarxy = wxPoint( 20, 60 );   //reset to the default position
           m_CursorDataxy = wxPoint( 20, 170 );
       }
-
+      
       return (WANTS_OVERLAY_CALLBACK |
               WANTS_OPENGL_OVERLAY_CALLBACK |
               WANTS_CURSOR_LATLON       |
@@ -464,6 +464,10 @@ void grib_pi::OnToolbarToolCallback(int id)
                 MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
             }
+#ifdef __OCPN__ANDROID__
+            m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
+            m_pGribCtrlBar->Refresh();
+#endif
         }
         m_pGribCtrlBar->Show();
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {

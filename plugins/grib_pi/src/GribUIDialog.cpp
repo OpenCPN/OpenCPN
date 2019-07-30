@@ -69,6 +69,10 @@ int round (double x) {
 #endif
 #endif
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 #if wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
 #define SetBitmapLabelLabel SetBitmap
 #endif
@@ -318,8 +322,9 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
     SetRequestBitmap( m_ZoneSelMode );
 
-    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    // Careful here, this MinSize() sets the final width of the control bar, overriding the width of the wxChoice above it.
+    m_sTimeline->SetSize( wxSize( 20 * m_ScaledFactor , -1 ) );
+    m_sTimeline->SetMinSize( wxSize( 20 * m_ScaledFactor , -1 ) );
 
 }
 
@@ -666,6 +671,52 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 #endif
     SetSize( wxSize( sd.x, sd.y ) );
     SetMinSize( wxSize( sd.x, sd.y ) );
+    
+#ifdef __OCPN__ANDROID__
+    wxRect tbRect = GetMasterToolbarRect();
+    qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
+
+    if( 1 ){
+        wxPoint pNew = pPlugIn->GetCtrlBarXY();
+        pNew.x = tbRect.x + tbRect.width + 4;
+        pNew.y = tbRect.y;
+        pPlugIn->SetCtrlBarXY( pNew );
+        qDebug() << "pNew" << pNew.x;
+        
+        int widthAvail = GetCanvasByIndex(0)->GetClientSize().x - (tbRect.x +tbRect.width);
+        
+        if(sd.x > widthAvail){
+            qDebug() << "Too big" << widthAvail << sd.x;
+            
+            int target_char_width = (float)widthAvail / 20;
+            wxScreenDC dc;
+            bool bOK = false;
+            int pointSize = 20;
+            int width, height;
+            wxFont *sFont;
+            while(!bOK){
+                qDebug() << "PointSize" << pointSize;
+                sFont = FindOrCreateFont_PlugIn( pointSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE );
+                dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont); 
+                if(width <= target_char_width)
+                    bOK = true;
+                pointSize--;
+                if(pointSize <= 10)
+                    bOK = true;
+            }
+                
+                
+            m_cRecordForecast->SetFont(*sFont);
+            
+            Layout();
+            Fit();
+            SetSize( wxSize( widthAvail, sd.y ) );
+            SetMinSize( wxSize( widthAvail, sd.y ) );
+
+        }
+    }
+#endif    
+
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
