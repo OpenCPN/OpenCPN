@@ -6727,7 +6727,7 @@ void ChartCanvas::HideChartInfoWindow( void )
 
 #ifdef __OCPN__ANDROID__        
         androidForceFullRepaint();
-#endif        
+#endif    
             
     }
 }
@@ -9723,17 +9723,19 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if( g_bShowTrue )
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-        if( g_bShowMag ){
-            double latAverage = (m_cursor_lat + render_lat)/2;
-            double lonAverage = (m_cursor_lon + render_lon)/2;
-            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+        if(!g_btouch){
+            if( g_bShowTrue )
+                routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+            if( g_bShowMag ){
+                double latAverage = (m_cursor_lat + render_lat)/2;
+                double lonAverage = (m_cursor_lon + render_lon)/2;
+                double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
             
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-        }
+                routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+            }
 
-        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+            routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+        }
 
         wxString s0;
         if( !route->m_bIsInLayer )
