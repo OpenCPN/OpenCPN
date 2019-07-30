@@ -790,8 +790,6 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
     }
     else
         m_pParentCanvas->MouseEventProcessObjects( event );
-    m_pParentCanvas->MouseEventProcessObjects( event );
-    
 
 #endif    
         
