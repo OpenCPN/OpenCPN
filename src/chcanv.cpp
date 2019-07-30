@@ -5711,8 +5711,8 @@ void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
                                          wxPoint &GPSOffsetPixels, wxPoint lGPSPoint,
                                          float &scale_factor_x, float &scale_factor_y)
 {
-    float screenResolution = (float) ::wxGetDisplaySize().x / g_display_size_mm;
-
+    float screenResolution = m_pix_per_mm;
+    
     //  Calculate the true ship length in exact pixels
     double ship_bow_lat, ship_bow_lon;
     ll_gc_ll( gLat, gLon, icon_hdt, g_n_ownship_length_meters / 1852., &ship_bow_lat,
