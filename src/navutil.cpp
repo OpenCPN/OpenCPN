@@ -455,6 +455,7 @@ extern wxString         g_lastAppliedTemplateGUID;
 
 extern int              g_route_prop_x, g_route_prop_y;
 extern int              g_route_prop_sx, g_route_prop_sy;
+extern int              g_AndroidVersionCode;
 
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
@@ -771,6 +772,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 #endif /* SYSTEM_SOUND_CMD */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
+    Read( _T ( "AndroidVersionCode" ), &g_AndroidVersionCode );
+    
     Read( _T ( "UIexpert" ), &g_bUIexpert );
     
     Read( _T ( "UIStyle" ), &g_uiStyle  );
@@ -2267,6 +2270,8 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "DarkDecorations"), g_bDarkDecorations );
     
+    Write( _T ( "AndroidVersionCode" ), g_AndroidVersionCode );
+
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
 //    Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );      //Not desired for O5 MUI

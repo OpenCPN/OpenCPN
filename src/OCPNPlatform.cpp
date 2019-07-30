@@ -282,6 +282,7 @@ extern about                     *g_pAboutDlgLegacy;
 extern wxColour                   g_colourTrackLineColour;
 extern int                        g_n_ownship_min_mm;
 
+extern int                        g_AndroidVersionCode;
 
 
 
@@ -644,6 +645,7 @@ void OCPNPlatform::Initialize_4( void )
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
+    
 #endif
 
 #ifdef __WXMAC__
@@ -652,6 +654,7 @@ void OCPNPlatform::Initialize_4( void )
     // canvas layout select button.
     options_lastPage = 1;
 #endif
+    
     
 }
 
@@ -1161,8 +1164,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath( _T ( "/PlugIns/GRIB" ) );
-        pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 0 );
-        pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 90 );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 100 );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 0 );
 
         pConfig->SetPath ( _T ( "/Settings/GRIB" ) );
         pConfig->Write ( _T ( "CursorDataShown" ), 0 );
@@ -1210,8 +1213,8 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
 
         qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
 
-        if( wxNOT_FOUND != vNew.Find(_T("5.0.0")) ){            // upgrade
-            qDebug() << "Upgrade detected" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
+        if( androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
+            qDebug() << "Upgrade detected" << "from VC: " << g_AndroidVersionCode << " to VC: " << androidGetVersionCode();
             
             // Set some S52/S57 options
             if(pConfig){
@@ -1234,6 +1237,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         // Set track default color to magenta
         g_colourTrackLineColour.Set(197,69,195);
         
+ 
         // This is ugly hack
         // TODO
         pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );

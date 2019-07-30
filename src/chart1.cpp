@@ -772,6 +772,8 @@ unsigned int     g_canvasConfig;
 bool             g_useMUI;
 bool             g_bmasterToolbarFull = true;
 
+int              g_AndroidVersionCode;
+
 int              g_memUsed;
 SENCThreadManager *g_SencThreadManager;
 
@@ -2383,7 +2385,7 @@ extern ocpnGLOptions g_GLOptions;
 #ifdef __OCPN__ANDROID__    
         //  We defer the startup message to here to allow the app frame to be contructed,
         //  thus avoiding a dialog with NULL parent which might not work on some devices.    
-        if( !n_NavMessageShown || ( g_vs != g_config_version_string ) )
+        if( !n_NavMessageShown || ( g_vs != g_config_version_string ) || (g_AndroidVersionCode != androidGetVersionCode()) )
         {
             //qDebug() << "Showing NavWarning";
             wxMilliSleep(500);
@@ -2397,6 +2399,9 @@ extern ocpnGLOptions g_GLOptions;
             g_config_version_string = g_vs;
             
         }
+        
+        // Finished with upgrade checking, so persist the currect Version Code
+        g_AndroidVersionCode = androidGetVersionCode();
 #endif
         
         
@@ -4481,8 +4486,9 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_ABOUT:
         case ID_ABOUT: {
-            g_MainToolbar->HideTooltip();
-            g_Platform->DoHelpDialog();
+            qDebug() << "TB" << g_MainToolbar->GetSize().x << g_toolbar_scalefactor << g_MainToolbar->GetSize().x / g_toolbar_scalefactor;
+//            g_MainToolbar->HideTooltip();
+//            g_Platform->DoHelpDialog();
             break;
         }
 
