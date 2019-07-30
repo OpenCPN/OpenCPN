@@ -328,7 +328,7 @@ bool chartdldr_pi::LoadConfig( void )
         wxLogMessage( _T ( "chartdldr_pi: " ) + m_base_chart_dir );
         wxLogMessage( _T ( "chartdldr_pi: " ) + fn.GetPath() );
         
-        pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, false );
+        pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, true );
         pConf->Read ( _T ( "PreselectUpdated" ), &m_preselect_updated, true );
         pConf->Read ( _T ( "AllowBulkUpdate" ), &m_allow_bulk_update, false );
         return true;
