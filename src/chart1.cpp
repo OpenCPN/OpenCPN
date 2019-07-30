@@ -4307,6 +4307,9 @@ void MyFrame::RefreshGroupIndices( void )
 
 void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 {
+    if(g_MainToolbar)
+        g_MainToolbar->HideTooltip();
+
     switch( event.GetId() ){
         case ID_MENU_SCALE_OUT:
             DoStackDelta( GetPrimaryCanvas(), 1 );
@@ -4443,7 +4446,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
-            g_MainToolbar->HideTooltip();
             DoSettings();
             break;
         }
@@ -4453,7 +4455,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         {
  #ifdef __OCPN__ANDROID__
             ///LoadS57();
-            g_MainToolbar->HideTooltip();
             DoAndroidPreferences();
  #else
             DoSettings();
@@ -4486,9 +4487,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_ABOUT:
         case ID_ABOUT: {
-            qDebug() << "TB" << g_MainToolbar->GetSize().x << g_toolbar_scalefactor << g_MainToolbar->GetSize().x / g_toolbar_scalefactor;
-//            g_MainToolbar->HideTooltip();
-//            g_Platform->DoHelpDialog();
+            g_Platform->DoHelpDialog();
             break;
         }
 
@@ -4498,7 +4497,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_PRINT: {
-            g_MainToolbar->HideTooltip();
             DoPrint();
             break;
         }
@@ -4521,7 +4519,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
-            g_MainToolbar->HideTooltip();
             
             pRouteManagerDialog = RouteManagerDialog::getInstance( this ); // There is one global instance of the Dialog
 
@@ -4571,27 +4568,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
 
         case ID_MASTERTOGGLE:{
-            g_MainToolbar->HideTooltip();
+            if(g_MainToolbar){
+                wxString tip = _("Show Toolbar");
+                if(!g_bmasterToolbarFull)
+                    tip = _("Hide Toolbar");
+                if( g_MainToolbar->GetToolbar() )
+                    g_MainToolbar->GetToolbar()->SetToolShortHelp( ID_MASTERTOGGLE, tip );
             
-            wxString tip = _("Show Toolbar");
-            if(!g_bmasterToolbarFull)
-                tip = _("Hide Toolbar");
-            if( g_MainToolbar->GetToolbar() )
-                g_MainToolbar->GetToolbar()->SetToolShortHelp( ID_MASTERTOGGLE, tip );
-            
-            
-            g_bmasterToolbarFull = !g_bmasterToolbarFull;
+                g_bmasterToolbarFull = !g_bmasterToolbarFull;
 
 #ifdef __WXOSX__            
-            if(g_bmasterToolbarFull)
-                m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
-            else
-                m_nMasterToolCountShown = 2;
+                if(g_bmasterToolbarFull)
+                    m_nMasterToolCountShown = g_MainToolbar->GetToolCount() - 1;        //TODO disable animation on OSX. Maybe use fade effect?
+                else
+                    m_nMasterToolCountShown = 2;
 #else                
-            m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
+                m_nMasterToolCountShown = g_MainToolbar->GetToolShowCount();        // Current state
 #endif            
-            ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
-            
+                ToolbarAnimateTimer.Start( 10, wxTIMER_ONE_SHOT );
+            }
             break;
         }
             
@@ -4656,8 +4651,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             //        If found, make the callback.
             //        TODO Modify this to allow multiple tools per plugin
             if( g_pi_manager ) {
-                g_MainToolbar->HideTooltip();
-                
                 ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
                 for( unsigned int i = 0; i < tool_array.size(); i++ ) {
                     PlugInToolbarToolContainer *pttc = tool_array[i];
@@ -4710,8 +4703,6 @@ void MyFrame::ShowTides(bool bShow)
 bool MyFrame::SetGlobalToolbarViz( bool viz )
 {
     bool viz_now = g_bmasterToolbarFull;
-    
-    g_MainToolbar->HideTooltip();
     wxString tip = _("Show Toolbar");
     if(viz){
         tip = _("Hide Toolbar");
