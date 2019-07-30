@@ -874,15 +874,26 @@ static void spherical_ll_gc_ll(float lat, float lon, float brg, float dist, floa
     *dlat = asinf(sy*cD + cy*sD*ca) * 180/M_PI;
 }
 
-static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
-{
-    //      Target data must be valid
-    if( NULL == td ) return;
+//  Global static AIS target rendering metrics
+   float AIS_scale_factor;
+   float AIS_nominal_target_size_mm;
+   float AIS_nominal_icon_size_pixels;
+   float AIS_pix_factor;
+   float AIS_user_scale_factor;
+   double AIS_nominal_line_width_pix;
 
-    //    Target is lost due to position report time-out, but still in Target List
-    if( td->b_lost ) return;
+   float AIS_width_interceptbar_base;
+   float AIS_width_interceptbar_top;
+   float AIS_intercept_bar_circle_diameter;
+   float AIS_width_interceptline;
+   float AIS_width_cogpredictor_base;
+   float AIS_width_cogpredictor_line;
+   float AIS_width_target_outline;
     
-    float scale_factor = 1.0;
+
+static void AISSetMetrics()
+{
+    AIS_scale_factor = 1.0;
     
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
@@ -891,34 +902,42 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     // By experience, it is found that specifying target size in pixels, then bounding rendered size
     // for high or lo resolution displays, gives the best compromise.
     
-    float nominal_target_size_mm = 30.0 / g_Platform->GetDisplayDPmm();
-    //float nominal_target_size_mm = gFrame->GetPrimaryCanvas()->GetDisplaySizeMM() / 60.0;
+    AIS_nominal_target_size_mm = 30.0 / g_Platform->GetDisplayDPmm();
+    // nominal_target_size_mm = gFrame->GetPrimaryCanvas()->GetDisplaySizeMM() / 60.0;
     
-    nominal_target_size_mm = wxMin(nominal_target_size_mm, 10.0);
-    nominal_target_size_mm = wxMax(nominal_target_size_mm, 6.0);
+    AIS_nominal_target_size_mm = wxMin(AIS_nominal_target_size_mm, 10.0);
+    AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 6.0);
     
-    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_target_size_mm));             // nominal size, but not less than 4 pixel
-    float pix_factor = nominal_icon_size_pixels / 30.0;          // generic A/B icons are 30 units in size
+    AIS_nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * AIS_nominal_target_size_mm));             // nominal size, but not less than 4 pixel
+    AIS_pix_factor = AIS_nominal_icon_size_pixels / 30.0;          // generic A/B icons are 30 units in size
     
-    scale_factor *= pix_factor;
+    AIS_scale_factor *= AIS_pix_factor;
     
-    float user_scale_factor = g_ShipScaleFactorExp;
+    AIS_user_scale_factor = g_ShipScaleFactorExp;
     if( g_ShipScaleFactorExp > 1.0 )
-        user_scale_factor = (log(g_ShipScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        AIS_user_scale_factor = (log(g_ShipScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
         
-    scale_factor *= user_scale_factor;
+    AIS_scale_factor *= AIS_user_scale_factor;
 
     //  Establish some graphic element line widths dependent on the platform display resolution
-    double nominal_line_width_pix = wxMax(1.5, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.4 mm nominal, but not less than 1 pixel
+    AIS_nominal_line_width_pix = wxMax(1.5, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.4 mm nominal, but not less than 1 pixel
 
-    float width_interceptbar_base = 3 * nominal_line_width_pix;
-    float width_interceptbar_top = 1.5 * nominal_line_width_pix;
-    float intercept_bar_circle_diameter = 4 * nominal_line_width_pix;
-    float width_interceptline = 2 * nominal_line_width_pix;
-    float width_cogpredictor_base = 3 * nominal_line_width_pix;
-    float width_cogpredictor_line = 1.5 * nominal_line_width_pix;
-    float width_target_outline = 1.2 * nominal_line_width_pix;
-    
+    AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
+    AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
+    AIS_intercept_bar_circle_diameter = 4 * AIS_nominal_line_width_pix;
+    AIS_width_interceptline = 2 * AIS_nominal_line_width_pix;
+    AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
+    AIS_width_cogpredictor_line = 1.5 * AIS_nominal_line_width_pix;
+    AIS_width_target_outline = 1.2 * AIS_nominal_line_width_pix;
+}    
+
+static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
+{
+    //      Target data must be valid
+    if( NULL == td ) return;
+
+    //    Target is lost due to position report time-out, but still in Target List
+    if( td->b_lost ) return;
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
@@ -1186,7 +1205,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
     if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
-    wxPen target_outline_pen( UBLCK, width_target_outline );
+    wxPen target_outline_pen( UBLCK, AIS_width_target_outline );
     
     //    Check for alarms here, maintained by AIS class timer tick
     if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
@@ -1202,7 +1221,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                                                        &tCPAPoint.y, 0, vp.pix_width, 0, vp.pix_height );
 
         if( res != Invisible ) {
-            wxPen ppPen2( URED, width_cogpredictor_line, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( URED, AIS_width_cogpredictor_line, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
 
@@ -1236,10 +1255,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
         if( ores != Invisible ) {
             wxColour yellow = GetGlobalColor( _T ( "YELO1" ) );
-            dc.SetPen( wxPen( yellow, width_interceptbar_base ) );
+            dc.SetPen( wxPen( yellow, AIS_width_interceptbar_base ) );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
-            wxPen ppPen2( URED, width_interceptbar_top, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( URED, AIS_width_interceptbar_top, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
@@ -1247,11 +1266,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             //        Draw little circles at the ends of the CPA alert line
             wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
             dc.SetBrush( br );
-            dc.SetPen( wxPen( UBLCK, width_target_outline ) );
+            dc.SetPen( wxPen( UBLCK, AIS_width_target_outline ) );
 
             //  Using the true ends, not the clipped ends
-            dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, intercept_bar_circle_diameter );
-            dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, intercept_bar_circle_diameter );
+            dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, AIS_intercept_bar_circle_diameter );
+            dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, AIS_intercept_bar_circle_diameter );
         }
 
         // Draw the intercept line from ownship
@@ -1264,7 +1283,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                                                            0, vp.pix_width, 0, vp.pix_height );
 
         if ( ownres != Invisible ) {
-            wxPen ppPen2 ( URED, width_interceptline, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2 ( URED, AIS_width_interceptline, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen(ppPen2);
 
@@ -1307,14 +1326,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             if( res != Invisible ) {
                     //    Draw a wider coloured line
                     if (targetscale >= 75){
-                        wxPen wide_pen( target_brush.GetColour(), width_cogpredictor_base );
+                        wxPen wide_pen( target_brush.GetColour(), AIS_width_cogpredictor_base );
                         dc.SetPen( wide_pen );
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
 
-                    if( width_cogpredictor_base > 1 ) {
+                    if( AIS_width_cogpredictor_base > 1 ) {
                         //    Draw narrow black line
-                        wxPen narrow_pen( UBLCK, width_cogpredictor_line );
+                        wxPen narrow_pen( UBLCK, AIS_width_cogpredictor_line );
                         if( targetscale < 75 ){
                             narrow_pen.SetWidth(1);
                             narrow_pen.SetStyle(wxPENSTYLE_DOT);
@@ -1335,7 +1354,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 #ifndef USE_ANDROID_GLES2
                         glPushMatrix();
                         glTranslated(pixx1, pixy1, 0);
-                        glScalef(scale_factor, scale_factor, scale_factor);
+                        glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
                         // draw circle
                         float points[] = {0.0f, 5.0f, 2.5f, 4.330127f, 4.330127f, 2.5f, 5.0f,
                                       0, 4.330127f, -2.5f, 2.5f, -4.330127f, 0, -5.1f,
@@ -1355,7 +1374,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                         glEnd();
 
                         glColor3ub(0, 0, 0);
-                        glLineWidth( width_target_outline );
+                        glLineWidth( AIS_width_target_outline );
                         glBegin(GL_LINE_LOOP);
                         for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
                             glVertex2i(points[i], points[i+1]);
@@ -1486,7 +1505,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         dc.SetPen( target_pen );
         
         if(dc.GetDC()) {
-            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, AIS_scale_factor );
         } else {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
@@ -1495,7 +1514,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                         
             glPushMatrix();
             glTranslated(TargetPoint.x, TargetPoint.y, 0);
-            glScalef(scale_factor, scale_factor, scale_factor);
+            glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
             
             glBegin(GL_TRIANGLE_FAN);
             
@@ -1514,7 +1533,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             glEnd();
 #else
             dc.SetPen( target_outline_pen );
-            dc.DrawPolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.DrawPolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, AIS_scale_factor );
 #endif            
             
             // Draw target outline, if not already done
@@ -1524,9 +1543,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             
             dc.SetPen( target_outline_pen );
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, AIS_scale_factor );
 #else            
-            glLineWidth(width_target_outline);
+            glLineWidth(AIS_width_target_outline);
 #ifndef USE_ANDROID_GLES2            
             glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
             
@@ -1744,7 +1763,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         }
         
         wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
-        dc.SetPen( wxPen( c,   2 * nominal_line_width_pix ) );
+        dc.SetPen( wxPen( c,   2 * AIS_nominal_line_width_pix ) );
         
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
@@ -1782,6 +1801,9 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
          if (!cp->GetShowAIS())
               return;
     }
+    
+    AISSetMetrics();
+
     AIS_Target_Hash::iterator it;
     AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
     //      Iterate over the AIS Target Hashmap but only for the main chartcanvas. For secundairy canvasses we use the same value for the AIS importance
@@ -1873,13 +1895,14 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
         {
             AISDrawTarget( td, dc, vp, cp ); // yes this is a doubling of code;(
             if( td->importance > 0 )
-            AISDrawTarget( td, dc, vp, cp );
+                AISDrawTarget( td, dc, vp, cp );
         }           
     }
 
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
-        if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) AISDrawTarget( td, dc, vp, cp );
+        if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) )
+            AISDrawTarget( td, dc, vp, cp );
     }
 }
 
