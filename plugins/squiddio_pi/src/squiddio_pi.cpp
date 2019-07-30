@@ -273,9 +273,25 @@ int squiddio_pi::Init(void) {
     }
 
     //    This PlugIn needs a toolbar icon, so request its insertion
-    m_leftclick_tool_id = InsertPlugInTool(_T(""), _img_plugin_logo,
+    wxString shareLocn = *GetpSharedDataLocation() +
+                          _T("plugins") + wxFileName::GetPathSeparator() +
+                          _T("squiddio_pi") + wxFileName::GetPathSeparator()
+                          + _T("images") + wxFileName::GetPathSeparator();
+    wxImage panelIcon(  shareLocn + _T("plugin_logo.png"));
+    if(panelIcon.IsOk())
+        m_bitmapLogo = new wxBitmap(panelIcon);
+    else{
+        m_bitmapLogo = _img_plugin_logo;
+        wxLogMessage(_T("    Squiddio logo PNG icon NOT loaded from:") + shareLocn);
+    }
+
+    m_leftclick_tool_id = InsertPlugInTool(_T(""), m_bitmapLogo,
             _img_plugin_logo, wxITEM_NORMAL, _("sQuiddio"), _T(""), NULL,
             SQUIDDIO_TOOL_POSITION, 0, this);
+
+//     m_leftclick_tool_id = InsertPlugInTool(_T(""), _img_plugin_logo,
+//             _img_plugin_logo, wxITEM_NORMAL, _("sQuiddio"), _T(""), NULL,
+//             SQUIDDIO_TOOL_POSITION, 0, this);
             
     m_pThread = new SquiddioThread(this);
     wxThreadError err = m_pThread->Run();

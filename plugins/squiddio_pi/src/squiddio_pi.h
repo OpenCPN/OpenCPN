@@ -198,6 +198,7 @@ private:
       int         m_leftclick_tool_id;
       
       bool m_bThreadRuning;
+      wxBitmap    *m_bitmapLogo;
       
       DECLARE_EVENT_TABLE()
 };

@@ -474,6 +474,11 @@ OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/
 OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/nb_NO.lproj/opencpn-squiddio_pi.mo
 OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fi_FI.lproj/opencpn-squiddio_pi.mo
 
+#ICONS
+icons_squiddio_plugin_deployment.path = /assets/files/plugins/squiddio_pi/images
+icons_squiddio_plugin_deployment.files +=$$PWD/../plugins/squiddio_pi/src/images/plugin_logo.png
+INSTALLS += icons_squiddio_plugin_deployment
+
 #------------------------------------------------------------------------------------
 
 
