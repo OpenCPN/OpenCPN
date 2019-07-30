@@ -70,6 +70,7 @@ extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint( bool bskipConfirm = false);
+extern int androidGetVersionCode();
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
