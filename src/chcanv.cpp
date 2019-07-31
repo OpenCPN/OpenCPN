@@ -313,6 +313,7 @@ extern ocpnGLOptions g_GLOptions;
 extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
+extern bool              g_bRollover;
 
 extern bool              g_bSpaceDropMark;
 extern bool              g_bAutoHideToolbar;
@@ -3767,9 +3768,8 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {
-#ifdef __OCPN__ANDROID__
-    return;
-#endif
+    if(!g_bRollover)
+        return;
     
     bool b_need_refresh = false;
 
@@ -7044,7 +7044,11 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
  
 //      Retrigger the route leg / AIS target popup timer
-    if( !g_btouch )
+    bool bRoll = !g_btouch;
+#ifdef __OCPN__ANDROID__
+    bRoll = g_bRollover;
+#endif    
+    if( bRoll )
     {
        if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) ||
 	   (m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
@@ -7053,6 +7057,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         else
             m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
     }
+    
 
 //  Retrigger the cursor tracking timer
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
