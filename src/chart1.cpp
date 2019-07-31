@@ -2402,6 +2402,9 @@ extern ocpnGLOptions g_GLOptions;
         
         // Finished with upgrade checking, so persist the currect Version Code
         g_AndroidVersionCode = androidGetVersionCode();
+        pConfig->UpdateSettings();
+
+        qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
 #endif
         
         
