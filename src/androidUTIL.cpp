@@ -749,7 +749,8 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event)
         
         //  Raise the resized options dialog.
         //  This has no effect if the dialog is not already shown.
-        g_options->Raise();
+        if(g_options)
+            g_options->Raise();
 
         resizeAndroidPersistents();
         return;
