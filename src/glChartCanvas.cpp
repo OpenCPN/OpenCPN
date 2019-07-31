@@ -5572,10 +5572,6 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 
             if(m_zoomFinaldx || m_zoomFinaldy){
                 m_pParentCanvas->PanCanvas( m_zoomFinaldx, m_zoomFinaldy );
-                
-                #ifdef __OCPN__ANDROID__
-                androidSetFollowTool(false);
-                #endif        
             }
 
             if(m_zoomFinalZoom > 1){    //  only fade on ZIN
@@ -5951,7 +5947,6 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                     m_bforcefull = true;
                 }
                             
-                androidSetFollowTool(false);
             }
 
 
