@@ -9728,19 +9728,16 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if(!g_btouch){
-            if( g_bShowTrue )
-                routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-            if( g_bShowMag ){
-                double latAverage = (m_cursor_lat + render_lat)/2;
-                double lonAverage = (m_cursor_lon + render_lon)/2;
-                double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+        if( g_bShowTrue )
+            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+        if( g_bShowMag ){
+            double latAverage = (m_cursor_lat + render_lat)/2;
+            double lonAverage = (m_cursor_lon + render_lon)/2;
+            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
             
-                routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-            }
-
-            routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
         }
+            routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
         wxString s0;
         if( !route->m_bIsInLayer )
@@ -9750,7 +9747,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         double disp_length = route->m_route_length;
         if( !g_btouch)
-            disp_length += dist;
+            disp_length += dist;                // Add in the to-be-created leg.
         s0 += FormatDistanceAdaptive( disp_length );
 
         RouteLegInfo( dc, r_rband, routeInfo, s0 );
