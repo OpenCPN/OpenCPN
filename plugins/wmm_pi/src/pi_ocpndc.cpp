@@ -141,8 +141,9 @@ pi_ocpnDC::pi_ocpnDC() :
     workBufSize = 0;
     s_odc_tess_work_buf = NULL;
 
+#ifdef USE_ANDROID_GLES2
     pi_loadShaders();
-    
+#endif    
 }
 
 pi_ocpnDC::~pi_ocpnDC()
@@ -158,7 +159,9 @@ pi_ocpnDC::~pi_ocpnDC()
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp)
 {
+#ifdef USE_ANDROID_GLES2
     configureShaders(vp->pix_width, vp->pix_height);
+#endif    
     m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
 

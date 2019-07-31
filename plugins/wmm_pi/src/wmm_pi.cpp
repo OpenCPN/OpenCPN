@@ -46,7 +46,6 @@
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) { WMMLogMessage1(wxString::FromAscii(s)); }
 
-
 #include "wmm_pi.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -72,30 +71,18 @@ bool g_compact;
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
-WmmUIDialog::WmmUIDialog( wmm_pi *_wmm_pi, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
-    : WmmUIDialogBase( parent, id, title, pos, size, style )
-
-{
-    m_wmm_pi = _wmm_pi;
-}
-
-
-WmmUIDialog::~WmmUIDialog()
-{
-    m_wmm_pi->m_pWmmDialog = 0;
-}
 
 void WmmUIDialog::EnablePlotChanged( wxCommandEvent& event )
 {
     if(m_cbEnablePlot->GetValue())
-      m_wmm_pi->RecomputePlot();
-    m_wmm_pi->SetShowPlot(m_cbEnablePlot->GetValue());
-    RequestRefresh( m_wmm_pi->m_parent_window );
+      m_wmm_pi.RecomputePlot();
+    m_wmm_pi.SetShowPlot(m_cbEnablePlot->GetValue());
+    RequestRefresh( m_wmm_pi.m_parent_window );
 }
 
 void WmmUIDialog::PlotSettings( wxCommandEvent& event )
 {
-    m_wmm_pi->ShowPlotSettings();
+    m_wmm_pi.ShowPlotSettings();
 }
 
 void WmmPlotSettingsDialog::About( wxCommandEvent& event )
@@ -175,7 +162,11 @@ int wmm_pi::Init(void)
 
     m_LastVal = wxEmptyString;
 
-    pFontSmall = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    //pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    wxFont * tFont = OCPNGetFont( _("Dialog"), 10);
+    m_fontSmall = *tFont;
+    pFontSmall = &m_fontSmall;
+    
     m_shareLocn =*GetpSharedDataLocation() +
     _T("plugins") + wxFileName::GetPathSeparator() +
     _T("wmm_pi") + wxFileName::GetPathSeparator() +
@@ -241,7 +232,7 @@ int wmm_pi::Init(void)
 
     m_pWmmDialog = NULL;
     m_oDC = NULL;
-    
+
     return ret_flag;
 }
 
@@ -377,8 +368,7 @@ void wmm_pi::RearrangeWindow()
 
     m_pWmmDialog->m_cbEnablePlot->Show(m_bShowPlotOptions);
     m_pWmmDialog->m_bPlotSettings->Show(m_bShowPlotOptions);
-    m_pWmmDialog->sbPlot->GetStaticBox()->Show(m_bShowPlotOptions);
-    
+
     if (!m_bShowAtCursor)
     {
         m_pWmmDialog->bSframe->Hide(m_pWmmDialog->sbScursor, true);
@@ -416,20 +406,17 @@ void wmm_pi::OnToolbarToolCallback(int id)
         return;
     if(NULL == m_pWmmDialog)
     {
-        m_pWmmDialog = new WmmUIDialog(this, m_parent_window);
+        m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
         wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
         m_pWmmDialog->SetFont(*pFont);
         
         m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
-        
-        m_pWmmDialog->Fit();
     }
 
     RearrangeWindow();
     /*m_pWmmDialog->SetMaxSize(m_pWmmDialog->GetSize());
     m_pWmmDialog->SetMinSize(m_pWmmDialog->GetSize());*/
     m_pWmmDialog->Show(!m_pWmmDialog->IsShown());
-    
     m_pWmmDialog->Layout();     // Some platforms need a re-Layout at this point (gtk, at least)
     if (m_pWmmDialog->IsShown())
         SendPluginMessage(_T("WMM_WINDOW_SHOWN"), wxEmptyString);
@@ -442,7 +429,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     
 #ifdef __OCPN__ANDROID__
     m_pWmmDialog->CentreOnScreen();
-    m_pWmmDialog->Move(-1,100);
+    m_pWmmDialog->Move(-1,0);
 #endif    
     
 }
@@ -492,13 +479,13 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 #endif
-    
+
     RenderOverlayBoth(m_oDC, vp);
 
 #ifndef USE_ANDROID_GLES2
     glPopAttrib();
 #endif
-    
+
     return true;
 }
 
@@ -524,7 +511,7 @@ void wmm_pi::RecomputePlot()
 }
 
 void wmm_pi::SetCursorLatLon(double lat, double lon)
-{ 
+{
     if(!m_pWmmDialog)
         return;
     
@@ -630,13 +617,12 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
                 //   No smaller than 8 pt.
                 int w;
                 wxScreenDC sdc;
-                sdc.SetFont(*pFontSmall);
-                sdc.GetTextExtent(NewVal, &w, NULL);
+                sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
+
                 while( (w > (icon.GetWidth() * 8 / 10) ) && (point_size >= 8) ){
                     point_size--;
                     pFontSmall->SetPointSize(point_size);
-                    sdc.SetFont(*pFontSmall);
-                    sdc.GetTextExtent(NewVal, &w, NULL);
+                    sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
                 }
             }
             dc.SetFont(*pFontSmall);
@@ -690,7 +676,6 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 //Demo implementation of response mechanism
 void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
 {
-    
     if(message_id == _T("WMM_VARIATION_REQUEST"))
     {
         wxJSONReader r;
@@ -960,26 +945,10 @@ void SetBackColor( wxWindow* ctrl, wxColour col)
 void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     WmmPrefsDialog *dialog = new WmmPrefsDialog( parent, wxID_ANY, _("WMM Preferences"), wxPoint( m_wmm_dialog_x, m_wmm_dialog_y), wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
-    
-    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-    dialog->SetFont(fo);
-    
-    if( m_parent_window ){
-        int xmax = m_parent_window->GetSize().GetWidth();
-        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
-        dialog->SetSize( xmax, ymax );
-        dialog->Layout();
-        
-        dialog->Move(0,0);
-    }
-    
-    wxColour cl = wxColour(214,218,222);
-    SetBackColor( dialog, cl );
-    
-//     dialog->Fit();
-//     wxColour cl;
-//     GetGlobalColor(_T("DILG1"), &cl);
-//     dialog->SetBackgroundColour(cl);
+    dialog->Fit();
+    wxColour cl;
+    GetGlobalColor(_T("DILG1"), &cl);
+    dialog->SetBackgroundColour(cl);
 
     dialog->m_rbViewType->SetSelection(m_iViewType);
     dialog->m_cbShowPlotOptions->SetValue(m_bShowPlotOptions);
@@ -988,12 +957,8 @@ void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
     dialog->m_cbLiveIcon->SetValue(m_bShowLiveIcon);
     dialog->m_sOpacity->SetValue(m_iOpacity);
 
-    dialog->Show();
-    
-}
-
-void wmm_pi::UpdatePrefs(WmmPrefsDialog *dialog)
-{
+    if(dialog->ShowModal() == wxID_OK)
+    {
         m_iViewType = dialog->m_rbViewType->GetSelection();
         m_bShowPlotOptions = dialog->m_cbShowPlotOptions->GetValue();
         m_bShowAtCursor = dialog->m_cbShowAtCursor->GetValue();
@@ -1005,6 +970,8 @@ void wmm_pi::UpdatePrefs(WmmPrefsDialog *dialog)
         SetIconType();
 
         SaveConfig();
+    }
+    delete dialog;
 }
 
 void wmm_pi::ShowPlotSettings()

@@ -106,8 +106,7 @@ IF(QT_ANDROID)
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
-    ADD_DEFINITIONS(-DARMHF)
-
+   
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
@@ -143,7 +142,7 @@ IF (QT_ANDROID )
 
         # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
         /home/dsr/Projects/opencpn/build-opencpn-Production_build_Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Release/libopencpn.so                
-
+        
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
@@ -158,7 +157,8 @@ IF (QT_ANDROID )
         ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
         ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
         ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-
+        
+        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
 
 ENDIF(QT_ANDROID)

@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "WmmUIDialog.h"
+
 ///////////////////////////////////////////////////////////////////////////
 
 WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -26,7 +27,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
         fgSizer6->Add( bSframe, 1, wxEXPAND, 5 );
 	bSframe->SetMinSize( wxSize( 200,-1 ) ); 
         
-        
+	
 	sbSboat = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Boat") ), wxVERTICAL );
 	
 	gSboat = new wxFlexGridSizer( 6, 2, 0, 0 );
@@ -34,7 +35,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	gSboat->SetFlexibleDirection( wxBOTH );
 	gSboat->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
         bSframe->Add( sbSboat, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-        
+	
 	m_staticText8 = new wxStaticText( this, wxID_ANY, _("F "), wxDefaultPosition, wxDefaultSize, 0 );
 	//m_staticText8->Wrap( -1 );
 	m_staticText8->SetToolTip( _("Total Intensity") );
@@ -114,7 +115,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tbD->SetMaxLength( 0 ); 
-	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
+	//m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer3->Add( m_tbD, 1, wxEXPAND, 5 );
 	
@@ -126,13 +127,13 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	sbScursor = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Cursor") ), wxVERTICAL );
         bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-        
+	
 	gScursor = new wxFlexGridSizer( 6, 2, 0, 0 );
 	gScursor->AddGrowableCol( 1 );
 	gScursor->SetFlexibleDirection( wxBOTH );
 	gScursor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
         sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-        
+	
 	m_staticText81 = new wxStaticText( this, wxID_ANY, _("F "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText81->Wrap( -1 );
 	m_staticText81->SetToolTip( _("Total Intensity") );
@@ -194,6 +195,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_tcI->SetMaxLength( 0 ); 
 	gScursor->Add( m_tcI, 0, wxEXPAND, 5 );
 	
+	
 	sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
 	
 	wxFlexGridSizer* gSizer4;
@@ -211,7 +213,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tcD->SetMaxLength( 0 ); 
-	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
+	//m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer4->Add( m_tcD, 0, wxEXPAND, 5 );
 	
@@ -319,7 +321,10 @@ WmmPrefsDialog::~WmmPrefsDialog()
 
 WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+        wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+        SetFont(*pFont);
+
+        this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	
 	wxGridSizer* gSizer2;
 	gSizer2 = new wxGridSizer( 0, 3, 0, 0 );

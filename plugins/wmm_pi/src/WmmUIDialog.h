@@ -88,7 +88,7 @@ class WmmUIDialogBase : public wxDialog
 		
 		WmmUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 250,485 ), long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
 		~WmmUIDialogBase();
-                
+	
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ class WmmPrefsDialog : public wxDialog
 		WmmPrefsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE ); 
 		~WmmPrefsDialog();
                 void OnOKClick(wxCommandEvent& event);
-                
+	
 };
 
 ///////////////////////////////////////////////////////////////////////////////
