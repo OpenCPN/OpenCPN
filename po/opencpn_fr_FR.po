@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-31 01:27\n"
+"PO-Revision-Date: 2019-07-31 17:59\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -2525,7 +2525,7 @@ msgstr "TCPA"
 
 #: src/AISTargetListDialog.cpp:641
 msgid "Target info"
-msgstr "Info. de cette cible"
+msgstr "Cette cible : Info"
 
 #: src/AISTargetListDialog.cpp:654
 msgid "Create WPT"
@@ -2553,7 +2553,7 @@ msgstr "Tri automatique"
 
 #: src/AISTargetListDialog.cpp:694
 msgid "Limit range: NM"
-msgstr "Distance maxi : Nm"
+msgstr "Dist. maxi : Nm"
 
 #: src/AISTargetListDialog.cpp:707
 msgid "Target Count"
@@ -2576,7 +2576,7 @@ msgstr "La trace de cette cible AIS a été enregistrée.\n"
 
 #: src/AISTargetQueryDialog.cpp:204 src/AISTargetQueryDialog.cpp:253
 msgid "AISTargetQuery"
-msgstr "Informations émises par cette cible"
+msgstr "Cette cible : Informations émises"
 
 #: src/AISTargetQueryDialog.cpp:312 src/cm93.cpp:7374
 #: src/GoToPositionDialog.cpp:147 src/options.cpp:554 src/options.cpp:660
@@ -2718,7 +2718,7 @@ msgstr "AIS"
 
 #: src/canvasMenu.cpp:551
 msgid "Target Query..."
-msgstr "Informations émises par cette cible ..."
+msgstr "Cette cible : Informations émises ..."
 
 #: src/canvasMenu.cpp:554
 msgid "Hide Target CPA"
@@ -3012,7 +3012,7 @@ msgstr "OpenCPN met à jour la liste des cartes"
 
 #: src/chart1.cpp:3007 src/chcanv.cpp:11869
 msgid "AIS Target Query"
-msgstr "Informations émises par cette cible"
+msgstr "Cette cible : Informations émises"
 
 #: src/chart1.cpp:4106 src/chcanv.cpp:5402 src/OCPNPlatform.cpp:1808
 msgid "StatusBar"
@@ -3149,7 +3149,7 @@ msgstr "Afficher les cibles AIS"
 
 #: src/chart1.cpp:5590 src/chcanv.cpp:12271 src/toolbar.cpp:1081
 msgid "Attenuate less critical AIS targets"
-msgstr "Peu critiques : Réduire"
+msgstr "Peu critiques : Atténuer"
 
 #: src/chart1.cpp:5592
 msgid "Hide Moored AIS Targets"
@@ -4491,15 +4491,15 @@ msgstr "Options d'affichage : Voir"
 
 #: src/options.cpp:2914
 msgid "COG Predictor Length (min)"
-msgstr "COG : Taille de la flèche de prédiction de la route en minutes"
+msgstr "COG : Flèche de prédiction de la route, taille en minutes"
 
 #: src/options.cpp:2921
 msgid "Heading Predictor Length (NMi)"
-msgstr "Cap compas : Longueur de la flèche indicatrice en mille(s) nautique(s)"
+msgstr "Cap compas : Flèche indicatrice en mille(s) nautique(s)"
 
 #: src/options.cpp:2928
 msgid "Ship Icon Type"
-msgstr "Caractéristiques et icône du bateau"
+msgstr "Bateau : Caractéristiques, icône"
 
 #: src/options.cpp:2931
 msgid "Real Scale Bitmap"
@@ -4702,7 +4702,7 @@ msgstr "Contrôler la mise à jour"
 
 #: src/options.cpp:3442
 msgid "Scan Charts and Update Database"
-msgstr "Dossier, Base de données : Analyser, Mettre à jour"
+msgstr "Dossier, Base de données : Analyse, Mise à jour"
 
 #: src/options.cpp:3445
 msgid "Force Full Database Rebuild"
@@ -6690,7 +6690,7 @@ msgstr "Cibles AIS : Voir"
 
 #: src/CanvasOptions.cpp:181
 msgid "Minimize less critical targets"
-msgstr "Cibles peu critiques : Reduire"
+msgstr "Peu critiques : Réduire"
 
 #: src/CanvasOptions.cpp:191
 msgid "Tides and Currents"

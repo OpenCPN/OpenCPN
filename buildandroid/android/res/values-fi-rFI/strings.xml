@@ -96,7 +96,7 @@
     <string name="ocpn_prefs_conn_FT232R">FTDI FT232R</string>
     <string name="ocpn_prefs_conn_FT231X">FTDI FT231X</string>
     <string name="ocpn_prefs_conn_continuous">Valitse jatkuva GPS-seuranta</string>
-    <string name="ocpn_prefs_conn_summary_internal">Aktivoi GPS tällä valinnalla.</string>
+    <string name="ocpn_prefs_conn_summary_internal">Valinta toimii vain, kun sisäinen GPS on aktivoitu!</string>
     <string name="ocpn_prefs_conn_summary_compatible">   tai yhteensopiva GPS-vastaanotin</string>
     <string name="ocpn_prefs_conn_summary_continuous">   ...vaikka keskeytettynä/unessa</string>
     <string name="ocpn_prefs_conn_detected">Havaittu USB-laite</string>

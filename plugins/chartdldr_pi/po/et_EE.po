@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-30 09:34-0400\n"
-"PO-Revision-Date: 2019-07-31 01:44\n"
+"PO-Revision-Date: 2019-07-31 18:02\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -195,7 +195,7 @@ msgstr "Allalaadimine %u diagrammi %u, %u allalaadimised nurjusid (%s / %s)"
 #: src/chartdldr_pi.cpp:1397
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
-msgstr ""
+msgstr "Kaardi %u %u -st (%s / %s) allalaadimine"
 
 #: src/chartdldr_pi.cpp:1431 src/chartdldrgui.cpp:302
 msgid "Download selected charts"
@@ -203,7 +203,7 @@ msgstr "Lae valitud kaardid alla"
 
 #: src/chartdldr_pi.cpp:1440
 msgid "Chart download cancelled."
-msgstr ""
+msgstr "Kaardi allalaadimine tühistatud."
 
 #: src/chartdldr_pi.cpp:1473 src/chartdldrgui.cpp:98
 msgid "Catalog"
@@ -292,7 +292,7 @@ msgstr "Vali kaust"
 
 #: src/chartdldrgui.cpp:170 src/chartdldrgui.cpp:501
 msgid "Cancel"
-msgstr ""
+msgstr "Loobu"
 
 #: src/chartdldrgui.cpp:201 src/chartdldrgui.cpp:562
 msgid "Choose Chart File Directory"
@@ -300,15 +300,15 @@ msgstr "Vali kaardifaili kaust"
 
 #: src/chartdldrgui.cpp:227
 msgid "Select Catalog..."
-msgstr ""
+msgstr "Vali kataloog..."
 
 #: src/chartdldrgui.cpp:232
 msgid "Chart Catalogs Available"
-msgstr ""
+msgstr "Saadaval kaardikataloogid"
 
 #: src/chartdldrgui.cpp:251
 msgid "Add Catalog"
-msgstr ""
+msgstr "Lisa kataloog"
 
 #: src/chartdldrgui.cpp:252
 msgid "Add a new chart catalog."
@@ -340,7 +340,7 @@ msgstr "Uuenda kõiki"
 
 #: src/chartdldrgui.cpp:276
 msgid "Download Charts..."
-msgstr ""
+msgstr "Lae alla kaardid..."
 
 #: src/chartdldrgui.cpp:305
 #, c-format
