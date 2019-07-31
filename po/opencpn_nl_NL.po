@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-21 01:16\n"
+"PO-Revision-Date: 2019-07-31 01:35\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -99,7 +99,7 @@ msgstr "De OpenCPN-auteurs"
 #: src/AboutFrame.cpp:74
 msgid "OpenCPN is a Free Software project, built by sailors.\n"
 "It is freely available to download and distribute without charge."
-msgstr "OpenCPN is een vrij softwareproject, gebouwd door zeilers.\n"
+msgstr "OpenCPN is een gratis softwareproject, gebouwd door zeilers.\n"
 "Het is vrij beschikbaar om te downloaden en te distribueren zonder kosten."
 
 #: src/AboutFrame.cpp:81
@@ -179,7 +179,7 @@ msgstr "beperkt manoeuvreerbaar"
 
 #: src/ais.cpp:151
 msgid "Constrained by draught"
-msgstr "beperkt door diepgang"
+msgstr "Beperkt door diepgang"
 
 #: src/ais.cpp:152
 msgid "Moored"
@@ -237,43 +237,43 @@ msgstr "virtueel (op positie)"
 
 #: src/ais.cpp:165
 msgid "Virtual (Off Position)"
-msgstr "virtueel (uit positie)"
+msgstr "Virtueel (uit positie)"
 
 #: src/ais.cpp:166
 msgid "Real"
-msgstr "werkelijk"
+msgstr "Werkelijk"
 
 #: src/ais.cpp:167
 msgid "Real (On Position)"
-msgstr "werkelijk (op positie)"
+msgstr "Werkelijk (op positie)"
 
 #: src/ais.cpp:168
 msgid "Real(Off Position)"
-msgstr "werkelijk (uit positie)"
+msgstr "Werkelijk (uit positie)"
 
 #: src/ais.cpp:177
 msgid "Vessel Fishing"
-msgstr "vaartuig vissend"
+msgstr "Vaartuig vissend"
 
 #: src/ais.cpp:178
 msgid "Vessel Towing"
-msgstr "vaartuig slepend"
+msgstr "Vaartuig slepend"
 
 #: src/ais.cpp:179
 msgid "Vessel Towing, Long"
-msgstr "vaartuig slepend, lang"
+msgstr "Vaartuig slepend, lang"
 
 #: src/ais.cpp:180
 msgid "Vessel Dredging"
-msgstr "vaartuig baggerend"
+msgstr "Vaartuig baggerend"
 
 #: src/ais.cpp:181
 msgid "Vessel Diving"
-msgstr "vaartuig duikwerkzaamheden"
+msgstr "Vaartuig duikwerkzaamheden"
 
 #: src/ais.cpp:182
 msgid "Military Vessel"
-msgstr "militair vaartuig"
+msgstr "Militair vaartuig"
 
 #: src/ais.cpp:183
 msgid "Sailing Vessel"
@@ -297,7 +297,7 @@ msgstr "sleepboot"
 
 #: src/ais.cpp:189
 msgid "Port Tender"
-msgstr "havenvaartuig"
+msgstr "Havenvaartuig"
 
 #: src/ais.cpp:190
 msgid "Pollution Control Vessel"
@@ -305,7 +305,7 @@ msgstr "oliebestrijdingsvaartuig"
 
 #: src/ais.cpp:191
 msgid "Law Enforcement Vessel"
-msgstr "overheidsvaartuig"
+msgstr "Overheidsvaartuig"
 
 #: src/ais.cpp:192
 msgid "Medical Transport"
@@ -321,7 +321,7 @@ msgstr "vrachtschip"
 
 #: src/ais.cpp:195 src/AIS_Decoder.cpp:319
 msgid "Tanker"
-msgstr "tanker (geen gas) (zee)"
+msgstr "Tanker"
 
 #: src/ais.cpp:196 src/AIS_Target_Data.cpp:390 src/AIS_Target_Data.cpp:675
 #: src/AIS_Target_Data.cpp:735 src/AIS_Target_Data.cpp:909 src/chartdbs.cpp:1456
@@ -342,11 +342,11 @@ msgstr "RACON"
 
 #: src/ais.cpp:200
 msgid "Fixed Structure"
-msgstr "platform"
+msgstr "Platform"
 
 #: src/ais.cpp:201
 msgid "Spare"
-msgstr "reserve"
+msgstr "Reserve"
 
 #: src/ais.cpp:202
 msgid "Light"
@@ -382,31 +382,31 @@ msgstr "cardinaal W baken"
 
 #: src/ais.cpp:210
 msgid "Beacon, Port Hand"
-msgstr "markering, bakboordzijde"
+msgstr "Markering, bakboordzijde"
 
 #: src/ais.cpp:211
 msgid "Beacon, Starboard Hand"
-msgstr "markering, stuurboordzijde"
+msgstr "Markering, stuurboordzijde"
 
 #: src/ais.cpp:212
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr "markering, aanbevolen vaarwater bakboordzijde"
+msgstr "Markering, aanbevolen vaarwater bakboordzijde"
 
 #: src/ais.cpp:213
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr "markering, aanbevolen vaarwater stuurboordzijde"
+msgstr "Markering, aanbevolen vaarwater stuurboordzijde"
 
 #: src/ais.cpp:214
 msgid "Beacon, Isolated Danger"
-msgstr "markering, afzonderlijk gevaar"
+msgstr "Markering, afzonderlijk gevaar"
 
 #: src/ais.cpp:215
 msgid "Beacon, Safe Water"
-msgstr "markering, veilig vaarwater"
+msgstr "Markering, veilig vaarwater"
 
 #: src/ais.cpp:216
 msgid "Beacon, Special Mark"
-msgstr "markering, bijzondere betekenis"
+msgstr "Markering, bijzondere betekenis"
 
 #: src/ais.cpp:217
 msgid "Cardinal Mark N"
@@ -450,11 +450,11 @@ msgstr "Veilig vaarwater"
 
 #: src/ais.cpp:227
 msgid "Special Mark"
-msgstr "markering bijzondere betekenis"
+msgstr "Markering bijzondere betekenis"
 
 #: src/ais.cpp:228
 msgid "Light Vessel/Rig"
-msgstr "lichtschip/-platform"
+msgstr "Lichtschip/-platform"
 
 #: src/ais.cpp:229
 msgid "GpsGate Buddy"
@@ -478,19 +478,19 @@ msgstr "APRS positierapport"
 
 #: src/ais.cpp:242
 msgid "F/V"
-msgstr "vis/v"
+msgstr "F/V"
 
 #: src/ais.cpp:243
 msgid "Tow"
-msgstr "sleep"
+msgstr "Sleep"
 
 #: src/ais.cpp:244
 msgid "Long Tow"
-msgstr "lange sleep"
+msgstr "Lange sleep"
 
 #: src/ais.cpp:245
 msgid "Dredge"
-msgstr "bag/v"
+msgstr "Bagger/v"
 
 #: src/ais.cpp:246
 msgid "D/V"
@@ -522,7 +522,7 @@ msgstr "red/v"
 
 #: src/ais.cpp:254
 msgid "Tender"
-msgstr "havenvaartuig"
+msgstr "Havenvaartuig"
 
 #: src/ais.cpp:255
 msgid "PC/V"
@@ -562,7 +562,7 @@ msgstr "ref.pt"
 
 #: src/ais.cpp:266
 msgid "Fix.Struct."
-msgstr "platform"
+msgstr "Platform."
 
 #: src/ais.cpp:268
 msgid "Lt"
@@ -786,7 +786,7 @@ msgstr "Beperkt gebied: niet ankeren"
 
 #: src/ais.cpp:340
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr "Beperkt gebied: toestemming noodzakelijk vóór transit"
+msgstr "Beperkt gebied: toestemming noodzakelijk vóór doorvaart"
 
 #: src/ais.cpp:341
 msgid "Restricted Area: Entry prohibited"
@@ -842,7 +842,7 @@ msgstr "Veiligheidswaarschuwing - niveau 3"
 
 #: src/ais.cpp:370
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Noodgebied: vaartuig onmanoevreerbaar"
+msgstr "Noodgebied: vaartuig onmanoevreerbaar en op drift"
 
 #: src/ais.cpp:371
 msgid "Distress Area: Vessel sinking"
@@ -886,7 +886,7 @@ msgstr "Noodgebied: man overboord"
 
 #: src/ais.cpp:381
 msgid "Distress Area: SAR area"
-msgstr "Noodgebied: opsporing en redding"
+msgstr "Noodgebied: opsporings- en reddingsgebied"
 
 #: src/ais.cpp:382
 msgid "Distress Area: Pollution response area"
@@ -1114,11 +1114,11 @@ msgstr "motorvrachtschip met één of meer schepen langszij"
 
 #: src/AIS_Decoder.cpp:275
 msgid "Motor freighter with tanker"
-msgstr "motorvrachtschip met tanker"
+msgstr "Motorvrachtschip met tanker"
 
 #: src/AIS_Decoder.cpp:276
 msgid "Motor freighter pushing one or more freighters"
-msgstr "motorvrachtschip dat één of meer vrachtschepen voortduwt"
+msgstr "Motorvrachtschip dat één of meer vrachtschepen voortduwt"
 
 #: src/AIS_Decoder.cpp:277
 msgid "Motor freighter pushing at least one tank-ship"
@@ -2593,7 +2593,8 @@ msgstr "Stop volgen"
 #: src/androidUTIL.cpp:2045
 msgid "OpenCPN Help is not installed.\n"
 "Would you like to install from Google PlayStore now?"
-msgstr ""
+msgstr "OpenCPN-Help is niet geïnstalleerd.\n"
+"Wilt u nu installeren vanuit Google Play Store?"
 
 #: src/androidUTIL.cpp:2806
 msgid "Your android device has an internal GPS, but it is disabled.\n"
@@ -2913,7 +2914,7 @@ msgstr "\n"
 
 #: src/chart1.cpp:927
 msgid "OpenCPN for Android"
-msgstr ""
+msgstr "OpenCPN voor Android"
 
 #: src/chart1.cpp:943
 msgid "Welcome to OpenCPN"
@@ -3471,7 +3472,7 @@ msgstr "Info routesegment bij aanwijzen"
 
 #: src/chcanv.cpp:10286
 msgid "MBTile requires OpenGL to be enabled"
-msgstr ""
+msgstr "MBTile vereist dat OpenGL ingeschakeld wordt"
 
 #: src/chcanv.cpp:10935 src/options.cpp:5013 src/options.cpp:5126
 msgid "Feet"
@@ -4764,7 +4765,7 @@ msgstr "Hardwareversnelling inschakelen (OpenGL)"
 
 #: src/options.cpp:3787
 msgid "OpenGL Options"
-msgstr ""
+msgstr "OpenGL-opties"
 
 #: src/options.cpp:3800 src/options.cpp:3930
 msgid "Chart Rotation Averaging Time"
@@ -5100,7 +5101,7 @@ msgstr "Toon als waar"
 
 #: src/options.cpp:5056
 msgid "Show magnetic"
-msgstr ""
+msgstr "Toon magnetisch"
 
 #: src/options.cpp:5069
 msgid "Assumed magnetic variation"
@@ -5314,11 +5315,11 @@ msgstr "Scaled Graphics interface inschakelen"
 
 #: src/options.cpp:5632
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Route/AIS Infoblok inschakelen"
 
 #: src/options.cpp:5636
 msgid "Use Inland ECDIS V2.3"
-msgstr ""
+msgstr "Gebruik Inland ECDIS V2.3"
 
 #: src/options.cpp:5645
 msgid "Use dark window decorations"
@@ -6729,7 +6730,7 @@ msgstr "Dit markeringspunt is deel van een kaartlaag en kan niet worden gewijzig
 
 #: src/MarkInfo.cpp:386
 msgid "Show name"
-msgstr ""
+msgstr "Toon naam"
 
 #: src/MarkInfo.cpp:477
 msgid "Extended"

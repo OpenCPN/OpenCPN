@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-01 12:44-0600\n"
-"PO-Revision-Date: 2017-12-08 15:25-0500\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"POT-Creation-Date: 2019-06-25 17:42+1000\n"
+"PO-Revision-Date: 2019-07-31 01:42\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -16,63 +16,67 @@ msgstr ""
 "X-Crowdin-Language: pt-BR\n"
 "X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
 
-#: src/squiddio_pi.cpp:125
+#: src/squiddio_pi.h:343
+msgid "Squiddio Preferences"
+msgstr ""
+
+#: src/squiddio_pi.cpp:173
 msgid "Show local sQuiddio destinations"
 msgstr "Mostrar locais de destinos do sQuiddio"
 
-#: src/squiddio_pi.cpp:130
+#: src/squiddio_pi.cpp:178
 msgid "Hide local sQuiddio destinations"
 msgstr "Esconder locais de destinos do sQuiddio"
 
-#: src/squiddio_pi.cpp:135
+#: src/squiddio_pi.cpp:183
 msgid "Download local sQuiddio destinations"
 msgstr "Baixar locais de destinos do sQuiddio"
 
-#: src/squiddio_pi.cpp:140
+#: src/squiddio_pi.cpp:188
 msgid "Report a Destination at this location"
 msgstr "Relatar um destino neste local"
 
-#: src/squiddio_pi.cpp:201
+#: src/squiddio_pi.cpp:251
 msgid "sQuiddio"
 msgstr "sQuiddio"
 
-#: src/squiddio_pi.cpp:610
+#: src/squiddio_pi.cpp:781
 msgid "Local destinations have been updated"
 msgstr "Locais de Destinos foram atualizados"
 
-#: src/squiddio_pi.cpp:613
+#: src/squiddio_pi.cpp:784
 msgid "No destinations available for the region"
 msgstr "Nenhum destino disponivel para a região"
 
-#: src/squiddio_pi.cpp:616
+#: src/squiddio_pi.cpp:787
 msgid "Server not responding. Check your Internet connection"
 msgstr "Servidor não está respondendo. Verifique sua conexão com a Internet"
 
-#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+#: src/squiddio_pi.cpp:834 src/squiddio_pi.cpp:1481
 msgid "Could not launch default browser. Check your Internet connection"
 msgstr "Não foi possível iniciar o navegador padrão. Verifique sua conexão com a Internet"
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading"
 msgstr "Baixando"
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading: "
 msgstr "Baixando: "
 
-#: src/squiddio_pi.cpp:666
+#: src/squiddio_pi.cpp:856
 msgid "Squiddio_pi: unable to connect to host"
 msgstr "Squiddio_pi: impossível conectar ao host"
 
-#: src/squiddio_pi.cpp:737
+#: src/squiddio_pi.cpp:927
 msgid "Squiddio"
 msgstr "Squiddio"
 
-#: src/squiddio_pi.cpp:741
+#: src/squiddio_pi.cpp:931
 msgid "Squiddio for OpenCPN"
 msgstr "Squiddio para OpenCPN"
 
-#: src/squiddio_pi.cpp:746
+#: src/squiddio_pi.cpp:936
 msgid "== User-sourced database of sailing destinations ==\n"
 "To download destinations for a desired region (requires Internet connection):\n"
 "* Position cursor on area where you want to view destinations and right click mouse\n"
@@ -104,11 +108,86 @@ msgstr "= = Banco de dados de usuários para destinos de vela = = \n"
 "IMPORTANT: Usando este plugin você está concordando com o sQuidd.io termos condições \n"
 "e, disponíveis em http://squidd.io/enduser_agreement"
 
-#: src/squiddio_pi.cpp:838
+#: src/squiddio_pi.cpp:1027
+#, c-format
+msgid "OD Text Points not available, wrong version of API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
+msgstr "Pontos de Texto OD não disponíveis, versão errada da API\n"
+"Squiddio API Maior: %i, Menor, %i, OD API Maior: %i, Menor %i"
+
+#: src/squiddio_pi.cpp:1131
 msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
 "To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
 msgstr "Compartilhamento de log não foi ativado. Por favor digite seu ID de usuário sQuiddio e chave de API. \n\n"
 "Para obter a sua chave de API, Cadastre-se para sQuiddio (http://squidd.io/signup) e visite a página do seu perfil on-line (ver link Editar perfil no painel de controle), guia de 'Números & chaves'."
+
+#: src/squiddio_pi.cpp:1379
+msgid "Marina"
+msgstr "Marina"
+
+#: src/squiddio_pi.cpp:1383
+msgid "Anchorage/Buoys"
+msgstr "Ancoradouro/Boias"
+
+#: src/squiddio_pi.cpp:1387
+msgid "AIS ATON Marker"
+msgstr "Marcador AIS ATON"
+
+#: src/squiddio_pi.cpp:1391
+msgid "Yacht Club"
+msgstr "Yacht Club"
+
+#: src/squiddio_pi.cpp:1395
+msgid "Fuel Station"
+msgstr "Postos de combustível"
+
+#: src/squiddio_pi.cpp:1399
+msgid "Dock/Pier"
+msgstr "Docas/cais"
+
+#: src/squiddio_pi.cpp:1403
+msgid "Boat Ramp"
+msgstr "Rampas"
+
+#: src/squiddio_pi.cpp:1407
+msgid "North"
+msgstr "Norte"
+
+#: src/squiddio_pi.cpp:1411
+msgid "North East"
+msgstr "Nordeste"
+
+#: src/squiddio_pi.cpp:1415
+msgid "East"
+msgstr "Leste"
+
+#: src/squiddio_pi.cpp:1419
+msgid "South East"
+msgstr "Sudoeste"
+
+#: src/squiddio_pi.cpp:1423
+msgid "Sout"
+msgstr "Sul"
+
+#: src/squiddio_pi.cpp:1427
+msgid "South West"
+msgstr "Sudoeste"
+
+#: src/squiddio_pi.cpp:1431
+msgid "West"
+msgstr "Oeste"
+
+#: src/squiddio_pi.cpp:1435
+msgid "North West"
+msgstr "Noroeste"
+
+#: src/squiddio_pi.cpp:1439
+msgid "Checked in"
+msgstr "Dar entrada"
+
+#: src/squiddio_pi.cpp:1443
+msgid "Unknown heading"
+msgstr "Direção desconhecida"
 
 #: src/logs.cpp:94
 msgid "Just now"
@@ -162,105 +241,202 @@ msgstr "Logs recebidos"
 msgid "Created sQuiddio log update:"
 msgstr "Atualização de log sQuiddio criado:"
 
-#: src/squiddioPrefsDialogBase.cpp:28
+#: src/squiddioPrefsDialogBase.cpp:26
 msgid "View Destinations"
 msgstr "Ver os destinos"
 
-#: src/squiddioPrefsDialogBase.cpp:35
+#: src/squiddioPrefsDialogBase.cpp:33
 msgid "All"
 msgstr "Todos"
 
-#: src/squiddioPrefsDialogBase.cpp:38
+#: src/squiddioPrefsDialogBase.cpp:36
 msgid "Marinas"
 msgstr "Marinas"
 
-#: src/squiddioPrefsDialogBase.cpp:41
+#: src/squiddioPrefsDialogBase.cpp:39
 msgid "Anchorages"
 msgstr "Ancoragens"
 
-#: src/squiddioPrefsDialogBase.cpp:44
+#: src/squiddioPrefsDialogBase.cpp:42
 msgid "Yacht clubs"
 msgstr "Iate clubes"
 
-#: src/squiddioPrefsDialogBase.cpp:47
+#: src/squiddioPrefsDialogBase.cpp:45
 msgid "Docks/piers"
 msgstr "Docas/cais"
 
-#: src/squiddioPrefsDialogBase.cpp:50
+#: src/squiddioPrefsDialogBase.cpp:48
 msgid "Boat ramps"
 msgstr "Rampas de barco"
 
-#: src/squiddioPrefsDialogBase.cpp:53
+#: src/squiddioPrefsDialogBase.cpp:51
 msgid "Fuel Stations"
 msgstr "Postos de combustíveis"
 
-#: src/squiddioPrefsDialogBase.cpp:56
+#: src/squiddioPrefsDialogBase.cpp:54
 msgid "Other"
 msgstr "\"Outros\""
 
-#: src/squiddioPrefsDialogBase.cpp:59
+#: src/squiddioPrefsDialogBase.cpp:57
 msgid "AIS marker"
 msgstr "Marcador de AIS"
 
-#: src/squiddioPrefsDialogBase.cpp:69
+#: src/squiddioPrefsDialogBase.cpp:67
 msgid "Share logs with friends"
 msgstr "Compartilhar logs com os amigos"
 
-#: src/squiddioPrefsDialogBase.cpp:76
+#: src/squiddioPrefsDialogBase.cpp:74
 msgid "Send"
 msgstr "Enviar"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+#: src/squiddioPrefsDialogBase.cpp:202
 msgid "Never"
 msgstr "Nunca"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a day"
 msgstr "Uma vez por dia"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a day"
 msgstr "Duas vezes por dia"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once an hour"
 msgstr "Uma vez por hora"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice an hour"
 msgstr "Duas vezes por hora"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a minute"
 msgstr "Uma vez por minuto"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a minute"
 msgstr "Duas vezes por minuto"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Every 10 seconds"
 msgstr "Cada 10 segundos"
 
-#: src/squiddioPrefsDialogBase.cpp:88
+#: src/squiddioPrefsDialogBase.cpp:86
 msgid "Receive"
 msgstr "Receber"
 
-#: src/squiddioPrefsDialogBase.cpp:100
+#: src/squiddioPrefsDialogBase.cpp:98
 msgid "sQuiddio ID"
 msgstr "sQuiddio ID"
 
-#: src/squiddioPrefsDialogBase.cpp:106
+#: src/squiddioPrefsDialogBase.cpp:104
 msgid "The email address you use to log into sQuidd.io"
 msgstr "O endereço de e-mail que você usa para entrar no sQuidd.io"
 
-#: src/squiddioPrefsDialogBase.cpp:110
+#: src/squiddioPrefsDialogBase.cpp:108
 msgid "API Key"
 msgstr "Chave da API"
 
-#: src/squiddioPrefsDialogBase.cpp:116
+#: src/squiddioPrefsDialogBase.cpp:114
 msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
 "IMPORTANT! Do not use your sQuiddio Password as your API Key! "
 msgstr "Recupere sua chave de API do seu perfil sQuidd.io. Inicie http://squidd.io e clique em Editar perfil no painel de controle, em seguida, selecione a guia números e chaves. Clique em ajuda para obter mais informações. \n\n"
 "IMPORTANTE! Não use sua sQuiddio senha como sua chave de API! "
+
+#: src/squiddioPrefsDialogBase.cpp:125
+msgid "Renderer"
+msgstr "Processador"
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "OpenCPN Waypoint"
+msgstr "Ponto de passagem OpenCPN"
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "ODraw TextPoint"
+msgstr "Ponto de texto ODraw"
+
+#: src/squiddioPrefsDialogBase.cpp:129
+msgid "OCPN or ODraw"
+msgstr "OCPN ou ODraw"
+
+#: src/squiddioPrefsDialogBase.cpp:137
+msgid "Ocpn Draw settings"
+msgstr "Configurações do Draw Ocpn"
+
+#: src/squiddioPrefsDialogBase.cpp:144
+msgid "Show Name"
+msgstr "Mostrar Nome"
+
+#: src/squiddioPrefsDialogBase.cpp:151
+msgid "Text position relative to point"
+msgstr "Posição do texto relativa ao ponto"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top"
+msgstr "Topo"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top Centre"
+msgstr "Topo central"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom"
+msgstr "Inferior"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom Centre"
+msgstr "Centro inferior"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Centre"
+msgstr "Centro"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Right"
+msgstr "Direita"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Left"
+msgstr "Esquerda"
+
+#: src/squiddioPrefsDialogBase.cpp:161
+msgid "Text Colour"
+msgstr "Cor do texto"
+
+#: src/squiddioPrefsDialogBase.cpp:168
+msgid "Baackground Colour"
+msgstr "Cor do fundo"
+
+#: src/squiddioPrefsDialogBase.cpp:175
+msgid "Background Transparency"
+msgstr "Transparência do fundo"
+
+#: src/squiddioPrefsDialogBase.cpp:185
+msgid "Text Font"
+msgstr "Fonte do texto"
+
+#: src/squiddioPrefsDialogBase.cpp:189
+msgid "Example"
+msgstr "Exemplo"
+
+#: src/squiddioPrefsDialogBase.cpp:196
+msgid "Fonts"
+msgstr "Fontes"
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "Always"
+msgstr "Sempre"
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "On Rollover Only"
+msgstr "Apenas no arrastamento"
+
+#: src/squiddioPrefsDialogBase.cpp:204
+msgid "Show Display Text"
+msgstr "Apresentar Texto"
+
+#: src/squiddioPrefsDialogBase.h:95
+msgid "sQuiddio Preferences"
+msgstr "preferências sQuiddio"
 

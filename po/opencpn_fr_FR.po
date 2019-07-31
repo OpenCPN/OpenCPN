@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-28 17:38\n"
+"PO-Revision-Date: 2019-07-31 01:27\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -3149,7 +3149,7 @@ msgstr "Afficher les cibles AIS"
 
 #: src/chart1.cpp:5590 src/chcanv.cpp:12271 src/toolbar.cpp:1081
 msgid "Attenuate less critical AIS targets"
-msgstr "Cibles AIS peu critiques : Atténuer"
+msgstr "Peu critiques : Réduire"
 
 #: src/chart1.cpp:5592
 msgid "Hide Moored AIS Targets"
@@ -4738,11 +4738,11 @@ msgstr "Créer la configuration ..."
 
 #: src/options.cpp:3540
 msgid "Delete Selected Config..."
-msgstr "Supprimer les configurations sélectionnées ..."
+msgstr "Config. sélectionnées : Supprimer"
 
 #: src/options.cpp:3544
 msgid "Apply Selected Config"
-msgstr "Utiliser la configuration sélectionnée"
+msgstr "Config.sélectionnée : utiliser"
 
 #: src/options.cpp:3612
 msgid "Create Config"
@@ -5004,7 +5004,7 @@ msgstr "COG vers le haut"
 
 #: src/options.cpp:4703 src/options.cpp:4861 src/CanvasOptions.cpp:145
 msgid "Look Ahead Mode"
-msgstr "Carte : Voir loin devant le bateau"
+msgstr "Voir loin du bateau"
 
 #: src/options.cpp:4722 src/options.cpp:4879
 msgid "Preserve scale when switching charts"
@@ -5098,7 +5098,7 @@ msgstr "Relèvements"
 
 #: src/options.cpp:5052
 msgid "Show true"
-msgstr "Voir Vrai M"
+msgstr "Voir dir. vraie"
 
 #: src/options.cpp:5056
 msgid "Show magnetic"
@@ -5114,7 +5114,7 @@ msgstr "Deg (- O, + E)"
 
 #: src/options.cpp:5162
 msgid "Show true bearings and headings"
-msgstr "Relèvements et directions vrais : Voir"
+msgstr "Relèvements/directions vrais : Voir"
 
 #: src/options.cpp:5165
 msgid "Show magnetic bearings and headings."
@@ -6766,7 +6766,7 @@ msgstr "GUID"
 
 #: src/MarkInfo.cpp:549
 msgid "Tide Station"
-msgstr "Station de marée"
+msgstr "Stations de marée"
 
 #: src/MarkInfo.cpp:556
 msgid "∿"

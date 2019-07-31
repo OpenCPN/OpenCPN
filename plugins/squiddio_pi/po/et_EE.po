@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-01 12:44-0600\n"
-"PO-Revision-Date: 2017-12-08 15:24-0500\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"POT-Creation-Date: 2019-06-25 17:42+1000\n"
+"PO-Revision-Date: 2019-07-31 01:44\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
 "MIME-Version: 1.0\n"
@@ -16,63 +16,67 @@ msgstr ""
 "X-Crowdin-Language: et\n"
 "X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
 
-#: src/squiddio_pi.cpp:125
+#: src/squiddio_pi.h:343
+msgid "Squiddio Preferences"
+msgstr "Squiddio eelistused"
+
+#: src/squiddio_pi.cpp:173
 msgid "Show local sQuiddio destinations"
 msgstr "Kuva kohalikke sQuiddio sihtkohti"
 
-#: src/squiddio_pi.cpp:130
+#: src/squiddio_pi.cpp:178
 msgid "Hide local sQuiddio destinations"
 msgstr "Peida kohalikud sQuiddio sihtkohad"
 
-#: src/squiddio_pi.cpp:135
+#: src/squiddio_pi.cpp:183
 msgid "Download local sQuiddio destinations"
 msgstr "Lae kohalikud sQuiddio sihtkohad alla"
 
-#: src/squiddio_pi.cpp:140
+#: src/squiddio_pi.cpp:188
 msgid "Report a Destination at this location"
 msgstr "Teata sihtkohast selles asukohas"
 
-#: src/squiddio_pi.cpp:201
+#: src/squiddio_pi.cpp:251
 msgid "sQuiddio"
 msgstr "sQuiddio"
 
-#: src/squiddio_pi.cpp:610
+#: src/squiddio_pi.cpp:781
 msgid "Local destinations have been updated"
 msgstr "Kohalikud sihtkohad on uuendatud"
 
-#: src/squiddio_pi.cpp:613
+#: src/squiddio_pi.cpp:784
 msgid "No destinations available for the region"
 msgstr "Selle regiooni kohta puuduvad sihtkohad"
 
-#: src/squiddio_pi.cpp:616
+#: src/squiddio_pi.cpp:787
 msgid "Server not responding. Check your Internet connection"
 msgstr "Server ei reageeri. Kontrolli oma Internetiühendust"
 
-#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+#: src/squiddio_pi.cpp:834 src/squiddio_pi.cpp:1481
 msgid "Could not launch default browser. Check your Internet connection"
 msgstr "Vaikebrauserit ei saanud käivitada. Kontrolli oma Internetiühendust"
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading"
 msgstr "Allalaadimine"
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading: "
 msgstr "Allalaadimas: "
 
-#: src/squiddio_pi.cpp:666
+#: src/squiddio_pi.cpp:856
 msgid "Squiddio_pi: unable to connect to host"
 msgstr "Squiddio_pi: ei saa ühendust hostiga"
 
-#: src/squiddio_pi.cpp:737
+#: src/squiddio_pi.cpp:927
 msgid "Squiddio"
 msgstr "Squiddio"
 
-#: src/squiddio_pi.cpp:741
+#: src/squiddio_pi.cpp:931
 msgid "Squiddio for OpenCPN"
 msgstr "Squiddio OpenCPN'i jaoks"
 
-#: src/squiddio_pi.cpp:746
+#: src/squiddio_pi.cpp:936
 msgid "== User-sourced database of sailing destinations ==\n"
 "To download destinations for a desired region (requires Internet connection):\n"
 "* Position cursor on area where you want to view destinations and right click mouse\n"
@@ -104,11 +108,86 @@ msgstr "== Kasutajate hangitud purjetamise sihtkohtade andmebaas ==\n"
 "TÄHTIS; kasutades seda pluginat sa nõustud sQuidd.io Mõistete \n"
 "ja Tingimustega, mis on saadaval http://squidd.io/enduser_agreement"
 
-#: src/squiddio_pi.cpp:838
+#: src/squiddio_pi.cpp:1027
+#, c-format
+msgid "OD Text Points not available, wrong version of API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
+msgstr "OD tekstipunktid ei ole saadaval, API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i vale versioon"
+
+#: src/squiddio_pi.cpp:1131
 msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
 "To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
 msgstr "Logi jagamine ei olnud aktiveeritud. Palun sisesta oma sQuiddio-kasutaja ID ja API-võti. \n\n"
 "Endale API-võtme saamiseks registreeru sQuiddio's (http://squidd.io/signup) ja käi ära oma võrguprofiili lehel (vaata linki Muuda Profiili armatuurlaual), 'Numbrid & Võtmed' vaheleht."
+
+#: src/squiddio_pi.cpp:1379
+msgid "Marina"
+msgstr "Jahisadam"
+
+#: src/squiddio_pi.cpp:1383
+msgid "Anchorage/Buoys"
+msgstr "Ankrupaik/poid"
+
+#: src/squiddio_pi.cpp:1387
+msgid "AIS ATON Marker"
+msgstr "AIS ATON-marker"
+
+#: src/squiddio_pi.cpp:1391
+msgid "Yacht Club"
+msgstr "Jahtklubi"
+
+#: src/squiddio_pi.cpp:1395
+msgid "Fuel Station"
+msgstr "Tankla"
+
+#: src/squiddio_pi.cpp:1399
+msgid "Dock/Pier"
+msgstr "Dokk/kai"
+
+#: src/squiddio_pi.cpp:1403
+msgid "Boat Ramp"
+msgstr "Slipp"
+
+#: src/squiddio_pi.cpp:1407
+msgid "North"
+msgstr "Põhi"
+
+#: src/squiddio_pi.cpp:1411
+msgid "North East"
+msgstr "Kirre"
+
+#: src/squiddio_pi.cpp:1415
+msgid "East"
+msgstr "Ida"
+
+#: src/squiddio_pi.cpp:1419
+msgid "South East"
+msgstr "Kagu"
+
+#: src/squiddio_pi.cpp:1423
+msgid "Sout"
+msgstr "Lõuna"
+
+#: src/squiddio_pi.cpp:1427
+msgid "South West"
+msgstr "Edel"
+
+#: src/squiddio_pi.cpp:1431
+msgid "West"
+msgstr "Lääs"
+
+#: src/squiddio_pi.cpp:1435
+msgid "North West"
+msgstr "Loe"
+
+#: src/squiddio_pi.cpp:1439
+msgid "Checked in"
+msgstr "Registreeru"
+
+#: src/squiddio_pi.cpp:1443
+msgid "Unknown heading"
+msgstr "Teadmata suund"
 
 #: src/logs.cpp:94
 msgid "Just now"
@@ -162,105 +241,202 @@ msgstr "Logid saadud"
 msgid "Created sQuiddio log update:"
 msgstr "Loodud sQuiddio logi uuendus:"
 
-#: src/squiddioPrefsDialogBase.cpp:28
+#: src/squiddioPrefsDialogBase.cpp:26
 msgid "View Destinations"
 msgstr "Vaata sihtkohti"
 
-#: src/squiddioPrefsDialogBase.cpp:35
+#: src/squiddioPrefsDialogBase.cpp:33
 msgid "All"
 msgstr "Kõik"
 
-#: src/squiddioPrefsDialogBase.cpp:38
+#: src/squiddioPrefsDialogBase.cpp:36
 msgid "Marinas"
 msgstr "Jahisadamad"
 
-#: src/squiddioPrefsDialogBase.cpp:41
+#: src/squiddioPrefsDialogBase.cpp:39
 msgid "Anchorages"
 msgstr "Ankrukohad"
 
-#: src/squiddioPrefsDialogBase.cpp:44
+#: src/squiddioPrefsDialogBase.cpp:42
 msgid "Yacht clubs"
 msgstr "Jahtklubid"
 
-#: src/squiddioPrefsDialogBase.cpp:47
+#: src/squiddioPrefsDialogBase.cpp:45
 msgid "Docks/piers"
 msgstr "Dokid/kaid"
 
-#: src/squiddioPrefsDialogBase.cpp:50
+#: src/squiddioPrefsDialogBase.cpp:48
 msgid "Boat ramps"
 msgstr "Slipid"
 
-#: src/squiddioPrefsDialogBase.cpp:53
+#: src/squiddioPrefsDialogBase.cpp:51
 msgid "Fuel Stations"
 msgstr "Tanklad"
 
-#: src/squiddioPrefsDialogBase.cpp:56
+#: src/squiddioPrefsDialogBase.cpp:54
 msgid "Other"
 msgstr "Muu"
 
-#: src/squiddioPrefsDialogBase.cpp:59
+#: src/squiddioPrefsDialogBase.cpp:57
 msgid "AIS marker"
 msgstr "AIS marker"
 
-#: src/squiddioPrefsDialogBase.cpp:69
+#: src/squiddioPrefsDialogBase.cpp:67
 msgid "Share logs with friends"
 msgstr "Jaga logisid sõpradega"
 
-#: src/squiddioPrefsDialogBase.cpp:76
+#: src/squiddioPrefsDialogBase.cpp:74
 msgid "Send"
 msgstr "Saada"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+#: src/squiddioPrefsDialogBase.cpp:202
 msgid "Never"
 msgstr "Mitte kunagi"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a day"
 msgstr "Kord päevas"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a day"
 msgstr "Kaks korda päevas"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once an hour"
 msgstr "Kord tunnis"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice an hour"
 msgstr "Kaks korda tunnis"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a minute"
 msgstr "Üks kord minutis"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a minute"
 msgstr "Kaks korda minutis"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Every 10 seconds"
 msgstr "Iga 10 sekundi järel"
 
-#: src/squiddioPrefsDialogBase.cpp:88
+#: src/squiddioPrefsDialogBase.cpp:86
 msgid "Receive"
 msgstr "Võta vastu"
 
-#: src/squiddioPrefsDialogBase.cpp:100
+#: src/squiddioPrefsDialogBase.cpp:98
 msgid "sQuiddio ID"
 msgstr "sQuiddio ID"
 
-#: src/squiddioPrefsDialogBase.cpp:106
+#: src/squiddioPrefsDialogBase.cpp:104
 msgid "The email address you use to log into sQuidd.io"
 msgstr "E-posti aadress, mida kasutad sQuidd.io'sse sisselogimiseks"
 
-#: src/squiddioPrefsDialogBase.cpp:110
+#: src/squiddioPrefsDialogBase.cpp:108
 msgid "API Key"
 msgstr "API võti"
 
-#: src/squiddioPrefsDialogBase.cpp:116
+#: src/squiddioPrefsDialogBase.cpp:114
 msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
 "IMPORTANT! Do not use your sQuiddio Password as your API Key! "
 msgstr "Hangi oma API-võti sQuidd.io profiilist. Logi http://squidd.io sisse ja kliki armatuurlaual Muuda Profiili, siis vali Numbrid ja Võtmed vaheleht. Kliki Abil rohkema info saamiseks. \n\n"
 "TÄHTIS! Ära kasuta oma sQuiddio salasõna kui oma API-võtit! "
+
+#: src/squiddioPrefsDialogBase.cpp:125
+msgid "Renderer"
+msgstr "Renderdaja"
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN'i teepunkt"
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "ODraw TextPoint"
+msgstr "ODraw tekstipunkt"
+
+#: src/squiddioPrefsDialogBase.cpp:129
+msgid "OCPN or ODraw"
+msgstr "OCPN või ODraw"
+
+#: src/squiddioPrefsDialogBase.cpp:137
+msgid "Ocpn Draw settings"
+msgstr "Ocpn Draw seaded"
+
+#: src/squiddioPrefsDialogBase.cpp:144
+msgid "Show Name"
+msgstr "Näita nime"
+
+#: src/squiddioPrefsDialogBase.cpp:151
+msgid "Text position relative to point"
+msgstr "Teksti asukoht punkti suhtes"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top"
+msgstr "Üleval"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top Centre"
+msgstr "Üleval keskel"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom"
+msgstr "All"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom Centre"
+msgstr "All keskel"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Centre"
+msgstr "Keskel"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Right"
+msgstr "Paremal"
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Left"
+msgstr "Vasakul"
+
+#: src/squiddioPrefsDialogBase.cpp:161
+msgid "Text Colour"
+msgstr "Teksti värv"
+
+#: src/squiddioPrefsDialogBase.cpp:168
+msgid "Baackground Colour"
+msgstr "Tausta värv"
+
+#: src/squiddioPrefsDialogBase.cpp:175
+msgid "Background Transparency"
+msgstr "Tausta läbipaistvus"
+
+#: src/squiddioPrefsDialogBase.cpp:185
+msgid "Text Font"
+msgstr "Teksti täht"
+
+#: src/squiddioPrefsDialogBase.cpp:189
+msgid "Example"
+msgstr "Näide"
+
+#: src/squiddioPrefsDialogBase.cpp:196
+msgid "Fonts"
+msgstr "Kirjamärgid"
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "Always"
+msgstr "Alati"
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "On Rollover Only"
+msgstr "Ainult üleliikudes"
+
+#: src/squiddioPrefsDialogBase.cpp:204
+msgid "Show Display Text"
+msgstr "Näita kuvatavat teksti"
+
+#: src/squiddioPrefsDialogBase.h:95
+msgid "sQuiddio Preferences"
+msgstr "sQuiddio eelistused"
 

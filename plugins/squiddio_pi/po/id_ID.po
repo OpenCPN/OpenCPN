@@ -1,0 +1,441 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-25 17:42+1000\n"
+"PO-Revision-Date: 2019-07-31 01:42\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: id\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.h:343
+msgid "Squiddio Preferences"
+msgstr ""
+
+#: src/squiddio_pi.cpp:173
+msgid "Show local sQuiddio destinations"
+msgstr "Tampilkan tujuan sQuiddio setempat"
+
+#: src/squiddio_pi.cpp:178
+msgid "Hide local sQuiddio destinations"
+msgstr "Sembunyikan tujuan sQuiddio lokal"
+
+#: src/squiddio_pi.cpp:183
+msgid "Download local sQuiddio destinations"
+msgstr "Download tujuan sQuiddio lokal"
+
+#: src/squiddio_pi.cpp:188
+msgid "Report a Destination at this location"
+msgstr "Laporkan Tujuan di lokasi ini"
+
+#: src/squiddio_pi.cpp:251
+msgid "sQuiddio"
+msgstr "sQuiddio"
+
+#: src/squiddio_pi.cpp:781
+msgid "Local destinations have been updated"
+msgstr "Tujuan lokal telah diperbarui"
+
+#: src/squiddio_pi.cpp:784
+msgid "No destinations available for the region"
+msgstr "Tidak ada tujuan yang tersedia untuk kawasan ini"
+
+#: src/squiddio_pi.cpp:787
+msgid "Server not responding. Check your Internet connection"
+msgstr "Server tidak merespons Periksa koneksi internet anda"
+
+#: src/squiddio_pi.cpp:834 src/squiddio_pi.cpp:1481
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr "Tidak bisa meluncurkan browser default. Periksa koneksi internet anda"
+
+#: src/squiddio_pi.cpp:844
+msgid "Downloading"
+msgstr "Download"
+
+#: src/squiddio_pi.cpp:844
+msgid "Downloading: "
+msgstr "Download: "
+
+#: src/squiddio_pi.cpp:856
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: tidak dapat terhubung ke host"
+
+#: src/squiddio_pi.cpp:927
+msgid "Squiddio"
+msgstr "Squiddio"
+
+#: src/squiddio_pi.cpp:931
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio untuk OpenCPN"
+
+#: src/squiddio_pi.cpp:936
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "== Database bersumber pengguna tujuan berlayar ==\n"
+"Untuk mendownload destinasi ke wilayah yang diinginkan (memerlukan koneksi Internet):\n"
+"* Posisikan kursor di area di mana Anda ingin melihat tujuan dan klik kanan mouse\n"
+"* Pilih 'Download lokal tujuan sQuiddio 'dari menu konteks-sensitif.\n\n"
+"Tujuan muncul sebagai titik arah OpenCPN:\n"
+"* Klik kanan pada waypoint untuk link ke halaman tujuan sQuiddio.\n"
+"* Ikuti link untuk menilai tujuan dan tambahkan komentar secara online.\n\n"
+"Pilihan menu lainnya:\n"
+"* Alihkan visibilitas untuk tujuan lokal on / off\n"
+"* Kirimkan tujuan baru (memerlukan koneksi internet dan akun pengguna gratis)\n\n"
+"== Masuk log masuk dalam bagan untuk penjelajah ==\n"
+"* Bagikan koordinat GPS Anda dengan teman-teman jelajah Anda dan visualisasikan posisinya\n"
+"di OpenCPN Anda. grafik (memerlukan akun sQuiddio gratis)\n\n"
+"PENTING: dengan menggunakan plugin ini Anda setuju dengan Syarat sQuidd.io \n"
+"dan Ketentuan, tersedia di http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:1027
+#, c-format
+msgid "OD Text Points not available, wrong version of API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1131
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Pembagian log tidak diaktifkan Harap masukkan ID pengguna sQuiddio dan Kunci API Anda.\n\n"
+"Untuk mendapatkan Kunci API Anda, masuk ke sQuiddio (http://squidd.io/signup) dan kunjungi halaman profil online Anda (lihat link Edit Profil di Dasbor), tab 'Bilangan & Tombol'."
+
+#: src/squiddio_pi.cpp:1379
+msgid "Marina"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1383
+msgid "Anchorage/Buoys"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1387
+msgid "AIS ATON Marker"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1391
+msgid "Yacht Club"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1395
+msgid "Fuel Station"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1399
+msgid "Dock/Pier"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1403
+msgid "Boat Ramp"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1407
+msgid "North"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1411
+msgid "North East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1415
+msgid "East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1419
+msgid "South East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1423
+msgid "Sout"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1427
+msgid "South West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1431
+msgid "West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1435
+msgid "North West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1439
+msgid "Checked in"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1443
+msgid "Unknown heading"
+msgstr ""
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Baru saja"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "Sebentar yang lalu"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr "%i detik yang lalu"
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr "Kira-kira satu menit yang lalu"
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr "%i menit yang lalu"
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr "Sekitar satu jam yang lalu"
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr "%i jam yang lalu"
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr "Kemarin"
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr "%i hari yang lalu"
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr "Log yang dikirim:"
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr "Log yang diterima"
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr "Dibuat update log sQuiddio:"
+
+#: src/squiddioPrefsDialogBase.cpp:26
+msgid "View Destinations"
+msgstr "Lihat Tujuan"
+
+#: src/squiddioPrefsDialogBase.cpp:33
+msgid "All"
+msgstr "Semua"
+
+#: src/squiddioPrefsDialogBase.cpp:36
+msgid "Marinas"
+msgstr "Marina"
+
+#: src/squiddioPrefsDialogBase.cpp:39
+msgid "Anchorages"
+msgstr "Jangkar"
+
+#: src/squiddioPrefsDialogBase.cpp:42
+msgid "Yacht clubs"
+msgstr "Klub kapal pesiar"
+
+#: src/squiddioPrefsDialogBase.cpp:45
+msgid "Docks/piers"
+msgstr "Galangan kapal/dermaga"
+
+#: src/squiddioPrefsDialogBase.cpp:48
+msgid "Boat ramps"
+msgstr "Perahu landai"
+
+#: src/squiddioPrefsDialogBase.cpp:51
+msgid "Fuel Stations"
+msgstr "Stasiun bahan bakar"
+
+#: src/squiddioPrefsDialogBase.cpp:54
+msgid "Other"
+msgstr "Lainnya"
+
+#: src/squiddioPrefsDialogBase.cpp:57
+msgid "AIS marker"
+msgstr "Penggabungan AIS"
+
+#: src/squiddioPrefsDialogBase.cpp:67
+msgid "Share logs with friends"
+msgstr "Bagikan log dengan teman"
+
+#: src/squiddioPrefsDialogBase.cpp:74
+msgid "Send"
+msgstr "Kirim"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "Never"
+msgstr "Tidak pernah"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Once a day"
+msgstr "Sekali sehari"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Twice a day"
+msgstr "Dua kali sehari"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Once an hour"
+msgstr "Sekali satu jam"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Twice an hour"
+msgstr "Dua kali dalam satu jam"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Once a minute"
+msgstr "Sekali dalam satu menit"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Twice a minute"
+msgstr "Dua kali dalam semenit"
+
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+msgid "Every 10 seconds"
+msgstr "Setiap 10 detik"
+
+#: src/squiddioPrefsDialogBase.cpp:86
+msgid "Receive"
+msgstr "Terima"
+
+#: src/squiddioPrefsDialogBase.cpp:98
+msgid "sQuiddio ID"
+msgstr "data diri sQuiddio"
+
+#: src/squiddioPrefsDialogBase.cpp:104
+msgid "The email address you use to log into sQuidd.io"
+msgstr "Alamat surel yang anda gunakan untuk masuk ke sQuidd.io"
+
+#: src/squiddioPrefsDialogBase.cpp:108
+msgid "API Key"
+msgstr "Kunci API"
+
+#: src/squiddioPrefsDialogBase.cpp:114
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "Ambil kunci API anda dari profil sQuidd anda. Masuk ke http://squidd.io dan tekan sunting profil di beranda, lalu pilih tab Bilangan dan Kunci. Tekan bantuan untuk informasi selanjutnya. \n\n"
+"PENTING! Jangan gunakan kata kunci sQuiddio anda sebagai kunci API anda! "
+
+#: src/squiddioPrefsDialogBase.cpp:125
+msgid "Renderer"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "OpenCPN Waypoint"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "ODraw TextPoint"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:129
+msgid "OCPN or ODraw"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:137
+msgid "Ocpn Draw settings"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:144
+msgid "Show Name"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:151
+msgid "Text position relative to point"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Right"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Left"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:161
+msgid "Text Colour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:168
+msgid "Baackground Colour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:175
+msgid "Background Transparency"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:185
+msgid "Text Font"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:189
+msgid "Example"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:196
+msgid "Fonts"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "Always"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "On Rollover Only"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:204
+msgid "Show Display Text"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.h:95
+msgid "sQuiddio Preferences"
+msgstr ""
+

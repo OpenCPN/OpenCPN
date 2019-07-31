@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-21 01:17\n"
+"PO-Revision-Date: 2019-07-31 01:39\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -478,7 +478,7 @@ msgstr "ARPA位置报告"
 
 #: src/ais.cpp:242
 msgid "F/V"
-msgstr "F/V"
+msgstr "渔船"
 
 #: src/ais.cpp:243
 msgid "Tow"
@@ -494,15 +494,15 @@ msgstr "疏浚"
 
 #: src/ais.cpp:246
 msgid "D/V"
-msgstr "D/V"
+msgstr "无动力船"
 
 #: src/ais.cpp:247
 msgid "Mil/V"
-msgstr "Mil/V"
+msgstr "军船"
 
 #: src/ais.cpp:248
 msgid "S/V"
-msgstr "S/V"
+msgstr "帆船"
 
 #: src/ais.cpp:249
 msgid "Yat"
@@ -510,7 +510,7 @@ msgstr "游艇"
 
 #: src/ais.cpp:250
 msgid "HSC"
-msgstr "HSC"
+msgstr "快船"
 
 #: src/ais.cpp:251
 msgid "P/V"
@@ -518,7 +518,7 @@ msgstr "P/V"
 
 #: src/ais.cpp:252
 msgid "SAR/V"
-msgstr "SAR/V"
+msgstr "救助船"
 
 #: src/ais.cpp:254
 msgid "Tender"
@@ -526,7 +526,7 @@ msgstr "供应船"
 
 #: src/ais.cpp:255
 msgid "PC/V"
-msgstr "PC/V"
+msgstr "防污船"
 
 #: src/ais.cpp:256
 msgid "LE/V"
@@ -538,15 +538,15 @@ msgstr "Med/V"
 
 #: src/ais.cpp:258
 msgid "Pass/V"
-msgstr "Pass/V"
+msgstr "客船"
 
 #: src/ais.cpp:259
 msgid "M/V"
-msgstr "M/V"
+msgstr "轮船"
 
 #: src/ais.cpp:260
 msgid "M/T"
-msgstr "M/V"
+msgstr "油轮"
 
 #: src/ais.cpp:261 src/ais.cpp:267
 msgid "?"
@@ -1460,7 +1460,7 @@ msgstr "高度"
 
 #: src/AIS_Target_Data.cpp:787 src/AIS_Target_Data.cpp:791
 msgid " COG Unavailable"
-msgstr " COG未知"
+msgstr " 对地航向未知"
 
 #: src/AIS_Target_Data.cpp:797 src/navutil.cpp:4270
 msgid "in"
@@ -2593,7 +2593,8 @@ msgstr "停止航迹"
 #: src/androidUTIL.cpp:2045
 msgid "OpenCPN Help is not installed.\n"
 "Would you like to install from Google PlayStore now?"
-msgstr ""
+msgstr "OpenCPN帮助没有安装。\n"
+"需要现在从谷歌商店安装吗？"
 
 #: src/androidUTIL.cpp:2806
 msgid "Your android device has an internal GPS, but it is disabled.\n"
@@ -2913,7 +2914,7 @@ msgstr "\n"
 
 #: src/chart1.cpp:927
 msgid "OpenCPN for Android"
-msgstr ""
+msgstr "安卓版OpenGL"
 
 #: src/chart1.cpp:943
 msgid "Welcome to OpenCPN"
@@ -3472,7 +3473,7 @@ msgstr "航线区段信息翻转"
 
 #: src/chcanv.cpp:10286
 msgid "MBTile requires OpenGL to be enabled"
-msgstr ""
+msgstr "MBTile需要启用OpenGL"
 
 #: src/chcanv.cpp:10935 src/options.cpp:5013 src/options.cpp:5126
 msgid "Feet"
@@ -3952,17 +3953,17 @@ msgstr "m/s"
 #: src/navutil.cpp:4367
 #, c-format
 msgid "%dd "
-msgstr ""
+msgstr "%d日 "
 
 #: src/navutil.cpp:4368
 #, c-format
 msgid "%2dH %2dM"
-msgstr ""
+msgstr "%2d时 %2d分"
 
 #: src/navutil.cpp:4369
 #, c-format
 msgid "%2dM %2dS"
-msgstr ""
+msgstr "%2d分 %2d秒"
 
 #: src/navutil.cpp:4382 src/RoutePropDlgImpl.cpp:341
 #: src/RoutePropDlgImpl.cpp:346
@@ -4613,7 +4614,7 @@ msgstr "计算数值"
 
 #: src/options.cpp:3099
 msgid "Calculate SOG and COG from position changes"
-msgstr "计算位置变化后的SOG和COG"
+msgstr "计算位置变化后的对地航速和对地航向"
 
 #: src/options.cpp:3103
 msgid "Min seconds between updates"
@@ -4765,7 +4766,7 @@ msgstr "使用加速图形(OpenGL)"
 
 #: src/options.cpp:3787
 msgid "OpenGL Options"
-msgstr ""
+msgstr "OpenGL选项"
 
 #: src/options.cpp:3800 src/options.cpp:3930
 msgid "Chart Rotation Averaging Time"
@@ -5101,7 +5102,7 @@ msgstr "显示真实的"
 
 #: src/options.cpp:5056
 msgid "Show magnetic"
-msgstr ""
+msgstr "显示磁方位"
 
 #: src/options.cpp:5069
 msgid "Assumed magnetic variation"
@@ -5315,11 +5316,11 @@ msgstr "启用成比例的图形界面"
 
 #: src/options.cpp:5632
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "启用航线/AIS信息块"
 
 #: src/options.cpp:5636
 msgid "Use Inland ECDIS V2.3"
-msgstr ""
+msgstr "使用内陆版2.3版电子海图系统"
 
 #: src/options.cpp:5645
 msgid "Use dark window decorations"
@@ -6728,7 +6729,7 @@ msgstr "本航路点是图层的一部分，不能编辑"
 
 #: src/MarkInfo.cpp:386
 msgid "Show name"
-msgstr ""
+msgstr "显示名称"
 
 #: src/MarkInfo.cpp:477
 msgid "Extended"

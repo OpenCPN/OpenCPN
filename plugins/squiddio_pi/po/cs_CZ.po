@@ -2,77 +2,81 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-01 12:44-0600\n"
-"PO-Revision-Date: 2017-09-05 13:13-0400\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"POT-Creation-Date: 2019-06-25 17:42+1000\n"
+"PO-Revision-Date: 2019-07-31 01:30\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: cs\n"
 "X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
 
-#: src/squiddio_pi.cpp:125
+#: src/squiddio_pi.h:343
+msgid "Squiddio Preferences"
+msgstr ""
+
+#: src/squiddio_pi.cpp:173
 msgid "Show local sQuiddio destinations"
 msgstr "Zobrazit místní sQuiddio destinace"
 
-#: src/squiddio_pi.cpp:130
+#: src/squiddio_pi.cpp:178
 msgid "Hide local sQuiddio destinations"
 msgstr "Skrýt místní sQuiddio destinace"
 
-#: src/squiddio_pi.cpp:135
+#: src/squiddio_pi.cpp:183
 msgid "Download local sQuiddio destinations"
 msgstr "Stáhnout místní sQuiddio destinace"
 
-#: src/squiddio_pi.cpp:140
+#: src/squiddio_pi.cpp:188
 msgid "Report a Destination at this location"
 msgstr "Nahlásit destinaci na tomto místě"
 
-#: src/squiddio_pi.cpp:201
+#: src/squiddio_pi.cpp:251
 msgid "sQuiddio"
 msgstr ""
 
-#: src/squiddio_pi.cpp:610
+#: src/squiddio_pi.cpp:781
 msgid "Local destinations have been updated"
 msgstr "Místní destinace byly aktualizovány"
 
-#: src/squiddio_pi.cpp:613
+#: src/squiddio_pi.cpp:784
 msgid "No destinations available for the region"
 msgstr "Žádné dostupné destinace v této oblasti"
 
-#: src/squiddio_pi.cpp:616
+#: src/squiddio_pi.cpp:787
 msgid "Server not responding. Check your Internet connection"
 msgstr "Server neodpovídá. Zkontrolujte připojení k Internetu."
 
-#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+#: src/squiddio_pi.cpp:834 src/squiddio_pi.cpp:1481
 msgid "Could not launch default browser. Check your Internet connection"
 msgstr "Nelze spustit výchozí prohlížeč. Zkontrolujte připojení k Internetu."
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading"
-msgstr ""
+msgstr "Stahování "
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:844
 msgid "Downloading: "
-msgstr ""
+msgstr "Stahování: "
 
-#: src/squiddio_pi.cpp:666
+#: src/squiddio_pi.cpp:856
 msgid "Squiddio_pi: unable to connect to host"
 msgstr "Squiddio_pi: Nelze se připojit k hostiteli"
 
-#: src/squiddio_pi.cpp:737
+#: src/squiddio_pi.cpp:927
 msgid "Squiddio"
 msgstr "Squiddio"
 
-#: src/squiddio_pi.cpp:741
+#: src/squiddio_pi.cpp:931
 msgid "Squiddio for OpenCPN"
 msgstr "Squiddio pro OpenCPN"
 
-#: src/squiddio_pi.cpp:746
+#: src/squiddio_pi.cpp:936
 msgid "== User-sourced database of sailing destinations ==\n"
 "To download destinations for a desired region (requires Internet connection):\n"
 "* Position cursor on area where you want to view destinations and right click mouse\n"
@@ -88,163 +92,349 @@ msgid "== User-sourced database of sailing destinations ==\n"
 "on your OpenCPN charts (requires a free sQuiddio account)\n\n"
 "IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
 "and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "== Uživateli tvořená databáze jachtařských destinací ==\n"
+"Pro stažení destinací ve vybraném regionu (potřebuješ připojení k Internetu):\n"
+"* Umísti kurzor na oblast kde chceš zobrazit destinace a klikni pravým tlačítkem myši\n"
+"* Vyber 'Stáhnout místní sQuiddio destinatinace' z kontextové nabídky.\n\n"
+"Destinace se objeví jako body zájmu v OpenCPN: \n"
+"* Klikni pravým tlačítkem pro odkaz na stránku destinace na sQuiddio. \n"
+"* Otevři odkaz pro hodnocení destinace a přidání komentáře online.\n\n"
+"Další možnosti nabádky: \n"
+"* Změnit viditelnost místních destinací (zap./vyp.) \n"
+"* Zaslat novou destinaci (vyžaduje připojení k Internetu a uživatelský účet zdarma)\n\n"
+"== Sdílení logů pro jachtaře ==\n"
+"* Sdílej své GPS souřadnice se svými přáteli a zobraz si jejich pozice\n"
+"na mapách v OpenCPN (vyžaduje sQuiddio účet zdrama)\n\n"
+"Důležité: Použitím tohoto doplňku souhlasíš s podmínkami užití sQuidd.io dostupnými na http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:1027
+#, c-format
+msgid "OD Text Points not available, wrong version of API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
 msgstr ""
 
-#: src/squiddio_pi.cpp:838
+#: src/squiddio_pi.cpp:1131
 msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
 "To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Sdílení logu nebylo aktivováno. Zadej prosím své uživatelské jméno sQuiddio a API klíč. \n\n"
+"Pro získání API klíče se přihlas na sQuiddio (http://squidd.io/signup) a navštiv stránku online profilu (viz. odkaz Edit Profile v Dashboardu), záložka 'Numbers & Keys'."
+
+#: src/squiddio_pi.cpp:1379
+msgid "Marina"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1383
+msgid "Anchorage/Buoys"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1387
+msgid "AIS ATON Marker"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1391
+msgid "Yacht Club"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1395
+msgid "Fuel Station"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1399
+msgid "Dock/Pier"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1403
+msgid "Boat Ramp"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1407
+msgid "North"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1411
+msgid "North East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1415
+msgid "East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1419
+msgid "South East"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1423
+msgid "Sout"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1427
+msgid "South West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1431
+msgid "West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1435
+msgid "North West"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1439
+msgid "Checked in"
+msgstr ""
+
+#: src/squiddio_pi.cpp:1443
+msgid "Unknown heading"
 msgstr ""
 
 #: src/logs.cpp:94
 msgid "Just now"
-msgstr ""
+msgstr "Právě teď"
 
 #: src/logs.cpp:97
 msgid "One second ago"
-msgstr ""
+msgstr "Před vteřinou"
 
 #: src/logs.cpp:100
 #, c-format
 msgid "%i seconds ago"
-msgstr ""
+msgstr "před %i vteřinami"
 
 #: src/logs.cpp:104
 msgid "About a minute ago"
-msgstr ""
+msgstr "Přibližně před minutou"
 
 #: src/logs.cpp:107
 #, c-format
 msgid "%i minutes ago"
-msgstr ""
+msgstr "před %i minutami"
 
 #: src/logs.cpp:111
 msgid "About an hour ago"
-msgstr ""
+msgstr "Přibližně před hodinou"
 
 #: src/logs.cpp:114
 #, c-format
 msgid "%i hours ago"
-msgstr ""
+msgstr "před %i hodinami"
 
 #: src/logs.cpp:118
 msgid "Yesterday"
-msgstr ""
+msgstr "Včera"
 
 #: src/logs.cpp:121
 #, c-format
 msgid "%i days ago"
-msgstr ""
+msgstr "Před %i dny"
 
 #: src/logs.cpp:199
 msgid "Log sent:"
-msgstr ""
+msgstr "Log odeslán:"
 
 #: src/logs.cpp:215
 msgid "Logs received"
-msgstr ""
+msgstr "Logy přijaté"
 
 #: src/logs.cpp:305
 msgid "Created sQuiddio log update:"
-msgstr ""
+msgstr "Vytvořené aktualizace logu sQuiddio:"
 
-#: src/squiddioPrefsDialogBase.cpp:28
+#: src/squiddioPrefsDialogBase.cpp:26
 msgid "View Destinations"
-msgstr ""
+msgstr "Zobrazit destinace"
 
-#: src/squiddioPrefsDialogBase.cpp:35
+#: src/squiddioPrefsDialogBase.cpp:33
 msgid "All"
-msgstr ""
+msgstr "Vše"
 
-#: src/squiddioPrefsDialogBase.cpp:38
+#: src/squiddioPrefsDialogBase.cpp:36
 msgid "Marinas"
-msgstr ""
+msgstr "Mariny"
 
-#: src/squiddioPrefsDialogBase.cpp:41
+#: src/squiddioPrefsDialogBase.cpp:39
 msgid "Anchorages"
-msgstr ""
+msgstr "Kotviště"
 
-#: src/squiddioPrefsDialogBase.cpp:44
+#: src/squiddioPrefsDialogBase.cpp:42
 msgid "Yacht clubs"
-msgstr ""
+msgstr "Jachtkluby"
 
-#: src/squiddioPrefsDialogBase.cpp:47
+#: src/squiddioPrefsDialogBase.cpp:45
 msgid "Docks/piers"
-msgstr ""
+msgstr "Doky/mola"
 
-#: src/squiddioPrefsDialogBase.cpp:50
+#: src/squiddioPrefsDialogBase.cpp:48
 msgid "Boat ramps"
-msgstr ""
+msgstr "Skluzy"
 
-#: src/squiddioPrefsDialogBase.cpp:53
+#: src/squiddioPrefsDialogBase.cpp:51
 msgid "Fuel Stations"
-msgstr ""
+msgstr "Čerpací stanice"
 
-#: src/squiddioPrefsDialogBase.cpp:56
+#: src/squiddioPrefsDialogBase.cpp:54
 msgid "Other"
-msgstr ""
+msgstr "Ostatní"
 
-#: src/squiddioPrefsDialogBase.cpp:59
+#: src/squiddioPrefsDialogBase.cpp:57
 msgid "AIS marker"
-msgstr ""
+msgstr "AIS značka"
 
-#: src/squiddioPrefsDialogBase.cpp:69
+#: src/squiddioPrefsDialogBase.cpp:67
 msgid "Share logs with friends"
-msgstr ""
+msgstr "Sdílet logy s přáteli"
 
-#: src/squiddioPrefsDialogBase.cpp:76
+#: src/squiddioPrefsDialogBase.cpp:74
 msgid "Send"
-msgstr ""
+msgstr "Odeslat"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
+#: src/squiddioPrefsDialogBase.cpp:202
 msgid "Never"
-msgstr ""
+msgstr "Nikdy"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a day"
-msgstr ""
+msgstr "Jadnou denně"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a day"
-msgstr ""
+msgstr "Dvakrát denně"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once an hour"
-msgstr ""
+msgstr "Jednou za hodinu"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice an hour"
-msgstr ""
+msgstr "Dvakrát za hodinu"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Once a minute"
-msgstr ""
+msgstr "Jednou za minutu"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Twice a minute"
-msgstr ""
+msgstr "Dvakrát za minutu"
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+#: src/squiddioPrefsDialogBase.cpp:78 src/squiddioPrefsDialogBase.cpp:90
 msgid "Every 10 seconds"
-msgstr ""
+msgstr "Každých 10 sekund"
 
-#: src/squiddioPrefsDialogBase.cpp:88
+#: src/squiddioPrefsDialogBase.cpp:86
 msgid "Receive"
-msgstr ""
+msgstr "Příjem"
 
-#: src/squiddioPrefsDialogBase.cpp:100
+#: src/squiddioPrefsDialogBase.cpp:98
 msgid "sQuiddio ID"
-msgstr ""
+msgstr "sQuiddio ID"
 
-#: src/squiddioPrefsDialogBase.cpp:106
+#: src/squiddioPrefsDialogBase.cpp:104
 msgid "The email address you use to log into sQuidd.io"
-msgstr ""
+msgstr "E-mailová adresa, kterou používáš pro přihlášení do sQuidd.io"
 
-#: src/squiddioPrefsDialogBase.cpp:110
+#: src/squiddioPrefsDialogBase.cpp:108
 msgid "API Key"
-msgstr ""
+msgstr "API klíč"
 
-#: src/squiddioPrefsDialogBase.cpp:116
+#: src/squiddioPrefsDialogBase.cpp:114
 msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
 "IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "API klíč získáš na svém sQuidd.io profilu. Přihlas se na http://squidd.io a klikni na Edit Profile v Dashboardu, tpak vyber záložku Numbers and Keys. Klikni na Help pro další informace. \n\n"
+"Důležité! Nepoužívej své sQuiddio heslo jako API klíč! "
+
+#: src/squiddioPrefsDialogBase.cpp:125
+msgid "Renderer"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "OpenCPN Waypoint"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:127
+msgid "ODraw TextPoint"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:129
+msgid "OCPN or ODraw"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:137
+msgid "Ocpn Draw settings"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:144
+msgid "Show Name"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:151
+msgid "Text position relative to point"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Top Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Bottom Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Centre"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Right"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:155
+msgid "Left"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:161
+msgid "Text Colour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:168
+msgid "Baackground Colour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:175
+msgid "Background Transparency"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:185
+msgid "Text Font"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:189
+msgid "Example"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:196
+msgid "Fonts"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "Always"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:202
+msgid "On Rollover Only"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:204
+msgid "Show Display Text"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.h:95
+msgid "sQuiddio Preferences"
 msgstr ""
 
