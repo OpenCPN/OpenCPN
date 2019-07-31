@@ -188,7 +188,6 @@ private:
     wxFont        *pFontSmall;
     double        m_scale;
     wxString      m_shareLocn;
-    wxFont        m_fontSmall;
 };
 
 int WMM_setupMagneticModel(char *data, MAGtype_MagneticModel * MagneticModel);

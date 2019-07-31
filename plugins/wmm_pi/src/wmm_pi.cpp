@@ -163,9 +163,7 @@ int wmm_pi::Init(void)
     m_LastVal = wxEmptyString;
 
     //pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
-    wxFont * tFont = OCPNGetFont( _("Dialog"), 10);
-    m_fontSmall = *tFont;
-    pFontSmall = &m_fontSmall;
+    pFontSmall = OCPNGetFont( _("WMM_Live_Overlay"), 10);
     
     m_shareLocn =*GetpSharedDataLocation() +
     _T("plugins") + wxFileName::GetPathSeparator() +
@@ -265,7 +263,7 @@ bool wmm_pi::DeInit(void)
         Geoid.GeoidHeightBuffer = NULL;
     }*/
     
-    delete pFontSmall;
+    //delete pFontSmall;
     
     if(m_oDC)
         delete m_oDC;
