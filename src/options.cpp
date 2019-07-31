@@ -6293,7 +6293,7 @@ void options::SetInitialSettings(void) {
   if(pSkewComp) pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
-  //pRollover->SetValue(g_bRollover);
+  pRollover->SetValue(g_bRollover);
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   //pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);

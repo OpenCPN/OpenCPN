@@ -916,6 +916,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "MobileTouch" ), &g_btouch );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive );
+    Read( _T ( "EnableRolloverBlock" ), &g_bRollover );
 
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
