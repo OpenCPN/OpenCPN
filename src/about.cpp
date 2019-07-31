@@ -61,7 +61,7 @@ wxString OpenCPNVersion =  wxString::Format( wxT("\n      Version %s"), VERSION_
     //+ wxString::FromAscii(VERSION_DATE);
 
 
-    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version %i.%i.%i<br>Base Build Date %s"),
+    wxString OpenCPNVersionAndroid = wxString::Format(_T("OpenCPN for Android Version %i.%i.%i<br>Base Build Date %s"),
                                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
     
 const wxString AboutText =
