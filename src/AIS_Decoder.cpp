@@ -879,11 +879,12 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     else if (props->m_bVDM){
                         
                         //Only single line VDM messages to be translated
-                        if( str.Mid( 3, 9 ).IsSameAs( _T("VDM,1,1,,") ) )  
+                        if( str.Mid( 3, 9 ).IsSameAs( wxT("VDM,1,1,,") ) )  
                         {  
                             int message_ID = strbit.GetInt( 1, 6 );        // Parse on message ID
-                            // Only translate the positionreport messages (1, 3 or 18)
-                            if ( message_ID == 1 ||  message_ID == 3 || message_ID == 18 ){
+                            // Only translate the dynamic positionreport messages (1, 2, 3 or 18)
+                            if ( (message_ID <= 3) || (message_ID == 18) )
+                            {
                                 // set OwnShip to prevent target from being drawn
                                 pTargetData->b_OwnShip = true;
                                 //Rename nmea sentence to AIVDO and calc a new checksum
@@ -899,7 +900,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                     aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
 
                                 gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
-                                //replace the changed sentence in nemea stream
+                                //add the changed sentence into nmea stream
                                 OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
                                 std::string s = std::string( aivdostr.mb_str() );
                                 event.SetNMEAString( s );
