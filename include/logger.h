@@ -70,6 +70,8 @@ class OcpnLog: public wxLog
 
         virtual ~OcpnLog();
 
+        void Flush() override;
+
         void DoLogRecord(wxLogLevel level,
                          const wxString& msg,
                          const wxLogRecordInfo& info) override;

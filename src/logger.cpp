@@ -118,6 +118,11 @@ OcpnLog::~OcpnLog()
     log.close();
 }
 
+void OcpnLog::Flush()
+{
+    wxLog::Flush();
+    log.flush();
+}
 
 void OcpnLog::DoLogRecord(wxLogLevel level,
 		          const wxString& msg,
