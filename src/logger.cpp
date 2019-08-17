@@ -128,10 +128,12 @@ void OcpnLog::DoLogRecord(wxLogLevel level,
 		          const wxString& msg,
 		          const wxLogRecordInfo& info)
 {
-    log << timeStamp() << " "
+    std::ostringstream oss;
+    oss << timeStamp() << " "
         << std::setw(7) << level2str(level) << " "
         << basename(info.filename) << ":" << info.line << " "
         << msg << std::endl;
+    log << oss.str();
 }
 
 
