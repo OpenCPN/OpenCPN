@@ -22,7 +22,10 @@
  ***************************************************************************
  */
 
+#include <algorithm>
 #include <iomanip>
+#include <map>
+#include <sstream>
 #include <string>
 
 #include <wx/datetime.h>
@@ -32,6 +35,21 @@
 
 const wxLogLevel OcpnLog::LOG_BADLEVEL = wxLOG_Max + 1;
 
+const static std::map<wxLogLevel, const char*> name_by_level = {
+    { wxLOG_FatalError, "FATALERR"},
+    { wxLOG_Error,      "ERROR"},
+    { wxLOG_Warning,    "WARNING"},
+    { wxLOG_Message,    "MESSAGE"},
+    { wxLOG_Status,     "STATUS"},
+    { wxLOG_Info,       "INFO"},
+    { wxLOG_Debug,      "DEBUG"},
+    { wxLOG_Trace,      "TRACE"},
+    { wxLOG_Progress,   "PROGRESS"}
+};
+
+
+static std::map<std::string, wxLogLevel> level_by_name;
+
 
 static std::string basename(const std::string path)
 {
@@ -40,6 +58,14 @@ static std::string basename(const std::string path)
 }
 
 
+static void init_level_by_name()
+{
+    for (auto it = name_by_level.begin(); it != name_by_level.end(); it++) {
+        level_by_name[std::string(it->second)] = it->first;
+    }
+}
+
+ 
 static std::string timeStamp()
 {
     wxDateTime now = wxDateTime::UNow();
@@ -55,56 +81,21 @@ static std::string timeStamp()
 
 std::string OcpnLog::level2str(wxLogLevel level)
 {
-    switch (level) {
-        case wxLOG_FatalError:
-            return "FATALERR";
-        case wxLOG_Error:
-            return "ERROR";
-        case wxLOG_Warning:
-            return "WARNING ";
-        case wxLOG_Message:
-            return "MESSAGE";
-        case wxLOG_Status:
-            return "STATUS";
-        case wxLOG_Info:
-            return "INFO";
-        case wxLOG_Debug:
-            return "DEBUG";
-        case wxLOG_Trace:
-            return "TRACE";
-        case wxLOG_Progress:
-            return "PROGRESS";
-        default:
-            break;
-    }
-    return "Unknown level";
+    auto search = name_by_level.find(level);
+    return search == name_by_level.end() ? "Unknown level" : search->second;
 }
 
 
 wxLogLevel OcpnLog::str2level(const char* string)
 {
-    std::string level(string);
-    for (auto& c: level)
-        c = tolower(c);
-    if (level == "fatalerror")
-        return wxLOG_FatalError;
-    if (level == "error")
-        return wxLOG_Error;
-    if (level == "warning")
-        return wxLOG_Warning;
-    if (level == "message")
-        return wxLOG_Message;
-    if (level == "info")
-        return wxLOG_Info;
-    if (level == "debug")
-        return wxLOG_Debug;
-    if (level == "trace")
-        return wxLOG_Trace;
-    if (level == "progress")
-        return wxLOG_Progress;
-    return LOG_BADLEVEL;
+    if (level_by_name.size() == 0) {
+        init_level_by_name();
+    }
+    std::string key(string);
+    std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+    auto search = level_by_name.find(key);
+    return search == level_by_name.end() ? LOG_BADLEVEL : search->second;
 }
-
 
 
 OcpnLog::OcpnLog(const char* path)
