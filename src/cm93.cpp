@@ -3455,6 +3455,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
             int nlen;
             double dival;
             int ival;
+            unsigned char *pucf;
 
             S57attVal *pattValTmp = new S57attVal;
 
@@ -3532,8 +3533,10 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
 #ifdef __ARM_ARCH
-                        float tf1;
-                        memcpy(&tf1, pf, sizeof(float));
+                        float __attribute__((aligned(16))) tf1;
+                        pucf = (unsigned char *)pf;
+
+                        memcpy(&tf1, pucf, sizeof(float));
                         *pAVR = tf1;
 #else
                         *pAVR = *pf;
@@ -4334,8 +4337,9 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     {
                                           float *pf = ( float * ) aval;
 #ifdef __ARM_ARCH
-                                          float tf1;
-                                          memcpy(&tf1, pf, sizeof(float));
+                                          float __attribute__((aligned(16))) tf1;
+                                          unsigned char *pucf = (unsigned char *)pf;
+                                          memcpy(&tf1, pucf, sizeof(float));
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
                                               tmp_transform_x = tf1;
                                           else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
