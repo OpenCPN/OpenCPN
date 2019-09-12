@@ -7,10 +7,10 @@
 # bailout on errors and echo commands
 set -xe
 
-brew install libexif
-brew upgrade cairo
-xz --version || brew install xz
-python3 --version || brew install python
+
+for pkg in cairo cmake libexif wget xz; do
+    brew list $pkg || brew install $pkg
+done
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 # We need to build own libarchive
