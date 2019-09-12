@@ -8470,12 +8470,14 @@ void options::DoOnPageChange(size_t page) {
       return;
   lastPage = i;
 
+#ifndef __OCPN__ANDROID__  
   if (0 == i) {  // Display
      if(m_sconfigSelect_single)
         m_sconfigSelect_single->Refresh( true );
      if(m_sconfigSelect_twovertical)
         m_sconfigSelect_twovertical->Refresh( true );
   }
+#endif  
   
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
