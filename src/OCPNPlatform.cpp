@@ -616,10 +616,15 @@ void OCPNPlatform::Initialize_3( void )
 #ifdef ocpnARM         // Boot arm* platforms (meaning rPI) without OpenGL on first run
     bcapable = false;
 #endif    
+
+    bool bAndroid =false;
+#ifdef __OCPN__ANDROID__
+    bAndroid = true;
+#endif
     
     // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade or fresh install
 
-    if( (g_bFirstRun || g_bUpgradeInProcess) && bcapable){
+    if( (g_bFirstRun || g_bUpgradeInProcess || bAndroid) && bcapable){
         g_bopengl = true;
         
         // Set up visually nice options
@@ -636,6 +641,11 @@ void OCPNPlatform::Initialize_3( void )
     }
 
     gFrame->SetGPSCompassScale();
+    
+    // Force a few items for Android, to ensure that UI is useable if config got scrambled
+    if(bAndroid){
+        g_btouch = true;
+    }
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
