@@ -2290,8 +2290,8 @@ wxString androidGetDeviceInfo()
             int a = s1.Find(_T("{"));
             if(wxNOT_FOUND != a){
                 wxString b = s1.Mid(a+1, 2);
-                memset(&android_plat_spc.msdk[0], 0, 3);
-                strncpy(&android_plat_spc.msdk[0], b.c_str(), 2);
+                memset(android_plat_spc.msdk, 0, sizeof(android_plat_spc.msdk));
+                strncpy(android_plat_spc.msdk, b.c_str(), 2);
             }
         }
         if(wxNOT_FOUND != s1.Find(_T("opencpn"))){
