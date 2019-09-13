@@ -317,7 +317,6 @@ static void saveFilelist(std::string filelist, std::string name)
         return;
     }
     diskfiles << filelist;
-    diskfiles.close();
 }
 
 
@@ -335,7 +334,6 @@ static void saveDirlist(std::string name)
     for (it = pathmap.begin(); it != pathmap.end(); it++) {
         dirs << it->first << ": " << it->second << endl;
     }
-    dirs.close();
 }
 
 static void saveVersion(const std::string& name, const std::string& version)
@@ -348,7 +346,6 @@ static void saveVersion(const std::string& name, const std::string& version)
         return;
     }
     stream << version << endl;
-    stream.close();
 }
 
 
@@ -671,35 +668,6 @@ static bool installedByIndex(const char* pluginIx, PluginMetadata& plugin)
 }
 
 
-static void listAvailablePlugins() {
-    using namespace std;
-
-    auto plugins = PluginHandler::getInstance()->getAvailable();
-    int i = 0;
-    for (PluginMetadata p: plugins) {
-        cout << setw(4) <<left << i
-            << setw(24) << left << p.name << setw(12) << p.version
-            << setw(12) << p.target << p.target_version << endl;
-        i += 1;
-    }
-}
-
-
-static void listInstalledPlugins()
-{
-    using namespace std;
-
-    auto plugins = PluginHandler::getInstance()->getInstalled();
-    int ix = 0;
-    for (PluginMetadata p: plugins) {
-        cout << setw(4) << left << ix
-            << setw(3) << (p.readonly ? "ro" : "rw")
-            << setw(24) << p.name << p.version << endl;
-        ix += 1;
-    }
-}
-
-
 static bool install(const char* pluginIx)
 {
     using namespace std;
@@ -733,13 +701,6 @@ static bool uninstall(const char* pluginIx)
     }
     return true;
 }
-
-
-std::string getLastErrorMsg()
-{
-    return "";
-}
-
 
 
 PluginHandler* PluginHandler::getInstance() {
@@ -875,7 +836,6 @@ bool PluginHandler::install(PluginMetadata plugin)
     std::cout << "Downloading: " << plugin.name << std::endl;
     auto downloader = Downloader(plugin.tarball_url);
     downloader.download(&stream);
-    stream.close();
 
     return install(plugin, path);
 }
@@ -915,128 +875,4 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     remove(versionPath(plugin_name).c_str());  // are actually OK.
 
     return true;
-}
-
-
-PluginCommandHandler* PluginCommandHandler::getInstance() {
-    static PluginCommandHandler* instance = 0;
-    if (!instance) {
-        instance = new(PluginCommandHandler);
-    }
-    return instance;
-}
-
-
-void show_paths()
-{
-    using namespace std;
-    auto paths = PluginPaths::getInstance();
-
-    cout << "libdir: " <<  paths->UserLibdir() << endl;
-    cout << "bindir: " <<  paths->UserBindir() << endl;
-    cout << "datadir: " <<  paths->UserDatadir() << endl;
-    cout << "lib directories:" << endl;
-    for (string p: paths->Libdirs()) {
-        cout << "    " << p << endl;
-    }
-
-    cout << "bin directories:" << endl;
-    for (string p: paths->Bindirs()) {
-        cout << "    " << p << endl;
-    }
-    cout << "data directories:" << endl;
-    for (string p: paths->Datadirs()) {
-        cout << "    " << p << endl;
-    }
-    cout << "--> Using windows" << endl;
-    cout << "libdir: " <<  paths->UserLibdir() << endl;
-    cout << "bindir: " <<  paths->UserBindir() << endl;
-    cout << "datadir: " <<  paths->UserDatadir() << endl;
-    cout << "lib directories:" << endl;
-    for (string p: paths->Libdirs()) {
-        cout << "    " << p << endl;
-    }
-
-    cout << "bin directories:" << endl;
-    for (string p: paths->Bindirs()) {
-        cout << "    " << p << endl;
-    }
-    cout << "data directories:" << endl;
-    for (string p: paths->Datadirs()) {
-        cout << "    " << p << endl;
-    }
- }
-
-
-
-void PluginCommandHandler::setParser(wxCmdLineParser* parser)
-{
-    wxString plugin;
-    wxString repo;
-    wxString dir;
-
-    if( parser->Found( _T("plugin_list_installed"))) {
-        this->command = "plugin_list_installed";
-    } else if (parser->Found( _T("plugin_list_available"))) {
-        this->command = "plugin_list_available";
-    } else if (parser->Found( _T("plugin_show_repo"))) {
-        this->command = "plugin_show_repo";
-    } else if (parser->Found( "plugin_install", &plugin )) {
-        this->command = "plugin_install";
-        this->option = plugin.ToStdString();
-    } else if (parser->Found( _T("plugin_uninstall"), &plugin)) {
-        this->command = "plugin_uninstall";
-        this->option = plugin.ToStdString();
-    } else if (parser->Found( _T("plugin_set_repo"), &repo)) {
-        this->command = "plugin_set_repo";
-        this->option = repo.ToStdString();
-    } else if (parser->Found( _T("plugin_set_windir"), &dir)) {
-        this->command = "plugin_set_windir";
-        this->option = dir.ToStdString();
-    } else if (parser->Found( _T("plugin_show_windir"))) {
-        this->command = "plugin_show_windir";
-    } else if (parser->Found( _T("plugin_show_paths"))) {
-        this->command = "plugin_show_paths";
-    }
-}
-
-void PluginCommandHandler::runParserCommands()
-{
-    using namespace std;
-
-    if (command == "plugin_set_repo") {
-        PluginHandler::getInstance()->setMetadata(option.c_str());
-        exit(0);
-    }
-    if (command == "plugin_list_installed") {
-        listInstalledPlugins();
-        exit(0);
-    }
-    if (command == "plugin_list_available") {
-        listAvailablePlugins();
-        exit(0);
-    }
-    if (command == "plugin_install") {
-        install(option.c_str());
-        exit(0);
-    }
-    if (command == "plugin_uninstall") {
-        uninstall(option.c_str());
-        exit(0);
-    }
-    if (command == "plugin_show_repo") {
-        cout << PluginHandler::getInstance()->getMetadataPath() << endl;
-        exit(0);
-    }
-    if (command == "plugin_set_windir") {
-        g_winPluginDir = option.c_str();
-        pConfig->UpdateSettings();
-    }
-    if (command == "plugin_show_windir") {
-        cout << "windir: " << g_Platform->GetWinPluginBaseDir() << endl;
-    }
-    if (command == "plugin_show_paths") {
-        show_paths();
-        exit(0);
-    }
 }

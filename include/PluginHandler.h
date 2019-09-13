@@ -132,21 +132,4 @@ class PluginHandler {
 };
 
 
-class PluginCommandHandler {
-
-    public:
-        static PluginCommandHandler* getInstance();
-        void setParser(wxCmdLineParser* p);
-        void runParserCommands();
-
-    protected:
-        PluginCommandHandler() {};
-
-    private:
-        PluginHandler* pluginHandler;
-        std::string command;
-        std::string option;
-};
-
-
 #endif // PLUGIN_HANDLER_H__
