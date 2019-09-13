@@ -20,6 +20,7 @@ buildwin/*.dll
 buildwin/*.lib
 buildwin/*.exe
 buildwin/*.crt
+ci/opencpn_rsa
 src/opencpn.rc
 .DS_Store
 NSIS.template.in
