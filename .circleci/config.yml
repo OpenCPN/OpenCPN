@@ -60,6 +60,7 @@ workflows:
       - build-xenial:
           filters:
             branches:
+<<<<<<< HEAD
               only: plug-mgr
       - build-trusty:
           filters:
@@ -73,3 +74,18 @@ workflows:
           filters:
             branches:
               only: plug-mgr
+=======
+              only: plugins
+      - build-trusty:
+          filters:
+            branches:
+              only: plugins
+      - build-macos:
+          filters:
+            branches:
+              only: plugins
+      - build-mingw:
+          filters:
+            branches:
+              only: plugins
+>>>>>>> ci: Add cloudsmith deployment, circleci builds + fixes.

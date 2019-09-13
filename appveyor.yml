@@ -2,6 +2,10 @@ clone_folder: c:\project\opencpn
 shallow_clone: false
 clone_depth: 10
 
+environment:
+   ssh_key:
+       secure: z8gD1DbVAxmyVEwmpex4/Q==
+
 image:
 - Visual Studio 2017
 
