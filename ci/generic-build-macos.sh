@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Build the Travis OSX artifacts 
+# Build the OSX artifacts 
 #
 
 # bailout on errors and echo commands
@@ -13,6 +13,7 @@ for pkg in cairo cmake libexif python3 wget xz; do
 done
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
+
 # We need to build own libarchive
 wget -q https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
 tar zxf libarchive-3.3.3.tar.gz
