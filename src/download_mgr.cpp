@@ -422,7 +422,7 @@ class WebsiteButton: public wxPanel
         {
             auto vbox = new wxBoxSizer(wxVERTICAL);
             auto button = new wxButton(this, wxID_ANY, _("Website"));
-            button->Enable(url != "");
+            button->Enable(strlen(url) > 0);
             vbox->Add(button);
             SetSizer(vbox);
             Bind(wxEVT_COMMAND_BUTTON_CLICKED,

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opencpn-plugin version="1">
+  <name> squiddio </name>
+  <version> 0.7.1 </version>
+  <release> 1 </release>
+  <summary> Repository of sailing destination waypoints </summary>
+
+  <api-version> 1.16 </api-version>
+  <open-source> no </open-source>
+  <author> Mauro Calvi </author>
+  <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+
+  <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+
+  <target>darwin</target>
+  <target-version>10.13.3</target-version>
+  <tarball-url>
+    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/squiddio_pi-0.7.1-1_darwin-10.13.3.tar.gz
+  </tarball-url>
+  <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+</opencpn-plugin>
