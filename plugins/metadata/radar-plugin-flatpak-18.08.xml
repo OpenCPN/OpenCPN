@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opencpn-plugin version="1">
+  <name> radar </name>
+  <version> 5.0.2-beta1 </version>
+  <release> 1 </release>
+  <summary> Overlays the radar picture on OpenCPN </summary>
+
+  <api-version> 1.16 </api-version>
+  <open-source> no </open-source>
+  <author> David S Register </author>
+  <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+
+  <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars. 
+
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+
+  <target>flatpak</target>
+  <target-version>18.08</target-version>
+  <tarball-url>
+          https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/radar_pi-5.0.2-beta1-1_flatpak-18.08.tar.gz
+  </tarball-url>
+  <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+</opencpn-plugin>
+
+<!-- Date: 2019-09-08 16:04:56+00:00 Commit: dafcc02 Build nr: 35 -->

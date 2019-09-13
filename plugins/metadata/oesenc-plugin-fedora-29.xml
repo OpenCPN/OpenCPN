@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opencpn-plugin version="1">
+  <name> oesenc </name>
+  <version> 2.9.1605 </version>
+  <release> 1 </release>
+  <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+
+  <api-version> 1.16 </api-version>
+  <open-source> no </open-source>
+  <author> David S Register </author>
+  <source> https://github.com/bdbcat/oesenc_pi </source>
+  <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+
+  <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.  
+
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and 
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+
+  <target>fedora</target>
+  <target-version>29</target-version>
+  <tarball-url>
+    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/oesenc_pi-1.2.0-1_fedora-29.tar.gz
+  </tarball-url>
+</opencpn-plugin>
+
+<!-- Date: 2019-09-12 20:16:33+00:00 Commit: cad3faf Build nr: 134 -->
