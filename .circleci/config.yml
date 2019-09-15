@@ -60,16 +60,16 @@ workflows:
       - build-xenial:
           filters:
             branches:
-              only: plugins
+              only: plug-mgr
       - build-trusty:
           filters:
             branches:
-              only: plugins
+              only: plug-mgr
       - build-macos:
           filters:
             branches:
-              only: plugins
+              only: plug-mgr
       - build-mingw:
           filters:
             branches:
-              only: plugins
+              only: plug-mgr
