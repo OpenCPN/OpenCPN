@@ -111,9 +111,7 @@ IF(QT_ANDROID)
     SET(OPENGL_FOUND "YES")
 
 #    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-#    add_subdirectory(src/glshim)
 
-#    add_subdirectory(src/glu)
 
 ELSE(QT_ANDROID)
     FIND_PACKAGE(OpenGL)
@@ -132,36 +130,6 @@ ELSE(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-# On Android, PlugIns need a specific linkage set....
-IF (QT_ANDROID )
-  # These libraries are needed to create PlugIns on Android.
-
-  SET(OCPN_Core_LIBRARIES
-        # Presently, Android Plugins are built in the core tree, so the variables {wxQT_BASE}, etc.
-        # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
-
-        # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn/build-opencpn-Production_build_Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Release/libopencpn.so                
-        
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-        ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-        
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
-        )
-
-ENDIF(QT_ANDROID)
 
 SET(BUILD_SHARED_LIBS TRUE)
 

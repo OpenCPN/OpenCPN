@@ -405,6 +405,7 @@ IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Qt_Base/Build: " ${Qt_Base} "/" ${Qt_Build})
   MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
+  SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
@@ -581,6 +582,26 @@ IF(NOT QT_ANDROID)
   MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 ENDIF(NOT QT_ANDROID)
 
+IF(QT_ANDROID)
+  SET( wxWidgets_LIBRARIES
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1.so
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+ 
+    )
+ENDIF(QT_ANDROID)
+
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
@@ -647,6 +668,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     add_compile_options(-Wno-overloaded-virtual)
 endif ()
 
+IF( QT_ANDROID )
+    ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
+    #ADD_DEFINITIONS("-Wl,-soname,libgorp.so ")
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
+ENDIF( QT_ANDROID )
+    
 #Enable CrashReporting for Windows (visual studio) and Linux
 IF(MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
     OPTION (OCPN_USE_CRASHREPORT "Enable crash reporting" OFF)
@@ -688,13 +715,13 @@ IF (NOT WIN32 AND NOT APPLE)
     ADD_DEFINITIONS(-D__OCPN__ANDROID__)
     ADD_DEFINITIONS(-DANDROID)
 
-    SET(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+    SET(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
 
     ## Compiler flags
     #  if(CMAKE_COMPILER_IS_GNUCXX)
     #      set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
     #  endif()
-    set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+    #set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
@@ -703,7 +730,7 @@ IF (NOT WIN32 AND NOT APPLE)
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
 
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
     INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
     ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
@@ -1172,7 +1199,7 @@ ENDIF(WIN32 OR APPLE)
 
 IF(QT_ANDROID)
   MESSAGE(STATUS "Building local SQLite3 library.")
-  ADD_LIBRARY(sqlite3 STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
+  ADD_LIBRARY(sqlite3 SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
   SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
 ENDIF(QT_ANDROID)
 
@@ -1334,7 +1361,7 @@ SET(SRC_NMEA0183
         src/nmea0183/mwv.hpp
 )
 IF(QT_ANDROID)
-  ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
+  ADD_LIBRARY(NMEA0183 SHARED ${SRC_NMEA0183})
 ELSE(QT_ANDROID)
   ADD_LIBRARY(NMEA0183 STATIC ${SRC_NMEA0183})
   set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
@@ -2319,14 +2346,24 @@ ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
 IF(QT_ANDROID)
-  ADD_LIBRARY(gorp ${HDRS} ${SRCS}
+  ADD_LIBRARY(gorp SHARED ${HDRS} ${SRCS}
           ${SRC_NMEA0183}
           ${SRC_S57ENC}
           ${SRC_TEXCMP}
           ${SRC_MIPMAP}
           ${SRC_SYMBOLS}
+          ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c
+          ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h
+          ${SQLITECPP_SRC}
+          ${SQLITECPP_INC}
+
   )
   TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
+  TARGET_LINK_LIBRARIES( gorp GLESv2 EGL )
+  TARGET_LINK_LIBRARIES( gorp ${OPENGL_LIBRARIES} )
+  
+  MESSAGE (STATUS " OPENGL_LIBRARIE at targetlinklib: ${OPENGL_LIBRARIES}")
+
 ENDIF()
 
 # Sanitizers, part 2/2
