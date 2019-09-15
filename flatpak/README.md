@@ -64,13 +64,13 @@ Armed with these tools, initialize by installing the runtime and sdk:
 
      $ sudo flatpak remote-add --if-not-exists flathub \
            https://dl.flathub.org/repo/flathub.flatpakrepo
-     $ sudo flatpak install flathub org.freedesktop.Platform//1.6
-     $ sudo flatpak install flathub org.freedesktop.Sdk//1.6
+     $ sudo flatpak install flathub org.freedesktop.Platform//18.08
+     $ sudo flatpak install flathub org.freedesktop.Sdk//18.08
 
 Review the org.opencpn.OpenCPN.yaml manifest file. In the very end
-are the definitions for the opencpn source; normally, it should just be
-to update the tag to make a new build. Then build the packages in *opencpn/*
-and *base*
+are the definitions for the opencpn source; the current setup is
+to build the tip of the plug-mgr branch.  Review and update as
+rquired. Then build the packages in *opencpn/* and *base*
 
     $ BRANCH=stable make build
 
@@ -87,11 +87,14 @@ Packaging plugins
 -----------------
 
 The file system used by flatpak apps is not available in a form where
-users could just drop a file. However, packaging plugins is normally 
-trivial. An example from the shipdriver plugin, 
-https://github.com/lea~/opencpn-gpgmas/shipdriver_pi.
+users could just drop a file. Note that once the plugin installer
+(PR #1457) is merged all these plugin can be used .
 
-The first step is to update the API. Copy the file ocpn_plugin.h
+The alternative is to package the plugin which normally is
+trivial. An example from the shipdriver plugin, 
+https://github.com/lea~/opencpn-gpgmas/shipdriver\_pi.
+
+The first step is to update the API. Copy the file ocpn\_plugin.h
 from the opencpn package to shipdriver src directory. Then, patch
 the plugin to use *GetPluginDataDir* instead of *GetpSharedDataLocation()*,
 for  the shipdriver this looks like:
@@ -109,7 +112,7 @@ for  the shipdriver this looks like:
          //  data directory, as used to compute it in the old code.
  
 The part(s) to patch could usually be found by searching for
-GetpSharedDataLocation(). 
+GetpSharedDataLocation(). Not all plugins uses a data location though.
 
 Pick a unique id on the form *org.opencpn.OpenCPN.Plugin.MyPlugin*. Ensure 
 that the plugin builds in a normal context. Create the plugin manifest with 
@@ -118,7 +121,7 @@ the name *org.opencpn.OpenCPN.Plugin.MyPlugin.yaml* like:
     id: org.opencpn.OpenCPN.Plugin.ShipDriver
     runtime: org.opencpn.OpenCPN
     runtime-version: stable
-    sdk: org.freedesktop.Sdk//1.6
+    sdk: org.freedesktop.Sdk//18.08
     build-extension: true
     separate-locales: false
     appstream-compose: false
