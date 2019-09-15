@@ -38,7 +38,20 @@ if [ -z "$CLOUDSMITH_API_KEY" ]; then
     echo 'Cannot deploy to cloudsmith: missing $CLOUDSMITH_API_KEY'
 else
     echo 'Deploying to cloudsmith'
-    sudo python3 -m pip install -q cloudsmith-cli
+    if pyenv versions 2>&1 >/dev/null; then   # circleci image
+        pyenv global 3.7.0
+        python -m pip install cloudsmith-cli
+        pyenv rehash
+    elif dnf --version 2>&1 >/dev/null; then
+        sudo dnf install python3-pip python3-setuptools
+        sudo python3 -m pip install -q cloudsmith-cli
+    elif apt-get --version 2>&1 >/dev/null; then
+        sudo apt-get install python3-pip python3-setuptools
+        sudo python3 -m pip install -q cloudsmith-cli
+    else
+        sudo -H python3 -m ensurepip
+        sudo -H python3 -m pip install -q setuptools
+    fi
     for src in $(expand *.dmg *setup.exe *.deb); do
         set -x
         old=$(basename $src)
