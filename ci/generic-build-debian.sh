@@ -25,3 +25,6 @@ cmake $WEBVIEW_OPT \
     ..
 make -sj2
 make package
+
+# Prepare the cloudsmith upload needing python3 -m pip
+sudo apt-get install python3-pip

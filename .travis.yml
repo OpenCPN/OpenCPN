@@ -37,7 +37,7 @@ deploy:
   skip_cleanup: true
   script: ci/generic-upload.sh
   on:
-    branch: plugins
+    branch: plug-mgr
     tags: false
 notifications:
   email: false
