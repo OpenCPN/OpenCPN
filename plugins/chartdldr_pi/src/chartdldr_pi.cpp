@@ -61,6 +61,10 @@
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
     WX_DEFINE_OBJARRAY(ArrayOfChartPanels);
+
+#ifdef __OCPN__ANDROID__    
+#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS    
+#endif
     
 #include <fstream>
     
