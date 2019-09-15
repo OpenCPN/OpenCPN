@@ -57,4 +57,5 @@ branches:
     - master
     - plugins
     - plugins-build
+    - plug-mgr
 
