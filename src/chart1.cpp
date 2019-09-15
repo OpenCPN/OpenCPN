@@ -975,9 +975,9 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
-#ifndef OCPN_USE_WRAPPER
+//#ifndef OCPN_USE_WRAPPER
 IMPLEMENT_APP( MyApp )
-#endif
+//#endif
 
 BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
