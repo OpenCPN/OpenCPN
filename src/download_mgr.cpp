@@ -149,7 +149,7 @@ struct OcpnVersion
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
- * or -1 if not found
+ * or -1 if not found.
  */
 static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
 {
@@ -162,6 +162,7 @@ static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
 }
 
 
+/** Return PlugInContainer with given name or 0 if not found. */
 static PlugInContainer*
     PlugInByName(const std::string name, ArrayOfPlugIns* plugins)
 {
