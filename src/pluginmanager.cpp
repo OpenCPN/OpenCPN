@@ -297,6 +297,22 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     return vp;
 }
 
+SemanticVersion PlugInContainer::GetVersion() 
+{
+    auto plugin_117 = dynamic_cast<opencpn_plugin_117*>(m_pplugin);
+    if (plugin_117) {
+        return SemanticVersion(plugin_117->GetPlugInVersionMajor(),
+                               plugin_117->GetPlugInVersionMinor(),
+                               plugin_117->GetPlugInVersionPatch(),
+                               plugin_117->GetPlugInVersionPre(),
+                               plugin_117->GetPlugInVersionBuild());
+    }
+    else {
+        return SemanticVersion(m_pplugin->GetAPIVersionMajor(),
+                               m_pplugin->GetAPIVersionMinor());
+    }
+
+}
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
@@ -4080,6 +4096,18 @@ void opencpn_plugin_116::PrepareContextMenu( int canvasIndex)
 {
     return;
 }
+
+//    Opencpn_Plugin_117 Implementation
+opencpn_plugin_117::opencpn_plugin_117(void *pmgr)
+    :opencpn_plugin_116(pmgr)
+{}
+
+int opencpn_plugin_117::GetPlugInVersionPatch() { return 0; };
+
+const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
+
+const char* opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
+
 
 //          Helper and interface classes
 

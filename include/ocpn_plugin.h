@@ -66,7 +66,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           16
+#define API_VERSION_MINOR           17
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -557,6 +557,22 @@ public:
 
 };
 
+class DECL_EXP opencpn_plugin_117 : public opencpn_plugin_116
+{
+public:
+    opencpn_plugin_117(void *pmgr);
+    /*
+     * Forms a semantic version together with GetPlugInVersionMajor() and
+     * GetPlugInVersionMinor(), see https://semver.org/
+     */
+    virtual int GetPlugInVersionPatch();
+
+    /** Pre-release tag version part, see GetPlugInVersionPatch() */
+    virtual const char* GetPlugInVersionPre();
+
+    /** Build version part  see GetPlugInVersionPatch(). */
+    virtual const char* GetPlugInVersionBuild();
+};
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
