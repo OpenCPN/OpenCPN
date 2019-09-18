@@ -5,7 +5,7 @@
 #
 # If pango is found create the linkable ocpn::pango interface library
 # carrying headers, libraries and compilation flags.
-# On a sidenote also sets PANGO_FOUND and PANGO_VERSION.
+# On a sidenote also sets PANGO_FOUND.
 #
 # License:
 #
@@ -87,5 +87,11 @@ if(PANGO_LIBRARIES AND NOT PANGO_FOUND)
   endif()
   add_library(ocpn::pango ALIAS _PANGO)
 endif()
+
+mark_as_advanced(PANGO_INCLUDE_DIR PANGO_LIBRARIES PANGO_VERSION)
+find_package_handle_standard_args(PANGO
+    REQUIRED_VARS PANGO_INCLUDE_DIR PANGO_LIBRARIES
+    VERSION_VAR PANGO_VERSION
+)
 
 unset(PANGO_DEPS_FOUND_VARS)
