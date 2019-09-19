@@ -4312,8 +4312,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
     itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
-    m_pVersion = new wxStaticText( this, wxID_ANY,
-                                   wxString::Format(_T("%d.%d"), m_pPlugin->m_version_major, m_pPlugin->m_version_minor) );
+
+    m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
     m_pVersion->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
