@@ -4062,7 +4062,19 @@ void MyFrame::ODoSetSize( void )
 
         if( m_pStatusBar != NULL ) {
             m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
-            m_pStatusBar->SetFieldsCount(m_StatusBarFieldCount);
+            int currentCount = m_pStatusBar->GetFieldsCount();
+            if(currentCount != m_StatusBarFieldCount){
+                if( (currentCount > 0) && (currentCount < 7)){
+                    
+                    // reset the widths very small to avoid auto-resizing of the frame
+                    // The sizes will be reset later in this method
+                    int widths[] = { 2,2,2,2,2,2 };
+                    m_pStatusBar->SetStatusWidths( currentCount, widths );
+                }
+    
+                qDebug() << "SetFieldCount: " << currentCount << m_StatusBarFieldCount;
+                m_pStatusBar->SetFieldsCount(m_StatusBarFieldCount);
+            }
             
             if(m_StatusBarFieldCount){
 
