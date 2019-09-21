@@ -4072,7 +4072,6 @@ void MyFrame::ODoSetSize( void )
                     m_pStatusBar->SetStatusWidths( currentCount, widths );
                 }
     
-                qDebug() << "SetFieldCount: " << currentCount << m_StatusBarFieldCount;
                 m_pStatusBar->SetFieldsCount(m_StatusBarFieldCount);
             }
             
@@ -4226,7 +4225,21 @@ void MyFrame::ODoSetSize( void )
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
     options_lastWindowPos = wxPoint(0,0);
+
+#ifdef __OCPN__ANDROID__    
+    // If the options dialog is displayed, this will have the effect of
+    // raising the dialog above the main and canvas-GUI toolbars.
+    // If the dialog is not shown, no harm done
     
+    if( !b_inCloseWindow ) {
+        if(g_options)
+            g_options->Raise();
+    
+        resizeAndroidPersistents();
+    }
+
+#endif    
+
     if(g_pauimgr)
         g_pauimgr->Update();
 
@@ -5843,7 +5856,6 @@ int MyFrame::DoOptionsDialog()
     g_boptionsactive = true;
     int last_ChartScaleFactorExp = g_ChartScaleFactor;
         
-    
     if(NULL == g_options) {
         g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
@@ -6089,14 +6101,6 @@ int MyFrame::DoOptionsDialog()
     SetAllToolbarScale();
     RequestNewToolbars();
 
-//<<<<<<< HEAD
-//    SetToolbarScale();
-//    RequestNewToolbar();
-    
-//    if(cc1)
-//        cc1->CreateDepthUnitEmbossMaps(global_color_scheme);
-    
-//=======
     // Change of master toolbar scale?
     bool b_masterScaleChange = false;
     if(fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
