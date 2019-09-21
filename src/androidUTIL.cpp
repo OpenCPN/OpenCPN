@@ -801,6 +801,18 @@ void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
             m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
             bInConfigChange = true;
             break;
+        
+/* 
+        case ID_CMD_STOP_RESIZE:    
+           // Stop any underway timer chain
+            qDebug() << "Stop Resize";
+            m_resizeTimer.Stop();
+            m_eventTimer.Stop();
+            timer_sequence = 0;
+            bInConfigChange = false;
+            break;
+            */
+           
             
         default:
             break;
@@ -1134,11 +1146,14 @@ extern "C"{
         qDebug() << "NewSize: " << new_size.x << new_size.y;
         config_size = new_size;
         
-        if(!bInConfigChange){
-            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-            evt.SetId( ID_CMD_TRIGGER_RESIZE );
-                g_androidUtilHandler->AddPendingEvent(evt);
-        }
+//         wxCommandEvent evts(wxEVT_COMMAND_MENU_SELECTED);
+//         evts.SetId( ID_CMD_STOP_RESIZE );
+//             g_androidUtilHandler->AddPendingEvent(evts);
+
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_TRIGGER_RESIZE );
+            g_androidUtilHandler->AddPendingEvent(evt);
+ 
 
         return 77;
     }
@@ -1249,6 +1264,13 @@ extern "C"{
         evt.SetId( ID_CMD_INVALIDATE );
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
+
+        if(!bInConfigChange){
+            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+            evt.SetId( ID_CMD_TRIGGER_RESIZE );
+            if(g_androidUtilHandler)
+                g_androidUtilHandler->AddPendingEvent(evt);
+        }
 
         return ret;
     }
@@ -2082,6 +2104,11 @@ void androidCancelTimedToast()
 void androidDisplayToast(wxString message)
 {
     callActivityMethod_ss("showToast", message);
+}
+
+void androidEnableRotation( void )
+{
+    callActivityMethod_vs("unlockActivityOrientation");
 }
 
 bool androidShowDisclaimer( wxString title, wxString msg )

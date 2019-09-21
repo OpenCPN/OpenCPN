@@ -6994,6 +6994,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
 #ifdef __OCPN__ANDROID__
             androidEnableBackButton( true );
+            androidEnableRotation();
 #endif
 
             break;

@@ -163,6 +163,7 @@ void androidDisplayTimedToast(wxString message, int timeMillisec);
 void androidCancelTimedToast();
 void androidDisplayToast(wxString message);
 
+void androidEnableRotation( void );
 
 //      SVG Support
 wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );
