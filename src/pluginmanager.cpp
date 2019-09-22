@@ -50,6 +50,11 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <cstdio>
+#include <string>
+#include <sstream>
+#include <iostream>
+
 #ifdef ocpnUSE_SVG
 #include <wxSVG/svg.h>
 #endif // ocpnUSE_SVG
@@ -4365,6 +4370,8 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 void PluginPanel::SetSelected( bool selected )
 {
     m_bSelected = selected;
+    std::ostringstream version;
+    version << m_pPlugin->GetVersion();
     if (selected)
     {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
@@ -4376,6 +4383,9 @@ void PluginPanel::SetSelected( bool selected )
         // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
         m_pButtonsUpDown->Show(false);
 #endif        
+        std::ostringstream os(m_pVersion->GetLabel().ToStdString());
+        version <<  _(" -- requires API version ")  << m_pPlugin->m_api_version;
+        m_pVersion->SetLabel(version.str());
         Layout();
         //FitInside();
     }
@@ -4389,6 +4399,7 @@ void PluginPanel::SetSelected( bool selected )
         m_pButtons->Show(true);
 #endif        
         m_pButtonsUpDown->Show(false);
+        m_pVersion->SetLabel(version.str());
         Layout();
         //FitInside();
     }
