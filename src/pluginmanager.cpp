@@ -50,6 +50,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <string>
 #include <sstream>
