@@ -311,6 +311,7 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 wxString callActivityMethod_vs(const char *method);
+wxString callActivityMethod_is(const char *method, int parm);
 
 
 //      Globals, accessible only to this module
@@ -1093,7 +1094,7 @@ extern "C"{
             
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
-        //qDebug() << string;
+        //qDebug() << "ProcessNMEA: " << string;
         
         char tstr[200];
         strncpy(tstr, string, 190);
@@ -1235,6 +1236,8 @@ extern "C"{
         wxLogMessage(_T("onPause"));
         g_bSleep = true;
         
+        callActivityMethod_is("setTrackContinuous", (int)g_btrackContinuous);
+
         if(!g_btrackContinuous)
             androidGPSService( GPS_OFF );
         
@@ -2918,6 +2921,9 @@ wxString androidGPSService(int parm)
     
     wxString return_string;
     jstring s = data.object<jstring>();
+    
+    if( s == NULL )
+        return return_string;
     
     //  Need a Java environment to decode the resulting string
     JNIEnv* jenv;

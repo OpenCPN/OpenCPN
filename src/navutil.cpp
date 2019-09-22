@@ -847,6 +847,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
         Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
         Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
+        Read( _T ( "TrackContinuous" ), &g_btrackContinuous, false );
     }
 
     Read( _T ( "ShowTrue" ), &g_bShowTrue );
