@@ -44,7 +44,7 @@ SemanticVersion::SemanticVersion(std::string s)
     :SemanticVersion()
 {
     using namespace std;
-    int pos = s.find('+');
+    size_t pos = s.find('+');
     if (pos != string::npos) {
         build = s.substr(pos + 1);
         s = s.substr(0, pos);
