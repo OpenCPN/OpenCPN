@@ -684,6 +684,8 @@ extern "C"  DECL_EXP bool AddLocaleCatalog( wxString catalog );
 
 extern "C"  DECL_EXP void PushNMEABuffer( wxString str );
 
+extern "C"  DECL_EXP void ZeroXTE();
+
 extern  DECL_EXP wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom);
 
 extern  DECL_EXP bool UpdateChartDBInplace(wxArrayString dir_array,
