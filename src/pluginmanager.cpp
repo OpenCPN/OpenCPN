@@ -4373,8 +4373,7 @@ void PluginPanel::SetSelected( bool selected )
     m_bSelected = selected;
     std::ostringstream version;
     version << m_pPlugin->GetVersion();
-    if (selected)
-    {
+    if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
         m_pButtons->Show(true);
@@ -4386,12 +4385,8 @@ void PluginPanel::SetSelected( bool selected )
 #endif        
         std::ostringstream os(m_pVersion->GetLabel().ToStdString());
         version <<  _(" -- requires API version ")  << m_pPlugin->m_api_version;
-        m_pVersion->SetLabel(version.str());
-        Layout();
-        //FitInside();
     }
-    else
-    {
+    else {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
@@ -4406,6 +4401,11 @@ void PluginPanel::SetSelected( bool selected )
     }
     Refresh(true);
     
+    m_pButtons->Show(selected);   // FIXME: Check show button logic
+    m_pButtonsUpDown->Show(selected);
+    m_pVersion->SetLabel(version.str());
+    Layout();
+    //FitInside();
 #ifdef __WXOSX__
     if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
