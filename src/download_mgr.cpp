@@ -601,7 +601,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxDialog(parent, wxID_ANY, _("Install new plugins"),
+    :wxDialog(parent, wxID_ANY, _("Plugin Manager"),
               wxDefaultPosition , wxDefaultSize,
               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
