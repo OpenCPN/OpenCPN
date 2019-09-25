@@ -25,13 +25,14 @@ Usage:
 ------
 
 Users might need to install flatpak, described in https://flatpak.org/setup/.
-Using the provisionary fedorapeople repo, opencpn can be installed using: 
+Using the provisionary beta-test directory
+
+    $ flatpak remote-add --if-not-exists \
+       flathub https://flathub.org/repo/flathub.flatpakrepo
 
     $ flatpak install --user \
-        https://leamas.fedorapeople.org/opencpn/opencpn.flatpakref
+       http://opencpn.duckdns.org/opencpn-beta/website/opencpn.flatpakref
 
-Same thing can be achieved pointing the browser to 
-https://leamas.fedorapeople.org/opencpn/
 
 In order to fix device permissions, a udev rule needs to be installed. Create
 a file called *70-serial-opencpn.rules* like

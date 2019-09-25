@@ -45,3 +45,6 @@ repourl:
 
 publish:
 	rsync -av $(DESTDIR)/ amazon-ec2:/var/www/ocpn-flatpak/website
+
+publish-beta:
+	rsync -av $(DESTDIR)/ amazon-ec2:/var/www/ocpn-website-beta/website
