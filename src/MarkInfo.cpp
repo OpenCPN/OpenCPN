@@ -463,12 +463,56 @@ void MarkInfoDlg::Create()
 
     sbSizerProperties->Add( bSizerInnerProperties, 1, wxEXPAND, 5 );
 
-    bSizerBasicProperties->Add( sbSizerProperties, 3, wxALL | wxEXPAND, 5 );
+    bSizerBasicProperties->Add( sbSizerProperties, 2, wxALL | wxEXPAND, 5 );
 
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
     wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_panelBasicProperties, _("Links")  );
     bSizerBasicProperties->Add( sbS_SizerLinks1, 1, wxALL | wxEXPAND, 5 );
     m_htmlList = new    wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    m_htmlList->SetBackgroundColour(wxColour(200, 0, 200));
+    
     sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
+#else
+
+    sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
+    bSizerBasicProperties->Add( sbSizerLinks, 1, wxALL | wxEXPAND, 5 );
+    
+    m_scrolledWindowLinks = new wxScrolledWindow( m_panelBasicProperties, wxID_ANY,
+            wxDefaultPosition, wxSize(-1, 100), wxHSCROLL | wxVSCROLL );
+    m_scrolledWindowLinks->SetMinSize( wxSize( -1, 80 ) );
+    m_scrolledWindowLinks->SetScrollRate( 2, 2 );
+    sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
+    
+    bSizerLinks = new wxBoxSizer( wxVERTICAL );
+    m_scrolledWindowLinks->SetSizer( bSizerLinks );
+    
+    m_menuLink = new wxMenu();
+    wxMenuItem* m_menuItemDelete;
+    m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ), wxEmptyString, wxITEM_NORMAL );
+    m_menuLink->Append( m_menuItemDelete );
+
+    wxMenuItem* m_menuItemEdit;
+    m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ), wxEmptyString, wxITEM_NORMAL );
+    m_menuLink->Append( m_menuItemEdit );
+
+    wxMenuItem* m_menuItemAdd;
+    m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ), wxEmptyString,  wxITEM_NORMAL );
+    m_menuLink->Append( m_menuItemAdd );
+
+    wxBoxSizer* bSizer9 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_buttonAddLink = new wxButton( m_panelBasicProperties, wxID_ANY, _("Add new"), wxDefaultPosition,  wxDefaultSize, wxBU_EXACTFIT );
+    bSizer9->Add( m_buttonAddLink, 0, wxALL, 5 );
+
+    m_buttonAddLink->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MarkInfoDlg::OnAddLink ), NULL, this );
+    
+    sbSizerLinks->Add( bSizer9, 0, wxEXPAND, 5 );
+
+
+#endif
+    
+    
+    
     
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* bSizer15;
@@ -641,7 +685,10 @@ void MarkInfoDlg::Create()
     // Connect Events
     m_textLatitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     m_textLongitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
     m_htmlList->Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
+#else
+#endif
     m_notebookProperties->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
     //m_EtaTimePickerCtrl->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
     //m_EtaDatePickerCtrl->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
@@ -760,7 +807,11 @@ MarkInfoDlg::~MarkInfoDlg()
                             wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
     m_textLongitude->Disconnect( wxEVT_CONTEXT_MENU,
                              wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
     m_htmlList->Disconnect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu), NULL, this);
+#else
+#endif
+
     m_notebookProperties->Disconnect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( MarkInfoDlg::OnNotebookPageChanged ), NULL, this );
 #ifndef __OCPN__ANDROID__
     m_EtaTimePickerCtrl->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( MarkInfoDlg::OnTimeChanged ), NULL, this );
@@ -822,6 +873,7 @@ void MarkInfoDlg::SetRoutePoint( RoutePoint *pRP )
 
 void MarkInfoDlg::UpdateHtmlList()
 {
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
     GetSimpleBox()->Clear();
     int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
     
@@ -834,6 +886,52 @@ void MarkInfoDlg::UpdateHtmlList()
             linknode = linknode->GetNext();
         }       
     }
+#else
+        // Clear the list
+        wxWindowList kids = m_scrolledWindowLinks->GetChildren();
+        for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+            wxWindowListNode *node = kids.Item(i);
+            wxWindow *win = node->GetData();
+
+            if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
+                ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_COMMAND_HYPERLINK, wxHyperlinkEventHandler( MarkInfoDlg::OnHyperLinkClick ) );
+                ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( MarkInfoDlg::m_htmlListContextMenu ) );
+                win->Destroy();
+            }
+        }
+
+        int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
+        HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
+        if( NbrOfLinks > 0 ) {
+            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            while( linknode ) {
+                Hyperlink *link = linknode->GetData();
+                wxString Link = link->Link;
+                wxString Descr = link->DescrText;
+
+                wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, Descr,
+                        Link, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT );
+                ctrl->Connect( wxEVT_COMMAND_HYPERLINK,  wxHyperlinkEventHandler( MarkInfoDlg::OnHyperLinkClick ), NULL, this );
+                if( !m_pRoutePoint->m_bIsInLayer )
+                    ctrl->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( MarkInfoDlg::m_htmlListContextMenu ), NULL, this );
+
+                bSizerLinks->Add( ctrl, 1, wxALL | wxEXPAND, 5 );
+
+                linknode = linknode->GetNext();
+            }
+        }
+        
+        // Integrate all of the rebuilt hyperlink controls
+         m_scrolledWindowLinks->Layout();
+#endif
+}
+
+void MarkInfoDlg::OnHyperLinkClick( wxHyperlinkEvent &event )
+{
+    wxString url = event.GetURL();
+    url.Replace(_T(" "), _T("%20") );
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser(url);
 }
 
 void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
@@ -842,7 +940,7 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
 //        The trouble is with the wxLaunchDefaultBrowser with verb "open"
 //        Workaround is to probe the registry to get the default browser, and open directly
 //     
-//        But, we will do this only if the URL contains the anchor point charater '#'
+//        But, we will do this only if the URL contains the anchor point character '#'
 //        What a hack......
 
 #ifdef __WXMSW__
@@ -879,7 +977,9 @@ void MarkInfoDlg::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
 #else
     wxString url = event.GetLinkInfo().GetHref().c_str();
     url.Replace(_T(" "), _T("%20") );
-    ::wxLaunchDefaultBrowser(url);
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser(url);
+
     event.Skip();
 #endif
 }
@@ -950,6 +1050,7 @@ void MarkInfoDlg::OnPositionCtlUpdated( wxCommandEvent& event )
 
 void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
 {
+#ifndef __OCPN__ANDROID__    
     //SimpleHtmlList->HitTest doesn't seem to work under msWin, so we use a custom made version
     wxPoint pos = event.GetPosition();
     i_htmlList_item = -1; 
@@ -975,6 +1076,88 @@ void MarkInfoDlg::m_htmlListContextMenu( wxMouseEvent &event )
     popup->Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MarkInfoDlg::On_html_link_popupmenu_Click), NULL, this);
     PopupMenu( popup );
     delete popup;        
+#else
+    
+    m_pEditedLink = wxDynamicCast(event.GetEventObject(), wxHyperlinkCtrl);
+     
+    if(m_pEditedLink){
+
+        wxString url = m_pEditedLink->GetURL();
+        wxString label = m_pEditedLink->GetLabel();
+        i_htmlList_item = -1; 
+        HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
+        if( hyperlinklist->GetCount() > 0 ){
+            int i = 0;
+            wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
+            while( linknode ) {
+                Hyperlink *link = linknode->GetData();
+                if(link->DescrText == label){
+                    i_htmlList_item = i;
+                    break;
+                }
+                
+                linknode = linknode->GetNext();
+                i++;
+            }
+        }
+
+        wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+
+        wxMenu* popup = new wxMenu();
+        {
+            wxMenuItem* menuItemDelete = new wxMenuItem( popup, ID_RCLK_MENU_DELETE_LINK, wxString( _("Delete") ), wxEmptyString,  wxITEM_NORMAL );
+#ifdef __WXQT__
+            menuItemDelete->SetFont(sFont);
+#endif
+            popup->Append( menuItemDelete );
+
+            wxMenuItem* menuItemEdit = new wxMenuItem( popup, ID_RCLK_MENU_EDIT_LINK, wxString( _("Edit") ), wxEmptyString,  wxITEM_NORMAL );
+#ifdef __WXQT__
+            menuItemEdit->SetFont(sFont);
+#endif
+            popup->Append( menuItemEdit );
+
+        }
+        
+        wxMenuItem* menuItemAdd = new wxMenuItem( popup, ID_RCLK_MENU_ADD_LINK, wxString( _("Add New") ), wxEmptyString,  wxITEM_NORMAL );
+#ifdef __WXQT__
+        menuItemAdd->SetFont(sFont);
+#endif
+        popup->Append( menuItemAdd );
+
+        m_contextObject = event.GetEventObject();
+        popup->Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MarkInfoDlg::On_html_link_popupmenu_Click), NULL, this);
+        wxPoint p = m_scrolledWindowLinks->GetPosition();
+        p.x += m_scrolledWindowLinks->GetSize().x / 2;
+        PopupMenu( popup, p );
+        delete popup;        
+
+        //m_scrolledWindowLinks->PopupMenu( m_menuLink,
+            //m_pEditedLink->GetPosition().x /*+ event.GetPosition().x*/,
+            //m_pEditedLink->GetPosition().y /*+ event.GetPosition().y*/ );
+    }
+/*
+    wxPoint pos = event.GetPosition();
+    i_htmlList_item = -1; 
+    for( int i=0; i <  (int)GetSimpleBox()->GetCount(); i++ )
+    {
+        wxRect rect = GetSimpleBox()->GetItemRect( i );
+        if( rect.Contains( pos) ){
+            i_htmlList_item = i;
+            break;
+        }            
+    }
+
+ */    
+#endif
+}
+
+void MarkInfoDlg::OnAddLink( wxCommandEvent& event )
+{
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+    evt.SetId(ID_RCLK_MENU_ADD_LINK);
+    
+    On_html_link_popupmenu_Click( evt );
 }
 
 void MarkInfoDlg::On_html_link_popupmenu_Click( wxCommandEvent& event )

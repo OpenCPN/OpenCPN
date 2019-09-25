@@ -284,6 +284,12 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textCtrlExtDescription;
         wxTextCtrl*             m_textCtrlGpx;
         wxTextCtrl*             m_textCtrlGuid;
+        wxScrolledWindow        *m_scrolledWindowLinks;
+        wxHyperlinkCtrl         *m_hyperlink17;
+        wxMenu                  *m_menuLink;
+        wxToggleButton          *m_toggleBtnEdit;
+        wxButton                *m_buttonAddLink;
+        
 #ifdef __OCPN__ANDROID__        
         wxChoice*               m_comboBoxTideStation;
 #else
@@ -307,7 +313,8 @@ class MarkInfoDlg : public wxFrame
         wxArrayString           m_choiceTideChoices;
         wxBitmap                m_bmTide;
         int                     m_sizeMetric;
-        
+        wxHyperlinkCtrl         *m_pEditedLink;
+
         void initialize_images(void);
         void OnBitmapCombClick(wxCommandEvent& event);
         void OnPositionCtlUpdated( wxCommandEvent& event );
@@ -326,6 +333,8 @@ class MarkInfoDlg : public wxFrame
         void m_htmlListContextMenu( wxMouseEvent &event );
         void OnRightClickLatLon( wxCommandEvent& event );
         void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
+        void OnHyperLinkClick( wxHyperlinkEvent &event );
+
         void On_html_link_popupmenu_Click( wxCommandEvent& event );
         void DefautlBtnClicked( wxCommandEvent& event );
         void OnNotebookPageChanged( wxNotebookEvent& event );
@@ -333,7 +342,8 @@ class MarkInfoDlg : public wxFrame
         void OnTideStationCombobox( wxCommandEvent& event);
         void OnClose( wxCloseEvent& event );
         void ShowTidesBtnClicked( wxCommandEvent& event );
-        
+        void OnAddLink( wxCommandEvent& event );
+
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
         ~MarkInfoDlg();
