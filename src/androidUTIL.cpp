@@ -30,6 +30,7 @@
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
+#include <wx/fontpicker.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -360,6 +361,9 @@ extern bool     g_btrackContinuous;
 int doAndroidPersistState();
 
 bool            bInConfigChange;
+
+//      Some dummy devices to ensure plugins have static access to these classes not used elsewhere
+wxFontPickerEvent       g_dummy_wxfpe;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
@@ -2561,7 +2565,7 @@ double GetAndroidDisplaySize()
     long androidHeight = 1;
     long androidDmWidth = 2;
     long androidDmHeight = 1;
-    long abh;
+    long abh = 1;
     
     wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){

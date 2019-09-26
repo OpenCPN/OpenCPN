@@ -584,15 +584,22 @@ ENDIF(NOT QT_ANDROID)
 
 IF(QT_ANDROID)
   SET( wxWidgets_LIBRARIES
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1.so
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1.so
+
+        # Link order is critical to avoid circular dependencies
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
+    
     ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
@@ -632,12 +639,19 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
-  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
   ADD_DEFINITIONS( " -Wno-unknown-pragmas")
-  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+   IF(NOT QT_ANDROID)
+    ADD_DEFINITIONS( "-rdynamic" )
+   ENDIF(NOT QT_ANDROID)
+
+  
+  #IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
-  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  #ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
   ADD_DEFINITIONS(" -Wno-deprecated-declarations ")
   # TODO: For libtess2, needs better handling after 5.0.0 cycle.
@@ -730,7 +744,7 @@ IF (NOT WIN32 AND NOT APPLE)
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
     INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
 
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
+    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
     INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
     ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
@@ -1199,7 +1213,7 @@ ENDIF(WIN32 OR APPLE)
 
 IF(QT_ANDROID)
   MESSAGE(STATUS "Building local SQLite3 library.")
-  ADD_LIBRARY(sqlite3 SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
+  ADD_LIBRARY(sqlite3 ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
   SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
 ENDIF(QT_ANDROID)
 
@@ -1361,7 +1375,7 @@ SET(SRC_NMEA0183
         src/nmea0183/mwv.hpp
 )
 IF(QT_ANDROID)
-  ADD_LIBRARY(NMEA0183 SHARED ${SRC_NMEA0183})
+  ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
 ELSE(QT_ANDROID)
   ADD_LIBRARY(NMEA0183 STATIC ${SRC_NMEA0183})
   set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
@@ -2362,7 +2376,7 @@ IF(QT_ANDROID)
   TARGET_LINK_LIBRARIES( gorp GLESv2 EGL )
   TARGET_LINK_LIBRARIES( gorp ${OPENGL_LIBRARIES} )
   
-  MESSAGE (STATUS " OPENGL_LIBRARIE at targetlinklib: ${OPENGL_LIBRARIES}")
+  MESSAGE (STATUS " OPEN_CORE_LIBRARIE at targetlinklib: ${OPENCPN_LIBRARIES}")
 
 ENDIF()
 
