@@ -1268,12 +1268,12 @@ extern "C"{
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
 
-        if(!bInConfigChange){
-            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-            evt.SetId( ID_CMD_TRIGGER_RESIZE );
-            if(g_androidUtilHandler)
-                g_androidUtilHandler->AddPendingEvent(evt);
-        }
+//         if(!bInConfigChange){
+//             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+//             evt.SetId( ID_CMD_TRIGGER_RESIZE );
+//             if(g_androidUtilHandler)
+//                 g_androidUtilHandler->AddPendingEvent(evt);
+//         }
 
         return ret;
     }
