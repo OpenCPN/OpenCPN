@@ -5559,7 +5559,25 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                         if ( curAttrName == _T("PERSTA")) ts = _("Period starts: ") + ts + wxT("  (")+ value + wxT(")"); 
                         value= ts;
                     }    
-                } 
+                }
+                if ( curAttrName == _T("TS_TSP")){
+                    wxArrayString as;
+                    wxString ts;
+                    wxStringTokenizer tk(value,  wxT(","));
+                    while ( tk.HasMoreTokens() )
+                        as.Add( tk.GetNextToken() );
+                    if (as.Count() > 14){
+                        ts= _T("Tidal Streams referred to<br>HW at <b>");
+                        ts.Append(as[1]).Append(_T("</b><br><table >"));
+                        size_t j=2;
+                        while( j < as.Count()-2 ){
+                            ts.Append(_T("<tr><td>")).Append( wxString::Format(wxT("%i"), (int)j/2 - 7)).Append(_T("</td><td>")).Append(as[j+1]).Append(_T("&#176</td><td>")).Append(as[j+2]).Append(_T("</td></tr>"));
+                            j=j+2;                        
+                        }
+                        ts.Append(_T("</table>"));
+                        value = ts;
+                    }
+                }
                     
                 if( isLight ) {
                     assert( curLight != nullptr);
