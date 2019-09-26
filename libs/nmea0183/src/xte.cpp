@@ -126,7 +126,16 @@ bool XTE::Write( SENTENCE& sentence )
 
    sentence += IsLoranBlinkOK;
    sentence += IsLoranCCycleLockOK;
-   sentence += CrossTrackErrorDistance;
+
+
+  // sentence += CrossTrackErrorDistance;
+  // use special version for XTE to increase precision
+   wxString temp_string;
+   temp_string.Printf(_T("%.5f"), CrossTrackErrorDistance);
+   sentence += temp_string;
+
+
+
 
    if(DirectionToSteer == Left)
        sentence += _T("L");
