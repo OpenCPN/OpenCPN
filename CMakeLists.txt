@@ -1858,6 +1858,23 @@ if (APPLE)
   )
   target_sources(${PACKAGE_NAME} PRIVATE ${CMAKE_BINARY_DIR}/ocpn-plugins.xml)
 
+  # ocpn-plugins.xml sources
+  file(GLOB PLUGIN_XML ${CMAKE_SOURCE_DIR}/plugins/metadata/*.xml)
+  foreach (_pluginXml ${PLUGIN_XML})
+    set_source_files_properties(
+        ${_pluginXml}
+      PROPERTIES
+      MACOSX_PACKAGE_LOCATION
+      SharedSupport/plugins-metadata
+    )
+  endforeach ()
+  message(STATUS "PLUGIN_XML: ${PLUGIN_XML}")
+  install(
+    FILES ${PLUGIN_XML}
+    DESTINATION ${PREFIX_PKGDATA}/plugins-metadata
+  )
+  target_sources(${PACKAGE_NAME} PRIVATE ${PLUGIN_XML})
+
   # Known, downloadable plugin icons
   file(GLOB PLUGIN_ICONS ${CMAKE_SOURCE_DIR}/plugins/icons/*)
   foreach (_pluginIcon ${PLUGIN_ICONS})
@@ -2119,6 +2136,10 @@ if (NOT APPLE)
   install(
       FILES ${CMAKE_BINARY_DIR}/ocpn-plugins.xml
       DESTINATION ${PREFIX_PKGDATA}
+  )
+  install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/plugins/metadata/
+    DESTINATION ${PREFIX_PKGDATA}/plugins-metadata
   )
 
   if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
