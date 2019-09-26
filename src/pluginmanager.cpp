@@ -2869,6 +2869,12 @@ void PushNMEABuffer( wxString buf )
     g_pMUX->AddPendingEvent( event );
 }
 
+void ZeroXTE() {
+  if (g_pRouteMan){
+  g_pRouteMan->ZeroCurrentXTEToActivePoint();
+  }
+}
+
 wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom)
 {
 
