@@ -152,6 +152,7 @@ ELSE(TINYXML_FOUND)
 ENDIF(TINYXML_FOUND)
 
 IF (QT_ANDROID )
+    ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
     SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")

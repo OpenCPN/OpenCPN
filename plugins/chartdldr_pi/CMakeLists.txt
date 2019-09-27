@@ -147,6 +147,7 @@ ENDIF ()
 IF(QT_ANDROID)
   ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
   ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
+  ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
 ENDIF(QT_ANDROID)
 
 IF(TINYXML_FOUND)
