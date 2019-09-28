@@ -84,6 +84,7 @@ IF (NOT QT_ANDROID )
 ELSE (NOT QT_ANDROID )
     ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} GLESv2 EGL z)
     SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
 ENDIF (NOT QT_ANDROID )
 

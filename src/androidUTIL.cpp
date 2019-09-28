@@ -416,6 +416,14 @@ androidUtilHandler::androidUtilHandler()
     m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
  
     m_bskipConfirm = false;
+    
+    // We do a few little dummy class accesses here, to cause the static link to wxWidgets to bring in some
+    // class members required by some plugins, that would be missing otherwise.
+    
+    wxRegion a(0,0,1,1);
+    wxRegion b(0,0,2,2);
+    bool c = a.IsEqual(b);
+
 }
 
        
