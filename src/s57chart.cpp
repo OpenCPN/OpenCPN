@@ -5426,29 +5426,31 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                         ts.Empty();                        
                         if ( m ) ts =  wxDateTime::GetMonthName(dt.GetMonth());                        
                         if ( d ) ts.Append( wxString::Format(wxT(" %d"), dt.GetDay()) );
-                        if( dt.GetYear()>0 ) ts.Append( wxString::Format(wxT(",  %Y"), dt.GetYear() ) );
+                        if( dt.GetYear()>0 ) ts.Append( wxString::Format(wxT(",  %i"), dt.GetYear() ) );
                         if ( curAttrName == _T("PEREND")) ts = _("Period ends: ") + ts + wxT("  (")+ value + wxT(")");
-                        if ( curAttrName == _T("PERSTA")) ts = _("Period starts: ") + ts + wxT("  (")+ value + wxT(")"); 
+                        if ( curAttrName == _T("PERSTA")) ts = _("Period starts: ") + ts + wxT("  (")+ value + wxT(")");
+                        if ( curAttrName == _T("DATEND")) ts = _("Date ending: ") + ts + wxT("  (")+ value + wxT(")");
+                        if ( curAttrName == _T("DATSTA")) ts = _("Date starting: ") + ts + wxT("  (")+ value + wxT(")");
                         value= ts;
                     }    
                 }
-                if ( curAttrName == _T("TS_TSP")){
+                if ( curAttrName == _T("TS_TSP")){ //Tidal current applet
                     wxArrayString as;
-                    wxString ts;
+                    wxString ts, ts1;
                     wxStringTokenizer tk(value,  wxT(","));
-                    while ( tk.HasMoreTokens() )
-                        as.Add( tk.GetNextToken() );
-                    if (as.Count() > 14){
-                        ts= _T("Tidal Streams referred to<br>HW at <b>");
-                        ts.Append(as[1]).Append(_T("</b><br><table >"));
-                        size_t j=2;
-                        while( j < as.Count()-2 ){
-                            ts.Append(_T("<tr><td>")).Append( wxString::Format(wxT("%i"), (int)j/2 - 7)).Append(_T("</td><td>")).Append(as[j+1]).Append(_T("&#176</td><td>")).Append(as[j+2]).Append(_T("</td></tr>"));
-                            j=j+2;                        
-                        }
+                    ts = tk.GetNextToken(); //we don't show this part (the TT entry number)'
+                    ts1 = tk.GetNextToken(); //Now has the tidal reference port name'
+                    ts =  _T("Tidal Streams referred to<br><b>");
+                    ts.Append(tk.GetNextToken()).Append(_T("</b> at <b>")).Append(ts1);
+                    ts.Append(/*tk.GetNextToken()).Append(*/_T("</b><br><table >"))  ;
+                    int i = -6;
+                    while ( tk.HasMoreTokens() ){ // fill the current table
+                        ts.Append(_T("<tr><td>")).Append( wxString::Format(wxT("%i"),i)).Append(_T("</td><td>"))
+                            .Append(tk.GetNextToken()).Append(_T("&#176</td><td>")).Append(tk.GetNextToken()).Append(_T("</td></tr>")); 
+                        i++;
+                    }   
                         ts.Append(_T("</table>"));
                         value = ts;
-                    }
                 }
                     
                 if( isLight ) {
