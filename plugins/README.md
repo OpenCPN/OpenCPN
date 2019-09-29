@@ -23,26 +23,40 @@ see below.
 
 ocpn-plugins.xml
 ----------------
-Creating a new metadata file should be straight-forward using existing
+The file ocpn-plugins.xml represents the plugin catalogue available for
+users to install. This file is created by merging a set of separate
+xml files. The catalogue could be re-generated from sources.
+
+Creating a new xml file should be straight-forward using existing
 examples. Patching existing xml files is of course also possible.
 BEWARE: The name is as returned by the `common_name` function,
 typically without the *_pi* suffix.
 
-Once a new metadata file is created or an existing is patched a new file
-*ocpn-plugins.xml* should be created.  By default, a system-wide
-*ocpn-plugins.xml* file is installed in the common data directory.
-There should be no reason to patch this.
+The process to regenerate the catalogue starts on Windows by adding the
+OpenCPN install directory to %PATH%, like:
 
-Instead, create a new file by first dropping the new or modified file
-into the *plugins/metadata* directory and run something like:
+   C:> set PATH=%PATH%;C:\Program Files (x86)\OpenCPN
 
-    plugins/metadata/metadata-builder plugins/metadata/* >
-        ~/.opencpn/ocpn-plugins.xml
+Windows and MacOS users also needs to ensure that python >= 3.4 is
+installed and available as the command `python`.
+ 
+The procedure is then done on the command line using the *ocpn-metadata*
+tool. This works in two steps. The first is to create a private set of
+xml source files, something like:
 
-The path to ocpn-plugins.xml is platform-dependent, see below. A
-*ocpn-plugins.xml* file installed in the private directory
-overrides the system-wide default one.
+    $ ocpn-metadata copy
+    New xml sources copied to /home/al/.opencpn/plugins-metadata 
 
+Now is the time to patch or add new xml files in
+*/home/al/.opencpn/plugins-metadata*. When done, generate the new 
+ocpn-plugins.xml using:
+
+    $ ocpn-metadata generate
+    Generated new ocpn-plugins.xml at /home/al/.opencpn/ocpn-plugins.xml
+
+The generated file is by default placed in a location overriding the
+distributed one (see Platform Notes below). ocpn-metadata has command line
+options to tweak the locations used, see `ocpn-metadata --help`
 
 Icons
 -----
@@ -80,7 +94,6 @@ Platform notes - Windows
 System-wide metadata: *C:\Program Files (x86)\OpenCPN\ocpn-plugins.xml*
 
 User metadata (overrides system if existing):
-    *%LOCALAPPDATA%\opencpn\ocpn-plugins.xml*, normally expanded to
     *:C:\ProgramData\opencpn\ocpn-plugins.xml*
 
 Tarball layout (top directory could have any name):

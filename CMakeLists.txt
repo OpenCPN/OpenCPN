@@ -2118,6 +2118,12 @@ endif ()
 #
 install(FILES data/license.txt DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
 
+if (WIN32)
+    install(FILES tools/ocpn-metadata.bat tools/ocpn-metadata DESTINATION ".")
+else ()
+    install(FILES tools/ocpn-metadata DESTINATION ${PREFIX_BIN})
+endif ()
+
 if (NOT APPLE)
 
   if (WIN32)
