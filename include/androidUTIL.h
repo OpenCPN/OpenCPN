@@ -164,6 +164,7 @@ void androidCancelTimedToast();
 void androidDisplayToast(wxString message);
 
 void androidEnableRotation( void );
+int androidGetScreenOrientation();
 
 //      SVG Support
 wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );

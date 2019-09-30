@@ -673,19 +673,22 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
+#if 0    
 #ifdef __OCPN__ANDROID__ 
      if(!g_running){
          wxLogMessage(_T("Got OnSize event while NOT running"));
          event.Skip();
+         qDebug() << "OnSizeB";
+
          return;
      }
+#endif
 #endif
 
     if(!IsShown())
         return;
-    
+
     SetCurrent(*m_pcontext);
-    
     
     if( !g_bopengl ) {
         SetSize( GetSize().x, GetSize().y );
@@ -715,7 +718,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     GetClientSize( &m_pParentCanvas->m_canvas_width, &m_pParentCanvas->m_canvas_height );
 
 #ifdef USE_ANDROID_GLES2
-    qDebug() << "OnSize()" << m_pParentCanvas->m_canvasIndex << m_pParentCanvas->m_canvas_width << m_pParentCanvas->m_canvas_height;
+    qDebug() << " glChartCanvas::OnSize()" << m_pParentCanvas->m_canvasIndex << m_pParentCanvas->m_canvas_width << m_pParentCanvas->m_canvas_height;
 
     if(m_pParentCanvas->m_canvasIndex >0){
         int xnew = gFrame->GetClientSize().x -m_pParentCanvas->m_canvas_width;

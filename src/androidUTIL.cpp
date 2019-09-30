@@ -1280,12 +1280,44 @@ extern "C"{
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
 
-//         if(!bInConfigChange){
-//             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-//             evt.SetId( ID_CMD_TRIGGER_RESIZE );
-//             if(g_androidUtilHandler)
-//                 g_androidUtilHandler->AddPendingEvent(evt);
-//         }
+        //  Check screen orientation is sensible
+        int orient = androidGetScreenOrientation();
+        qDebug() << "Orient: " << orient;
+        if(gFrame && gFrame->GetPrimaryCanvas()){
+            qDebug() << "Size: " << gFrame->GetSize().x << gFrame->GetSize().y;
+            qDebug() << "CanvasSize: " << gFrame->GetPrimaryCanvas()->GetSize().x << gFrame->GetPrimaryCanvas()->GetSize().y;
+            
+            if(gFrame->GetSize().y > gFrame->GetSize().x){
+                qDebug() << "gFrame is Portrait";
+                if((orient == 2) || (orient == 4)){
+                    qDebug() << "NEEDS RESIZE";
+                    GetAndroidDisplaySize();
+                    wxSize new_size = getAndroidDisplayDimensions();
+                    qDebug() << "NewSize: " << new_size.x << new_size.y;
+                    config_size = new_size;
+        
+                    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+                    evt.SetId( ID_CMD_TRIGGER_RESIZE );
+                    if(g_androidUtilHandler)
+                        g_androidUtilHandler->AddPendingEvent(evt);
+                }
+            }
+            else{
+                qDebug() << "gFrame is Landscape";
+                if((orient == 1) || (orient == 3)){
+                    qDebug() << "NEEDS RESIZE";
+                    GetAndroidDisplaySize();
+                    wxSize new_size = getAndroidDisplayDimensions();
+                    qDebug() << "NewSize: " << new_size.x << new_size.y;
+                    config_size = new_size;
+        
+                    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+                    evt.SetId( ID_CMD_TRIGGER_RESIZE );
+                    if(g_androidUtilHandler)
+                        g_androidUtilHandler->AddPendingEvent(evt);
+                }
+            }
+        }
 
         return ret;
     }
@@ -2086,6 +2118,13 @@ bool androidSetFullscreen( bool bFull )
     return true;
 }
 
+int androidGetScreenOrientation(){
+    wxString s = callActivityMethod_vs("getScreenOrientation");
+    long result = -1;
+    s.ToLong(&result);
+    return result;
+}
+    
 void androidLaunchHelpView()
 {
     qDebug() << "androidLaunchHelpView ";
