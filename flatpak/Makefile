@@ -11,8 +11,8 @@ REPO_URL        ?= http://leamas.fedorapeople.org/opencpn/repo
 all: build sign
 
 build:
-	flatpak-builder --force-clean app org.opencpn.OpenCPN.yaml
-	flatpak build-export repo/repo app $(BRANCH)
+	flatpak-builder --repo=repo/repo --force-clean \
+	    app org.opencpn.OpenCPN.yaml
 	flatpak install -y --user --reinstall \
 	    $(CURDIR)/repo/repo org.opencpn.OpenCPN
 
