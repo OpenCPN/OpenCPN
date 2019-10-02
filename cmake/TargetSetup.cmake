@@ -26,10 +26,14 @@ elseif (APPLE)
     execute_process(COMMAND "sw_vers" "-productVersion"
                     OUTPUT_VARIABLE PKG_TARGET_VERSION)
 elseif (UNIX)
-    # Some linux dist:
-    execute_process(COMMAND "lsb_release" "-is"
+    find_program(LSB_RELEASE NAMES lsb_release)
+    if (NOT LSB_RELEASE)
+        message(FATAL_ERROR
+                "Cannot find the lsb_release program, please install.")
+    endif ()
+    execute_process(COMMAND ${LSB_RELEASE} "-is"
                     OUTPUT_VARIABLE PKG_TARGET)
-    execute_process(COMMAND "lsb_release" "-rs"
+    execute_process(COMMAND ${LSB_RELEASE} "-rs"
                     OUTPUT_VARIABLE PKG_TARGET_VERSION)
 else ()
     set(PKG_TARGET "unknown")
