@@ -59,6 +59,9 @@ def get_args(paths):
     copy_parser.add_argument(
             '--destdir', metavar='dir', default=paths["userdir"],
             help='destination directory [%s]' % paths["userdir"])
+    copy_parser.add_argument(
+            '--force', action="store_true",
+            help='Overwrite possibly existing source files.')
     generate_parser.add_argument(
             '--userdir', metavar='dir', default=paths["userdir"],
             help='source directory [%s]' % paths["userdir"])
@@ -96,6 +99,8 @@ def main():
             print("Cannot find system metadata directory " + args.systemdir)
             print("Consider using --systemdir option.")
             sys.exit(1)
+        if os.path.exists(args.destdir) and args.force:
+            shutil.rmtree(args.destdir)
         if os.path.exists(args.destdir):
             print("The directory %s is in the way, please remove"
                   % args.destdir)
