@@ -361,6 +361,7 @@ extern bool     g_btrackContinuous;
 int doAndroidPersistState();
 
 bool            bInConfigChange;
+AudioDoneCallback s_soundCallBack;
 
 //      Some dummy devices to ensure plugins have static access to these classes not used elsewhere
 wxFontPickerEvent       g_dummy_wxfpe;
@@ -423,7 +424,7 @@ androidUtilHandler::androidUtilHandler()
     wxRegion a(0,0,1,1);
     wxRegion b(0,0,2,2);
     bool c = a.IsEqual(b);
-
+    
 }
 
        
@@ -814,7 +815,15 @@ void androidUtilHandler::OnScheduledEvent( wxCommandEvent& event )
             m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
             bInConfigChange = true;
             break;
-        
+ 
+        case ID_CMD_SOUND_FINISHED:
+            //qDebug() << "Trigger SoundFinished";
+            if(s_soundCallBack){
+               s_soundCallBack(0);              // No user data
+               s_soundCallBack = 0;
+            }
+            break;
+ 
 /* 
         case ID_CMD_STOP_RESIZE:    
            // Stop any underway timer chain
@@ -2901,6 +2910,36 @@ int androidGetVersionCode()
     return rv;
 }
 
+wxString androidGetVersionName()
+{
+       //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        //qDebug() << "Activity is not valid";
+        return _T("ERROR");
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getAndroidVersionName", "()Ljava/lang/String;");
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    JNIEnv* jenv;
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+}
+
 //---------------------------------------------------------------
 //      GPS Device Support
 //---------------------------------------------------------------
@@ -4036,15 +4075,31 @@ wxString getFontQtStylesheet(wxFont *font)
 
     
 
-bool androidPlaySound( wxString soundfile )
+bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack )
 {
     //qDebug() << "androidPlay";
-    
+    s_soundCallBack = callBack;    
     wxString result = callActivityMethod_ss("playSound", soundfile);
     
     return true;
 }
     
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onSoundFinished(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onSoundFinished";
+        
+        if(s_soundCallBack){
+            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+            evt.SetId( ID_CMD_SOUND_FINISHED );
+            if(g_androidUtilHandler)
+                g_androidUtilHandler->AddPendingEvent(evt);
+        }
+
+            
+        return 98;
+    }
+}
 
 wxString androidGetSupplementalLicense( void )
 {

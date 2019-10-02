@@ -42,6 +42,7 @@ class AndroidSound: public OcpnSound
         bool Reset() /*override*/ { return true; };
         bool Play() override;
         bool Stop() override;
+        void SetFinishedCallback(AudioDoneCallback cb, void* userData);
 
    protected:
         std::string m_soundfile;

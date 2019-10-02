@@ -47,6 +47,9 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 #include "navutil.h"
+#ifdef __OCPN__ANDROID__
+  #include "androidUTIL.h"
+#endif  
 
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
@@ -56,13 +59,6 @@ extern bool g_bresponsive;
 
 wxString OpenCPNVersion =  wxString::Format( wxT("\n      Version %s"), VERSION_FULL);
     
-    //%i.%i.%i Build "),
-    //                  VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
-    //+ wxString::FromAscii(VERSION_DATE);
-
-
-    wxString OpenCPNVersionAndroid = wxString::Format(_T("OpenCPN for Android Version %i.%i.%i<br>Base Build Date %s"),
-                                     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
@@ -286,6 +282,10 @@ void about::Populate( void )
         aboutText.Append( _T("<i>") );
 
 #ifdef __OCPN__ANDROID__    
+    wxString msg;
+    msg.Printf( _T(" [%d]"), androidGetVersionCode() );
+    wxString OpenCPNVersionAndroid = _T("OpenCPN for Android Version ") + androidGetVersionName() + msg;
+
     aboutText.Append( AboutText + OpenCPNVersionAndroid  + OpenCPNInfoAlt );
 #else
     aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfo );

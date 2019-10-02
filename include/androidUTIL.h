@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include "OCPN_Sound.h"
+
 class ArrayOfCDI;
 
 #include <QString>
@@ -71,6 +73,7 @@ extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint( bool bskipConfirm = false);
 extern int androidGetVersionCode();
+extern wxString androidGetVersionName();
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
@@ -125,7 +128,7 @@ extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 
-bool androidPlaySound( wxString soundfile );
+bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack );
 
 bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
