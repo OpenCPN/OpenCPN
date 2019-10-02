@@ -73,17 +73,11 @@ SemanticVersion::SemanticVersion(
 
 bool SemanticVersion::operator < (const SemanticVersion& other)
 {
-    if (major < other.major) return true;
-    if (major > other.major) return false;
-    if (minor < other.minor) return true;
-    if (minor > other.minor) return false;
-    if (patch < other.patch) return true;
-    if (patch > other.patch) return false;
-    int len = std::min(pre.length(), other.pre.length());
-    if (pre.substr(0, len) != other.pre.substr(0, len)) {
-        return pre.substr(0, len) < other.pre.substr(0, len);
-    }
-    return pre.length() > other.pre.length();
+    if (major != other.major) return major < other.major;
+    if (minor != other.minor) return minor < other.minor;
+    if (patch != other.patch) return patch < other.patch;
+    if (pre != other.pre) return pre < other.pre;
+    return false;
 }
 
 bool SemanticVersion::operator == (const SemanticVersion& other)

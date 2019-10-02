@@ -38,7 +38,7 @@
  * be integers. The tag is a pre-release marker, the build is build info.
  *
  * Parsing and comparing follows the spec besides the pre-release tag which 
- * is sorted strictly lexically (no dotted parts support).
+ * is sorted strictly lexically (no dotted parts or numeric ordering support).
  *
  * See: https://semver.org/
  */
