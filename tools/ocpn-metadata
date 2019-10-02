@@ -68,6 +68,9 @@ def get_args(paths):
     generate_parser.add_argument(
             '--destfile', metavar='path', default=paths["destfile"],
             help='destination path [%s]' % paths["destfile"])
+    generate_parser.add_argument(
+            '--force', action="store_true",
+            help='Overwrite possibly existing ocpn-plugins.xml.')
     args = parser.parse_args()
     return args
 
@@ -102,14 +105,21 @@ def main():
         if os.path.exists(args.destdir) and args.force:
             shutil.rmtree(args.destdir)
         if os.path.exists(args.destdir):
-            print("The directory %s is in the way, please remove"
-                  % args.destdir)
+            print("The directory %s is in the way" % args.destdir)
+            print("Please remove or use --force")
             sys.exit(1)
         shutil.copytree(args.systemdir, args.destdir)
         print("New xml sources copied to " + args.destdir)
     else:
         if not os.path.exists(args.userdir):
             print("No private sources found. Did you forget to run copy first?")
+            print("Otherwise consider using --userdir.")
+            sys.exit(1)
+        if os.path.exists(args.destfile) and args.force:
+            os.remove(args.destfile)
+        if os.path.exists(args.destfile):
+            print("The file %s is in the way" % args.destfile)
+            print("Please remove or use --force")
             sys.exit(1)
         generate(args.userdir, args.destfile)
         print("Generated new ocpn-plugins.xml at " + args.destfile)
