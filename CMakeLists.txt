@@ -192,6 +192,7 @@ else (APPLE OR WIN32)
 endif (APPLE OR WIN32)
 
 option(OCPN_VERBOSE "Make verbose builds"  ON)
+option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
 
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
@@ -382,17 +383,19 @@ message(
 # TODO: Should we use  -fno-stack-protector IF NOT DEBUGGING CFLAGS="-O2
 # -march=native"
 if (NOT WIN32 AND NOT APPLE)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-fexceptions"
-    "-rdynamic"
-    "-fno-strict-aliasing"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-fexceptions"
+      "-rdynamic"
+      "-fno-strict-aliasing"
+      "-Wno-deprecated-declarations"
+    )
+  endif ()
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
   endif ()
-  add_compile_options("-Wno-deprecated-declarations")
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
@@ -402,29 +405,33 @@ if (NOT WIN32 AND NOT APPLE)
 endif (NOT WIN32 AND NOT APPLE)
 
 if (MINGW)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-Wno-cpp"
-    "-fexceptions"
-    "-fno-strict-aliasing"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-Wno-cpp"
+      "-fexceptions"
+      "-fno-strict-aliasing"
+    )
+  endif ()
   add_definitions("-DPSAPI_VERSION=1")
   add_definitions("-DUNICODE" "-D_UNICODE")
 endif (MINGW)
 
 if (APPLE)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-fexceptions"
-    "-Wno-overloaded-virtual"
-    "-fno-strict-aliasing"
-    "-Wno-deprecated"
-    "-Wno-deprecated-declarations"
-    "-Wno-unknown-pragmas"
-    "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-fexceptions"
+      "-Wno-overloaded-virtual"
+      "-fno-strict-aliasing"
+      "-Wno-deprecated"
+      "-Wno-deprecated-declarations"
+      "-Wno-unknown-pragmas"
+      "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+  endif ()
 endif (APPLE)
 
 if (APPLE)
