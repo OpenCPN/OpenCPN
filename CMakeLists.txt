@@ -30,7 +30,7 @@ Help:
         cmake -LH  | grep -B1 OCPN_
 
 Renamed options:
-    From version TBD all OpenCPN configuration options have a OCPN_ prefix
+    From version 5.0.0 all OpenCPN configuration options have a OCPN_ prefix
     Many older options are renamed, some examples:
 
         ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
@@ -44,7 +44,7 @@ Renamed options:
 
 
 Installation paths:
-  - Since TBD OpenCPN supports the GNU install paths, see
+  - Since 5.0.0 OpenCPN supports the GNU install paths, see
     https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
   - Use CMAKE_INSTALL_LIBDIR to change the base directory for plugins;
     defaults to library location on most platforms, but is 'lib' on
