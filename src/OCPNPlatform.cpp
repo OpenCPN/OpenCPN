@@ -1406,33 +1406,6 @@ wxString &OCPNPlatform::GetPrivateDataDir()
 }
 
 
-/** Expand environment and drop non-existing paths in input.*/
-static wxString normalizeLoadPath(const wxString dirs) {
-    wxString loadPath("");
-    wxStringTokenizer tokens(dirs, PATH_SEP);
-    while (tokens.HasMoreTokens()) {
-        wxString dir = tokens.GetNextToken();
-        if (dir.EndsWith(wxFileName::GetPathSeparator())) {
-            dir.RemoveLast();
-        }
-        if (!dir.EndsWith("opencpn")) {
-            dir += wxFileName::GetPathSeparator();
-            dir += "opencpn";
-        }
-        wxFileName path(dir);
-        path.Normalize();
-        if (!path.Exists()) {
-            continue;
-        }
-        if (loadPath != "") {
-            loadPath += PATH_SEP;
-        }
-        loadPath += path.GetFullPath();
-    }
-    return loadPath;
-}
-
-
 static wxString ExpandPaths(wxString paths, OCPNPlatform* platform);
 
 

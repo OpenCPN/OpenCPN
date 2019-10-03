@@ -151,16 +151,6 @@ static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
 }
 
 
-/** Return PluginContainer with given name or 0 if not found */
-static PlugInContainer*
-    PlugInByName(const std::string name, ArrayOfPlugIns* plugins)
-{
-    auto ix = PlugInIxByName(name, plugins);
-    return ix == -1 ? 0 : plugins->Item(ix);
-}
-
-
-
 static void XMLCALL elementData(void* userData, const XML_Char* s, int len)
 {
     parse_ctx* ctx = static_cast<parse_ctx*>(userData);
@@ -249,21 +239,6 @@ static std::string pluginsConfigDir()
         mkdir(pluginDataDir);
     }
     return pluginDataDir;
-}
-
-
-static std::string getMetadataPath()
-{
-    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
-    path += SEP;
-    path += "ocpn-plugins.xml";
-    if (ocpn::exists(path)) {
-        return path;
-    }
-    path = g_Platform->GetSharedDataDir().ToStdString();
-    path += SEP ;
-    path += "ocpn-plugins.xml";
-    return path;
 }
 
 
@@ -624,85 +599,6 @@ static bool extractTarball(const std::string path, std::string& filelist)
 }
 
 
-static bool
-pluginByIndex(const char* pluginIx, PluginMetadata& plugin, bool useAvailable)
-{
-    using namespace std;
-
-    unsigned ix;
-    stringstream iss(pluginIx);
-    iss >> ix;
-    if (iss.fail()) {
-        wxLogWarning("Illegal numeric input");
-        return false;
-    }
-    auto handler = PluginHandler::getInstance();
-    std::vector<PluginMetadata> plugins;
-    if  (useAvailable) {
-        plugins = PluginHandler::getInstance()->getAvailable();
-    }
-    else {
-        plugins = PluginHandler::getInstance()->getInstalled();
-    }
-    if (ix >= plugins.size()) {
-        wxLogWarning("Numeric value out of range");
-        return false;
-    }
-    plugin = plugins[ix];
-    plugin.ix = ix;
-    return true;
-}
-
-
-/** Given index, try to return plugin from list of available. */
-static bool availableByIndex(const char* pluginIx, PluginMetadata& plugin)
-{
-    return pluginByIndex(pluginIx, plugin, true);
-}
-
-
-/** Given index, try to return plugin from list of installed. */
-static bool installedByIndex(const char* pluginIx, PluginMetadata& plugin)
-{
-    return pluginByIndex(pluginIx, plugin, false);
-}
-
-
-static bool install(const char* pluginIx)
-{
-    using namespace std;
-
-    PluginMetadata plugin;
-    if (!availableByIndex(pluginIx, plugin)) {
-        return false;
-    }
-    return PluginHandler::getInstance()->install(plugin);
-}
-
-
-static bool uninstall(const char* pluginIx)
-{
-    using namespace std;
-
-    PluginMetadata plugin;
-    if (!installedByIndex(pluginIx, plugin)) {
-        wxLogMessage("uninstall: Cannot lookup plugin with ix: %s", pluginIx);
-        return false;
-    }
-    if (!g_pi_manager->UnLoadPlugIn(plugin.ix)) {
-        wxLogMessage("uninstall: Cannot unload, plugin ix: %d", plugin.ix);
-        return false;
-    }
-    bool ok = PluginHandler::getInstance()->uninstall(plugin.name);
-    if (!ok) {
-        wxLogMessage("uninstall: Cannot uninstall, plugin: %s",
-                     plugin.name.c_str());
-        return false;
-    }
-    return true;
-}
-
-
 PluginHandler* PluginHandler::getInstance() {
     static PluginHandler* instance = 0;
     if (!instance) {
@@ -710,6 +606,7 @@ PluginHandler* PluginHandler::getInstance() {
     }
     return instance;
 }
+
 
 bool PluginHandler::isPluginWritable(std::string name)
 {

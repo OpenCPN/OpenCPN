@@ -487,7 +487,6 @@ bool PlugInManager::LoadAllPlugIns(bool load_enabled, bool b_enable_blackdialog)
 {
     using namespace std;
     static const wxString sep = wxFileName::GetPathSeparator();
-    const char* envdirs =  0;
     vector<string> dirs = PluginPaths::getInstance()->Libdirs();
     wxLogMessage(_T("PlugInManager: loading plugins from %s"),
                  ocpn::join(dirs, ';'));
@@ -3596,7 +3595,6 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint *dst, /* const*/ RoutePoint *sr
 bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint *pwaypoint)
 {
     //  Find the RoutePoint
-    bool b_found = false;
     RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( GUID );
 
     if(!prp)
@@ -3731,7 +3729,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
 {
     Track *track = new Track();
 
-    PlugIn_Waypoint *pwp;
+    PlugIn_Waypoint *pwp = 0;
     TrackPoint *pWP_src = 0;
     int ip = 0;
 
@@ -7173,7 +7171,6 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& GUID)
 
    // PlugIn_Waypoint *pwp;
    RoutePoint *src_wp;
-   int ip = 0;
    wxRoutePointListNode *node = route->pRoutePointList->GetFirst();
 
    while( node ) {
