@@ -10,12 +10,12 @@ int main(int argc, char** argv)
     SemanticVersion v1;
     SemanticVersion v2;
     if (argc > 1) {
-        SemanticVersion tmp(argv[1]);
+        auto tmp = SemanticVersion::parse(argv[1]);
         v1 = tmp;
         std::cout << "First version: " << v1 << "\n";
     }
     if (argc > 2) {
-        SemanticVersion tmp(argv[2]);
+        auto tmp = SemanticVersion::parse(argv[2]);
         v2 = tmp;
         std::cout << "Second version: " << v2 << "\n";
     }

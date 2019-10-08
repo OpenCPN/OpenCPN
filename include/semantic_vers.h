@@ -53,15 +53,12 @@ struct SemanticVersion
     int major;
     int minor;
     int patch;
-    int post;           // Post-release number e. g., at downstream.
+    int post;           // Post-release number e. g., downstream packaging.
     std::string pre;    // Pre-release tag like alfa.
     std::string build;  // Build info
 
-    /** Construct a "0.0.0" version. */
+    /** Construct a "0.0.0.0" version. */
     SemanticVersion();
-
-    /** Parse a version string, sets major == -1 on errors. */
-    SemanticVersion(std::string version_release);
 
     SemanticVersion(int major, int minor, int rev = 0, int post = 0,
                     std::string pre = "",  std::string build = "");
@@ -75,6 +72,9 @@ struct SemanticVersion
 
     /** Return printable representation. */
     std::string to_string();
+
+    /** Parse a version string, sets major == -1 on errors. */
+    static SemanticVersion parse(std::string s);
 };
 
 /** Dump version string. */

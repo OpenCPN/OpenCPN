@@ -35,30 +35,33 @@
 #undef major                // walk around gnu's major() and minor() macros.
 #undef minor
 
-SemanticVersion::SemanticVersion()
-    :major(0), minor(0), patch(0), post(0), pre(""), build("")
-{}
-
-
-SemanticVersion::SemanticVersion(std::string s)
-    :SemanticVersion()
+SemanticVersion SemanticVersion::parse(std::string s)
 {
     using namespace std;
+
+    SemanticVersion vers;
     size_t pos = s.find('+');
     if (pos != string::npos) {
-        build = s.substr(pos + 1);
+        vers.build = s.substr(pos + 1);
         s = s.substr(0, pos);
     }
     pos = s.find('-');
     if (pos != string::npos) {
-        pre = s.substr(pos + 1);
+        vers.pre = s.substr(pos + 1);
         s = s.substr(0, pos);
     }
-    int r = sscanf(s.c_str(), "%d.%d.%d.%d", &major, &minor, &patch, &post);
+    int r = sscanf(s.c_str(), "%d.%d.%d.%d",
+                   &vers.major, &vers.minor, &vers.patch, &vers.post);
     if (r < 2) {
-        major = -1;
+        vers.major = -1;
     }
+    return vers;
 }
+
+
+SemanticVersion::SemanticVersion()
+    :major(0), minor(0), patch(0), post(0), pre(""), build("")
+{}
 
 
 SemanticVersion::SemanticVersion(int major, int minor, int patch, int post,
