@@ -567,6 +567,9 @@ public:
      */
     virtual int GetPlugInVersionPatch();
 
+    /** Post-release version part, extends the semver spec. */
+    virtual int GetPlugInVersionPost();
+
     /** Pre-release tag version part, see GetPlugInVersionPatch() */
     virtual const char* GetPlugInVersionPre();
 

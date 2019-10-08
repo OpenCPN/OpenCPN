@@ -36,7 +36,7 @@
 #undef minor
 
 SemanticVersion::SemanticVersion()
-    :major(0), minor(0), patch(0), pre(""), build("")
+    :major(0), minor(0), patch(0), post(0), pre(""), build("")
 {}
 
 
@@ -54,19 +54,20 @@ SemanticVersion::SemanticVersion(std::string s)
         pre = s.substr(pos + 1);
         s = s.substr(0, pos);
     }
-    int r = sscanf(s.c_str(), "%d.%d.%d", &major, &minor, &patch);
+    int r = sscanf(s.c_str(), "%d.%d.%d.%d", &major, &minor, &patch, &post);
     if (r < 2) {
         major = -1;
     }
 }
 
 
-SemanticVersion::SemanticVersion(
-    int major, int minor, int patch, std::string pre, std::string build)
+SemanticVersion::SemanticVersion(int major, int minor, int patch, int post,
+                                 std::string pre, std::string build)
 {
     this->major = major;
     this->minor = minor;
     this->patch = patch;
+    this->post = post;
     this->pre = pre;
     this->build = build;
 }
@@ -76,6 +77,7 @@ bool SemanticVersion::operator < (const SemanticVersion& other)
     if (major != other.major) return major < other.major;
     if (minor != other.minor) return minor < other.minor;
     if (patch != other.patch) return patch < other.patch;
+    if (post != other.post) return post < other.post;
     return pre < other.pre;
 }
 
@@ -84,6 +86,7 @@ bool SemanticVersion::operator == (const SemanticVersion& other)
     return major == other.major
         && minor == other.minor
         && patch == other.patch
+        && post == other.post
         && pre == other.pre;
 }
 
@@ -110,6 +113,9 @@ bool SemanticVersion::operator != (const SemanticVersion& other)
 std::ostream& operator << (std::ostream& s, const SemanticVersion& v)
 {
     s << v.major << '.' << v.minor << '.' << v.patch;
+    if (v.post != 0) {
+        s << '.' << v.post;
+    }
     if (v.pre != "" ) { 
         s << '-' << v.pre;
     }

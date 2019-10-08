@@ -310,6 +310,7 @@ SemanticVersion PlugInContainer::GetVersion()
         return SemanticVersion(plugin_117->GetPlugInVersionMajor(),
                                plugin_117->GetPlugInVersionMinor(),
                                plugin_117->GetPlugInVersionPatch(),
+                               plugin_117->GetPlugInVersionPost(),
                                plugin_117->GetPlugInVersionPre(),
                                plugin_117->GetPlugInVersionBuild());
     }
@@ -4109,6 +4110,8 @@ opencpn_plugin_117::opencpn_plugin_117(void *pmgr)
 {}
 
 int opencpn_plugin_117::GetPlugInVersionPatch() { return 0; };
+
+int opencpn_plugin_117::GetPlugInVersionPost() { return 0; };
 
 const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
 

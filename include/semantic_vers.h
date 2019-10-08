@@ -33,12 +33,18 @@
 
 
 /**
- * Versions are simplified semantic versioning: major.minor.revision-tag+build
- * for example 1.2.6+1-alfa+deadbee. The values major, minor and revision should
- * be integers. The tag is a pre-release marker, the build is build info.
+ * Versions uses a modified semantic versioning scheme:
+ * major.minor.revision.post-tag+build.
+ * for example 1.2.6.1-alfa+deadbee. The values major, minor, revision
+ * and post should be integers. The tag is a pre-release marker, the build
+ * part is build info.
  *
- * Parsing and comparing follows the spec besides the pre-release tag which 
- * is sorted strictly lexically (no dotted parts or numeric ordering support).
+ * Parsing and comparing follows the spec besides
+ *   -  the pre-release tag which is sorted strictly lexically
+ *      (no dotted parts or numeric ordering support).
+ *
+ *   -  The post part which is post-release number, typically used in
+ *      downstream releases.
  *
  * See: https://semver.org/
  */
@@ -47,16 +53,17 @@ struct SemanticVersion
     int major;
     int minor;
     int patch;
-    std::string pre;    // Pre-release tag like alfa
+    int post;           // Post-release number e. g., at downstream.
+    std::string pre;    // Pre-release tag like alfa.
     std::string build;  // Build info
 
-    /** Construct a "0.0.0" version. */ 
+    /** Construct a "0.0.0" version. */
     SemanticVersion();
 
     /** Parse a version string, sets major == -1 on errors. */
     SemanticVersion(std::string version_release);
 
-    SemanticVersion(int major, int minor, int rev = 0,
+    SemanticVersion(int major, int minor, int rev = 0, int post = 0,
                     std::string pre = "",  std::string build = "");
 
     bool operator <  (const SemanticVersion& other);
