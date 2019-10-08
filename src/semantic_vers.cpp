@@ -76,8 +76,7 @@ bool SemanticVersion::operator < (const SemanticVersion& other)
     if (major != other.major) return major < other.major;
     if (minor != other.minor) return minor < other.minor;
     if (patch != other.patch) return patch < other.patch;
-    if (pre != other.pre) return pre < other.pre;
-    return false;
+    return pre < other.pre;
 }
 
 bool SemanticVersion::operator == (const SemanticVersion& other)
