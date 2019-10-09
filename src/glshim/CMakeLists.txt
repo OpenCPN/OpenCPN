@@ -16,7 +16,7 @@ if(BCMHOST)
 endif()
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
-add_definitions(-g -std=c99 -funwind-tables -O2)
+add_definitions( -std=c99 -funwind-tables -O2)
 
 include_directories(include)
 add_subdirectory(src)

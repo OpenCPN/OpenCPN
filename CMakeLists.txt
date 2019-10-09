@@ -640,7 +640,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -fno-strict-aliasing")
   ADD_DEFINITIONS( " -Wno-unknown-pragmas")
 
    IF(NOT QT_ANDROID)
@@ -649,7 +649,7 @@ IF(NOT WIN32 AND NOT APPLE )
 
   
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-    ADD_DEFINITIONS( " -O0")
+    ADD_DEFINITIONS( " -g -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
   
   # TODO: Enable deprecation warnings again after the 5.0.0 cycle

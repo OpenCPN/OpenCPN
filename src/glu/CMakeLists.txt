@@ -14,8 +14,13 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O2")
+  ADD_DEFINITIONS( " -fno-strict-aliasing -O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
+
+IF(QT_ANDROID)
+  ADD_DEFINITIONS( " -fPIC")
+ENDIF(QT_ANDROID)
+  
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(include)

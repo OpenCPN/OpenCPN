@@ -36,7 +36,7 @@ IF(NOT MSVC)
   ADD_DEFINITIONS( "-Wall -g -fprofile-arcs -ftest-coverage -fexceptions" )
  ELSE(PROFILING)
 #  ADD_DEFINITIONS( "-Wall -g -fexceptions" )
- ADD_DEFINITIONS( "-Wall -Wno-unused-result -g -O2 -fexceptions" )
+ ADD_DEFINITIONS( "-Wall -Wno-unused-result -O2 -fexceptions" )
  ENDIF(PROFILING)
 
  IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
@@ -96,6 +96,7 @@ ENDIF(NOT QT_ANDROID)
 
 
 SET(BUILD_SHARED_LIBS TRUE)
+
 
 FIND_PACKAGE(Gettext REQUIRED)
 
