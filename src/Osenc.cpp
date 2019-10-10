@@ -1996,9 +1996,9 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         unsigned char *pucnorth = (unsigned char *)&north;
         unsigned char *pucdeep = (unsigned char *)&deep;
 
-        memcpy(pdf++, &puceast, sizeof(float));
-        memcpy(pdf++, &pucnorth, sizeof(float));
-        memcpy(pdf++, &pucdeep, sizeof(float));
+        memcpy(pdf++, puceast, sizeof(float));
+        memcpy(pdf++, pucnorth, sizeof(float));
+        memcpy(pdf++, pucdeep, sizeof(float));
         
         #else                    
         *pdf++ = easting;
