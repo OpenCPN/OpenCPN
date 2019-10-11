@@ -1420,8 +1420,13 @@ void options::Init(void) {
   m_sconfigSelect_twovertical = NULL;
 
   m_colourPickerDefaultSize = wxSize(-1, -1);
-#ifdef __OCPN__ANDROID__  
-  m_colourPickerDefaultSize = wxSize(6 * dialogFont->GetPixelSize().y, dialogFont->GetPixelSize().y * 2);
+#ifdef __OCPN__ANDROID__ 
+  wxScreenDC dc;
+  dc.SetFont(*dialogFont);
+  int width, height;
+  dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, dialogFont);
+
+  m_colourPickerDefaultSize = wxSize(4 * height, height * 2);
 #endif  
 
 }

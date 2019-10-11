@@ -1825,9 +1825,10 @@ int OCPNPlatform::GetStatusBarFieldCount()
     wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
     dc.SetFont(*templateFont);
     
-    wxSize sz = dc.GetTextExtent(_T("WWWWWW"));
-    double font_size_pix = (double)sz.x / 6.0;
-    
+    int width;
+    dc.GetTextExtent(_T("WWWWWW"), &width, NULL, NULL, NULL, templateFont);
+    double font_size_pix = (double)width / 6.0;
+
     wxSize dispSize = getDisplaySize();
     
     double nChars = dispSize.x / font_size_pix;
@@ -1866,9 +1867,11 @@ double OCPNPlatform::getFontPointsperPixel( void )
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
         dc.SetFont(*f);
     
-        wxSize sz = dc.GetTextExtent(_T("H"));
-        if(sz.y > 0)
-            m_pt_per_pixel = 12.0 / (double)sz.y;
+        int width, height;
+        dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, f);
+
+        if(height > 0)
+            m_pt_per_pixel = 12.0 / (double)height;
     }
     if(m_pt_per_pixel > 0)
         pt_per_pixel = m_pt_per_pixel;

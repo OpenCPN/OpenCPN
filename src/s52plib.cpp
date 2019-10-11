@@ -2591,8 +2591,9 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
             //Get the width of a single average character in the spec font
             wxScreenDC dc;
             dc.SetFont(*specFont);
-            wxSize tsz = dc.GetTextExtent(_T("X"));
-            text->avgCharWidth = tsz.x;
+            int width;
+            dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, specFont);
+            text->avgCharWidth = width; 
 
             //    If we have loaded a legacy S52 compliant PLIB,
             //    then we should use the formal font selection as required by S52 specifications.
