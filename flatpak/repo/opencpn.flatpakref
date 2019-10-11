@@ -2,7 +2,7 @@
 Name=org.opencpn.OpenCPN
 Title=OpenCPN - Concise ChartPLotter - Main package
 Description=OpenCPN main package, loaded by Plugin.Base
-Branch=stable
+Branch=master
 Url=http://opencpn.duckdns.org/opencpn/repo
 Homepage=https://opencpn.org
 Icon=https://opencpn.org/OpenCPN/assets/img/logoOriginal.png

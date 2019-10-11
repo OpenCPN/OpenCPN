@@ -2,7 +2,7 @@
 # Build the opencpn repo
 #
 
-BRANCH          ?= stable
+BRANCH          ?= master
 GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
