@@ -7,7 +7,10 @@
 # bailout on errors and echo commands
 set -xe
 
-brew install cairo libexif xz
+
+for pkg in cairo cmake libexif wget xz; do
+    brew list $pkg || brew install $pkg
+done
 export MACOSX_DEPLOYMENT_TARGET=10.9
 # We need to build own libarchive
 wget https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
