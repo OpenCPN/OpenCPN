@@ -233,6 +233,7 @@ RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
 double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+wxString                  gTime, gDate;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
 
@@ -8859,6 +8860,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     }
                     
                     sfixtime = m_NMEA0183.Rmc.UTCTime;
+                    gTime = sfixtime;
+                    gDate = m_NMEA0183.Rmc.Date;
                 }
                 break;
 
@@ -8933,7 +8936,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Gll.IsDataValid == NTrue )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
-                    sfixtime = m_NMEA0183.Gll.UTCTime;  
+                    sfixtime = m_NMEA0183.Gll.UTCTime;
                 }
                 break;
             }
