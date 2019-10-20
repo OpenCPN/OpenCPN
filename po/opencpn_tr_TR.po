@@ -6774,11 +6774,11 @@ msgstr ""
 
 #: src/MarkInfo.cpp:1371 src/MarkInfo.cpp:1386
 msgid "Don't use"
-msgstr ""
+msgstr "Kullanma"
 
 #: src/MarkInfo.cpp:1372
 msgid "Show Waypoint Name"
-msgstr ""
+msgstr "Seyirnoktası İsmini Göster"
 
 #: src/MarkInfo.cpp:1394
 msgid "Arrival radius"
@@ -6790,7 +6790,7 @@ msgstr ""
 
 #: src/MarkInfo.cpp:1402
 msgid "Show always"
-msgstr ""
+msgstr "Herzaman Göster"
 
 #: src/MarkInfo.cpp:1403
 msgid "Show only at scale"
