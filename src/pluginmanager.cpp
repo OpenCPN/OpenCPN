@@ -1522,6 +1522,10 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         }
                         case 116:
                         {
+                            opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                            if (ppi) {
+                              ppi->RenderOverlay(*pdc, &pivp);
+                            }
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116) 
                                 ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex);
@@ -1582,6 +1586,10 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         }
                         case 116:
                         {
+                            opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                            if (ppi) {
+                                b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                            }
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116) 
                                 b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
@@ -1651,6 +1659,10 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                     }
                     case 116:
                     {
+                        opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                        if (ppi) {
+                            ppi->RenderGLOverlay(pcontext, &pivp);
+                        }
                         opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                         if (ppi116) {
                             ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex);
