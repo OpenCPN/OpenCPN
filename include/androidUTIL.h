@@ -132,6 +132,8 @@ bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack );
 
 bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
+void androidDisableFullScreen();
+void androidRestoreFullScreen();
 
 void androidLaunchHelpView();
 void androidTerminate();

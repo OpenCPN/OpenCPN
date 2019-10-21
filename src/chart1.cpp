@@ -5928,6 +5928,7 @@ int MyFrame::DoOptionsDialog()
 #ifdef __OCPN__ANDROID__
     androidEnableBackButton( false );
     androidEnableOptionsMenu( false );
+    androidDisableFullScreen();
 #endif
         
     // Record current canvas config
@@ -5963,6 +5964,7 @@ int MyFrame::DoOptionsDialog()
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
     androidEnableOptionsMenu( true );
+    androidRestoreFullScreen();
     #endif
     
 

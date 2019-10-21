@@ -352,7 +352,7 @@ wxString        g_deviceInfo;
 int             s_androidMemTotal;
 int             s_androidMemUsed;
 bool            g_backEnabled;
-
+bool            g_bFullscreenSave;
 bool            s_optionsActive;
 
 extern int ShowNavWarning();
@@ -2125,6 +2125,22 @@ bool androidSetFullscreen( bool bFull )
     callActivityMethod_is("setFullscreen", (int)bFull);
     
     return true;
+}
+
+void androidDisableFullScreen()
+{
+    if(g_bFullscreen){
+        g_bFullscreenSave = true;
+        androidSetFullscreen( false );
+    }
+}
+
+void androidRestoreFullScreen()
+{
+    if(g_bFullscreenSave){
+        g_bFullscreenSave = false;
+        androidSetFullscreen( true );
+    }
 }
 
 int androidGetScreenOrientation(){
