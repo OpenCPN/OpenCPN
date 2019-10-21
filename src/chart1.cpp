@@ -7377,7 +7377,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( ShouldRestartTrack() )
         TrackDailyRestart();
 
-    if(g_bSleep){
+    // If no alerts are on, then safe to resume sleeping
+    if(g_bSleep && !AnchorAlertOn1 && !AnchorAlertOn2){
         FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
         return;
     }
