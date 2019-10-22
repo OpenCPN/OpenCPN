@@ -628,6 +628,21 @@ bool Routeman::UpdateAutopilot()
    double r_Sog(0.0), r_Cog(0.0);
    if (!std::isnan(gSog)) r_Sog = gSog;
    if (!std::isnan(gCog)) r_Cog = gCog;
+
+   // Send active leg info directly to plugins with full precision
+
+   ActiveLegDat leg_info;
+   leg_info.btw = CurrentBrgToActivePoint;
+   leg_info.dtw = CurrentRngToActivePoint;
+   leg_info.xte = CurrentXTEToActivePoint;
+   if (XTEDir < 0) {
+     leg_info.xte = -leg_info.xte;    // direction to steer Left -> negative XTE
+   }
+   leg_info.wp_name = pActivePoint->GetName().Truncate(6);
+   leg_info.arrival = m_bArrival;
+
+   g_pi_manager->SendActiveLegInfoToAllPlugIns(&leg_info);
+
     //RMB
         {
 
