@@ -67,7 +67,8 @@
 #include "iENCToolbar.h"
 #include "Select.h"
 #include "routeman.h"
- 
+#include "CanvasOptions.h"
+
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
 wxT("A copy of that license is shown above.")
@@ -1537,7 +1538,7 @@ extern "C"{
         while (node)
         {
             wxWindow* win = node->GetData();
-            if(win->IsShown())
+            if(win->IsShown() && !win->IsKindOf( CLASSINFO( CanvasOptions )))
                 ret++;
             
             node = node->GetNext();
