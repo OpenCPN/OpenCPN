@@ -2188,7 +2188,7 @@ void androidDisplayToast(wxString message)
 
 void androidEnableRotation( void )
 {
-    callActivityMethod_vs("unlockActivityOrientation");
+    callActivityMethod_vs("EnableRotation");
 }
 
 bool androidShowDisclaimer( wxString title, wxString msg )
