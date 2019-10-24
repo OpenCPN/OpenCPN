@@ -674,28 +674,28 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     
 #ifdef __OCPN__ANDROID__
     wxRect tbRect = GetMasterToolbarRect();
-    qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
+    //qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
 
     if( 1 ){
         wxPoint pNew = pPlugIn->GetCtrlBarXY();
         pNew.x = tbRect.x + tbRect.width + 4;
-        pNew.y = tbRect.y;
+        pNew.y = 0; //tbRect.y;
         pPlugIn->SetCtrlBarXY( pNew );
-        qDebug() << "pNew" << pNew.x;
+        //qDebug() << "pNew" << pNew.x;
         
         int widthAvail = GetCanvasByIndex(0)->GetClientSize().x - (tbRect.x +tbRect.width);
         
         if(sd.x > widthAvail){
-            qDebug() << "Too big" << widthAvail << sd.x;
+            //qDebug() << "Too big" << widthAvail << sd.x;
             
-            int target_char_width = (float)widthAvail / 20;
+            int target_char_width = (float)widthAvail / 28;
             wxScreenDC dc;
             bool bOK = false;
             int pointSize = 20;
             int width, height;
             wxFont *sFont;
             while(!bOK){
-                qDebug() << "PointSize" << pointSize;
+                //qDebug() << "PointSize" << pointSize;
                 sFont = FindOrCreateFont_PlugIn( pointSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE );
                 dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont); 
                 if(width <= target_char_width)
@@ -710,11 +710,17 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             
             Layout();
             Fit();
+            Hide();
             SetSize( wxSize( widthAvail, sd.y ) );
             SetMinSize( wxSize( widthAvail, sd.y ) );
+            Show();
 
         }
     }
+    wxPoint pNow = pPlugIn->GetCtrlBarXY();
+    pNow.y = 0;
+    pPlugIn->SetCtrlBarXY( pNow );
+
 #endif    
 
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
