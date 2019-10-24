@@ -1473,6 +1473,11 @@ void WayPointman::ProcessDefaultIcons()
         }
     }
 
+    // Possibly an upgrade of App, with more icons available
+    //  So, reload them all
+    if(n_cache_files < 50)
+        bcacheLoaded = false;
+    
     //  Cache was unusable, so load from original
     if(!bcacheLoaded)
     {
