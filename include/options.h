@@ -26,6 +26,11 @@
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
 #include <wx/spinctrl.h>
