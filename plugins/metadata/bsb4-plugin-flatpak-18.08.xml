@@ -2,7 +2,7 @@
 <opencpn-plugin version="1">
   <name> bsb4 </name>
   <version> 1.5.0 </version>
-  <release> 1 </release>
+  <release> 3 </release>
   <summary> OpenCPN support for BSB4 raster charts </summary>
 
   <api-version> 1.16 </api-version>
@@ -20,10 +20,7 @@
 
   <target>flatpak</target>
   <target-version>18.08</target-version>
-  <tarball-url>
-    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/bsb4_pi-1.5.0-1_flatpak-18.08.tar.gz
-  </tarball-url>
+  <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-flatpak-18.08-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_flatpak-18.08.tar.gz </tarball-url>
 </opencpn-plugin>
 
 
-<!-- Date: 2019-09-12 20:16:18+00:00 Commit: a041768 Build nr: 176 -->

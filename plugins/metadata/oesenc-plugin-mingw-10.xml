@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opencpn-plugin version="1">
   <name> oesenc </name>
-  <version> 2.9.1605 </version>
-  <release> 1 </release>
+  <version> 3.3.0 </version>
+  <release> 3 </release>
   <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
 
   <api-version> 1.16 </api-version>
@@ -24,9 +24,6 @@ can only be used after purchasing decryption keys from o-charts.org.
 
   <target>mingw</target>
   <target-version>10</target-version>
-  <tarball-url>
-    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/oesenc_pi-1.2.0-1_mingw-10.tar.gz
-  </tarball-url>
+  <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-mingw-10-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_mingw-10.tar.gz </tarball-url>
 </opencpn-plugin>
 
-<!-- Date: 2019-09-12 20:19:27+00:00 Commit: cad3faf Build nr: 135 -->

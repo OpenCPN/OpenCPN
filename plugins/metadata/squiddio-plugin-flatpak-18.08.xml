@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opencpn-plugin version="1">
   <name> squiddio </name>
-  <version> 0.7.1 </version>
-  <release> 1 </release>
+  <version> 1.0.17 </version>
+  <release> 6 </release>
   <summary> Repository of sailing destination waypoints </summary>
 
-  <api-version> 1.16 </api-version>
+  <api-version>  </api-version>
   <open-source> no </open-source>
-  <author> Mauro Calvi </author>
+  <author>  </author>
   <source> https://github.com/opencpn-radar-pi/radar_pi </source>
 
   <description>
@@ -19,9 +19,6 @@ Android comes with sQuiddio built in.
 
   <target>flatpak</target>
   <target-version>18.08</target-version>
-  <tarball-url>
-    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/squiddio_pi-0.7.1-1_flatpak-18.08.tar.gz
-  </tarball-url>
+  <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-flatpak-18.08-tarball/versions/v1.0.17.6/squiddio_pi-1.0.17.6_flatpak-18.08.tar.gz </tarball-url>
   <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
 </opencpn-plugin>
-<!-- Date: 2019-09-08 16:07:58+00:00 Commit: 43ab85c Build nr: 23 -->

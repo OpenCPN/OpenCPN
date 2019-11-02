@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opencpn-plugin version="1">
   <name> radar </name>
-  <version> 5.0.2-beta1 </version>
-  <release> 1 </release>
+  <version> 5.0.4-beta2 </version>
+  <release> 3 </release>
   <summary> Overlays the radar picture on OpenCPN </summary>
 
   <api-version> 1.16 </api-version>
@@ -22,9 +22,7 @@ Support for four simultaneously active radars.  Multiple brands can be mixed.
 
   <target>ubuntu</target>
   <target-version>16.04</target-version>
-  <tarball-url>
-          https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/radar_pi-5.0.2-beta1-1_ubuntu-16.04.tar.gz
-  </tarball-url>
+  <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-ubuntu-16.04-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_ubuntu-16.04.tar.gz </tarball-url>
   <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
 </opencpn-plugin>
 
