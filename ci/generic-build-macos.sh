@@ -55,4 +55,10 @@ chmod 644 /usr/local/lib/lib*.dylib
 make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
+
 make create-dmg
+
+# install the stuff needed by upload.
+sudo -H python3 -m ensurepip
+sudo -H python3 -m pip install -q setuptools
+sudo -H python3 -m pip install -q cloudsmith-cli
