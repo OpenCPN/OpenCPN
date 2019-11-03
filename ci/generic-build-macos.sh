@@ -7,6 +7,17 @@
 # bailout on errors and echo commands
 set -xe
 
+# Fix broken ruby on the CircleCI image:
+if [ -n "$CI" ]; then
+    curl -fsSL \
+        https://raw.githubusercontent.com/Homebrew/install/master/uninstall \
+        > uninstall
+    chmod 755 uninstall
+    ./uninstall -f
+    inst="https://raw.githubusercontent.com/Homebrew/install/master/install"
+    /usr/bin/ruby -e "$(curl -fsSL $inst)"
+fi
+
 set -o pipefail
 for pkg in cairo cmake libexif python3 wget xz; do
     brew list $pkg 2>/dev/null | head -10 || brew install $pkg
