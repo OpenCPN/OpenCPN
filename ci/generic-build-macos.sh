@@ -7,6 +7,17 @@
 # bailout on errors and echo commands
 set -xe
 
+# ruby needs to see libyaml when installed, so:
+curl -fsSL http://pyyaml.org/download/libyaml/yaml-0.2.2.tar.gz \
+    > yaml-0.2.2.tar.gz
+tar xf yaml-0.2.2.tar.gz
+cd yaml-0.2.2
+./configure
+make
+sudo make install
+cd .. 
+rm -rf yaml-0.2.2 yaml-0.2.2.tar.gz
+
 # Fix broken ruby on the CircleCI image:
 if [ -n "$CI" ]; then
     curl -fsSL \
@@ -51,7 +62,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
 make -sj2
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
-chmod 644 /usr/local/lib/lib*.dylib
+sudo chmod 644 /usr/local/lib/lib*.dylib
 make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
