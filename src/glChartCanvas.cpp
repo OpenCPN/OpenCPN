@@ -5529,8 +5529,9 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, fl
 
 void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 {
+    // If m_zoomFinal is set, shortcut the timer sequence.
     
-    if(m_nRun < m_nTotal){
+    if( (m_nRun < m_nTotal) && !m_zoomFinal){
         m_runoffsetx += m_offsetxStep; 
         if(m_offsetxStep > 0)
             m_runoffsetx = wxMin(m_runoffsetx, m_fbo_offsetx);
