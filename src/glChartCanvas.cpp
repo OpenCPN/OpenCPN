@@ -743,7 +743,6 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
     
     if(m_pParentCanvas->MouseEventOverlayWindows( event ))
         return;
-
 #ifndef __OCPN__ANDROID__
         if(m_pParentCanvas->MouseEventSetup( event )) 
         return;                 // handled, no further action required
@@ -780,7 +779,6 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
              return;
      }
         
-            
     if(m_pParentCanvas->MouseEventSetup( event, false )) {
         if(!event.LeftDClick()){
             return;                 // handled, no further action required
@@ -791,8 +789,15 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
         qDebug() << "Skip right on pan";
         return;
     }
-    else
-        m_pParentCanvas->MouseEventProcessObjects( event );
+    else{
+        bool obj_proc = m_pParentCanvas->MouseEventProcessObjects( event );
+
+        if(!obj_proc && !m_pParentCanvas->singleClickEventIsValid ) {
+            if(!m_bgestureGuard)
+                m_pParentCanvas->MouseEventProcessCanvas( event );      // This is where a physical mouse gets processed, if detected
+        }
+
+    }
 
 #endif    
         
