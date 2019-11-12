@@ -5650,12 +5650,15 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
         miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
             group_item_spacing);
 
-        wxStaticText* stSoundDeviceIndex =
-            new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
+        stSoundDeviceIndex = new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
         pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
         pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
     }
   }
+#ifdef __OCPN__ANDROID__
+    stSoundDeviceIndex->Hide();
+    pSoundDeviceIndex->Hide();
+#endif    
 
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
