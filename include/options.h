@@ -199,7 +199,8 @@ enum {
   ID_SCREENCONFIG1,
   ID_SCREENCONFIG2,
   ID_CONFIGEDIT_OK,
-  ID_CONFIGEDIT_CANCEL
+  ID_CONFIGEDIT_CANCEL,
+  ID_ZOOMBUTTONS
 };
 
 /* Define an int bit field for dialog return value
@@ -387,6 +388,7 @@ class options : private Uncopyable,
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
 //  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover, *pDarkDecorations;
+  wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
 

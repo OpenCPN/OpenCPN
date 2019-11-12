@@ -316,6 +316,7 @@ extern float g_ChartScaleFactorExp;
 extern bool g_bRollover;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
+extern bool  g_bShowMuiZoomButtons;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -331,6 +332,7 @@ extern int      g_iWpt_ScaMin;
 extern bool     g_bUseWptScaMin;
 bool            g_bOverruleScaMin;
 extern int      osMajor, osMinor;
+extern bool     g_bShowMuiZoomButtons;
 
 extern "C" bool CheckSerialAccess(void);
 extern  wxString GetShipNameFromFile(int);
@@ -5673,6 +5675,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pRollover = new wxCheckBox(itemPanelFont, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
   miscOptions->Add(pRollover, 0, wxALL, border_size);
   
+  pZoomButtons = new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));
+  miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
+#ifndef __OCPN__ANDROID__
+  pZoomButtons->Hide();
+#endif  
   
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,  _("Use Inland ECDIS V2.3"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
@@ -6299,6 +6306,8 @@ void options::SetInitialSettings(void) {
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
   pRollover->SetValue(g_bRollover);
+  pZoomButtons->SetValue( g_bShowMuiZoomButtons );
+
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   //pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
@@ -7440,7 +7449,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
   g_bRollover = pRollover->GetValue();
-  
+  g_bShowMuiZoomButtons = pZoomButtons->GetValue();
+
   g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
 
   long hide_val = 10;

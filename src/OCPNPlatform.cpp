@@ -283,6 +283,7 @@ extern wxColour                   g_colourTrackLineColour;
 extern int                        g_n_ownship_min_mm;
 
 extern int                        g_AndroidVersionCode;
+extern bool                       g_bShowMuiZoomButtons;
 
 
 
@@ -1038,7 +1039,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_nAWMax = 1852;
     gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
     g_n_ownship_min_mm = 8;
-    
+    g_bShowMuiZoomButtons = true;
+
     // Initial S52/S57 options
     if(pConfig){
         pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
@@ -1138,7 +1140,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_bRollover = true;
-    
+    g_bShowMuiZoomButtons = false;
+
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;
     

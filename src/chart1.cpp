@@ -6112,8 +6112,13 @@ int MyFrame::DoOptionsDialog()
     if((rr & TOOLBAR_CHANGED) || b_masterScaleChange )
         RequestNewMasterToolbar( true );
 
+    bool bMuiChange = false;
+#ifdef __OCPN__ANDROID__
+    bMuiChange = true;                  // to pick up possible "zoom" button visibility change    
+#endif
+
     // Inform the canvases
-    if( b_masterScaleChange ){
+    if( b_masterScaleChange  || bMuiChange ){
             // ..For each canvas...
         for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
             ChartCanvas *cc = g_canvasArray.Item(i);

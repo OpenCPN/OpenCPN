@@ -459,6 +459,7 @@ extern int              g_AndroidVersionCode;
 
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
+bool                    g_bShowMuiZoomButtons = true;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1002,6 +1003,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
+    Read( _T ( "ShowMUIZoomButtons" ), &g_bShowMuiZoomButtons );
+    
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
     
@@ -2332,6 +2335,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
     Write( _T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base );
+
+    Write( _T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons );
 
 #ifdef ocpnUSE_GL
     /* opengl options */

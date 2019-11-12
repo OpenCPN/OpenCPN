@@ -60,6 +60,7 @@
 extern OCPNPlatform              *g_Platform;
 extern ChartCanvas               *g_focusCanvas;
 extern ocpnStyle::StyleManager*   g_StyleManager;
+extern bool                       g_bShowMuiZoomButtons;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -548,16 +549,18 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
- #ifndef __OCPN__ANDROID__        
        
-        m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
-        barSizer->Add(m_zinButton, 0, wxSHAPED);
+        if(g_bShowMuiZoomButtons){
+            m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
+            barSizer->Add(m_zinButton, 0, wxSHAPED);
     
-        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
-        barSizer->Add(m_zoutButton, 0, wxSHAPED);
+            m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
+            barSizer->Add(m_zoutButton, 0, wxSHAPED);
     
-        barSizer->AddSpacer(2);
+            barSizer->AddSpacer(2);
+        }
         
+#ifndef __OCPN__ANDROID__        
         //  Scale 
         m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
         wxColour textbackColor = GetGlobalColor( _T("GREY1") );
@@ -582,16 +585,17 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
-
+        if(g_bShowMuiZoomButtons){
+            m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
+            barSizer->Add(m_zinButton, 1, wxSHAPED);
+        
+            m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
+            barSizer->Add(m_zoutButton, 1, wxSHAPED);
+        
+            barSizer->AddSpacer(5);
+        }
+        
 #ifndef __OCPN__ANDROID__        
-        m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
-        barSizer->Add(m_zinButton, 1, wxSHAPED);
-        
-        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, m_scaleFactor, iconDir + _T("MUI_zoom-out.svg"));
-        barSizer->Add(m_zoutButton, 1, wxSHAPED);
-        
-        barSizer->AddSpacer(5);
-        
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
                                         iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
