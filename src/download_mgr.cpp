@@ -132,7 +132,7 @@ struct OcpnVersion
     friend std::ostream& operator << (std::ostream& s, const OcpnVersion& v)
     {
         s << v.major << '.' << v.minor << '.' << v.revision;
-        if (v.build != "" ) { 
+        if (v.build != "" ) {
             s << '.' << v.build;
         }
         return s;
@@ -393,7 +393,7 @@ class InstallButton: public wxPanel
         bool m_remove;
 
         const char* getUpdateLabel(PlugInContainer* pic,
-                                   PluginMetadata metadata) 
+                                   PluginMetadata metadata)
         {
             OcpnVersion currentVersion(pic->m_version_major,
                                        pic->m_version_minor);
@@ -410,7 +410,6 @@ class InstallButton: public wxPanel
                 return _("Downgrade");
             }
         }
- 
 };
 
 
@@ -534,36 +533,249 @@ class PluginTextPanel: public wxPanel
         CandidateButtonsPanel* m_buttons;
 };
 
-
-/** A single, right-adjusted OK button which closes victim when pushed. */
-class MainButtonsPanel: public wxPanel
+/**
+ * Active catalogue: The current active, the default  and latest downloaded
+ * + buttons to use default or latest.  
+ * 
+ */
+class ActiveCatalogPanel: public wxPanel
 {
     public:
-        MainButtonsPanel(wxWindow* parent,  wxWindow* victim)
-            :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
-             m_victim(victim)
+        ActiveCatalogPanel(wxWindow* parent)
+            :wxPanel(parent)
         {
-            auto button = new wxButton(this, wxID_ANY, _("Ok"));
-            auto sizer = new wxBoxSizer(wxHORIZONTAL);
-            sizer->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable space
-            sizer->Add(button, wxSizerFlags().Right().Bottom());
+            auto grid = new wxFlexGridSizer(4, 0, 0);
+            grid->AddGrowableCol(0);
+            grid->AddGrowableCol(1);
+            grid->AddGrowableCol(2);
+            grid->AddGrowableCol(3);
+            auto flags = wxSizerFlags().Expand();
+
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Current active plugin catalogue")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("0.1.0")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("2019-11-01")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, ""));
+;
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Default catalogue")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("0.0.2")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("2019-03-08")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxButton(this, wxID_ANY, _("Use as active catalogue")), wxSizerFlags().Border());
+
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Latest available catalog:")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("0.1.1")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("2019-11-20")), wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxButton(this, wxID_ANY, _("Use as  active catalogue")), wxSizerFlags().Border());
+            auto sizer = new wxBoxSizer(wxVERTICAL);
+            sizer->Add(grid, wxSizerFlags().Proportion(1).Expand().Border());
             SetSizer(sizer);
-            Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                 [=](wxCommandEvent&) {m_victim->Close(); });
-        }
-
-        ~MainButtonsPanel()
-        {
-            Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {m_victim->Close(); });
-        }
-
-    protected:
-        wxWindow* m_victim;
+         }
 };
 
 
-/** The list of download candidates in a scrolled window + OK button. */
+class CatalogUpdate: wxDialog
+{
+    public:
+        CatalogUpdate(wxWindow* parent)
+            :wxDialog(parent, wxID_ANY, _("Manage Plugin Catalog"),
+                      wxDefaultPosition , wxDefaultSize,
+                      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+        {
+            auto sizer = new wxBoxSizer(wxVERTICAL);
+
+            auto url_status = new wxBoxSizer(wxHORIZONTAL);
+            url_status->Add(new wxStaticText(this, wxID_ANY, _("Catalog URL status: ")),
+                             wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            url_status->Add(new wxStaticText(this, wxID_ANY, _("OK")),
+                            wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            sizer->Add(url_status, wxSizerFlags().Expand().Border());
+
+            auto url_channel = new wxBoxSizer(wxHORIZONTAL);
+            url_channel->Add(new wxStaticText(this, wxID_ANY, _("Catalog channel: ")),
+                             wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            wxArrayString channel_list;
+            channel_list.Add("master");
+            channel_list.Add("stable");
+            channel_list.Add("experimental");
+            auto channels = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channel_list);
+            channels->SetSelection(1);
+            channels->Enable();
+            url_channel->Add(channels, wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            sizer->Add(url_channel, wxSizerFlags().Expand().Border());
+
+            sizer->Add(new wxStaticLine(this), wxSizerFlags().Expand().Border());
+            auto active_panel = new ActiveCatalogPanel(this);
+            sizer->Add(active_panel, wxSizerFlags().Expand().Border());
+            sizer->Add(new wxStaticLine(this), wxSizerFlags().Expand().Border());
+            SetSizer(sizer);
+            auto advanced  = new wxStaticText(this, wxID_ANY, "");
+            advanced->SetLabelMarkup(ADVANCED);
+            sizer->Add(advanced, wxSizerFlags().Expand().Border());
+
+            auto url_location = new wxBoxSizer(wxHORIZONTAL);
+            url_location->Add(new wxStaticText(this, wxID_ANY, _("Custom catalogue URL: ")),
+                              wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+            const char* URI = "https://raw.githubusercontent.com/OpenCPN/plugins/release/ocpn-plugins.xml";
+            sizer->Add(url_location, wxSizerFlags().Expand().Border());
+
+            auto url_edit = new wxBoxSizer(wxHORIZONTAL);
+            auto url_ctrl = new wxTextCtrl(this, wxID_ANY, URI);
+            auto size = GetTextExtent(URI);
+            url_ctrl->SetMinClientSize(size);
+            url_edit->Add(url_ctrl, wxSizerFlags().Expand());
+            sizer->Add(url_edit, wxSizerFlags().Expand().Border());
+
+
+            auto url_buttons = new wxBoxSizer(wxHORIZONTAL);
+            url_buttons->Add(new wxButton(this, wxID_ANY, _("Cancel")), wxSizerFlags().Right().Bottom().Border());
+            url_buttons->Add(new wxButton(this, wxID_ANY, _("Use default location")), wxSizerFlags().Right().Bottom().Border());
+            url_buttons->Add(new wxButton(this, wxID_ANY, _("Update")), wxSizerFlags().Right().Bottom().Border());
+            sizer->Add(url_buttons, wxSizerFlags().Border().Right());
+
+            Fit();
+            Show();
+        }
+
+    protected:
+        const char* const MORE = _("<span foreground='blue'>More...</span>");
+        const char* const LESS = _("<span foreground='blue'>Less...</span>");
+        const char* const ADVANCED
+            = _("<span foreground='blue'>Advanced...</span>");
+};
+
+
+class CatalogLoad: public wxDialog
+{
+    public:
+        CatalogLoad(wxWindow* parent)
+            :wxDialog(parent, wxID_ANY, _("Check catalogue server"),
+                      wxDefaultPosition , wxDefaultSize,
+                      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+        {
+
+            auto sizer = new wxBoxSizer(wxVERTICAL);
+            auto grid = new wxFlexGridSizer(2, 0, 0);
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Server is reachable")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("OK")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Check branches")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("OK")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("Check latest release")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            grid->Add(new wxStaticText(this, wxID_ANY, _("OK")),
+                        wxSizerFlags().Expand().Border().Align(wxALIGN_CENTER_VERTICAL));
+            sizer->Add(grid, wxSizerFlags().Expand().Border());
+            SetSizer(sizer);
+
+            auto buttons = new wxBoxSizer(wxHORIZONTAL);
+            buttons->Add(new wxButton(this, wxID_ANY, _("Cancel")), wxSizerFlags().Right().Bottom().Border());
+            m_ok_button = new wxButton(this, wxID_ANY, _("OK"));
+            buttons->Add(m_ok_button, wxSizerFlags().Right().Bottom().Border());
+            sizer->Add(buttons, wxSizerFlags().Right().Bottom());
+            m_ok_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                              &CatalogLoad::OnOkClick, this);
+            Fit();
+            Show();
+        }
+
+
+        void OnOkClick( wxCommandEvent& event ) { new CatalogUpdate(this->GetParent()); this->Close(); }
+
+    private:
+        wxButton* m_ok_button;
+};
+
+
+
+/**
+ * Three buttons down-right for plugin catalog maintenance.
+ */
+class MainButtonsPanel: public wxPanel
+{
+
+    public:
+        MainButtonsPanel(wxWindow* parent, wxWindow* victim)
+            :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32))
+        {
+            auto sizer = new wxBoxSizer(wxHORIZONTAL);
+            auto spacing = GetTextExtent("m").GetWidth();
+            sizer->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable space
+            sizer->Add(new UpdateCatalogDialogBtn(this), wxSizerFlags());
+            sizer->Add(spacing, 0);
+            sizer->Add(new UpdateCatalogNowBtn(this), wxSizerFlags());
+            sizer->Add(spacing, 0);
+            sizer->Add(new OkKillVictimButton(this, victim), wxSizerFlags());
+            SetSizer(sizer);
+        }
+
+    protected:
+        
+        /** OK button, closes victim when pushed. */
+        class OkKillVictimButton: public wxButton
+        {
+            private:
+               wxWindow* m_victim;
+        
+            public:
+                OkKillVictimButton(wxWindow* parent, wxWindow* victim)
+                    :wxButton(parent, wxID_ANY, _("OK")),
+                    m_victim(victim)
+                {
+                     Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {m_victim->Close(); });
+                }
+        
+                virtual ~OkKillVictimButton() 
+                {
+                      Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {m_victim->Close(); });
+                }
+        };
+
+        /**  Invokes the update catalog procedure. */
+        class UpdateCatalogNowBtn: public wxButton
+        {
+            public:
+                UpdateCatalogNowBtn(wxWindow* parent)
+                    :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
+                {
+                     Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {new CatalogLoad(this); });
+                }
+        
+                virtual ~UpdateCatalogNowBtn() 
+                {
+                      Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {new CatalogLoad(this); });
+                }
+        };
+
+        /**  Button invoking the update catalog dialog. */
+        class UpdateCatalogDialogBtn: public wxButton
+        {
+            public:
+                UpdateCatalogDialogBtn(wxWindow* parent)
+                    :wxButton(parent, wxID_ANY, _("Advanced..."))
+                {
+                     Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {new CatalogUpdate(this); });
+                }
+        
+                virtual ~UpdateCatalogDialogBtn() 
+                {
+                      Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
+                          [=](wxCommandEvent&) {new CatalogUpdate(this); });
+                }
+        };
+};
+
+
+/**
+ * The list of download candidates in a scrolled window + OK and
+ * Settings  button.
+ */
 class OcpnScrolledWindow : public wxScrolledWindow
 {
     public:
@@ -590,7 +802,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             }
             box->Add(grid, wxSizerFlags().Proportion(1).Expand());
             auto button_panel = new MainButtonsPanel(this, parent);
-            box->Add(button_panel, wxSizerFlags().Right().Border());
+            box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
             SetSizer(box);
             FitInside();
             SetScrollRate(0, 1);
