@@ -151,7 +151,7 @@
     <string name="ocpn_grib_download_summary_cape">Zażądaj danych CAPE</string>
     <string name="ocpn_grib_download_summary_waves">Żażądaj dane fal</string>
     <string name="ocpn_grib_download_summary_current">Żażądaj aktualnych dane</string>
-    <string name="ocpn_grib_download_summary_seatemp">Żażądaj dane temperatury morza</string>
+    <string name="ocpn_grib_download_summary_seatemp">Zażądaj danych o temperaturze morza</string>
     <string name="ocpn_grib_ref_tz">Strefa czasu odnieśienia GRIB</string>
     <!-- Grib Fragment prefs -->
     <string name="ocpn_grib_overlaytrans">Przeźroczystość nakładki</string>

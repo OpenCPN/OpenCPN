@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-25 17:42+1000\n"
-"PO-Revision-Date: 2019-07-31 01:37\n"
+"PO-Revision-Date: 2019-11-12 02:18\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/squiddio_pi.h:343
 msgid "Squiddio Preferences"
-msgstr ""
+msgstr "Preferências sQuiddio"
 
 #: src/squiddio_pi.cpp:173
 msgid "Show local sQuiddio destinations"

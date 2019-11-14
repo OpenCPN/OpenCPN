@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-17 17:38-0400\n"
-"PO-Revision-Date: 2019-07-31 01:40\n"
+"POT-Creation-Date: 2019-11-11 20:46-0500\n"
+"PO-Revision-Date: 2019-11-12 02:22\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -16,8 +16,8 @@ msgstr ""
 "X-Crowdin-Language: vi\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5626
-#: src/chart1.cpp:10239 src/toolbar.cpp:1042
+#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5654
+#: src/chart1.cpp:10279 src/toolbar.cpp:1042
 msgid "About OpenCPN"
 msgstr "Giới thiệu về OpenCPN"
 
@@ -35,7 +35,7 @@ msgstr "Cảnh báo AIS của OpenCPN"
 
 #: include/AISTargetQueryDialog.h:48 include/AISTargetQueryDialog.h:60
 #: include/S57QueryDialog.h:44 include/S57QueryDialog.h:54
-#: src/canvasMenu.cpp:396 src/canvasMenu.cpp:402 src/chcanv.cpp:8846
+#: src/canvasMenu.cpp:396 src/canvasMenu.cpp:402 src/chcanv.cpp:8872
 msgid "Object Query"
 msgstr "Đối tượng truy vấn"
 
@@ -48,8 +48,8 @@ msgstr "Trung tâm khung nhìn"
 msgid "Link Properties"
 msgstr "Thuộc tính kết nối"
 
-#: include/options.h:73 src/chart1.cpp:5621 src/chart1.cpp:5834
-#: src/chart1.cpp:6897 src/chart1.cpp:10200 src/options.cpp:4049
+#: include/options.h:76 src/chart1.cpp:5649 src/chart1.cpp:5861
+#: src/chart1.cpp:6935 src/chart1.cpp:10240 src/options.cpp:4048
 #: src/toolbar.cpp:969
 msgid "Options"
 msgstr "Tùy chọn"
@@ -59,7 +59,7 @@ msgid "Print Route Selection"
 msgstr "In tuyến đường đã chọn"
 
 #: include/RoutePropDlg.h:138 include/RoutePropDlgImpl.h:83
-#: src/canvasMenu.cpp:1557 src/chcanv.cpp:7540 src/RoutePropDlgImpl.cpp:474
+#: src/canvasMenu.cpp:1559 src/chcanv.cpp:7566 src/RoutePropDlgImpl.cpp:474
 msgid "Route Properties"
 msgstr "Thuộc tính tuyến đi"
 
@@ -68,9 +68,9 @@ msgstr "Thuộc tính tuyến đi"
 msgid "Extra Object Info"
 msgstr ""
 
-#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:643 src/canvasMenu.cpp:731
-#: src/canvasMenu.cpp:781 src/canvasMenu.cpp:1448 src/canvasMenu.cpp:1459
-#: src/canvasMenu.cpp:1472 src/canvasMenu.cpp:1484
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:643 src/canvasMenu.cpp:732
+#: src/canvasMenu.cpp:783 src/canvasMenu.cpp:1450 src/canvasMenu.cpp:1461
+#: src/canvasMenu.cpp:1474 src/canvasMenu.cpp:1486
 #: src/routemanagerdialog.cpp:1393 src/routemanagerdialog.cpp:2331
 msgid "Send to GPS"
 msgstr "Gửi đến GPS"
@@ -84,7 +84,7 @@ msgstr "Cấu hình tra cứu hành trình"
 msgid "< Back"
 msgstr ""
 
-#: src/AboutFrame.cpp:47 src/options.cpp:7759
+#: src/AboutFrame.cpp:47 src/options.cpp:7809
 msgid "OpenCPN"
 msgstr ""
 
@@ -150,10 +150,10 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr ""
 
 #: src/AboutFrameImpl.cpp:81 src/AISTargetQueryDialog.cpp:176
-#: src/chart1.cpp:2797 src/chart1.cpp:6190 src/chart1.cpp:11259
-#: src/chart1.cpp:11294 src/LinkPropDlg.cpp:133 src/navutil.cpp:3107
-#: src/options.cpp:750 src/options.cpp:3671 src/options.cpp:8146
-#: src/options.cpp:8183 src/options.cpp:10095 src/pluginmanager.cpp:544
+#: src/chart1.cpp:2805 src/chart1.cpp:6228 src/chart1.cpp:11299
+#: src/chart1.cpp:11334 src/LinkPropDlg.cpp:133 src/navutil.cpp:3119
+#: src/options.cpp:751 src/options.cpp:3677 src/options.cpp:8196
+#: src/options.cpp:8233 src/options.cpp:10147 src/pluginmanager.cpp:544
 #: src/pluginmanager.cpp:1261 src/pluginmanager.cpp:1303
 #: src/pluginmanager.cpp:1331 src/pluginmanager.cpp:1365 src/Route.cpp:1197
 #: src/RoutePoint.cpp:1127 src/tcmgr.cpp:762
@@ -221,8 +221,8 @@ msgid "Reserved 14"
 msgstr "Dự trữ  14"
 
 #: src/ais.cpp:162 src/AIS_Target_Data.cpp:404 src/ConnectionParams.cpp:494
-#: src/ConnectionParams.cpp:589 src/ConnectionParams.cpp:645
-#: src/ConnectionParams.cpp:667
+#: src/ConnectionParams.cpp:589 src/ConnectionParams.cpp:814
+#: src/ConnectionParams.cpp:836
 msgid "Undefined"
 msgstr "Không xác định"
 
@@ -1031,7 +1031,7 @@ msgstr "Hủy bỏ - hủy khu vực như được xác định bởi Message Li
 msgid "Undefined (default)"
 msgstr "(Chưa định nghĩa)"
 
-#: src/ais.cpp:1695 src/ais.cpp:1696
+#: src/ais.cpp:1714 src/ais.cpp:1715
 msgid "AIS Target Name"
 msgstr "Tên mục tiêu AIS"
 
@@ -1335,7 +1335,7 @@ msgid "SAR Aircraft"
 msgstr "Máy bay tìm kiểm cứu nạn"
 
 #: src/AIS_Target_Data.cpp:345 src/AIS_Target_Data.cpp:354
-#: src/AISTargetListDialog.cpp:531 src/options.cpp:610 src/options.cpp:944
+#: src/AISTargetListDialog.cpp:531 src/options.cpp:611 src/options.cpp:945
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -1406,7 +1406,7 @@ msgstr "Bên phải"
 msgid "Left"
 msgstr "Bên trái"
 
-#: src/AIS_Target_Data.cpp:623 src/options.cpp:4997 src/options.cpp:5113
+#: src/AIS_Target_Data.cpp:623 src/options.cpp:5039 src/options.cpp:5155
 #: src/RoutePropDlg.cpp:224 src/TrackPropDlg.cpp:220 src/TrackPropDlg.cpp:1185
 msgid "Speed"
 msgstr "Tốc độ"
@@ -1461,7 +1461,7 @@ msgstr "Độ cao"
 msgid " COG Unavailable"
 msgstr " Hướng đi không được phép"
 
-#: src/AIS_Target_Data.cpp:797 src/navutil.cpp:4270
+#: src/AIS_Target_Data.cpp:797 src/navutil.cpp:4282
 msgid "in"
 msgstr "trong"
 
@@ -1481,7 +1481,7 @@ msgstr "B"
 msgid "Aid to Navigation"
 msgstr "Phương tiện trợ giúp hàng hải"
 
-#: src/AIS_Target_Data.cpp:893 src/options.cpp:4087 src/options.cpp:4290
+#: src/AIS_Target_Data.cpp:893 src/options.cpp:4086 src/options.cpp:4286
 #: src/CanvasOptions.cpp:238
 msgid "Base"
 msgstr "Căn cứ"
@@ -2463,23 +2463,23 @@ msgstr "Venezuela"
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:307 src/chart1.cpp:1430 src/chart1.cpp:6506
-#: src/chart1.cpp:11744 src/chart1.cpp:12704 src/chcanv.cpp:10918
-#: src/chcanv.cpp:10949 src/ChInfoWin.cpp:56 src/cm93.cpp:7310
+#: src/AISTargetListDialog.cpp:307 src/chart1.cpp:1432 src/chart1.cpp:6544
+#: src/chart1.cpp:11784 src/chart1.cpp:12744 src/chcanv.cpp:10943
+#: src/chcanv.cpp:10974 src/ChInfoWin.cpp:56 src/cm93.cpp:7314
 #: src/concanv.cpp:103 src/ConnectionParams.cpp:320 src/ConnectionParams.cpp:404
-#: src/ConnectionParams.cpp:704 src/glChartCanvas.cpp:4149
-#: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1592 src/OCPNPlatform.cpp:2017
-#: src/OCPNPlatform.cpp:2057 src/options.cpp:913 src/options.cpp:1401
-#: src/options.cpp:2309 src/options.cpp:8846 src/options.cpp:9078
-#: src/options.cpp:10130 src/options.cpp:10274 src/Osenc.cpp:1661
+#: src/ConnectionParams.cpp:883 src/glChartCanvas.cpp:4177
+#: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1612 src/OCPNPlatform.cpp:2057
+#: src/OCPNPlatform.cpp:2097 src/options.cpp:914 src/options.cpp:1402
+#: src/options.cpp:2315 src/options.cpp:8898 src/options.cpp:9130
+#: src/options.cpp:10182 src/options.cpp:10326 src/Osenc.cpp:1661
 #: src/routemanagerdialog.cpp:283 src/RoutePropDlg.cpp:21 src/TCWin.cpp:89
 #: src/TCWin.cpp:245 src/toolbar.cpp:2930 src/TrackPropDlg.cpp:105
 #: src/TrackPropDlg.cpp:239 src/TrackPropDlg.cpp:538 src/CanvasOptions.cpp:82
-#: src/MarkInfo.cpp:274 src/MarkInfo.cpp:308
+#: src/MarkInfo.cpp:275 src/MarkInfo.cpp:318
 msgid "Dialog"
 msgstr "Hộp thoại"
 
-#: src/AISTargetListDialog.cpp:325 src/canvasMenu.cpp:585 src/chart1.cpp:5597
+#: src/AISTargetListDialog.cpp:325 src/canvasMenu.cpp:585 src/chart1.cpp:5625
 msgid "AIS target list"
 msgstr "Danh sách AIS mục tiêu"
 
@@ -2489,7 +2489,7 @@ msgstr "Trk"
 
 #: src/AISTargetListDialog.cpp:515 src/routeprintout.cpp:385
 #: src/RoutePropDlg.cpp:37 src/RoutePropDlgImpl.cpp:735 src/TrackPropDlg.cpp:256
-#: src/TrackPropDlg.cpp:560 src/TrackPropDlg.cpp:1181 src/MarkInfo.cpp:373
+#: src/TrackPropDlg.cpp:560 src/TrackPropDlg.cpp:1181 src/MarkInfo.cpp:385
 msgid "Name"
 msgstr "Tên"
 
@@ -2498,7 +2498,8 @@ msgid "Call"
 msgstr "Cuộc gọi"
 
 #: src/AISTargetListDialog.cpp:547 src/ConnectionParams.cpp:442
-#: src/ConnectionParams.cpp:537 src/options.cpp:2135 src/options.cpp:2805
+#: src/ConnectionParams.cpp:537 src/ConnectionParams.cpp:631
+#: src/ConnectionParams.cpp:715 src/options.cpp:2141 src/options.cpp:2811
 msgid "Type"
 msgstr "Loại"
 
@@ -2577,9 +2578,9 @@ msgstr "Những thông tin theo đường đi đây của tàu đã được ghi
 msgid "AISTargetQuery"
 msgstr "Truy vấn mục tiêu AIS"
 
-#: src/AISTargetQueryDialog.cpp:312 src/cm93.cpp:7374
-#: src/GoToPositionDialog.cpp:147 src/options.cpp:554 src/options.cpp:660
-#: src/options.cpp:6053 src/routeprintout.cpp:430 src/TCWin.cpp:199
+#: src/AISTargetQueryDialog.cpp:312 src/cm93.cpp:7378
+#: src/GoToPositionDialog.cpp:147 src/options.cpp:555 src/options.cpp:661
+#: src/options.cpp:6100 src/routeprintout.cpp:430 src/TCWin.cpp:199
 #: src/TCWin.cpp:215 src/toolbar.cpp:2994 src/TrackPropDlg.cpp:499
 #: src/TrackPropDlg.cpp:830
 msgid "OK"
@@ -2589,27 +2590,27 @@ msgstr "Ok"
 msgid "Stop Tracking"
 msgstr "Ngừng ghi lại đường đi"
 
-#: src/androidUTIL.cpp:2045
+#: src/androidUTIL.cpp:2162
 msgid "OpenCPN Help is not installed.\n"
 "Would you like to install from Google PlayStore now?"
 msgstr ""
 
-#: src/androidUTIL.cpp:2806
+#: src/androidUTIL.cpp:2991
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
 msgstr "Điện thoại android có tích hợp GPS, nhưng nó bị vô hiệu hóa.\n"
 "xin vui lòng truy cập vào hộp thoại android Settings/Location để bật GPS"
 
-#: src/androidUTIL.cpp:2955
+#: src/androidUTIL.cpp:3143
 msgid "Nothing found"
 msgstr "Không tìm thấy gì"
 
-#: src/androidUTIL.cpp:4553 src/chart1.cpp:3661
+#: src/androidUTIL.cpp:4757 src/chart1.cpp:3676
 msgid "Anchorage created "
 msgstr "Chỗ neo đậu đã được tạo "
 
 #: src/canvasMenu.cpp:269 src/canvasMenu.cpp:286 src/concanv.cpp:212
-#: src/options.cpp:864
+#: src/options.cpp:865
 msgid "Menu"
 msgstr "Thực đơn"
 
@@ -2661,7 +2662,7 @@ msgstr "Di chuyển thuyền đến đây"
 msgid "Navigate To Here"
 msgstr "Điều hướng đến đây"
 
-#: src/canvasMenu.cpp:429 src/chart1.cpp:5522
+#: src/canvasMenu.cpp:429 src/chart1.cpp:5550
 msgid "Course Up Mode"
 msgstr "Chế độ mở khóa"
 
@@ -2669,8 +2670,8 @@ msgstr "Chế độ mở khóa"
 msgid "Chart Up Mode"
 msgstr "Chế độ mở biểu đồ"
 
-#: src/canvasMenu.cpp:434 src/chart1.cpp:5159 src/chart1.cpp:5521
-#: src/chart1.cpp:7712
+#: src/canvasMenu.cpp:434 src/chart1.cpp:5195 src/chart1.cpp:5549
+#: src/chart1.cpp:7752
 msgid "North Up Mode"
 msgstr "Chế độ phía Bắc bên trên"
 
@@ -2698,7 +2699,7 @@ msgstr "Dán đường đi"
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 Hộp thoại bù..."
 
-#: src/canvasMenu.cpp:505 src/options.cpp:4543 src/options.cpp:4601
+#: src/canvasMenu.cpp:505 src/options.cpp:4536 src/options.cpp:4594
 msgid "Chart Groups"
 msgstr "Nhóm biểu đồ"
 
@@ -2756,8 +2757,8 @@ msgstr "Lớp Lộ trình"
 
 #: src/canvasMenu.cpp:603 src/canvasMenu.cpp:620 src/canvasMenu.cpp:674
 #: src/canvasMenu.cpp:678 src/canvasMenu.cpp:701 src/canvasMenu.cpp:708
-#: src/canvasMenu.cpp:765 src/canvasMenu.cpp:769 src/options.cpp:1685
-#: src/MarkInfo.cpp:351
+#: src/canvasMenu.cpp:766 src/canvasMenu.cpp:770 src/options.cpp:1691
+#: src/MarkInfo.cpp:363
 msgid "Properties"
 msgstr "Thuộc tính"
 
@@ -2774,7 +2775,7 @@ msgstr "Hủy kích hoạt"
 msgid "Activate"
 msgstr "Kích hoạt"
 
-#: src/canvasMenu.cpp:619 src/chcanv.cpp:3853 src/chcanv.cpp:9719
+#: src/canvasMenu.cpp:619 src/chcanv.cpp:3868 src/chcanv.cpp:9744
 #: src/concanv.cpp:139 src/concanv.cpp:158 src/concanv.cpp:200
 msgid "Route"
 msgstr "Tuyến đường"
@@ -2788,13 +2789,14 @@ msgid "Append Waypoint"
 msgstr "Nối Điểm đường"
 
 #: src/canvasMenu.cpp:636 src/canvasMenu.cpp:679 src/canvasMenu.cpp:724
-#: src/canvasMenu.cpp:774
+#: src/canvasMenu.cpp:775
 msgid "Copy as KML"
 msgstr "Sao chép như KML"
 
 #: src/canvasMenu.cpp:637 src/canvasMenu.cpp:680 src/canvasMenu.cpp:727
-#: src/canvasMenu.cpp:777 src/options.cpp:860 src/options.cpp:9979
-#: src/RoutePropDlg.cpp:277 src/TrackPropDlg.cpp:742 src/MarkInfo.cpp:948
+#: src/canvasMenu.cpp:778 src/options.cpp:861 src/options.cpp:10031
+#: src/RoutePropDlg.cpp:277 src/TrackPropDlg.cpp:742 src/MarkInfo.cpp:491
+#: src/MarkInfo.cpp:1070 src/MarkInfo.cpp:1108
 msgid "Delete"
 msgstr "Xoá"
 
@@ -2802,7 +2804,7 @@ msgstr "Xoá"
 msgid "Reverse..."
 msgstr "Đảo ngược..."
 
-#: src/canvasMenu.cpp:652 src/canvasMenu.cpp:740
+#: src/canvasMenu.cpp:652 src/canvasMenu.cpp:741
 msgid "Send to new GPS"
 msgstr "Gửi đến GPS mới"
 
@@ -2810,19 +2812,19 @@ msgstr "Gửi đến GPS mới"
 msgid "Layer Track"
 msgstr "Lớp đường đã đi"
 
-#: src/canvasMenu.cpp:677 src/chcanv.cpp:3973
+#: src/canvasMenu.cpp:677 src/chcanv.cpp:3988
 msgid "Track"
 msgstr "Đường đã đi"
 
-#: src/canvasMenu.cpp:691 src/canvasMenu.cpp:755
+#: src/canvasMenu.cpp:691 src/canvasMenu.cpp:756
 msgid "Unnamed Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:700 src/canvasMenu.cpp:764
+#: src/canvasMenu.cpp:700 src/canvasMenu.cpp:765
 msgid "Layer Waypoint"
 msgstr "Lớp Điểm đường"
 
-#: src/canvasMenu.cpp:707 src/canvasMenu.cpp:768
+#: src/canvasMenu.cpp:707 src/canvasMenu.cpp:769
 msgid "Waypoint"
 msgstr "Điểm đường"
 
@@ -2830,73 +2832,73 @@ msgstr "Điểm đường"
 msgid "Remove from Route"
 msgstr "Loại bỏ lộ trình"
 
-#: src/canvasMenu.cpp:772
+#: src/canvasMenu.cpp:773
 msgid "Navigate To This"
 msgstr "Điều hướng đến đây"
 
-#: src/canvasMenu.cpp:791
+#: src/canvasMenu.cpp:793
 msgid "Clear Anchor Watch"
 msgstr "Xem mỏ neo"
 
-#: src/canvasMenu.cpp:801
+#: src/canvasMenu.cpp:803
 msgid "Set Anchor Watch"
 msgstr "Thiết lập xem mỏ neo"
 
-#: src/canvasMenu.cpp:839
+#: src/canvasMenu.cpp:841
 msgid "Main Menu"
 msgstr ""
 
-#: src/canvasMenu.cpp:851
+#: src/canvasMenu.cpp:853
 msgid "Show Tide Information"
 msgstr "Hiển thị thông tin thủy triều"
 
-#: src/canvasMenu.cpp:857
+#: src/canvasMenu.cpp:859
 msgid "Show Current Information"
 msgstr "Hiển thị thông tin hiện tại"
 
-#: src/canvasMenu.cpp:1018
+#: src/canvasMenu.cpp:1020
 msgid "Temporary GOTO Route"
 msgstr "Lộ trình GOTO tạm thời"
 
-#: src/canvasMenu.cpp:1019 src/canvasMenu.cpp:1082
+#: src/canvasMenu.cpp:1021 src/canvasMenu.cpp:1084
 #: src/routemanagerdialog.cpp:2280
 msgid "Here"
 msgstr "Ở đây"
 
-#: src/canvasMenu.cpp:1021
+#: src/canvasMenu.cpp:1023
 msgid "There"
 msgstr "Đằng kia"
 
-#: src/canvasMenu.cpp:1078 src/routemanagerdialog.cpp:1938
+#: src/canvasMenu.cpp:1080 src/routemanagerdialog.cpp:1938
 #: src/routemanagerdialog.cpp:2276
 msgid "(Unnamed Waypoint)"
 msgstr "(Không rõ tên điểm đường)"
 
-#: src/canvasMenu.cpp:1079 src/routemanagerdialog.cpp:2277
+#: src/canvasMenu.cpp:1081 src/routemanagerdialog.cpp:2277
 msgid "Go to "
 msgstr "Đi tới "
 
-#: src/canvasMenu.cpp:1288 src/routemanagerdialog.cpp:1198
+#: src/canvasMenu.cpp:1290 src/routemanagerdialog.cpp:1198
 msgid "Rename Waypoints?"
 msgstr "Đổi tên điểm đường?"
 
-#: src/canvasMenu.cpp:1311
+#: src/canvasMenu.cpp:1313
 msgid "Are you sure you want to delete this route?"
 msgstr "Bạn có chắc bạn muốn xóa bỏ con đường này không?"
 
-#: src/canvasMenu.cpp:1312
+#: src/canvasMenu.cpp:1314
 msgid "OpenCPN Route Delete"
 msgstr "Xóa lộ trình OpenCPN"
 
-#: src/canvasMenu.cpp:1569
+#: src/canvasMenu.cpp:1571
 msgid "Are you sure you want to delete this track?"
 msgstr "Bạn có chắc muốn xóa đường đã đi này?"
 
-#: src/canvasMenu.cpp:1570 src/routeman.cpp:1003
+#: src/canvasMenu.cpp:1572 src/routeman.cpp:1003
 msgid "OpenCPN Track Delete"
 msgstr "Xóa bỏ đường đã đi OpenCPN"
 
-#: src/chart1.cpp:911
+#: src/chart1.cpp:913
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
 "See the GNU General Public License for more details.\n\n"
@@ -2910,371 +2912,371 @@ msgstr "\n"
 "KHÔNG ĐƯỢC dựa hoàn toàn vào OpenCPN để đảm bảo sự an toàn tính mạng hoặc tài sản.\n\n"
 "Hãy nhấp vào \"OK\" để đồng ý và tiến hành, \"Hủy\" để thoát.\n"
 
-#: src/chart1.cpp:927
+#: src/chart1.cpp:929
 msgid "OpenCPN for Android"
 msgstr ""
 
-#: src/chart1.cpp:943
+#: src/chart1.cpp:945
 msgid "Welcome to OpenCPN"
 msgstr "Chào mừng đến với OpenCPN"
 
-#: src/chart1.cpp:990
+#: src/chart1.cpp:992
 msgid "Show usage syntax."
 msgstr "Hiển thị cú pháp sử dụng."
 
-#: src/chart1.cpp:991
+#: src/chart1.cpp:993
 msgid "Run in portable mode."
 msgstr "Chạy chế độ cầm tay."
 
-#: src/chart1.cpp:992
+#: src/chart1.cpp:994
 msgid "Switch to full screen mode on start."
 msgstr "Chuyển sang chế độ toàn màn hình khi khởi động."
 
-#: src/chart1.cpp:993
+#: src/chart1.cpp:995
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr "Vô hiệu hoá tăng tốc video OpenGL. Ghi nhớ lại thiết lập này."
 
-#: src/chart1.cpp:996
+#: src/chart1.cpp:998
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr "Hiển thị trình chiếu <num>biểu đồ và thoát khỏi. Không hoặc giá trị âm <num> hiểu là không có giới hạn."
 
-#: src/chart1.cpp:1433
+#: src/chart1.cpp:1435
 msgid "OpenCPN ENC Prepare"
 msgstr "Chuẩn bị OpenCPN ENC"
 
-#: src/chart1.cpp:1463
+#: src/chart1.cpp:1465
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Khoảng cách từ tàu riêng: %4.0f NMi"
 
-#: src/chart1.cpp:1494
+#: src/chart1.cpp:1496
 msgid "ENC Completed."
 msgstr "ENC đã hoàn thành."
 
-#: src/chart1.cpp:1801 src/chart1.cpp:1807
+#: src/chart1.cpp:1803 src/chart1.cpp:1809
 msgid "Failed to initialize the user interface. "
 msgstr "Thất bại khi khởi tạo giao diện người dùng. "
 
-#: src/chart1.cpp:1802
+#: src/chart1.cpp:1804
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN không thể khởi động. "
 
-#: src/chart1.cpp:1803
+#: src/chart1.cpp:1805
 msgid "The necessary configuration files were not found. "
 msgstr "Các tập tin cấu hình cần thiết không được tìm thấy. "
 
-#: src/chart1.cpp:1804
+#: src/chart1.cpp:1806
 msgid "See the log file at "
 msgstr "Xem các tập tin đăng nhập tại "
 
-#: src/chart1.cpp:1804
+#: src/chart1.cpp:1806
 msgid " for details."
 msgstr " để biết chi tiết."
 
-#: src/chart1.cpp:2105
+#: src/chart1.cpp:2107
 msgid " -- [Portable(-p) executing from "
 msgstr " --[Chế độ cầm tay(-p) cách thực hiện "
 
-#: src/chart1.cpp:2188
+#: src/chart1.cpp:2190
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Đang truy xuất bộ thư mục biểu đồ từ Windows Registry"
 
-#: src/chart1.cpp:2406
+#: src/chart1.cpp:2414
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN khởi tạo %ld ms."
 
-#: src/chart1.cpp:2795
+#: src/chart1.cpp:2803
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr ""
 
-#: src/chart1.cpp:2804
+#: src/chart1.cpp:2812
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Xây dựng lại cơ sở dữ liệu biểu đồ từ cấu hình mục tập tin..."
 
-#: src/chart1.cpp:2807
+#: src/chart1.cpp:2815
 msgid "Elapsed time : "
 msgstr "Thời gian đã qua: "
 
-#: src/chart1.cpp:2808
+#: src/chart1.cpp:2816
 msgid "Estimated time : "
 msgstr "Thời gian dự kiến: "
 
-#: src/chart1.cpp:2809
+#: src/chart1.cpp:2817
 msgid "Remaining time : "
 msgstr "Thời gian còn lại: "
 
-#: src/chart1.cpp:2810 src/chart1.cpp:6501 src/chart1.cpp:6509
+#: src/chart1.cpp:2818 src/chart1.cpp:6539 src/chart1.cpp:6547
 msgid "OpenCPN Chart Update"
 msgstr "Cập Nhật biểu đồ OpenCPN"
 
-#: src/chart1.cpp:3007 src/chcanv.cpp:11869
+#: src/chart1.cpp:3015 src/chcanv.cpp:11894
 msgid "AIS Target Query"
 msgstr "Truy vấn AIS mục tiêu"
 
-#: src/chart1.cpp:4106 src/chcanv.cpp:5402 src/OCPNPlatform.cpp:1808
+#: src/chart1.cpp:4132 src/chcanv.cpp:5422 src/OCPNPlatform.cpp:1828
 msgid "StatusBar"
 msgstr "Thanh trạng thái"
 
-#: src/chart1.cpp:4562 src/chart1.cpp:4701
+#: src/chart1.cpp:4603 src/chart1.cpp:4737
 msgid "Show Toolbar"
 msgstr ""
 
-#: src/chart1.cpp:4564 src/chart1.cpp:4703 src/chart1.cpp:10193
+#: src/chart1.cpp:4605 src/chart1.cpp:4739 src/chart1.cpp:10233
 msgid "Hide Toolbar"
 msgstr ""
 
-#: src/chart1.cpp:4917 src/chart1.cpp:4975
+#: src/chart1.cpp:4953 src/chart1.cpp:5011
 msgid "MAN OVERBOARD"
 msgstr "Người rơi xuống biển"
 
-#: src/chart1.cpp:4936
+#: src/chart1.cpp:4972
 msgid "1.0 NM along COG"
 msgstr "1.0 NM so với COG"
 
-#: src/chart1.cpp:4947
+#: src/chart1.cpp:4983
 msgid "Temporary MOB Route"
 msgstr "Lộ trình MOB tạm thời"
 
-#: src/chart1.cpp:4948
+#: src/chart1.cpp:4984
 msgid "Assumed 1 Mile Point"
 msgstr "Giả định 1 dặm điểm"
 
-#: src/chart1.cpp:4998
+#: src/chart1.cpp:5034
 msgid "Disable Tracking"
 msgstr "Vô hiệu hoá theo dõi"
 
-#: src/chart1.cpp:5023 src/chart1.cpp:8873 src/chart1.cpp:9002
+#: src/chart1.cpp:5059 src/chart1.cpp:8913 src/chart1.cpp:9042
 msgid "(Unnamed Track)"
 msgstr "(Lộ trình chưa đặt tên)"
 
-#: src/chart1.cpp:5072 src/chart1.cpp:5519 src/chart1.cpp:10218
+#: src/chart1.cpp:5108 src/chart1.cpp:5547 src/chart1.cpp:10258
 #: src/toolbar.cpp:1025
 msgid "Enable Tracking"
 msgstr "Bật theo dõi"
 
-#: src/chart1.cpp:5518 src/toolbar.cpp:962
+#: src/chart1.cpp:5546 src/toolbar.cpp:962
 msgid "Auto Follow"
 msgstr "Tự động theo dõi"
 
-#: src/chart1.cpp:5525 src/chart1.cpp:5528 src/toolbar.cpp:927
+#: src/chart1.cpp:5553 src/chart1.cpp:5556 src/toolbar.cpp:927
 msgid "Zoom In"
 msgstr "Phóng to"
 
-#: src/chart1.cpp:5526 src/chart1.cpp:5529 src/toolbar.cpp:933
+#: src/chart1.cpp:5554 src/chart1.cpp:5557 src/toolbar.cpp:933
 msgid "Zoom Out"
 msgstr "Thu nhỏ"
 
-#: src/chart1.cpp:5532
+#: src/chart1.cpp:5560
 msgid "Larger Scale Chart"
 msgstr "Hải đồ tỉ lệ lớn hơn"
 
-#: src/chart1.cpp:5533
+#: src/chart1.cpp:5561
 msgid "Smaller Scale Chart"
 msgstr "Hải đồ tỉ lệ nhỏ hơn"
 
-#: src/chart1.cpp:5536
+#: src/chart1.cpp:5564
 msgid "Exit OpenCPN"
 msgstr "Thoát OpenCPN"
 
-#: src/chart1.cpp:5538
+#: src/chart1.cpp:5566
 msgid "&Navigate"
 msgstr "& Điều hướng"
 
-#: src/chart1.cpp:5543 src/chart1.cpp:5546 src/options.cpp:4718
-#: src/options.cpp:4875 src/CanvasOptions.cpp:157
+#: src/chart1.cpp:5571 src/chart1.cpp:5574 src/options.cpp:4711
+#: src/options.cpp:4880 src/CanvasOptions.cpp:157
 msgid "Enable Chart Quilting"
 msgstr "Kích hoạt ghép Hải đồ"
 
-#: src/chart1.cpp:5544 src/chart1.cpp:5547 src/options.cpp:4761
-#: src/options.cpp:4922 src/CanvasOptions.cpp:165
+#: src/chart1.cpp:5572 src/chart1.cpp:5575 src/options.cpp:4754
+#: src/options.cpp:4928 src/CanvasOptions.cpp:165
 msgid "Show Chart Outlines"
 msgstr "Hiển thị đường kẻ hải đồ"
 
-#: src/chart1.cpp:5549 src/options.cpp:5536
+#: src/chart1.cpp:5577 src/options.cpp:5579
 msgid "Show Chart Bar"
 msgstr "Hiển thị thanh hải đồ"
 
-#: src/chart1.cpp:5554 src/chart1.cpp:5561 src/toolbar.cpp:984
+#: src/chart1.cpp:5582 src/chart1.cpp:5589 src/toolbar.cpp:984
 msgid "Show ENC text"
 msgstr "Hiển thị chữ ENC"
 
-#: src/chart1.cpp:5555 src/chart1.cpp:5562
+#: src/chart1.cpp:5583 src/chart1.cpp:5590
 msgid "Show ENC Lights"
 msgstr "Hiển thị đèn ENC"
 
-#: src/chart1.cpp:5556 src/chart1.cpp:5563
+#: src/chart1.cpp:5584 src/chart1.cpp:5591
 msgid "Show ENC Soundings"
 msgstr "Hiển thị độ sâu ENC"
 
-#: src/chart1.cpp:5557 src/chart1.cpp:5564
+#: src/chart1.cpp:5585 src/chart1.cpp:5592
 msgid "Show ENC Anchoring Info"
 msgstr "Hiển thị thông tin neo đậu ENC"
 
-#: src/chart1.cpp:5558 src/chart1.cpp:5565
+#: src/chart1.cpp:5586 src/chart1.cpp:5593
 msgid "Show ENC Data Quality"
 msgstr "Hiển thị chất lượng dữ liệu ENC"
 
-#: src/chart1.cpp:5559 src/chart1.cpp:5566
+#: src/chart1.cpp:5587 src/chart1.cpp:5594
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/chart1.cpp:5570 src/chcanv.cpp:1250 src/toolbar.cpp:1006
+#: src/chart1.cpp:5598 src/chcanv.cpp:1266 src/toolbar.cpp:1006
 msgid "Show Tides"
 msgstr "Hiển thị thủy triều"
 
-#: src/chart1.cpp:5571 src/chcanv.cpp:1286 src/toolbar.cpp:1000
+#: src/chart1.cpp:5599 src/chcanv.cpp:1302 src/toolbar.cpp:1000
 #: src/CanvasOptions.cpp:198
 msgid "Show Currents"
 msgstr "Hiển thị hiện hành"
 
-#: src/chart1.cpp:5574 src/chart1.cpp:5576 src/chart1.cpp:10223
+#: src/chart1.cpp:5602 src/chart1.cpp:5604 src/chart1.cpp:10263
 #: src/toolbar.cpp:1032
 msgid "Change Color Scheme"
 msgstr "Thay đổi màu lược đồ"
 
-#: src/chart1.cpp:5581 src/chart1.cpp:5583
+#: src/chart1.cpp:5609 src/chart1.cpp:5611
 msgid "Enter Full Screen"
 msgstr "Xem toàn màn hình"
 
-#: src/chart1.cpp:5585
+#: src/chart1.cpp:5613
 msgid "&View"
 msgstr "&Xem"
 
-#: src/chart1.cpp:5589 src/toolbar.cpp:1090
+#: src/chart1.cpp:5617 src/toolbar.cpp:1090
 msgid "Show AIS Targets"
 msgstr "Hiển thị AIS mục tiêu"
 
-#: src/chart1.cpp:5590 src/chcanv.cpp:12271 src/toolbar.cpp:1081
+#: src/chart1.cpp:5618 src/chcanv.cpp:12296 src/toolbar.cpp:1081
 msgid "Attenuate less critical AIS targets"
 msgstr "Giảm chức năng phán đoán AIS mục tiêu"
 
-#: src/chart1.cpp:5592
+#: src/chart1.cpp:5620
 msgid "Hide Moored AIS Targets"
 msgstr "Ẩn đối tượng AIS đang thả neo"
 
-#: src/chart1.cpp:5593
+#: src/chart1.cpp:5621
 msgid "Show AIS Target Tracks"
 msgstr "Hiển thị vết đối tượng AIS"
 
-#: src/chart1.cpp:5594
+#: src/chart1.cpp:5622
 msgid "Show CPA Alert Dialogs"
 msgstr "Hiển thị cảnh báo CPA"
 
-#: src/chart1.cpp:5595
+#: src/chart1.cpp:5623
 msgid "Sound CPA Alarms"
 msgstr "Cảnh báo âm thanh CPA"
 
-#: src/chart1.cpp:5598
+#: src/chart1.cpp:5626
 msgid "&AIS"
 msgstr "& AIS"
 
-#: src/chart1.cpp:5602 src/chart1.cpp:5604
+#: src/chart1.cpp:5630 src/chart1.cpp:5632
 msgid "Measure Distance"
 msgstr "Đo khoảng cách"
 
-#: src/chart1.cpp:5608
+#: src/chart1.cpp:5636
 msgid "Route && Mark Manager..."
 msgstr "Quản lý tuyến và điểm đánh dấu..."
 
-#: src/chart1.cpp:5609 src/chart1.cpp:10206 src/toolbar.cpp:955
+#: src/chart1.cpp:5637 src/chart1.cpp:10246 src/toolbar.cpp:955
 msgid "Create Route"
 msgstr "Tạo tuyến đường"
 
-#: src/chart1.cpp:5611
+#: src/chart1.cpp:5639
 msgid "Drop Mark at Boat"
 msgstr "Đặt đánh dấu tại tàu"
 
-#: src/chart1.cpp:5612
+#: src/chart1.cpp:5640
 msgid "Drop Mark at Cursor"
 msgstr "Đặt đánh dấu tại con trỏ"
 
-#: src/chart1.cpp:5615 src/chart1.cpp:5619 src/chart1.cpp:10278
+#: src/chart1.cpp:5643 src/chart1.cpp:5647 src/chart1.cpp:10318
 #: src/toolbar.cpp:1051
 msgid "Drop MOB Marker"
 msgstr "Thả đánh dấu MOB"
 
-#: src/chart1.cpp:5617 src/pluginmanager.cpp:4303
+#: src/chart1.cpp:5645 src/pluginmanager.cpp:4303
 msgid "Preferences"
 msgstr "Tùy chọn"
 
-#: src/chart1.cpp:5624
+#: src/chart1.cpp:5652
 msgid "&Tools"
 msgstr "&Công cụ"
 
-#: src/chart1.cpp:5627
+#: src/chart1.cpp:5655
 msgid "OpenCPN Help"
 msgstr "Trợ giúp OpenCPN"
 
-#: src/chart1.cpp:5628
+#: src/chart1.cpp:5656
 msgid "&Help"
 msgstr "&Trợ Giúp"
 
-#: src/chart1.cpp:6189
+#: src/chart1.cpp:6227
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Xin vui lòng khởi động lại OpenCPN để kích hoạt thay đổi ngôn ngữ hoặc giao diện."
 
-#: src/chart1.cpp:7705
+#: src/chart1.cpp:7745
 msgid "Rotated Mode"
 msgstr "Chế độ xoay"
 
-#: src/chart1.cpp:8740 src/routeprintout.cpp:493
+#: src/chart1.cpp:8780 src/routeprintout.cpp:493
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Lỗi trong quá trình in. \n"
 "Có lẽ máy in hiện thời của bạn không được thiết lập một cách chính xác?"
 
-#: src/chart1.cpp:8922 src/chart1.cpp:8983 src/routemanagerdialog.cpp:939
+#: src/chart1.cpp:8962 src/chart1.cpp:9023 src/routemanagerdialog.cpp:939
 msgid "(Unnamed Route)"
 msgstr "(Lô trình không tên)"
 
-#: src/chart1.cpp:9538
+#: src/chart1.cpp:9578
 msgid " Ship "
 msgstr " Tàu "
 
-#: src/chart1.cpp:9791 src/chart1.cpp:9843
+#: src/chart1.cpp:9831 src/chart1.cpp:9883
 msgid "AIS MAN OVERBOARD"
 msgstr "Tín hiệu AIS Người rơi xuống biển"
 
-#: src/chart1.cpp:9805 src/options.cpp:2897
+#: src/chart1.cpp:9845 src/options.cpp:2903
 msgid "Own ship"
 msgstr "Tàu của tôi"
 
-#: src/chart1.cpp:9816
+#: src/chart1.cpp:9856
 msgid "Temporary AISMOB Route"
 msgstr "Lô trình AISMOB tạm"
 
-#: src/chart1.cpp:9817
+#: src/chart1.cpp:9857
 msgid "Present own ship"
 msgstr "Chỉ định tàu của tôi"
 
-#: src/chart1.cpp:9887
+#: src/chart1.cpp:9927
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "Cập nhật tín hiệu AIS người rơi xuống biển"
 
-#: src/chart1.cpp:10212 src/routemanagerdialog.cpp:280 src/toolbar.cpp:1018
+#: src/chart1.cpp:10252 src/routemanagerdialog.cpp:280 src/toolbar.cpp:1018
 msgid "Route & Mark Manager"
 msgstr "Quản lý lộ trình & đánh dấu"
 
-#: src/chart1.cpp:10234 src/toolbar.cpp:1012
+#: src/chart1.cpp:10274 src/toolbar.cpp:1012
 msgid "Print Chart"
 msgstr "In biểu đồ"
 
-#: src/chart1.cpp:10278 src/toolbar.cpp:1051
+#: src/chart1.cpp:10318 src/toolbar.cpp:1051
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/chart1.cpp:11254
+#: src/chart1.cpp:11294
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN yêu cầu quyền truy cập vào cổng serial để sử dụng NMEA serial\n"
 
-#: src/chart1.cpp:11256
+#: src/chart1.cpp:11296
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Không tìm thấy cổng Serial Port \n"
 "Bạn phải cài đặt một cổng serial hoặc cắm một thiết bị nối tiếp vào cổng usb. \n"
 
-#: src/chart1.cpp:11282
+#: src/chart1.cpp:11322
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3294,9 +3296,9 @@ msgstr " ChartFile:  "
 msgid " Name:  "
 msgstr " Tên:  "
 
-#: src/chartdbs.cpp:1410 src/chartdbs.cpp:1412 src/chcanv.cpp:5362
-#: src/chcanv.cpp:5364 src/chcanv.cpp:5367 src/chcanv.cpp:5371
-#: src/chcanv.cpp:5374 src/chcanv.cpp:5411 src/routemanagerdialog.cpp:583
+#: src/chartdbs.cpp:1410 src/chartdbs.cpp:1412 src/chcanv.cpp:5382
+#: src/chcanv.cpp:5384 src/chcanv.cpp:5387 src/chcanv.cpp:5391
+#: src/chcanv.cpp:5394 src/chcanv.cpp:5431 src/routemanagerdialog.cpp:583
 msgid "Scale"
 msgstr "Tỷ lệ"
 
@@ -3356,200 +3358,200 @@ msgstr "OpenCPN quét thư mục...."
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN Thêm hải đồ...."
 
-#: src/chcanv.cpp:1252
+#: src/chcanv.cpp:1268
 msgid "Hide Tides"
 msgstr "Ẩn thủy triều"
 
-#: src/chcanv.cpp:1288
+#: src/chcanv.cpp:1304
 msgid "Hide Currents"
 msgstr "Ẩn dòng chảy"
 
-#: src/chcanv.cpp:1386 src/chcanv.cpp:1401
+#: src/chcanv.cpp:1402 src/chcanv.cpp:1417
 msgid "Group \""
 msgstr "Nhóm\""
 
-#: src/chcanv.cpp:1391
+#: src/chcanv.cpp:1407
 msgid "\" is empty."
 msgstr ""
 
-#: src/chcanv.cpp:1393 src/chcanv.cpp:1408
+#: src/chcanv.cpp:1409 src/chcanv.cpp:1424
 msgid "OpenCPN Group Notice"
 msgstr "Nhóm thông báo OpenCPN"
 
-#: src/chcanv.cpp:1406
+#: src/chcanv.cpp:1422
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\"trống rỗng, chuyển sang\"Tất cả biểu đồ hoạt động\" nhóm."
 
-#: src/chcanv.cpp:3855 src/chcanv.cpp:9721
+#: src/chcanv.cpp:3870 src/chcanv.cpp:9746
 msgid "Layer Route: "
 msgstr "Lớp lộ trình: "
 
-#: src/chcanv.cpp:3857 src/chcanv.cpp:3978
+#: src/chcanv.cpp:3872 src/chcanv.cpp:3993
 msgid "(unnamed)"
 msgstr "(không tên)"
 
-#: src/chcanv.cpp:3861 src/chcanv.cpp:3982
+#: src/chcanv.cpp:3876 src/chcanv.cpp:3997
 msgid "Total Length: "
 msgstr "Tổng chiều dài: "
 
-#: src/chcanv.cpp:3862
+#: src/chcanv.cpp:3877
 msgid "Leg: from "
 msgstr "Chân: từ "
 
-#: src/chcanv.cpp:3863
+#: src/chcanv.cpp:3878
 msgid " to "
 msgstr " đến "
 
-#: src/chcanv.cpp:3975
+#: src/chcanv.cpp:3990
 msgid "Layer Track: "
 msgstr "Theo dõi lớp: "
 
-#: src/chcanv.cpp:7626 src/chcanv.cpp:8078
+#: src/chcanv.cpp:7652 src/chcanv.cpp:8104
 msgid "Use nearby waypoint?"
 msgstr "Sử dụng điểm gần kề?"
 
-#: src/chcanv.cpp:7627 src/chcanv.cpp:7679 src/chcanv.cpp:8079
-#: src/chcanv.cpp:8129
+#: src/chcanv.cpp:7653 src/chcanv.cpp:7705 src/chcanv.cpp:8105
+#: src/chcanv.cpp:8155
 msgid "OpenCPN Route Create"
 msgstr "Tạo lộ trình OpenCPN"
 
-#: src/chcanv.cpp:7672 src/chcanv.cpp:8124
+#: src/chcanv.cpp:7698 src/chcanv.cpp:8150
 msgid "For this leg the Great Circle route is "
 msgstr "Cho chặng này đường Great Circle là "
 
-#: src/chcanv.cpp:7673 src/chcanv.cpp:8125
+#: src/chcanv.cpp:7699 src/chcanv.cpp:8151
 msgid " shorter than rhumbline.\n\n"
 msgstr " ngắn hơn rhumbline.\n\n"
 
-#: src/chcanv.cpp:7674 src/chcanv.cpp:8126
+#: src/chcanv.cpp:7700 src/chcanv.cpp:8152
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Bạn có muốn bao gồm điểm định tuyến Great Circle cho chặng này?"
 
-#: src/chcanv.cpp:8842 src/chcanv.cpp:8850 src/S57QueryDialog.cpp:89
+#: src/chcanv.cpp:8868 src/chcanv.cpp:8876 src/S57QueryDialog.cpp:89
 #: src/S57QueryDialog.cpp:250
 msgid "ObjectQuery"
 msgstr "Truy vấn đối tượng"
 
-#: src/chcanv.cpp:8952 src/chcanv.cpp:8955 src/routemanagerdialog.cpp:2160
+#: src/chcanv.cpp:8978 src/chcanv.cpp:8981 src/routemanagerdialog.cpp:2160
 #: src/routemanagerdialog.cpp:2163 src/RoutePropDlgImpl.cpp:815
 msgid "Waypoint Properties"
 msgstr "Thuộc tính điểm chọn"
 
-#: src/chcanv.cpp:8952 src/routemanagerdialog.cpp:2160
+#: src/chcanv.cpp:8978 src/routemanagerdialog.cpp:2160
 #: src/RoutePropDlgImpl.cpp:478
 msgid "Layer"
 msgstr "Lớp"
 
-#: src/chcanv.cpp:9036
+#: src/chcanv.cpp:9062
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Hiện có điểm trùng với vị trí bạn đang dán. Bạn có muốn trộn các dữ liệu dán với nó? \n\n"
 
-#: src/chcanv.cpp:9037
+#: src/chcanv.cpp:9063
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Trả lời 'Không' sẽ tạo ra một điểm mới tại cùng một vị trí."
 
-#: src/chcanv.cpp:9038
+#: src/chcanv.cpp:9064
 msgid "Merge waypoint?"
 msgstr "Trộn điểm?"
 
-#: src/chcanv.cpp:9094
+#: src/chcanv.cpp:9120
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Hiện có nhiều điểm trùng với vị trí bạn đang dán. Bạn có muốn trộn tất cả các dữ liệu này?\n\n"
 
-#: src/chcanv.cpp:9095
+#: src/chcanv.cpp:9121
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Trả lời 'Không' sẽ tạo ra tất cả các điểm mới cho lộ trình này."
 
-#: src/chcanv.cpp:9096
+#: src/chcanv.cpp:9122
 msgid "Merge waypoints?"
 msgstr "Trộn điểm?"
 
-#: src/chcanv.cpp:9585 src/chcanv.cpp:9616 src/RolloverWin.cpp:136
+#: src/chcanv.cpp:9611 src/chcanv.cpp:9642 src/RolloverWin.cpp:136
 #: src/RolloverWin.cpp:236 src/RolloverWin.cpp:375
 msgid "RouteLegInfoRollover"
 msgstr "RouteLegInfoRollover"
 
-#: src/chcanv.cpp:10286
+#: src/chcanv.cpp:10311
 msgid "MBTile requires OpenGL to be enabled"
 msgstr ""
 
-#: src/chcanv.cpp:10935 src/options.cpp:5013 src/options.cpp:5126
+#: src/chcanv.cpp:10960 src/options.cpp:5055 src/options.cpp:5168
 msgid "Feet"
 msgstr "Feet"
 
-#: src/chcanv.cpp:10936 src/options.cpp:4986 src/options.cpp:5013
-#: src/options.cpp:5105 src/options.cpp:5126
+#: src/chcanv.cpp:10961 src/options.cpp:5028 src/options.cpp:5055
+#: src/options.cpp:5147 src/options.cpp:5168
 msgid "Meters"
 msgstr "Mét"
 
-#: src/chcanv.cpp:10937 src/options.cpp:5013 src/options.cpp:5126
+#: src/chcanv.cpp:10962 src/options.cpp:5055 src/options.cpp:5168
 msgid "Fathoms"
 msgstr "Phút"
 
-#: src/chcanv.cpp:10940
+#: src/chcanv.cpp:10965
 msgid "OverZoom"
 msgstr "OverZoom"
 
-#: src/chcanv.cpp:11331 src/chcanv.cpp:11332
+#: src/chcanv.cpp:11356 src/chcanv.cpp:11357
 msgid "ExtendedTideIcon"
 msgstr "Biểu tượng thủy triều mở rộng"
 
-#: src/chcanv.cpp:11640
+#: src/chcanv.cpp:11665
 msgid "CurrentValue"
 msgstr "Giá trị hiện tại"
 
-#: src/chcanv.cpp:12270
+#: src/chcanv.cpp:12295
 msgid "Show all AIS Targets"
 msgstr "Hiển thị tất cả đối tượng AIS"
 
-#: src/chcanv.cpp:12272 src/toolbar.cpp:993 src/toolbar.cpp:1083
+#: src/chcanv.cpp:12297 src/toolbar.cpp:993 src/toolbar.cpp:1083
 #: src/toolbar.cpp:1086
 msgid "Hide AIS Targets"
 msgstr "Ẩn AIS mục tiêu"
 
-#: src/chcanv.cpp:12926
+#: src/chcanv.cpp:12951
 msgid "Show This Chart"
 msgstr "Hiển thị hải đồ này"
 
-#: src/chcanv.cpp:12931
+#: src/chcanv.cpp:12956
 msgid "Hide This Chart"
 msgstr "Ẩn biểu đồ này"
 
-#: src/cm93.cpp:7308
+#: src/cm93.cpp:7312
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "Ô OpenCPN CM93 điều chỉnh bù"
 
-#: src/cm93.cpp:7334
+#: src/cm93.cpp:7338
 msgid "Cell"
 msgstr "Mảnh"
 
-#: src/cm93.cpp:7337
+#: src/cm93.cpp:7341
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 
-#: src/cm93.cpp:7340
+#: src/cm93.cpp:7344
 msgid "Cell Scale"
 msgstr "Tỷ lệ ô"
 
-#: src/cm93.cpp:7343
+#: src/cm93.cpp:7347
 msgid "wgsox"
 msgstr "wgsox"
 
-#: src/cm93.cpp:7346
+#: src/cm93.cpp:7350
 msgid "wgsoy"
 msgstr "wgsoy"
 
-#: src/cm93.cpp:7349 src/cm93.cpp:7360
+#: src/cm93.cpp:7353 src/cm93.cpp:7364
 msgid "User X Offset"
 msgstr "Người dùng X bù"
 
-#: src/cm93.cpp:7352 src/cm93.cpp:7367
+#: src/cm93.cpp:7356 src/cm93.cpp:7371
 msgid "User Y Offset"
 msgstr "Người dùng Y bù"
 
-#: src/cm93.cpp:7360 src/cm93.cpp:7367 src/options.cpp:4205 src/options.cpp:4215
-#: src/options.cpp:4225 src/options.cpp:4421 src/options.cpp:4428
-#: src/options.cpp:4435 src/options.cpp:6721
+#: src/cm93.cpp:7364 src/cm93.cpp:7371 src/options.cpp:4204 src/options.cpp:4214
+#: src/options.cpp:4224 src/options.cpp:4417 src/options.cpp:4424
+#: src/options.cpp:4431 src/options.cpp:6770
 msgid "meters"
 msgstr "mét"
 
@@ -3605,12 +3607,12 @@ msgid "ETA  @SOG"
 msgstr ""
 
 #: src/ConnectionParams.cpp:156 src/ConnectionParams.cpp:471
-#: src/ConnectionParams.cpp:648 src/options.cpp:1694 src/options.cpp:2330
+#: src/ConnectionParams.cpp:817 src/options.cpp:1700 src/options.cpp:2336
 msgid "Serial"
 msgstr "Serial"
 
 #: src/ConnectionParams.cpp:158 src/ConnectionParams.cpp:566
-#: src/ConnectionParams.cpp:672 src/options.cpp:1699 src/options.cpp:2335
+#: src/ConnectionParams.cpp:841 src/options.cpp:1705 src/options.cpp:2341
 msgid "Network"
 msgstr "Mạng lưới"
 
@@ -3626,15 +3628,15 @@ msgstr "BT"
 msgid "Internal"
 msgstr "Bộ nhớ trong"
 
-#: src/ConnectionParams.cpp:187 src/options.cpp:1780 src/options.cpp:2417
+#: src/ConnectionParams.cpp:187 src/options.cpp:1786 src/options.cpp:2423
 msgid "TCP"
 msgstr "TCP"
 
-#: src/ConnectionParams.cpp:189 src/options.cpp:1786 src/options.cpp:2423
+#: src/ConnectionParams.cpp:189 src/options.cpp:1792 src/options.cpp:2429
 msgid "UDP"
 msgstr "UDP"
 
-#: src/ConnectionParams.cpp:191 src/options.cpp:1792 src/options.cpp:2429
+#: src/ConnectionParams.cpp:191 src/options.cpp:1798 src/options.cpp:2435
 msgid "GPSD"
 msgstr "GPSD"
 
@@ -3682,18 +3684,19 @@ msgstr "Ra"
 msgid ", Out: None"
 msgstr ", Ra: không có"
 
-#: src/ConnectionParams.cpp:422 src/options.cpp:2805 src/pluginmanager.cpp:4418
+#: src/ConnectionParams.cpp:422 src/options.cpp:2811 src/pluginmanager.cpp:4418
 #: src/pluginmanager.cpp:4429
 msgid "Enable"
 msgstr "Bật"
 
 #: src/ConnectionParams.cpp:450 src/ConnectionParams.cpp:545
+#: src/ConnectionParams.cpp:639 src/ConnectionParams.cpp:723
 msgid "Direction"
 msgstr ""
 
 #: src/ConnectionParams.cpp:454 src/ConnectionParams.cpp:549
-#: src/options.cpp:1770 src/options.cpp:1851 src/options.cpp:2408
-#: src/options.cpp:2500
+#: src/options.cpp:1776 src/options.cpp:1857 src/options.cpp:2414
+#: src/options.cpp:2506
 msgid "Protocol"
 msgstr "Giao thức"
 
@@ -3701,17 +3704,20 @@ msgstr "Giao thức"
 msgid "Serial Port"
 msgstr ""
 
-#: src/ConnectionParams.cpp:462 src/options.cpp:1834 src/options.cpp:2483
+#: src/ConnectionParams.cpp:462 src/options.cpp:1840 src/options.cpp:2489
 msgid "Baudrate"
 msgstr "Tốc độ truyền"
 
 #: src/ConnectionParams.cpp:466 src/ConnectionParams.cpp:561
-#: src/options.cpp:1867 src/options.cpp:2516 src/options.cpp:2806
+#: src/ConnectionParams.cpp:655 src/ConnectionParams.cpp:739
+#: src/options.cpp:1873 src/options.cpp:2522 src/options.cpp:2812
 msgid "Priority"
 msgstr "Ưu tiên"
 
 #: src/ConnectionParams.cpp:524 src/ConnectionParams.cpp:619
-#: src/ConnectionParams.cpp:655 src/ConnectionParams.cpp:679
+#: src/ConnectionParams.cpp:703 src/ConnectionParams.cpp:787
+#: src/ConnectionParams.cpp:824 src/ConnectionParams.cpp:848
+#: src/ConnectionParams.cpp:852 src/ConnectionParams.cpp:857
 msgid "Comment: "
 msgstr ""
 
@@ -3723,7 +3729,15 @@ msgstr ""
 msgid "Network Port"
 msgstr ""
 
-#: src/DetailSlider.cpp:87 src/options.cpp:4236 src/options.cpp:4447
+#: src/ConnectionParams.cpp:660 src/options.cpp:1711 src/options.cpp:2347
+msgid "Built-in GPS"
+msgstr "Xây dựng - trong GPS"
+
+#: src/ConnectionParams.cpp:744 src/options.cpp:1720
+msgid "Built-in Bluetooth"
+msgstr "Xây dựng - trong Bluetooth"
+
+#: src/DetailSlider.cpp:87 src/options.cpp:4234 src/options.cpp:4442
 msgid "CM93 Detail Level"
 msgstr "Mức độ chi tiết CM93"
 
@@ -3735,31 +3749,31 @@ msgstr ""
 msgid "Vectorchart Zoom/Scale Weighting"
 msgstr ""
 
-#: src/glChartCanvas.cpp:2161 src/s52plib.cpp:2311 src/s52plib.cpp:2336
-#: src/s52plib.cpp:2444 src/s52plib.cpp:2621
+#: src/glChartCanvas.cpp:2173 src/s52plib.cpp:2311 src/s52plib.cpp:2336
+#: src/s52plib.cpp:2444 src/s52plib.cpp:2622
 msgid "ChartTexts"
 msgstr "Chữ biểu đồ"
 
-#: src/glChartCanvas.cpp:5014
+#: src/glChartCanvas.cpp:4959
 msgid "Waiting for raster chart compression thread exit."
 msgstr "Chờ biểu đồ raster nén thoát."
 
 #: src/GoToPositionDialog.cpp:120 src/RoutePropDlg.cpp:216
-#: src/TrackPropDlg.cpp:216 src/MarkInfo.cpp:419
+#: src/TrackPropDlg.cpp:216 src/MarkInfo.cpp:431
 msgid "Latitude"
 msgstr "Vĩ độ"
 
 #: src/GoToPositionDialog.cpp:130 src/RoutePropDlg.cpp:218
-#: src/TrackPropDlg.cpp:217 src/MarkInfo.cpp:426
+#: src/TrackPropDlg.cpp:217 src/MarkInfo.cpp:438
 msgid "Longitude"
 msgstr "Kinh độ"
 
-#: src/GoToPositionDialog.cpp:143 src/LinkPropDlg.cpp:80 src/navutil.cpp:3725
-#: src/options.cpp:551 src/options.cpp:657 src/options.cpp:6057
-#: src/options.cpp:9983 src/options.cpp:10192 src/routeprintout.cpp:426
+#: src/GoToPositionDialog.cpp:143 src/LinkPropDlg.cpp:80 src/navutil.cpp:3737
+#: src/options.cpp:552 src/options.cpp:658 src/options.cpp:6104
+#: src/options.cpp:10035 src/options.cpp:10244 src/routeprintout.cpp:426
 #: src/RoutePropDlg.cpp:345 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2990
-#: src/TrackPropDlg.cpp:495 src/TrackPropDlg.cpp:826 src/MarkInfo.cpp:611
-#: src/MarkInfo.cpp:1545
+#: src/TrackPropDlg.cpp:495 src/TrackPropDlg.cpp:826 src/MarkInfo.cpp:678
+#: src/MarkInfo.cpp:1751
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -3811,159 +3825,159 @@ msgstr "Chọn một tập tin"
 msgid "Link not complete, can't be saved."
 msgstr "Liên kết không hoàn chỉnh, không thể lưu được."
 
-#: src/navutil.cpp:1707 src/navutil.cpp:3076 src/options.cpp:635
-#: src/options.cpp:807
+#: src/navutil.cpp:1715 src/navutil.cpp:3088 src/options.cpp:636
+#: src/options.cpp:808
 msgid "Persistent"
 msgstr "Liên tục"
 
-#: src/navutil.cpp:2768 src/navutil.cpp:2879
+#: src/navutil.cpp:2780 src/navutil.cpp:2891
 msgid "Export GPX file"
 msgstr "Xuất tập tin GPX"
 
-#: src/navutil.cpp:2781
+#: src/navutil.cpp:2793
 msgid "Overwrite existing file?"
 msgstr "Ghi đè tập tin hiện có ?"
 
-#: src/navutil.cpp:2981 src/navutil.cpp:3015
+#: src/navutil.cpp:2993 src/navutil.cpp:3027
 msgid "Import GPX file"
 msgstr "Nhập tập tin GPX "
 
-#: src/navutil.cpp:3076
+#: src/navutil.cpp:3088
 msgid "Temporary"
 msgstr ""
 
-#: src/navutil.cpp:3107
+#: src/navutil.cpp:3119
 msgid "duplicate waypoints detected during import and ignored."
 msgstr ""
 
-#: src/navutil.cpp:3630
+#: src/navutil.cpp:3642
 msgid "&Font family:"
 msgstr "& Phông chữ Family:"
 
-#: src/navutil.cpp:3636 src/navutil.cpp:3638
+#: src/navutil.cpp:3648 src/navutil.cpp:3650
 msgid "The font family."
 msgstr "Loại font."
 
-#: src/navutil.cpp:3643
+#: src/navutil.cpp:3655
 msgid "&Style:"
 msgstr "& Kiểu:"
 
-#: src/navutil.cpp:3647 src/navutil.cpp:3649
+#: src/navutil.cpp:3659 src/navutil.cpp:3661
 msgid "The font style."
 msgstr "Kiểu phông."
 
-#: src/navutil.cpp:3654
+#: src/navutil.cpp:3666
 msgid "&Weight:"
 msgstr "& Trọng lượng:"
 
-#: src/navutil.cpp:3658 src/navutil.cpp:3660
+#: src/navutil.cpp:3670 src/navutil.cpp:3672
 msgid "The font weight."
 msgstr "Phông chữ đậm."
 
-#: src/navutil.cpp:3667
+#: src/navutil.cpp:3679
 msgid "C&olour:"
 msgstr "Màu sắc:"
 
-#: src/navutil.cpp:3677 src/navutil.cpp:3679
+#: src/navutil.cpp:3689 src/navutil.cpp:3691
 msgid "The font colour."
 msgstr "Màu phông chữ."
 
-#: src/navutil.cpp:3685
+#: src/navutil.cpp:3697
 msgid "&Point size:"
 msgstr "& Kích thước điểm:"
 
-#: src/navutil.cpp:3690 src/navutil.cpp:3692
+#: src/navutil.cpp:3702 src/navutil.cpp:3704
 msgid "The font point size."
 msgstr "Kích cỡ font cho điểm."
 
-#: src/navutil.cpp:3699
+#: src/navutil.cpp:3711
 msgid "&Underline"
 msgstr "& Gạch dưới"
 
-#: src/navutil.cpp:3702 src/navutil.cpp:3704
+#: src/navutil.cpp:3714 src/navutil.cpp:3716
 msgid "Whether the font is underlined."
 msgstr "Gạch dưới phông chữ."
 
-#: src/navutil.cpp:3711
+#: src/navutil.cpp:3723
 msgid "Preview:"
 msgstr "Xem trước:"
 
-#: src/navutil.cpp:3716 src/navutil.cpp:3718
+#: src/navutil.cpp:3728 src/navutil.cpp:3730
 msgid "Shows the font preview."
 msgstr "Hiện xem trước phông chữ."
 
-#: src/navutil.cpp:3728
+#: src/navutil.cpp:3740
 msgid "Click to cancel the font selection."
 msgstr "Nhấn vào đây để hủy bỏ lựa chọn phông chữ."
 
-#: src/navutil.cpp:3731
+#: src/navutil.cpp:3743
 msgid "&OK"
 msgstr "& OK"
 
-#: src/navutil.cpp:3733 src/navutil.cpp:3735
+#: src/navutil.cpp:3745 src/navutil.cpp:3747
 msgid "Click to confirm the font selection."
 msgstr "Nhấn vào đây để xác nhận việc lựa chọn phông chữ."
 
-#: src/navutil.cpp:4252
+#: src/navutil.cpp:4264
 msgid "NMi"
 msgstr "Hải lý"
 
-#: src/navutil.cpp:4255
+#: src/navutil.cpp:4267
 msgid "mi"
 msgstr "dặm"
 
-#: src/navutil.cpp:4258
+#: src/navutil.cpp:4270
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4261
+#: src/navutil.cpp:4273
 msgid "m"
 msgstr "phút"
 
-#: src/navutil.cpp:4264
+#: src/navutil.cpp:4276
 msgid "ft"
 msgstr "ft"
 
-#: src/navutil.cpp:4267
+#: src/navutil.cpp:4279
 msgid "fa"
 msgstr "fa"
 
-#: src/navutil.cpp:4273
+#: src/navutil.cpp:4285
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:4341
+#: src/navutil.cpp:4353
 msgid "kts"
 msgstr "kts"
 
-#: src/navutil.cpp:4344
+#: src/navutil.cpp:4356
 msgid "mph"
 msgstr "mph"
 
-#: src/navutil.cpp:4347 src/options.cpp:4999 src/options.cpp:5115
+#: src/navutil.cpp:4359 src/options.cpp:5041 src/options.cpp:5157
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:4350 src/options.cpp:4999 src/options.cpp:5115
+#: src/navutil.cpp:4362 src/options.cpp:5041 src/options.cpp:5157
 msgid "m/s"
 msgstr "m/s"
 
-#: src/navutil.cpp:4367
+#: src/navutil.cpp:4379
 #, c-format
 msgid "%dd "
 msgstr ""
 
-#: src/navutil.cpp:4368
+#: src/navutil.cpp:4380
 #, c-format
 msgid "%2dH %2dM"
 msgstr ""
 
-#: src/navutil.cpp:4369
+#: src/navutil.cpp:4381
 #, c-format
 msgid "%2dM %2dS"
 msgstr ""
 
-#: src/navutil.cpp:4382 src/RoutePropDlgImpl.cpp:341
+#: src/navutil.cpp:4394 src/RoutePropDlgImpl.cpp:341
 #: src/RoutePropDlgImpl.cpp:346
 msgid "N/A"
 msgstr ""
@@ -3990,125 +4004,126 @@ msgstr "Không thể tải các dữ liệu âm thanh từ '%s'."
 msgid "Sound file '%s' is in unsupported format."
 msgstr "Tệp âm thanh '%s' có định dạng không được hỗ trợ."
 
-#: src/options.cpp:526 src/ConfigMgr.cpp:631
+#: src/options.cpp:527 src/ConfigMgr.cpp:631
 msgid "Title"
 msgstr ""
 
-#: src/options.cpp:533 src/routeprintout.cpp:117 src/routeprintout.cpp:414
+#: src/options.cpp:534 src/routeprintout.cpp:117 src/routeprintout.cpp:414
 #: src/RoutePropDlg.cpp:228 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:721
-#: src/ConfigMgr.cpp:636 src/MarkInfo.cpp:434 src/MarkInfo.cpp:469
+#: src/ConfigMgr.cpp:636 src/MarkInfo.cpp:446 src/MarkInfo.cpp:525
 msgid "Description"
 msgstr "Mô tả"
 
-#: src/options.cpp:541
+#: src/options.cpp:542
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
 msgstr ""
 
-#: src/options.cpp:605
+#: src/options.cpp:606
 msgid "MMSI Extended Properties"
 msgstr "Thuộc tính mở rộng MMSI"
 
-#: src/options.cpp:619
+#: src/options.cpp:620
 msgid "Tracking"
 msgstr "Theo dõi"
 
-#: src/options.cpp:624
+#: src/options.cpp:625
 msgid "Default tracking"
 msgstr "Theo dõi mặc định"
 
-#: src/options.cpp:629
+#: src/options.cpp:630
 msgid "Always track"
 msgstr "Luôn luôn theo dõi"
 
-#: src/options.cpp:632
+#: src/options.cpp:633
 msgid " Never track"
 msgstr " Không bao giờ theo dõi"
 
-#: src/options.cpp:641
+#: src/options.cpp:642
 msgid "Ignore this MMSI"
 msgstr "Bỏ qua MMSI này"
 
-#: src/options.cpp:645
+#: src/options.cpp:646
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Điều chỉnh MMSI này như SART/PLB(AIS) MOB."
 
-#: src/options.cpp:648
+#: src/options.cpp:649
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "Chuyển đổi AIVDM sang AIVDO cho MMSI"
 
-#: src/options.cpp:651
+#: src/options.cpp:652
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "MMSI này là đối tượng theo dõi của tôi - Không CPA cảnh báo"
 
-#: src/options.cpp:750
+#: src/options.cpp:751
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "Một MMSI Id nói chung là một số 9 chữ số. \n"
 "Xin hãy kiểm tra các mục của bạn và hủy bỏ nếu cần thiết."
 
-#: src/options.cpp:795 src/options.cpp:2931 src/RoutePropDlg.cpp:179
+#: src/options.cpp:796 src/options.cpp:2937 src/RoutePropDlg.cpp:179
 #: src/RoutePropDlg.cpp:195 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:406
 #: src/TrackPropDlg.cpp:613 src/TrackPropDlg.cpp:623
 msgid "Default"
 msgstr "Mặc định"
 
-#: src/options.cpp:798 src/routemanagerdialog.cpp:1933
+#: src/options.cpp:799 src/routemanagerdialog.cpp:1933
 #: src/routemanagerdialog.cpp:2109
 msgid "Always"
 msgstr "Luôn luôn"
 
-#: src/options.cpp:801
+#: src/options.cpp:802
 msgid "Never"
 msgstr "Không bao giờ"
 
-#: src/options.cpp:838 src/options.cpp:886
+#: src/options.cpp:839 src/options.cpp:887
 msgid "Edit MMSI Properties"
 msgstr "Chỉnh sửa thuộc tính MMSI"
 
-#: src/options.cpp:855 src/options.cpp:5202 src/options.cpp:5209
+#: src/options.cpp:856 src/options.cpp:5244 src/options.cpp:5251
 msgid "MMSI Properties"
 msgstr "Thuộc tính MMSI"
 
-#: src/options.cpp:857 src/RoutePropDlg.cpp:269 src/RoutePropDlg.cpp:293
-#: src/TrackPropDlg.cpp:736 src/TrackPropDlg.cpp:761 src/MarkInfo.cpp:949
+#: src/options.cpp:858 src/RoutePropDlg.cpp:269 src/RoutePropDlg.cpp:293
+#: src/TrackPropDlg.cpp:736 src/TrackPropDlg.cpp:761 src/MarkInfo.cpp:495
+#: src/MarkInfo.cpp:1071 src/MarkInfo.cpp:1114
 msgid "Edit"
 msgstr "Chỉnh sửa"
 
-#: src/options.cpp:952
+#: src/options.cpp:953
 msgid "Track Mode"
 msgstr "Chế độ ghi đường đi"
 
-#: src/options.cpp:960
+#: src/options.cpp:961
 msgid "Ignore"
 msgstr "Bỏ qua"
 
-#: src/options.cpp:969
+#: src/options.cpp:970
 msgid "MOB"
 msgstr "MOB"
 
-#: src/options.cpp:977
+#: src/options.cpp:978
 msgid "VDM->VDO"
 msgstr "VDM-> VDO"
 
-#: src/options.cpp:985
+#: src/options.cpp:986
 msgid "Ship name"
 msgstr "Tên tàu"
 
-#: src/options.cpp:993
+#: src/options.cpp:994
 msgid "Follower"
 msgstr "Người theo dõi"
 
-#: src/options.cpp:997
+#: src/options.cpp:998
 msgid "New..."
 msgstr "Mới..."
 
-#: src/options.cpp:1020
+#: src/options.cpp:1021
 msgid "Add MMSI Properties"
 msgstr "Thêm các thuộc tính MMSI"
 
-#: src/options.cpp:1434
+#: src/options.cpp:1440
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -4119,7 +4134,7 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1446
+#: src/options.cpp:1452
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -4131,1291 +4146,1292 @@ msgid "\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1472 src/options.cpp:8089 src/routeman.cpp:865
+#: src/options.cpp:1478 src/options.cpp:8139 src/routeman.cpp:865
 #: src/routeman.cpp:946
 msgid "OpenCPN Warning"
 msgstr "Cảnh báo OpenCPN"
 
-#: src/options.cpp:1578 src/options.cpp:2183
+#: src/options.cpp:1584 src/options.cpp:2189
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:1588 src/options.cpp:2193 src/options.cpp:4663
+#: src/options.cpp:1594 src/options.cpp:2199 src/options.cpp:4656
 msgid "General"
 msgstr "Tổng quan"
 
-#: src/options.cpp:1597
+#: src/options.cpp:1603
 msgid "Filter NMEA COG/SOG"
 msgstr "Bộ lọc NMEA COG/SOG"
 
-#: src/options.cpp:1607 src/options.cpp:2211
+#: src/options.cpp:1613 src/options.cpp:2217
 msgid "Filter period (sec)"
 msgstr "Bộ lọc định kỳ (giây)"
 
-#: src/options.cpp:1628 src/options.cpp:2231
+#: src/options.cpp:1634 src/options.cpp:2237
 msgid "Show NMEA Debug Window"
 msgstr "Hiển thị cửa sổ gỡ lỗi NMEA"
 
-#: src/options.cpp:1634
+#: src/options.cpp:1640
 msgid "Use Furuno GP3X for uploads"
 msgstr "Sử dụng Furuno GP3X để tải lên"
 
-#: src/options.cpp:1640
+#: src/options.cpp:1646
 msgid "Use GRMN for uploads"
 msgstr "Sử dụng GRMN để tải lên"
 
-#: src/options.cpp:1646 src/options.cpp:2250
+#: src/options.cpp:1652 src/options.cpp:2256
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "Sử dụng định vị từ tính trong cấu trúc đầu ra ECAPB"
 
-#: src/options.cpp:1657 src/options.cpp:2261
+#: src/options.cpp:1663 src/options.cpp:2267
 msgid "Data Connections"
 msgstr "Kết nối dữ liệu"
 
-#: src/options.cpp:1671 src/options.cpp:4586 src/options.cpp:9978
+#: src/options.cpp:1677 src/options.cpp:4579 src/options.cpp:10030
 #: src/RoutePropDlg.cpp:290 src/TrackPropDlg.cpp:758
 msgid "Add"
 msgstr "Thêm mới"
 
-#: src/options.cpp:1675
+#: src/options.cpp:1681
 msgid "Remove"
 msgstr "Loại bỏ"
 
-#: src/options.cpp:1705 src/options.cpp:2341
-msgid "Built-in GPS"
-msgstr "Xây dựng - trong GPS"
-
-#: src/options.cpp:1714
-msgid "Built-in Bluetooth"
-msgstr "Xây dựng - trong Bluetooth"
-
-#: src/options.cpp:1718 src/options.cpp:2354 src/options.cpp:9363
+#: src/options.cpp:1724 src/options.cpp:2360 src/options.cpp:9415
 msgid "BT Scan"
 msgstr "BT quét"
 
-#: src/options.cpp:1726
+#: src/options.cpp:1732
 msgid "BT Sources"
 msgstr "BT nguồn"
 
-#: src/options.cpp:1802 src/options.cpp:2436
+#: src/options.cpp:1808 src/options.cpp:2442
 msgid "Address"
 msgstr "Địa chỉ"
 
-#: src/options.cpp:1810 src/options.cpp:1825 src/options.cpp:2445
-#: src/options.cpp:2474 src/options.cpp:2805
+#: src/options.cpp:1816 src/options.cpp:1831 src/options.cpp:2451
+#: src/options.cpp:2480 src/options.cpp:2811
 msgid "DataPort"
 msgstr "Cổng dữ liệu"
 
-#: src/options.cpp:1840 src/options.cpp:2489
+#: src/options.cpp:1846 src/options.cpp:2495
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1840 src/options.cpp:2489
+#: src/options.cpp:1846 src/options.cpp:2495
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1840 src/options.cpp:2489
+#: src/options.cpp:1846 src/options.cpp:2495
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1840 src/options.cpp:2489
+#: src/options.cpp:1846 src/options.cpp:2495
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1840 src/options.cpp:2489
+#: src/options.cpp:1846 src/options.cpp:2495
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1841 src/options.cpp:2490
+#: src/options.cpp:1847 src/options.cpp:2496
 msgid "4800"
 msgstr ""
 
-#: src/options.cpp:1841 src/options.cpp:2490
+#: src/options.cpp:1847 src/options.cpp:2496
 msgid "9600"
 msgstr ""
 
-#: src/options.cpp:1841 src/options.cpp:2490
+#: src/options.cpp:1847 src/options.cpp:2496
 msgid "19200"
 msgstr ""
 
-#: src/options.cpp:1841 src/options.cpp:2490
+#: src/options.cpp:1847 src/options.cpp:2496
 msgid "38400"
 msgstr ""
 
-#: src/options.cpp:1841 src/options.cpp:2490
+#: src/options.cpp:1847 src/options.cpp:2496
 msgid "57600"
 msgstr ""
 
-#: src/options.cpp:1842 src/options.cpp:2491
+#: src/options.cpp:1848 src/options.cpp:2497
 msgid "115200"
 msgstr ""
 
-#: src/options.cpp:1842 src/options.cpp:2491
+#: src/options.cpp:1848 src/options.cpp:2497
 msgid "230400"
 msgstr ""
 
-#: src/options.cpp:1842 src/options.cpp:2491
+#: src/options.cpp:1848 src/options.cpp:2497
 msgid "460800"
 msgstr ""
 
-#: src/options.cpp:1842 src/options.cpp:2491
+#: src/options.cpp:1848 src/options.cpp:2497
 msgid "921600"
 msgstr ""
 
-#: src/options.cpp:1856 src/options.cpp:2505
+#: src/options.cpp:1862 src/options.cpp:2511
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:1856 src/options.cpp:2505
+#: src/options.cpp:1862 src/options.cpp:2511
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:1857 src/options.cpp:2506
+#: src/options.cpp:1863 src/options.cpp:2512
 msgid "Seatalk"
 msgstr "Nói chuyện trên biển"
 
-#: src/options.cpp:1872 src/options.cpp:2521
+#: src/options.cpp:1878 src/options.cpp:2527
 msgid "0"
 msgstr ""
 
-#: src/options.cpp:1872 src/options.cpp:2521
+#: src/options.cpp:1878 src/options.cpp:2527
 msgid "1"
 msgstr ""
 
-#: src/options.cpp:1872 src/options.cpp:2521
+#: src/options.cpp:1878 src/options.cpp:2527
 msgid "2"
 msgstr ""
 
-#: src/options.cpp:1872 src/options.cpp:2521
+#: src/options.cpp:1878 src/options.cpp:2527
 msgid "3"
 msgstr ""
 
-#: src/options.cpp:1872 src/options.cpp:2521
+#: src/options.cpp:1878 src/options.cpp:2527
 msgid "4"
 msgstr ""
 
-#: src/options.cpp:1873 src/options.cpp:2522
+#: src/options.cpp:1879 src/options.cpp:2528
 msgid "5"
 msgstr ""
 
-#: src/options.cpp:1873 src/options.cpp:2522
+#: src/options.cpp:1879 src/options.cpp:2528
 msgid "6"
 msgstr ""
 
-#: src/options.cpp:1873 src/options.cpp:2522
+#: src/options.cpp:1879 src/options.cpp:2528
 msgid "7"
 msgstr ""
 
-#: src/options.cpp:1873 src/options.cpp:2522
+#: src/options.cpp:1879 src/options.cpp:2528
 msgid "8"
 msgstr ""
 
-#: src/options.cpp:1873 src/options.cpp:2522
+#: src/options.cpp:1879 src/options.cpp:2528
 msgid "9"
 msgstr ""
 
-#: src/options.cpp:1884 src/options.cpp:2548
+#: src/options.cpp:1890 src/options.cpp:2554
 msgid "Control checksum"
 msgstr "Kiểm tra kiểm soát"
 
-#: src/options.cpp:1888 src/options.cpp:2552
+#: src/options.cpp:1894 src/options.cpp:2558
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Nếu đã kiểm tra, chỉ những câu với một tổng kiểm tra hợp lệ mới được chuyển qua"
 
-#: src/options.cpp:1892
+#: src/options.cpp:1898
 msgid "Use GRMN mode for input"
 msgstr "Sử dụng chế độ GRMN cho đầu vào"
 
-#: src/options.cpp:1901 src/options.cpp:2565
+#: src/options.cpp:1907 src/options.cpp:2571
 msgid "Receive Input on this Port"
 msgstr "Nhận đầu vào trên cổng này"
 
-#: src/options.cpp:1905 src/options.cpp:2571
+#: src/options.cpp:1911 src/options.cpp:2577
 msgid "Output on this port"
 msgstr "Đầu ra trên cổng này"
 
-#: src/options.cpp:1913 src/options.cpp:2576
+#: src/options.cpp:1919 src/options.cpp:2582
 msgid "Talker ID"
 msgstr "ID người nói"
 
-#: src/options.cpp:1924 src/options.cpp:2587
+#: src/options.cpp:1930 src/options.cpp:2593
 msgid "APB bearing precision"
 msgstr "APB khả năng chính xác"
 
-#: src/options.cpp:1945 src/options.cpp:2607
+#: src/options.cpp:1951 src/options.cpp:2613
 msgid "Input filtering"
 msgstr "Bộ lọc đầu vào"
 
-#: src/options.cpp:1951 src/options.cpp:2613 src/options.cpp:10027
+#: src/options.cpp:1957 src/options.cpp:2619 src/options.cpp:10079
 msgid "Accept only sentences"
 msgstr "Chỉ chấp nhận câu phù hợp"
 
-#: src/options.cpp:1955 src/options.cpp:2617 src/options.cpp:10027
+#: src/options.cpp:1961 src/options.cpp:2623 src/options.cpp:10079
 msgid "Ignore sentences"
 msgstr "Bỏ qua thông báo"
 
-#: src/options.cpp:1978 src/options.cpp:2641
+#: src/options.cpp:1984 src/options.cpp:2647
 msgid "Output filtering"
 msgstr "Lọc đầu ra"
 
-#: src/options.cpp:1985 src/options.cpp:2648 src/options.cpp:10025
+#: src/options.cpp:1991 src/options.cpp:2654 src/options.cpp:10077
 msgid "Transmit sentences"
 msgstr "Truyền thông báo"
 
-#: src/options.cpp:1989 src/options.cpp:2652 src/options.cpp:10025
+#: src/options.cpp:1995 src/options.cpp:2658 src/options.cpp:10077
 msgid "Drop sentences"
 msgstr "Hủy thông báo"
 
-#: src/options.cpp:2135
+#: src/options.cpp:2141
 msgid "On"
 msgstr "Mở"
 
-#: src/options.cpp:2135
+#: src/options.cpp:2141
 msgid "Data Port"
 msgstr "Cổng dữ liệu"
 
-#: src/options.cpp:2135
+#: src/options.cpp:2141
 msgid "Prio"
 msgstr "Ưu tiên"
 
-#: src/options.cpp:2136
+#: src/options.cpp:2142
 msgid "Parm"
 msgstr "Parm"
 
-#: src/options.cpp:2136
+#: src/options.cpp:2142
 msgid "I/O"
 msgstr "I/O"
 
-#: src/options.cpp:2136 src/options.cpp:2807
+#: src/options.cpp:2142 src/options.cpp:2813
 msgid "Filters"
 msgstr "Bộ lọc"
 
-#: src/options.cpp:2205
+#: src/options.cpp:2211
 msgid "Filter NMEA Course and Speed data"
 msgstr "Lọc dữ liệu NMEA và tốc độ"
 
-#: src/options.cpp:2237
+#: src/options.cpp:2243
 msgid "Format uploads for Furuno GP3X"
 msgstr "Định dạng tải lên cho Furuno GP3X"
 
-#: src/options.cpp:2243
+#: src/options.cpp:2249
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Sử dụng chế độ Garmin GRMN (máy chủ) để tải lên"
 
-#: src/options.cpp:2296
+#: src/options.cpp:2302
 msgid "Add Connection"
 msgstr "Thêm kết nối"
 
-#: src/options.cpp:2300
+#: src/options.cpp:2306
 msgid "Remove Connection"
 msgstr "Xóa kết nối"
 
-#: src/options.cpp:2319 src/options.cpp:9899
+#: src/options.cpp:2325 src/options.cpp:9951
 msgid "Edit Selected Connection"
 msgstr ""
 
-#: src/options.cpp:2350
+#: src/options.cpp:2356
 msgid "Built-in Bluetooth SPP"
 msgstr "Bluetooth gắn liền"
 
-#: src/options.cpp:2364
+#: src/options.cpp:2370
 msgid "Bluetooth Data Sources"
 msgstr "Nguồn dữ liệu Bluetooth"
 
-#: src/options.cpp:2455 src/options.cpp:2539
+#: src/options.cpp:2461 src/options.cpp:2545
 msgid "User Comment"
 msgstr ""
 
-#: src/options.cpp:2556
+#: src/options.cpp:2562
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Sử dụng chế độ Garmin (GRMN) cho đầu vào"
 
-#: src/options.cpp:2571
+#: src/options.cpp:2577
 msgid "as autopilot or NMEA repeater"
 msgstr ""
 
-#: src/options.cpp:2576
+#: src/options.cpp:2582
 msgid "blank = default ID"
 msgstr "trống = ID mặc định"
 
-#: src/options.cpp:2593
+#: src/options.cpp:2599
 msgid "x"
 msgstr ""
 
-#: src/options.cpp:2593
+#: src/options.cpp:2599
 msgid "x.x"
 msgstr ""
 
-#: src/options.cpp:2593
+#: src/options.cpp:2599
 msgid "x.xx"
 msgstr ""
 
-#: src/options.cpp:2594
+#: src/options.cpp:2600
 msgid "x.xxx"
 msgstr ""
 
-#: src/options.cpp:2594
+#: src/options.cpp:2600
 msgid "x.xxxx"
 msgstr ""
 
-#: src/options.cpp:2806
+#: src/options.cpp:2812
 msgid "Parameters"
 msgstr "Tham số"
 
-#: src/options.cpp:2806
+#: src/options.cpp:2812
 msgid "Connection"
 msgstr "Kết nối"
 
-#: src/options.cpp:2904 src/CanvasOptions.cpp:154
+#: src/options.cpp:2910 src/CanvasOptions.cpp:154
 msgid "Display Options"
 msgstr "Tùy chọn Hiển thị"
 
-#: src/options.cpp:2914
+#: src/options.cpp:2920
 msgid "COG Predictor Length (min)"
 msgstr "Dự đoán độ dài COG (min)"
 
-#: src/options.cpp:2921
+#: src/options.cpp:2927
 msgid "Heading Predictor Length (NMi)"
 msgstr "Dự đoán độ dài điểm đến (NMi)"
 
-#: src/options.cpp:2928
+#: src/options.cpp:2934
 msgid "Ship Icon Type"
 msgstr "Loại biểu tượng tàu"
 
-#: src/options.cpp:2931
+#: src/options.cpp:2937
 msgid "Real Scale Bitmap"
 msgstr "Ảnh bitmap tỉ lệ thực"
 
-#: src/options.cpp:2932
+#: src/options.cpp:2938
 msgid "Real Scale Vector"
 msgstr "Ảnh vector tỉ lệ thực"
 
-#: src/options.cpp:2946
+#: src/options.cpp:2952
 msgid "Length Over All (m)"
 msgstr "Chiều dài (m)"
 
-#: src/options.cpp:2952
+#: src/options.cpp:2958
 msgid "Width Over All (m)"
 msgstr "Chiều rộng (m)"
 
-#: src/options.cpp:2958
+#: src/options.cpp:2964
 msgid "GPS Offset from Bow (m)"
 msgstr ""
 
-#: src/options.cpp:2964
+#: src/options.cpp:2970
 msgid "GPS Offset from Midship (m)"
 msgstr ""
 
-#: src/options.cpp:2970
+#: src/options.cpp:2976
 msgid "Minimum Screen Size (mm)"
 msgstr "Kích thước màn hình tối thiểu (mm)"
 
-#: src/options.cpp:2982
+#: src/options.cpp:2988
 msgid "Show range rings"
 msgstr ""
 
-#: src/options.cpp:2985 src/options.cpp:3123 src/options.cpp:3472
+#: src/options.cpp:2991 src/options.cpp:3129 src/options.cpp:3478
+#: src/MarkInfo.cpp:578
 msgid "None"
 msgstr "Không"
 
-#: src/options.cpp:2999 src/options.cpp:3260
+#: src/options.cpp:3005 src/options.cpp:3266
 msgid "Distance between rings"
 msgstr ""
 
-#: src/options.cpp:3008 src/options.cpp:3271
+#: src/options.cpp:3014 src/options.cpp:3277
 msgid "Distance Unit"
 msgstr "Đơn vị khoảng cách"
 
-#: src/options.cpp:3011 src/options.cpp:3121 src/options.cpp:4985
-#: src/options.cpp:5104
+#: src/options.cpp:3017 src/options.cpp:3127 src/options.cpp:5027
+#: src/options.cpp:5146
 msgid "Nautical miles"
 msgstr "Hải lý"
 
-#: src/options.cpp:3011 src/options.cpp:3121 src/options.cpp:4986
-#: src/options.cpp:5105
+#: src/options.cpp:3017 src/options.cpp:3127 src/options.cpp:5028
+#: src/options.cpp:5147
 msgid "Kilometers"
 msgstr "Kilômét"
 
-#: src/options.cpp:3017
+#: src/options.cpp:3023
 msgid "Range Ring Colour"
 msgstr ""
 
-#: src/options.cpp:3026 src/routemanagerdialog.cpp:443
+#: src/options.cpp:3032 src/routemanagerdialog.cpp:443
 msgid "Tracks"
 msgstr "Lộ trình"
 
-#: src/options.cpp:3032
+#: src/options.cpp:3038
 msgid "Automatic Daily Tracks at midnight"
 msgstr "Tự động theo dõi hàng ngày lúc nửa đêm"
 
-#: src/options.cpp:3040
+#: src/options.cpp:3046
 msgid "Automatic Daily Tracks at"
 msgstr "Tự động hàng ngày theo dõi tại"
 
-#: src/options.cpp:3046
+#: src/options.cpp:3052
 msgid "Computer"
 msgstr "Máy tính"
 
-#: src/options.cpp:3049 src/RoutePropDlg.cpp:145 src/TrackPropDlg.cpp:350
+#: src/options.cpp:3055 src/RoutePropDlg.cpp:145 src/TrackPropDlg.cpp:350
 #: src/TrackPropDlg.cpp:357 src/TrackPropDlg.cpp:677
 msgid "UTC"
 msgstr "Giờ UTC"
 
-#: src/options.cpp:3052
+#: src/options.cpp:3058
 msgid "LMT"
 msgstr "LMT"
 
-#: src/options.cpp:3063
+#: src/options.cpp:3069
 msgid "Highlight Tracks"
 msgstr "Tô màu lộ trình"
 
-#: src/options.cpp:3066
+#: src/options.cpp:3072
 msgid "Track Colour"
 msgstr ""
 
-#: src/options.cpp:3080
+#: src/options.cpp:3086
 msgid "Tracking Precision"
 msgstr "Theo dõi chính xác"
 
-#: src/options.cpp:3083
+#: src/options.cpp:3089
 msgid "Low"
 msgstr "Thấp"
 
-#: src/options.cpp:3083
+#: src/options.cpp:3089
 msgid "Medium"
 msgstr "Trung bình"
 
-#: src/options.cpp:3083
+#: src/options.cpp:3089
 msgid "High"
 msgstr "Cao"
 
-#: src/options.cpp:3090
+#: src/options.cpp:3096
 msgid "Calculate values"
 msgstr ""
 
-#: src/options.cpp:3099
+#: src/options.cpp:3105
 msgid "Calculate SOG and COG from position changes"
 msgstr ""
 
-#: src/options.cpp:3103
+#: src/options.cpp:3109
 msgid "Min seconds between updates"
 msgstr ""
 
-#: src/options.cpp:3115
+#: src/options.cpp:3121
 msgid "Routes/Points"
 msgstr ""
 
-#: src/options.cpp:3129
+#: src/options.cpp:3135
 msgid "New Routes"
 msgstr ""
 
-#: src/options.cpp:3143 src/options.cpp:3202
+#: src/options.cpp:3149 src/options.cpp:3208
 msgid "Waypoint default icon"
 msgstr ""
 
-#: src/options.cpp:3146 src/options.cpp:3205 src/MarkInfo.cpp:398
+#: src/options.cpp:3152 src/options.cpp:3211 src/MarkInfo.cpp:410
 msgid "Combo!"
 msgstr ""
 
-#: src/options.cpp:3167
+#: src/options.cpp:3173
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Bán kính vòng tròn đến tọa độ điểm (NMi)"
 
-#: src/options.cpp:3176
+#: src/options.cpp:3182
 msgid "Advance route waypoint on arrival only"
 msgstr ""
 
-#: src/options.cpp:3187
+#: src/options.cpp:3193
 msgid "New Waypoints"
 msgstr ""
 
-#: src/options.cpp:3225
+#: src/options.cpp:3231
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr ""
 
-#: src/options.cpp:3233
+#: src/options.cpp:3239
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr ""
 
-#: src/options.cpp:3245
+#: src/options.cpp:3251
 msgid "Waypoint range rings"
 msgstr ""
 
-#: src/options.cpp:3282
+#: src/options.cpp:3288
 msgid "Waypoint Range Ring Colours"
 msgstr ""
 
-#: src/options.cpp:3301
+#: src/options.cpp:3307
 msgid "Control Options"
 msgstr ""
 
-#: src/options.cpp:3310
+#: src/options.cpp:3316
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "Khóa điểm (trừ khi hộp thoại thông số điểm đang bật)"
 
-#: src/options.cpp:3316
+#: src/options.cpp:3322
 msgid "Confirm deletion of tracks and routes"
 msgstr "Xác nhận xóa tuyến và lộ trình"
 
-#: src/options.cpp:3375
+#: src/options.cpp:3381
 msgid "Chart Files"
 msgstr "File hải đồ"
 
-#: src/options.cpp:3381
+#: src/options.cpp:3387
 msgid "Directories"
 msgstr "Thư mục"
 
-#: src/options.cpp:3416
+#: src/options.cpp:3422
 msgid "Add Directory..."
 msgstr "Thêm thư mục..."
 
-#: src/options.cpp:3420 src/options.cpp:4525 src/RoutePropDlgImpl.cpp:819
+#: src/options.cpp:3426 src/options.cpp:4518 src/RoutePropDlgImpl.cpp:819
 msgid "Remove Selected"
 msgstr "Xoá mục đã chọn"
 
-#: src/options.cpp:3426
+#: src/options.cpp:3432
 msgid "Compress Selected"
 msgstr "Nén mục được chọn"
 
-#: src/options.cpp:3434
+#: src/options.cpp:3440
 msgid "Update Control"
 msgstr "Cập Nhật điều khiển"
 
-#: src/options.cpp:3442
+#: src/options.cpp:3448
 msgid "Scan Charts and Update Database"
 msgstr "Quét hải đồ hiện có và cập nhật Csdl"
 
-#: src/options.cpp:3445
+#: src/options.cpp:3451
 msgid "Force Full Database Rebuild"
 msgstr "Cập nhật lại toàn bộ Csdl"
 
-#: src/options.cpp:3448
+#: src/options.cpp:3454
 msgid "Prepare all ENC Charts"
 msgstr "Chuẩn bị tất cả hải đồ"
 
-#: src/options.cpp:3468
+#: src/options.cpp:3474
 msgid " [Modified]"
 msgstr ""
 
-#: src/options.cpp:3478
+#: src/options.cpp:3484
 msgid "Templates"
 msgstr ""
 
-#: src/options.cpp:3490
+#: src/options.cpp:3496
 msgid "Template Status"
 msgstr ""
 
-#: src/options.cpp:3497
+#: src/options.cpp:3503
 msgid "Last Applied Template Title:"
 msgstr ""
 
-#: src/options.cpp:3509
+#: src/options.cpp:3515
 msgid "Saved Templates"
 msgstr ""
 
-#: src/options.cpp:3532
+#: src/options.cpp:3538
 msgid "Create Config..."
 msgstr ""
 
-#: src/options.cpp:3540
+#: src/options.cpp:3546
 msgid "Delete Selected Config..."
 msgstr ""
 
-#: src/options.cpp:3544
+#: src/options.cpp:3550
 msgid "Apply Selected Config"
 msgstr ""
 
-#: src/options.cpp:3612
+#: src/options.cpp:3618
 msgid "Create Config"
 msgstr ""
 
-#: src/options.cpp:3671
+#: src/options.cpp:3677
 msgid "Problem applying selected configuration."
 msgstr ""
 
-#: src/options.cpp:3750 src/RoutePropDlg.cpp:323 src/TrackPropDlg.cpp:775
+#: src/options.cpp:3756 src/RoutePropDlg.cpp:323 src/TrackPropDlg.cpp:775
 msgid "Advanced"
 msgstr "Nâng cao"
 
-#: src/options.cpp:3770
+#: src/options.cpp:3776
 msgid "De-skew Raster Charts"
 msgstr ""
 
-#: src/options.cpp:3781 src/options.cpp:4040
+#: src/options.cpp:3787 src/options.cpp:4039
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Sử dụng tăng tốc đồ họa (OpenGL)"
 
-#: src/options.cpp:3787
+#: src/options.cpp:3793
 msgid "OpenGL Options"
 msgstr ""
 
-#: src/options.cpp:3800 src/options.cpp:3930
+#: src/options.cpp:3806 src/options.cpp:3931
 msgid "Chart Rotation Averaging Time"
 msgstr ""
 
-#: src/options.cpp:3812 src/options.cpp:3943 src/options.cpp:5558
+#: src/options.cpp:3818 src/options.cpp:3944 src/options.cpp:5601
 msgid "seconds"
 msgstr "giây"
 
-#: src/options.cpp:3818 src/options.cpp:3950
+#: src/options.cpp:3824 src/options.cpp:3951
 msgid "Chart Zoom/Scale Weighting"
 msgstr ""
 
-#: src/options.cpp:3823 src/options.cpp:3958
+#: src/options.cpp:3829 src/options.cpp:3959
 msgid "Raster"
 msgstr "Raster"
 
-#: src/options.cpp:3838 src/options.cpp:3968
+#: src/options.cpp:3839 src/options.cpp:3968
 msgid "Vector"
 msgstr "Vector"
 
-#: src/options.cpp:3854 src/options.cpp:4001
+#: src/options.cpp:3855 src/options.cpp:4000
 msgid "Physical Screen Width"
 msgstr "Độ rộng màn hình vật lý"
 
-#: src/options.cpp:3859 src/options.cpp:4006
+#: src/options.cpp:3860 src/options.cpp:4005
 msgid "Auto"
 msgstr "Tự động"
 
-#: src/options.cpp:3862 src/options.cpp:4010
+#: src/options.cpp:3863 src/options.cpp:4009
 msgid "Manual:"
 msgstr "Tùy chỉnh:"
 
-#: src/options.cpp:3871 src/options.cpp:4018
+#: src/options.cpp:3872 src/options.cpp:4017
 msgid "mm"
 msgstr "mm"
 
-#: src/options.cpp:3901 src/options.cpp:4712
+#: src/options.cpp:3902 src/options.cpp:4705 src/options.cpp:4874
 msgid "Chart Display"
 msgstr "Hiển thị hải đồ"
 
-#: src/options.cpp:3907
+#: src/options.cpp:3908
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr ""
 
-#: src/options.cpp:3981
+#: src/options.cpp:3980
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Với một giá trị thấp hơn, mức độ zoom tương tự cho hải đồ chi tiết ít. \n"
 "Với một giá trị cao hơn, mức độ zoom tương tự cho hải đồ chi tiết cao hơn."
 
-#: src/options.cpp:4034
+#: src/options.cpp:4033
 msgid "Graphics"
 msgstr "Đồ hoạ"
 
-#: src/options.cpp:4067
+#: src/options.cpp:4066
 msgid "Vector Chart Display"
 msgstr "Hải đồ dạng vector"
 
-#: src/options.cpp:4086 src/options.cpp:4289 src/CanvasOptions.cpp:237
+#: src/options.cpp:4085 src/options.cpp:4285 src/CanvasOptions.cpp:237
 msgid "Display Category"
 msgstr "Danh mục hiển thị"
 
-#: src/options.cpp:4087 src/options.cpp:4290 src/CanvasOptions.cpp:238
+#: src/options.cpp:4086 src/options.cpp:4286 src/CanvasOptions.cpp:238
 msgid "Standard"
 msgstr "Tiêu chuẩn"
 
-#: src/options.cpp:4087 src/options.cpp:4290 src/CanvasOptions.cpp:238
+#: src/options.cpp:4086 src/options.cpp:4286 src/CanvasOptions.cpp:238
 msgid "All"
 msgstr "Tất cả"
 
-#: src/options.cpp:4087 src/options.cpp:4290
+#: src/options.cpp:4086 src/options.cpp:4286
 msgid "Mariner's Standard"
 msgstr "Tiêu chuẩn hàng hải"
 
-#: src/options.cpp:4099 src/options.cpp:5296 src/options.cpp:6063
+#: src/options.cpp:4098 src/options.cpp:5338 src/options.cpp:6110
 msgid "Display"
 msgstr "Hiển thị"
 
-#: src/options.cpp:4105 src/options.cpp:4306
+#: src/options.cpp:4104 src/options.cpp:4302
 msgid "Depth Soundings"
 msgstr "Điểm độ sâu"
 
-#: src/options.cpp:4110 src/options.cpp:4311
+#: src/options.cpp:4109 src/options.cpp:4307
 msgid "Chart Information Objects"
 msgstr "Các đối tượng hải đồ"
 
-#: src/options.cpp:4116
+#: src/options.cpp:4115
 msgid "Buoys/Lights"
 msgstr "Phao/Đèn"
 
-#: src/options.cpp:4121 src/options.cpp:4319 src/CanvasOptions.cpp:217
+#: src/options.cpp:4120 src/options.cpp:4315 src/CanvasOptions.cpp:217
 msgid "Buoy/Light Labels"
 msgstr "Nhãn hiển thị Phao/Đèn"
 
-#: src/options.cpp:4125 src/options.cpp:4324 src/CanvasOptions.cpp:225
+#: src/options.cpp:4124 src/options.cpp:4320 src/CanvasOptions.cpp:225
 msgid "Light Descriptions"
 msgstr "Ánh sáng mô tả"
 
-#: src/options.cpp:4129 src/options.cpp:4328
+#: src/options.cpp:4128 src/options.cpp:4324
 msgid "Extended Light Sectors"
 msgstr "Lĩnh vực ánh sáng mở rộng"
 
-#: src/options.cpp:4134
+#: src/options.cpp:4133
 msgid "Chart Texts"
 msgstr "Biểu đồ dạng văn bản"
 
-#: src/options.cpp:4139 src/options.cpp:4336
+#: src/options.cpp:4138 src/options.cpp:4332
 msgid "National text on chart"
 msgstr "Các văn bản quốc gia trên biểu đồ"
 
-#: src/options.cpp:4144 src/options.cpp:4341
+#: src/options.cpp:4143 src/options.cpp:4337
 msgid "Important Text Only"
 msgstr "Chỉ văn bản quan trọng"
 
-#: src/options.cpp:4149 src/options.cpp:4346
+#: src/options.cpp:4148 src/options.cpp:4342
 msgid "De-Cluttered Text"
 msgstr "Văn bản lộn xộn"
 
-#: src/options.cpp:4153
+#: src/options.cpp:4152
 msgid "Chart Detail"
 msgstr "Biểu đồ chi tiết"
 
-#: src/options.cpp:4156 src/options.cpp:4351
+#: src/options.cpp:4155 src/options.cpp:4347
 msgid "Reduced Detail at Small Scale"
 msgstr "Giảm chi tiết ở tỷ lệ nhỏ"
 
-#: src/options.cpp:4165 src/options.cpp:4367
+#: src/options.cpp:4164 src/options.cpp:4363
 msgid "Graphics Style"
 msgstr "Kiểu mẫu đồ họa"
 
-#: src/options.cpp:4168 src/options.cpp:4369
+#: src/options.cpp:4167 src/options.cpp:4365
 msgid "Paper Chart"
 msgstr "Biểu đồ giấy"
 
-#: src/options.cpp:4168 src/options.cpp:4369
+#: src/options.cpp:4167 src/options.cpp:4365
 msgid "Simplified"
 msgstr "Đơn giản hóa"
 
-#: src/options.cpp:4174 src/options.cpp:4379
+#: src/options.cpp:4173 src/options.cpp:4375
 msgid "Boundaries"
 msgstr "Ranh giới"
 
-#: src/options.cpp:4177 src/options.cpp:4381
+#: src/options.cpp:4176 src/options.cpp:4377
 msgid "Plain"
 msgstr "Rõ ràng"
 
-#: src/options.cpp:4177 src/options.cpp:4381
+#: src/options.cpp:4176 src/options.cpp:4377
 msgid "Symbolized"
 msgstr "Biểu tượng"
 
-#: src/options.cpp:4183 src/options.cpp:4391
+#: src/options.cpp:4182 src/options.cpp:4387
 msgid "Colors"
 msgstr "Màu sắc"
 
-#: src/options.cpp:4186 src/options.cpp:4394
+#: src/options.cpp:4185 src/options.cpp:4390
 msgid "2 Color"
 msgstr "2 màu"
 
-#: src/options.cpp:4186 src/options.cpp:4394
+#: src/options.cpp:4185 src/options.cpp:4390
 msgid "4 Color"
 msgstr "4 màu"
 
-#: src/options.cpp:4197 src/options.cpp:4416
+#: src/options.cpp:4196 src/options.cpp:4412
 msgid "Shallow Depth"
 msgstr "Nông sâu"
 
-#: src/options.cpp:4208 src/options.cpp:4424
+#: src/options.cpp:4207 src/options.cpp:4420
 msgid "Safety Depth"
 msgstr "Độ sâu an toàn"
 
-#: src/options.cpp:4218 src/options.cpp:4431
+#: src/options.cpp:4217 src/options.cpp:4427
 msgid "Deep Depth"
 msgstr "Sâu sâu"
 
-#: src/options.cpp:4256 src/options.cpp:4467
+#: src/options.cpp:4252 src/options.cpp:4460
 msgid "User Standard Objects"
 msgstr ""
 
-#: src/options.cpp:4266 src/options.cpp:4473 src/options.cpp:9976
+#: src/options.cpp:4262 src/options.cpp:4466 src/options.cpp:10028
 msgid "Select All"
 msgstr "Chọn tất cả"
 
-#: src/options.cpp:4268 src/options.cpp:4475 src/options.cpp:9977
+#: src/options.cpp:4264 src/options.cpp:4468 src/options.cpp:10029
 msgid "Clear All"
 msgstr "Xóa tất cả"
 
-#: src/options.cpp:4273 src/options.cpp:4480
+#: src/options.cpp:4269 src/options.cpp:4473
 msgid "Reset to STANDARD"
 msgstr "Đặt lại tiêu chuẩn"
 
-#: src/options.cpp:4501
+#: src/options.cpp:4494
 msgid "Tides && Currents"
 msgstr "Thủy triều && dòng"
 
-#: src/options.cpp:4506
+#: src/options.cpp:4499
 msgid "Active Datasets"
 msgstr "Datasets hoạt động"
 
-#: src/options.cpp:4523
+#: src/options.cpp:4516
 msgid "Add Dataset..."
 msgstr "Thêm Dataset..."
 
-#: src/options.cpp:4570
+#: src/options.cpp:4563
 msgid "All Available Charts"
 msgstr "Tất cả các biểu đồ có sẵn"
 
-#: src/options.cpp:4588
+#: src/options.cpp:4581
 msgid "Remove Chart"
 msgstr "Xoá hải đồ"
 
-#: src/options.cpp:4617
+#: src/options.cpp:4610
 msgid "All Charts"
 msgstr "Tất cả các hải đồ"
 
-#: src/options.cpp:4634
+#: src/options.cpp:4627
 msgid "New Group..."
 msgstr "Nhóm mới..."
 
-#: src/options.cpp:4635
+#: src/options.cpp:4628
 msgid "Delete Group"
 msgstr "Xoá nhóm"
 
-#: src/options.cpp:4685 src/CanvasOptions.cpp:131
+#: src/options.cpp:4678 src/options.cpp:4847 src/CanvasOptions.cpp:131
 msgid "Navigation Mode"
 msgstr "Chế độ điều hướng"
 
-#: src/options.cpp:4693 src/options.cpp:4851 src/CanvasOptions.cpp:137
+#: src/options.cpp:4686 src/options.cpp:4855 src/CanvasOptions.cpp:137
 msgid "North Up"
 msgstr "Bắc lên"
 
-#: src/options.cpp:4696 src/options.cpp:4854 src/CanvasOptions.cpp:141
+#: src/options.cpp:4689 src/options.cpp:4858 src/CanvasOptions.cpp:141
 msgid "Course Up"
 msgstr "Mở khóa"
 
-#: src/options.cpp:4703 src/options.cpp:4861 src/CanvasOptions.cpp:145
+#: src/options.cpp:4696 src/options.cpp:4865 src/CanvasOptions.cpp:145
 msgid "Look Ahead Mode"
 msgstr "Xem trước chế độ"
 
-#: src/options.cpp:4722 src/options.cpp:4879
+#: src/options.cpp:4715 src/options.cpp:4884
 msgid "Preserve scale when switching charts"
 msgstr "Giữ gìn tỷ lệ khi chuyển đổi hải đồ"
 
-#: src/options.cpp:4731
+#: src/options.cpp:4724 src/options.cpp:4893
 msgid "Controls"
 msgstr "Điều khiển"
 
-#: src/options.cpp:4737 src/options.cpp:4891
+#: src/options.cpp:4730 src/options.cpp:4899
 msgid "Smooth Panning / Zooming"
 msgstr "Thu phóng/ kéo dịch mịn"
 
-#: src/options.cpp:4740 src/options.cpp:4899
+#: src/options.cpp:4733 src/options.cpp:4902
 msgid "Zoom to Cursor"
 msgstr "Phóng to đến con trỏ"
 
-#: src/options.cpp:4751
+#: src/options.cpp:4744 src/options.cpp:4918
 msgid "Display Features"
 msgstr "Hiển thị các tính năng"
 
-#: src/options.cpp:4757 src/options.cpp:4918 src/CanvasOptions.cpp:161
+#: src/options.cpp:4750 src/options.cpp:4924 src/CanvasOptions.cpp:161
 msgid "Show Grid"
 msgstr "Hiển thị lưới"
 
-#: src/options.cpp:4765 src/options.cpp:4926 src/CanvasOptions.cpp:169
+#: src/options.cpp:4758 src/options.cpp:4932 src/CanvasOptions.cpp:169
 msgid "Show Depth Units"
 msgstr "Hiển thị các đơn vị độ sâu"
 
-#: src/options.cpp:4781
+#: src/options.cpp:4774
 msgid "Status Bar Option"
 msgstr ""
 
-#: src/options.cpp:4787
+#: src/options.cpp:4780 src/options.cpp:4954
 msgid "Live ETA at Cursor"
 msgstr ""
 
-#: src/options.cpp:4794
+#: src/options.cpp:4787 src/options.cpp:4961
 msgid "Default Boat Speed "
 msgstr ""
 
-#: src/options.cpp:4805 src/options.cpp:4932
+#: src/options.cpp:4800 src/options.cpp:4973
 msgid "Canvas Layout"
 msgstr ""
 
-#: src/options.cpp:4964
+#: src/options.cpp:4948
+msgid "Status Bar"
+msgstr ""
+
+#: src/options.cpp:5006
 msgid "Units"
 msgstr "Đơn vị"
 
-#: src/options.cpp:4983 src/options.cpp:5102 src/routeprintout.cpp:114
+#: src/options.cpp:5025 src/options.cpp:5144 src/routeprintout.cpp:114
 #: src/routeprintout.cpp:407 src/RoutePropDlg.cpp:73 src/RoutePropDlg.cpp:212
-#: src/TrackPropDlg.cpp:214 src/MarkInfo.cpp:516
+#: src/TrackPropDlg.cpp:214 src/MarkInfo.cpp:572
 msgid "Distance"
 msgstr "Khoảng cách"
 
-#: src/options.cpp:4985 src/options.cpp:5104
+#: src/options.cpp:5027 src/options.cpp:5146
 msgid "Statute miles"
 msgstr "Quy chế dặm"
 
-#: src/options.cpp:4999 src/options.cpp:5115
+#: src/options.cpp:5041 src/options.cpp:5157
 msgid "Knots"
 msgstr "Hải lý"
 
-#: src/options.cpp:4999 src/options.cpp:5115
+#: src/options.cpp:5041 src/options.cpp:5157
 msgid "Mph"
 msgstr "Mph"
 
-#: src/options.cpp:5010 src/options.cpp:5123
+#: src/options.cpp:5052 src/options.cpp:5165
 msgid "Depth"
 msgstr "Độ sâu"
 
-#: src/options.cpp:5028 src/options.cpp:5138
+#: src/options.cpp:5070 src/options.cpp:5180
 msgid "Lat/Long"
 msgstr "Vĩ độ/ Kinh độ"
 
-#: src/options.cpp:5030 src/options.cpp:5140
+#: src/options.cpp:5072 src/options.cpp:5182
 msgid "Degrees, Decimal Minutes"
 msgstr "Độ, phút thập phân"
 
-#: src/options.cpp:5031 src/options.cpp:5141
+#: src/options.cpp:5073 src/options.cpp:5183
 msgid "Decimal Degrees"
 msgstr "Độ thập phân"
 
-#: src/options.cpp:5032 src/options.cpp:5142
+#: src/options.cpp:5074 src/options.cpp:5184
 msgid "Degrees, Minutes, Seconds"
 msgstr "Độ, phút, giây"
 
-#: src/options.cpp:5047 src/options.cpp:5154
+#: src/options.cpp:5089 src/options.cpp:5196
 msgid "Bearings"
 msgstr "Điều hướng"
 
-#: src/options.cpp:5052
+#: src/options.cpp:5094
 msgid "Show true"
 msgstr "Hiển thị đúng"
 
-#: src/options.cpp:5056
+#: src/options.cpp:5098
 msgid "Show magnetic"
 msgstr ""
 
-#: src/options.cpp:5069
+#: src/options.cpp:5111
 msgid "Assumed magnetic variation"
 msgstr ""
 
-#: src/options.cpp:5081 src/options.cpp:5185
+#: src/options.cpp:5123 src/options.cpp:5227
 msgid "deg (-W, +E)"
 msgstr "deg (-W + E)"
 
-#: src/options.cpp:5162
+#: src/options.cpp:5204
 msgid "Show true bearings and headings"
 msgstr "Hiển thị tiêu đề và điều hướng thực"
 
-#: src/options.cpp:5165
+#: src/options.cpp:5207
 msgid "Show magnetic bearings and headings."
 msgstr ""
 
-#: src/options.cpp:5176 src/options.cpp:6280
+#: src/options.cpp:5218 src/options.cpp:6329
 msgid "WMM Plugin calculated magnetic variation"
 msgstr ""
 
-#: src/options.cpp:5190
+#: src/options.cpp:5232
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr ""
 
-#: src/options.cpp:5225
+#: src/options.cpp:5267
 msgid "AIS Targets"
 msgstr "Đối tượng AIS"
 
-#: src/options.cpp:5232
+#: src/options.cpp:5274
 msgid "CPA Calculation"
 msgstr "Tính toán CPA"
 
-#: src/options.cpp:5242
+#: src/options.cpp:5284
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "Không cảnh báo (T)CPA, nếu phạm vi mục tiêu lớn hơn (NMi)"
 
-#: src/options.cpp:5249
+#: src/options.cpp:5291
 msgid "Warn if CPA less than (NMi)"
 msgstr "Cảnh báo nếu CPA ít hơn (NMi)"
 
-#: src/options.cpp:5261
+#: src/options.cpp:5303
 msgid "...and TCPA is less than (min)"
 msgstr "... và TCPA thấp hơn (giá trị nhỏ nhất)"
 
-#: src/options.cpp:5269
+#: src/options.cpp:5311
 msgid "Lost Targets"
 msgstr "Đối tượng mất tín hiệu"
 
-#: src/options.cpp:5278
+#: src/options.cpp:5320
 msgid "Mark targets as lost after (min)"
 msgstr "Đánh dấu đối tượng là mất tín hiệu sau (phút)"
 
-#: src/options.cpp:5285
+#: src/options.cpp:5327
 msgid "Remove lost targets after (min)"
 msgstr "Xóa đối tượng bị mất tín hiệu sau (phút)"
 
-#: src/options.cpp:5305
+#: src/options.cpp:5347
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Hiển thị mũi tên dự đoán COG, độ dài (phút)"
 
-#: src/options.cpp:5313
+#: src/options.cpp:5355
 msgid "Show target tracks, length (min)"
 msgstr "Hiển thị lộ trình đối tượng (phút)"
 
-#: src/options.cpp:5321
+#: src/options.cpp:5363
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr ""
 
-#: src/options.cpp:5329
+#: src/options.cpp:5371
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr ""
 
-#: src/options.cpp:5337
+#: src/options.cpp:5379
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Hiển thị thông báo khu vực (từ tin nhắn AIS)"
 
-#: src/options.cpp:5344
+#: src/options.cpp:5386
 msgid "Show AIS targets real size"
 msgstr "Hiển thị kích cỡ thực của đối tượng AIS"
 
-#: src/options.cpp:5351
+#: src/options.cpp:5393
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Hiển thị tên đối tượng AIS ở tỉ lệ lớn hơn 1:"
 
-#: src/options.cpp:5359
+#: src/options.cpp:5401
 msgid "Treat WPL sentences as APRS position reports"
 msgstr ""
 
-#: src/options.cpp:5369
+#: src/options.cpp:5411
 msgid "Rollover"
 msgstr "Làm lại"
 
-#: src/options.cpp:5375
+#: src/options.cpp:5417
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Tên tàu\" MMSI (Call Sign)"
 
-#: src/options.cpp:5379
+#: src/options.cpp:5421
 msgid "[Class] Type (Status)"
 msgstr "[Lớp] loại (Trạng thái)"
 
-#: src/options.cpp:5382
+#: src/options.cpp:5424
 msgid "SOG COG"
 msgstr "SOG COG"
 
-#: src/options.cpp:5385
+#: src/options.cpp:5427
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: src/options.cpp:5390
+#: src/options.cpp:5432
 msgid "CPA/TCPA Alerts"
 msgstr "Cảnh báo CPA/TCPA"
 
-#: src/options.cpp:5399
+#: src/options.cpp:5441
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Hiển thị hộp thoại cảnh báo CPA/TCPA"
 
-#: src/options.cpp:5403
+#: src/options.cpp:5445
 msgid "Select Alert Sound"
 msgstr "Chọn âm thanh cảnh báo"
 
-#: src/options.cpp:5409
+#: src/options.cpp:5451
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Phát âm thanh cảnh báo CPA/TCPA và DSC/SART trong trường hợp khẩn cấp."
 
-#: src/options.cpp:5413
+#: src/options.cpp:5455
 msgid "Test Alert Sound"
 msgstr "Phát thử âm cảnh báo"
 
-#: src/options.cpp:5418
+#: src/options.cpp:5460
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:5425
+#: src/options.cpp:5467
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr ""
 
-#: src/options.cpp:5437
+#: src/options.cpp:5479
 msgid "General Options"
 msgstr "Cài đặt chung"
 
-#: src/options.cpp:5445
+#: src/options.cpp:5487
 msgid "Language"
 msgstr "Ngôn ngữ"
 
-#: src/options.cpp:5457
+#: src/options.cpp:5499
 msgid "Fonts"
 msgstr "Phông chữ"
 
-#: src/options.cpp:5482
+#: src/options.cpp:5525
 msgid "Choose Font..."
 msgstr "Chọn phông chữ..."
 
-#: src/options.cpp:5487
+#: src/options.cpp:5530
 msgid "Choose Font Color..."
 msgstr "Chọn màu sắc phông chữ..."
 
-#: src/options.cpp:5491
+#: src/options.cpp:5534
 msgid "Sample"
 msgstr ""
 
-#: src/options.cpp:5498
+#: src/options.cpp:5541
 msgid "Toolbar and Window Style"
 msgstr "Giao diện thanh công cụ và cửa sổ"
 
-#: src/options.cpp:5516
+#: src/options.cpp:5559
 msgid "Interface Options"
 msgstr "Tùy chọn giao diện"
 
-#: src/options.cpp:5522
+#: src/options.cpp:5565
 msgid "Show Status Bar"
 msgstr "Hiện Thanh Trạng Thái"
 
-#: src/options.cpp:5527
+#: src/options.cpp:5570
 msgid "Show Menu Bar"
 msgstr "Hiện thanh Menu"
 
-#: src/options.cpp:5541
+#: src/options.cpp:5584
 msgid "Show Compass/GPS Status Window"
 msgstr "Hiển thị cửa sổ La bàn/Trạng thái GPS"
 
-#: src/options.cpp:5549
+#: src/options.cpp:5592
 msgid "Enable Toolbar auto-hide"
 msgstr "Cho phép thanh công cụ tự ẩn"
 
-#: src/options.cpp:5565
+#: src/options.cpp:5608
 msgid "Play Ships Bells"
 msgstr "Bật chuông tàu"
 
-#: src/options.cpp:5575
+#: src/options.cpp:5618
 msgid "Audio Play command:"
 msgstr ""
 
-#: src/options.cpp:5593
+#: src/options.cpp:5636
 msgid "Unknown device :"
 msgstr ""
 
-#: src/options.cpp:5611
+#: src/options.cpp:5653
 msgid "Sound Device"
 msgstr ""
 
-#: src/options.cpp:5619
+#: src/options.cpp:5665
 msgid "Enable Touchscreen interface"
 msgstr "Cho phép dùng giao diện màn hình cảm ứng"
 
-#: src/options.cpp:5623
+#: src/options.cpp:5669
 msgid "Enable Scaled Graphics interface"
 msgstr "Cho phép dùng giao diện thu nhỏ đồ họa"
 
-#: src/options.cpp:5632
+#: src/options.cpp:5678
 msgid "Enable route/AIS info block"
 msgstr ""
 
-#: src/options.cpp:5636
+#: src/options.cpp:5681
+msgid "Show Zoom buttons"
+msgstr ""
+
+#: src/options.cpp:5687
 msgid "Use Inland ECDIS V2.3"
 msgstr ""
 
-#: src/options.cpp:5645
+#: src/options.cpp:5696
 msgid "Use dark window decorations"
 msgstr ""
 
-#: src/options.cpp:5666
+#: src/options.cpp:5714
 msgid "User Interface scale factor"
 msgstr "Hệ số tỷ lệ giao diện người dùng"
 
-#: src/options.cpp:5680
+#: src/options.cpp:5727
 msgid "Chart Object scale factor"
 msgstr "Hệ số tỷ lệ biểu đồ"
 
-#: src/options.cpp:5694
+#: src/options.cpp:5739
 msgid "Ship scale factor"
 msgstr ""
 
-#: src/options.cpp:5924 src/options.cpp:6091
+#: src/options.cpp:5971 src/options.cpp:6138
 msgid "Connections"
 msgstr "Kết nối"
 
-#: src/options.cpp:6060
+#: src/options.cpp:6107
 msgid "Apply"
 msgstr "Áp dụng"
 
-#: src/options.cpp:6069
+#: src/options.cpp:6116
 msgid "Charts"
 msgstr "Biểu đồ"
 
-#: src/options.cpp:6101
+#: src/options.cpp:6148
 msgid "Ships"
 msgstr "Tàu thuyền"
 
-#: src/options.cpp:6110
+#: src/options.cpp:6157
 msgid "User Interface"
 msgstr "Giao diện người dùng"
 
-#: src/options.cpp:6113 src/options.cpp:6114
+#: src/options.cpp:6160 src/options.cpp:6161
 msgid "Plugins"
 msgstr "Phần bổ xung"
 
-#: src/options.cpp:6286
+#: src/options.cpp:6335
 msgid "User set magnetic variation"
 msgstr "Người dùng thiết lập biến đổi từ tính"
 
-#: src/options.cpp:6721
+#: src/options.cpp:6770
 msgid "feet"
 msgstr "feet"
 
-#: src/options.cpp:6721
+#: src/options.cpp:6770
 msgid "fathoms"
 msgstr "fathoms"
 
-#: src/options.cpp:6931
+#: src/options.cpp:6980
 msgid "Add a directory containing chart files"
 msgstr "Thêm một danh mục chứa tập tin bảng biểu"
 
-#: src/options.cpp:7163
+#: src/options.cpp:7212
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - chiều dài của con tàu phải > 0"
 
-#: src/options.cpp:7165
+#: src/options.cpp:7214
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - Sườn ngang con tàu của bạn phải > 0"
 
-#: src/options.cpp:7168
+#: src/options.cpp:7217
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - Vị trí GPS giữa tàu phải nằm trong chiều ngang tàu của bạn"
 
-#: src/options.cpp:7172
+#: src/options.cpp:7221
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - Vị trí GPS ở mũi tàu phải nằm trong chiều dài tàu của bạn"
 
-#: src/options.cpp:7174
+#: src/options.cpp:7223
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - kích thước tối thiểu biểu tượng tàu của bạn phải trong khoảng 1mm và 100 mm"
 
-#: src/options.cpp:7176
+#: src/options.cpp:7225
 msgid "The settings for own ship real size are not correct:"
 msgstr "Các cài đặt cho kích thước thật của con tàu không chính xác:"
 
-#: src/options.cpp:7177 src/routemanagerdialog.cpp:1487
+#: src/options.cpp:7226 src/routemanagerdialog.cpp:1487
 msgid "OpenCPN info"
 msgstr "Thông tin OpenCPN"
 
-#: src/options.cpp:7758
+#: src/options.cpp:7808
 msgid "The changes to the window decorations will take full effect the next time you start OpenCPN."
 msgstr ""
 
-#: src/options.cpp:8085
+#: src/options.cpp:8135
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
 msgstr "Việc nén sẽ làm thay đổi các tệp đồ thị trên đĩa. \\ Nđiều này có thể làm cho chúng không tương thích với các chương trình khác hoặc các phiên bản cũ của OpenCPN. \\ Ncác biểu đồ nén có thể mất một thời gian để tải và hiển thị trên một số hệ thống. \\ Nchúng có thể được giải nén lại bằng cách sử dụng các chương trình zip unxz hoặc 7."
 
-#: src/options.cpp:8102 src/options.cpp:8153
+#: src/options.cpp:8152 src/options.cpp:8203
 msgid "OpenCPN Compress Charts"
 msgstr "Biểu đồ nén OpenCPN"
 
-#: src/options.cpp:8145
+#: src/options.cpp:8195
 msgid "No charts found to compress."
 msgstr "Không có biểu đồ nào được tìm thấy để nén."
 
-#: src/options.cpp:8179
+#: src/options.cpp:8229
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -5424,43 +5440,43 @@ msgstr "nén %ld biểu đồ\n"
 "từ %.1fMB để %.1fMB\n"
 "Ghi lại %.1fMB (%.1f%%)"
 
-#: src/options.cpp:8636 src/options.cpp:8647
+#: src/options.cpp:8688 src/options.cpp:8699
 msgid "Select Sound File"
 msgstr "Chọn tập tin âm thanh"
 
-#: src/options.cpp:9081
+#: src/options.cpp:9133
 msgid "Enter Group Name"
 msgstr "Nhập tên nhóm"
 
-#: src/options.cpp:9081
+#: src/options.cpp:9133
 msgid "New Chart Group"
 msgstr "Nhóm biểu đồ mới"
 
-#: src/options.cpp:9247 src/options.cpp:9261
+#: src/options.cpp:9299 src/options.cpp:9313
 msgid "Select Tide/Current Data"
 msgstr "Chọn dữ liệu thủy triều/ hiện tại"
 
-#: src/options.cpp:9309
+#: src/options.cpp:9361
 msgid "Stop Scan"
 msgstr "Dừng quét"
 
-#: src/options.cpp:9830
+#: src/options.cpp:9882
 msgid "Configure new connection"
 msgstr ""
 
-#: src/options.cpp:9964
+#: src/options.cpp:10016
 msgid "Sentence Filter"
 msgstr "Bộ lọc câu phù hợp"
 
-#: src/options.cpp:10072
+#: src/options.cpp:10124
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
 msgstr "Nhập câu phù hợp NMEA (2, 3 hoặc 5 ký tự) "
 
-#: src/options.cpp:10073
+#: src/options.cpp:10125
 msgid "Enter the NMEA sentence"
 msgstr "Nhập câu phù hợp NMEA"
 
-#: src/options.cpp:10090
+#: src/options.cpp:10142
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5469,63 +5485,63 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 msgstr "Một câu NMEA thường dài 3 ký tự (như RMC, GGA vv) \\ n Nó cũng có thể có một tiền tố hai chữ cái xác định nguồn, hoặc TALKER, của tin nhắn.\n"
 " Toàn bộ các câu giống như GPGGA hoặc AITXT. \\ N N Bạn có thể lọc tất cả các câu với một số tiền tố TALKER nhất định (như GP, AI...). \\ N \\ n Bộ lọc chỉ chấp nhận ba định dạng này."
 
-#: src/options.cpp:10137
+#: src/options.cpp:10189
 msgid "Texture Compression"
 msgstr "Nén kết cấu"
 
-#: src/options.cpp:10138
+#: src/options.cpp:10190
 msgid "Texture Compression with Caching"
 msgstr "Nén kết cấu với bộ nhớ đệm"
 
-#: src/options.cpp:10140
+#: src/options.cpp:10192
 msgid "Texture Compression Caching"
 msgstr "Kết cấu nén bộ nhớ đệm"
 
-#: src/options.cpp:10142
+#: src/options.cpp:10194
 msgid "Texture Memory Size (MB)"
 msgstr "Kích thước bộ nhớ kết cấu (MB)"
 
-#: src/options.cpp:10146 src/options.cpp:10319
+#: src/options.cpp:10198 src/options.cpp:10371
 msgid "Size: "
 msgstr "Kích thước: "
 
-#: src/options.cpp:10148
+#: src/options.cpp:10200
 msgid "Rebuild Texture Cache"
 msgstr "Xây dựng lại kết cấu bộ nhớ đệm"
 
-#: src/options.cpp:10150
+#: src/options.cpp:10202
 msgid "Clear Texture Cache"
 msgstr "Xoá kết cấu bộ nhớ đệm"
 
-#: src/options.cpp:10154
+#: src/options.cpp:10206
 msgid "Show FPS"
 msgstr "Hiển thị FPS"
 
-#: src/options.cpp:10155
+#: src/options.cpp:10207
 msgid "Polygon Smoothing"
 msgstr ""
 
-#: src/options.cpp:10156
+#: src/options.cpp:10208
 msgid "Line Smoothing"
 msgstr ""
 
-#: src/options.cpp:10158
+#: src/options.cpp:10210
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "Phần mềm OpenGL (khởi động lại OpenCPN)"
 
-#: src/options.cpp:10160
+#: src/options.cpp:10212
 msgid "Use Accelerated Panning"
 msgstr "Sử dụng tăng tốc kéo dịch"
 
-#: src/options.cpp:10162
+#: src/options.cpp:10214
 msgid "Texture Settings"
 msgstr "Cài đặt kết cấu"
 
-#: src/options.cpp:10169
+#: src/options.cpp:10221
 msgid "Texture Cache"
 msgstr "Kết cấu bộ nhớ đệm"
 
-#: src/options.cpp:10176
+#: src/options.cpp:10228
 msgid "Miscellaneous"
 msgstr "Linh tinh"
 
@@ -5701,7 +5717,7 @@ msgstr "&Tuyến đường từ Lộ trình theo dõi"
 msgid "Waypoints"
 msgstr "Điểm"
 
-#: src/routemanagerdialog.cpp:582 src/MarkInfo.cpp:394 src/MarkInfo.cpp:1511
+#: src/routemanagerdialog.cpp:582 src/MarkInfo.cpp:406 src/MarkInfo.cpp:1717
 msgid "Icon"
 msgstr "Biểu tượng"
 
@@ -5758,7 +5774,7 @@ msgid "Create Persistent layer"
 msgstr ""
 
 #: src/routemanagerdialog.cpp:744 src/TrackPropDlg.cpp:287
-#: src/TrackPropDlg.cpp:593 src/MarkInfo.cpp:492
+#: src/TrackPropDlg.cpp:593 src/MarkInfo.cpp:548
 msgid "Show on chart"
 msgstr "Hiển thị trên hải đồ"
 
@@ -5981,7 +5997,7 @@ msgid "LMT@Location"
 msgstr ""
 
 #: src/RoutePropDlg.cpp:159 src/TrackPropDlg.cpp:370 src/TrackPropDlg.cpp:596
-#: src/MarkInfo.cpp:519
+#: src/MarkInfo.cpp:575
 msgid "Color"
 msgstr "Màu sắc"
 
@@ -6137,15 +6153,16 @@ msgstr "ETA"
 msgid "Next tide event"
 msgstr "Sự kiện thủy triều tiếp theo"
 
-#: src/RoutePropDlg.cpp:232 src/MarkInfo.cpp:577
+#: src/RoutePropDlg.cpp:232 src/MarkInfo.cpp:646
 msgid "ETD"
 msgstr ""
 
-#: src/RoutePropDlg.cpp:241 src/TrackPropDlg.cpp:525 src/MarkInfo.cpp:344
+#: src/RoutePropDlg.cpp:241 src/TrackPropDlg.cpp:525 src/MarkInfo.cpp:356
 msgid "Basic"
 msgstr "Cơ bản"
 
-#: src/RoutePropDlg.cpp:254 src/TrackPropDlg.cpp:728 src/MarkInfo.cpp:456
+#: src/RoutePropDlg.cpp:254 src/TrackPropDlg.cpp:728 src/MarkInfo.cpp:469
+#: src/MarkInfo.cpp:477
 msgid "Links"
 msgstr "Liên kết"
 
@@ -6154,6 +6171,7 @@ msgid "wxFB Website"
 msgstr "trang web wxFB"
 
 #: src/RoutePropDlg.cpp:273 src/RoutePropDlg.cpp:309 src/TrackPropDlg.cpp:739
+#: src/MarkInfo.cpp:499 src/MarkInfo.cpp:504
 msgid "Add new"
 msgstr "Thêm mới"
 
@@ -6501,7 +6519,7 @@ msgstr "Chú thích"
 msgid "Pause"
 msgstr "Tạm dừng"
 
-#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:1018
+#: src/TTYWindow.cpp:83 src/MarkInfo.cpp:1222
 msgid "Copy"
 msgstr "Sao chép"
 
@@ -6689,112 +6707,108 @@ msgstr ""
 msgid "User Standard"
 msgstr ""
 
-#: src/MarkInfo.cpp:364
+#: src/MarkInfo.cpp:376
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr ""
 
-#: src/MarkInfo.cpp:386
+#: src/MarkInfo.cpp:398
 msgid "Show name"
 msgstr ""
 
-#: src/MarkInfo.cpp:477
+#: src/MarkInfo.cpp:533
 msgid "Extended"
 msgstr ""
 
-#: src/MarkInfo.cpp:484
+#: src/MarkInfo.cpp:540
 msgid "Extended Properties"
 msgstr ""
 
-#: src/MarkInfo.cpp:498
+#: src/MarkInfo.cpp:554
 msgid "Show at scale > 1 :"
 msgstr ""
 
-#: src/MarkInfo.cpp:505
+#: src/MarkInfo.cpp:561
 msgid "Show waypoint name"
 msgstr ""
 
-#: src/MarkInfo.cpp:509 src/MarkInfo.cpp:1519
+#: src/MarkInfo.cpp:565 src/MarkInfo.cpp:1725
 msgid "Range rings"
 msgstr ""
 
-#: src/MarkInfo.cpp:514
+#: src/MarkInfo.cpp:570
 msgid "Number"
 msgstr ""
 
-#: src/MarkInfo.cpp:524
+#: src/MarkInfo.cpp:585
 msgid "0.05"
 msgstr ""
 
-#: src/MarkInfo.cpp:538
+#: src/MarkInfo.cpp:599
 msgid "GUID"
 msgstr ""
 
-#: src/MarkInfo.cpp:549
+#: src/MarkInfo.cpp:610
 msgid "Tide Station"
 msgstr ""
 
-#: src/MarkInfo.cpp:556
-msgid "∿"
-msgstr ""
-
-#: src/MarkInfo.cpp:559
+#: src/MarkInfo.cpp:628
 msgid "Arrival Radius"
 msgstr ""
 
-#: src/MarkInfo.cpp:567
+#: src/MarkInfo.cpp:636
 msgid "Planned Speed"
 msgstr ""
 
-#: src/MarkInfo.cpp:951
+#: src/MarkInfo.cpp:1073 src/MarkInfo.cpp:1122
 msgid "Add New"
 msgstr ""
 
-#: src/MarkInfo.cpp:1019
+#: src/MarkInfo.cpp:1223
 msgid "Copy lat/long"
 msgstr ""
 
-#: src/MarkInfo.cpp:1020
+#: src/MarkInfo.cpp:1224
 msgid "Paste"
 msgstr ""
 
-#: src/MarkInfo.cpp:1021
+#: src/MarkInfo.cpp:1225
 msgid "Paste lat/long"
 msgstr ""
 
-#: src/MarkInfo.cpp:1490
+#: src/MarkInfo.cpp:1696
 msgid "Save some defaults"
 msgstr ""
 
-#: src/MarkInfo.cpp:1498
+#: src/MarkInfo.cpp:1704
 msgid "Check which properties of current waypoint\n"
 " should be set as default for NEW waypoints."
 msgstr ""
 
-#: src/MarkInfo.cpp:1503 src/MarkInfo.cpp:1518
+#: src/MarkInfo.cpp:1709 src/MarkInfo.cpp:1724
 msgid "Do use"
 msgstr ""
 
-#: src/MarkInfo.cpp:1503 src/MarkInfo.cpp:1518
+#: src/MarkInfo.cpp:1709 src/MarkInfo.cpp:1724
 msgid "Don't use"
 msgstr ""
 
-#: src/MarkInfo.cpp:1504
+#: src/MarkInfo.cpp:1710
 msgid "Show Waypoint Name"
 msgstr ""
 
-#: src/MarkInfo.cpp:1526
+#: src/MarkInfo.cpp:1732
 msgid "Arrival radius"
 msgstr ""
 
-#: src/MarkInfo.cpp:1533
+#: src/MarkInfo.cpp:1739
 msgid "Show only if"
 msgstr ""
 
-#: src/MarkInfo.cpp:1534
+#: src/MarkInfo.cpp:1740
 msgid "Show always"
 msgstr ""
 
-#: src/MarkInfo.cpp:1535
+#: src/MarkInfo.cpp:1741
 msgid "Show only at scale"
 msgstr ""
 

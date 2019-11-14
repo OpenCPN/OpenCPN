@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-30 09:34-0400\n"
-"PO-Revision-Date: 2019-07-31 01:38\n"
+"PO-Revision-Date: 2019-11-12 02:20\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -199,7 +199,7 @@ msgstr "Laddar hem sjökort %u av %u (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1431 src/chartdldrgui.cpp:302
 msgid "Download selected charts"
-msgstr "Laddar ner valda sjökort"
+msgstr "Ladda ner valda sjökort"
 
 #: src/chartdldr_pi.cpp:1440
 msgid "Chart download cancelled."
@@ -340,7 +340,7 @@ msgstr "Uppdatera alla"
 
 #: src/chartdldrgui.cpp:276
 msgid "Download Charts..."
-msgstr "Laddar ner sjökort..."
+msgstr "Ladda ner sjökort..."
 
 #: src/chartdldrgui.cpp:305
 #, c-format

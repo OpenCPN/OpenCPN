@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-07-31 01:36\n"
+"PO-Revision-Date: 2019-11-12 02:17\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -23,8 +23,8 @@ msgstr "Rozpocznij żądanie"
 #: src/GribUIDialog.cpp:340
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr "Zaznacz Żądany Obszar\n"
-"lub Kliknij tu, aby porzucić żądanie"
+msgstr "Zaznacz żądany obszar\n"
+"lub lliknij tu, aby porzucić przerwać"
 
 #: src/GribUIDialog.cpp:344 src/GribUIDialog.cpp:819
 msgid "Valid Area and Continue"
@@ -44,7 +44,7 @@ msgstr " nie zawiera prawidłowych danych!"
 
 #: src/GribUIDialog.cpp:416
 msgid "No valid GRIB file"
-msgstr "Brak prawidłowego pliku"
+msgstr "Brak prawidłowego pliku GRIB"
 
 #: src/GribUIDialog.cpp:612 src/GribUIDialog.cpp:808
 msgid "Hide data at cursor"

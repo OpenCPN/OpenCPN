@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-25 17:42+1000\n"
-"PO-Revision-Date: 2019-07-31 01:36\n"
+"PO-Revision-Date: 2019-11-12 02:09\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/squiddio_pi.h:343
 msgid "Squiddio Preferences"
-msgstr ""
+msgstr "Squiddio voorkeuren"
 
 #: src/squiddio_pi.cpp:173
 msgid "Show local sQuiddio destinations"
@@ -112,7 +112,8 @@ msgstr "== Database van zeilbestemmingen == \n"
 #, c-format
 msgid "OD Text Points not available, wrong version of API\n"
 "Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
-msgstr ""
+msgstr "OD Text Points niet beschikbaar, verkeerde versie van API\n"
+"Squiddio API Major: %i, Minor %i, OD API Major: %i, Minor %i"
 
 #: src/squiddio_pi.cpp:1131
 msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
@@ -122,71 +123,71 @@ msgstr "Posities delen is niet geactiveerd. Vul uw sQuiddio gebruikersnaam en AP
 
 #: src/squiddio_pi.cpp:1379
 msgid "Marina"
-msgstr ""
+msgstr "Jachthavens"
 
 #: src/squiddio_pi.cpp:1383
 msgid "Anchorage/Buoys"
-msgstr ""
+msgstr "Ankerplaats / Boeien"
 
 #: src/squiddio_pi.cpp:1387
 msgid "AIS ATON Marker"
-msgstr ""
+msgstr "AIS ATON Marker"
 
 #: src/squiddio_pi.cpp:1391
 msgid "Yacht Club"
-msgstr ""
+msgstr "Jachtclub"
 
 #: src/squiddio_pi.cpp:1395
 msgid "Fuel Station"
-msgstr ""
+msgstr "Tankstation"
 
 #: src/squiddio_pi.cpp:1399
 msgid "Dock/Pier"
-msgstr ""
+msgstr "Havens/pieren"
 
 #: src/squiddio_pi.cpp:1403
 msgid "Boat Ramp"
-msgstr ""
+msgstr "Boothellingen"
 
 #: src/squiddio_pi.cpp:1407
 msgid "North"
-msgstr ""
+msgstr "Noord"
 
 #: src/squiddio_pi.cpp:1411
 msgid "North East"
-msgstr ""
+msgstr "Noordoost"
 
 #: src/squiddio_pi.cpp:1415
 msgid "East"
-msgstr ""
+msgstr "Oost"
 
 #: src/squiddio_pi.cpp:1419
 msgid "South East"
-msgstr ""
+msgstr "Zuid Oost"
 
 #: src/squiddio_pi.cpp:1423
 msgid "Sout"
-msgstr ""
+msgstr "Zuid"
 
 #: src/squiddio_pi.cpp:1427
 msgid "South West"
-msgstr ""
+msgstr "Zuidwest"
 
 #: src/squiddio_pi.cpp:1431
 msgid "West"
-msgstr ""
+msgstr "West"
 
 #: src/squiddio_pi.cpp:1435
 msgid "North West"
-msgstr ""
+msgstr "Noordwest"
 
 #: src/squiddio_pi.cpp:1439
 msgid "Checked in"
-msgstr ""
+msgstr "Check-in"
 
 #: src/squiddio_pi.cpp:1443
 msgid "Unknown heading"
-msgstr ""
+msgstr "Onbekende rubriek"
 
 #: src/logs.cpp:94
 msgid "Just now"
@@ -345,97 +346,97 @@ msgstr "Haal uw API-sleutel op vanaf uw sQuidd.io profiel. Log in bij http://squ
 
 #: src/squiddioPrefsDialogBase.cpp:125
 msgid "Renderer"
-msgstr ""
+msgstr "Renderer"
 
 #: src/squiddioPrefsDialogBase.cpp:127
 msgid "OpenCPN Waypoint"
-msgstr ""
+msgstr "OpenCPN Markeringspunt"
 
 #: src/squiddioPrefsDialogBase.cpp:127
 msgid "ODraw TextPoint"
-msgstr ""
+msgstr "ODraw Tekst punt"
 
 #: src/squiddioPrefsDialogBase.cpp:129
 msgid "OCPN or ODraw"
-msgstr ""
+msgstr "OCPN of ODraw"
 
 #: src/squiddioPrefsDialogBase.cpp:137
 msgid "Ocpn Draw settings"
-msgstr ""
+msgstr "OCPN Draw instellingen"
 
 #: src/squiddioPrefsDialogBase.cpp:144
 msgid "Show Name"
-msgstr ""
+msgstr "Toon naam"
 
 #: src/squiddioPrefsDialogBase.cpp:151
 msgid "Text position relative to point"
-msgstr ""
+msgstr "Tekstpositie t.o.v. punt"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Top"
-msgstr ""
+msgstr "boven"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Top Centre"
-msgstr ""
+msgstr "middenboven"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Bottom"
-msgstr ""
+msgstr "onder"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Bottom Centre"
-msgstr ""
+msgstr "middenonder"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Centre"
-msgstr ""
+msgstr "centrum"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Right"
-msgstr ""
+msgstr "rechts"
 
 #: src/squiddioPrefsDialogBase.cpp:155
 msgid "Left"
-msgstr ""
+msgstr "links"
 
 #: src/squiddioPrefsDialogBase.cpp:161
 msgid "Text Colour"
-msgstr ""
+msgstr "Kleur tekst"
 
 #: src/squiddioPrefsDialogBase.cpp:168
 msgid "Baackground Colour"
-msgstr ""
+msgstr "Kleur achtergrond"
 
 #: src/squiddioPrefsDialogBase.cpp:175
 msgid "Background Transparency"
-msgstr ""
+msgstr "Transparantie achtergrond"
 
 #: src/squiddioPrefsDialogBase.cpp:185
 msgid "Text Font"
-msgstr ""
+msgstr "Lettertype"
 
 #: src/squiddioPrefsDialogBase.cpp:189
 msgid "Example"
-msgstr ""
+msgstr "Voorbeeld"
 
 #: src/squiddioPrefsDialogBase.cpp:196
 msgid "Fonts"
-msgstr ""
+msgstr "Lettertypes"
 
 #: src/squiddioPrefsDialogBase.cpp:202
 msgid "Always"
-msgstr ""
+msgstr "altijd"
 
 #: src/squiddioPrefsDialogBase.cpp:202
 msgid "On Rollover Only"
-msgstr ""
+msgstr "alleen bij aanwijzen"
 
 #: src/squiddioPrefsDialogBase.cpp:204
 msgid "Show Display Text"
-msgstr ""
+msgstr "Toon tekst"
 
 #: src/squiddioPrefsDialogBase.h:95
 msgid "sQuiddio Preferences"
-msgstr ""
+msgstr "sQuiddio voorkeuren"
 

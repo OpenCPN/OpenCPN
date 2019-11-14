@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-30 09:34-0400\n"
-"PO-Revision-Date: 2019-07-31 01:37\n"
+"PO-Revision-Date: 2019-11-12 02:18\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -190,12 +190,12 @@ msgstr "Erro, o URL para os dados das cartas (%s) parece errado."
 #: src/chartdldr_pi.cpp:1393
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr "Descarregando o gráfico %u de %u, %u downloads falharam (%s / %s)"
+msgstr "Descarregando a carta %u de %u, %u ficheiros falharam (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1397
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
-msgstr ""
+msgstr "Descarregando a carta %u de %u (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1431 src/chartdldrgui.cpp:302
 msgid "Download selected charts"
@@ -203,7 +203,7 @@ msgstr "Descarregar as cartas seleccionadas"
 
 #: src/chartdldr_pi.cpp:1440
 msgid "Chart download cancelled."
-msgstr ""
+msgstr "Descarga da carta cancelada."
 
 #: src/chartdldr_pi.cpp:1473 src/chartdldrgui.cpp:98
 msgid "Catalog"
@@ -292,7 +292,7 @@ msgstr "Escolha uma pasta"
 
 #: src/chartdldrgui.cpp:170 src/chartdldrgui.cpp:501
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: src/chartdldrgui.cpp:201 src/chartdldrgui.cpp:562
 msgid "Choose Chart File Directory"
@@ -300,15 +300,15 @@ msgstr "Escolha o diretório para a carta"
 
 #: src/chartdldrgui.cpp:227
 msgid "Select Catalog..."
-msgstr ""
+msgstr "Selecionar catálogo..."
 
 #: src/chartdldrgui.cpp:232
 msgid "Chart Catalogs Available"
-msgstr ""
+msgstr "Catálogos de cartas disponíveis"
 
 #: src/chartdldrgui.cpp:251
 msgid "Add Catalog"
-msgstr ""
+msgstr "Adicionar catálogo"
 
 #: src/chartdldrgui.cpp:252
 msgid "Add a new chart catalog."
@@ -340,7 +340,7 @@ msgstr "Actualizar tudo"
 
 #: src/chartdldrgui.cpp:276
 msgid "Download Charts..."
-msgstr ""
+msgstr "Descarregar cartas..."
 
 #: src/chartdldrgui.cpp:305
 #, c-format

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-07-31 01:31\n"
+"PO-Revision-Date: 2019-11-12 02:11\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -207,7 +207,7 @@ msgstr "Dashboard Einstellungen"
 
 #: src/dashboard_pi.cpp:1739
 msgid "show this dashboard"
-msgstr "zeige dies Dashboard"
+msgstr "zeige dieses Dashboard"
 
 #: src/dashboard_pi.cpp:1745
 msgid "Caption:"

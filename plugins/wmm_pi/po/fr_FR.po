@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:18-0400\n"
-"PO-Revision-Date: 2019-07-31 17:59\n"
+"PO-Revision-Date: 2019-11-12 02:11\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -68,7 +68,7 @@ msgstr "Le complément World Model magnétique pour OpenCPN \n"
 
 #: src/wmm_pi.cpp:475 src/wmm_pi.cpp:616
 msgid "Error, see log."
-msgstr "Erreur. Voir dans le fichier log."
+msgstr "Erreur. Voir le fichier log."
 
 #: src/wmm_pi.cpp:846 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
@@ -168,15 +168,15 @@ msgstr "Voir"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr "Montrer les options de création des cartes"
+msgstr "Cartes, Options de création : Activer"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
-msgstr "Montrer aussi pour la position du curseur"
+msgstr "Voir aussi pour la position du curseur"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr "Montrer l'icône de WMM dans la barre d'icônes"
+msgstr "Voir l'icône de WMM dans la barre d'icônes"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
@@ -228,5 +228,5 @@ msgstr "Annuler"
 
 #: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
-msgstr "Construction de la carte magnétique"
+msgstr "Cartes des données mag. : Construire"
 

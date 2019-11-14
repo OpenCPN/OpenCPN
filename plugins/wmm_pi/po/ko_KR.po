@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:18-0400\n"
-"PO-Revision-Date: 2019-07-31 01:35\n"
+"PO-Revision-Date: 2019-11-12 02:16\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -197,21 +197,21 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:377
 msgid "Pole Accuracy"
-msgstr ""
+msgstr "극 정확도"
 
 #: src/WmmUIDialog.cpp:381
 msgid "About"
-msgstr ""
+msgstr "제품 정보"
 
 #: src/WmmUIDialog.cpp:384
 msgid "Save"
-msgstr ""
+msgstr "저장"
 
 #: src/WmmUIDialog.cpp:387
 msgid "Cancel"
-msgstr ""
+msgstr "취소"
 
 #: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
-msgstr ""
+msgstr "자기 지도 작성"
 

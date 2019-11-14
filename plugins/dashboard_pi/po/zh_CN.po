@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-07-31 18:01\n"
+"PO-Revision-Date: 2019-11-12 02:07\n"
 "Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -115,7 +115,7 @@ msgstr "真风向&风速"
 
 #: src/dashboard_pi.cpp:160 src/dashboard_pi.cpp:162
 msgid "VMG"
-msgstr ""
+msgstr "有效航速"
 
 #: src/dashboard_pi.cpp:164 src/dashboard_pi.cpp:166
 msgid "Rudder Angle"
@@ -425,35 +425,35 @@ msgstr ""
 
 #: src/wind_history.cpp:436
 msgid "NNE"
-msgstr ""
+msgstr "北北东"
 
 #: src/wind_history.cpp:442
 msgid "ENE"
-msgstr ""
+msgstr "东北东"
 
 #: src/wind_history.cpp:448
 msgid "ESE"
-msgstr ""
+msgstr "东南东"
 
 #: src/wind_history.cpp:454
 msgid "SSE"
-msgstr ""
+msgstr "南南东"
 
 #: src/wind_history.cpp:460
 msgid "SSW"
-msgstr ""
+msgstr "南南西"
 
 #: src/wind_history.cpp:466
 msgid "WSW"
-msgstr ""
+msgstr "西南西"
 
 #: src/wind_history.cpp:472
 msgid "WNW"
-msgstr ""
+msgstr "西北西"
 
 #: src/wind_history.cpp:478
 msgid "NNW"
-msgstr ""
+msgstr "北北西"
 
 #: src/wind_history.cpp:575
 #, c-format
