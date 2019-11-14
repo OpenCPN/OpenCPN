@@ -826,6 +826,8 @@ set(
   include/AISTargetQueryDialog.h
   include/bbox.h
   include/canvasMenu.h
+  include/catalog_handler.h
+  include/catalog_mgr.h
   include/chart1.h
   include/ChartDataInputStream.h
   include/chartdb.h
@@ -938,6 +940,8 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/bbox.cpp
+  src/catalog_handler.cpp
+  src/catalog_mgr.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp

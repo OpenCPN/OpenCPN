@@ -89,6 +89,11 @@ struct PluginMetadata {
 
 };
 
+/** Overall metadata for the set of plugins used. */
+struct CatalogData {
+    std::string version;
+    std::string date;
+};
 
 class PluginHandler {
 
@@ -121,6 +126,9 @@ class PluginHandler {
 
         std::string getLastErrorMsg();
 
+        /** Plugin catalog metadata for given path, default current file. */
+        CatalogData getCatalogData(const char* path = 0);
+
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */
         PluginHandler() {}
@@ -128,6 +136,7 @@ class PluginHandler {
     private:
         std::string metadataPath;
         std::vector<PluginMetadata> installed;
+        CatalogData catalogData;
 
 };
 

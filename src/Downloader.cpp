@@ -69,6 +69,7 @@ bool Downloader::download(std::ostream* stream)
     curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_errbuf);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
     // FIXME -- Add correct certificates on host.

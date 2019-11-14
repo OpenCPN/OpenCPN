@@ -445,6 +445,9 @@ wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
 bool                    g_bShowMuiZoomButtons = true;
 
+wxString                g_catalog_custom_url;
+wxString                g_catalog_channel;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -824,6 +827,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+
+    // Plugin catalog handler persistent variables.
+    Read( "CatalogCustomURL", &g_catalog_custom_url);
+    Read( "CatalogChannel", &g_catalog_channel);
     
     
     //  NMEA connection options.
@@ -2290,6 +2297,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+
+    // Plugin catalog persistent values.
+    Write( _T( "CatalogCustomURL"), g_catalog_custom_url);
+    Write( _T( "CatalogChannel"), g_catalog_channel);
     
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );

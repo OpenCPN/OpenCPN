@@ -23,6 +23,8 @@
  */
 #include <algorithm>
 #include <cstdio>
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -127,5 +129,25 @@ std::string join(std::vector<std::string> v, char c)
     return s;
 }
 
+bool replace(std::string& str, const std::string& from, const std::string& to)
+{
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+
+void copy_file(const std::string& src_path, const std::string& dest_path)
+{
+    std::ifstream source(src_path, std::ios::binary);
+    std::ofstream dest(dest_path, std::ios::binary);
+
+    dest << source.rdbuf();
+
+    source.close();
+    dest.close();
+}
 
 }  // namespace ocpn

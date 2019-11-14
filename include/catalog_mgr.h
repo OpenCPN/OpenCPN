@@ -20,32 +20,25 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- */
-#include <string>
-#include <vector>
+*/
 
-/** Standard, mostly strings utilities. */
 
-namespace ocpn {
+#ifndef CATALOG_MGR_H__
+#define CATALOG_MGR_H__
 
-bool endswith(const std::string& s, const std::string& suffix);
+#include <wx/dialog.h>
+#include <wx/window.h>
 
-bool startswith(const std::string& s, const std::string& prefix);
+/** Catalog handler GUI.  */
+class CatalogDialog: public wxDialog
+{
+    public:
 
-std::string ltrim(std::string s);
+        /**
+         * Ctor. Simple reflects whether to just install the last catalog
+         * or invoke the advanced dialog instead. 
+         */
+        CatalogDialog(wxWindow* parent, bool simple);
+};
 
-std::string rtrim(std::string s);
-
-std::string trim(std::string s); 
-
-std::string join(std::vector<std::string> v, char c);
-
-bool exists(const std::string& path);
-
-void mkdir(const std::string path);
-
-bool replace(std::string& str, const std::string& from, const std::string& to);
-
-void copy_file(const std::string& src_path, const std::string& dest_path);
-
-}   // namespace ocpn
+#endif // CATALOG_MGR_H__

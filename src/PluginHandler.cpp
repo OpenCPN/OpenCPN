@@ -92,6 +92,9 @@ struct parse_ctx {
     std::vector<PluginMetadata> plugins;
     std::unique_ptr<PluginMetadata> plugin;
     std::string buff;
+    int depth;
+    std::string version;
+    std::string date;
 };
 
 
@@ -165,6 +168,7 @@ startElement(void* userData, const XML_Char* name, const XML_Char** atts)
     ctx->buff = "";
     if (strcmp(name, "plugin") == 0) {
         ctx->plugin = std::unique_ptr<PluginMetadata>(new PluginMetadata);
+        ctx->depth += 1;
     }
 }
 
@@ -173,9 +177,17 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
 {
     parse_ctx* ctx = static_cast<parse_ctx*>(userData);
     std::string buff = ctx->buff;
-
-    if (strcmp(name, "plugin") == 0) {
+    if (ctx->depth <=  0)  {
+        if (strcmp(name, "version") == 0) {
+            ctx->version = ocpn::trim(buff);
+        }
+        else if (strcmp(name, "date") == 0) {
+            ctx->date = ocpn::trim(buff);
+        }
+    }
+    else if (strcmp(name, "plugin") == 0) {
         ctx->plugins.push_back(*ctx->plugin);
+        ctx->depth -= 1;
     } else if (strcmp(name, "name") == 0) {
         ctx->plugin->name = ocpn::trim(buff);
     } else if (strcmp(name, "version") == 0) {
@@ -642,24 +654,42 @@ std::string PluginHandler::getMetadataPath()
     return metadataPath;
 }
 
+static void parseMetadata(const std::string path, parse_ctx& ctx)
+{
+    using namespace std;
+
+    wxLogMessage("PluginHandler: using metadata path: %s", path);
+    ctx.depth = 0;
+    if (!ocpn::exists(path)) {
+        wxLogWarning("Non-existing plugins metadata file: %s", path.c_str());
+        return;
+    }
+    ifstream ifpath(path);
+    string xml((istreambuf_iterator<char>(ifpath)),
+            istreambuf_iterator<char>());
+    readXml(xml, ctx);
+}
 
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
 
-    string path = getMetadataPath();
-    wxLogMessage("PluginHandler: using metadata path: %s", path);
     parse_ctx ctx;
-    if (!ocpn::exists(path)) {
-        wxLogWarning("Non-existing plugins metadata file: %s", path.c_str());
-        return ctx.plugins;
-    }
-    ifstream ifpath(path);
-    string xml((istreambuf_iterator<char>(ifpath)),
-            istreambuf_iterator<char>());
-    readXml(xml, ctx);
+    parseMetadata(getMetadataPath(), ctx);
+    catalogData.date = ctx.date;
+    catalogData.version = ctx.version;
     return ctx.plugins;
+}
+
+
+CatalogData PluginHandler::getCatalogData(const char* path)
+{
+    parse_ctx ctx;
+    parseMetadata(path ? path : getMetadataPath(), ctx);
+    catalogData.date = ctx.date;
+    catalogData.version = ctx.version;
+    return catalogData;
 }
 
 
