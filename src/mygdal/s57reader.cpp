@@ -2726,6 +2726,14 @@ int S57Reader::FindAndApplyUpdates( const char * pszPath )
 /*      efficiently as possible for this transfer.                      */
 /************************************************************************/
 
+// Android uses clang compiler.
+//  At optimization -O3, this function has trouble with alignment of values,
+//  Specifically, conversion of an int32 from a buffer into double.
+//  Workaround: We disable optimization for this little used function.
+#ifdef __ARM_ARCH
+[[clang::optnone]]
+#endif
+
 OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
 
 {
