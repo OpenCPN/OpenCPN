@@ -106,8 +106,14 @@ bool DPT::Parse( const SENTENCE& sentence )
    } 
 
    DepthMeters                = sentence.Double( 1 );
-   OffsetFromTransducerMeters = sentence.Double( 2 );
-
+   wxString offset = sentence.Field( 2 );
+   int minus = offset.find_last_of('-');
+   if (minus != wxNOT_FOUND && minus > 0)
+   {   // Remove extra - from offset string
+       wxString first = offset.substr(0, minus);
+       offset = first + offset.Mid(minus + 1);
+   }
+   offset.ToDouble(&OffsetFromTransducerMeters);
    return( TRUE );
 }
 
