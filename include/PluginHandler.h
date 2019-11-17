@@ -62,32 +62,8 @@
 
 #include <wx/cmdline.h>
 
-struct PluginMetadata {
-    std::string name;
-    std::string version;
-    std::string release;
-    std::string summary;
+#include "catalog_parser.h"
 
-    std::string api_version;
-    std::string author;
-    std::string description;
-    std::string git_commit ;
-    std::string git_date;
-    std::string source;
-    std::string tarball_url;
-    std::string target;
-    std::string target_version;
-    std::string info_url;
-
-    bool openSource;
-
-    bool readonly;                // Can plugin be removed?
-    int ix;                       // Index in list of installed or available.
-    void clear() { *this = PluginMetadata(); }
-    PluginMetadata() :  readonly(true), ix(-1) {}
-
-
-};
 
 /** Overall metadata for the set of plugins used. */
 struct CatalogData {

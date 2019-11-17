@@ -33,9 +33,8 @@
 
 #include <curl/curl.h>
 
-#include <tinyxml.h>
-
 #include "catalog_handler.h"
+#include "catalog_parser.h"
 #include "Downloader.h"
 #include "ocpn_utils.h"
 
@@ -117,36 +116,17 @@ catalog_status CatalogHandler::DownloadCatalog(std::string& path)
 }
 
 
-catalog_status CatalogHandler::ParseCatalog(const std::string& xml)
+catalog_status CatalogHandler::ParseCatalog(const std::string xml)
 {
-      TiXmlDocument dom;
-      bool ok = dom.Parse(xml.c_str());
-      if (!ok) {
-          error_msg = "Cannot parse XML data";
-          return ServerStatus::XML_ERROR;
-      }
-      auto root = dom.RootElement();
-      if (!root) {
-          error_msg = "Cannot find xml root (!)";
-          return ServerStatus::XML_ERROR;
-      }
-      const TiXmlElement* version_elem = root->FirstChildElement("version");
-      if (!version_elem) {
-          error_msg = "Cannot find xml version element (!)";
-          return ServerStatus::XML_ERROR;
-      }
-      const TiXmlElement* date_elem = root->FirstChildElement("date");
-      if (!date_elem) {
-          error_msg = "Cannot find xml date element (!)";
-          return ServerStatus::XML_ERROR;
-      }
-      this->version = version_elem->GetText();
-      this->date = date_elem->GetText();
-      error_msg = "";
-      return ServerStatus::OK;
+    catalog_ctx ctx;
+    bool ok = ::ParseCatalog(xml, ctx);
+    if (ok) {
+        this->version = ctx.version;
+        this->date = ctx.date;
+        return ServerStatus::OK;
+    }
+    return ServerStatus::XML_ERROR;
 }
-
-
 
 
 std::vector<std::string> CatalogHandler::GetChannels()

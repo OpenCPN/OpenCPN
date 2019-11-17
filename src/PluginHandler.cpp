@@ -53,23 +53,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ocpn_utils.h"
-
-#ifdef XML_LARGE_SIZE
-#  if defined(XML_USE_MSC_EXTENSIONS) && _MSC_VER < 1400
-#    define XML_FMT_INT_MOD "I64"
-#  else
-#    define XML_FMT_INT_MOD "ll"
-#  endif
-#else
-#  define XML_FMT_INT_MOD "l"
-#endif
-
-#ifdef XML_UNICODE_WCHAR_T
-# include <wchar.h>
-# define XML_FMT_STR "ls"
-#else
-# define XML_FMT_STR "s"
-#endif
+#include "catalog_parser.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -87,15 +71,6 @@ extern PlugInManager* g_pi_manager;
 extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
-
-struct parse_ctx {
-    std::vector<PluginMetadata> plugins;
-    std::unique_ptr<PluginMetadata> plugin;
-    std::string buff;
-    int depth;
-    std::string version;
-    std::string date;
-};
 
 
 /** split s on first occurrence of delim, or return s in first result. */
@@ -151,91 +126,6 @@ static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
         }
     }
     return -1;
-}
-
-
-static void XMLCALL elementData(void* userData, const XML_Char* s, int len)
-{
-    parse_ctx* ctx = static_cast<parse_ctx*>(userData);
-    ctx->buff.append(s, len);
-}
-
-
-static void XMLCALL
-startElement(void* userData, const XML_Char* name, const XML_Char** atts)
-{
-    parse_ctx* ctx = static_cast<parse_ctx*>(userData);
-    ctx->buff = "";
-    if (strcmp(name, "plugin") == 0) {
-        ctx->plugin = std::unique_ptr<PluginMetadata>(new PluginMetadata);
-        ctx->depth += 1;
-    }
-}
-
-
-static void XMLCALL endElement(void* userData, const XML_Char* name)
-{
-    parse_ctx* ctx = static_cast<parse_ctx*>(userData);
-    std::string buff = ctx->buff;
-    if (ctx->depth <=  0)  {
-        if (strcmp(name, "version") == 0) {
-            ctx->version = ocpn::trim(buff);
-        }
-        else if (strcmp(name, "date") == 0) {
-            ctx->date = ocpn::trim(buff);
-        }
-    }
-    else if (strcmp(name, "plugin") == 0) {
-        ctx->plugins.push_back(*ctx->plugin);
-        ctx->depth -= 1;
-    } else if (strcmp(name, "name") == 0) {
-        ctx->plugin->name = ocpn::trim(buff);
-    } else if (strcmp(name, "version") == 0) {
-        ctx->plugin->version = ocpn::trim(buff);
-    } else if (strcmp(name, "release") == 0) {
-        ctx->plugin->release = ocpn::trim(buff);
-    } else if (strcmp(name, "summary") == 0) {
-        ctx->plugin->summary = ocpn::trim(buff);
-    } else if (strcmp(name, "api_version") == 0) {
-        ctx->plugin->api_version = ocpn::trim(buff);
-    } else if (strcmp(name, "author") == 0) {
-        ctx->plugin->author = ocpn::trim(buff);
-    } else if (strcmp(name, "description") == 0) {
-        ctx->plugin->description = ocpn::trim(buff);
-    } else if (strcmp(name, "git-commit") == 0) {
-        ctx->plugin->git_commit = ocpn::trim(buff);
-    } else if (strcmp(name, "git-date") == 0) {
-        ctx->plugin->git_date = ocpn::trim(buff);
-    } else if (strcmp(name, "source") == 0) {
-        ctx->plugin->source = ocpn::trim(buff);
-    } else if (strcmp(name, "tarball-url") == 0) {
-        ctx->plugin->tarball_url = ocpn::trim(buff);
-    } else if (strcmp(name, "info-url") == 0) {
-        ctx->plugin->info_url = ocpn::trim(buff);
-    } else if (strcmp(name, "target") == 0) {
-        ctx->plugin->target = ocpn::trim(buff);
-    } else if (strcmp(name, "target-version") == 0) {
-        ctx->plugin->target_version = ocpn::trim(buff);
-    } else if (strcmp(name, "open-source") == 0) {
-        ctx->plugin->openSource = ocpn::trim(buff) == "yes";
-    }
-}
-
-
-static void readXml(std::string xml, parse_ctx& ctx)
-{
-    XML_Parser parser = XML_ParserCreate(NULL);
-
-    XML_SetUserData(parser, &ctx);
-    XML_SetElementHandler(parser, startElement, endElement);
-    XML_SetCharacterDataHandler(parser, elementData);
-
-    if (XML_Parse(parser, xml.c_str(), xml.size(), true) == XML_STATUS_ERROR) {
-        wxLogWarning("%" XML_FMT_STR " at line %" XML_FMT_INT_MOD "u\n",
-                     XML_ErrorString(XML_GetErrorCode(parser)),
-                     XML_GetCurrentLineNumber(parser));
-    }
-    XML_ParserFree(parser);
 }
 
 
@@ -654,7 +544,7 @@ std::string PluginHandler::getMetadataPath()
     return metadataPath;
 }
 
-static void parseMetadata(const std::string path, parse_ctx& ctx)
+static void parseMetadata(const std::string path, catalog_ctx& ctx)
 {
     using namespace std;
 
@@ -667,7 +557,7 @@ static void parseMetadata(const std::string path, parse_ctx& ctx)
     ifstream ifpath(path);
     string xml((istreambuf_iterator<char>(ifpath)),
             istreambuf_iterator<char>());
-    readXml(xml, ctx);
+    ParseCatalog(xml, ctx);
 }
 
 
@@ -675,7 +565,7 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
 
-    parse_ctx ctx;
+    catalog_ctx ctx;
     parseMetadata(getMetadataPath(), ctx);
     catalogData.date = ctx.date;
     catalogData.version = ctx.version;
@@ -685,7 +575,7 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
 
 CatalogData PluginHandler::getCatalogData(const char* path)
 {
-    parse_ctx ctx;
+    catalog_ctx ctx;
     parseMetadata(path ? path : getMetadataPath(), ctx);
     catalogData.date = ctx.date;
     catalogData.version = ctx.version;

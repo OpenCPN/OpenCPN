@@ -81,7 +81,7 @@ class CatalogHandler {
         ServerStatus DownloadCatalog(std::string& path);
 
         /** Parse XML contents, set date and version attributes. */
-        ServerStatus ParseCatalog(const std::string& xml);
+        ServerStatus ParseCatalog(const std::string xml);
 
         /** Return catalog date, valid after ParseCatalog(). */
         std::string GetCatalogDate() { return date; }
