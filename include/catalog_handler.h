@@ -23,7 +23,7 @@
  */
 
 /**
- * Handle plugin catalog managent: Check for available versions and branches,
+ * Plugin catalog management: Check for available versions and branches,
  * download as required.
  */
 
@@ -35,6 +35,8 @@
 #include <ostream>
 #include <vector>
 
+#include "catalog_parser.h"
+
 
 /**
  * A local proxy for the catalog server. The server has a number
@@ -42,6 +44,9 @@
  *
  * Backend code for channel management (which catalog to get) and
  * the important download function. 
+ *
+ * Also: CatalogData handling, basically version and date for 
+ * various ocpn-plugins.xml.
  */
 class CatalogHandler {
 
@@ -53,10 +58,10 @@ class CatalogHandler {
 
         static CatalogHandler* getInstance();
 
-        /** Download channel json data, possibly returns error code. */
+        /** Download channel json data, possibly return error code. */
         ServerStatus LoadChannels(std::ostream* json);
 
-        /** Parse and store json channel data, possibly returns error code. */
+        /** Parse and store json channel data, possibly return error code. */
         ServerStatus LoadChannels(const std::string& json);
 
         /** Get the downloaded list of channels, empty on errors. */
@@ -71,23 +76,29 @@ class CatalogHandler {
         /** Set a custom url, overrides also channel settings. */
         void SetCustomUrl(const char* url);
 
-        /** Download the latest catalog to given stream. */
-        ServerStatus DownloadCatalog(std::ostream* stream);
-
         /** Get the default URL, with actual channel included */
         std::string GetDefaultUrl();
+
+        /** Download the latest catalog to given stream. */
+        ServerStatus DownloadCatalog(std::ostream* stream);
 
         /** Download the latest catalog to local path. */
         ServerStatus DownloadCatalog(std::string& path);
 
-        /** Parse XML contents, set date and version attributes. */
-        ServerStatus ParseCatalog(const std::string xml);
+        /** Parse XML contents, save as latest data if latest is true. */
+        ServerStatus ParseCatalog(const std::string xml, bool latest = false);
 
-        /** Return catalog date, valid after ParseCatalog(). */
-        std::string GetCatalogDate() { return date; }
+        /** Data for default version, installed with main opencpn. */
+        CatalogData DefaultCatalogData();
 
-        /** Return catalog version, valid after ParseCatalog(). */
-        std::string GetCatalogVersion() { return version; }
+        /** Data for user catalog which overrides the default one. */
+        CatalogData UserCatalogData();
+
+        /** Data for latest parsed data marked as latest. */
+        CatalogData LatestCatalogData();
+
+        /** Invalidate *CatalogData caches */
+        void ClearCatalogData();
 
         /** Last error message, free format. */
         std::string LastErrorMsg();
@@ -96,6 +107,8 @@ class CatalogHandler {
     protected:
 	/** Initiate the handler. */
         CatalogHandler();
+
+        void LoadCatalogData(const std::string& path, CatalogData& data);
 
         const char* const GET_BRANCHES_PATH =
             "/repos/OpenCPN/plugins/branches";
@@ -116,8 +129,9 @@ class CatalogHandler {
         ServerStatus status;
         std::ostream* stream;
         std::string error_msg;
-        std::string version;
-        std::string date;
+        CatalogData latest_data;
+        CatalogData default_data;
+        CatalogData user_data;
 };
 
 typedef CatalogHandler::ServerStatus catalog_status;

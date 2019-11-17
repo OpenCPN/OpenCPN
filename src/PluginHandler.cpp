@@ -555,9 +555,9 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
         return;
     }
     ifstream ifpath(path);
-    string xml((istreambuf_iterator<char>(ifpath)),
-            istreambuf_iterator<char>());
-    ParseCatalog(xml, ctx);
+    std::string xml((istreambuf_iterator<char>(ifpath)),
+                    istreambuf_iterator<char>());
+    ParseCatalog(xml, &ctx);
 }
 
 
@@ -570,16 +570,6 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
     catalogData.date = ctx.date;
     catalogData.version = ctx.version;
     return ctx.plugins;
-}
-
-
-CatalogData PluginHandler::getCatalogData(const char* path)
-{
-    catalog_ctx ctx;
-    parseMetadata(path ? path : getMetadataPath(), ctx);
-    catalogData.date = ctx.date;
-    catalogData.version = ctx.version;
-    return catalogData;
 }
 
 

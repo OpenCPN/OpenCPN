@@ -37,9 +37,20 @@
 #include "catalog_parser.h"
 #include "Downloader.h"
 #include "ocpn_utils.h"
+#include "OCPNPlatform.h"
+#include "PluginHandler.h"
 
-extern wxString g_catalog_custom_url;
-extern wxString g_catalog_channel;
+
+#ifdef _WIN32
+static const std::string SEP("\\");
+#else
+static const std::string SEP("/");
+#endif
+
+
+extern wxString                 g_catalog_custom_url;
+extern wxString                 g_catalog_channel;
+extern OCPNPlatform*            g_Platform;
 
 static const char* const DOWNLOAD_REPO = 
     "https://raw.githubusercontent.com/leamas/plugins";
@@ -83,18 +94,17 @@ std::string CatalogHandler::GetDefaultUrl()
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream)
 {
-    std::string path = std::string(DOWNLOAD_REPO) + DOWNLOAD_PATH;
-    ocpn::replace(path, "@branch@", m_active_channel);
-    wxLogMessage("Effective catalog path: %s", path.c_str());
+    std::string uri = std::string(DOWNLOAD_REPO) + DOWNLOAD_PATH;
+    ocpn::replace(uri, "@branch@", m_active_channel);
+    wxLogMessage("Downloading from effective catalog path: %s", uri.c_str());
 
-    Downloader downloader(path);
+    Downloader downloader(uri);
     bool ok = downloader.download(stream);
     if (ok) {
         return ServerStatus::OK;
     } 
-    int code = downloader.last_errorcode();
-    return ServerStatus::CURL_ERROR;
     error_msg = downloader.last_error();
+    return ServerStatus::CURL_ERROR;
 }
 
 
@@ -116,16 +126,19 @@ catalog_status CatalogHandler::DownloadCatalog(std::string& path)
 }
 
 
-catalog_status CatalogHandler::ParseCatalog(const std::string xml)
+catalog_status CatalogHandler::ParseCatalog(const std::string xml, bool latest)
 {
     catalog_ctx ctx;
-    bool ok = ::ParseCatalog(xml, ctx);
-    if (ok) {
-        this->version = ctx.version;
-        this->date = ctx.date;
+    bool ok = ::ParseCatalog(xml, &ctx);
+    if (ok && latest) {
+        this->latest_data.version = ctx.version;
+        this->latest_data.date = ctx.date;
+        this->latest_data.undef = false;
         return ServerStatus::OK;
     }
-    return ServerStatus::XML_ERROR;
+    wxLogWarning("Cannot parse xml starting with: %s", xml.substr(0,60).c_str());
+    return ok ? ServerStatus::OK : ServerStatus::XML_ERROR;
+
 }
 
 
@@ -157,9 +170,78 @@ std::string CatalogHandler::GetActiveChannel()
 
 void CatalogHandler::SetCustomUrl(const char* url)
 {
-    wxLogMessage("Setting custom url: %s", url);
     custom_url = url;
     g_catalog_custom_url = url;
+}
+
+
+CatalogData CatalogHandler::LatestCatalogData()
+{
+    if (latest_data.undef) {
+        std::ostringstream os;
+        if (DownloadCatalog(&os) == ServerStatus::OK) {
+            ParseCatalog(os.str());
+        }
+    }
+    return latest_data;
+}
+
+
+void 
+CatalogHandler::LoadCatalogData(const std::string& path, CatalogData& data)
+{
+    if (!ocpn::exists(path)) {
+        data.version= "?";
+        data.date = "?";
+        data.undef = false;
+        return;
+    }
+    std::ifstream file;
+    file.open(path, std::ios::in);
+    if (file.is_open()) {
+        std::string xml((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+        file.close();
+        catalog_ctx ctx;
+        if (::ParseCatalog(xml, &ctx)) {
+            data.version = ctx.version;
+            data.date = ctx.date;
+            data.undef = false;
+        }
+    }
+}
+
+
+CatalogData CatalogHandler::UserCatalogData()
+{
+    if (user_data.undef) {
+        auto plugin_handler = PluginHandler::getInstance();
+        std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+        path += SEP;
+        path += "ocpn-plugins.xml";
+        LoadCatalogData(path, user_data);
+    }
+    return user_data;
+}
+
+
+CatalogData CatalogHandler::DefaultCatalogData()
+{
+    if (default_data.undef) {
+        auto plugin_handler = PluginHandler::getInstance();
+        std::string path = g_Platform->GetSharedDataDir().ToStdString();
+        path += SEP;
+        path += "ocpn-plugins.xml";
+        LoadCatalogData(path, default_data);
+    }
+    return default_data;
+}
+
+void CatalogHandler::ClearCatalogData()
+{
+    default_data.undef = true;
+    user_data.undef = true;
+    latest_data.undef = true;
 }
 
 

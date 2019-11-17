@@ -76,7 +76,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
 {
     catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
     std::string buff = ctx->buff;
-    if (ctx->depth <=  0)  {
+    if (ctx->depth <= 0)  {
         if (strcmp(name, "version") == 0) {
             ctx->version = ocpn::trim(buff);
         }
@@ -121,12 +121,14 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
 }
 
 
-bool ParseCatalog(const std::string xml, catalog_ctx& ctx)
+bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
 {
     bool ok = true;
     XML_Parser parser = XML_ParserCreate(NULL);
+    ctx->buff.clear();
+    ctx->depth = 0;
 
-    XML_SetUserData(parser, &ctx);
+    XML_SetUserData(parser, ctx);
     XML_SetElementHandler(parser, startElement, endElement);
     XML_SetCharacterDataHandler(parser, elementData);
 
@@ -137,7 +139,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx& ctx)
         ok = false;
     }
     XML_ParserFree(parser);
-    if (ctx.plugins.size() == 0) {
+    if (ctx->plugins.size() == 0) {
         wxLogWarning("ParseCatalog: No plugins found.");
         ok = false;
     }

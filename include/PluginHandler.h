@@ -65,12 +65,6 @@
 #include "catalog_parser.h"
 
 
-/** Overall metadata for the set of plugins used. */
-struct CatalogData {
-    std::string version;
-    std::string date;
-};
-
 class PluginHandler {
 
     public:
@@ -101,9 +95,6 @@ class PluginHandler {
         bool uninstall(const std::string plugin);
 
         std::string getLastErrorMsg();
-
-        /** Plugin catalog metadata for given path, default current file. */
-        CatalogData getCatalogData(const char* path = 0);
 
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */

@@ -91,7 +91,7 @@ class CatalogUpdate: public wxDialog
         class UrlEdit; //forward
 
     public:
-        CatalogUpdate(wxWindow* parent, CatalogData latest_data)
+        CatalogUpdate(wxWindow* parent)
             :wxDialog(parent, wxID_ANY, _("Manage Plugin Catalog"),
                       wxDefaultPosition , wxDefaultSize,
                       wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
@@ -103,7 +103,7 @@ class CatalogUpdate: public wxDialog
             sizer->Add(new UrlChannel(this), flags);
             sizer->Add(new wxStaticLine(this), flags);
 
-            sizer->Add(new ActiveCatalogGrid(this, latest_data), flags);
+            sizer->Add(new ActiveCatalogGrid(this), flags);
             sizer->Add(new wxStaticLine(this), flags);
 
             m_advanced  = new wxStaticText(this, wxID_ANY, "");
@@ -271,7 +271,7 @@ class CatalogUpdate: public wxDialog
          */
         struct ActiveCatalogGrid: public wxPanel, public Helpers
         {
-            ActiveCatalogGrid(wxWindow* parent, CatalogData latest_data)
+            ActiveCatalogGrid(wxWindow* parent)
                 :wxPanel(parent), Helpers(this)
             {
                 using CmdEvt = wxCommandEvent;
@@ -285,14 +285,16 @@ class CatalogUpdate: public wxDialog
                 auto flags = wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL);
                 flags = flags.DoubleBorder();
        
-                CatalogData catalog_data = plugin_handler->getCatalogData(); 
+                CatalogData catalog_data = 
+                    CatalogHandler::getInstance()->UserCatalogData();
                 grid->Add(staticText(
                             _("Current active plugin catalog")), flags);
                 grid->Add(staticText(catalog_data.version.c_str()), flags);
                 grid->Add(staticText(catalog_data.date.c_str()), flags);
                 grid->Add(staticText(""), flags);
 
-                GetDefaultCatalogData(catalog_data);
+                catalog_data =
+                    CatalogHandler::getInstance()->DefaultCatalogData();
                 grid->Add(staticText(_("Default catalog")), flags);
                 grid->Add(staticText(catalog_data.version.c_str()), flags);
                 grid->Add(staticText(catalog_data.date.c_str()), flags);
@@ -301,7 +303,8 @@ class CatalogUpdate: public wxDialog
                 use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED, 
                                   [=](CmdEvt& e) { useDefaultCatalog(); });
 
-                catalog_data = latest_data;
+                catalog_data =
+                    CatalogHandler::getInstance()->LatestCatalogData();
                 grid->Add(staticText(_("Latest available catalog:")), flags);
                 grid->Add(staticText(catalog_data.version.c_str()), flags);
                 grid->Add(staticText(catalog_data.date.c_str()), flags);
@@ -340,6 +343,7 @@ class CatalogUpdate: public wxDialog
                 auto src = GetDefaultCatalogPath();
                 auto dest = GetPrivateCatalogPath();
                 ocpn::copy_file(src, dest );
+                CatalogHandler::getInstance()->ClearCatalogData();
                 GetParent()->Close(true);
             }
 
@@ -348,24 +352,10 @@ class CatalogUpdate: public wxDialog
                auto catalog = CatalogHandler::getInstance();
                std::ofstream dest(GetPrivateCatalogPath());
                catalog->DownloadCatalog(&dest);
+               CatalogHandler::getInstance()->ClearCatalogData();
                GetParent()->Close(true);
             }
 
-            void  GetDefaultCatalogData(CatalogData& data)
-            {
-                auto plugin_handler = PluginHandler::getInstance();
-                std::string path
-                    = g_Platform->GetSharedDataDir().ToStdString();
-                path += SEP ;
-                path += "ocpn-plugins.xml";
-                if (!ocpn::exists(path)) {
-                    data.version = "?";
-                    data.date = "?";
-                }
-                else {
-                    data = plugin_handler->getCatalogData(path.c_str()); 
-                }
-            }     
         };
 
 
@@ -379,13 +369,12 @@ class CatalogUpdate: public wxDialog
                 auto flags = wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL);
                 url_location->Add(staticText(_("Custom catalog URL: ")),
                                   flags);
-                const char* half_URI = "https://raw.githubusercontent.com/OpenCPN";
                 flags = wxSizerFlags().Expand().Border();
                 sizer->Add(url_location, flags);
         
                 auto url_edit = new wxBoxSizer(wxHORIZONTAL);
-                m_url_ctrl = new wxTextCtrl(this, wxID_ANY, half_URI);
                 auto uri = CatalogHandler::getInstance()->GetDefaultUrl();
+                m_url_ctrl = new wxTextCtrl(this, wxID_ANY, uri);
                 auto size = GetTextExtent(uri);
                 size.SetWidth(size.GetWidth()  * 120 / 100);
                 size.SetHeight(size.GetHeight() * 130 / 100);
@@ -423,7 +412,7 @@ class CatalogLoad: public wxPanel, public Helpers
         class DialogGrid; // forward
 
         CatalogLoad(wxWindow* parent, bool use_latest = false)
-            :wxPanel(parent), Helpers(this), simple(use_latest)
+            :wxPanel(parent), Helpers(this), m_simple(use_latest)
         {
 
             auto sizer = new wxBoxSizer(wxVERTICAL);
@@ -468,7 +457,7 @@ class CatalogLoad: public wxPanel, public Helpers
         void workerDone(wxCommandEvent& ev)
         {
             m_grid->CellDone(ev, 5);
-            if (simple) {
+            if (m_simple) {
                 std::string message = "Catalog updated";
                 std::string path =
                     g_Platform->GetPrivateDataDir().ToStdString();
@@ -494,9 +483,8 @@ class CatalogLoad: public wxPanel, public Helpers
             else {
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
-                catalog_data.version = handler->GetCatalogVersion();
-                catalog_data.date = handler->GetCatalogDate();
-                new CatalogUpdate(GetParent(), catalog_data);
+                catalog_data = handler->LatestCatalogData();
+                new CatalogUpdate(this);
                 GetParent()->Destroy();
             }
         }
@@ -522,16 +510,16 @@ class CatalogLoad: public wxPanel, public Helpers
             status = catalog->DownloadCatalog(&m_xml);
             PostEvent(CATALOG_DL_DONE, status, catalog->LastErrorMsg());
 
-            status = catalog->ParseCatalog(m_xml.str());
+            status = catalog->ParseCatalog(m_xml.str(), true);
             if (status == catalog_status::OK) {
                 PostEvent(CATALOG_PARSE_DONE,
-                           catalog_status::OK_MSG,
-                           catalog->GetCatalogVersion());
+                          catalog_status::OK_MSG,
+                          catalog->LatestCatalogData().version);
             }
             else {
                 PostEvent(CATALOG_PARSE_DONE,
-                           status,
-                           catalog->LastErrorMsg());
+                          status,
+                          catalog->LastErrorMsg());
             }
         }
 
@@ -610,11 +598,10 @@ class CatalogLoad: public wxPanel, public Helpers
             wxButton* m_ok;
         };
 
-
         std::ostringstream m_xml;
         DialogGrid* m_grid;
         Buttons* m_buttons;
-        const bool simple;   // Simple means just install, no advanced dialog
+        const bool m_simple;   // Simple means just install, no advanced dialog
 };
 
 

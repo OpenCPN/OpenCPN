@@ -28,31 +28,20 @@
 #include <string>
 #include <vector>
 
-#include <expat.h>
+/**
+ *  Datatypes and a single method to parse ocpn-plugins.xml XML data.
+ */
 
-#if defined(__MINGW32__) && defined(Yield)
-#undef Yield                 // from win.h, conflicts with mingw headers
-#endif
+/** Overall metadata for the set of plugins used. */
+struct CatalogData {
+    std::string version;
+    std::string date;
+    bool undef;
+    CatalogData() : undef(true) {}
+};
 
-#include "ocpn_utils.h"
 
-#ifdef XML_LARGE_SIZE
-#  if defined(XML_USE_MSC_EXTENSIONS) && _MSC_VER < 1400
-#    define XML_FMT_INT_MOD "I64"
-#  else
-#    define XML_FMT_INT_MOD "ll"
-#  endif
-#else
-#  define XML_FMT_INT_MOD "l"
-#endif
-
-#ifdef XML_UNICODE_WCHAR_T
-# include <wchar.h>
-# define XML_FMT_STR "ls"
-#else
-# define XML_FMT_STR "s"
-#endif
-
+/** Plugin metadata, reflects the xml format directly. */
 struct PluginMetadata {
     std::string name;
     std::string version;
@@ -91,9 +80,10 @@ struct catalog_ctx {
     std::unique_ptr<PluginMetadata> plugin;    
     std::string buff;
     int depth;
+    catalog_ctx(): depth(0) {}
 };
 
 
-bool ParseCatalog(const std::string xml, catalog_ctx& ctx);
+bool ParseCatalog(const std::string xml, catalog_ctx* ctx);
 
 #endif  // CATALOG_PARSER_H__
