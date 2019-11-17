@@ -293,10 +293,10 @@ class CatalogUpdate: public wxDialog
                 grid->Add(staticText(""), flags);
 
                 GetDefaultCatalogData(catalog_data);
-                grid->Add(staticText(_("Default catalogue")), flags);
+                grid->Add(staticText(_("Default catalog")), flags);
                 grid->Add(staticText(catalog_data.version.c_str()), flags);
                 grid->Add(staticText(catalog_data.date.c_str()), flags);
-                auto use_default = makeButton(_("Use as active catalogue"));
+                auto use_default = makeButton(_("Use as active catalog"));
                 grid->Add(use_default, wxSizerFlags().Border());
                 use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED, 
                                   [=](CmdEvt& e) { useDefaultCatalog(); });
@@ -305,7 +305,7 @@ class CatalogUpdate: public wxDialog
                 grid->Add(staticText(_("Latest available catalog:")), flags);
                 grid->Add(staticText(catalog_data.version.c_str()), flags);
                 grid->Add(staticText(catalog_data.date.c_str()), flags);
-                auto use_latest = makeButton(_("Use as active catalogue"));
+                auto use_latest = makeButton(_("Use as active catalog"));
                 use_latest->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                                  [=](CmdEvt& e) { UseLatestCatalog(); });
 
@@ -377,7 +377,7 @@ class CatalogUpdate: public wxDialog
                 auto sizer = new wxBoxSizer(wxVERTICAL);
                 auto url_location = new wxBoxSizer(wxHORIZONTAL);
                 auto flags = wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL);
-                url_location->Add(staticText(_("Custom catalogue URL: ")),
+                url_location->Add(staticText(_("Custom catalog URL: ")),
                                   flags);
                 const char* half_URI = "https://raw.githubusercontent.com/OpenCPN";
                 flags = wxSizerFlags().Expand().Border();
