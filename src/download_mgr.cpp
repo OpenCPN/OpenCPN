@@ -566,7 +566,7 @@ class MainButtonsPanel: public wxPanel
         
             public:
                 OkKillVictimButton(wxWindow* parent, wxWindow* victim)
-                    :wxButton(parent, wxID_ANY, _("OK")),
+                    :wxButton(parent, wxID_ANY, _("Done")),
                     m_victim(victim)
                 {
                      Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -589,14 +589,9 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
                 Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new CatalogDialog(this, true); });
+                   [=](wxCommandEvent&) {new CatalogDialog(GetParent(), true); });
             }
         
-            virtual ~UpdateCatalogNowBtn() 
-            {
-                Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                    [=](wxCommandEvent&) {new CatalogDialog(this, true); });
-            }
         };
 
         /**  Button invoking the update catalog dialog. */
@@ -605,17 +600,12 @@ class MainButtonsPanel: public wxPanel
             public:
 
             UpdateCatalogDialogBtn(wxWindow* parent)
-                :wxButton(parent, wxID_ANY, _("Advanced..."))
+                :wxButton(parent, wxID_ANY, _("Advanced catalog update..."))
             {
                  Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                     [=](wxCommandEvent&) {new CatalogDialog(this, false); });
+                     [=](wxCommandEvent&) {new CatalogDialog(GetParent(), false); });
             }
         
-            virtual ~UpdateCatalogDialogBtn() 
-            {
-                 Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                     [=](wxCommandEvent&) {new CatalogDialog(this, false); });
-            }
         };
 };
 
