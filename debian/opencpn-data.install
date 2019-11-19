@@ -1,9 +1,2 @@
-usr/share/opencpn/plugins
-usr/share/opencpn/s57data
-usr/share/opencpn/sounds
-usr/share/opencpn/uidata
-usr/share/opencpn/tcdata
-usr/share/opencpn/gshhs
-usr/share/opencpn/CoC-909_2013-InlandECDIS_20170308s.pdf
+usr/share/opencpn
 usr/share/locale/*/LC_MESSAGES/*.mo
-usr/share/opencpn/doc/help_web.html

@@ -8,11 +8,11 @@ Bug: https://github.com/OpenCPN/OpenCPN/issues/1166
  src/chart1.cpp   | 18 ++++++++++++++++++
  2 files changed, 19 insertions(+)
 
-Index: OpenCPN/include/chart1.h
-===================================================================
---- OpenCPN.orig/include/chart1.h	2019-11-19 08:52:54.350637312 -0500
-+++ OpenCPN/include/chart1.h	2019-11-19 08:52:54.346635273 -0500
-@@ -310,6 +310,7 @@
+diff --git a/include/chart1.h b/include/chart1.h
+index ad448da..192be01 100644
+--- a/include/chart1.h
++++ b/include/chart1.h
+@@ -310,6 +310,7 @@ private:
  class MyApp: public wxApp
  {
    public:
@@ -20,10 +20,10 @@ Index: OpenCPN/include/chart1.h
      bool OnInit();
      int OnExit();
      void OnInitCmdLine(wxCmdLineParser& parser);
-Index: OpenCPN/src/chart1.cpp
-===================================================================
---- OpenCPN.orig/src/chart1.cpp	2019-11-19 08:52:54.350637312 -0500
-+++ OpenCPN/src/chart1.cpp	2019-11-19 08:52:54.346635273 -0500
+diff --git a/src/chart1.cpp b/src/chart1.cpp
+index d83e133..0b78cd7 100644
+--- a/src/chart1.cpp
++++ b/src/chart1.cpp
 @@ -32,6 +32,11 @@
  //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
  #endif
@@ -36,7 +36,7 @@ Index: OpenCPN/src/chart1.cpp
  
  #include <wx/settings.h>
  #include <wx/print.h>
-@@ -1552,6 +1557,19 @@
+@@ -1552,6 +1557,19 @@ void ParseAllENC(wxWindow* parent)
          delete prog;
  }
  

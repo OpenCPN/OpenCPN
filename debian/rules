@@ -28,13 +28,6 @@ override_dh_auto_install:
 	-mv debian/tmp/usr/share/opencpn/sounds/README.bells \
 	    debian/tmp/usr/share/opencpn/tcdata/README.harmonics \
 	    debian/tmp/usr/share/doc/opencpn
-	# Don't use the legacy appdata location
-	mkdir debian/tmp/usr/share/metainfo
-	-mv debian/tmp/usr/share/appdata/opencpn.appdata.xml \
-	    debian/tmp/usr/share/metainfo
-	# Don't install duplicate gplv2 license:
-	# https://github.com/OpenCPN/OpenCPN/pull/1143
-	rm -f debian/tmp/usr/share/opencpn/license.txt
 
 
 override_dh_missing:

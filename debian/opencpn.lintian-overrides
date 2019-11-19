@@ -2,10 +2,5 @@
 hardening-no-fortify-functions usr/lib/opencpn/libchartdldr_pi.so
 hardening-no-fortify-functions usr/lib/opencpn/libdashboard_pi.so
 
-# Other spelling errors: needs to be handled upstream, see 
-# https://github.com/OpenCPN/OpenCPN/issues/1141
+# False positive from translations.
 spelling-error-in-binary usr/bin/opencpn *
-
-# exit calls: Needs to be fixed upstream: 
-# https://github.com/OpenCPN/OpenCPN/issues/1140
-shlib-calls-exit usr/lib/opencpn/libgrib_pi.so

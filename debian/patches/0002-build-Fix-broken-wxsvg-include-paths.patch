@@ -1,0 +1,36 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 19 Nov 2019 09:18:44 -0500
+Subject: [PATCH] build: Fix broken wxsvg include paths.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1489
+---
+ src/CanvasOptions.cpp | 2 +-
+ src/MUIBar.cpp        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/CanvasOptions.cpp b/src/CanvasOptions.cpp
+index 39f40d7..7472015 100644
+--- a/src/CanvasOptions.cpp
++++ b/src/CanvasOptions.cpp
+@@ -43,7 +43,7 @@
+ #include "OCPNPlatform.h"
+ 
+ #ifdef ocpnUSE_SVG
+-#include "wxsvg/include/wxSVG/svg.h"
++#include "wxSVG/svg.h"
+ #endif // ocpnUSE_SVG
+ 
+ #ifdef __OCPN__ANDROID__
+diff --git a/src/MUIBar.cpp b/src/MUIBar.cpp
+index e8dbc6a..8b2137a 100644
+--- a/src/MUIBar.cpp
++++ b/src/MUIBar.cpp
+@@ -43,7 +43,7 @@
+ #include "styles.h"
+ 
+ #ifdef ocpnUSE_SVG
+-#include "wxsvg/include/wxSVG/svg.h"
++#include "wxSVG/svg.h"
+ #endif // ocpnUSE_SVG
+ 
+ #ifdef __OCPN__ANDROID__
