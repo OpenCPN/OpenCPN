@@ -535,7 +535,7 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
-                new CatalogUpdate(GetParent());
+                new CatalogUpdate(0);
                 GetParent()->Close();
             }
         }
