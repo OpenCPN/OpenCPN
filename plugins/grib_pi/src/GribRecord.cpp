@@ -397,8 +397,50 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
     } 
 }
 
-
 //------------------------------------------------------------------------------
+void GribRecord::Average(const GribRecord &rec)
+{
+
+    // for now only average records of same size
+    // this : 6-12
+    // rec  : 6-9
+    // compute average 9-12
+    //
+    // this : 0-12
+    // rec  : 0-11
+    // compute average 11-12
+
+    if (rec.data == 0 || !rec.isOk())
+        return;
+
+    if (data == 0 || !isOk())
+        return;
+
+    if (Ni != rec.Ni || Nj != rec.Nj)
+        return;
+
+    if (getPeriodP1() != rec.getPeriodP1())
+        return;
+
+    double d2 = getPeriodP2() - getPeriodP1();
+    double d1 = rec.getPeriodP2() - rec.getPeriodP1();
+
+    if (d2 <= d1)
+        return;
+
+    zuint size = Ni *Nj;
+    double diff = d2 -d1;
+    for (zuint i=0; i<size; i++) {
+        if (rec.data[i] == GRIB_NOTDEF)
+           continue;
+        if (data[i] == GRIB_NOTDEF)
+           continue;
+
+        data[i] = (data[i]*d2 -rec.data[i]*d1)/diff;
+    }
+}
+
+//-------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {
 	dataType = t;
@@ -437,14 +479,14 @@ void  GribRecord::multiplyAllData(double k)
     if (data == 0 || !isOk())
         return;
 
-	for (zuint j=0; j<Nj; j++) {
-		for (zuint i=0; i<Ni; i++)
-		{
-			if (isDefined(i,j)) {
-				data[j*Ni+i] *= k;
-			}
-		}
-	}
+    for (zuint j=0; j<Nj; j++) {
+        for (zuint i=0; i<Ni; i++)
+        {
+            if (isDefined(i,j)) {
+                data[j*Ni+i] *= k;
+            }
+        }
+    }
 }
 
 //----------------------------------------------
@@ -463,39 +505,38 @@ void  GribRecord::setRecordCurrentDate (time_t t)
 }
 
 //----------------------------------------------
+static bool isleapyear( zuint y) { return ( ( y %4 ==0) && ( y % 100 != 0) ) || ( y %400 ==0); }
+
 time_t GribRecord::makeDate(
             zuint year,zuint month,zuint day,zuint hour,zuint min,zuint sec) {
-    struct tm date;
-    date.tm_sec  = 0  ;         /* seconds */
-    date.tm_min  = 0;           /* minutes */
-    date.tm_hour = 0;           /* hours */
-    date.tm_mday = day;         /* day of the month */
-    date.tm_mon  = month-1;     /* month */
-    date.tm_year = year-1900;   /* year */
-    date.tm_wday   = 0;         /* day of the week */
-    date.tm_yday   = 0;         /* day in the year */
-    date.tm_isdst  = 0;         /* daylight saving time */
+    if (year<1970 || year>2200 || month<1 || month>12 || day<1)
+        return -1;
+    time_t r = 0;
 
-	time_t   temps = -1;
-    wxDateTime dt(date);
-	temps = dt.GetTicks();
-	temps += ((hour * 3600) + (min * 60 ) + sec);								//find datetime exactly as in the file
-	wxDateTime dtt(temps);
-	wxTimeSpan of = wxDateTime::Now() - (wxDateTime::Now().ToGMT() );			//transform to local time
-	if(dtt.IsDST())																//correct dst offset applied 3 times  why ???
-		of -= wxTimeSpan( 2, 0 );
-	dtt += of;
-	temps = dtt.GetTicks();
-
-/*
-	char sdate[64];
-	sprintf(sdate, "%04d-%02d-%02d 00:00:00", year,month,day);
-    QDateTime dt = QDateTime::fromString(sdate, "yyyy-MM-dd HH:mm:ss");
-    dt.setTimeSpec(Qt::UTC);
-	dt = dt.addSecs (hour*3600+min*60+sec);
-	temps = dt.toTime_t();
-*/
-	return temps;
+    // TODO : optimize (precomputed data)
+    for (zuint  y=1970; y<year; y++) {
+        r += 365*24*3600;
+        if (isleapyear(y))
+            r += 24*3600;
+    }
+    for (zuint  m=1; m<month; m++) {
+        if (m==2) {
+            r += 28*24*3600;
+            if (isleapyear(year))
+                r += 24*3600;
+        }
+        else if (m==1||m==3||m==5||m==7||m==8||m==10||m==12) {
+            r += 31*24*3600;
+        }
+        else {
+            r += 30*24*3600;
+        }
+    }
+    r += (day-1)*24*3600;
+    r += hour*3600;
+    r += min*60;
+    r += sec;
+    return r;
 }
 
 
@@ -721,7 +762,7 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
 //         nbval ++;
 
      int nbval = 0;     // how many values in grid ?
-     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+     if (GRY->getValue(i0, j0) != GRIB_NOTDEF)
          nbval ++;
      if (GRY->getValue(i1, j0) != GRIB_NOTDEF)
          nbval ++;
@@ -730,7 +771,20 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
      if (GRY->getValue(i1, j1) != GRIB_NOTDEF)
          nbval ++;
 
-    if (nbval < 3)
+    if (nbval <= 3)
+        return false;
+
+     nbval = 0;     // how many values in grid ?
+     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i0, j1) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j1) != GRIB_NOTDEF)
+         nbval ++;
+
+    if (nbval <= 3)
         return false;
 
     dx = (3.0 - 2.0*dx)*dx*dx;   // pseudo hermite interpolation

@@ -26,7 +26,9 @@
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
+#include <wx/wx.h>
 
+#include "dychart.h"
 #include "viewport.h"
 #include "glTexCache.h"
 #include "glTextureDescriptor.h"
@@ -49,13 +51,11 @@
 #include "lz4.h"
 #include "lz4hc.h"
 
-#ifdef __WXOSX__
-#include "GL/gl_private.h"
-#endif
-
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(JobList);
 WX_DEFINE_LIST(ProgressInfoList);
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 
 extern double           gLat, gLon, gCog, gSog, gHdt;
 
@@ -71,10 +71,10 @@ extern int              g_uncompressed_tile_size;
 extern int              g_nCPUCount;
 
 extern bool             b_inCompressAllCharts;
+extern MyFrame         *gFrame;
+extern arrayofCanvasPtr  g_canvasArray;
 
 extern OCPNPlatform *g_Platform;
-extern ChartCanvas *cc1;
-extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
@@ -792,93 +792,89 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
     JobTicket *ticket = event.GetTicket();
 
     if(event.type ==1){
-        if(m_progDialog){
-            
-            // Look for a matching entry...
-            bool bfound = false;
-            ProgressInfoItem *item;
-            wxProgressInfoListNode *tnode = progList.GetFirst();
+        if(!m_progDialog){
+            // currently unreachable, but...
+            return;
+        }
+        // Look for a matching entry...
+        bool bfound = false;
+        ProgressInfoItem *item;
+        wxProgressInfoListNode *tnode = progList.GetFirst();
+        while(tnode){
+            item = tnode->GetData();
+            if(item->file_path == ticket->m_ChartPath){
+                bfound = true;
+                break;
+            }
+            tnode = tnode->GetNext();
+        }
+
+        if (!bfound) {
+            // look for an empty slot
+            tnode = progList.GetFirst();
             while(tnode){
                 item = tnode->GetData();
-                if(item->file_path == ticket->m_ChartPath){
+                if(item->file_path.IsEmpty()){
                     bfound = true;
+                    item->file_path = ticket->m_ChartPath;
                     break;
                 }
                 tnode = tnode->GetNext();
             }
-            if(bfound){
-                wxString msgx;
-                if(1){
-                    int bar_length = NBAR_LENGTH;
-                    if(m_bcompact)
-                        bar_length = 20;
-                    
-                    msgx += _T("\n[");
-                    wxString block = wxString::Format(_T("%c"), 0x2588);
-                    float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
-                    for(int i=0 ; i < bar_length ; i++){
-                        if(i <= cutoff)
-                            msgx += block;
-                        else
-                            msgx += _T("-");
-                    }
-                    msgx += _T("]");
-
-                    if(!m_bcompact){
-                        wxString msgy;
-                        msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
-                        msgx += msgy;
-                
-                        wxFileName fn(ticket->m_ChartPath);
-                        msgx += fn.GetFullName();
-                    }
-                }
-                else
-                    msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
-                
-                item->msgx = msgx;
-            }
-
-                // look for an empty slot
-            else{
-                bool bfound_empty = false;
-                tnode = progList.GetFirst();
-                while(tnode){
-                    item = tnode->GetData();
-                    if(item->file_path.IsEmpty()){
-                        bfound_empty = true;
-                        break;
-                    }
-                    
-                    tnode = tnode->GetNext();
-                }
-                
-                if(bfound_empty){
-                    item->file_path = ticket->m_ChartPath;
-                    wxString msgx;
-                    msgx.Printf(_T("\n [%3d/%3d]"), event.nstat+1, event.nstat_max);
-                    item->msgx = msgx;
-                }
-            }
-        
-            // Ready to compose
-            wxString msg;
-            tnode = progList.GetFirst();
-            while(tnode){
-                item = tnode->GetData();
-                msg += item->msgx + _T("\n");
-                tnode = tnode->GetNext();
-            }
-            
-            if(m_skipout)
-                m_progMsg = _T("Skipping, please wait...\n\n");
-            
-            if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
-                m_skip = true;
-            if(m_skip)
-                m_skipout = true;
-            return;
         }
+
+        if(bfound){
+            wxString msgx;
+            if(1){
+                int bar_length = NBAR_LENGTH;
+                if(m_bcompact)
+                    bar_length = 20;
+                
+                msgx += _T("\n[");
+                wxString block = wxString::Format(_T("%c"), 0x2588);
+                float cutoff = -1.;
+                if (event.nstat_max != 0)
+                    cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
+                for(int i=0 ; i < bar_length ; i++){
+                    if(i <= cutoff)
+                        msgx += block;
+                    else
+                        msgx += _T("-");
+                }
+                msgx += _T("]");
+
+                if(!m_bcompact){
+                    wxString msgy;
+                    msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
+                    msgx += msgy;
+            
+                    wxFileName fn(ticket->m_ChartPath);
+                    msgx += fn.GetFullName();
+                }
+            }
+            else
+                msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
+            
+            item->msgx = msgx;
+        }
+
+        // Ready to compose
+        wxString msg;
+        tnode = progList.GetFirst();
+        while(tnode){
+            item = tnode->GetData();
+            msg += item->msgx + _T("\n");
+            tnode = tnode->GetNext();
+        }
+
+        if(m_skipout)
+            m_progMsg = _T("Skipping, please wait...\n\n");
+        
+        if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
+            m_skip = true;
+        if(m_skip)
+            m_skipout = true;
+        return;
     }
     
     if(ticket->b_isaborted || ticket->b_abort){
@@ -890,7 +886,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
         if(bthread_debug)
             printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
                     ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
-    } else if(!b_inCompressAllCharts) {
+    } else if(!ticket->b_inCompressAll) {
         //   Normal completion from here
         glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
         if(ptd) {
@@ -909,10 +905,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             // We need to force a refresh to replace the uncompressed texture
             // This frees video memory and is also really required if we had
             // gone up a mipmap level
-            if(cc1) {
-                glChartCanvas::Invalidate(); // ensure we refresh
-                cc1->Refresh();
-            }
+            gFrame->InvalidateAllGL();
             ptd->compdata_ticks = 10;
         }
 
@@ -922,7 +915,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
     }
 
     //      Free all possible memory
-    if(b_inCompressAllCharts) { // if compressing all write cache here
+    if(ticket->b_inCompressAll) { // if compressing all write cache here
         ChartBase *pchart = ChartData->OpenChartFromDB(ticket->m_ChartPath, FULL_INIT );
         ChartData->DeleteCacheChart(pchart);
         delete ticket->pFact;
@@ -956,7 +949,9 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
             itt != m_chart_texfactory_hash.end(); ++itt ) {
             glTexFactory *ptf = itt->second;
             if(ptf && ptf->OnTimer())
-                ;//break;
+            {
+                //break;
+            }
         }
     }
 
@@ -1042,6 +1037,8 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
     pt->b_isaborted = false;
     pt->bpost_zip_compress = b_postZip;
     pt->binplace = b_inplace;
+    pt->b_inCompressAll = b_inCompressAllCharts;
+    
 
     /* do we compress in ram using builtin libraries, or do we
        upload to the gpu and use the driver to perform compression?
@@ -1274,19 +1271,26 @@ bool glTextureManager::TextureCrunch(double factor)
         if(!bGLMemCrunch)
             break;
 
-        if( cc1->GetVP().b_quilt )          // quilted
-        {
-                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
-                    }
-        }
-        else      // not quilted
-        {
-                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+               // For each canvas
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
+ 
+                if( cc->GetVP().b_quilt )          // quilted
                 {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
+                        if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                            !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                            ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
+                            }
                 }
+                else      // not quilted
+                {
+                    if( !cc->m_singleChart->GetFullPath().IsSameAs(chart_full_path))
+                    {
+                        ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
+                    }
+                }
+            }
         }
     }
     
@@ -1327,23 +1331,31 @@ bool glTextureManager::FactoryCrunch(double factor)
         
         // we better have to find one because glTexFactory keep cache texture open
         // and ocpn will eventually run out of file descriptors
-        if( cc1->GetVP().b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+        
+        // For each canvas
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
                 
-                int lru = ptf->GetLRUTime();
-                if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
-                    lru_oldest = lru;
-                    ptf_oldest = ptf;
-                }
-            }
-        } else {
-            if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
-                int lru = ptf->GetLRUTime();
-                if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
-                    lru_oldest = lru;
-                    ptf_oldest = ptf;
+                if( cc->GetVP().b_quilt )          // quilted
+                {
+                    if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                        !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                
+                        int lru = ptf->GetLRUTime();
+                        if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
+                            lru_oldest = lru;
+                            ptf_oldest = ptf;
+                        }
+                    }
+                } else {
+                    if( !cc->m_singleChart->GetFullPath().IsSameAs(chart_full_path)) {
+                        int lru = ptf->GetLRUTime();
+                        if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
+                            lru_oldest = lru;
+                            ptf_oldest = ptf;
+                        }
+                    }
                 }
             }
         }
@@ -1376,7 +1388,7 @@ bool glTextureManager::FactoryCrunch(double factor)
 void glTextureManager::BuildCompressedCache()
 {
     idx_sorted_by_distance.Clear();
-    
+
     // Building the cache may take a long time....
     // Be a little smarter.
     // Build a sorted array of chart database indices, sorted on distance from the ownship currently.
@@ -1399,62 +1411,89 @@ void glTextureManager::BuildCompressedCache()
         wxFileName fn(CompressedCacheFilePath);
         //        if(fn.FileExists()) /* skip if file exists */
         //            continue;
-        
+
         idx_sorted_by_distance.Add(i);
-        
+
         count++;
-    }  
-    
+    }
+
     if(count == 0)
         return;
-    
+
     wxLogMessage(wxString::Format(_T("BuildCompressedCache() count = %d"), count ));
-    
-    b_inCompressAllCharts = true;
+
+    m_timer.Stop();
     PurgeJobList();
+    if (GetRunningJobCount()) {
+
+        wxLogMessage(_T("Starting compressor pool drain"));
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        #define THREAD_WAIT_SECONDS 5
+        time_t end = stall + THREAD_WAIT_SECONDS;
+
+        int n_comploop = 0;
+        while(stall < end ) {
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+
+            wxString msg;
+            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, GetRunningJobCount());
+            wxLogMessage(msg);
+            if(!GetRunningJobCount())
+                break;
+            wxYield();
+            wxSleep(1);
+        }
+
+        wxString fmsg;
+        fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+                    n_comploop, GetRunningJobCount());
+        wxLogMessage(fmsg);
+    }
     ClearAllRasterTextures();
-    
+    b_inCompressAllCharts = true;
+
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
     //  after the compression threads start, so our index array will be invalid.
-    
+
     ArrayOfCompressTargets ct_array;
     for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
-        
-        int i = idx_sorted_by_distance.Item(j);
-        
+
+        int i = idx_sorted_by_distance[j];
+
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
-        
+
         wxString filename(cte.GetpFullPath(), wxConvUTF8);
-        
+
         compress_target *pct = new compress_target;
         pct->distance = distance;
         pct->chart_path = filename;
-        
+
         ct_array.Add(pct);
     }
-    
+
     // create progress dialog
     long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT;
-    
+
     wxString msg0;
     msg0 = _T("                                                                               \n  \n  ");
-    
-    #ifdef __WXQT__    
+
+    #ifdef __WXQT__
     msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggggggggggggggggggggggggggggg top line ");
     #endif    
-    
-    
+
     for(int i=0 ; i < m_max_jobs+1 ; i++)
         msg0 += _T("\n                                             ");
-    
+
     m_progDialog = new wxGenericProgressDialog();
-    
+
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));  
     int fontSize = qFont->GetPointSize();
     wxFont *sFont;    
-    wxSize csz = cc1->GetClientSize();
+    wxSize csz = gFrame->GetClientSize();
     if(csz.x < 500 || csz.y < 500)
         sFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     else
@@ -1468,119 +1507,116 @@ void glTextureManager::BuildCompressedCache()
     sdc.GetTextExtent(_T("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]"), &width, &height, NULL, NULL, sFont);
     if(width > (csz.x / 2))
         m_bcompact = true;
-    
-    
+
     m_progDialog->Create(_("OpenCPN Compressed Cache Update"), msg0, count+1, NULL, style );
-    
+
     //    Make sure the dialog is big enough to be readable
     m_progDialog->Hide();
     wxSize sz = m_progDialog->GetSize();
     sz.x = csz.x * 9 / 10;
     m_progDialog->SetSize( sz );
-    
+
     m_progDialog->Layout();
     wxSize sza = m_progDialog->GetSize();
-    
+
     wxSize pprog_size = sz;
     m_progDialog->Centre();
     m_progDialog->Show();
     m_progDialog->Raise();
-    
+
     m_skipout = false;
     m_skip = false;
     int yield = 0;
-        
+
     for( m_jcnt = 0; m_jcnt<ct_array.GetCount(); m_jcnt++) {
-        
-        wxString filename = ct_array.Item(m_jcnt).chart_path;
+
+        wxString filename = ct_array[m_jcnt].chart_path;
         wxString CompressedCacheFilePath = CompressedCachePath(filename);
-        double distance = ct_array.Item(m_jcnt).distance;
-        
+        double distance = ct_array[m_jcnt].distance;
+
         ChartBase *pchart = ChartData->OpenChartFromDBAndLock( filename, FULL_INIT );
         if(!pchart) /* probably a corrupt chart */
             continue;
-        
-        // bad things if more than one texfactory for a chart
-            g_glTextureManager->PurgeChartTextures( pchart, true );
-            
-            
-            ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-            if(pBSBChart) {
-                
-                glTexFactory *tex_fact = new glTexFactory(pchart, g_raster_format);
-                
-                m_progMsg.Printf( _("Distance from Ownship:  %4.0f NMi\n"), distance);
-                m_progMsg.Prepend(_T("Preparing RNC Cache...\n"));
-                
-                if(m_skipout) {
-                    g_glTextureManager->PurgeJobList();
-                    ChartData->DeleteCacheChart(pchart);
-                    delete tex_fact;
-                    break;
-                }
-                
-                int size_X = pBSBChart->GetSize_X();
-                int size_Y = pBSBChart->GetSize_Y();
-                
-                int tex_dim = g_GLOptions.m_iTextureDimension;
-                
-                int nx_tex = ceil( (float)size_X / tex_dim );
-                int ny_tex = ceil( (float)size_Y / tex_dim );
-                
-                int nt = ny_tex * nx_tex;
-                
-                wxRect rect;
-                rect.y = 0;
-                rect.width = tex_dim;
-                rect.height = tex_dim;
-                for( int y = 0; y < ny_tex; y++ ) {
-                    rect.x = 0;
-                    for( int x = 0; x < nx_tex; x++ ) {
-                        
-                        
-                        for(int level = 0; level < g_mipmap_max_level + 1; level++ )
-                            if(!tex_fact->IsLevelInCache( level, rect, global_color_scheme )){
-                                
-                                goto schedule;
-                            }
-                            rect.x += rect.width;
-                    }
-                    rect.y += rect.height;
-                }
-                
-                //      Free all possible memory
-                ChartData->DeleteCacheChart(pchart);
-                delete tex_fact;
-                yield++;
-                if (yield == 200) {
-                    ::wxYield();
-                    yield = 0;
-                    if (!m_progDialog->Update(m_jcnt)) {
-                        m_skip = true;
-                        m_skipout = true;
-                    }
-                }
-                continue;
 
-                yield = 0;
-                
-                schedule:
-                ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);            
-                while(!m_skip) {
-                    ::wxYield();
-                    int cnt = GetJobCount() - GetRunningJobCount();
-                    if(!cnt)
-                        break;
-                    wxThread::Sleep(1);
+        // bad things if more than one texfactory for a chart
+        g_glTextureManager->PurgeChartTextures( pchart, true );
+
+        ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
+        if(pBSBChart == 0)
+            continue;
+            
+        glTexFactory *tex_fact = new glTexFactory(pchart, g_raster_format);
+
+        m_progMsg.Printf( _("Distance from Ownship:  %4.0f NMi\n"), distance);
+        m_progMsg.Prepend(_T("Preparing RNC Cache...\n"));
+
+        if(m_skipout) {
+            g_glTextureManager->PurgeJobList();
+            ChartData->DeleteCacheChart(pchart);
+            delete tex_fact;
+            break;
+        }
+
+        int size_X = pBSBChart->GetSize_X();
+        int size_Y = pBSBChart->GetSize_Y();
+
+        int tex_dim = g_GLOptions.m_iTextureDimension;
+
+        int nx_tex = ceil( (float)size_X / tex_dim );
+        int ny_tex = ceil( (float)size_Y / tex_dim );
+
+        int nt = ny_tex * nx_tex;
+
+        wxRect rect;
+        rect.y = 0;
+        rect.width = tex_dim;
+        rect.height = tex_dim;
+        for( int y = 0; y < ny_tex; y++ ) {
+            rect.x = 0;
+            for( int x = 0; x < nx_tex; x++ ) {
+                for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
+                    if(!tex_fact->IsLevelInCache( level, rect, global_color_scheme )){
+                        goto schedule;
+                    }
                 }
-                
-                if(m_skipout) {
-                    g_glTextureManager->PurgeJobList();
-                    ChartData->DeleteCacheChart(pchart);
-                    delete tex_fact;
-                    break;
-                }
+                rect.x += rect.width;
             }
+            rect.y += rect.height;
+        }
+        //  Nothing to do
+        //  Free all possible memory
+        ChartData->DeleteCacheChart(pchart);
+        delete tex_fact;
+        yield++;
+        if (yield == 200) {
+            ::wxYield();
+            yield = 0;
+            if (!m_progDialog->Update(m_jcnt)) {
+                m_skip = true;
+                m_skipout = true;
+            }
+        }
+        continue;
+
+        // some work to do
+        schedule:
+
+        yield = 0;
+        ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);
+        while(!m_skip) {
+            ::wxYield();
+            int cnt = GetJobCount() - GetRunningJobCount();
+            if(!cnt)
+                break;
+            wxThread::Sleep(1);
+        }
+
+        if(m_skipout) {
+            g_glTextureManager->PurgeJobList();
+            ChartData->DeleteCacheChart(pchart);
+            delete tex_fact;
+            break;
+        }
     }
     
     while(GetRunningJobCount()) {
@@ -1589,8 +1625,9 @@ void glTextureManager::BuildCompressedCache()
     }
     
     b_inCompressAllCharts = false;
+    m_timer.Start(500);
     
     delete m_progDialog;
-    m_progDialog = NULL;
+    m_progDialog = nullptr;
 }
 

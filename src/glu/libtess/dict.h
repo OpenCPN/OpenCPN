@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __dict_list_h_
-#define __dict_list_h_
+#ifndef __dict_h_
+#define __dict_h_
 
 /* Use #define's so that another heap implementation can use this one */
 

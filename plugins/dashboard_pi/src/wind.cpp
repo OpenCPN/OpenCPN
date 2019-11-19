@@ -33,6 +33,7 @@
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
+#include <cmath>
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -168,13 +169,13 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 	wxColour cl;
 	GetGlobalColor(_T("DASH2"), &cl);
 	wxPen pen1;
-	pen1.SetStyle(wxSOLID);
+	pen1.SetStyle(wxPENSTYLE_SOLID);
 	pen1.SetColour(cl);
 	pen1.SetWidth(2);
 	dc->SetPen(pen1);
 	GetGlobalColor(_T("DASH1"), &cl);
 	wxBrush brush1;
-	brush1.SetStyle(wxSOLID);
+	brush1.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush1.SetColour(cl);
 	dc->SetBrush(brush1);
 	dc->DrawCircle(m_cx, m_cy, m_radius / 8);
@@ -184,11 +185,11 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 
 	GetGlobalColor(_T("BLUE3"), &cl);
 	wxBrush brush2;
-	brush2.SetStyle(wxSOLID);
+	brush2.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush2.SetColour(cl);
 	dc->SetBrush(brush2);
 
-	/* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+	/* this is fix for a +/-180ï¿½ round instrument, when m_MainValue is supplied as <0..180><L | R>
 	* for example TWA & AWA */
 	if (m_MainValueTrueUnit == _T("\u00B0L"))
 		data = 360 - m_MainValueTrue;
@@ -217,11 +218,11 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 
 	GetGlobalColor(_T("DASHN"), &cl);
 	wxBrush brush;
-	brush.SetStyle(wxSOLID);
+	brush.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush.SetColour(cl);
 	dc->SetBrush(brush);
 
-	/* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+	/* this is fix for a +/-180ï¿½ round instrument, when m_MainValue is supplied as <0..180><L | R>
 	* for example TWA & AWA */
 	if (m_MainValueAppUnit == _T("\u00B0L"))
 		data = 360 - m_MainValueApp;
@@ -259,13 +260,13 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(wxGCDC* dc, double value,
 	wxSize size = GetClientSize();
 
 	wxString text;
-	if (!wxIsNaN(value))
+	if (!std::isnan(value))
 	{
 		if (unit == _T("\u00B0"))
 			text = wxString::Format(format, value) + DEGREE_SIGN;
-		else if (unit == _T("\u00B0L")) // No special display for now, might be XX°< (as in text-only instrument)
+		else if (unit == _T("\u00B0L")) // No special display for now, might be XXï¿½< (as in text-only instrument)
 			text = wxString::Format(format, value) + DEGREE_SIGN;
-		else if (unit == _T("\u00B0R")) // No special display for now, might be >XX°
+		else if (unit == _T("\u00B0R")) // No special display for now, might be >XXï¿½
 			text = wxString::Format(format, value) + DEGREE_SIGN;
 		else if (unit == _T("\u00B0T"))
 			text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
@@ -299,7 +300,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(wxGCDC* dc, double value,
 		TextPoint.y = (size.y * .75) - height;
 		GetGlobalColor(_T("DASHL"), &cl);
 		int penwidth = size.x / 100;
-		wxPen* pen = wxThePenList->FindOrCreatePen(cl, penwidth, wxSOLID);
+		wxPen* pen = wxThePenList->FindOrCreatePen(cl, penwidth, wxPENSTYLE_SOLID);
 		dc->SetPen(*pen);
 		GetGlobalColor(_T("DASHB"), &cl);
 		dc->SetBrush(cl);

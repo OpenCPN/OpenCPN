@@ -78,8 +78,6 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
-
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {
@@ -105,6 +103,17 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
     }
 }
 
+wxWindow *GetGRIBCanvas()
+{
+    wxWindow *wx;
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1)            // multi?
+        wx = GetCanvasByIndex(1);
+    else
+        wx = GetOCPNCanvasWindow();
+    return wx;
+}
+
 //---------------------------------------------------------------------------------------
 //          GRIB Control Implementation
 //---------------------------------------------------------------------------------------
@@ -112,63 +121,15 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
    as a possible optimization, write this function to also
    take latitude longitude boundaries so the resulting record can be
    a subset of the input, but also would need to be recomputed when panning the screen */
-GribTimelineRecordSet::GribTimelineRecordSet()
+GribTimelineRecordSet::GribTimelineRecordSet(unsigned int cnt): GribRecordSet(cnt)
 {
     for(int i=0; i<Idx_COUNT; i++)
         m_IsobarArray[i] = NULL;
 }
-#if 0
-GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
-{
-    for(int i=0; i<Idx_COUNT; i++) {
-        m_GribRecordPtrArray[i] = NULL;
-        m_IsobarArray[i] = NULL;
-    }
-
-    for(int i=0; i<Idx_COUNT; i++) {
-        if(m_GribRecordPtrArray[i])
-            continue;
-
-        GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
-        GribRecord *GR2 = GRS2.m_GribRecordPtrArray[i];
-
-        if(!GR1 || !GR2)
-            continue;
-
-        /* if this is a vector interpolation use the 2d method */
-        if(i < Idx_WIND_VY) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i <= Idx_WIND_VY300)
-            continue;
-        else if(i == Idx_SEACURRENT_VX) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i == Idx_SEACURRENT_VY)
-            continue;
-
-        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
-    }
-
-    m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
-        + interp_const*GRS2.m_Reference_Time;
-}
-#endif
 
 GribTimelineRecordSet::~GribTimelineRecordSet()
 {
-    for(int i=0; i<Idx_COUNT; i++)
-        delete m_GribRecordPtrArray[i]; /* delete these for timeline */
+    // RemoveGribRecords();
     ClearCachedData();
 }
 
@@ -538,7 +499,7 @@ bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double
     //calculate the largest overlay size
     GribRecord **pGR = timelineSet->m_GribRecordPtrArray;
     double ltmi = -GRIB_NOTDEF, ltma = GRIB_NOTDEF, lnmi = -GRIB_NOTDEF, lnma = GRIB_NOTDEF;
-    for( int i = 0; i<36; i++){
+    for( unsigned int i = 0; i < Idx_COUNT; i++){
         GribRecord *pGRA = pGR[i];
         if(!pGRA) continue;
         if(pGRA->getLatMin() < ltmi) ltmi = pGRA->getLatMin();
@@ -595,7 +556,10 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
     m_cursor_lon = lon;
     m_cursor_lat = lat;
 
-    UpdateTrackingControl();
+    if(m_vp && 
+        ((lat > m_vp->lat_min) && (lat < m_vp->lat_max))&&
+        ((lon > m_vp->lon_min) && (lon < m_vp->lon_max)) )
+        UpdateTrackingControl();
 }
 
 void GRIBUICtrlBar::UpdateTrackingControl()
@@ -949,12 +913,11 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     if( m_tPlayStop.IsRunning() ) return;                            // do nothing when play back is running !
 
     /*if there is one instance of the dialog already visible, do nothing*/
-    if(pReq_Dialog){
-        if( pReq_Dialog->IsShown() ) return;
-    }
+    if(pReq_Dialog && pReq_Dialog->IsShown() ) return;
 
     /*a second click without selection cancel the process*/
     if( m_ZoneSelMode == DRAW_SELECTION ) {
+        assert(pReq_Dialog);
         m_ZoneSelMode = START_SELECTION;
         pReq_Dialog->StopGraphicalZoneSelection();
         SetRequestBitmap( m_ZoneSelMode );
@@ -1201,7 +1164,7 @@ void GRIBUICtrlBar::TimelineChanged()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( pParent );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 void GRIBUICtrlBar::RestaureSelectionString()
@@ -1296,7 +1259,7 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
     if(rsa->GetCount() == 0)
         return NULL;
 
-    GribTimelineRecordSet *set = new GribTimelineRecordSet;
+    GribTimelineRecordSet *set = new GribTimelineRecordSet(m_bGRIBActiveFile->GetCounter());
     for(int i=0; i<Idx_COUNT; i++) {
         GribRecordSet *GRS1 = NULL, *GRS2 = NULL;
         GribRecord *GR1 = NULL, *GR2 = NULL;
@@ -1336,7 +1299,8 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
 
         double interp_const;
         if(minute1 == minute2) {
-            set->m_GribRecordPtrArray[i] = new GribRecord(*GR1);
+            // with big grib a copy is slow use a reference.
+            set->m_GribRecordPtrArray[i] = GR1;
             continue;
         } else
             interp_const = (nminute-minute1) / (minute2-minute1);
@@ -1346,8 +1310,9 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
             GribRecord *GR1y = GRS1->m_GribRecordPtrArray[i + Idx_WIND_VY];
             GribRecord *GR2y = GRS2->m_GribRecordPtrArray[i + Idx_WIND_VY];
             if(GR1y && GR2y) {
-                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (set->m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                GribRecord *Ry;
+                set->SetUnRefGribRecord(i, GribRecord::Interpolated2DRecord(Ry, *GR1, *GR1y, *GR2, *GR2y, interp_const));
+                set->SetUnRefGribRecord(i + Idx_WIND_VY, Ry);
                 continue;
             }
         } else if(i <= Idx_WIND_VY300)
@@ -1356,19 +1321,136 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
             GribRecord *GR1y = GRS1->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
             GribRecord *GR2y = GRS2->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
             if(GR1y && GR2y) {
-                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (set->m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                GribRecord *Ry;
+                set->SetUnRefGribRecord(i,  GribRecord::Interpolated2DRecord(Ry, *GR1, *GR1y, *GR2, *GR2y, interp_const));
+                set->SetUnRefGribRecord(Idx_SEACURRENT_VY, Ry);
                 continue;
             }
         } else if(i == Idx_SEACURRENT_VY)
             continue;
 
-        set->m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
+        set->SetUnRefGribRecord(i,  GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR));
     }
 
     set->m_Reference_Time = time.GetTicks();
     //(1-interp_const)*GRS1.m_Reference_Time + interp_const*GRS2.m_Reference_Time;
     return set;
+}
+
+double GRIBUICtrlBar::getTimeInterpolatedValue ( int idx, double lon, double lat, wxDateTime time)
+{
+    if (m_bGRIBActiveFile == nullptr)
+        return GRIB_NOTDEF;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    if(rsa->GetCount() == 0)
+        return GRIB_NOTDEF;
+
+    GribRecord *before = nullptr, *after = nullptr;
+
+    unsigned int j;
+    time_t t = time.GetTicks();
+    for(j=0; j<rsa->GetCount(); j++) {
+        GribRecordSet *GRS = &rsa->Item(j);
+        GribRecord *GR = GRS->m_GribRecordPtrArray[idx];
+        if(!GR)
+            continue;
+
+        time_t curtime = GR->getRecordCurrentDate();
+        if (curtime == t)
+            return GR->getInterpolatedValue(lon, lat);
+
+        if(curtime < t)
+            before = GR;
+
+        if(curtime > t) {
+            after = GR;
+            break;
+        }
+    }
+    // time_t wxDateTime::GetTicks();
+    if(!before || !after)
+        return GRIB_NOTDEF;
+
+    time_t t1 = before->getRecordCurrentDate();
+    time_t t2 = after->getRecordCurrentDate();
+    if (t1 == t2)
+        return before->getInterpolatedValue(lon, lat);
+
+    double v1 = before->getInterpolatedValue(lon, lat);
+    double v2 = after->getInterpolatedValue(lon, lat);
+    if (v1 != GRIB_NOTDEF && v2 != GRIB_NOTDEF) {
+        double k  = fabs( (double)(t-t1)/(t2-t1) );
+	return (1.0-k)*v1 + k*v2;
+    }
+
+    return GRIB_NOTDEF;
+}
+
+bool GRIBUICtrlBar::getTimeInterpolatedValues( double &M, double &A, int idx1, int idx2, double lon, double lat, wxDateTime time)
+{
+    M = GRIB_NOTDEF;
+    A = GRIB_NOTDEF;
+
+    if (m_bGRIBActiveFile == nullptr)
+        return false;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    if(rsa->GetCount() == 0)
+        return false;
+
+    GribRecord *beforeX = nullptr, *afterX = nullptr;
+    GribRecord *beforeY = nullptr, *afterY = nullptr;
+
+    unsigned int j;
+    time_t t = time.GetTicks();
+    for(j=0; j<rsa->GetCount(); j++) {
+        GribRecordSet *GRS = &rsa->Item(j);
+        GribRecord *GX = GRS->m_GribRecordPtrArray[idx1];
+        GribRecord *GY = GRS->m_GribRecordPtrArray[idx2];
+        if(!GX || !GY)
+            continue;
+
+        time_t curtime = GX->getRecordCurrentDate();
+        if (curtime == t) {
+            return GribRecord::getInterpolatedValues(M, A, GX, GY, lon, lat, true);
+        }
+        if(curtime < t) {
+            beforeX = GX;
+            beforeY = GY;
+        }
+        if(curtime > t) {
+            afterX = GX;
+            afterY = GY;
+            break;
+        }
+    }
+    // time_t wxDateTime::GetTicks();
+    if(!beforeX || !afterX)
+        return false;
+
+    if(!beforeY || !afterY)
+        return false;
+
+    time_t t1 = beforeX->getRecordCurrentDate();
+    time_t t2 = afterX->getRecordCurrentDate();
+    if (t1 == t2) {
+        return GribRecord::getInterpolatedValues(M, A, beforeX, beforeY, lon, lat, true);
+    }
+    double v1m, v2m, v1a, v2a;
+    if (!GribRecord::getInterpolatedValues(v1m, v1a, beforeX, beforeY, lon, lat, true))
+        return false;
+
+    if (!GribRecord::getInterpolatedValues(v2m, v2a, afterX, afterY, lon, lat, true))
+        return false;
+
+    if (v1m == GRIB_NOTDEF || v2m == GRIB_NOTDEF || v1a == GRIB_NOTDEF || v2a == GRIB_NOTDEF )
+        return false;
+
+    double k  = fabs( (double)(t-t1)/(t2-t1) );
+    M =  (1.0-k)*v1m + k*v2m;
+    A =  (1.0-k)*v1a + k*v2a;
+    return true;
 }
 
 void GRIBUICtrlBar::OnTimeline( wxScrollEvent& event )
@@ -1401,6 +1483,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         m_grib_dir = dialog->GetDirectory();
         dialog->GetPaths(m_file_names);
         OpenFile();
+        DoZoomToCenter();
         SetDialogsStyleSizePosition( true );
     }
     delete dialog;
@@ -1453,13 +1536,15 @@ void GRIBUICtrlBar::PopulateComboDataList()
 
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 {
+    DoZoomToCenter();
+#if 0    
     if(!m_pTimelineSet) return;
 
     double latmin,latmax,lonmin,lonmax;
     if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
         return;
 
-    ::wxBeginBusyCursor();
+    //::wxBeginBusyCursor();
 
     //calculate overlay size
     double width = lonmax - lonmin;
@@ -1498,6 +1583,56 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
     JumpToPosition(clat, clon, ppm);
 
     RequestRefresh( pParent );
+#endif
+
+}
+
+void GRIBUICtrlBar::DoZoomToCenter( )
+{
+    if(!m_pTimelineSet) return;
+
+    double latmin,latmax,lonmin,lonmax;
+    if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
+        return;
+
+    //::wxBeginBusyCursor();
+
+    //calculate overlay size
+    double width = lonmax - lonmin;
+    double height = latmax - latmin;
+
+    // Calculate overlay center
+    double clat = latmin + height / 2;
+    double clon = lonmin + width / 2;
+
+    //try to limit the ppm at a reasonable value
+    if(width  > 120.){
+        lonmin = clon - 60.;
+        lonmax = clon + 60.;
+    }
+    if(height > 120.){
+        latmin = clat - 60.;
+        latmax = clat + 60.;
+    }
+
+
+    //Calculate overlay width & height in nm (around the center)
+    double ow, oh;
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+
+    wxWindow *wx = GetGRIBCanvas();
+    //calculate screen size
+    int w = wx->GetSize().x;
+    int h = wx->GetSize().y;
+
+    //calculate final ppm scale to use
+    double ppm;
+    ppm = wxMin(w/(ow*1852), h/(oh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    CanvasJumpToPosition(wx, clat, clon, ppm);
 
 }
 
@@ -1585,8 +1720,7 @@ void GRIBUICtrlBar::ComputeBestForecastForNow()
     UpdateTrackingControl();
 
     pPlugIn->SendTimelineMessage(now);
-    RequestRefresh( pParent );
-
+    RequestRefresh( GetGRIBCanvas());
 }
 
 void GRIBUICtrlBar::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
@@ -1630,19 +1764,19 @@ void GRIBUICtrlBar::SetFactoryOptions()
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
     UpdateTrackingControl();
-    RequestRefresh( pParent );
+    RequestRefresh( GetGRIBCanvas() );
 }
 
 //----------------------------------------------------------------------------------------------------------
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
+unsigned int GRIBFile::ID = 0;
 
-GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile ): m_counter(++ID)
 {
     m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
     m_last_message = wxEmptyString;
-
     for (unsigned int i = 0; i < file_names.GetCount(); i++) {
         wxString file_name = file_names[i];
         if( ::wxFileExists( file_name ) )
@@ -1654,7 +1788,6 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
         return;
     }
     //    Use the zyGrib support classes, as (slightly) modified locally....
-
     m_pGribReader = new GribReader();
 
     //    Read and ingest the entire GRIB file.......
@@ -1685,7 +1818,8 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
 
     // fixup Accumulation records
     m_pGribReader->computeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
-
+    m_pGribReader->computeAccumulationRecords(GRB_PRECIP_RATE,LV_GND_SURF, 0);
+    m_pGribReader->computeAccumulationRecords(GRB_CLOUD_TOT,  LV_ATMOS_ALL, 0);
 
     if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
     if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""
@@ -1697,7 +1831,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     std::set<time_t>::iterator iter;
     std::set<time_t> date_list = m_pGribReader->getListDates();
     for( iter = date_list.begin(); iter != date_list.end(); iter++ ) {
-        GribRecordSet *t = new GribRecordSet();
+        GribRecordSet *t = new GribRecordSet(m_counter);
         time_t reftime = *iter;
         t->m_Reference_Time = reftime;
         m_GribRecordSetArray.Add( t );

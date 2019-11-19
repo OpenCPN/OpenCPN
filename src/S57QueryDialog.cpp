@@ -23,22 +23,28 @@
  */
 
 #include "wx/wxprec.h"
+#include <wx/wxhtml.h>
 
 #include "S57QueryDialog.h"
-#include "chcanv.h"
+//#include "chcanv.h"
+#include "navutil.h"
+#include "chart1.h"
 
 extern ColorScheme global_color_scheme;
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern int g_S57_dialog_sx;
 extern int g_S57_dialog_sy;
+extern int g_S57_extradialog_sx;
+extern int g_S57_extradialog_sy;
 extern bool g_bresponsive;
 extern bool g_btouch;
 
-IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )
+IMPLEMENT_CLASS ( S57QueryDialog, wxFrame )
 // S57QueryDialog event table definition
-BEGIN_EVENT_TABLE ( S57QueryDialog, wxDialog )  //ws wxDialog
+BEGIN_EVENT_TABLE ( S57QueryDialog, wxFrame )  //ws wxDialog
     EVT_SIZE ( S57QueryDialog::OnSize )
     EVT_CLOSE( S57QueryDialog::OnClose)
+    EVT_HTML_LINK_CLICKED( wxID_ANY, S57QueryDialog::OnHtmlLinkClicked )
 END_EVENT_TABLE()
 
 S57QueryDialog::S57QueryDialog()
@@ -51,14 +57,13 @@ S57QueryDialog::S57QueryDialog( wxWindow* parent, wxWindowID id, const wxString&
 {
     Init();
     Create( parent, id, caption, pos, size, style );
-
 }
 
 S57QueryDialog::~S57QueryDialog()
 {
     g_S57_dialog_sx = GetSize().x;
     g_S57_dialog_sy = GetSize().y;
-
+    m_btnOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( S57QueryDialog::OnOKClick ), NULL, this );
 }
 
 void S57QueryDialog::Init()
@@ -74,15 +79,12 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxDEFAULT_FRAME_STYLE;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
+    long wstyle = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT;
     
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
-    if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
+    if( !wxFrame::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
     wxFont *dFont = GetOCPNScaledFont(_("ObjectQuery"));
 
@@ -150,8 +152,9 @@ void S57QueryDialog::CreateControls()
 
     topSizer->FitInside( this );
 
-    wxSizer* ok = CreateButtonSizer( wxOK );
-    topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
+    m_btnOK = new wxButton(this, wxID_OK);
+    m_btnOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( S57QueryDialog::OnOKClick ), NULL, this );
+    topSizer->Add( m_btnOK, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
 void S57QueryDialog::SetColorScheme( void )
@@ -184,7 +187,7 @@ void S57QueryDialog::OnSize( wxSizeEvent& event )
 {
     g_S57_dialog_sx = GetSize().x;
     g_S57_dialog_sy = GetSize().y;
-    wxDialog::OnSize( event );
+    wxFrame::OnSize( event );
 }
 
 void S57QueryDialog::OnClose( wxCloseEvent& event )
@@ -195,3 +198,76 @@ void S57QueryDialog::OnClose( wxCloseEvent& event )
     g_pObjectQueryDialog = NULL;
 }
 
+void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
+{
+    S57ExtraQueryInfoDlg* ExtraObjInfoDlg = new S57ExtraQueryInfoDlg( GetParent(), wxID_ANY, _("Extra Object Info"), wxPoint(GetPosition().x+20, GetPosition().y+20 ), wxSize( g_S57_extradialog_sx, g_S57_extradialog_sy ) );
+    ExtraObjInfoDlg->m_phtml->LoadPage(event.GetLinkInfo().GetHref());
+    ExtraObjInfoDlg->SetColorScheme();
+    ExtraObjInfoDlg->Show(true);
+}
+
+///////////////////////////////////////////////////////////////
+
+IMPLEMENT_CLASS ( S57ExtraQueryInfoDlg, wxFrame )
+// S57QueryDialog event table definition
+BEGIN_EVENT_TABLE ( S57ExtraQueryInfoDlg, wxFrame )  //ws wxDialog
+    EVT_SIZE ( S57ExtraQueryInfoDlg::OnSize )
+    EVT_CLOSE( S57ExtraQueryInfoDlg::OnClose)
+END_EVENT_TABLE()
+
+S57ExtraQueryInfoDlg::S57ExtraQueryInfoDlg()
+{
+    Init();
+}
+
+S57ExtraQueryInfoDlg::S57ExtraQueryInfoDlg( wxWindow* parent, wxWindowID id, const wxString& caption,
+                                const wxPoint& pos, const wxSize& size, long style )
+{
+    Init();
+    Create( parent, id, caption, pos, size, style );
+}
+bool S57ExtraQueryInfoDlg::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
+                             const wxPoint& pos, const wxSize& size, long style )
+{
+    //    As a display optimization....
+    //    if current color scheme is other than DAY,
+    //    Then create the dialog ..WITHOUT.. borders and title bar.
+    //    This way, any window decorations set by external themes, etc
+    //    will not detract from night-vision
+
+    long wstyle = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT;
+
+    if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
+            && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
+
+    if( !wxFrame::Create( parent, id, caption, pos, size, wstyle ) ) return false;
+
+    wxFont *dFont = GetOCPNScaledFont(_("ObjectQuery"));
+
+    SetFont( *dFont );
+    CreateControls();
+ 
+    DimeControl( this );
+    return true;
+
+}
+S57ExtraQueryInfoDlg::~S57ExtraQueryInfoDlg()
+{
+    g_S57_extradialog_sx = GetSize().x;
+    g_S57_extradialog_sy = GetSize().y;
+
+}
+
+void S57ExtraQueryInfoDlg::OnSize( wxSizeEvent& event )
+{
+    g_S57_extradialog_sx = GetSize().x;
+    g_S57_extradialog_sy = GetSize().y;
+    wxFrame::OnSize( event );
+}
+
+void S57ExtraQueryInfoDlg::OnClose( wxCloseEvent& event )
+{
+    g_S57_extradialog_sx = GetSize().x;
+    g_S57_extradialog_sy = GetSize().y;
+    Destroy();
+}

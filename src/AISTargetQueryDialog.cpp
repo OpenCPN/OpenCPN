@@ -38,6 +38,7 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "RoutePoint.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
@@ -48,17 +49,17 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
+extern MyFrame *gFrame;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
 #define xID_TRK_CREATE 10011
 IMPLEMENT_CLASS ( AISTargetQueryDialog, wxDialog )
 // AISTargetQueryDialog event table definition
-BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxDialog )
+BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxFrame )
     EVT_BUTTON( xID_OK, AISTargetQueryDialog::OnIdOKClick )
     EVT_BUTTON( xID_WPT_CREATE, AISTargetQueryDialog::OnIdWptCreateClick )
     EVT_BUTTON( xID_TRK_CREATE, AISTargetQueryDialog::OnIdTrkCreateClick )
@@ -112,15 +113,16 @@ void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
     if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+            wxString n =  wxString::Format(wxT("\"%s\"  %i "),td->ShipName,  td->MMSI).append(wxDateTime::Now().Format(wxT("%H:%M")));
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, n, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
-            cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            cc1->undo->AfterUndoableAction( NULL );
+            gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
             Refresh( false );
         }
     }
@@ -145,7 +147,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                     
                 Track *t = new Track();
 
-                t->m_TrackNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+                t->SetName( wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() ) );
                 wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
                 while( node )
                 {
@@ -194,7 +196,8 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
-    if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
+    if( !wxFrame::Create( parent, id, caption, pos, size, wstyle ) )
+        return false;
 
     m_parent = parent;
     
@@ -296,7 +299,7 @@ void AISTargetQueryDialog::CreateControls()
     m_pQueryTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                         wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
     m_pQueryTextCtl->SetBorders( 1 );
-    topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND, 5 );
+    topSizer->Add( m_pQueryTextCtl, 1, wxEXPAND, 5 );
 
     wxSizer* opt = new wxBoxSizer( wxHORIZONTAL );
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -306,9 +309,7 @@ void AISTargetQueryDialog::CreateControls()
     opt->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
     topSizer->Add( opt, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
-
-    wxSizer* ok = CreateButtonSizer( wxOK );
-    topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
+    topSizer->Add(new wxButton(this, xID_OK, _("OK")), 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
     Fit();
     
@@ -499,8 +500,9 @@ void AISTargetQueryDialog::RenderHTMLQuery(AIS_Target_Data *td)
     
     wxString html;
     wxColor bg = GetBackgroundColour();
+    wxColor fg = GetForegroundColour();
     
-    html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+    html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
     
     html << td->BuildQueryResult();
     

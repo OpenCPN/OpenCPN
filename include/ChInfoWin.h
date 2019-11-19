@@ -29,7 +29,7 @@
 
 #include "chart1.h"
 
-class ChInfoWin: public wxDialog
+class ChInfoWin: public wxPanel
 {
 public:
     ChInfoWin( wxWindow *parent );

@@ -24,6 +24,8 @@
 #include "gpsapp.h"
 #include "garmin_gps.h"
 #include "gpsserial.h"
+#include "Route.h"
+#include "chart1.h"
 
 #define GPS_DEBUG
 

@@ -1,4 +1,4 @@
-﻿/******************************************************************************
+/******************************************************************************
  * $Id: dial.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -43,6 +43,7 @@
     #include <wx/wx.h>
 #endif
 
+#include <cmath>
 #include "wx/tokenzr.h"
 
 double rad2deg(double angle)
@@ -361,7 +362,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
       wxSize size = GetClientSize();
 
       wxString text;
-      if(!wxIsNaN(value))
+      if(!std::isnan(value))
       {
           if (unit == _T("\u00B0"))
                text = wxString::Format(format, value)+DEGREE_SIGN;

@@ -36,6 +36,8 @@
 
 #define CURRENT_SENC_FORMAT_VERSION  200
 
+#define OBJL_NAME_LEN  6
+
 //    Fwd Defns
 class wxArrayOfS57attVal;
 class OGREnvelope;
@@ -190,7 +192,7 @@ public:
    DisPrio        DPRI;             // Display Priority
    RadPrio        RPRI;             // 'O' or 'S', Radar Priority
    LUPname        TNAM;             // FTYP:  areas, points, lines
-   wxArrayString *ATTCArray;        // ArrayString of LUP Attributes
+   std::vector<char *> ATTArray;    // Array of LUP Attributes
    wxString       *INST;            // Instruction Field (rules)
    DisCat         DISC;             // Display Categorie: D/S/O, DisplayBase, Standard, Other
    int            LUCM;             // Look-Up Comment (PLib3.x put 'groupes' here,
@@ -264,7 +266,7 @@ typedef struct _S57attVal {
 WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
 
 typedef struct _OBJLElement {
-    char OBJLName[6];
+    char OBJLName[OBJL_NAME_LEN];
     int nViz;
 } OBJLElement;
 
@@ -289,7 +291,6 @@ class s57chart;
 class S57Obj;
 class OGRFeature;
 class PolyTessGeo;
-class PolyTessGeoTrap;
 class line_segment_element;
 class PI_line_segment_element;
 

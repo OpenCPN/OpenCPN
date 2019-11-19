@@ -36,6 +36,9 @@
 #include <wx/mstream.h>
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
+#include <wx/regex.h>
+
+#include <algorithm>
 
 #include "mygdal/ogr_api.h"
 #include "s57chart.h"
@@ -51,6 +54,8 @@
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
 #include "ChartDataInputStream.h"
+#include "DetailSlider.h"
+#include "chcanv.h"
 
 #include <stdio.h>
 
@@ -68,7 +73,6 @@ extern ocpnGLOptions g_GLOptions;
 #define new DEBUG_NEW
 #endif
 
-extern ChartCanvas               *cc1;
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
@@ -81,10 +85,6 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern bool             g_bShowDetailSlider;
 extern wxString         g_PrivateDataDir;
 
-// Flav add for CM93Offset manual setup
-extern double           g_CM93Maps_Offset_x;
-extern double           g_CM93Maps_Offset_y;
-extern bool             g_CM93Maps_Offset_on;
 extern bool             g_bopengl;
 extern PlugInManager    *g_pi_manager;
 extern float            g_GLMinSymbolLineWidth;
@@ -292,7 +292,7 @@ class covr_set
 
             bool Init ( wxChar scale_char, wxString &prefix );
             unsigned int GetCoverCount() { return m_covr_array_outlines.GetCount(); }
-            M_COVR_Desc *GetCover ( unsigned int im ) { return &m_covr_array_outlines.Item ( im ); }
+            M_COVR_Desc *GetCover ( unsigned int im ) { return &m_covr_array_outlines[im]; }
             void Add_MCD ( M_COVR_Desc *pmcd );
             bool Add_Update_MCD ( M_COVR_Desc *pmcd );
             bool IsCovrLoaded ( int cell_index );
@@ -481,7 +481,7 @@ bool covr_set::Add_Update_MCD ( M_COVR_Desc *pmcd )
             bool b_found = false;
             for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
             {
-                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
                   if ( ( pmcd_candidate->m_cell_index == pmcd->m_cell_index ) &&
                           ( pmcd_candidate->m_object_id == pmcd->m_object_id ) &&
                           ( pmcd_candidate->m_subcell == pmcd->m_subcell ) )
@@ -515,7 +515,7 @@ int covr_set::Find_MCD ( M_COVR_Desc *pmcd )
 
             for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
             {
-                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
                   if ( ( pmcd_candidate->m_cell_index == pmcd->m_cell_index ) &&
                           ( pmcd_candidate->m_object_id == pmcd->m_object_id ) &&
                           ( pmcd_candidate->m_subcell == pmcd->m_subcell ) )
@@ -534,7 +534,7 @@ M_COVR_Desc *covr_set::Find_MCD ( int cell_index, int object_id, int subcell )
 
       for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
       {
-            M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+            M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
             if ( ( pmcd_candidate->m_cell_index == cell_index ) &&
                     ( pmcd_candidate->m_object_id == object_id ) &&
                     ( pmcd_candidate->m_subcell == subcell ) )
@@ -1274,8 +1274,8 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
       int ilonroot = ( ilon / 60 ) * 60;
 
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep(&fileroot);
 
       wxString sdir ( fileprefix );
       sdir += fileroot;
@@ -1411,6 +1411,9 @@ static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
       pCIB->transform_x_origin = header.easting_min;
       pCIB->transform_y_origin = header.northing_min;
 
+      pCIB->min_lat = header.lat_min;
+      pCIB->min_lon = header.lon_min;
+      
 //      pCIB->m_cell_mcovr_array.Empty();
 
       //    Extract some table sizes from the header, and pre-allocate the tables
@@ -1946,6 +1949,7 @@ cm93chart::cm93chart()
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
       m_this_chart_context->chart = this;
+      m_RAZBuilt = true;
       
 }
 
@@ -2184,18 +2188,18 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
 
       //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells = GetVPCellArray ( vpt );
+      std::vector<int> vpcells = GetVPCellArray ( vpt );
 
       //    Check the member array to see if all these viewport cells have been loaded
       bool bcell_is_in;
       bool recalc_depth = false;
 
-      for ( unsigned int i=0 ; i < vpcells.GetCount() ; i++ )
+      for ( unsigned int i=0 ; i < vpcells.size() ; i++ )
       {
             bcell_is_in = false;
-            for ( unsigned int j=0 ; j < m_cells_loaded_array.GetCount() ; j++ )
+            for ( unsigned int j=0 ; j < m_cells_loaded_array.size() ; j++ )
             {
-                  if ( vpcells.Item ( i ) == m_cells_loaded_array.Item ( j ) )
+                  if ( vpcells[i] == m_cells_loaded_array[j] )
                   {
                         bcell_is_in = true;
                         break;
@@ -2206,7 +2210,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             if ( !bcell_is_in )
             {
                 OCPNPlatform::ShowBusySpinner();
-                  int cell_index = vpcells.Item ( i );
+                  int cell_index = vpcells[i];
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
@@ -2216,7 +2220,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
                         recalc_depth = true;
 
-                        m_cells_loaded_array.Add ( cell_index );
+                        m_cells_loaded_array.push_back ( cell_index );
 
                         Unload_CM93_Cell();
                   }
@@ -2232,13 +2236,37 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
-                        if ( wxNOT_FOUND == m_cells_loaded_array.Index ( cell_index ) )
-                              m_cells_loaded_array.Add ( cell_index );
+                        if (std::find(m_cells_loaded_array.begin(), m_cells_loaded_array.end(), cell_index) == m_cells_loaded_array.end())
+                              m_cells_loaded_array.push_back ( cell_index );
 
                         Unload_CM93_Cell();
 
                         loadcell_key++;
                   }
+                  
+                  AssembleLineGeometry();
+
+                      //  Set up the chart context
+                    m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
+                    m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
+                    
+                    m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+                    m_this_chart_context->pRigidATONArray = pRigidATONArray;
+                    m_this_chart_context->chart = this;
+                    m_this_chart_context->safety_contour = 1e6;    // to be evaluated later
+                    m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+                    
+                    //  Loop and populate all the objects
+                    for( int i = 0; i < PI_PRIO_NUM; ++i ) {
+                        for( int j = 0; j < PI_LUPNAME_NUM; j++ ) {
+                            ObjRazRules *top = razRules[i][j];
+                            while(top){
+                                if(top->obj)
+                                    top->obj->m_chart_context = m_this_chart_context;
+                                top = top->next;
+                            }
+                        }
+                    }
                 OCPNPlatform::HideBusySpinner();
             }
       }
@@ -2250,7 +2278,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 }
 
 
-ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
+std::vector<int> cm93chart::GetVPCellArray ( const ViewPort &vpt )
 {
       //    Fetch the lat/lon of the screen corner points
       ViewPort vptl = vpt;
@@ -2272,10 +2300,10 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
       }
 
       //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells;
+      std::vector<int> vpcells;
 
       int lower_left_cell = Get_CM93_CellIndex ( ll_lat, ll_lon, GetNativeScale() );
-      vpcells.Add ( lower_left_cell );                // always add the lower left cell
+      vpcells.push_back( lower_left_cell );                // always add the lower left cell
 
       if ( g_bDebugCM93 )
             printf ( "cm93chart::GetVPCellArray   Adding %d\n", lower_left_cell );
@@ -2304,7 +2332,7 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
 
                   next_cell += ( lati_20 + 270 ) * 10000;
 
-                  vpcells.Add ( ( int ) next_cell );
+                  vpcells.push_back ( ( int ) next_cell );
                   if ( g_bDebugCM93 )
                         printf ( "cm93chart::GetVPCellArray   Adding %d\n", next_cell );
 
@@ -3366,7 +3394,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       char u[201];
       strncpy ( u, sclass_sub.mb_str(), 199 );
       u[200] = '\0';
-      strncpy ( pobj->FeatureName, u, 7 );
+      memcpy ( pobj->FeatureName, u, 7 );
 
       //  Touch up the geom types
       int geomtype_sub = geomtype;
@@ -3789,6 +3817,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  xgeom->ref_lat = lat1;
+                  xgeom->ref_lon = lon1;
+
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
                   Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat2, &lon2 );
@@ -3811,7 +3842,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->x_offset = m_CIB.transform_x_origin - trans_WGS84_offset_x;
                         xgeom->y_rate   = m_CIB.transform_y_rate;
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
-
+                        
                         pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
 
@@ -4064,6 +4095,9 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->x_origin -= trans_WGS84_offset_x;
       pobj->y_origin -= trans_WGS84_offset_y;
 
+      // Mark the object chart type, for the convenience of S52PLIB
+      pobj->auxParm3 = CHART_TYPE_CM93;
+      
       return pobj;
 }
 
@@ -4374,31 +4408,31 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
 {
       //    Create an array of CellIndexes covering the current viewport
-      ArrayOfInts vpcells = GetVPCellArray ( *vpt );
+      std::vector<int> vpcells = GetVPCellArray ( *vpt );
 
       //    Check the member covr_set to see if all these viewport cells have had their m_covr loaded
 
-      for ( unsigned int i=0 ; i < vpcells.GetCount() ; i++ )
+      for ( unsigned int i=0 ; i < vpcells.size() ; i++ )
       {
             //    If the cell is not already in the master coverset, go load enough of it to get the offsets and outlines.....
-            if ( !m_pcovr_set->IsCovrLoaded ( vpcells.Item ( i ) ) )
+            if ( !m_pcovr_set->IsCovrLoaded ( vpcells[i] ) )
             {
-                  if ( loadcell_in_sequence ( vpcells.Item ( i ), '0' ) )
+                  if ( loadcell_in_sequence ( vpcells[i], '0' ) )
                   {
-                        ProcessMCOVRObjects ( vpcells.Item ( i ), '0' );
+                        ProcessMCOVRObjects ( vpcells[i], '0' );
                         Unload_CM93_Cell();           // all done with this (sub)cell
                   }
-                  m_pcovr_set->m_cell_hash[vpcells.Item ( i )] = 1;
+                  m_pcovr_set->m_cell_hash[vpcells[i]] = 1;
 
                   char loadcell_key = 'A';               // starting subcells
 
                   //    Load the subcells in sequence
                   //    On successful load, add it to the covr set and process the cell
-                  while ( loadcell_in_sequence ( vpcells.Item ( i ), loadcell_key ) )
+                  while ( loadcell_in_sequence ( vpcells[i], loadcell_key ) )
                   {
                         //Extract the m_covr structures inline
 
-                        ProcessMCOVRObjects ( vpcells.Item ( i ), loadcell_key );
+                        ProcessMCOVRObjects ( vpcells[i], loadcell_key );
 
                         Unload_CM93_Cell();           // all done with this (sub)cell
 
@@ -4421,7 +4455,7 @@ bool cm93chart::IsPointInLoadedM_COVR ( double xc, double yc )
 #else
       for ( unsigned int im=0 ; im < m_pcovr_array_loaded.GetCount() ; im++ )
       {
-            if ( G_PtInPolygon_FL ( m_pcovr_array_loaded.Item ( im )->pvertices, m_pcovr_array_loaded.Item ( im )->m_nvertices, xc, yc ) )
+            if ( G_PtInPolygon_FL ( m_pcovr_array_loaded[im]->pvertices, m_pcovr_array_loaded[im]->m_nvertices, xc, yc ) )
                   return true;
       }
       return false;
@@ -4485,11 +4519,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       
       
       wxString fileroot;
-      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-      fileroot += m_scalechar;
-      fileroot += _T ( "/" );
+      fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+      appendOSDirSep( &fileroot );
+      fileroot.append( m_scalechar );
+      appendOSDirSep( &fileroot );
       wxString key = fileroot;
-      key += file;
+      key.append( file );
       fileroot.Prepend ( m_prefix );
 
       file.Prepend ( fileroot );
@@ -4544,11 +4579,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             file1 += new_scalechar;
             file1[0] = sub_char;
 
-            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-            fileroot += new_scalechar;
-            fileroot += _T ( "/" );
+            fileroot.Printf ( _T ( "%04d%04d" ), ilatroot, ilonroot );
+            appendOSDirSep( &fileroot );
+            fileroot.append( new_scalechar );
+            appendOSDirSep( &fileroot );
             key = fileroot;
-            key += file1;
+            key.append( file1 );
 
             fileroot.Prepend ( m_prefix );
 
@@ -4591,7 +4627,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       
       if ( g_bDebugCM93 )
       {
-          printf("noFind count: %d\n", m_noFindArray.GetCount());
+          printf("noFind count: %d\n", (int)m_noFindArray.GetCount());
       }
                 
       if(!bfound && !compfile.Length())
@@ -4832,16 +4868,16 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
       wxString target;
       wxString path;
 
-      wxString sep(wxFileName::GetPathSeparator());
-
       //    Verify that the passed file name exists
       if ( !fn.FileExists() )
       {
             // It may be a directory
             if( wxDir::Exists(name) )
             {
-                  target = name + sep;
-                  path = name + sep;
+                target = name;
+                appendOSDirSep(&target);
+                path = name;
+                appendOSDirSep(&path);
             }
             else {
                   wxString msg ( _T ( "   CM93Composite Chart Init cannot find " ) );
@@ -5385,7 +5421,7 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
 
             for ( unsigned int im=0 ; im < m_pcm93chart_current->m_pcovr_array_loaded.GetCount() ; im++ )
             {
-                  M_COVR_Desc *pmcd = ( m_pcm93chart_current->m_pcovr_array_loaded.Item ( im ) );
+                  M_COVR_Desc *pmcd = ( m_pcm93chart_current->m_pcovr_array_loaded[im] );
 
                   //    We can make a quick test based on the bbox of the M_COVR and the bbox of the ViewPort
 
@@ -6009,7 +6045,7 @@ void cm93compchart::SetSpecialCellIndexOffset ( int cell_index, int object_id, i
             m_pcm93chart_current->SetUserOffsets ( cell_index, object_id, subcell, xoff, yoff );
 }
 
-bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
+bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, ChartCanvas *cc )
 {
       if ( m_cmscale >= 7 )
           return false;
@@ -6017,6 +6053,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
       bool secondpass = false;
+      glChartCanvas *glcc = cc->GetglCanvas();
+      if(!glcc)
+          return false;
+      
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
@@ -6040,8 +6080,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
 
+          //TODO this needs fixing for multicanvas
           if(glChartCanvas::HasNormalizedViewPort(vp)) {
-              glChartCanvas::MultMatrixViewPort(vp);
+              glcc->MultMatrixViewPort(vp);
               nvp = glChartCanvas::NormalizedViewPort(vp);
           } else
               nvp = vp;
@@ -6235,7 +6276,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             if(fabs(lon - lastlon) > 180) {
                 if(lastvalid) {
                     wxPoint2DDouble r = vp.GetDoublePixFromLL(lastlat, lastlon > 0 ? 180 : -180);
-                    if(!wxIsNaN(r.m_x)) {
+                    if(!std::isnan(r.m_x)) {
                         q->y = l.m_x;
                         q->x = l.m_y;
                         q++;
@@ -6251,7 +6292,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
                 }
 
                 wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lon > 0 ? 180 : -180);
-                if((lastvalid = !wxIsNaN(r.m_x))) {
+                if((lastvalid = !std::isnan(r.m_x))) {
                     r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                     r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
                     l.m_x = r.m_x;
@@ -6262,7 +6303,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
             lastlon = lon;
                                               
             wxPoint2DDouble s = vp.GetDoublePixFromLL( lat, lon );
-            if(!wxIsNaN(s.m_x)) {
+            if(!std::isnan(s.m_x)) {
                 //    Outlines stored in MCDs are not adjusted for offsets
                 s.m_x -= mcd->user_xoff * vp.view_scale_ppm;
                 s.m_y -= mcd->user_yoff * vp.view_scale_ppm;
@@ -6427,8 +6468,9 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 #ifdef ocpnUSE_GL
       if(g_bopengl) {
           /* need a full refresh if not in quilted mode, and the cell changed */
-          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
-              glChartCanvas::Invalidate();
+          //TODO re-add this for multicanvas
+          //if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              //glChartCanvas::Invalidate();
 
           m_last_cell_adjustvp = m_pcm93chart_current;
       }
@@ -6706,7 +6748,7 @@ wxString  OCPNOffsetListCtrl::OnGetItemText ( long item, long column ) const
 {
 
       wxString ret;
-      M_COVR_Desc *pmcd = m_parent->m_pcovr_array.Item ( item );
+      M_COVR_Desc *pmcd = m_parent->m_pcovr_array[item];
 
       switch ( column )
       {
@@ -6844,7 +6886,7 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
 
       m_OKButton = new wxButton ( this, wxID_ANY, _ ( "OK" ), wxDefaultPosition, wxDefaultSize, 0 );
       m_OKButton->Connect ( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler ( CM93OffsetDialog::OnOK ), NULL, this );
-      boxSizer02->Add ( m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+      boxSizer02->Add ( m_OKButton, 0, wxALL, 5 );
       m_OKButton->SetDefault();
 
       topSizer->Add ( boxSizer02, 0, wxEXPAND|wxALL, 2 );
@@ -6877,7 +6919,7 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 
@@ -6922,7 +6964,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 }
@@ -6970,7 +7012,7 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 
       if ( m_pparent ) {
             m_pparent->Refresh ( true );
-            cc1->InvalidateGL();
+            gFrame->InvalidateAllGL();
       }
     }
 }
@@ -6991,7 +7033,7 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
                   m_pcovr_array.Clear();
 
                   //    Get an array of cell indicies at the current viewport
-                  ArrayOfInts cell_array = pchart->GetVPCellArray ( vpt );
+                  std::vector<int> cell_array = pchart->GetVPCellArray ( vpt );
 
                   ViewPort vp;
                   vp = vpt;
@@ -7005,9 +7047,9 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
                   {
                         M_COVR_Desc *mcd = pcover->GetCover ( im );
 
-                        for ( unsigned int icell=0 ; icell < cell_array.GetCount() ; icell++ )
+                        for ( unsigned int icell=0 ; icell < cell_array.size() ; icell++ )
                         {
-                              if ( cell_array.Item ( icell ) == mcd->m_cell_index )
+                              if ( cell_array[icell] == mcd->m_cell_index )
                               {
                                     wxPoint *pwp = pchart->GetDrawBuffer ( mcd->m_nvertices );
                                     OCPNRegion rgn = mcd->GetRegion ( vp, pwp );
@@ -7021,9 +7063,9 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
 
                   //    Try to find and maintain the correct list selection, even though the list contents may have changed
                   int sel_index = -1;
-                  for ( unsigned int im=0 ; im < m_pcovr_array.GetCount() ; im++ )
+                  for ( unsigned int im=0 ; im < m_pcovr_array.size() ; im++ )
                   {
-                        M_COVR_Desc *mcd = m_pcovr_array.Item ( im );
+                        M_COVR_Desc *mcd = m_pcovr_array[im];
                         if ( ( m_selected_cell_index == mcd->m_cell_index ) &&
                                 ( m_selected_object_id == mcd->m_object_id ) &&
                                 ( m_selected_subcell == mcd->m_subcell ) )

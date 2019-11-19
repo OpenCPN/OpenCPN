@@ -39,7 +39,6 @@ BEGIN_EVENT_TABLE(ocpnFloatingCompassWindow, wxWindow) EVT_PAINT ( ocpnFloatingC
 END_EVENT_TABLE()
 
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern ChartCanvas *cc1;
 extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
@@ -50,10 +49,7 @@ extern MyFrame *gFrame;
 ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent )
 {
     m_pparent = parent;
-    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
-#ifndef __WXMAC__
-    wstyle |= wxFRAME_SHAPED;
-#endif    
+    long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
 #ifdef __WXMAC__
     wstyle |= wxSTAY_ON_TOP;
 #endif

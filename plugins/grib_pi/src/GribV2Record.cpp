@@ -195,6 +195,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 *
 *   RETURN VALUES :
 *          0 = Successful decode
+*         -2 = no memory Error.
 *         -3 = Error decode jpeg2000 code stream.
 *         -5 = decoded image had multiple color components.
 *              Only grayscale is expected.
@@ -226,7 +227,10 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //       
 
     jpcstream=jas_stream_memopen(injpc,bufsize);
-
+    if (jpcstream == nullptr) {
+        printf(" dec_jpeg2000: no memory\n");
+        return -2;
+    }
 //   
 //     Decode JPEG200 codestream into jas_image_t structure.
 //       
@@ -714,13 +718,14 @@ static bool unpackDS(GRIBMessage *grib_msg)
   struct {
     int *ref_vals,*widths;
     int *lengths;
-    int *first_vals,sign,omin;
+    int *first_vals = 0,sign,omin;
     long long miss_val,group_miss_val;
     int max_length;
   } groups;
   float lastgp,D=pow(10.,grib_msg->md.D),E=pow(2.,grib_msg->md.E);
 
   groups.omin = 0;
+  groups.first_vals = nullptr;
 
   off= grib_msg->offset+40;
   switch (grib_msg->md.drs_templ_num) {
@@ -738,10 +743,12 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	break;
     case 3:
 	if (grib_msg->md.complex_pack.num_groups > 0) {
-	  groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
-	  for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
-	    getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
-	    off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+          if (grib_msg->md.complex_pack.spatial_diff.order) {
+	      groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
+	      for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
+	          getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
+	          off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+              }
 	  }
 	  getBits(grib_msg->buffer,&groups.sign,off,1);
 	  getBits(grib_msg->buffer,&groups.omin,off+1,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8-1);
@@ -851,7 +858,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	}
 
 	if (grib_msg->md.drs_templ_num == 3) {
-      	   if (grib_msg->md.complex_pack.spatial_diff.order) {
+      	   if (groups.first_vals != nullptr) {
       	      for (n=grib_msg->md.complex_pack.spatial_diff.order-1; n > 0; --n) {
   	         lastgp=groups.first_vals[n]-groups.first_vals[n-1];
   	         for (l=0,m=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
@@ -878,9 +885,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
   	   	++m;
   	     }
   	   }
-  	   if (grib_msg->md.complex_pack.spatial_diff.order > 0) {
-  	      delete [] groups.first_vals;
-           }
+  	   delete [] groups.first_vals;
 	}
 	else for (l=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
   	   if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
@@ -918,6 +923,9 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	delete [] jvals;
 	break;
 #endif
+    default:
+        erreur("Unknown packing %d", grib_msg->md.drs_templ_num);
+        break;
   }
   return true;
 }
@@ -960,11 +968,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 22: ret = GRB_WIND_GUST; break; // 
             }
             break;
-        case 3: // dataCat
+        case 3: // dataCat mass
             switch (dataNum) {
             case 0: ret = GRB_PRESSURE; break; //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
             case 1: ret = GRB_PRESSURE; break; // PRSMSL //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
             case 5: ret = GRB_GEOPOT_HGT; break; // DATA_TO_GRBV2[DATA_GEOPOT_HGT]= grb2DataType(0,3,5);
+
+            case 192: ret = GRB_PRESSURE; break; //DATA_TO_GRBV2[DATA_MSLET] = grb2DataType(0,3,192);
             }
             break;
         case 6: // dataCat
@@ -1028,15 +1038,18 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        erreur("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
+        erreur("unknown %d %d %d", productDiscipline,  dataCat,dataNum);
     }
 #endif    
     return ret;    
 }
 
+/** Return UINT_MAX on errors. */
 static int mapStatisticalEndTime(GRIBMessage *grid)
 {
-  switch (grid->md.time_unit) { // table 4.4
+   // lovely md.fcst_time is in grid->md.time_unit but md.stat_proc.t[0].time_length is in grid->md.stat_proc.t[0].time_unit
+   // not always the same.
+  if (grid->md.time_unit == grid->md.stat_proc.t[0].time_unit) switch (grid->md.time_unit) { // table 4.4
     case 0:  // minute
 	// return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:  // hour
@@ -1050,10 +1063,25 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
 	return (grid->md.stat_proc.eyr -grid->yr);
     default:
 	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
-	exit(1);
+	return UINT_MAX;
   }
+
+  if (grid->md.time_unit == 0 && grid->md.stat_proc.t[0].time_unit == 1) {
+         // in minute + hourly increment
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length *60;
+  }
+
+  if (grid->md.time_unit == 1 && grid->md.stat_proc.t[0].time_unit == 0 && (grid->md.stat_proc.t[0].time_unit  % 60) != 0 ) {
+          // convert in hour
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length /60;
+  }
+
+  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time, 
+            grid->md.stat_proc.t[0].time_length);
+  return UINT_MAX;
 }
 
+// map GRIB2 msg time to GRIB1 P1 and P2 in sec
 static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_range,int *n_avg,int *n_missing, int center)
 {
   switch (grid->md.pds_templ_num) {
@@ -1149,6 +1177,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		}
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
+                if (*p2 == UINT_MAX) {
+                    return false;
+                }
 		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
@@ -1162,6 +1193,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		*t_range=2;
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
+                if (*p2 == UINT_MAX) {
+                    return false;
+                }
 		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
@@ -1180,6 +1214,9 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 			    *t_range=2;
 			    *p1=grid->md.fcst_time;
 			    *p2=mapStatisticalEndTime(grid);
+                            if (*p2 == UINT_MAX) {
+                                return false;
+                            }
 			    if (grid->md.stat_proc.t[0].incr_length == 0)
 				*n_avg=0;
 			    else {
@@ -1203,8 +1240,6 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 	fprintf(stderr,"Unable to map time range for Product Definition Template %d into GRIB1\n",grid->md.pds_templ_num);
 	return false;
   }
-  if (*p2 < 0)
-      return false;
   return true;
 }
 
@@ -1600,9 +1635,11 @@ GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 //-------------------------------------------------------------------------------
 // Constructeur de recopie
 //-------------------------------------------------------------------------------
+#pragma warning(disable: 4717)
 GribV2Record::GribV2Record(const GribRecord &rec) : GribRecord(rec)
 {
     *this = rec;
+    #pragma warning(default: 4717)
 }
 
 GribV2Record::~GribV2Record()
@@ -1620,7 +1657,7 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
 {
   unsigned char temp[16];
   int status;
-  size_t n,num;
+  size_t num;
 
   if (grib_msg->buffer != NULL) {
     delete [] grib_msg->buffer;

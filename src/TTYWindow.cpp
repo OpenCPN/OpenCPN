@@ -32,9 +32,9 @@
 #include "WindowDestroyListener.h"
 #include "chart1.h"
 
-IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxDialog )
+IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxFrame )
 
-BEGIN_EVENT_TABLE( TTYWindow, wxDialog )
+BEGIN_EVENT_TABLE( TTYWindow, wxFrame )
     EVT_CLOSE(TTYWindow::OnCloseWindow)
 END_EVENT_TABLE()
 
@@ -48,7 +48,7 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
     : m_window_destroy_listener(listener)
     , m_pScroll(NULL)
 {
-    wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
+    wxFrame::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT );
 
     wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
     SetSizer( bSizerOuterContainer );
@@ -76,9 +76,18 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
     sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
     bSizerBottomContainer->Add( sbSizer1, 0, wxALIGN_LEFT | wxALL, 5 );
 
-    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizerBottomContainer->Add( m_buttonPause, 0, wxALIGN_RIGHT | wxALL, 5 );
+    wxStaticBox *buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
+    wxStaticBoxSizer *bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
+    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_buttonCopy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition, wxDefaultSize, 0);
+    m_buttonCopy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
+
+    bbSizer1->Add(m_buttonPause, 0, wxALL, 5);
+    bbSizer1->Add(m_buttonCopy, 0, wxALL, 5);
+    bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
+
+    m_buttonCopy->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TTYWindow::OnCopyClick), NULL, this);
     m_buttonPause->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TTYWindow::OnPauseClick ), NULL, this );
 
     bpause = false;
@@ -99,7 +108,7 @@ void TTYWindow::CreateLegendBitmap()
     dc.SelectObject( m_bm_legend );
     if( m_bm_legend.IsOk()) {
 
-        dc.SetBackground( wxBrush(GetGlobalColor(_T("DILG1"))) );
+        dc.SetBackground( wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW)) );
         dc.Clear();
 
         wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
@@ -158,6 +167,8 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
         m_buttonPause->SetLabel( _("Pause") );
     }
 }
+
+void TTYWindow::OnCopyClick(wxCommandEvent& event) { m_pScroll->Copy(); }
 
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
 {

@@ -238,7 +238,7 @@ void CustomGrid::OnLabeClick( wxGridEvent& event)
             for( int c = 0; c < m_numCols; c++){
                 double value = m_NumRowVal[idx][c];
                 /*Current direction is generally reported as the "flow" direction, which is opposite from wind convention. So, adjust.*/
-                if( idx == R_CURRENT && m_IsDigit.GetChar(idx) == 'X' ){
+                if( idx == R_CURRENT && m_IsDigit.GetChar(idx) == 'X' && value != GRIB_NOTDEF){
                     value += 180;
                     if(value >= 360) value -= 360;
                     if( value < 0 ) value += 360;
@@ -265,7 +265,7 @@ void CustomGrid::SetNumericalRow( int row, int col, int datatype, double value )
     m_NumRow[datatype] = row;
     m_NumRowVal[datatype].push_back(value);
     /*Current direction is generally reported as the "flow" direction,which is opposite from wind convention. So, adjust.*/
-    if( datatype == R_CURRENT && m_IsDigit.GetChar(datatype) == 'X' ){
+    if( datatype == R_CURRENT && m_IsDigit.GetChar(datatype) == 'X' && value != GRIB_NOTDEF){
         value += 180;
         if(value >= 360) value -= 360;
         if( value < 0 ) value += 360;

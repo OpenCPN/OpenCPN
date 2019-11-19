@@ -95,22 +95,6 @@
 
 #define CHART_DIR "Charts"
 
-void write_file( const wxString extract_file, char *data, unsigned long datasize )
-{
-    wxFileName fn(extract_file);
-    if( wxDirExists( fn.GetPath() ) )
-    {
-        if( !wxFileName::Mkdir(fn.GetPath(), 0755, wxPATH_MKDIR_FULL) )
-        {
-            wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
-            return;
-        }
-    }
-    wxFileOutputStream f(extract_file);
-    f.Write(data, datasize);
-    f.Close();
-}
-
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
@@ -142,7 +126,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
     // Create the PlugIn icons
     initialize_images();
 
-    m_chartSources = NULL;
+    m_pChartSources = NULL;
     m_parent_window = NULL;
     m_pChartCatalog = NULL;
     m_pChartSource = NULL;
@@ -169,7 +153,7 @@ int chartdldr_pi::Init( void )
     m_pconfig = GetOCPNConfigObject();
     m_pOptionsPage = NULL;
 
-    m_chartSources = new wxArrayOfChartSources();
+    m_pChartSources = new wxArrayOfChartSources();
     m_pChartCatalog = new ChartCatalog;
     m_pChartSource = NULL;
 
@@ -182,7 +166,7 @@ int chartdldr_pi::Init( void )
         wxString s1 = st.GetNextToken();
         wxString s2 = st.GetNextToken();
         wxString s3 = st.GetNextToken();
-        m_chartSources->Add(new ChartSource(s1, s2, s3));
+        m_pChartSources->Add(new ChartSource(s1, s2, s3));
     }
     return (
             WANTS_PREFERENCES         |
@@ -195,9 +179,9 @@ bool chartdldr_pi::DeInit( void )
 {
     wxLogMessage(_T("chartdldr_pi: DeInit"));
     
-    //m_chartSources->Clear();
-    //wxDELETE(m_chartSources);
-    //wxDELETE(m_pChartCatalog);
+    m_pChartSources->Clear();
+    wxDELETE(m_pChartSources);
+    wxDELETE(m_pChartCatalog);
     //wxDELETE(m_pChartSource);
     /* TODO: Seth */
 //      dialog->Close();
@@ -318,9 +302,9 @@ bool chartdldr_pi::SaveConfig(void)
 
     m_schartdldr_sources.Clear();
 
-    for( size_t i = 0; i < m_chartSources->GetCount(); i++ )
+    for( size_t i = 0; i < m_pChartSources->GetCount(); i++ )
     {
-        ChartSource *cs = m_chartSources->Item(i);
+        ChartSource *cs = m_pChartSources->Item(i);
         m_schartdldr_sources.Append(wxString::Format(_T("%s|%s|%s|"), cs->GetName().c_str(), cs->GetUrl().c_str(), cs->GetDir().c_str()));
     }
 
@@ -407,13 +391,13 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
             break;
         case ID_MNU_SELUPD:
         {
-            ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
             FillFromFile(cs->GetUrl(), cs->GetDir(), false, true);
             break;
         }
         case ID_MNU_SELNEW:
         {
-            ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
             FillFromFile(cs->GetUrl(), cs->GetDir(), true, false);
             break;
         }
@@ -469,7 +453,7 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 {
-    if (pPlugIn->m_pChartSource == 0)
+    if (pPlugIn->m_pChartSource == NULL)
         return;
 #ifdef __WXGTK__
     wxExecute(wxString::Format(_T("xdg-open %s"), pPlugIn->m_pChartSource->GetDir().c_str()));
@@ -493,11 +477,11 @@ void ChartDldrPanelImpl::SetSource( int id )
     // TODO: DAN - Need to optimze to only update the chart list if needed.
     //             Right now it updates multiple times unnecessarily.
     CleanForm();
-    if( id >= 0 && id < (int)pPlugIn->m_chartSources->Count() )
+    if( id >= 0 && id < (int)pPlugIn->m_pChartSources->Count() )
     {
         ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
         wxYield();
-        ChartSource *cs = pPlugIn->m_chartSources->Item(id);
+        ChartSource *cs = pPlugIn->m_pChartSources->Item(id);
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
@@ -721,8 +705,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
             break;
         UpdateChartList( event );
         DownloadCharts();
-        attempted_to_update += downloading;
-        failed_to_update += failed_downloads;
+        attempted_to_update += m_downloading;
+        failed_to_update += m_failed_downloads;
     }
     wxLogMessage( wxString::Format(_T("chartdldr_pi::UpdateAllCharts() downloaded %d out of %d charts."), attempted_to_update - failed_to_update, attempted_to_update) );
     if( failed_to_update > 0 )
@@ -740,7 +724,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     //TODO: check if everything exists and we can write to the output dir etc.
     if( !m_lbChartSources->GetSelectedItemCount() )
         return;
-    ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+    ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
@@ -985,100 +969,120 @@ void ChartDldrPanelImpl::DownloadCharts()
         wxMessageBox(_("No charts selected for download."));
         return;
     }
-    ChartSource *cs = pPlugIn->m_chartSources->Item(GetSelectedCatalog());
+    ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
     if( m_clCharts->GetCheckedItemCount() == 0 && !updatingAll )
     {
         wxMessageBox(_("No charts selected for download."));
         return;
     }
 
-    failed_downloads = 0;
     cancelled = false;
     to_download = m_clCharts->GetCheckedItemCount();
-    downloading = 0;
+    m_downloading = 0;
+    m_failed_downloads = 0;
     DisableForDownload( false );
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
     DownloadIsCancel = true;
+
+    wxFileName downloaded_p;
+    int idx = -1;
+
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
-        //Prepare download queues
-        if( m_clCharts->IsChecked(i) )
-        {
-            m_bTransferComplete = false;
-            m_bTransferSuccess = true;
-            m_totalsize = _("Unknown");
-            m_transferredsize = _T("0");
-            downloading++;
-            if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
-            {
-                if( wxYES ==
-                        wxMessageBox(
-                                wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
-After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
-                {
-                    wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
-                }
-            }
-            else
-            {
-                //download queue
-                wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
-                if( url.IsReference() )
-                {
-                    wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
-                    this->Enable();
-                    return;
-                }
-                //construct local file path
-                wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
-                wxFileName fn;
-                fn.SetFullName(file);
-                fn.SetPath(cs->GetDir());
-                wxString path = fn.GetFullPath();
-                if( wxFileExists( path ) )
-                    wxRemoveFile( path );
-                wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
-
-                //  Ready to start download
-#ifdef __OCPN__ANDROID__
-                wxString file_path = _T("file://") + fn.GetFullPath();
-#else
-                wxString file_path = fn.GetFullPath();
-#endif
-                
-                long handle;
-                OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
-
-                while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
-                {
-                    m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                                 downloading, to_download, failed_downloads,
-                                                                 m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                    wxMilliSleep(30);
-                    wxYield();
-//                    if( !IsShownOnScreen() )
-//                        cancelled = true;
-                }
-                
-                if(cancelled){
-                    OCPN_cancelDownloadFileBackground( handle );
-                }
-                    
-                if( m_bTransferSuccess && !cancelled )
-                {
-                    wxFileName myfn(path);
-                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
-                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
-                } else {
-                    if( wxFileExists( path ) )
-                        wxRemoveFile( path );
-                    failed_downloads++;
-                }
-            }
-        }
         if( cancelled )
             break;
+        //Prepare download queues
+        if( !m_clCharts->IsChecked(i) )
+            continue;
+
+        m_bTransferComplete = false;
+        m_bTransferSuccess = true;
+        m_totalsize = _("Unknown");
+        m_transferredsize = _T("0");
+        m_downloading++;
+        if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
+        {
+            if( wxYES == wxMessageBox(
+                            wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
+After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
+            {
+                wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
+            }
+            continue;
+        }
+
+        //download queue
+        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
+        if( url.IsReference() )
+        {
+            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            this->Enable();
+            /// XXX undo anything? return or break?
+            return;
+        }
+        //construct local file path
+        wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
+        wxFileName fn;
+        fn.SetFullName(file);
+        fn.SetPath(cs->GetDir());
+        wxString path = fn.GetFullPath();
+        if( wxFileExists( path ) )
+            wxRemoveFile( path );
+        wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+
+        //  Ready to start download
+#ifdef __OCPN__ANDROID__
+        wxString file_path = _T("file://") + fn.GetFullPath();
+#else
+        wxString file_path = fn.GetFullPath();
+#endif
+        
+        long handle;
+        OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
+
+        if (idx >= 0) {
+            pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
+
+            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
+            idx = -1;
+        }
+
+        while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
+        {
+            m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                                                         m_downloading, to_download, m_failed_downloads,
+                                                         m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            wxYield();
+            wxMilliSleep(30);
+//            if( !IsShownOnScreen() )
+//                cancelled = true;
+        }
+        
+        if(cancelled){
+            idx = -1;
+            OCPN_cancelDownloadFileBackground( handle );
+        }
+            
+        if( m_bTransferSuccess && !cancelled )
+        {
+            idx = i;
+            downloaded_p = path;
+        } else {
+            idx = -1;
+            if( wxFileExists( path ) )
+                wxRemoveFile( path );
+            m_failed_downloads++;
+        }
+    }
+    if (idx >= 0) {
+        pPlugIn->ProcessFile(downloaded_p.GetFullPath(), downloaded_p.GetPath(), true, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime());
+
+        cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(idx).number, 
+                                      pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
     }
     DisableForDownload( true );
 #ifdef __OCPN__ANDROID__
@@ -1088,10 +1092,11 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 #endif
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
-    if( failed_downloads > 0 && !updatingAll )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
+    if( m_failed_downloads > 0 && !updatingAll )
+        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
+                , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
-    if( (downloading-failed_downloads > 0) && !updatingAll )
+    if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
 
@@ -1127,12 +1132,12 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     downloadInProgress = false;
     cancelled = true;
     to_download = -1;
-    downloading = -1;
+    m_downloading = -1;
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
     DownloadIsCancel = false;
-    failed_downloads = 0;
+    m_failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
     m_bTransferComplete = true;
     m_bTransferSuccess = true;
@@ -1140,12 +1145,11 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
     m_bconnected = true;
 
-    for (size_t i = 0; i < pPlugIn->m_chartSources->GetCount(); i++)
+    for (size_t i = 0; i < pPlugIn->m_pChartSources->GetCount(); i++)
     {
-        AppendCatalog(pPlugIn->m_chartSources->Item(i));
+        AppendCatalog(pPlugIn->m_pChartSources->Item(i));
     }
     m_populated = true;
-    
 }
 
 void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
@@ -1153,11 +1157,16 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
     if( !m_populated )
     {
         m_populated = true;
-        for (size_t i = 0; i < pPlugIn->m_chartSources->GetCount(); i++)
+        for (size_t i = 0; i < pPlugIn->m_pChartSources->GetCount(); i++)
         {
-            AppendCatalog(pPlugIn->m_chartSources->Item(i));
+            AppendCatalog(pPlugIn->m_pChartSources->Item(i));
         }
     }
+#ifdef __WXMAC__
+    // Mojave does not paint the controls correctly without this.
+    m_lbChartSources->Refresh(true);
+    m_clCharts->Refresh(true);
+#endif
     event.Skip();
 }
 
@@ -1170,7 +1179,7 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
         return;
     int ToBeRemoved = GetSelectedCatalog();
     m_lbChartSources->SetItemState(ToBeRemoved, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
-    pPlugIn->m_chartSources->RemoveAt(ToBeRemoved);
+    pPlugIn->m_pChartSources->RemoveAt(ToBeRemoved);
     m_lbChartSources->DeleteItem(ToBeRemoved);
     CleanForm();
     pPlugIn->SetSourceId(-1);
@@ -1185,40 +1194,31 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
     
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
-    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    dialog->ShowModal();
-    int code2 = dialog->GetReturnCode();    
-    if( code2 == wxID_OK )
-    {
-        ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
-                                          dialog->m_tcChartDirectory->GetValue());
-        pPlugIn->m_chartSources->Add(cs);
-        AppendCatalog(cs);
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+    dialog->ShowWindowModalThenDo([this,dialog](int retcode){
+        if ( retcode == wxID_OK ) {
+            ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
+                                              dialog->m_tcChartDirectory->GetValue());
+            pPlugIn->m_pChartSources->Add(cs);
+            AppendCatalog(cs);
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
+            if( !covered )
+            {
+                wxString dir = cs->GetDir();
+                AddChartDirectory( dir );
+            }
+            SelectCatalog(m_lbChartSources->GetItemCount() - 1);
+            pPlugIn->SaveConfig();
         }
-        if( !covered )
-        {
-            wxString dir = cs->GetDir();
-            AddChartDirectory( dir );
-        }
-        SelectCatalog(m_lbChartSources->GetItemCount() - 1);
-        pPlugIn->SaveConfig();
-    }
-    delete dialog;
+    });
     event.Skip();
-    
-    Show();
 }
 
 void ChartDldrPanelImpl::DoEditSource()
@@ -1228,55 +1228,48 @@ void ChartDldrPanelImpl::DoEditSource()
     int cat = GetSelectedCatalog();
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
-    dialog->SetSourceEdit(pPlugIn->m_chartSources->Item(cat));
+    dialog->SetSourceEdit(pPlugIn->m_pChartSources->Item(cat));
     dialog->SetTitle(_("Edit Chart Source"));
     
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
-    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    Hide();                     // This cleans up the screen a bit, avoiding confusion...
-    
-    if( dialog->ShowModal() == wxID_OK )
-    {
-        pPlugIn->m_chartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
-        pPlugIn->m_chartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
-        pPlugIn->m_chartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
+    dialog->ShowWindowModalThenDo([this,dialog,cat](int retcode){
+        if ( retcode == wxID_OK ) {
+            pPlugIn->m_pChartSources->Item(cat)->SetName(dialog->m_tSourceName->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetUrl(dialog->m_tChartSourceUrl->GetValue());
+            pPlugIn->m_pChartSources->Item(cat)->SetDir(dialog->m_tcChartDirectory->GetValue());
 
-        m_lbChartSources->SetItem(cat, 0, pPlugIn->m_chartSources->Item(cat)->GetName());
-        m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
-        m_lbChartSources->SetItem(cat, 2, pPlugIn->m_chartSources->Item(cat)->GetDir());
-        wxURI url(pPlugIn->m_chartSources->Item(cat)->GetUrl());
-        wxFileName fn(url.GetPath());
-        fn.SetPath(pPlugIn->m_chartSources->Item(cat)->GetDir());
-        wxString path = fn.GetFullPath();
-        if( wxFileExists(path) )
-        {
-            if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+            m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartSources->Item(cat)->GetName());
+            m_lbChartSources->SetItem(cat, 1, _("(Please update first)"));
+            m_lbChartSources->SetItem(cat, 2, pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxURI url(pPlugIn->m_pChartSources->Item(cat)->GetUrl());
+            wxFileName fn(url.GetPath());
+            fn.SetPath(pPlugIn->m_pChartSources->Item(cat)->GetDir());
+            wxString path = fn.GetFullPath();
+            if( wxFileExists(path) )
             {
-                m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
-                m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
-                m_lbChartSources->SetItem(cat, 2, path);
+                if( pPlugIn->m_pChartCatalog->LoadFromFile(path, true) )
+                {
+                    m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
+                    m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
+                    m_lbChartSources->SetItem(cat, 2, path);
+                }
             }
-        }
-        bool covered = false;
-        for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
-        {
-            if( pPlugIn->m_chartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+            bool covered = false;
+            for( size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++ )
             {
-                covered = true;
-                break;
+                if( pPlugIn->m_pChartSources->Item(cat)->GetDir().StartsWith((GetChartDBDirArrayString().Item(i))) )
+                {
+                    covered = true;
+                    break;
+                }
             }
-        }
-        if( !covered )
-            wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_chartSources->Item(cat)->GetDir().c_str()),
-                         _("Chart Downloader") );
+            if( !covered )
+                wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
+                             _("Chart Downloader") );
 
-        pPlugIn->SaveConfig();
-        SetSource(cat);
-    }
-    delete dialog;
-    
-    Show();
+            pPlugIn->SaveConfig();
+            SetSource(cat);
+        }
+    });
 }
 
 void ChartDldrPanelImpl::EditSource( wxCommandEvent& event )
@@ -1585,7 +1578,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 {
     bool ret = true;
 
-    std::auto_ptr<wxZipEntry> entry(new wxZipEntry());
+    std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 
     do
     {
@@ -1700,6 +1693,8 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     LoadSources();
     m_nbChoice->SetSelection(0);
     //m_treeCtrlPredefSrcs->ExpandAll();
+    
+    Fit();
 
     applyStyle();
 }
@@ -1709,15 +1704,20 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
     wxTreeItemId tree = m_treeCtrlPredefSrcs->AddRoot(_T("root"));
 
     wxFileName fn;
-    fn.SetPath(*GetpSharedDataLocation());
-    fn.AppendDir(_T("plugins"));
-    fn.AppendDir(_T("chartdldr_pi"));
-    fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("chart_sources.xml"));
+    fn.SetPath(*GetpPrivateApplicationDataLocation());
+    fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
     if( !fn.FileExists() )
     {
-        wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
-        return false;
+        fn.SetPath(*GetpSharedDataLocation());
+        fn.AppendDir(_T("plugins"));
+        fn.AppendDir(_T("chartdldr_pi"));
+        fn.AppendDir(_T("data"));
+        fn.SetFullName(_T("chart_sources.xml"));
+        if( !fn.FileExists() )
+        {
+            wxLogMessage( wxString::Format(_T("Error: chartdldr_pi::LoadSources() %s not found!"), fn.GetFullPath().c_str()) );
+            return false;
+        }
     }
     wxString path = fn.GetFullPath();
     TiXmlDocument * doc = new TiXmlDocument();
@@ -1964,7 +1964,7 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl( const wxString Url, bool catalog_xml
     return re.Matches(Url);
 }
 
-wxString FormatBytes(double bytes)
+static wxString FormatBytes(double bytes)
 {
     return wxString::Format( _T("%.1fMB"), bytes / 1024 / 1024 );
 }

@@ -40,7 +40,7 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
-
+extern bool g_bPluginHandleAutopilotRoute;
 
 //----------------------------------------------------------------------------
 //    forward class declarations
@@ -82,7 +82,8 @@ public:
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
-
+      void RemovePointFromRoute( RoutePoint* point, Route* route, ChartCanvas *cc );
+          
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);

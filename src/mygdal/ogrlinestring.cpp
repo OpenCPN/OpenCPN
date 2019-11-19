@@ -409,7 +409,7 @@ void OGRLineString::setNumPoints( int nNewPointCount )
 
         assert( paoPoints != NULL );
 
-        memset( paoPoints + nPointCount,
+        memset( (void*) (paoPoints + nPointCount),
                 0, sizeof(OGRRawPoint) * (nNewPointCount - nPointCount) );
 
         if( getCoordinateDimension() == 3 )

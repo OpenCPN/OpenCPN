@@ -38,7 +38,7 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    15
+#define     MY_API_VERSION_MINOR    16
 
 #include "../../../include/ocpn_plugin.h"
 
@@ -62,7 +62,7 @@
 #define SEPARATED_HORIZONTAL   2          // dialog separated shown honrizontaly
 #define SEPARATED_VERTICAL     3          // dialog separated shown vaerticaly
 
-class grib_pi : public opencpn_plugin_115
+class grib_pi : public opencpn_plugin_116
 {
 public:
       grib_pi(void *ppimgr);
@@ -84,10 +84,12 @@ public:
 //    The override PlugIn Methods
       bool MouseEventHook( wxMouseEvent &event);
       bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+      bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
       void SetCursorLatLon(double lat, double lon);
       void OnContextMenuItemCallback(int id);
       void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex);
       void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
       int GetToolBarToolCount(void);
@@ -144,7 +146,8 @@ private:
       // preference data
       bool              m_bGRIBUseHiDef;
       bool              m_bGRIBUseGradualColors;
-      bool		m_bDrawBarbedArrowHead;
+      bool              m_bDrawBarbedArrowHead;
+      bool              m_bZoomToCenterAtInit;
       int              m_bTimeZone;
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
@@ -161,6 +164,7 @@ private:
 
       bool        m_bShowGrib;
       PlugIn_ViewPort  m_current_vp;
+      wxBitmap         m_panelBitmap;
 };
 
 //----------------------------------------------------------------------------------------

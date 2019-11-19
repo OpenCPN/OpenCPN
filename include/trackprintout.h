@@ -24,8 +24,6 @@
  **************************************************************************/
 
 #include <iostream>
-using namespace std; // FIXME: 'using namespace' must not be used in header files
-
 
 #ifndef __TRACKPRINTOUT_H__
 #define __TRACKPRINTOUT_H__
@@ -42,6 +40,7 @@ using namespace std; // FIXME: 'using namespace' must not be used in header file
 #include "navutil.h"
 #include "TrackPropDlg.h"
 #include "printtable.h"
+#include "chart1.h"
 
 class MyTrackPrintout : public MyPrintout {
 public:

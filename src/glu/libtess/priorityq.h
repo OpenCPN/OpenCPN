@@ -32,8 +32,8 @@
 **
 */
 
-#ifndef __priorityq_sort_h_
-#define __priorityq_sort_h_
+#ifndef __priorityq_h_
+#define __priorityq_h_
 
 #include "priorityq-heap.h"
 

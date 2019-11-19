@@ -33,7 +33,7 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-S57ClassRegistrar *OGRS57DataSource::poRegistrar = NULL;
+//S57ClassRegistrar *OGRS57DataSource::poRegistrar = NULL;
 
 /************************************************************************/
 /*                          OGRS57DataSource()                          */

@@ -43,6 +43,7 @@
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 class MyFrame;
+class ChartCanvas;
 
 //----------------------------------------------------------------------------
 // Piano
@@ -50,7 +51,7 @@ class MyFrame;
 class Piano : public wxEvtHandler
 {
 public:
-      Piano();
+      Piano( ChartCanvas *parent );
       ~Piano();
 
       void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
@@ -59,14 +60,16 @@ public:
       void FormatKeys(void);
       bool MouseEvent(wxMouseEvent& event);
       void SetColorScheme(ColorScheme cs);
-      void SetKeyArray(ArrayOfInts piano_chart_index_array);
+      void SetKeyArray(std::vector<int> piano_chart_index_array);
       void SetActiveKey(int iactive) { m_iactive = iactive; }
-      void SetActiveKeyArray(ArrayOfInts array);
-      void SetNoshowIndexArray(ArrayOfInts array);
-      void SetEclipsedIndexArray(ArrayOfInts array);
-      void SetSkewIndexArray(ArrayOfInts array);
-      void SetTmercIndexArray(ArrayOfInts array);
-      void SetPolyIndexArray(ArrayOfInts array);
+      void SetActiveKeyArray(std::vector<int> array);
+      void SetNoshowIndexArray(std::vector<int> array);
+      void SetEclipsedIndexArray(std::vector<int> array);
+      void SetSkewIndexArray(std::vector<int> array);
+      void SetTmercIndexArray(std::vector<int> array);
+      void SetPolyIndexArray(std::vector<int> array);
+
+      std::vector<int>  GetActiveKeyArray() { return m_active_index_array; }
 
       void SetVizIcon(wxBitmap *picon_bmp){ if( m_pVizIconBmp ) delete m_pVizIconBmp; m_pVizIconBmp = picon_bmp; }
       void SetInVizIcon(wxBitmap *picon_bmp){ if( m_pInVizIconBmp ) delete m_pInVizIconBmp; m_pInVizIconBmp = picon_bmp; }
@@ -81,6 +84,7 @@ public:
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
 
       int GetHeight();
+      int GetWidth();
       
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
@@ -89,10 +93,12 @@ public:
       
 private:
       void BuildGLTexture();
-      bool InArray(ArrayOfInts &array, int key);
+      bool InArray(std::vector<int> &array, int key);
 
       wxString GetStateHash();
       wxString    m_hash;
+      
+      ChartCanvas *m_parentCanvas;
       
       int         m_nRegions;
       int         m_index_last;
@@ -100,22 +106,21 @@ private:
       int         m_hover_last;
 
       wxBrush     m_backBrush;
-      wxBrush     m_tBrush;
-      wxBrush     m_vBrush;
-      wxBrush     m_svBrush;
-      wxBrush     m_uvBrush;
-      wxBrush     m_slBrush;
+      wxBrush     m_srBrush, m_rBrush;
+      wxBrush     m_svBrush, m_vBrush;
+      wxBrush     m_unavailableBrush;
+      wxBrush     m_utileBrush, m_tileBrush;
 
       wxBrush     m_cBrush;
       wxBrush     m_scBrush;
 
-      ArrayOfInts m_key_array;
-      ArrayOfInts m_noshow_index_array;
-      ArrayOfInts m_active_index_array;
-      ArrayOfInts m_eclipsed_index_array;
-      ArrayOfInts m_skew_index_array;
-      ArrayOfInts m_tmerc_index_array;
-      ArrayOfInts m_poly_index_array;
+      std::vector<int> m_key_array;
+      std::vector<int> m_noshow_index_array;
+      std::vector<int> m_active_index_array;
+      std::vector<int> m_eclipsed_index_array;
+      std::vector<int> m_skew_index_array;
+      std::vector<int> m_tmerc_index_array;
+      std::vector<int> m_poly_index_array;
       bool        m_bBusy;
       wxTimer     m_eventTimer;
       int         m_click_sel_index;
@@ -135,7 +140,8 @@ private:
       bool        m_bleaving;
 
       GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
-
+      int         m_width;
+      
 DECLARE_EVENT_TABLE()
 };
 

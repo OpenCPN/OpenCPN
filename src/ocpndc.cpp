@@ -920,7 +920,7 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
         }
 
         for( unsigned int i=0; i<gTesselatorVertices.Count(); i++ )
-            delete (GLvertex*)gTesselatorVertices.Item(i);
+            delete (GLvertex*)gTesselatorVertices[i];
         gTesselatorVertices.Clear();
     }
 #endif    

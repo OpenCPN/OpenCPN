@@ -157,6 +157,11 @@ extern "C"
     /* reads from a string */
     size_t wxcurl_string_read(void* ptr, size_t size, size_t nmemb, void* pcharbuf)
     {
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && __GNUC__ >= 8
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
         size_t iRealSize = size * nmemb;
         size_t iRetVal = 0;
 
@@ -182,6 +187,7 @@ extern "C"
         }
 
         return iRetVal;
+#pragma GCC diagnostic pop
     }
 
     /* reads from a stream */
@@ -202,7 +208,6 @@ extern "C"
     }
 }
 
-
 // base.cpp: implementation of the wxCurlProgressBaseEvent class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -222,7 +227,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetElapsedTime() const
 wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedTime() const
 {
     double nBytesPerSec = GetSpeed();
-    if (nBytesPerSec == 0 || wxIsNaN(nBytesPerSec))
+    if (nBytesPerSec == 0 || std::isnan(nBytesPerSec))
         return wxTimeSpan(0);       // avoid division by zero
 
     // compute remaining seconds; here we assume that the current
@@ -248,7 +253,7 @@ wxTimeSpan wxCurlProgressBaseEvent::GetEstimatedRemainingTime() const
 std::string wxCurlProgressBaseEvent::GetHumanReadableSpeed(const std::string &invalid, int precision) const
 {
     double speed = GetSpeed();
-    if (speed == 0 || wxIsNaN(speed))
+    if (speed == 0 || std::isnan(speed))
         return invalid;
 
     wxULongLong ull((wxULongLong_t)speed);
@@ -404,7 +409,6 @@ wxCurlBase::wxCurlBase(const wxString& szURL /*= wxEmptyString*/,
                     long flags /*=wxCURL_DEFAULT_FLAGS*/)
  : m_pCURL(NULL),
 m_bAbortHungTransfer(false),
-m_szBaseURL(wxCURL_STRING2BUF(szURL)),
 m_szCurrFullURL(wxCURL_STRING2BUF(szURL)),
 m_szUsername(wxCURL_STRING2BUF(szUserName)),
 m_szPassword(wxCURL_STRING2BUF(szPassword)),
@@ -434,10 +438,11 @@ wxCurlBase::~wxCurlBase()
 //////////////////////////////////////////////////////////////////////
 // LibCURL Abstraction Methods
 //////////////////////////////////////////////////////////////////////
-
 typedef int (*func_T)(void);
 bool wxCurlBase::SetOpt(CURLoption option, ...)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvarargs"
     va_list arg;
 
     func_T param_func = (func_T)0;
@@ -475,6 +480,7 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
 
     DumpErrorIfNeed(res);
     return (res == CURLE_OK);
+#pragma clang diagnostic pop
 }
 
 bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
@@ -494,6 +500,8 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
 
 bool wxCurlBase::GetInfo(CURLINFO info, ...) const
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvarargs"
     va_list arg;
     void* pParam;
 
@@ -507,6 +515,7 @@ bool wxCurlBase::GetInfo(CURLINFO info, ...) const
     DumpErrorIfNeed(res);
     va_end(arg);
     return (res == CURLE_OK);
+#pragma clang diagnostic pop
 }
 
 bool wxCurlBase::Perform()
@@ -632,7 +641,7 @@ std::string wxCurlBase::GetBaseURL() const
 
 void wxCurlBase::SetURL(const wxString& szRelativeURL)
 {
-    wxString str = wxCURL_BUF2STRING(m_szCurrFullURL) + szRelativeURL;
+    wxString str = wxCURL_BUF2STRING(m_szBaseURL) + szRelativeURL;
     m_szCurrFullURL = wxCURL_STRING2BUF(str);
 }
 
@@ -822,7 +831,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_WRITEHEADER, &m_szResponseHeader);
         SetOpt(CURLOPT_ERRORBUFFER, m_szDetailedErrorBuffer);
         SetOpt(CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0\r\n" \
-                    "Accept: application/xml,text/html,application/xhtml+xml;q=0.9,*/*;q=0.8\r\n" \
+                    "Accept: */*\r\n" \
                     "Connection: keep-alive"); //Pretend we are a normal browser
         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef __WXMSW__

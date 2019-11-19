@@ -76,6 +76,7 @@ wxCrashPrint::wxCrashPrint (int flags, const wxString &fname) {
 // general functions
 
 void wxCrashPrint::Report () {
+#if defined(__linux__)
     wxString appname = wxTheApp->GetAppName();
 
     // get the backtrace with symbols
@@ -97,7 +98,7 @@ void wxCrashPrint::Report () {
     wxString cur, addr, func, addrs;
     wxArrayString lines;
     size_t pos1, pos2;
-    for (int i = 0; i < btCount; ++i) {
+    if (m_btStrings) for (int i = 0; i < btCount; ++i) {
         cur = wxString::FromAscii  (m_btStrings[i]);
         pos1 = cur.rfind ('[');
         pos2 = cur.rfind (']');
@@ -136,5 +137,5 @@ void wxCrashPrint::Report () {
             wxPrintf (_T("%s\n"), lines[i].c_str());
         }
     }
-
+#endif
 }

@@ -49,21 +49,25 @@ wxCurlProtocol wxCurlBaseThread::GetProtocolFromURL(const wxString &url)
 }
 
 /* static */
-wxCurlBase *wxCurlBaseThread::CreateHandlerFor(wxCurlProtocol prot)
+std::shared_ptr<wxCurlBase> wxCurlBaseThread::CreateHandlerFor(wxCurlProtocol prot)
 {
     switch (prot)
     {
         case wxCP_HTTP:
-            return new wxCurlHTTP;
+            return std::shared_ptr<wxCurlBase>(new wxCurlHTTP); // std::make_shared<wxCurlHTTP>();
         case wxCP_FTP:
-            return new wxCurlFTP;
-
+            return std::shared_ptr<wxCurlBase>(new wxCurlFTP); // std::make_shared<wxCurlFTP>();
         default:
-            return NULL;
+            return std::shared_ptr<wxCurlBase>(nullptr);
     }
 }
 
 wxCurlThreadError wxCurlBaseThread::SetURL(const wxString &url)
+{
+    return SetURL( url, std::shared_ptr<wxCurlBase>(nullptr));
+}
+
+wxCurlThreadError wxCurlBaseThread::SetURL(const wxString &url, std::shared_ptr<wxCurlBase> pCurl )
 {
     wxCHECK_MSG(!IsAlive(), wxCTE_NO_RESOURCE, wxS("Cannot use this function after the tranfer has begun"));
 
@@ -72,13 +76,17 @@ wxCurlThreadError wxCurlBaseThread::SetURL(const wxString &url)
     if (curr == wxCP_INVALID)
         return wxCTE_INVALID_PROTOCOL;
 
-    if (curr != m_protocol)
+    if (curr != m_protocol && pCurl == 0)
     {
+        wxASSERT(m_pCurl == 0);
         m_protocol = curr;
 
         // we need to (re)create the m_pCurl object
-        wxDELETE(m_pCurl);
         m_pCurl = CreateHandlerFor(m_protocol);
+    }
+    else if (pCurl != 0) {
+        m_protocol = curr;
+        m_pCurl = pCurl;
     }
 
     if (!m_pCurl || !m_pCurl->IsOk())
@@ -256,10 +264,10 @@ void *wxCurlDownloadThread::Entry()
     switch (m_protocol)
     {
         case wxCP_HTTP:
-            return (void*)wx_static_cast(wxCurlHTTP*, m_pCurl)->Get(m_output, m_url);
+            return (void*)wx_static_cast(wxCurlHTTP*, m_pCurl.get())->Get(m_output, m_url);
 
         case wxCP_FTP:
-            return (void*)wx_static_cast(wxCurlFTP*, m_pCurl)->Get(m_output, m_url);
+            return (void*)wx_static_cast(wxCurlFTP*, m_pCurl.get())->Get(m_output, m_url);
 
         default: break;
     }
@@ -351,10 +359,10 @@ void *wxCurlUploadThread::Entry()
     switch (m_protocol)
     {
         case wxCP_HTTP:
-            return (void*)wx_static_cast(wxCurlHTTP*, m_pCurl)->Put(m_input, m_url);
+            return (void*)wx_static_cast(wxCurlHTTP*, m_pCurl.get())->Put(m_input, m_url);
 
         case wxCP_FTP:
-            return (void*)wx_static_cast(wxCurlFTP*, m_pCurl)->Put(m_input, m_url);
+            return (void*)wx_static_cast(wxCurlFTP*, m_pCurl.get())->Put(m_input, m_url);
             
         default: break;
     }

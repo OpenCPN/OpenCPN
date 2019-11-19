@@ -110,7 +110,7 @@ class OGRS57DataSource
 
     S57Writer           *poWriter;
 
-    static S57ClassRegistrar *poRegistrar;
+    S57ClassRegistrar *poRegistrar;
 
     int                 bClassCountSet;
     int                 anClassCount[MAX_CLASSES];

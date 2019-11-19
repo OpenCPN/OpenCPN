@@ -32,12 +32,13 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
+#include "RoutePoint.h"
+#include "chcanv.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern MyFrame *gFrame;
-extern ChartCanvas *cc1;
 extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx;
@@ -47,7 +48,6 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern ChartCanvas *cc1;
 extern OCPNPlatform  *g_Platform;
 
 
@@ -189,11 +189,11 @@ void AISTargetAlertDialog::CreateControls()
     
     m_pAlertTextCtl->SetBorders( 5 );
 
-    topSizer->Add( m_pAlertTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
+    topSizer->Add( m_pAlertTextCtl, 1, wxALL | wxEXPAND, 5 );
 
     // A horizontal box sizer to contain Ack
     wxBoxSizer* AckBox = new wxBoxSizer( wxHORIZONTAL );
-    topSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
+    topSizer->Add( AckBox, 0, wxALL, 5 );
 
     // The Silence button
     if( g_bAIS_CPA_Alert_Audio ){
@@ -255,8 +255,9 @@ void AISTargetAlertDialog::UpdateText()
 
         wxString html;
         wxColor bg = GetBackgroundColour();
-        
-        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+        wxColor fg = GetForegroundColour();
+
+        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
         
         html << m_alert_text;
         html << _T("</center></font></body></html>");
@@ -379,17 +380,17 @@ void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
     if( m_pdecoder ) { 
         AIS_Target_Data *td =  m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
         if( td ) {
-            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
             
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
-            if(cc1){
-                cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-                cc1->undo->AfterUndoableAction( NULL );
-                cc1->InvalidateGL();
+            if(gFrame->GetPrimaryCanvas()){
+                gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+                gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
+                gFrame->InvalidateAllGL();
             }
             Refresh( false );
         }
@@ -411,7 +412,7 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 {
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
-        if( td ) gFrame->JumpToPosition( td->Lat, td->Lon, cc1->GetVPScale() );
+        if( td ) gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), td->Lat, td->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
     }
 }
 

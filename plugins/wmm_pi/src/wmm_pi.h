@@ -45,10 +45,9 @@
 
 #include "ocpn_plugin.h"
 
-#include "WMMHeader.h"
-#include "WMM_SubLibrary.c"
+#include "GeomagnetismHeader.h"
+#include "EGM9615.h"
 #include "WmmUIDialog.h"
-#include "WMM_COF.h"
 #include "MagneticPlotMap.h"
 
 #include "jsonreader.h"
@@ -130,13 +129,14 @@ public:
     void ShowPlotSettings();
 
 //    WMM Declarations
-    WMMtype_MagneticModel *MagneticModel, *TimedMagneticModel;
-    WMMtype_Ellipsoid Ellip;
-    WMMtype_CoordSpherical CoordSpherical;
-    WMMtype_CoordGeodetic CoordGeodetic;
-    WMMtype_Date UserDate;
-    WMMtype_GeoMagneticElements GeoMagneticElements;
-    WMMtype_Geoid Geoid;
+    MAGtype_MagneticModel *MagneticModels[1];
+    MAGtype_MagneticModel *MagneticModel, *TimedMagneticModel;
+    MAGtype_Ellipsoid Ellip;
+    MAGtype_CoordSpherical CoordSpherical;
+    MAGtype_CoordGeodetic CoordGeodetic;
+    MAGtype_Date UserDate;
+    MAGtype_GeoMagneticElements GeoMagneticElements;
+    MAGtype_Geoid Geoid;
     wxString filename;
 
     wxWindow       *m_parent_window;
@@ -178,8 +178,8 @@ private:
     void          SendBoatVariation();
     void          SendCursorVariation();
 
-    WMMtype_GeoMagneticElements m_cursorVariation;
-    WMMtype_GeoMagneticElements m_boatVariation;
+    MAGtype_GeoMagneticElements m_cursorVariation;
+    MAGtype_GeoMagneticElements m_boatVariation;
 
     bool m_bComputingPlot;
     wxFont        *pFontSmall;
@@ -187,6 +187,6 @@ private:
     wxString      m_shareLocn;
 };
 
-int WMM_setupMagneticModel(char *data, WMMtype_MagneticModel * MagneticModel);
+int WMM_setupMagneticModel(char *data, MAGtype_MagneticModel * MagneticModel);
 
 #endif

@@ -91,7 +91,7 @@ protected:
                 OGRLayerAttrIndex();
 
 public:
-    virtual     ~OGRLayerAttrIndex();
+    virtual     ~OGRLayerAttrIndex() = 0;
 
     virtual OGRErr Initialize( const char *pszIndexPath, OGRLayer * ) = 0;
 
