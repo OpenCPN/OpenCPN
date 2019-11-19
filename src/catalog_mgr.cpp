@@ -137,6 +137,12 @@ class CatalogUpdate: public wxDialog, Helpers
             ShowModal();
         }
 
+        bool Destroy()
+        {
+            GetParent()->GetParent()->Close();
+            return wxDialog::Destroy();
+        }
+
     protected:
         const char* const HIDE =
             _("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
@@ -535,8 +541,8 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
-                new CatalogUpdate(0);
-                GetParent()->Close();
+                new CatalogUpdate(this);
+                GetParent()->Hide();
             }
         }
 
