@@ -139,9 +139,9 @@ class CatalogUpdate: public wxDialog, Helpers
 
         bool Destroy()
         {
-            GetParent()->GetParent()->Close();
             GetParent()->GetParent()->GetParent()->SetFocus();
             GetParent()->GetParent()->GetParent()->Raise();
+            GetParent()->GetParent()->Close();
             return wxDialog::Destroy();
         }
 
