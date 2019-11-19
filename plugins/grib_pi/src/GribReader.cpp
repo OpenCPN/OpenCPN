@@ -132,28 +132,26 @@ void GribReader::readAllGribRecords()
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV2Record(file, id);
-                if (rec->isOk() == true)
-                    is_v2 = true;
+                is_v2 = rec->isOk();
             }
         }
         else {
             GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
             if (rec2 && rec2->hasMoreDataSet())  {
-                rec = static_cast<GribV2Record *>(rec)->GribV2NextDataSet(file, id);
-                if (prevDataSet != 0) {
-                    delete prevDataSet;
-                }
+                rec = rec2->GribV2NextDataSet(file, id);
+                delete prevDataSet;
             }
             else {
                 rec = new GribV2Record(file, id);
             }
+
+            is_v2 = rec->isOk();
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV1Record(file, id);
             }
-            else 
-                is_v2 = true;
         }
+        prevDataSet = 0;
         if (rec->isOk() == false)
         {
             delete rec;
@@ -161,16 +159,14 @@ void GribReader::readAllGribRecords()
         }
         b_EOF = rec->isEof();
 
-        prevDataSet = 0;
         if (!rec->isDataKnown())
         {
             GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
-            if ( rec2 == 0 || rec2->hasMoreDataSet()) {
+            if ( rec2 == 0 || !rec2->hasMoreDataSet()) {
                 delete rec;
                 rec = 0;
             }
-            else if (is_v2) {
-                // must delete it in the next iteration
+            else { // must delete it in the next iteration
                 prevDataSet = rec;
             }
             continue;
@@ -271,11 +267,12 @@ void GribReader::readAllGribRecords()
                 delete rec;
                 rec = 0;
             }
-            else if (is_v2) {
+            else {
                 prevDataSet = rec;
             }
         }
     } while (!b_EOF);
+    delete prevDataSet;
 }
 
 
@@ -353,22 +350,30 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
         return;
 
 	// XXX only work if P2 -P1 === time
-    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit)
-    {
+    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit) {
 		time_t date = *rit;
 		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
 		if ( rec && rec->isOk() ) {
 		    
 		    // XXX double check reference date and timerange 
-		    if (prev != 0 )
-		    {
-		        if (rec->getTimeRange() == 4 && prev->getPeriodP1() == rec->getPeriodP1()) {
+		    if (prev != 0 ) {
+		        if (prev->getPeriodP1() == rec->getPeriodP1()) {
 		            // printf("substract %d %d %d\n", prev->getPeriodP1(), prev->getPeriodP2(), prev->getPeriodSec());
-		            prev->Substract(*rec);
-		            p1 = rec->getPeriodP2();
+		            if (rec->getTimeRange() == 4) {
+		                // accumulation
+		                // prev = prev -rec
+		                prev->Substract(*rec);
+		                p1 = rec->getPeriodP2();
+                    }
+                    else if (rec->getTimeRange() == 3) {
+                        // average
+                        // prev = (prev*d2 - rec*d1) / (double) (d2 - d1);
+                        prev->Average(*rec);
+                        p1 = rec->getPeriodP2();
+                    }
                 }
                 // convert to mm/h
-                if (p2 > p1) {
+                if (p2 > p1 && rec->getTimeRange() == 4 ) {
                     prev->multiplyAllData( 1.0/(p2 -p1) );
                 }
                 p2 = p1 = 0;
@@ -378,7 +383,7 @@ void  GribReader::computeAccumulationRecords (int dataType, int levelType, int l
 		    p2 = prev->getPeriodP2();
 		}
 	}
-	if (prev != 0 && p2 > p1) {
+	if (prev != 0 && p2 > p1 && prev->getTimeRange() == 4 ) {
 	    // the last one
         prev->multiplyAllData( 1.0/(p2 -p1) );
 	}
@@ -446,8 +451,8 @@ void GribReader::readGribFileContent()
 					for (zuint i=0; i<(zuint)recModel->getNi(); i++)
 					    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
 					    {
-					        double x = recModel->getX(i);
-						double y = recModel->getY(j);
+					        double x, y;
+					        recModel->getXY(i, j, &x, &y);
 						double dp = computeDewPoint(x, y, date);
 						recDewpoint->setValue(i, j, dp);
                                             }
@@ -571,35 +576,6 @@ double 	GribReader::get2GribsInterpolatedValueByDate (
 	return val;
 }
 
-//---------------------------------------------------
-// Rectangle de la zone couverte par les données
-bool GribReader::getZoneExtension(double *x0,double *y0, double *x1,double *y1)
-{
-    std::vector<GribRecord *> *ls = getFirstNonEmptyList();
-    if (ls != NULL) {
-        GribRecord *rec = ls->at(0);
-        if (rec != NULL) {
-            *x0 = rec->getX(0);
-            *y0 = rec->getY(0);
-            *x1 = rec->getX( rec->getNi()-1 );
-            *y1 = rec->getY( rec->getNj()-1 );
-            if (*x0 > *x1) {
-				double tmp = *x0;
-				*x0 = *x1;
-				*x1 = tmp;
-            }
-            if (*y0 > *y1) {
-				double tmp = *y0;
-				*y0 = *y1;
-				*y1 = tmp;
-            }
-        }
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 //---------------------------------------------------
 // Premier GribRecord trouvé (pour récupérer la grille)
 GribRecord * GribReader::getFirstGribRecord()

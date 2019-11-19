@@ -217,6 +217,7 @@ public:
       wxChoice                     *m_pChoiceUTCOffset;
       wxChoice                     *m_pChoiceSpeedUnit;
       wxChoice                     *m_pChoiceDepthUnit;
+      wxSpinCtrlDouble             *m_pSpinDBTOffset;
       wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
 
@@ -260,7 +261,8 @@ enum
 {
       ID_DASH_PREFS = 999,
       ID_DASH_VERTICAL,
-      ID_DASH_HORIZONTAL
+      ID_DASH_HORIZONTAL,
+      ID_DASH_UNDOCK
 };
 
 class DashboardWindow : public wxWindow

@@ -25,11 +25,11 @@
 #ifndef __S57QUERYDIALOG_H__
 #define __S57QUERYDIALOG_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 
 class wxHtmlWindow;
 
-class S57QueryDialog: public wxDialog
+class S57QueryDialog: public wxFrame
 {
       DECLARE_CLASS( S57QueryDialog )
                   DECLARE_EVENT_TABLE()
@@ -62,6 +62,9 @@ class S57QueryDialog: public wxDialog
             void RecalculateSize( void );
             
             void OnClose(wxCloseEvent& event);
+            void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
+    
+            void OnOKClick(wxCommandEvent& event) { Close(); }
 
       //    Overrides
             void OnPaint ( wxPaintEvent& event );
@@ -71,7 +74,38 @@ class S57QueryDialog: public wxDialog
       //    Data
             wxHtmlWindow      *m_phtml;
             wxSize            m_createsize;
+    
+            wxButton          *m_btnOK;
+};
 
+class S57ExtraQueryInfoDlg: public S57QueryDialog
+{
+        DECLARE_CLASS( S57ExtraQueryInfoDlg )
+        DECLARE_EVENT_TABLE()
+    public:
+
+      /// Constructors
+
+            S57ExtraQueryInfoDlg( );
+            S57ExtraQueryInfoDlg( wxWindow* parent,
+                            wxWindowID id = wxID_ANY,
+                            const wxString& caption = _("Extra Object Info"),
+                                        const wxPoint& pos = wxDefaultPosition,
+                                        const wxSize& size = wxDefaultSize,
+                                        long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+            bool Create( wxWindow* parent,
+                         wxWindowID id = wxID_ANY,
+                         const wxString& caption = _("Extra Object Info"),
+                                     const wxPoint& pos = wxDefaultPosition,
+                                     const wxSize& size = wxDefaultSize,
+                                     long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+
+            ~S57ExtraQueryInfoDlg( );
+            void OnClose(wxCloseEvent& event);
+            void OnSize( wxSizeEvent& event );
+            void RecalculateSize( void );
+private:
+            wxButton          *m_btnOK;
 };
 
 #endif

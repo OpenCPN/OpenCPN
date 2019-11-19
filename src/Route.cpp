@@ -32,6 +32,7 @@
 #include "multiplexer.h"
 #include "Select.h"
 #include "georef.h"
+#include "chcanv.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -44,6 +45,7 @@ extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
+extern wxString g_default_routepoint_icon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -85,17 +87,19 @@ Route::Route()
     
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+    m_HyperlinkList = new HyperlinkList;
 }
 
 Route::~Route()
 {
     pRoutePointList->DeleteContents( false );            // do not delete Marks
     delete pRoutePointList;
+    delete m_HyperlinkList;
 }
 
 // The following is used only for route splitting, assumes just created, empty route
 //
-void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
+void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix, const bool duplicate_first_point)
 {
     m_RouteNameString = psourceroute->m_RouteNameString + suffix;
     m_RouteStartString = psourceroute->m_RouteStartString;
@@ -103,11 +107,12 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
 
     int i;
     for( i = start_nPoint; i <= end_nPoint; i++ ) {
-        if( !psourceroute->m_bIsInLayer ) AddPoint( psourceroute->GetPoint( i ), false );
-        else {
+        if( !psourceroute->m_bIsInLayer && !(i == start_nPoint && duplicate_first_point) ) {
+            AddPoint( psourceroute->GetPoint( i ), false );
+        } else {
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                    psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
+                    psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
 
             AddPoint( ptargetpoint, false );
         }
@@ -151,8 +156,9 @@ RoutePoint *Route::GetPoint( int nWhichPoint )
     int i = 1;
     while( node ) {
         prp = node->GetData();
-        if( i == nWhichPoint ) return prp;
-
+        if( i == nWhichPoint ) {
+            return prp;
+        }
         i++;
         node = node->GetNext();
     }
@@ -175,13 +181,13 @@ RoutePoint *Route::GetPoint( const wxString &guid )
     return ( NULL );
 }
 
-void Route::DrawPointWhich( ocpnDC& dc, int iPoint, wxPoint *rpn )
+void Route::DrawPointWhich( ocpnDC& dc, ChartCanvas *canvas, int iPoint, wxPoint *rpn )
 {
     if( iPoint <= GetnPoints() )
-        GetPoint( iPoint )->Draw( dc, rpn );
+        GetPoint( iPoint )->Draw( dc, canvas, rpn );
 }
 
-void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow )
+void Route::DrawSegment( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow )
 {
     if( m_bRtIsSelected ) dc.SetPen( *g_pRouteMan->GetSelectedRoutePen() );
     else
@@ -192,11 +198,13 @@ void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, b
     RenderSegment( dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow );
 }
 
-void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
+void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 {
     if( pRoutePointList->empty() )
         return;
 
+    ViewPort vp = canvas->GetVP();
+    
     LLBBox test_box = GetBBox();
     if( box.IntersectOut( test_box ) ) // Route is wholly outside window
         return;
@@ -239,22 +247,22 @@ void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
 
     wxPoint rpt1, rpt2;
     if ( m_bVisible )
-        DrawPointWhich( dc, 1, &rpt1 );
+        DrawPointWhich( dc, canvas, 1, &rpt1 );
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
     node = node->GetNext();
 
     if ( !m_bVisible && prp1->m_bKeepXRoute )
-            prp1->Draw( dc );
+            prp1->Draw( dc, canvas );
 
     while( node ) {
 
         RoutePoint *prp2 = node->GetData();
         if ( !m_bVisible && prp2->m_bKeepXRoute )
-            prp2->Draw( dc );
+            prp2->Draw( dc, canvas );
         else if (m_bVisible)
-            prp2->Draw( dc, &rpt2 );
+            prp2->Draw( dc, canvas, &rpt2 );
 
         if ( m_bVisible )
         {
@@ -308,7 +316,6 @@ void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
     }
 }
 
-extern ChartCanvas *cc1;
 
 static void TestLongitude(double lon, double min, double max, bool &lonl, bool &lonr)
 {
@@ -330,7 +337,7 @@ static void TestLongitude(double lon, double min, double max, bool &lonl, bool &
     }
 }
 
-void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
+void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL    
     float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * vp.view_scale_ppm;
@@ -341,10 +348,10 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
     
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp2 = node->GetData();
-    cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
+    canvas->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
     if(GetnPoints() == 1 && dc) { // single point.. make sure it shows up for highlighting
-        cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
+        canvas->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
         dc->DrawLine(r1.m_x, r1.m_y, r1.m_x+2, r1.m_y+2);
         return;
     }
@@ -365,8 +372,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
         {
             
             wxPoint2DDouble r2;
-            cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
-            if(wxIsNaN(r2.m_x)) {
+            canvas->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
+            if(std::isnan(r2.m_x)) {
                 r1valid = false;
                 continue;
             }
@@ -394,8 +401,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             }
 
             if(!r1valid) {
-                cc1->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
-                if(wxIsNaN(r1.m_x))
+                canvas->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
+                if(std::isnan(r1.m_x))
                     continue;
             }
 
@@ -462,27 +469,34 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
 #endif    
 }
 
-void Route::DrawGL( ViewPort &vp )
+void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL
     if( pRoutePointList->empty() || !m_bVisible ) return;
 
-    if(!vp.GetBBox().IntersectOut(GetBBox())){
-        DrawGLRouteLines(vp);
+    if(!vp.GetBBox().IntersectOut(GetBBox()))
+        DrawGLRouteLines(vp, canvas);
 
-        /*  Route points  */
-        for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
-            RoutePoint *prp = node->GetData();
+    /*  Route points  */
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+        // Inflate the bounding box a bit to ensure full drawing in accelerated pan mode.
+        // TODO this is a little extravagant, assumming a mark is always a large fixed lat/lon extent.
+        //  Maybe better to use the mark's drawn box, once it is known.
+        if(vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)){
+                
             if ( !m_bVisible && prp->m_bKeepXRoute )
-                prp->DrawGL( vp );
+                prp->DrawGL( vp, canvas );
             else if (m_bVisible)
-                prp->DrawGL( vp );
+                prp->DrawGL( vp, canvas );
         }
     }
+    
 #endif
 }
 
-void Route::DrawGLRouteLines( ViewPort &vp )
+    
+void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL
     //  Hiliting first
@@ -497,7 +511,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
         ocpnDC dc;
         dc.SetPen( HiPen );
         
-        DrawGLLines(vp, &dc);
+        DrawGLLines(vp, &dc, canvas);
     }
     
     /* determine color and width */
@@ -534,7 +548,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
 
     dc.SetGLStipple();
 
-    DrawGLLines(vp, NULL);
+    DrawGLLines(vp, NULL, canvas);
 
     glDisable (GL_LINE_STIPPLE);
 
@@ -543,7 +557,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
     wxPoint rpt1, rpt2;
     while(node) {
         RoutePoint *prp = node->GetData();
-        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+        canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
         if(node != pRoutePointList->GetFirst())
             RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
         rpt1 = rpt2;
@@ -691,8 +705,8 @@ void Route::ClearHighlights( void )
 RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
         bool bRenamePoints )
 {
-    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
-            GetNewMarkSequenced(), GPX_EMPTY_STRING );
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon,
+            GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
     newpoint->SetNameShown( false );
@@ -716,8 +730,8 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
         return NULL;
     nRP++;
     
-    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
-                                           GetNewMarkSequenced(), GPX_EMPTY_STRING );
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon,
+                                           GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
     newpoint->SetNameShown( false );
@@ -859,8 +873,16 @@ LLBBox &Route::GetBBox( void )
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *data = node->GetData();
 
-    bbox_lonmax = bbox_lonmin = data->m_lon;
-    bbox_latmax = bbox_latmin = data->m_lat;
+    if(data->m_wpBBox.GetValid()){
+        bbox_lonmax = data->m_wpBBox.GetMaxLon();
+        bbox_lonmin = data->m_wpBBox.GetMinLon();
+        bbox_latmax = data->m_wpBBox.GetMaxLat();
+        bbox_latmin = data->m_wpBBox.GetMinLat();
+    }
+    else{
+        bbox_lonmax = bbox_lonmin = data->m_lon;
+        bbox_latmax = bbox_latmin = data->m_lat;
+    }
 
     double lastlon = data->m_lon, wrap = 0;
 
@@ -902,7 +924,7 @@ LLBBox &Route::GetBBox( void )
     return RBBox;
 }
 
-void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect )
+void Route::CalculateDCRect( wxDC& dc_route, ChartCanvas *canvas, wxRect *prect )
 {
     dc_route.ResetBoundingBox();
     dc_route.DestroyClippingRegion();
@@ -921,7 +943,7 @@ void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect )
             bool blink_save = prp2->m_bBlink;
             prp2->m_bBlink = false;
             ocpnDC odc_route( dc_route );
-            prp2->Draw( odc_route, NULL );
+            prp2->Draw( odc_route, canvas, NULL );
             prp2->m_bBlink = blink_save;
 
             wxRect r =  prp2->CurrentRect_in_DC ;
@@ -947,8 +969,12 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    Calculate the absolute distance from 1->2
 
     double dd;
+    double br;
     // why are we using mercator rather than great circle here?? [sean 8-11-2015]
-    DistanceBearingMercator( slat1, slon1, slat2, slon2, 0, &dd );
+    DistanceBearingMercator( slat2, slon2, slat1, slon1, &br, &dd );
+    
+    prp->SetCourse(br);
+    prp->SetDistance(dd);
 
 //    And store in Point 2
     prp->m_seg_len = dd;
@@ -959,40 +985,30 @@ void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double pla
 //    If Point1 Description contains ETD, store it in Point1
 
     if( planspeed > 0. ) {
-        double vmg = 0.0;
         wxDateTime etd;
 
-        if( prp0->m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
-            wxString s_vmg = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
-            if( !s_vmg.ToDouble( &vmg ) ) vmg = planspeed;
-        }
-
         double legspeed = planspeed;
-        if( vmg > 0.1 && vmg < 1000. ) legspeed = vmg;
+        if( prp->GetPlannedSpeed() > 0.1 && prp->GetPlannedSpeed() < 1000. )
+            legspeed = prp->GetPlannedSpeed();
         if( legspeed > 0.1 && legspeed < 1000. ) {
             m_route_time += 3600. * dd / legspeed;
             prp->m_seg_vmg = legspeed;
         }
-
-        prp0->m_seg_etd = wxInvalidDateTime;
-        if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
-            wxString s_etd = ( prp0->m_MarkDescription.Mid(
-                                   prp0->m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
-            const wxChar *parse_return = etd.ParseDateTime( s_etd );
-            if( parse_return ) {
-                wxString tz( parse_return );
-
-                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) prp0->m_seg_etd = etd;
-                else
-                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
-                        prp0->m_seg_etd = etd;
-                        long lmt_offset = (long) ( ( prp0->m_lon * 3600. ) / 15. );
-                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
-                        prp0->m_seg_etd -= lmt;
-                    } else
-                        prp0->m_seg_etd = etd.ToUTC();
+        wxLongLong duration = wxLongLong(3600.0 * prp->m_seg_len / prp->m_seg_vmg);
+        prp->SetETE(duration);
+        wxTimeSpan ts( 0, 0, duration );
+        if( !prp0->GetManualETD().IsValid() ) {
+            prp0->m_manual_etd = false;
+            if( prp0->GetETA().IsValid() ) {
+                prp0->m_seg_etd = prp0->GetETA();
+            } else {
+                prp0->m_seg_etd = m_PlannedDeparture + wxTimeSpan(0, 0, m_route_time);
             }
+        }
+        prp->m_seg_eta = prp0->GetETD() + ts;
+        if( !prp->m_manual_etd || !prp->GetETD().IsValid() ) {
+            prp->m_seg_etd = prp->m_seg_eta;
+            prp->m_manual_etd = false;
         }
     }
 }
@@ -1012,6 +1028,9 @@ void Route::UpdateSegmentDistances( double planspeed )
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
+        if( !prp0->m_manual_etd ) {
+            prp0->m_seg_etd = m_PlannedDeparture;
+        }
         node = node->GetNext();
 
         while( node ) {

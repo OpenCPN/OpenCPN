@@ -131,7 +131,7 @@ wxStaticText *wxCurlTransferDialog::AddSizerRow(wxSizer *sz, const wxString &nam
 {
     // the static text
     wxStaticText *st = new wxStaticText( this, wxID_STATIC, name, wxDefaultPosition, wxDefaultSize );
-    st->SetFont(wxFont(8, wxSWISS, wxNORMAL, wxBOLD, false, wxS("")));
+    st->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxS("")));
 
     // the value
     wxStaticText *ret = new wxStaticText( this, wxID_STATIC, _("Not available"),

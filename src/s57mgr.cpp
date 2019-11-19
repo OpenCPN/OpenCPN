@@ -76,17 +76,6 @@ extern "C" char *mygetenv(char *pvar)
 
 }
 */
-/*
-#include <stdlib.h>
-extern char **environ;
-{
-    wxLogMessage(_T("In my getenv"));
-
-    void *t = (void *)environ;
-    return NULL;
-}
-*/
-
 
 //----------------------------------------------------------------------------------
 //      s57mgr Implementation

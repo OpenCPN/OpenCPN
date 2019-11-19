@@ -27,6 +27,7 @@
 #include <wx/string.h>
 
 #include <stdio.h>
+#include <vector>
 
 #include "TCDataFactory.h"
 #include "Station_Data.h"
@@ -72,7 +73,7 @@ private:
 
     char                index_line_buffer[1024];
     FILE                *m_IndexFile;
-    ArrayOfAbbrEntry    m_abbreviation_array;
+    std::vector<abbr_entry> m_abbreviation_array;
     ArrayOfIDXEntry     m_IDX_array;
 
     int         num_IDX;

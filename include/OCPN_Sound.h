@@ -22,43 +22,99 @@
  ***************************************************************************
  */
 
-#ifndef __OCPN_SOUND_H__
-#define __OCPN_SOUND_H__
+#ifndef OCPN_SOUND_H__
+#define OCPN_SOUND_H__
 
-#include <wx/sound.h>
+#include <functional>
+#include <memory>
+#include <string>
 
-#ifdef OCPN_USE_PORTAUDIO
-    #include "OCPNSoundData.h"
-    #include "portaudio.h"
-#endif
+typedef std::function<void(void* userPtr)>  AudioDoneCallback;
 
-class OCPN_Sound: public wxSound
+/**
+ * Sound  class supports playing a sound using synchronous or asynchronous
+ * mode. Also supports sound device enumeration and various status
+ * checks.
+ *
+ * Instances should normally be obtained using SoundFactory();
+ */
+
+class OcpnSound
 {
-public:
-    OCPN_Sound();
-    ~OCPN_Sound();
+    friend OcpnSound* SoundFactory();
 
-    static int DeviceCount();
+    public:
 
-    bool IsOk() const;
-    bool Create(const wxString& fileName, int deviceIndex=-1, bool isResource = false);
-    bool Play(unsigned flags = wxSOUND_ASYNC) const;
-    bool IsPlaying() const;
-    void Stop();
-    void UnLoad(void);
+        virtual ~OcpnSound();
 
-private:
-    bool m_OK;
-    wxString m_soundfile;
+        /** Return number of available devices. */
+        virtual int DeviceCount() const { return 1; }
 
-#ifdef OCPN_USE_PORTAUDIO
-    bool LoadWAV(const wxUint8 *data, size_t length, bool copyData);
-    void FreeMem(void);
+        /** Return free-format info on device or "" if not available. */
+        virtual std::string GetDeviceInfo(int deviceIndex) { return ""; }
 
-    OCPNSoundData *m_osdata;
-    PaStream *m_stream;
-#endif
+        /** Return true if given device is an output device. */
+        virtual bool IsOutputDevice(int deviceIndex) const { return true; }
+
+        /**
+         * Callback invoked as cb(userData) when audio stream is done and
+         * drained. Should be called before Load() to be effective.
+         *
+         * Setting a non-null callback forces use of asynchronous mode. 
+         * Using a default, 0 argument restores to synchronous mode.
+         *
+         * NOTE: Callback might be invoked in a interrupt or thread context,
+         * avoid anything which might block (I/O, memory allocation etc.). 
+         */
+        virtual void SetFinishedCallback(AudioDoneCallback cb = 0, 
+                                         void* userData = 0);
+
+        /**
+         * Initiate the class, loading data from given path and using the
+         * given device as output. DeviceIx == -1 implies default device.
+         */
+        virtual bool Load(const char* path, int deviceIx = -1) = 0;
+
+        /**
+         * Plays the file loaded by Load(). If a callback is defined using
+         * SetFinishedCallback() the playback is asynchronous, otherwise the
+         * call blocks until the playback has completed.
+         *
+         * If the sound has not been successfully Load()'ed or another sound
+         * is currently played the request is dropped and logged returning
+         * false.
+         *
+         * Otherwise in synchronous mode returns success/failure from
+         * backend. Asynchronous mode returns true.
+         */
+        virtual bool Play(void) = 0;
+
+        /**
+         * Stop possible playback and unload buffers, allowed even if
+         * not playing. Returns true if stopping is supported, else false.
+         */
+        virtual bool Stop() = 0;
+
+        /** Reflects loading errors. */
+        virtual bool IsOk() const { return m_OK; }
+
+        /**
+         * Set system command string in case program wants to change from
+         * default string.
+         */
+        virtual void SetCmd( const char *cmd ) { };    // does nothing if not overridden
+
+    protected:
+
+        /** Default ctor. Load() must be called before actual usage. */
+        OcpnSound();
+
+        bool m_OK;
+        int m_deviceIx;
+        std::string m_soundfile;
+        AudioDoneCallback m_onFinished;
+        void* m_callbackData;
 
 };
 
-#endif
+#endif // OCPN_SOUND_H__

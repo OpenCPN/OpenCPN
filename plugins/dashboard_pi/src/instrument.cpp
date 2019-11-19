@@ -30,6 +30,7 @@
 #ifndef  WX_PRECOMP
   #include "wx/wx.h"
 #endif //precompiled headers
+#include <cmath>
 
 #include "instrument.h"
 #include "wx28compat.h"
@@ -116,6 +117,11 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     wxColour cl;
     GetGlobalColor( _T("DASHB"), &cl );
     dc.SetBackground( cl );
+#ifdef __WXGTK__
+    dc.SetBrush( cl );
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.DrawRectangle( 0, 0, size.x, size.y );
+#endif
     dc.Clear();
 
     Draw( &dc );
@@ -150,7 +156,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             pdc.DrawRectangle(0, 0, size.x, m_TitleHeight);
 
             wxPen pen;
-            pen.SetStyle( wxSOLID );
+            pen.SetStyle( wxPENSTYLE_SOLID );
             GetGlobalColor( _T("DASHL"), &cl );
             pen.SetColour( cl );
             pdc.SetPen( pen );
@@ -177,6 +183,7 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWind
 {
       m_format = format;
       m_data = _T("---");
+      m_DataHeight = 0;
 }
 
 wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
@@ -227,7 +234,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
       if (m_cap_flag & st){
-            if(!wxIsNaN(data) && (data < 9999)){
+            if(!std::isnan(data) && (data < 9999)){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
                 else if (unit == _T("\u00B0"))
@@ -271,6 +278,7 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wx
       m_data2 = _T("---");
       m_cap_flag1 = cap_flag1;
       m_cap_flag2 = cap_flag2;
+      m_DataHeight = 0;
 }
 
 wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )

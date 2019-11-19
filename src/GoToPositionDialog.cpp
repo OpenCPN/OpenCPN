@@ -31,10 +31,10 @@
 
 #include "GoToPositionDialog.h"
 #include "PositionParser.h"
-#include "routeprop.h"
+#include "MarkInfo.h"
 #include "navutil.h"
+#include "chcanv.h"
 
-extern ChartCanvas *cc1;
 extern MyFrame *gFrame;
 
 /*!
@@ -65,20 +65,13 @@ GoToPositionDialog::GoToPositionDialog()
 {
 }
 
-GoToPositionDialog::GoToPositionDialog( wxWindow* parent, wxWindowID id, const wxString& caption,
-                                        const wxPoint& pos, const wxSize& size, long style )
+GoToPositionDialog::GoToPositionDialog( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
 {
-#ifdef __WXOSX__
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP;
-#else
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#endif
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
+    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
+
+    Create( parent, id, caption, pos, size, wstyle );
 
     CreateControls();
-    GetSizer()->SetSizeHints( this );
-    Centre();
-
 }
 
 GoToPositionDialog::~GoToPositionDialog()
@@ -97,6 +90,8 @@ bool GoToPositionDialog::Create( wxWindow* parent, wxWindowID id, const wxString
     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
     wxDialog::Create( parent, id, caption, pos, size, style );
 
+    m_hostCanvas = NULL;
+    
     CreateControls();
     GetSizer()->SetSizeHints( this );
     Centre();
@@ -170,7 +165,8 @@ bool GoToPositionDialog::ShowToolTips()
 void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
 {
     Hide();
-    cc1->ReloadVP();
+    if(m_hostCanvas)
+        m_hostCanvas->ReloadVP();
 
     event.Skip();
 }
@@ -189,12 +185,13 @@ void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
     if( lat > 80.0 || lat < -80.0 ) goto noGo;
     if( lon > 180.0 || lon < -180.0 ) goto noGo;
 
-    gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
+    if(m_hostCanvas)
+        gFrame->JumpToPosition( m_hostCanvas, lat, lon, m_hostCanvas->GetVPScale() );
     Hide();
     event.Skip();
     return;
 
-    noGo:
+ noGo:
     wxBell();
     event.Skip();
     return;

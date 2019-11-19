@@ -143,7 +143,7 @@ int32 GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet)
 
     GPS_Diag("Tx Data:");
     Diag(&ser_pkt.dle, 3);
-    if((ret=GPS_Serial_Write(fd,(const void *) &ser_pkt.dle,(size_t)3)) == -1)
+    if((ret=GPS_Serial_Write(fd,(const void *) &ser_pkt.dle,(size_t)3)) == (size_t)-1)
     {
 	perror("write");
 	GPS_Error("SEND: Write to GPS failed");
@@ -156,7 +156,7 @@ int32 GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet)
     }
 
     Diag(ser_pkt.data, bytes);
-    if((ret=GPS_Serial_Write(fd,(const void *)ser_pkt.data,(size_t)bytes)) == -1)
+    if((ret=GPS_Serial_Write(fd,(const void *)ser_pkt.data,(size_t)bytes)) == (size_t)-1)
     {
 	perror("write");
 	GPS_Error("SEND: Write to GPS failed");
@@ -177,7 +177,7 @@ int32 GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet)
     m1 = Get_Pkt_Type(ser_pkt.type, ser_pkt.data[0], &m2);
     GPS_Diag("(%-8s%s)\n", m1, m2 ? m2 : "");
 
-    if((ret=GPS_Serial_Write(fd,(const void *)&ser_pkt.chk,(size_t)3)) == -1)
+    if((ret=GPS_Serial_Write(fd,(const void *)&ser_pkt.chk,(size_t)3)) == (size_t)-1)
     {
 	perror("write");
 	GPS_Error("SEND: Write to GPS failed");

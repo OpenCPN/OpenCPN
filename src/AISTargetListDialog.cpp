@@ -36,6 +36,8 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
+#include "RoutePoint.h"
+#include "chcanv.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 
@@ -44,13 +46,13 @@ extern bool g_bAisTargetList_sortReverse;
 extern bool g_bAisTargetList_autosort;
 extern int g_AisTargetList_sortColumn;
 extern wxString g_AisTargetList_column_spec;
+extern wxString g_AisTargetList_column_order;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern int g_AisTargetList_range;
 extern wxString g_AisTargetList_perspective;
 extern MyConfig *pConfig;
 extern AISTargetListDialog *g_pAISTargetList;
 extern MyFrame *gFrame;
-extern ChartCanvas *cc1;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -598,7 +600,25 @@ void AISTargetListDialog::CreateControls()
     item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );
     g_AisTargetList_sortColumn = wxMax(g_AisTargetList_sortColumn, 0);
     m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
-    
+
+#ifdef wxHAS_LISTCTRL_COLUMN_ORDER 
+    wxStringTokenizer tkz_order(g_AisTargetList_column_order, _T(";"));
+    wxString s_order = tkz_order.GetNextToken();
+    int i_columns = m_pListCtrlAISTargets->GetColumnCount();
+    wxArrayInt a_order(i_columns);    
+    for (int i = 0; i < i_columns; i++) {
+        long l_order=(long)i;
+        s_order.ToLong(&l_order);
+        if (l_order<0 || l_order>i_columns) {
+            l_order = i;
+        }
+        a_order[i] = l_order;
+        s_order= tkz_order.GetNextToken();
+    }
+
+    m_pListCtrlAISTargets->SetColumnsOrder(a_order);
+#endif
+
     topSizer->Add( m_pListCtrlAISTargets, 1, wxEXPAND | wxALL, 0 );
     
     wxBoxSizer* boxSizer02 = new wxBoxSizer( wxVERTICAL );
@@ -856,38 +876,38 @@ void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
 void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
 {
     long selItemID = -1;
-    selItemID = m_pListCtrlAISTargets->GetNextItem( selItemID, wxLIST_NEXT_ALL,
-            wxLIST_STATE_SELECTED );
-    if( selItemID == -1 ) return;
+    selItemID = m_pListCtrlAISTargets->GetNextItem( selItemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( selItemID == -1 )
+        return;
 
     AIS_Target_Data *pAISTarget = NULL;
-    if( m_pdecoder ) pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(
-            m_pMMSI_array->Item( selItemID ) );
+    if( m_pdecoder ) pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( selItemID ) );
 
-    if( pAISTarget ) gFrame->JumpToPosition( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale() );
+    if( pAISTarget )
+        gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), pAISTarget->Lat, pAISTarget->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 }
 
 void AISTargetListDialog::OnTargetCreateWpt( wxCommandEvent& event )
 {
     long selItemID = -1;
-    selItemID = m_pListCtrlAISTargets->GetNextItem( selItemID, wxLIST_NEXT_ALL,
-            wxLIST_STATE_SELECTED );
-    if( selItemID == -1 ) return;
+    selItemID = m_pListCtrlAISTargets->GetNextItem( selItemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( selItemID == -1 )
+        return;
 
     AIS_Target_Data *pAISTarget = NULL;
-    if( m_pdecoder ) pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(
-            m_pMMSI_array->Item( selItemID ) );
+    if( m_pdecoder )
+        pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( selItemID ) );
 
     if( pAISTarget ) {
-        RoutePoint *pWP = new RoutePoint( pAISTarget->Lat, pAISTarget->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+        RoutePoint *pWP = new RoutePoint( pAISTarget->Lat, pAISTarget->Lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
         pSelect->AddSelectableRoutePoint( pAISTarget->Lat, pAISTarget->Lon, pWP );
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateWptListCtrl();
-        cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-        cc1->undo->AfterUndoableAction( NULL );
+        gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+        gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
         Refresh( false );
     }
 }

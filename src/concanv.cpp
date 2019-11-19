@@ -48,6 +48,7 @@
 #include "navutil.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
+#include "Route.h"
 
 extern Routeman         *g_pRouteMan;
 extern MyFrame          *gFrame;
@@ -61,7 +62,7 @@ bool             g_bShowRouteTotal;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 enum eMenuItems {
-    ID_NAVLEG,
+    ID_NAVLEG = 1,
     ID_NAVROUTE,
     ID_NAVHIGHWAY
 } menuItems;
@@ -82,15 +83,13 @@ END_EVENT_TABLE()
 // Define a constructor for my canvas
 ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
 {
+    m_speedUsed = SPEED_VMG;
     pbackBrush = NULL;
     m_bNeedClear = false;
 
-long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
-#ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
-#endif
+    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
 
-    wxDialog::Create( frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
+    wxFrame::Create( frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
     
     m_pParent = frame;
 
@@ -125,7 +124,7 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
     m_pitemBoxSizerLeg->Add( pRNG, 1, wxALIGN_LEFT | wxALL, 2 );
 
     pTTG = new AnnunText( this, -1, _("Console Legend"), _("Console Value") );
-    pTTG->SetALabel( _T("TTG") );
+    pTTG->SetALabel( _T("TTG  @VMG") );
     m_pitemBoxSizerLeg->Add( pTTG, 1, wxALIGN_LEFT | wxALL, 2 );
 
 //    Create CDI Display Window
@@ -255,7 +254,12 @@ void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
 
 void ConsoleCanvas::ToggleRouteTotalDisplay()
 {
-    g_bShowRouteTotal = !g_bShowRouteTotal;
+    if( m_speedUsed == SPEED_VMG ) {
+        m_speedUsed = SPEED_SOG;
+    } else {
+        m_speedUsed = SPEED_VMG;
+        g_bShowRouteTotal = !g_bShowRouteTotal;
+    }
     LegRoute();
 }
     
@@ -283,16 +287,22 @@ void ConsoleCanvas::UpdateRouteData()
             
             pBRG->SetAValue( cogstr );
 
-            // VMG
-            // VMG is always to next waypoint, not to end of route
-            // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
-            double VMG = 0.;
-            if( !wxIsNaN(gCog) && !wxIsNaN(gSog) )
+            double speed = 0.;
+            if( !std::isnan(gCog) && !std::isnan(gSog) )
             {
                 double BRG;
                 BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
-                VMG = gSog * cos( ( BRG - gCog ) * PI / 180. ) ;
-                str_buf.Printf( _T("%6.2f"), toUsrSpeed( VMG ) );
+                double vmg = gSog * cos( ( BRG - gCog ) * PI / 180. );
+                str_buf.Printf( _T("%6.2f"), toUsrSpeed( vmg ) );
+
+                if( m_speedUsed == SPEED_VMG ) {
+                    // VMG
+                    // VMG is always to next waypoint, not to end of route
+                    // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
+                    speed = vmg;
+                } else {
+                    speed = gSog;
+                }
             }
             else
                 str_buf = _T("---");
@@ -332,9 +342,9 @@ void ConsoleCanvas::UpdateRouteData()
                 // In all cases, ttg/eta are declared invalid if VMG <= 0.
                 // If showing only "this leg", use VMG for calculation of ttg
                 wxString ttg_s;
-                if( ( VMG > 0. ) && !wxIsNaN(gCog) && !wxIsNaN(gSog) )
+                if( ( speed > 0. ) && !std::isnan(gCog) && !std::isnan(gSog) )
                 {
-                    float ttg_sec = ( rng / VMG ) * 3600.;
+                    float ttg_sec = ( rng / speed ) * 3600.;
                     wxTimeSpan ttg_span( 0, 0, long( ttg_sec ), 0 );
                     ttg_s = ttg_span.Format();
                 }
@@ -342,6 +352,11 @@ void ConsoleCanvas::UpdateRouteData()
                     ttg_s = _T("---");
 
                 pTTG->SetAValue( ttg_s );
+                if( m_speedUsed == SPEED_VMG ) {
+                    pTTG->SetALabel( wxString( _("TTG  @VMG") ) );
+                } else {
+                    pTTG->SetALabel( wxString( _("TTG  @SOG") ) );
+                }
             }
             else
             {
@@ -380,7 +395,7 @@ void ConsoleCanvas::UpdateRouteData()
                 wxString tttg_s;
                 wxTimeSpan tttg_span;
                 float tttg_sec;
-                if( VMG > 0. )
+                if( speed > 0. )
                 {
                     tttg_sec = ( trng / gSog ) * 3600.;
                     tttg_span = wxTimeSpan::Seconds( (long) tttg_sec );
@@ -402,7 +417,7 @@ void ConsoleCanvas::UpdateRouteData()
                 eta = dtnow.Add( tttg_span );
                 wxString seta;
 
-                if (VMG > 0.) {
+                if (speed > 0.) {
                   // Show date, e.g. Feb 15, if TTG > 24 h
                   seta = tttg_sec > SECONDS_PER_DAY ?
                     eta.Format(_T("%b %d %H:%M")) : eta.Format(_T("%H:%M"));
@@ -410,7 +425,13 @@ void ConsoleCanvas::UpdateRouteData()
                   seta = _T("---");
                 }
                 pXTE->SetAValue( seta );
-                pXTE->SetALabel( wxString( _("ETA          ") ) );
+                if( m_speedUsed == SPEED_VMG ) {
+                    pTTG->SetALabel( wxString( _("TTG  @VMG") ) );
+                    pXTE->SetALabel( wxString( _("ETA  @VMG") ) );
+                } else {
+                    pTTG->SetALabel( wxString( _("TTG  @SOG") ) );
+                    pXTE->SetALabel( wxString( _("ETA  @SOG") ) );
+                }
             }
 
             pRNG->Refresh();

@@ -39,11 +39,42 @@ enum { Idx_WIND_VX, Idx_WIND_VX850, Idx_WIND_VX700, Idx_WIND_VX500, Idx_WIND_VX3
 
 class GribRecordSet {
 public:
-    GribRecordSet() {
-        for(int i=0; i<Idx_COUNT; i++)
-            m_GribRecordPtrArray[i] = NULL;
+    GribRecordSet(unsigned int id) : m_Reference_Time(-1), m_ID(id) {
+        for(int i=0; i<Idx_COUNT; i++) {
+            m_GribRecordPtrArray[i] = 0;
+            m_GribRecordUnref[i] = false;
+        }
+    }
+
+    virtual ~GribRecordSet()
+    {
+         RemoveGribRecords();
+    }
+
+    /* copy and paste by plugins, keep functions in header */
+    void SetUnRefGribRecord(int i, GribRecord *pGR ) { 
+        assert (i >= 0 && i < Idx_COUNT);
+        if (m_GribRecordUnref[i] == true) {
+            delete m_GribRecordPtrArray[i];
+        }
+        m_GribRecordPtrArray[i] = pGR;
+        m_GribRecordUnref[i] = true;
+    }
+
+    void RemoveGribRecords( ) { 
+        for(int i=0; i<Idx_COUNT; i++) {
+            if (m_GribRecordUnref[i] == true) {
+                delete m_GribRecordPtrArray[i];
+            }
+        }
     }
 
     time_t m_Reference_Time;
+    unsigned int m_ID;
+
     GribRecord *m_GribRecordPtrArray[Idx_COUNT];
+private:
+    // grib records files are stored and owned by reader mapGribRecords
+    // interpolated grib are not, keep track of them
+    bool        m_GribRecordUnref[Idx_COUNT];
 };

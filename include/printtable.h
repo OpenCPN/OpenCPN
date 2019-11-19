@@ -27,8 +27,6 @@
  */
 #include <iostream>
 #include <vector>
-using namespace std;
-
 
 #ifndef __PRINTTABLE_H__
 #define __PRINTTABLE_H__
@@ -76,9 +74,9 @@ protected:
 
     bool create_next_row;
 
-    vector< vector < wxString > > data;
-    vector< double > widths;
-    vector< wxString > header;
+    std::vector< std::vector < wxString > > data;
+    std::vector< double > widths;
+    std::vector< wxString > header;
     TableState state;
 
     void Start();
@@ -93,7 +91,7 @@ public:
     Table& operator<<( const double& );
     Table& operator<<( const wxString& );
 
-    vector< vector < wxString > > & GetData()
+    std::vector< std::vector < wxString > > & GetData()
     {
         return data;
     };
@@ -119,8 +117,7 @@ public:
     };
 };
 
-
-ostream& operator<<( ostream&,
+std::ostream& operator<<( std::ostream&,
             Table& );
 
 
@@ -236,9 +233,9 @@ public:
  */
 class PrintTable : public Table {
 protected:
-    vector< vector < PrintCell > > contents;
-    vector < PrintCell >           header_content;
-    vector< int >                  rows_heights;
+    std::vector< std::vector < PrintCell > > contents;
+    std::vector < PrintCell >           header_content;
+    std::vector< int >                  rows_heights;
     int                            header_height;
 
 
@@ -247,18 +244,18 @@ protected:
 public:
     PrintTable();
 
-    // creates internally vector of PrintCell's, to calculate columns widths and row sizes
+    // creates internally std::vector of PrintCell's, to calculate columns widths and row sizes
     void AdjustCells( wxDC* _dc,
                  int   marginX,
                  int   marginY );
 
     // delivers content of the table
-    vector< vector < PrintCell > >& GetContent()
+    std::vector< std::vector < PrintCell > >& GetContent()
     {
         return contents;
     };
     // delivers header  of the table
-    vector < PrintCell > & GetHeader()
+    std::vector < PrintCell > & GetHeader()
     {
         return header_content;
     };

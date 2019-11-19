@@ -25,7 +25,7 @@
 #ifndef __TTYWINDOW_H__
 #define __TTYWINDOW_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/bitmap.h>
 
 class wxButton;
@@ -33,7 +33,7 @@ class wxTextCtrl;
 class TTYScroll;
 class WindowDestroyListener;
 
-class TTYWindow : public wxDialog
+class TTYWindow : public wxFrame
 {
     DECLARE_DYNAMIC_CLASS( TTYWindow )
     DECLARE_EVENT_TABLE()
@@ -47,12 +47,14 @@ class TTYWindow : public wxDialog
         void OnCloseWindow(wxCloseEvent& event);
         void Close();
         void OnPauseClick( wxCommandEvent& event );
+        void OnCopyClick(wxCommandEvent& event);
 
     protected:
         void CreateLegendBitmap();
         WindowDestroyListener * m_window_destroy_listener;
         TTYScroll   *m_pScroll;
         wxButton    *m_buttonPause;
+        wxButton    *m_buttonCopy;
         bool        bpause;
         wxBitmap    m_bm_legend;
         wxTextCtrl *m_tFilter;

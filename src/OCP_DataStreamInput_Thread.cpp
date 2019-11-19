@@ -104,14 +104,6 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 
 #ifdef ocpnUSE_NEWSERIAL
 
-size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(const wxString& string)
-{
-    size_t status;
-    status = m_serial.write(string.c_str(), string.Len());
-    
-    return status;
-}
-
 size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
 {
     if( m_serial.isOpen() ) {
@@ -127,7 +119,6 @@ size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
         return -1;
     }
 }
-
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
@@ -267,7 +258,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun1");
                     
                 }
                 if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -276,7 +267,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun2");
                     
                     *ptmpbuf = 0;
                     
@@ -299,28 +290,26 @@ void *OCP_DataStreamInput_Thread::Entry()
         }                       // if newdata > 0
         
         //      Check for any pending output message
+
+        bool b_qdata = !out_que.empty();
         
-        m_outCritical.Enter();
-        {
-            bool b_qdata = !out_que.empty();
+        while(b_qdata){
+            //  Take a copy of message
+            char *qmsg = out_que.front();
+            out_que.pop();
+            //m_outCritical.Leave();
+            char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+            strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+            free(qmsg);
             
-            while(b_qdata){
-                
-                //  Take a copy of message
-                char *qmsg = out_que.front();
-                char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-                strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
-                out_que.pop();
-                free(qmsg);
-                
-                m_outCritical.Leave();
-                WriteComPortPhysical(msg);
-                m_outCritical.Enter();
-                
-                b_qdata = !out_que.empty();
-            } //while b_qdata
-        }
-        m_outCritical.Leave();
+            if( static_cast<size_t>(-1) == WriteComPortPhysical(msg) && 10 < retries++ ) {
+                // We failed to write the port 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
+                retries = 0;
+                CloseComPortPhysical();
+            }
+            
+            b_qdata = !out_que.empty();
+        } //while b_qdata
 
     }
 thread_exit:
@@ -1071,8 +1060,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
     if (isatty(com_fd) != 0)
     {
         /* Save original terminal parameters */
-        if (tcgetattr(com_fd,&ttyset_old) != 0)
+        if (tcgetattr(com_fd,&ttyset_old) != 0) {
+            close(com_fd);
             return -128;
+        }
 
         memcpy(&ttyset, &ttyset_old, sizeof(termios));
 
@@ -1113,8 +1104,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
         }
         ttyset.c_cflag &=~ CSIZE;
         ttyset.c_cflag |= (CSIZE & (stopbits==2 ? CS7 : CS8));
-        if (tcsetattr(com_fd, TCSANOW, &ttyset) != 0)
+        if (tcsetattr(com_fd, TCSANOW, &ttyset) != 0) {
+            close(com_fd);
             return -129;
+        }
 
         tcflush(com_fd, TCIOFLUSH);
     }

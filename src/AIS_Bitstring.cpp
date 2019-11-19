@@ -22,8 +22,6 @@
  ***************************************************************************
  */
 
-#include <wx/utils.h>
-
 #include "AIS_Bitstring.h"
 #include <string.h>
 

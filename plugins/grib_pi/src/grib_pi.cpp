@@ -73,10 +73,21 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_115(ppimgr)
+    :opencpn_plugin_116(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
+      
+      wxString shareLocn = *GetpSharedDataLocation() +
+                          _T("plugins") + wxFileName::GetPathSeparator() +
+                          _T("grib_pi") + wxFileName::GetPathSeparator()
+                          + _T("data") + wxFileName::GetPathSeparator();
+      wxImage panelIcon(  shareLocn + _T("grib_panel_icon.png"));
+      if(panelIcon.IsOk())
+        m_panelBitmap = wxBitmap(panelIcon);
+      else
+        wxLogMessage(_T("    GRIB panel icon NOT loaded"));
+
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       m_GUIScaleFactor = -1.;
@@ -135,6 +146,8 @@ int grib_pi::Init(void)
 		  wxLogMessage(normalIcon);
 		  m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
 			  _("Grib"), _T(""), NULL, GRIB_TOOL_POSITION, 0, this);
+                  
+
 	  }
 
       if( !QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy ) ) {
@@ -191,7 +204,7 @@ int grib_pi::GetPlugInVersionMinor()
 
 wxBitmap *grib_pi::GetPlugInBitmap()
 {
-      return _img_grib_pi;
+      return &m_panelBitmap;
 }
 
 wxString grib_pi::GetCommonName()
@@ -253,6 +266,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
     Pref->m_cbDrawBarbedArrowHead->SetValue(m_bDrawBarbedArrowHead);
+    Pref->m_cZoomToCenterAtInit->SetValue(m_bZoomToCenterAtInit);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
@@ -264,6 +278,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
          m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
+         m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
 
           if( m_pGRIBOverlayFactory )
               m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
@@ -350,22 +365,29 @@ bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 
 void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
-	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient(position);
+    //  Use the application frame to bound the control bar position.
+    wxApp *app = wxTheApp;
+    
+    wxWindow *frame = app->GetTopWindow();   // or GetOCPNCanvasWindow()->GetParent();
+    if(!frame)
+        return;
+    
+    wxPoint p = frame->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
-		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
-	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
-		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
+    if (p.x + dialog->GetSize().GetX() > frame->GetClientSize().GetX())
+        p.x = frame->GetClientSize().GetX() - dialog->GetSize().GetX();
+    if (p.y + dialog->GetSize().GetY() > frame->GetClientSize().GetY())
+	p.y = frame->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
-	dialog->Move(GetOCPNCanvasWindow()->ClientToScreen(p));
+    dialog->Move(frame->ClientToScreen(p));
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    if( !::wxIsBusy() ) ::wxBeginBusyCursor();
+    //if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
     bool starting = false;
 
@@ -437,6 +459,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
         // to actual status to ensure correct status upon CtrlBar rebuild
         SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+        
+        // Do an automatic "zoom-to-center" on the overlay canvas if set in Preferences
+        if( m_pGribCtrlBar && m_bZoomToCenterAtInit){
+           m_pGribCtrlBar->DoZoomToCenter();
+        }
+ 
         RequestRefresh(m_parent_window); // refresh main window
     } else
        m_pGribCtrlBar->Close();
@@ -503,6 +531,26 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     return true;
 }
 
+bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1 && canvasIndex != 1){            // multi?
+        return false;
+    }
+
+    return RenderGLOverlay( pcontext, vp);
+}
+
+bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    // If multicanvas are active, render the overlay on the right canvas only
+    if(GetCanvasCount() > 1 && canvasIndex != 1) {            // multi?
+        return false;
+    }
+
+    return RenderOverlay( dc, vp);
+}
+
 void grib_pi::SetCursorLatLon(double lat, double lon)
 {
     if(m_pGribCtrlBar && m_pGribCtrlBar->IsShown())
@@ -531,7 +579,86 @@ void grib_pi::SetDialogFont( wxWindow *dialog, wxFont *font)
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
 {
-    if(message_id == _T("GRIB_VERSION_REQUEST"))
+    if(message_id == _T("GRIB_VALUES_REQUEST"))
+    {
+        if(!m_pGribCtrlBar)
+            OnToolbarToolCallback(0);
+
+        // lat, lon, time, what
+        wxJSONReader r;
+        wxJSONValue v;
+        r.Parse(message_body, &v);
+        if (!v.HasMember(_T("Day"))) {
+            // bogus or loading grib
+            SendPluginMessage(wxString(_T("GRIB_VALUES")), _T(""));
+            return;
+        }
+        wxDateTime time(v[_T("Day")].AsInt(),
+                        (wxDateTime::Month)v[_T("Month")].AsInt(),
+                        v[_T("Year")].AsInt(),
+                        v[_T("Hour")].AsInt(),
+                        v[_T("Minute")].AsInt(),
+                        v[_T("Second")].AsInt());
+        double lat = v[_T("lat")].AsDouble();
+        double lon = v[_T("lon")].AsDouble();
+
+        if(m_pGribCtrlBar) {
+            if (v.HasMember(_T("WIND SPEED"))) {
+                double vkn, ang;
+                if ( m_pGribCtrlBar->getTimeInterpolatedValues(vkn, ang,
+                                         Idx_WIND_VX, Idx_WIND_VY,
+                                         lon, lat, time) && vkn != GRIB_NOTDEF)
+                {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("WIND SPEED")] = vkn;
+                    v[_T("WIND DIR")] = ang;
+                }
+                else {
+                    v.Remove(_T("WIND SPEED"));
+                    v.Remove(_T("WIND DIR"));
+                }
+            }
+            if (v.HasMember(_T("CURRENT SPEED"))) {
+                double vkn, ang;
+                if ( m_pGribCtrlBar->getTimeInterpolatedValues(vkn, ang,
+                                         Idx_SEACURRENT_VX, Idx_SEACURRENT_VY,
+                                         lon, lat, time) && vkn != GRIB_NOTDEF)
+                {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("CURRENT SPEED")] = vkn;
+                    v[_T("CURRENT DIR")] = ang;
+                }
+                else {
+                    v.Remove(_T("CURRENT SPEED"));
+                    v.Remove(_T("CURRENT DIR"));
+                }
+            }
+            if (v.HasMember(_T("GUST")) ) {
+                double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_WIND_GUST, lon, lat, time );
+                if ( vkn != GRIB_NOTDEF ) {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("GUST")] = vkn;
+                }
+                else
+                    v.Remove(_T("GUST"));
+            }
+            if (v.HasMember(_T("SWELL")) ) {
+                double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_HTSIGW, lon, lat, time );
+                if ( vkn != GRIB_NOTDEF ) {
+                    v[_T("Type")] = wxT("Reply");
+                    v[_T("SWELL")] = vkn;
+                }
+                else
+                    v.Remove(_T("SWELL"));
+            }
+
+            wxJSONWriter w;
+            wxString out;
+            w.Write(v, out);
+            SendPluginMessage(wxString(_T("GRIB_VALUES")), out);
+        }
+    }
+    else if(message_id == _T("GRIB_VERSION_REQUEST"))
     {
         wxJSONValue v;
         v[_T("GribVersionMinor")] = GetAPIVersionMinor();
@@ -542,12 +669,12 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         w.Write(v, out);
         SendPluginMessage(wxString(_T("GRIB_VERSION")), out);
     }
-    if(message_id == _T("GRIB_TIMELINE_REQUEST"))
+    else if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
         // local time
         SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime() : wxDateTime::Now());
     }
-    if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
+    else if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
     {
         wxJSONReader r;
         wxJSONValue v;
@@ -579,7 +706,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         m_pLastTimelineSet = set;
     }
     
-    if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
+    else if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
     {
         wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
         
@@ -607,7 +734,7 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
     pConf->Read ( _T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0 );
     pConf->Read ( _T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1 );
-
+    pConf->Read(  _T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
     pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
@@ -643,7 +770,8 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
-    pConf->Write ( _T( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
+    pConf->Write ( _T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
+    pConf->Write ( _T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
 
     pConf->Write ( _T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x );
     pConf->Write ( _T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y );

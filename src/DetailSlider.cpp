@@ -40,12 +40,10 @@ extern int         g_chart_zoom_modifier;
 extern int         g_chart_zoom_modifier_vector;
 extern int         g_detailslider_dialog_x;
 extern int         g_detailslider_dialog_y;
-extern ChartCanvas *cc1;
 extern MyFrame     *gFrame;
 extern bool        g_bQuiltEnable;
-extern ChartStack  *pCurrentStack;
 
-BEGIN_EVENT_TABLE(PopUpDSlide, wxDialog)
+BEGIN_EVENT_TABLE(PopUpDSlide, wxFrame)
     EVT_KEY_DOWN(PopUpDSlide::OnKeyDown )
     EVT_MOVE( PopUpDSlide::OnMove )
     EVT_COMMAND_SCROLL_THUMBRELEASE(-1, PopUpDSlide::OnChangeValue)
@@ -86,27 +84,24 @@ bool PopUpDSlide::Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartT,
     int value;
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         value = g_cm93_zoom_factor;
-        WindowText=wxT("CM93 Detail Level");
+        WindowText = _("CM93 Detail Level");
         }
         else if ( (ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) || (ChartFam == CHART_FAMILY_RASTER ) ){
             value = g_chart_zoom_modifier;
-            WindowText=wxT("Rasterchart Zoom/Scale Weighting");
+            WindowText = _("Rasterchart Zoom/Scale Weighting");
         }
             else if ( (ChartType == CHART_TYPE_S57) || (ChartFam == CHART_FAMILY_VECTOR ) ){
                 value = g_chart_zoom_modifier_vector;
-                WindowText=wxT("Vectorchart Zoom/Scale Weighting");
+                WindowText = _("Vectorchart Zoom/Scale Weighting");
             }
             else{ 
                 pPopupDetailSlider = NULL;
                 return false;                
             }
     
-    long wstyle = wxDEFAULT_DIALOG_STYLE;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
+    long wstyle = wxDEFAULT_DIALOG_STYLE|wxFRAME_FLOAT_ON_PARENT;
     
-    if( !wxDialog::Create( parent, id, WindowText, pos, size, wstyle ) ) return false;
+    if( !wxFrame::Create( parent, id, WindowText, pos, size, wstyle ) ) return false;
 
     m_pparent = parent;
     
@@ -174,8 +169,10 @@ void PopUpDSlide::OnChangeValue( wxScrollEvent& event )
 
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         g_cm93_zoom_factor = m_p_DetailSlider->GetValue();
-        cc1->ReloadVP();
-        cc1->Refresh();
+        ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+        
+        parentCanvas->ReloadVP();
+        parentCanvas->Refresh();
         ::wxEndBusyCursor();
         return;
     }

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-04-09 11:19-0400\n"
+"POT-Creation-Date: 2019-03-12 22:18-0400\n"
+"PO-Revision-Date: 2019-03-18 02:52\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -15,173 +15,209 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ja\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
-#
-msgid ""
-"\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic "
-"variation values printed on many raster charts.\n"
-"\n"
+
+#: src/wmm_pi.cpp:86
+msgid "\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n"
-"\n"
-"The plotted lines are similar to a topographic map.  The space between them "
-"can be adjusted; more space takes less time to calculate.\n"
-"\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs "
-"computation time.\n"
-"\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
-"Sean D'Epagnier to support plotting."
+"\t20000 to 66000\n\n"
+"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr ""
-#
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(DIP) - 地磁気傾斜 "
-#
-msgid "About"
-msgstr "説明"
-#
-msgid "Boat"
-msgstr "ボート"
-#
-msgid "Building Magnetic Map"
-msgstr "磁気地図構築"
-#
-msgid "Cancel"
-msgstr "キャンセル"
-#
-msgid "Cursor"
-msgstr "カーソル"
-#
-msgid "Degrees"
-msgstr "度"
-#
-msgid "East Component"
-msgstr "東向き成分"
-#
-msgid "Enable plot"
-msgstr "プロット有効"
-#
-msgid "Error, see log."
-msgstr "エラー 、ログを参照してください。"
-#
-msgid "Extended"
-msgstr "拡張"
-#
-msgid "F "
-msgstr ""
-#
-msgid "Field Strength"
-msgstr "磁界強度"
-#
-msgid "H "
-msgstr ""
-#
-msgid "Horizontal Intensity"
-msgstr "水平強度"
-#
-msgid "Incl"
-msgstr "伏角"
-#
-msgid "Inclination"
-msgstr "伏角"
-#
-msgid "Magnetic Plot Settings"
-msgstr "磁気プロット設定"
-#
-msgid "Magnetic Variation"
-msgstr "自差"
-#
-msgid "Nano Tesla"
-msgstr "ナノ テスラ"
-#
-msgid "North Component"
-msgstr "北向き成分"
-#
-msgid "Plot"
-msgstr "プロット"
-#
-msgid "Pole Accuracy"
-msgstr "極の精度"
-#
-msgid "Save"
-msgstr "保存"
-#
-msgid "Settings..."
-msgstr "設定..."
-#
-msgid "Show Plot Options"
-msgstr "プロット オプションを表示"
-#
-msgid "Show also data at cursor position"
-msgstr "カーソル位置のデータも表示"
-#
-msgid "Show data in toolbar icon"
-msgstr "ツールバーのアイコンにデータを表示"
-#
-msgid "Show toolbar icon"
-msgstr "ツールバーのアイコンを表示"
-#
-msgid "Step Size"
-msgstr "ステップ サイズ"
-#
-msgid "Total Intensity"
-msgstr "全強度"
-#
-msgid "Vari"
-msgstr "自差"
-#
-msgid "Variation"
-msgstr "自差"
-#
-msgid "Variation only"
-msgstr "自差のみ"
-#
-msgid "Vertical Component"
-msgstr "鉛直成分"
-#
-msgid "View"
-msgstr "表示"
-#
-msgid "WMM"
-msgstr "WMM"
-#
+
+#: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
 msgstr "WMMプラグイン"
-#
-msgid "WMM Preferences"
-msgstr "WMM の設定"
-#
-msgid "Window transparency"
-msgstr "ウィンドウの透明度"
-#
+
+#: src/wmm_pi.cpp:208 src/wmm_pi.cpp:280 src/WmmUIDialog.h:87
+msgid "WMM"
+msgstr "WMM"
+
+#: src/wmm_pi.cpp:286
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "OpenCPN用世界磁気モデルプラグイン"
-#
-msgid ""
-"World Magnetic Model PlugIn for OpenCPN\n"
+
+#: src/wmm_pi.cpp:291
+msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
 "The bundled WMM2015 model expires on December 31, 2019.\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
-"OpenCPNのための世界磁気モデルのプラグインは\n"
+msgstr "OpenCPNのための世界磁気モデルのプラグインは\n"
 "NOAA世界磁気モデルで実装されています\n"
 "世界磁気モデルの詳細情報は http://www.ngdc.noaa.gov/geomag/WMM/\n"
 "バンドルされているWMM2015モデルは2019年12月31日に期限が切れます\n"
 "新しいバージョンのプラグインがリリースされない場合は NOAAから\n"
 "新しいWMM.COFを取得し、OpenCPNログファイルに見つけることができる\n"
 "場所に配置します"
-#
+
+#: src/wmm_pi.cpp:475 src/wmm_pi.cpp:616
+msgid "Error, see log."
+msgstr "エラー 、ログを参照してください。"
+
+#: src/wmm_pi.cpp:846 src/WmmUIDialog.h:112
+msgid "WMM Preferences"
+msgstr "WMM の設定"
+
+#: src/wmm_pi.h:78 src/WmmUIDialog.h:152
+msgid "Magnetic Plot Settings"
+msgstr "磁気プロット設定"
+
+#: src/WmmUIDialog.cpp:26
+msgid "Boat"
+msgstr "ボート"
+
+#: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
+msgid "F "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
+msgid "Total Intensity"
+msgstr "全強度"
+
+#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
+msgid "H "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
+msgid "Horizontal Intensity"
+msgstr "水平強度"
+
+#: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
+msgid "North Component"
+msgstr "北向き成分"
+
+#: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
 msgstr ""
-#
+
+#: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
+msgid "East Component"
+msgstr "東向き成分"
+
+#: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
 msgstr ""
+
+#: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
+msgid "Vertical Component"
+msgstr "鉛直成分"
+
+#: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
+msgid "Incl"
+msgstr "伏角"
+
+#: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - 地磁気傾斜 "
+
+#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
+msgid "Vari"
+msgstr "自差"
+
+#: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
+msgid "Magnetic Variation"
+msgstr "自差"
+
+#: src/WmmUIDialog.cpp:122
+msgid "Cursor"
+msgstr "カーソル"
+
+#: src/WmmUIDialog.cpp:222
+msgid "Plot"
+msgstr "プロット"
+
+#: src/WmmUIDialog.cpp:231
+msgid "Enable plot"
+msgstr "プロット有効"
+
+#: src/WmmUIDialog.cpp:235
+msgid "Settings..."
+msgstr "設定..."
+
+#: src/WmmUIDialog.cpp:274
+msgid "Extended"
+msgstr "拡張"
+
+#: src/WmmUIDialog.cpp:274
+msgid "Variation only"
+msgstr "自差のみ"
+
+#: src/WmmUIDialog.cpp:276
+msgid "View"
+msgstr "表示"
+
+#: src/WmmUIDialog.cpp:280
+msgid "Show Plot Options"
+msgstr "プロット オプションを表示"
+
+#: src/WmmUIDialog.cpp:283
+msgid "Show also data at cursor position"
+msgstr "カーソル位置のデータも表示"
+
+#: src/WmmUIDialog.cpp:286
+msgid "Show toolbar icon"
+msgstr "ツールバーのアイコンを表示"
+
+#: src/WmmUIDialog.cpp:289
+msgid "Show data in toolbar icon"
+msgstr "ツールバーのアイコンにデータを表示"
+
+#: src/WmmUIDialog.cpp:293
+msgid "Window transparency"
+msgstr "ウィンドウの透明度"
+
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:358
+msgid "Variation"
+msgstr "自差"
+
+#: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
+msgid "Degrees"
+msgstr "度"
+
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
+msgid "Inclination"
+msgstr "伏角"
+
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:359
+msgid "Field Strength"
+msgstr "磁界強度"
+
+#: src/WmmUIDialog.cpp:356
+msgid "Nano Tesla"
+msgstr "ナノ テスラ"
+
+#: src/WmmUIDialog.cpp:366
+msgid "Step Size"
+msgstr "ステップ サイズ"
+
+#: src/WmmUIDialog.cpp:377
+msgid "Pole Accuracy"
+msgstr "極の精度"
+
+#: src/WmmUIDialog.cpp:381
+msgid "About"
+msgstr "説明"
+
+#: src/WmmUIDialog.cpp:384
+msgid "Save"
+msgstr "保存"
+
+#: src/WmmUIDialog.cpp:387
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: src/MagneticPlotMap.cpp:357
+msgid "Building Magnetic Map"
+msgstr "磁気地図構築"
+

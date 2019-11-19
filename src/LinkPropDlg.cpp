@@ -24,14 +24,13 @@
  **************************************************************************/
 
 #include "LinkPropDlg.h"
+#include "navutil.h"
+#include "chart1.h"
 
 LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString& title,
         const wxPoint& pos, const wxSize& size, long style )
 {
     long wstyle = style; // wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
     
     wxDialog::Create( parent, id, title, pos, size, wstyle );
 
@@ -74,7 +73,7 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
     m_sdbSizerButtons = new wxStdDialogButtonSizer();
     m_sdbSizerButtonsOK = new wxButton( this, wxID_OK );
     m_sdbSizerButtons->AddButton( m_sdbSizerButtonsOK );
-    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL );
+    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
     m_sdbSizerButtons->AddButton( m_sdbSizerButtonsCancel );
     m_sdbSizerButtons->Realize();
 

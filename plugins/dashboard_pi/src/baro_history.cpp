@@ -67,8 +67,8 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory( wxWindow *pare
       for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
         m_ArrayPressHistory[idx] = -1;
         m_ExpSmoothArrayPressure[idx] = -1;
-        m_ArrayRecTime[idx]=wxDateTime::Now();
-        m_ArrayRecTime[idx].SetYear(999);
+        m_ArrayRecTime[idx]=wxDateTime::Now().GetTm();
+        m_ArrayRecTime[idx].year=999;
       }
       alpha=0.01;  //smoothing constant
       m_WindowRect=GetClientRect();
@@ -119,7 +119,7 @@ void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit
 
       }
       m_ExpSmoothArrayPressure[BARO_RECORD_COUNT-1]=alpha*m_ArrayPressHistory[BARO_RECORD_COUNT-2]+(1-alpha)*m_ExpSmoothArrayPressure[BARO_RECORD_COUNT-2];
-      m_ArrayRecTime[BARO_RECORD_COUNT-1]=wxDateTime::Now();
+      m_ArrayRecTime[BARO_RECORD_COUNT-1]=wxDateTime::Now().GetTm();
       m_MaxPress   = wxMax(m_Press,m_MaxPress);
 
       m_MinPress   = wxMin(m_MinPress,m_Press);
@@ -254,7 +254,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   wxColour col;
   double ratioH;
   int degw,degh;
-  int width,height,min,hour;
+  int width,height,sec,min,hour;
   wxString WindAngle,WindSpeed;
   wxPen pen;
   wxString label;
@@ -272,14 +272,14 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   dc->SetFont(*g_pFontLabel);
   //determine the time range of the available data (=oldest data value)
   int i=0;
-  while(m_ArrayRecTime[i].GetYear()== 999 && i<BARO_RECORD_COUNT-1) i++;
+  while(m_ArrayRecTime[i].year == 999 && i<BARO_RECORD_COUNT-1) i++;
   if (i == BARO_RECORD_COUNT -1) {  min=0;
     hour=0;
 
   }
   else {
-    min=m_ArrayRecTime[i].GetMinute();
-    hour=m_ArrayRecTime[i].GetHour();
+    min=m_ArrayRecTime[i].min;
+    hour=m_ArrayRecTime[i].hour;
   }
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT-1);
  // dc->DrawText(wxString::Format(_(" Max %.1f Min %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,m_MinPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
@@ -347,10 +347,11 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   int done=-1;
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
-    min=m_ArrayRecTime[idx].GetMinute();
-    hour=m_ArrayRecTime[idx].GetHour();
-    if(m_ArrayRecTime[idx].GetYear()!= 999) {
-      if ( (hour*100+min) != done && (min % 5 == 0 ) && (m_ArrayRecTime[idx].GetSecond() == 0 || m_ArrayRecTime[idx].GetSecond() == 1) ) {
+    sec = m_ArrayRecTime[idx].sec;
+    min=m_ArrayRecTime[idx].min;
+    hour=m_ArrayRecTime[idx].hour;
+    if(m_ArrayRecTime[idx].year!= 999) {
+      if ( (hour*100+min) != done && ( min % 5 == 0 ) && (sec == 0 || sec == 1) ) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine( pointTime.x, m_TopLineHeight+1, pointTime.x,(m_TopLineHeight+m_DrawAreaRect.height+1) );
         label.Printf(_T("%02d:%02d"), hour,min);

@@ -171,10 +171,11 @@ ChartDataInputStream::ChartDataInputStream(const wxString& fileName)
 
 ChartDataInputStream::~ChartDataInputStream()
 {
+    // close it
+    delete m_stream;
     // delete the temp file, how do we remove temp files if the program crashed?
     if(!m_tempfilename.empty())
         wxRemoveFile(m_tempfilename);
-    delete m_stream;
 }
 
 size_t ChartDataInputStream::OnSysRead(void *buffer, size_t size)

@@ -30,30 +30,38 @@
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
-#include "gpxdocument.h"
+
+#define MAX_INT_VAL 2147483647  //max possible integer value before 'rollover'
+#define SCAMIN_MIN 10000        //minimal allowed ScaMin setting. prevents always hiding
+
+#define ETA_FORMAT_STR "%x %H:%M"
+//"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
 class ocpnDC;
 class wxDC;
+class ChartCanvas;
 
 class RoutePoint
 {
 public:
-      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = GPX_EMPTY_STRING, bool bAddToList = true);
+      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = wxEmptyString, bool bAddToList = true);
       RoutePoint( RoutePoint* orig );
       RoutePoint();
       virtual ~RoutePoint(void);
-      void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
+      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
       
       void SetPosition(double lat, double lon);
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
-      void CalculateDCRect(wxDC& dc, wxRect *prect);
-
+      void CalculateDCRect(wxDC& dc, ChartCanvas *canvas, wxRect *prect);
+      LLBBox &GetBBox(){ return m_wpBBox; }
+      
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
       bool IsNameShown() { return m_bShowName; }
+      bool IsVisibleSelectable(ChartCanvas *canvas);
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
@@ -94,23 +102,43 @@ public:
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
       void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
-
+      void SetScaMin(wxString str);
+      void SetScaMin(long val);
+      long GetScaMin(){return m_ScaMin; };
+      void SetScaMax(wxString str);
+      void SetScaMax(long val);
+      long GetScaMax(){return m_ScaMax; };
+      bool GetUseSca(){return b_UseScamin; };
+      void SetUseSca( bool value ){ b_UseScamin = value; };
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
-      wxPoint2DDouble GetDragHandlePoint( ViewPort &vp);
-      void SetPointFromDraghandlePoint(ViewPort &vp, double lat, double lon);
-      void SetPointFromDraghandlePoint(ViewPort &vp, int x, int y);
-      void PresetDragOffset( int x, int y);
+      wxPoint2DDouble GetDragHandlePoint( ChartCanvas *canvas );
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon);
+      void SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y);
+      void PresetDragOffset( ChartCanvas *canvas, int x, int y);
+      void ShowScaleWarningMessage(ChartCanvas *canvas);
+      void SetPlannedSpeed(double spd);
+      double GetPlannedSpeed();
+      wxDateTime GetETD();
+      wxDateTime GetManualETD();
+      void SetETD(const wxDateTime &etd);
+      bool SetETD(const wxString &ts);
+      wxDateTime GetETA();
+      wxString GetETE();
+      void SetETE(wxLongLong secs);
       
       double            m_lat, m_lon;
-      double             m_seg_len;              // length in NMI to this point
+      double            m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
       double            m_seg_vmg;
       wxDateTime        m_seg_etd;
+      wxDateTime        m_seg_eta;
+      wxLongLong        m_seg_ete = 0;
+      bool              m_manual_etd{false};
 
       bool              m_bPtIsSelected;
-      bool              m_bIsBeingEdited;
+      bool              m_bRPIsBeingEdited;
 
       bool              m_bIsInRoute;
       bool              m_bIsolatedMark;        // This is an isolated mark
@@ -124,6 +152,8 @@ public:
       bool              m_bIsActive;
       wxString          m_MarkDescription;
       wxString          m_GUID;
+    
+      wxString          m_TideStation;
 
       wxFont            *m_pMarkFont;
       wxColour          m_FontColor;
@@ -132,7 +162,7 @@ public:
 
       bool              m_bBlink;
       bool              m_bDynamicName;
-      bool              m_bShowName;
+      bool              m_bShowName, m_bShowNameData;
       wxRect            CurrentRect_in_DC;
       int               m_NameLocationOffsetX;
       int               m_NameLocationOffsetY;
@@ -149,9 +179,10 @@ public:
       float             m_fWaypointRangeRingsStep;
       int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
+      
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, bool use_cached_screen_coords=false );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 
@@ -169,7 +200,7 @@ public:
 
       wxDateTime        m_CreateTimeX;
 private:
-      wxPoint2DDouble computeDragHandlePoint(ViewPort &vp);
+      wxPoint2DDouble computeDragHandlePoint(ChartCanvas *canvas);
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
@@ -186,6 +217,10 @@ private:
       int               m_drag_line_length_man, m_drag_icon_offset;
       double            m_dragHandleLat, m_dragHandleLon;
       int               m_draggingOffsetx, m_draggingOffsety;
+      bool              b_UseScamin;
+      long              m_ScaMin;
+      long              m_ScaMax;
+      double            m_PlannedSpeed;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

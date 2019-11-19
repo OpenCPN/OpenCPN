@@ -24,6 +24,7 @@
 
 #include <wx/textctrl.h>
 #include <wx/dcclient.h>
+#include <wx/clipbrd.h>
 
 #include "TTYScroll.h"
 
@@ -110,13 +111,25 @@ void TTYScroll::OnDraw( wxDC& dc )
             dc.SetTextForeground( wxColour(_T("MAROON")) );
             lss = ls.Mid(8);
         }
-        else if(ls.Mid(0, 8) == _T("<CORAL>") ){
+        else if(ls.Mid(0, 7) == _T("<CORAL>") ){
             dc.SetTextForeground( wxColour(_T("CORAL")) );
-            lss = ls.Mid(8);
+            lss = ls.Mid(7);
         }
         dc.DrawText( lss, 0, y );
        y += m_hLine;
     }
 }
 
-
+void TTYScroll::Copy()
+{
+    wxString theText;
+    for (unsigned int i = 0; i < m_plineArray->GetCount(); i++) {
+        theText.append(m_plineArray->Item(i));
+        theText.append("\n");
+    }
+    // Write scrolled text to the clipboard
+    if (wxTheClipboard->Open()) {
+        wxTheClipboard->SetData(new wxTextDataObject(theText));
+        wxTheClipboard->Close();
+    }
+}

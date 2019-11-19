@@ -39,6 +39,8 @@
 
 #include <wx/file.h>
 
+#include "dychart.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -47,7 +49,6 @@
 #include "chartbase.h" // for projections
 #include "wx28compat.h"
 
-#include "dychart.h"
 
 
 #ifdef __WXMSW__
@@ -64,6 +65,9 @@ extern wxString gWorldMapLocation;
 
 GSHHSChart::GSHHSChart() {
     reader = NULL;
+    land = wxColor( 250, 250, 250 );
+    water = wxColor( 0, 0, 0 );
+    
 }
 
 GSHHSChart::~GSHHSChart() {
@@ -92,6 +96,12 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
 
+void GSHHSChart::SetColorsDirect( wxColour newLand, wxColour newWater ) {
+    land =  newLand;
+    water = newWater;
+}
+    
+
 void GSHHSChart::Reset() {
     if( reader )
         delete reader;
@@ -101,13 +111,13 @@ void GSHHSChart::Reset() {
 
 int GSHHSChart::GetMinAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMinAvailableQuality();
 }
 
 int GSHHSChart::GetMaxAvailableQuality() {
     if( !reader )
-        reader = new GshhsReader( );
+        reader = new GshhsReader();
     return reader->GetMaxAvailableQuality();
 }
 
@@ -260,7 +270,7 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
         for( v = 0; v < p->at( c ).size(); v++ ) {
             wxRealPoint &ccp = cp.at( v );
             wxPoint2DDouble q = GetDoublePixFromLL(vp, ccp.y, ccp.x + dx );
-            if(wxIsNaN(q.m_x)) {
+            if(std::isnan(q.m_x)) {
                 pointCount = 0;
                 break;
             }
@@ -633,7 +643,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
+static inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
 {
     double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
     double x3 = line2.m_p1.x, y3 = line2.m_p1.y, x4 = line2.m_p2.x, y4 = line2.m_p2.y;
@@ -643,15 +653,16 @@ inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
     double bx = x3 - x4, by = y3 - y4;
     double cx = x1 - x3, cy = y1 - y3;
 
+#  define INTER_LIMIT 1e-7
     double denominator = ay * bx - ax * by;
     if( denominator < 1e-10 ) {
-        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > 1e-5)
+        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > INTER_LIMIT)
+            return false; /* different intercepts, no intersection */
+        if(fabs((x1*ay - ax*y1)*by - (x3*by - bx*y3)*ay) > INTER_LIMIT)
             return false; /* different intercepts, no intersection */
 
         return true;
     }
-
-#  define INTER_LIMIT 1e-7
 
     const double reciprocal = 1 / denominator;
     const double na = ( by * cx - bx * cy ) * reciprocal;
@@ -819,11 +830,12 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         glEnableClientState(GL_VERTEX_ARRAY);
         
         // use a viewport that allows the vertexes to be reused over many frames
-        if(glChartCanvas::HasNormalizedViewPort(vp)) {
-            glPushMatrix();
-            glChartCanvas::MultMatrixViewPort(vp);
-            nvp = glChartCanvas::NormalizedViewPort(vp);
-        }
+        // TODO fix for multicanvas
+         if(glChartCanvas::HasNormalizedViewPort(vp)) {
+             glPushMatrix();
+             glChartCanvas::MultMatrixViewPort(vp);
+             nvp = glChartCanvas::NormalizedViewPort(vp);
+         }
     }
 #endif
     for( clon = clonmin; clon < clonmax; clon++ ) {
