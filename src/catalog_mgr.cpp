@@ -634,12 +634,8 @@ class CatalogLoad: public wxPanel, public Helpers
                 sizer->Add(1, 1, 100, wxEXPAND);   // Expanding spacer
                 auto cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
                 sizer->Add(cancel, flags);
-                m_ok = new wxButton(this, wxID_ANY, _("OK"));
+                m_ok = new wxButton(this, wxID_OK, _("OK"));
                 sizer->Add(m_ok, flags);
-                cancel->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                             [=](wxCommandEvent& ev) { closeWindow(); });
-                m_ok->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                         [=](wxCommandEvent& ev) { closeWindow(); });
                 SetSizer(sizer);
                 Fit();
                 Show();
