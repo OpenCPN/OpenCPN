@@ -148,7 +148,10 @@ class CatalogUpdate: public wxDialog, Helpers
         wxStaticText* m_advanced;
         bool m_show_edit;
 
-        void closeMyWindow() { Destroy(); }
+        void closeMyWindow() { 
+            EndModal(wxID_OK);
+            GetParent()->Close(true);
+        }
 
         /**
          * The window width  is determined by the normally hidden custom
