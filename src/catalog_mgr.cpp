@@ -543,12 +543,7 @@ class CatalogLoad: public wxPanel, public Helpers
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
                 wxLogMessage("Running CatalogUpdate.");
-                CatalogUpdate dlg(this);
-                wxLogMessage("Done running CatalogUpdate.");
-           //     new CatalogUpdate(this);
-           //   GetParent()->Hide();
-                auto parent = dynamic_cast<wxDialog*>(GetParent());
-                parent->EndModal(0);
+                new CatalogUpdate(this);
             }
         }
 
