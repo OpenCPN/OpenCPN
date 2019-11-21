@@ -22,6 +22,6 @@ buildwin/*.exe
 buildwin/*.crt
 src/opencpn.rc
 */buildwin
-buildandroid/notes
+buildandroid/*
 wxWidgets/*
 .DS_Store
