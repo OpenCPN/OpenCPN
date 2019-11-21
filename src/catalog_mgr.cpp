@@ -74,7 +74,7 @@ class Helpers
             return new wxStaticText(parent, wxID_ANY, text);
         }
 
-        wxButton* makeButton(const char* label)
+        wxButton* makeButton(const char* label, int id = wxID_ANY)
         {
             return new wxButton(parent, wxID_ANY, label);
         }
@@ -137,14 +137,6 @@ class CatalogUpdate: public wxDialog, Helpers
             ShowModal();
         }
 
-        bool Destroy()
-        {
-            GetParent()->GetParent()->GetParent()->SetFocus();
-            GetParent()->GetParent()->GetParent()->Raise();
-            GetParent()->GetParent()->Close();
-            return wxDialog::Destroy();
-        }
-
     protected:
         const char* const HIDE =
             _("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
@@ -200,7 +192,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                             [=](wxCommandEvent& ev) { clearUrl(); });
 
-                auto update = makeButton(_("Update"));
+                auto update = makeButton(_("Update"), wxID_OK);
                 sizer->Add(update, flags);
                 update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                              [=](wxCommandEvent& ev) { updateUrl(); });
@@ -504,6 +496,13 @@ class CatalogLoad: public wxPanel, public Helpers
                  [=](wxCommandEvent& ev) { workerDone(ev); });
         }
 
+        bool Close(bool force)
+        {
+            GetParent()->Close();
+            Destroy();
+            return true;
+        }
+
         void PostEvent(int evt_id, catalog_status status, std::string message)
         {
             wxCommandEvent evt(evt_id);
@@ -543,8 +542,13 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
-                new CatalogUpdate(this);
-                GetParent()->Hide();
+                wxLogMessage("Running CatalogUpdate.");
+                CatalogUpdate dlg(this);
+                wxLogMessage("Done running CatalogUpdate.");
+           //     new CatalogUpdate(this);
+           //   GetParent()->Hide();
+                auto parent = dynamic_cast<wxDialog*>(GetParent());
+                parent->EndModal(0);
             }
         }
 
@@ -633,12 +637,12 @@ class CatalogLoad: public wxPanel, public Helpers
                 auto sizer = new wxBoxSizer(wxHORIZONTAL);
                 auto flags = wxSizerFlags().Right().Bottom().Border();
                 sizer->Add(1, 1, 100, wxEXPAND);   // Expanding spacer
-                auto cancel = new wxButton(this, wxID_ANY, _("Cancel"));
+                auto cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
                 sizer->Add(cancel, flags);
                 m_ok = new wxButton(this, wxID_ANY, _("OK"));
                 sizer->Add(m_ok, flags);
                 cancel->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                               [=](wxCommandEvent& ev) { closeWindow(); });
+                             [=](wxCommandEvent& ev) { closeWindow(); });
                 m_ok->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                          [=](wxCommandEvent& ev) { closeWindow(); });
                 SetSizer(sizer);
@@ -646,7 +650,12 @@ class CatalogLoad: public wxPanel, public Helpers
                 Show();
             }
 
-            void closeWindow() { GetParent()->GetParent()->Close(); }
+            void closeWindow()
+            {
+                auto parent =
+                    dynamic_cast<wxDialog*>(GetParent()->GetParent());
+                parent->EndModal(0);
+            }
 
             void ActivateOk()
             {
