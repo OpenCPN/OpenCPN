@@ -2996,6 +2996,16 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             break;
     }
 
+#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
+    bool darkMode = (cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT || g_bDarkDecorations);
+
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        setAppLevelDarkMode(darkMode);
+    }
+    else if (wxPlatformInfo::Get().CheckOSVersion(10, 12)) {
+        setWindowLevelDarkMode(MacGetTopLevelWindowRef(), darkMode);
+    }
+#endif
 
     g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
         
@@ -3142,15 +3152,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     }
     
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
-
-#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-    if( (osMajor >= 10) && (osMinor >= 12) ){
-        if( g_bDarkDecorations ) {
-            applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
-        }
-    }
-#endif
-
 }
 
 void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )

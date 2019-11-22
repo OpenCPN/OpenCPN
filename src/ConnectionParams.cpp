@@ -368,14 +368,12 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     }
     
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            if(selected) {
-                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-            } else {
-                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-            }
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        // On macOS 10.14+ we use the native colours, which automatically adjust in Dark Mode.
+        if (selected) {
+            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
+        } else {
+            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
         }
     }
 #endif
