@@ -121,7 +121,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern WayPointman *pWayPointMan;
-extern wxString g_PrivateDataDir;
 
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
@@ -224,7 +223,6 @@ extern bool g_bTrackDaily;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern bool g_bHighliteTracks;
-extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
@@ -267,7 +265,6 @@ extern OcpnSound* g_anchorwatch_sound;
 extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
-extern double g_overzoom_emphasis_base;
 extern bool g_oz_vector_scale;
 extern bool g_bShowStatusBar;
 
@@ -315,7 +312,6 @@ extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 extern bool g_bInlandEcdis;
 extern bool g_bDarkDecorations;
-extern bool g_bSpaceDropMark;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;

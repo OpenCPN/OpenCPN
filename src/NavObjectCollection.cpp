@@ -37,11 +37,7 @@ extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern Select *pSelect;
 //extern bool g_bIsNewLayer;
-//extern bool g_bLayerViz;
 
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()

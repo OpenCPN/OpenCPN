@@ -52,10 +52,8 @@
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 
-extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
 extern MyFrame          *gFrame;
-extern MyConfig         *pConfig;
 extern OCPNPlatform     *g_Platform;
 
 int                      g_ais_cog_predictor_width;
@@ -64,16 +62,6 @@ extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
 
 //    AIS Global configuration
-extern bool             g_bCPAMax;
-extern double           g_CPAMax_NM;
-extern bool             g_bCPAWarn;
-extern double           g_CPAWarn_NM;
-extern bool             g_bTCPA_Max;
-extern double           g_TCPA_Max;
-extern bool             g_bMarkLost;
-extern double           g_MarkLost_Mins;
-extern bool             g_bRemoveLost;
-extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bHideMoored;
@@ -85,32 +73,12 @@ extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bInlandEcdis;
 
-extern ColorScheme      global_color_scheme;
 
-extern bool             g_bAIS_CPA_Alert;
-extern bool             g_bAIS_CPA_Alert_Audio;
-extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 
 extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int              g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-extern wxString         g_sAIS_Alert_Sound_File;
 
-extern AISTargetListDialog    *g_pAISTargetList;
-extern int              g_AisTargetList_range;
-extern wxString         g_AisTargetList_perspective;
-extern int              g_AisTargetList_sortColumn;
-extern bool             g_bAisTargetList_sortReverse;
-extern wxString         g_AisTargetList_column_spec;
-extern int              g_AisTargetList_count;
-
-extern bool             g_bAISRolloverShowClass;
-extern bool             g_bAISRolloverShowCOG;
-extern bool             g_bAISRolloverShowCPA;
-
-extern bool             g_bAIS_ACK_Timeout;
-extern double           g_AckTimeout_Mins;
 extern bool             g_bShowScaled;
-extern bool             g_bAllowShowScaled;
 
 int                     g_ShowScaled_Num;
 int                     ImportanceSwitchPoint = 100;
@@ -122,14 +90,10 @@ int                     g_ScaledNumWeightSizeOfT;
 int                     g_ScaledSizeMinimal;
 
 
-extern bool             bGPSValid;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
-extern bool             g_bresponsive;
-extern float            g_ChartScaleFactorExp;
 extern float            g_ShipScaleFactorExp;
 
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 float AISImportanceSwitchPoint = 0.0;
 

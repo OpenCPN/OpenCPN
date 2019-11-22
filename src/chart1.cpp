@@ -7992,7 +7992,7 @@ void MyFrame::SetChartThumbnail( int index )
                     }
                 }
                 
-               pthumbwin->Move( pos );
+                pthumbwin->Move( pos );
                 
             }
             
@@ -8067,7 +8067,6 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #endif
 
 int g_lastMemTick = -1;
-extern long g_tex_mem_used;
 
 bool GetMemoryStatus( int *mem_total, int *mem_used )
 {
