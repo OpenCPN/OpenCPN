@@ -3550,7 +3550,9 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
     route->m_RouteNameString = proute->m_NameString;
     route->m_RouteStartString = proute->m_StartString;
     route->m_RouteEndString = proute->m_EndString;
-    route->m_GUID = proute->m_GUID;
+    if (!proute->m_GUID.IsEmpty()) {
+        route->m_GUID = proute->m_GUID;
+    }
     route->m_btemp = (b_permanent == false);
 
     pRouteList->Append( route );
