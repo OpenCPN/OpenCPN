@@ -107,7 +107,7 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
             cp = (s0p + i) / 6;
             cx = bitbytes[cp];        // what if cp >= byte_length?
             cs = 5 - ((s0p + i) % 6);
-            c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
+            c0 = (cx >> cs) & 1;
             acc |= c0;
 
             i++;
