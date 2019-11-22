@@ -59,7 +59,6 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_btouch;
 extern int  g_GUIScaleFactor;
 
-extern Piano                     *g_Piano;
 extern OCPNPlatform              *g_Platform;
 
 //------------------------------------------------------------------------------

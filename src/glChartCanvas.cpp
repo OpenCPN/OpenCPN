@@ -132,7 +132,6 @@ extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
-extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
 extern std::vector<int> g_quilt_noshow_index_array;
