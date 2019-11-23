@@ -651,9 +651,10 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxFrame(parent, wxID_ANY, _("Plugin Manager"),
+    :wxFrame(0, wxID_ANY, _("Plugin Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_FRAME_STYLE | wxSTAY_ON_TOP | wxDIALOG_NO_PARENT)
+              wxDEFAULT_FRAME_STYLE | wxSTAY_ON_TOP | wxDIALOG_NO_PARENT),
+    m_parent(parent)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto scrwin = new download_mgr::OcpnScrolledWindow(this);
@@ -664,6 +665,7 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     wxSize minsize = GetTextExtent("abcdefghijklmnopqrst");
     minsize = wxSize(5 * minsize.GetWidth(), 20 * minsize.GetHeight());
     SetMinClientSize(minsize);
+
     Fit();
     Center();
 }

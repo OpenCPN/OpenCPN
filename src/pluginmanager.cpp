@@ -4237,7 +4237,7 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
  */
 AddPluginPanel::AddPluginPanel(wxWindow* parent)
     :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
-    m_dialog(0)
+    m_dialog(0), m_parent(parent)
 {
     wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
     path.AppendDir("uidata");
@@ -4258,9 +4258,9 @@ AddPluginPanel::AddPluginPanel(wxWindow* parent)
 
 void AddPluginPanel::OnClick(wxMouseEvent& event)
 {
-    GetParent()->Hide();
+    m_parent->Hide();
     if (!m_dialog) {
-        m_dialog = new PluginDownloadDialog(0);
+        m_dialog = new PluginDownloadDialog(this);
     }
     m_dialog->Show();
     m_dialog->Raise();

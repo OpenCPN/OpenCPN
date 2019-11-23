@@ -405,6 +405,7 @@ class AddPluginPanel: public wxPanel
         PluginDownloadDialog* m_dialog;
         wxBitmap m_bitmap;
         wxStaticBitmap* m_staticBitmap;
+        wxWindow* m_parent;
 };
 
 class PluginListPanel: public wxScrolledWindow

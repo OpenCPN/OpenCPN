@@ -133,6 +133,10 @@ class CatalogUpdate: public wxDialog, Helpers
             size.SetHeight(1);
             SetMinClientSize(size);
 
+            //Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent e) { 
+            //        GetParent()->Show();
+            //        Close();
+            //});
             Fit();
             ShowModal();
         }
@@ -644,11 +648,9 @@ class CatalogLoad: public wxPanel, public Helpers
                 Show();
             }
 
-            void closeWindow()
-            {
-                auto parent =
-                    dynamic_cast<wxDialog*>(GetParent()->GetParent());
-                parent->EndModal(0);
+            void closeWindow() 
+            { 
+                GetParent()->GetParent()->Close();
             }
 
             void ActivateOk()

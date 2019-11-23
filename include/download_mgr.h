@@ -33,6 +33,9 @@ class PluginDownloadDialog: public wxFrame
 {
     public:
         PluginDownloadDialog(wxWindow* parent);
+
+    private:
+        wxWindow* m_parent;
 };
 
 #endif // DOWNLOAD_MGR_H__
