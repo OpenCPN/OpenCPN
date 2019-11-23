@@ -76,6 +76,9 @@ class CatalogHandler {
         /** Set a custom url, overrides also channel settings. */
         void SetCustomUrl(const char* url);
 
+        /** Set a custom url, overrides also channel settings. */
+        std::string  GetCustomUrl();
+
         /** Get the default URL, with actual channel included */
         std::string GetDefaultUrl();
 
@@ -123,9 +126,7 @@ class CatalogHandler {
         const char* const DEFAULT_CHANNEL = "master";
 
     private:
-        std::string custom_url;
         std::vector<std::string> channels;
-        std::string m_active_channel;
         ServerStatus status;
         std::ostream* stream;
         std::string error_msg;

@@ -133,10 +133,6 @@ class CatalogUpdate: public wxDialog, Helpers
             size.SetHeight(1);
             SetMinClientSize(size);
 
-            //Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent e) { 
-            //        GetParent()->Show();
-            //        Close();
-            //});
             Fit();
             ShowModal();
         }
@@ -189,17 +185,17 @@ class CatalogUpdate: public wxDialog, Helpers
                 auto sizer = new wxBoxSizer(wxHORIZONTAL);
                 auto flags = wxSizerFlags().Right().Bottom().Border();
 
+                auto clear = makeButton(_("Clear"));
+                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                            [=](wxCommandEvent& ev) { clearUrl(); });
+                sizer->Add(clear, flags);
+
                 auto use_default = makeButton(_("Use default location"));
                 use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                                   [=](wxCommandEvent& ev) { useDefaultUrl(); });
                 sizer->Add(use_default, flags);
 
-                auto clear = makeButton(_("Clear"));
-                sizer->Add(clear, flags);
-                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                            [=](wxCommandEvent& ev) { clearUrl(); });
-
-                auto update = makeButton(_("Update"), wxID_OK);
+                auto update = makeButton(_("Save"));
                 sizer->Add(update, flags);
                 update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                              [=](wxCommandEvent& ev) { updateUrl(); });
@@ -218,7 +214,7 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void clearUrl()
             {
-                m_parent->m_url_edit->setText("");
+                m_parent->m_url_edit->clear();
             }
 
             void updateUrl()
@@ -229,6 +225,7 @@ class CatalogUpdate: public wxDialog, Helpers
             }
 
             CatalogUpdate* m_parent;
+
         };
 
         /** The Url Status line at top */
@@ -452,6 +449,8 @@ class CatalogUpdate: public wxDialog, Helpers
                 m_url_ctrl->Refresh();
             }
 
+            void clear() { m_url_ctrl->Clear(); }
+
             std::string getText()
             {
                 return std::string(m_url_ctrl->GetLineText(0).ToStdString());
@@ -604,7 +603,11 @@ class CatalogLoad: public wxPanel, public Helpers
                 grid->Add(staticText(_("")), flags);
                 grid->Add(staticText(_("")), flags);
                 grid->Add(staticText(_("")), flags);
-
+                auto url = CatalogHandler::getInstance()->GetCustomUrl();
+                if (url != "") {
+                    grid->Add(staticText(_("Custom URL")), flags);
+                    grid->Add(staticText(url.c_str()), flags);
+                }
                 SetSizer(grid);
                 Fit();
                 Show();

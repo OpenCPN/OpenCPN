@@ -63,13 +63,10 @@ static const char* const API_PATH = "/leamas/plugins/branches";
 
 
 CatalogHandler::CatalogHandler()
-    :m_active_channel(DEFAULT_CHANNEL), status(ServerStatus::UNKNOWN)
+    : status(ServerStatus::UNKNOWN)
 {
-    if (g_catalog_custom_url != "") {
-        custom_url = g_catalog_custom_url.ToStdString();
-    }
-    if (g_catalog_channel != "") {
-        m_active_channel = g_catalog_channel.ToStdString();
+    if (g_catalog_channel == "") {
+        g_catalog_channel = DEFAULT_CHANNEL;
     }
 }
 
@@ -87,18 +84,20 @@ CatalogHandler* CatalogHandler::getInstance()
 std::string CatalogHandler::GetDefaultUrl()
 {
     std::string url = std::string(DOWNLOAD_REPO) + DOWNLOAD_PATH;
-    ocpn::replace(url, "@branch@", m_active_channel);
+    ocpn::replace(url, "@branch@", g_catalog_channel.ToStdString());
     return url;
 }
 
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream)
 {
-    std::string uri = std::string(DOWNLOAD_REPO) + DOWNLOAD_PATH;
-    ocpn::replace(uri, "@branch@", m_active_channel);
-    wxLogMessage("Downloading from effective catalog path: %s", uri.c_str());
-
-    Downloader downloader(uri);
+    std::string path(g_catalog_custom_url.ToStdString());
+    if (path == "") {
+        path = std::string(DOWNLOAD_REPO) + DOWNLOAD_PATH;
+        ocpn::replace(path, "@branch@", g_catalog_channel.ToStdString());
+        wxLogMessage("Effective catalog path: %s", path.c_str());
+    }
+    Downloader downloader(path);
     bool ok = downloader.download(stream);
     if (ok) {
         return ServerStatus::OK;
@@ -152,8 +151,7 @@ bool CatalogHandler::SetActiveChannel(const char* channel)
 {
     for (auto c: channels) {
         if (c == channel) {
-            m_active_channel = channel;
-            g_catalog_channel = m_active_channel;
+            g_catalog_channel = channel;
             return true;
         }
     }
@@ -164,13 +162,12 @@ bool CatalogHandler::SetActiveChannel(const char* channel)
 
 std::string CatalogHandler::GetActiveChannel()
 {
-    return m_active_channel;
+    return g_catalog_channel.ToStdString();
 }
 
 
 void CatalogHandler::SetCustomUrl(const char* url)
 {
-    custom_url = url;
     g_catalog_custom_url = url;
 }
 
@@ -242,6 +239,11 @@ void CatalogHandler::ClearCatalogData()
     default_data.undef = true;
     user_data.undef = true;
     latest_data.undef = true;
+}
+
+std::string CatalogHandler::GetCustomUrl()
+{
+     return g_catalog_custom_url.ToStdString();
 }
 
 
