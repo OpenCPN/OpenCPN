@@ -558,7 +558,7 @@ class MainButtonsPanel: public wxPanel
 
     protected:
         
-        /** OK button, closes victim when pushed. */
+        /** OK button, hides victim when pushed. */
         class OkKillVictimButton: public wxButton
         {
             private:
@@ -570,13 +570,13 @@ class MainButtonsPanel: public wxPanel
                     m_victim(victim)
                 {
                      Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                          [=](wxCommandEvent&) {m_victim->Close(); });
+                          [=](wxCommandEvent&) {m_victim->Hide(); });
                 }
         
                 virtual ~OkKillVictimButton() 
                 {
                       Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                          [=](wxCommandEvent&) {m_victim->Close(); });
+                          [=](wxCommandEvent&) {m_victim->Hide(); });
                 }
         };
 
@@ -651,9 +651,9 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxDialog(parent, wxID_ANY, _("Plugin Manager"),
+    :wxFrame(parent, wxID_ANY, _("Plugin Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+              wxDEFAULT_FRAME_STYLE)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto scrwin = new download_mgr::OcpnScrolledWindow(this);
@@ -666,5 +666,5 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     SetMinClientSize(minsize);
 
     Fit();
-    ShowModal();
+    Show();
 }

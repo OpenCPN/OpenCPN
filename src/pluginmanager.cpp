@@ -4239,7 +4239,8 @@ class AddPluginPanel: public wxPanel
 {
     public:
         AddPluginPanel(wxWindow* parent)
-            :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32))
+            :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
+            m_dialog(0)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
             path.AppendDir("uidata");
@@ -4262,7 +4263,10 @@ class AddPluginPanel: public wxPanel
 
         void OnClick(wxMouseEvent& event)
         {
-            new PluginDownloadDialog(this);
+            if (!m_dialog) {
+                m_dialog = new PluginDownloadDialog(0);
+            }
+            m_dialog->Show();
         }
 
         ~AddPluginPanel()
@@ -4274,6 +4278,7 @@ class AddPluginPanel: public wxPanel
         }
 
     protected:
+        PluginDownloadDialog* m_dialog;
         wxBitmap m_bitmap;
         wxStaticBitmap* m_staticBitmap;
 };

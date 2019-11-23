@@ -26,10 +26,10 @@
 #ifndef DOWNLOAD_MGR_H__
 #define DOWNLOAD_MGR_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/window.h>
 
-class PluginDownloadDialog: public wxDialog
+class PluginDownloadDialog: public wxFrame
 {
     public:
         PluginDownloadDialog(wxWindow* parent);
