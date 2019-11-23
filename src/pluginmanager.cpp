@@ -4235,53 +4235,45 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 /*
  * Panel with a single + sign which opens the "Add/download plugin" dialog.
  */
-class AddPluginPanel: public wxPanel
+AddPluginPanel::AddPluginPanel(wxWindow* parent)
+    :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
+    m_dialog(0)
 {
-    public:
-        AddPluginPanel(wxWindow* parent)
-            :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
-            m_dialog(0)
-        {
-            wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
-            path.AppendDir("uidata");
-            auto size = GetTextExtent("+");
-            LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
-            if (!m_bitmap.IsOk()) {
-                wxLogMessage("AddPluginPanel: bitmap is not OK!");
-            }
-            auto hbox = new wxBoxSizer(wxHORIZONTAL);
-            hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
-            m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
-            hbox->Add(m_staticBitmap);
-            SetSizer(hbox);
-            SetToolTip(new wxToolTip(_("Download and install/update plugins")));
-            Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-            m_staticBitmap->Bind(wxEVT_LEFT_DOWN,
-                                 &AddPluginPanel::OnClick,
-                                 this);
-        }
+    wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
+    path.AppendDir("uidata");
+    auto size = GetTextExtent("+");
+    LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
+    if (!m_bitmap.IsOk()) {
+        wxLogMessage("AddPluginPanel: bitmap is not OK!");
+    }
+    auto hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
+    m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
+    hbox->Add(m_staticBitmap);
+    SetSizer(hbox);
+    SetToolTip(new wxToolTip(_("Download and install/update plugins")));
+    Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+    m_staticBitmap->Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+}
 
-        void OnClick(wxMouseEvent& event)
-        {
-            if (!m_dialog) {
-                m_dialog = new PluginDownloadDialog(0);
-            }
-            m_dialog->Show();
-        }
+void AddPluginPanel::OnClick(wxMouseEvent& event)
+{
+    GetParent()->Hide();
+    if (!m_dialog) {
+        m_dialog = new PluginDownloadDialog(0);
+    }
+    m_dialog->Show();
+    m_dialog->Raise();
+    m_dialog->SetFocus();
+}
 
-        ~AddPluginPanel()
-        {
-            Unbind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-            m_staticBitmap->Unbind(wxEVT_LEFT_DOWN,
-                                   &AddPluginPanel::OnClick,
-                                   this);
-        }
-
-    protected:
-        PluginDownloadDialog* m_dialog;
-        wxBitmap m_bitmap;
-        wxStaticBitmap* m_staticBitmap;
-};
+AddPluginPanel::~AddPluginPanel()
+{
+    Unbind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+    m_staticBitmap->Unbind(wxEVT_LEFT_DOWN,
+                           &AddPluginPanel::OnClick,
+                           this);
+}
 
 PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
     :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL ),
@@ -4290,8 +4282,8 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     SetSizer(new wxBoxSizer(wxVERTICAL));
     m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
     GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Expand());
-    GetSizer()->Add(new AddPluginPanel(this),
-                    wxSizerFlags().Expand().Right().DoubleBorder());
+//    GetSizer()->Add(new AddPluginPanel(this),
+//                    wxSizerFlags().Expand().Right().DoubleBorder());
     ReloadPlugins(pPluginArray);
     SetScrollRate(0, 1);
 }
@@ -4320,8 +4312,8 @@ void PluginListPanel::Clear()
     }
     wxASSERT(m_pitemBoxSizer01->IsEmpty());
     wxASSERT(m_PluginItems.IsEmpty());
-    wxASSERT(GetSizer()->GetItemCount() == 2);
-    wxASSERT(GetChildren().GetCount() == 1);
+    wxASSERT(GetSizer()->GetItemCount() == 1);
+    //wxASSERT(GetChildren().GetCount() == 1);
 }
 
 

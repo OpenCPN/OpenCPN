@@ -8523,8 +8523,10 @@ void options::DoOnPageChange(size_t page) {
           new PluginListPanel(itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
                               wxDefaultSize, g_pi_manager->GetPlugInArray());
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
-
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
+
+      m_AddPluginPanel = new AddPluginPanel(this);
+      itemBoxSizerPanelPlugins->Add(m_AddPluginPanel, 1, wxEXPAND | wxALL, 4);
 
       itemBoxSizerPanelPlugins->Layout();
 

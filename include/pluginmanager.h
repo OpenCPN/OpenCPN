@@ -389,7 +389,23 @@ DECLARE_EVENT_TABLE()
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
 
-class AddPluginPanel;
+class PluginDownloadDialog;
+
+/*
+ * Panel with a single + sign which opens the "Add/download plugins" dialog.
+ */
+class AddPluginPanel: public wxPanel
+{
+    public:
+        AddPluginPanel(wxWindow* parent);
+        void OnClick(wxMouseEvent& event);
+        ~AddPluginPanel();
+
+    protected:
+        PluginDownloadDialog* m_dialog;
+        wxBitmap m_bitmap;
+        wxStaticBitmap* m_staticBitmap;
+};
 
 class PluginListPanel: public wxScrolledWindow
 {
