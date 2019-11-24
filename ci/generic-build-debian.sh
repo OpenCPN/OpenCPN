@@ -25,3 +25,5 @@ cmake $WEBVIEW_OPT \
     ..
 make -sj2
 make package
+
+sudo apt-get install python3-pip python3-setuptools
