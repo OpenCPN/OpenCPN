@@ -24,4 +24,3 @@ ci/opencpn_rsa
 src/opencpn.rc
 .DS_Store
 NSIS.template.in
-ocpn-plugins.xml
