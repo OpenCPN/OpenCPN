@@ -4262,7 +4262,9 @@ void AddPluginPanel::OnClick(wxMouseEvent& event)
     // Locate the options wxWindow parent. If not hidden, it steals focus.
     auto opts = dynamic_cast<options*>(m_parent->GetParent()->GetParent());
     wxASSERT(opts != 0);
+#ifndef  __WXOSX__
     opts->Hide();
+#endif
     if (!m_dialog) {
         m_dialog = new PluginDownloadDialog(this);
     }
