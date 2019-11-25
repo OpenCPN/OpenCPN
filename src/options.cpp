@@ -8526,12 +8526,8 @@ void options::DoOnPageChange(size_t page) {
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
       m_AddPluginPanel = new AddPluginPanel(itemPanelPlugins);
-      auto hbox = new wxBoxSizer(wxHORIZONTAL);
-      hbox->Add(1, 1, 1, wxEXPAND);
-      hbox->Add(m_AddPluginPanel);
-      itemBoxSizerPanelPlugins->Add(hbox,
+      itemBoxSizerPanelPlugins->Add(m_AddPluginPanel,
                                     wxSizerFlags(0).Expand().TripleBorder());
-
       itemBoxSizerPanelPlugins->Layout();
 
       //  Update the PlugIn page to reflect the state of individual selections
