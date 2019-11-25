@@ -651,9 +651,9 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxFrame(0, wxID_ANY, _("Plugin Manager"),
+    :wxDialog(0, wxID_ANY, _("Plugin Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_FRAME_STYLE | wxSTAY_ON_TOP | wxDIALOG_NO_PARENT),
+              wxDEFAULT_DIALOG_STYLE | wxDIALOG_NO_PARENT),
     m_parent(parent)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
