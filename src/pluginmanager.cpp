@@ -4242,6 +4242,7 @@ AddPluginPanel::AddPluginPanel(wxWindow* parent)
     wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
     path.AppendDir("uidata");
     auto size = GetTextExtent("+");
+    SetMinSize(wxSize( 2 * size.GetHeight(),  2 * size.GetHeight()));
     LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
     if (!m_bitmap.IsOk()) {
         wxLogMessage("AddPluginPanel: bitmap is not OK!");
@@ -4249,7 +4250,7 @@ AddPluginPanel::AddPluginPanel(wxWindow* parent)
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
     m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
-    hbox->Add(m_staticBitmap);
+    hbox->Add(m_staticBitmap, wxSizerFlags(0));
     SetSizer(hbox);
     SetToolTip(new wxToolTip(_("Download and install/update plugins")));
     Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
@@ -4275,15 +4276,15 @@ AddPluginPanel::~AddPluginPanel()
                            this);
 }
 
-PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
+PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
+                                 const wxPoint &pos, const wxSize &size,
+                                 ArrayOfPlugIns *pPluginArray )
     :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL ),
     m_PluginSelected(0)
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
     m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Expand());
-//    GetSizer()->Add(new AddPluginPanel(this),
-//                    wxSizerFlags().Expand().Right().DoubleBorder());
+    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Proportion(1).Expand());
     ReloadPlugins(pPluginArray);
     SetScrollRate(0, 1);
 }
@@ -4291,7 +4292,6 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
 /**
  * Clear m_PluginsItems and remove everything in this instance besides:
  *   - The empty m_pitemBoxSizer01.
- *   - The AddPluginPanel with a '+'.
  */
 void PluginListPanel::Clear()
 {
@@ -4313,7 +4313,7 @@ void PluginListPanel::Clear()
     wxASSERT(m_pitemBoxSizer01->IsEmpty());
     wxASSERT(m_PluginItems.IsEmpty());
     wxASSERT(GetSizer()->GetItemCount() == 1);
-    //wxASSERT(GetChildren().GetCount() == 1);
+    wxASSERT(GetChildren().GetCount() == 0);
 }
 
 

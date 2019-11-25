@@ -8526,7 +8526,11 @@ void options::DoOnPageChange(size_t page) {
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
       m_AddPluginPanel = new AddPluginPanel(this);
-      itemBoxSizerPanelPlugins->Add(m_AddPluginPanel, 1, wxEXPAND | wxALL, 4);
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      hbox->Add(1, 1, 1, wxEXPAND);
+      hbox->Add(m_AddPluginPanel);
+      itemBoxSizerPanelPlugins->Add(hbox,
+                                    wxSizerFlags(0).Expand().TripleBorder());
 
       itemBoxSizerPanelPlugins->Layout();
 

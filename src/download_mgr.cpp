@@ -642,7 +642,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto button_panel = new MainButtonsPanel(this, parent);
             box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
             SetSizer(box);
-            FitInside();
+            //FitInside();
             SetScrollRate(0, 1);
         };
 };
