@@ -4259,7 +4259,10 @@ AddPluginPanel::AddPluginPanel(wxWindow* parent)
 
 void AddPluginPanel::OnClick(wxMouseEvent& event)
 {
-    m_parent->Hide();
+    // Locate the options wxWindow parent. If not hidden, it steals focus.
+    auto opts = dynamic_cast<options*>(m_parent->GetParent()->GetParent());
+    wxASSERT(opts != 0);
+    opts->Hide();
     if (!m_dialog) {
         m_dialog = new PluginDownloadDialog(this);
     }
@@ -4284,7 +4287,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
     m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Proportion(1).Expand());
+    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Expand());
     ReloadPlugins(pPluginArray);
     SetScrollRate(0, 1);
 }

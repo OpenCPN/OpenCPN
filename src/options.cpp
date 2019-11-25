@@ -8525,7 +8525,7 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
-      m_AddPluginPanel = new AddPluginPanel(this);
+      m_AddPluginPanel = new AddPluginPanel(itemPanelPlugins);
       auto hbox = new wxBoxSizer(wxHORIZONTAL);
       hbox->Add(1, 1, 1, wxEXPAND);
       hbox->Add(m_AddPluginPanel);
