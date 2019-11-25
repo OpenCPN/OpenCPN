@@ -378,9 +378,11 @@ class InstallButton: public wxPanel
                              m_metadata.name.c_str());
                 return;
             }
-            auto upwards = GetParent()
-                ->GetParent()->GetParent()->GetParent()->GetParent();
-            auto listPanels = dynamic_cast<PluginListPanel*>(upwards);
+            auto upwards = GetParent()->GetParent()->GetParent();
+            auto main_window = dynamic_cast<PluginDownloadDialog*>(upwards);
+            wxASSERT(main_window != 0);
+            auto listPanels =
+                dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
             wxASSERT(listPanels != 0);
             listPanels->ReloadPlugins(g_pi_manager->GetPlugInArray());
             auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();

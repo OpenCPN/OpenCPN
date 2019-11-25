@@ -4295,6 +4295,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
 /**
  * Clear m_PluginsItems and remove everything in this instance besides:
  *   - The empty m_pitemBoxSizer01.
+ *   - The AddPluginPanel
  */
 void PluginListPanel::Clear()
 {
@@ -4315,7 +4316,8 @@ void PluginListPanel::Clear()
     }
     wxASSERT(m_pitemBoxSizer01->IsEmpty());
     wxASSERT(m_PluginItems.IsEmpty());
-    wxASSERT(GetSizer()->GetItemCount() == 1);
+    auto items = GetSizer()->GetItemCount();
+    wxASSERT(items == 2 || items == 1);
     wxASSERT(GetChildren().GetCount() == 0);
 }
 

@@ -34,6 +34,8 @@ class PluginDownloadDialog: public wxDialog
     public:
         PluginDownloadDialog(wxWindow* parent);
 
+        wxWindow* GetRealParent() { return  m_parent; }
+
     private:
         wxWindow* m_parent;
 };
