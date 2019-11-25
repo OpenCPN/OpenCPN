@@ -430,7 +430,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 sizer->Add(url_location, flags);
 
                 auto url_edit = new wxBoxSizer(wxHORIZONTAL);
-                auto uri = CatalogHandler::getInstance()->GetDefaultUrl();
+                auto uri = CatalogHandler::getInstance()->GetCustomUrl();
                 m_url_ctrl = new wxTextCtrl(this, wxID_ANY, uri);
                 auto the_parent = dynamic_cast<CatalogUpdate*>(GetParent());
                 m_url_ctrl->SetMinClientSize(the_parent->getWindowSize());
