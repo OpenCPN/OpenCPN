@@ -554,34 +554,13 @@ class MainButtonsPanel: public wxPanel
             sizer->Add(spacing, 0);
             sizer->Add(new UpdateCatalogNowBtn(this), wxSizerFlags());
             sizer->Add(spacing, 0);
-            sizer->Add(new OkKillVictimButton(this, victim), wxSizerFlags());
+            sizer->Add(new wxButton(this, wxID_OK, _("Done")),
+                       wxSizerFlags());
             SetSizer(sizer);
         }
 
     protected:
         
-        /** OK button, hides victim when pushed. */
-        class OkKillVictimButton: public wxButton
-        {
-            private:
-               wxWindow* m_victim;
-        
-            public:
-                OkKillVictimButton(wxWindow* parent, wxWindow* victim)
-                    :wxButton(parent, wxID_ANY, _("Done")),
-                    m_victim(victim)
-                {
-                     Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                          [=](wxCommandEvent&) {m_victim->Hide(); });
-                }
-        
-                virtual ~OkKillVictimButton() 
-                {
-                      Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                          [=](wxCommandEvent&) {m_victim->Hide(); });
-                }
-        };
-
         /**  Invokes the update catalog procedure. */
         class UpdateCatalogNowBtn: public wxButton
         {
@@ -591,7 +570,8 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
                 Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new CatalogDialog(GetParent(), true); });
+                   [=](wxCommandEvent&) {new CatalogDialog(GetParent(), true);
+                });
             }
         
         };
