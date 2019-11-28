@@ -5369,7 +5369,7 @@ void MyFrame::ToggleAnchor( ChartCanvas *cc )
 
 void MyFrame::ToggleDataQuality( ChartCanvas *cc )
 {
-    cc->SetShowENCDataQual( !cc->GetShowENCDataQual());
+    cc->SetShowENCDataQual(true);// !cc->GetShowENCDataQual());
 
     SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, cc->GetShowENCDataQual() );
 
