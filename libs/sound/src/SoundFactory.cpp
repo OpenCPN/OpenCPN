@@ -24,6 +24,11 @@
 #include "config.h"
 #include "SoundFactory.h"
 
+// I dunno why this is necessary, maybe due to clang?
+#ifdef __OCPN__ANDROID__
+#undef HAVE_PORTAUDIO
+#undef HAVE_SYSTEM_CMD_SOUND
+#endif
 
 #ifdef HAVE_PORTAUDIO
 #include "PortAudioSound.h"
@@ -38,7 +43,8 @@ OcpnSound* SoundFactory(void) { return new SystemCmdSound(SYSTEM_SOUND_CMD); }
 #elif defined(__OCPN__ANDROID__)
 #include "AndroidSound.h"
 
-// TBD...
+OcpnSound* SoundFactory(void) { return new AndroidSound(); }
+
 
 #elif defined(__WXMSW__)
 #include "MswSound.h"
