@@ -69,7 +69,6 @@ NMEA0183::NMEA0183()
    response_table.Add( (RESPONSE *) &Hsc );
    response_table.Add( (RESPONSE *) &Lcd );
    response_table.Add( (RESPONSE *) &Mtw );
-   response_table.Add( (RESPONSE *) &Mwv );
    response_table.Add( (RESPONSE *) &Oln );
    response_table.Add( (RESPONSE *) &Osd );
    response_table.Add( (RESPONSE *) &Proprietary );
@@ -89,6 +88,8 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &GPwpl );
    response_table.Append( (RESPONSE *) &Apb );
    response_table.Append( (RESPONSE *) &Xte );
+   response_table.Append( (RESPONSE *) &Mwd );
+   response_table.Append( (RESPONSE *) &Mwv );
    
 
 /*
