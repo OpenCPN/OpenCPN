@@ -81,7 +81,6 @@
 #include "concanv.h"
 #include "options.h"
 #include "AboutFrameImpl.h"
-#include "about.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
 #include "ais.h"
@@ -646,7 +645,6 @@ bool                      g_bNeedDBUpdate;
 bool                      g_bPreserveScaleOnX;
 
 AboutFrameImpl            *g_pAboutDlg;
-about                     *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;

@@ -28,8 +28,6 @@ target_include_directories(MIPMAP
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/mipmap
 )
 
-IF( NOT QT_ANDROID)
-
 # always use optimizations for the texture compression which is much faster
 if (NOT MSVC)
     set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
@@ -67,8 +65,3 @@ else (NOT MSVC)
             src/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "/arch:AVX")
     endif ()
 endif (NOT MSVC)
-  
-ELSE( NOT QT_ANDROID)
-    set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfloat-abi=softfp -mfpu=neon")
-ENDIF( NOT QT_ANDROID)
-

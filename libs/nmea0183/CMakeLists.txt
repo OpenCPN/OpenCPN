@@ -50,11 +50,6 @@ SET(SRC
     src/apb.hpp
     src/xte.cpp
     src/xte.hpp
-    src/mwd.cpp
-    src/mwd.hpp
-    src/mwv.cpp
-    src/mwv.hpp
-
 )
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)

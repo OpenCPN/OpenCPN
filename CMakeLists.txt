@@ -142,14 +142,6 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-IF(DEFINED _wx_selected_config)
-  MESSAGE (STATUS "selected config ${_wx_selected_config}")
-  IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Building for wxQt-Android")
-    SET(QT_ANDROID "ON")
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")  
-ENDIF(DEFINED _wx_selected_config)
-
 include(FindPkgConfig)
 include(CMakeDependentOption)
 
@@ -297,16 +289,6 @@ option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
   "Use aplay(1), afplay(1) etc. to play sounds if available" ON
 )
-
-IF (QT_ANDROID)
-  SET(OCPN_NEW_SERIAL OFF)
-  SET(OCPN_USE_NEWSERIAL OFF)
-  SET(OCPN_USE_CURL OFF)
-  SET(ENABLE_PORTAUDIO OFF)
-  SET(ENABLE_SYSTEM_CMD_SOUND OFF)
-  SET(ENABLE_SNDFILE OFF) 
-  SET(OCPN_USE_LZMA OFF) 
-ENDIF (QT_ANDROID)
 
 # Check if a given library should use the bundled source
 macro (USE_BUNDLED_LIB _result library)
@@ -494,16 +476,6 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
-  
-  add_compile_options("-Wno-inconsistent-missing-override"
-        "-Wno-potentially-evaluated-expression"
-        "-Wno-overloaded-virtual"
-        "-Wno-unused-command-line-argument"
-        "-Wno-unknown-pragmas"
-        "-O0"
-        "-fPIC"
-  )
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
 endif (QT_ANDROID)
 
 set(
@@ -585,26 +557,21 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
 endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
-IF(DEFINED _wx_selected_config)
-  IF(_wx_selected_config MATCHES "androideabi-qt")
-    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
-    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DARMHF)
-
-    SET(OPENGLES_FOUND "YES")
-    SET(OPENGL_FOUND "YES")
-  
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
-    SET(USE_GLES2 ON )
-    MESSAGE (STATUS "Using GLESv2 for Android")
-    ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
-    ADD_DEFINITIONS(-DUSE_GLSL)
-    INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
-
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+if (DEFINED _wx_selected_config)
+  message(STATUS "selected config ${_wx_selected_config}")
+  if (_wx_selected_config MATCHES "androideabi-qt")
+    message(STATUS "Building for wxQt-Android")
+    message(STATUS "Qt_Base: " ${Qt_Base})
+    message(
+      STATUS
+        "wxQt_Base/Build: "
+        ${wxQt_Base}
+        "/"
+        ${wxQt_Build}
+    )
+    set(QT_ANDROID "ON")
+  endif (_wx_selected_config MATCHES "androideabi-qt")
+endif (DEFINED _wx_selected_config)
 
 if ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
@@ -732,58 +699,29 @@ if (NOT QT_ANDROID)
   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 endif (NOT QT_ANDROID)
 
-IF(QT_ANDROID)
-  SET( wxWidgets_LIBRARIES
-
-        # Link order is critical to avoid circular dependencies
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-    
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
-    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
- 
-    )
-ENDIF(QT_ANDROID)
-
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-IF(QT_ANDROID)
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
+if (QT_ANDROID)
+  include_directories("${Qt_Base}/android_armv7/include/QtCore")
+  include_directories("${Qt_Base}/android_armv7/include")
+  include_directories("${Qt_Base}/android_armv7/include/QtWidgets")
+  include_directories("${Qt_Base}/android_armv7/include/QtGui")
+  include_directories("${Qt_Base}/android_armv7/include/QtOpenGL")
+  include_directories("${Qt_Base}/android_armv7/include/QtTest")
 
-  INCLUDE_DIRECTORIES(
-      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-  include_directories("${CMAKE_SOURCE_DIR}/include")
-
+  include_directories(
+    "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1"
+  )
+  include_directories("${wxQt_Base}/include")
 
   add_definitions(-DQT_WIDGETS_LIB)
 endif (QT_ANDROID)
 
 set(
   HDRS
-  include/about.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/AIS_Bitstring.h
@@ -890,7 +828,6 @@ set(
 
 set(
   SRCS
-  src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
   src/AIS_Bitstring.cpp
@@ -1009,30 +946,10 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND SRCS src/crashprint.cpp)
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
-IF(QT_ANDROID)
-  SET(HDRS ${HDRS} include/androidUTIL.h)
-  SET(SRCS ${SRCS} src/androidUTIL.cpp)
-ENDIF(QT_ANDROID)
-
-IF(USE_GLES2)
-    SET(HDRS ${HDRS} include/shaders.h)
-    SET(SRCS ${SRCS} src/shaders.cpp)
-ENDIF(USE_GLES2)
-
-SET(SRC_TINYXML
-    src/tinyxml.cpp
-    src/tinyxmlerror.cpp
-    src/tinyxmlparser.cpp
-    include/tinyxml.h
-)
-
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
   add_executable(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
-elseif (QT_ANDROID)
-  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-  add_library(${PACKAGE_NAME} SHARED ${HDRS} ${SRCS})
 else ()
   add_executable(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
@@ -1319,13 +1236,6 @@ if (OCPN_USE_SVG)
       add_subdirectory("libs/wxsvg")
     endif ()
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
-
-  else(NOT QT_ANDROID)
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_SVG)
 
@@ -1454,19 +1364,13 @@ target_link_libraries(
   PUBLIC
     ocpn::nmea0183
     ocpn::tess2
+    ocpn::wxsvg
     ocpn::sound
     ocpn::wxjson
     ssl::sha1
     ocpn::tinyxml
-)
-
-IF(NOT QT_ANDROID)
-   target_link_libraries(S57ENC PUBLIC
-      ocpn::wxsvg
     ocpn::wxcurl
 )
-ENDIF(NOT QT_ANDROID)
-
 add_subdirectory(libs/iso8211)
 target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 
@@ -1996,10 +1900,16 @@ if (APPLE)
 endif (APPLE)
 
 if (QT_ANDROID)
-  target_link_libraries( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
-  target_link_libraries( ${PACKAGE_NAME} PRIVATE GLESv2 EGL z)
-  target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENGL_LIBRARIES} )
-  target_link_libraries( ${PACKAGE_NAME} PRIVATE NMEA0183 )
+  add_library(
+    gorp
+    ${HDRS}
+    ${SRCS}
+    ${SRC_S57ENC}
+    ${SRC_TEXCMP}
+    ${SRC_MIPMAP}
+    ${SRC_SYMBOLS}
+  )
+  target_link_libraries(gorp PRIVATE NMEA0183 ${wxWidgets_LIBRARIES})
 endif ()
 
 # Sanitizers, part 2/2

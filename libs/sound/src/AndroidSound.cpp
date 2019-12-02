@@ -37,12 +37,6 @@ AndroidSound::~AndroidSound()
     Stop();
 }
 
-void AndroidSound::SetFinishedCallback(AudioDoneCallback cb, void* userData)
-{
-    m_onFinished = cb;
-    m_callbackData = userData;
-}
-
 
 bool AndroidSound::Load(const char* path, int deviceIndex)
 {
@@ -55,16 +49,16 @@ bool AndroidSound::Load(const char* path, int deviceIndex)
 }
 
 
-bool AndroidSound::Stop(void)
+void AndroidSound::Stop(void)
 {
-    //m_OK = false;
-    return true;
+    Stop();
+    m_OK = false;
 }
 
 
 bool AndroidSound::Play(void) 
 {
-    return androidPlaySound(m_soundfile, m_onFinished);
+    return androidPlaySound(m_soundfile);
 }
 
 

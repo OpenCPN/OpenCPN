@@ -30,7 +30,6 @@ add_library(ocpn::texcmp  ALIAS TEXCMP)
 
 set(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
 
-IF( NOT QT_ANDROID)
 if (NOT wxWidgets_INCLUDE_DIRS)
     find_package(GTK2)
     find_package(GTK3)
@@ -50,11 +49,10 @@ if (NOT wxWidgets_INCLUDE_DIRS)
     endif ()
     find_package(wxWidgets REQUIRED)
 endif (NOT wxWidgets_INCLUDE_DIRS)
-  include(${wxWidgets_USE_FILE})
-ENDIF( NOT QT_ANDROID)
 
 target_include_directories(TEXCMP PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/squish)
 target_include_directories(TEXCMP PRIVATE ${wxWidgets_INCLUDE_DIRS})
+include(${wxWidgets_USE_FILE})
    
 pkg_search_module(LZ4 liblz4 lz4)
 USE_BUNDLED_LIB(USE_BUNDLED_LZ4 lz4)
