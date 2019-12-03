@@ -257,6 +257,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
 {
     if( !s_glGetCompressedTexImage )
         return false;
+#ifndef USE_ANDROID_GLES2
     
     GLuint comp_tex;
     if(!inplace) {
@@ -291,6 +292,9 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
         glDeleteTextures(1, &comp_tex);
     
     return true;
+#else
+    return false;
+#endif
 }
 
 static 
@@ -1278,7 +1282,7 @@ bool glTextureManager::TextureCrunch(double factor)
  
                 if( cc->GetVP().b_quilt )          // quilted
                 {
-                        if( cc->m_pQuilt->IsComposed() &&
+                        if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
                             !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                             ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
                             }
@@ -1339,7 +1343,7 @@ bool glTextureManager::FactoryCrunch(double factor)
                 
                 if( cc->GetVP().b_quilt )          // quilted
                 {
-                    if( cc->m_pQuilt->IsComposed() &&
+                    if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
                         !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                 
                         int lru = ptf->GetLRUTime();
@@ -1466,7 +1470,9 @@ void glTextureManager::BuildCompressedCache()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
 
-        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        //TODO Merge
+        wxString filename = wxString(cte.GetpFullPath());
+        //wxString filename = cte.GetFullSystemPath();
 
         compress_target *pct = new compress_target;
         pct->distance = distance;
