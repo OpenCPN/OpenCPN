@@ -4084,8 +4084,8 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
         return;
     }
 
-    if(timer_sequence == 3){
-        g_Platform->onStagedResizeFinal();
+     if(timer_sequence == 3){
+//         g_Platform->onStagedResizeFinal();
 
         return;
     }
