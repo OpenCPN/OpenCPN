@@ -18,7 +18,7 @@ Build-Depends: debhelper (>= 12),
  libsqlite3-dev,
  libtinyxml-dev,
  libunarr-dev,
- libwxbase3.0-dev,
+ libwxgtk3.0-gtk3-dev,
  portaudio19-dev
 Standards-Version: 4.4.1
 Homepage: https://opencpn.org
