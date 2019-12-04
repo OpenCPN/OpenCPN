@@ -470,7 +470,7 @@
        xlink:href="#f"
        id="E"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.03294,0,0,1.03294,-59.41425,-1218.2033)"
+       gradientTransform="matrix(1.03294,0,0,1.03294,-59.414,-1122.2035)"
        x1="73.009003"
        y1="1086.4139"
        x2="73.009003"
@@ -486,6 +486,15 @@
          stop-color="#939393"
          offset="1" />
     </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient6184"
+       id="F"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.03294,0,0,1.03294,-59.414,-1090.2035)"
+       x1="73.009003"
+       y1="1086.4139"
+       x2="73.009003"
+       y2="1070.924" />
   </defs>
   <metadata
      id="metadata1312">
@@ -502,23 +511,39 @@
   <g
      transform="translate(0,-96)"
      id="layer1">
-    <rect
-       ry="3.878"
-       y="-128.00024"
-       height="32"
-       width="32"
-       transform="scale(1,-1)"
-       id="rect4364"
-       x="-0.00025001168"
-       style="fill:url(#E);enable-background:new" />
-    <rect
-       ry="3.7550001"
-       y="96.510246"
-       x="0.51074994"
-       height="30.979"
-       width="30.979"
-       id="rect4426"
-       style="fill:none;stroke:#939393;stroke-width:1.02100003;stroke-linecap:round;stroke-linejoin:round;enable-background:new" />
+    <g
+       transform="translate(-2.5001168e-4,95.99975)"
+       id="g46412"
+       style="enable-background:new">
+      <g
+         id="g4276">
+        <rect
+           ry="3.878"
+           y="-32.0005"
+           height="32"
+           width="32"
+           transform="scale(1,-1)"
+           id="rect4364"
+           x="0"
+           style="fill:url(#E);enable-background:new" />
+        <rect
+           ry="3.878"
+           height="32"
+           width="32"
+           y="0.00050003629"
+           id="rect4366"
+           x="0"
+           style="fill:url(#F);enable-background:new" />
+        <rect
+           ry="3.7550001"
+           y="0.51050001"
+           x="0.51099992"
+           height="30.979"
+           width="30.979"
+           id="rect4426"
+           style="fill:none;stroke:#939393;stroke-width:1.02100003;stroke-linecap:round;stroke-linejoin:round;enable-background:new" />
+      </g>
+    </g>
     <path
        style="fill:#ffffff;fill-opacity:0.75688076;fill-rule:nonzero;stroke:none"
        d="m -228.9185,-67.271774 0,-2.794709 0,2.794709 z"
