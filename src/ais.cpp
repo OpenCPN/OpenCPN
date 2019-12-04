@@ -876,6 +876,7 @@ static void spherical_ll_gc_ll(float lat, float lon, float brg, float dist, floa
 
 static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
+#ifndef __OCPN__ANDROID__
     //      Target data must be valid
     if( NULL == td ) return;
 
@@ -1748,6 +1749,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             glEnd();
 #endif
     }           // Draw tracks
+#endif //ANDROID    
 }
 
 void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )

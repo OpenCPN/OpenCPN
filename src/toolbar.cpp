@@ -761,7 +761,7 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     wxSize s = gFrame->GetSize();
     m_recoversize = s;
     s.y--;
-    gFrame->TriggerResize(s);
+    //gFrame->TriggerResize(s);
     Raise();
 #endif    
 
@@ -843,8 +843,8 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     
 #ifdef __WXQT__
     wxSize s = gFrame->GetSize();               // check for rotation
-    if(m_recoversize.x == s.x)
-        gFrame->TriggerResize(m_recoversize);
+    //if(m_recoversize.x == s.x)
+      //  gFrame->TriggerResize(m_recoversize);
     Raise();
 #endif
     if(!m_destroyTimer.IsRunning()){
@@ -2567,6 +2567,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             
             if(!svgFile.IsEmpty()){         // try SVG
 #ifdef ocpnUSE_SVG
+#ifndef __OCPN__ANDROID__
                 if( wxFileExists( svgFile ) ){
                     wxSVGDocument svgDoc;
                     if( svgDoc.Load(svgFile) ){
@@ -2577,6 +2578,11 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                 }
+#else
+                bmp = loadAndroidSVG( svgFile,tool->m_width, tool->m_height );
+                bmp = m_style->BuildPluginIcon( bmp, TOOLICON_NORMAL );
+#endif
+                
 #endif           
             }
 

@@ -493,7 +493,7 @@ if (QT_ANDROID)
   add_definitions(-DOCPN_USE_WRAPPER)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
   
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
@@ -2370,7 +2370,7 @@ endif (MSVC AND OCPN_USE_CRASHREPORT)
 message(STATUS "")
 
 if (NOT SKIP_PLUGINS)
-  add_subdirectory(plugins)
+  #add_subdirectory(plugins)
 endif ()
 
 #

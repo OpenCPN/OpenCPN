@@ -57,6 +57,10 @@
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #define DIALOG_MARGIN 3
 
 
@@ -351,7 +355,7 @@ void RouteManagerDialog::Create()
                                        wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                                        | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pRouteListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pRouteListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -463,7 +467,7 @@ void RouteManagerDialog::Create()
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     
     #ifdef __OCPN__ANDROID__    
-    m_pTrkListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pTrkListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pTrkListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -561,7 +565,7 @@ void RouteManagerDialog::Create()
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pWptListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pWptListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -691,7 +695,7 @@ void RouteManagerDialog::Create()
                                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
                                      | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pLayListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pLayListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -754,25 +758,30 @@ void RouteManagerDialog::Create()
     
     RecalculateSize();
 
-    // create a image list for the list with just the eye icons
-    int bmSize = 22;
-    wxImageList *imglist = new wxImageList( bmSize, bmSize, true, 1 );
+    int imageRefSize = m_charWidth * 2; //g_Platform->GetDisplayDPmm() * 4;
+    wxImageList *imglist = new wxImageList( imageRefSize, imageRefSize, true, 1 );
     
     // Load eye icons
     wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
-    wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("eye.svg"), bmSize, bmSize );
+    wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("eye.svg"), imageRefSize, imageRefSize );
     if(iconSVG.IsOk()){
-        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));           // Avoid wxImageList size asserts
+        iconSVG.Resize( wxSize(imageRefSize, imageRefSize), wxPoint(0,0));           // Avoid wxImageList size asserts
         imglist->Add( wxBitmap( iconSVG ) );
     }
     
-    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyex.svg"), bmSize, bmSize );
+    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyex.svg"), imageRefSize, imageRefSize );
     if(iconSVG.IsOk()){
-        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));
+        iconSVG.Resize( wxSize(imageRefSize, imageRefSize), wxPoint(0,0));
         imglist->Add( wxBitmap( iconSVG ) );
     }
     
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+
+#ifdef __OCPN__ANDROID__    
+    m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(imageRefSize, imageRefSize));
+#endif
+
+   
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(m_listIconSize), wxIMAGE_LIST_SMALL );
@@ -852,13 +861,13 @@ void RouteManagerDialog::RecalculateSize()
     sz.y = 30 * char_height;
     
     wxSize dsize = GetParent()->GetClientSize();
-    sz.y = wxMin(sz.y, dsize.y - (1 * char_height));
-    sz.x = wxMin(sz.x, dsize.x - (1 * char_height));
+    sz.y = wxMin(sz.y, dsize.y - (0 * char_height));
+    sz.x = wxMin(sz.x, dsize.x - (0 * char_height));
     SetClientSize(sz);
     
     wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (1 * char_height));
-    fsize.x = wxMin(fsize.x, dsize.x - (1 * char_height));
+    fsize.y = wxMin(fsize.y, dsize.y - (0 * char_height));
+    fsize.x = wxMin(fsize.x, dsize.x - (0 * char_height));
     SetSize(fsize);
     
     CentreOnParent();
@@ -950,7 +959,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         list_index++;
     }
 
-    m_pRouteListCtrl->SortItems( SortRoutesOnName, 0 );
+    m_pRouteListCtrl->SortItems( SortRoutesOnName, (wxIntPtr)NULL );
 
     m_pRouteListCtrl->SetColumnWidth(0, 4 * m_charWidth);
     
@@ -1021,7 +1030,30 @@ void RouteManagerDialog::MakeAllRoutesInvisible()
 
 void RouteManagerDialog::ZoomtoRoute( Route *route )
 {
-    gFrame->CenterView( gFrame->GetPrimaryCanvas(), route->GetBBox() );
+
+    // Calculate bbox center
+    LLBBox RBBox = route->GetBBox();
+    double clat = (RBBox.GetMinLat() + RBBox.GetMaxLat()) / 2;
+    double clon = (RBBox.GetMinLon() + RBBox.GetMaxLon()) / 2;
+
+    // Calculate ppm
+    double rw, rh, ppm; // route width, height, final ppm scale to use
+    int ww, wh; // chart window width, height
+    // route bbox width in nm
+    DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMinLat(),
+                             RBBox.GetMaxLon(), NULL, &rw );
+    // route bbox height in nm
+    DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMaxLat(),
+                             RBBox.GetMinLon(), NULL, &rh );
+
+    gFrame->GetPrimaryCanvas()->GetSize( &ww, &wh );
+
+    ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), clat, clon, ppm );
+
     m_bNeedConfigFlush = true;
 }
 
@@ -1335,11 +1367,11 @@ void RouteManagerDialog::OnRteColumnClicked( wxListEvent &event )
     if( event.m_col == 1 ) {
         sort_route_name_dir++;
 
-        m_pRouteListCtrl->SortItems( SortRoutesOnName, 0 );
+        m_pRouteListCtrl->SortItems( SortRoutesOnName, (wxIntPtr)NULL );
     } else
         if( event.m_col == 2 ) {
             sort_route_to_dir++;
-            m_pRouteListCtrl->SortItems( SortRoutesOnTo, 0 );
+            m_pRouteListCtrl->SortItems( SortRoutesOnTo, (wxIntPtr)NULL );
         }
 }
 
@@ -1356,6 +1388,9 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     SendToGpsDlg *pdlg = new SendToGpsDlg();
     pdlg->SetRoute( route );
 
+    wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+    pdlg->SetFont(fo);
+    
     wxString source;
     pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
     
@@ -1614,11 +1649,11 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
     switch( sort_track_key ){
             case SORT_ON_DISTANCE:
-                m_pTrkListCtrl->SortItems( SortTracksOnDistance, 0 );
+                m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr)NULL );
                 break;
             case SORT_ON_NAME:
             default:
-                m_pTrkListCtrl->SortItems( SortTracksOnName, 0 );
+                m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr)NULL );
                 break;
     }
 
@@ -1647,12 +1682,12 @@ void RouteManagerDialog::OnTrkColumnClicked( wxListEvent &event )
     if( event.m_col == 1 ) {
         sort_track_key = SORT_ON_NAME;
         sort_track_name_dir++;
-        m_pTrkListCtrl->SortItems( SortTracksOnName, 0 );
+        m_pTrkListCtrl->SortItems( SortTracksOnName, (wxIntPtr)NULL );
     } else
         if( event.m_col == 2 ) {
             sort_track_key = SORT_ON_DISTANCE;
             sort_track_len_dir++;
-            m_pTrkListCtrl->SortItems( SortTracksOnDistance, 0 );
+            m_pTrkListCtrl->SortItems( SortTracksOnDistance, (wxIntPtr)NULL );
         }
 }
 
@@ -2351,11 +2386,11 @@ void RouteManagerDialog::OnLayColumnClicked( wxListEvent &event )
 {
     if( event.m_col == 1 ) {
         sort_layer_name_dir++;
-        m_pLayListCtrl->SortItems( SortLayersOnName, 0 );
+        m_pLayListCtrl->SortItems( SortLayersOnName, (wxIntPtr)NULL );
     } else
         if( event.m_col == 2 ) {
             sort_layer_len_dir++;
-            m_pLayListCtrl->SortItems( SortLayersOnSize, 0 );
+            m_pLayListCtrl->SortItems( SortLayersOnSize, (wxIntPtr)NULL );
         }
 }
 

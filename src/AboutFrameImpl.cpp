@@ -66,8 +66,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + EXTEND_HEIGHT;
 
     SetMinSize(wxSize(width, height));
-    Layout();
-    Fit();
+    RecalculateSize();
 }
 
 
@@ -132,4 +131,32 @@ void AboutFrameImpl::AboutFrameOnActivate( wxActivateEvent& event )
     Layout();
     m_scrolledWindowAbout->Refresh();
     m_panelMainLinks->Refresh();
+}
+
+void AboutFrameImpl::RecalculateSize( void )
+{
+#ifdef __OCPN__ANDROID__    
+    //  Make an estimate of the dialog size, without scrollbars showing
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 20;
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    
+    SetSize(fsize);
+    Centre();
+
+#else 
+    Fit();
+    Centre();
+#endif
+    
 }

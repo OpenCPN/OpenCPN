@@ -1470,9 +1470,7 @@ void glTextureManager::BuildCompressedCache()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
 
-        //TODO Merge
-        wxString filename = wxString(cte.GetpFullPath());
-        //wxString filename = cte.GetFullSystemPath();
+        wxString filename = cte.GetFullSystemPath();
 
         compress_target *pct = new compress_target;
         pct->distance = distance;

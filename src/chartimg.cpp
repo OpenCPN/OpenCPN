@@ -4384,7 +4384,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
       unsigned char *pCL;
       int rgbval;
       unsigned char *lp;
-      register int ix = xs;
+      int ix = xs;
 
       if(bUseLineCache && pLineCache)
       {

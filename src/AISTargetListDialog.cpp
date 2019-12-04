@@ -27,6 +27,10 @@
 #include <wx/tokenzr.h>
 #include <wx/clipbrd.h>
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include "AISTargetListDialog.h"
 #include "ais.h"
 #include "AIS_Decoder.h"
