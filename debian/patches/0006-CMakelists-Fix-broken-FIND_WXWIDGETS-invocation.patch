@@ -1,0 +1,31 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 4 Dec 2019 14:56:00 -0500
+Subject: CMakelists: Fix broken FIND_WXWIDGETS invocation
+
+This is already fixed in upstream. This patch is simplified
+and thus cannot be upstreamed.
+---
+ CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 06198ef..f34e138 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1053,14 +1053,14 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+     MESSAGE(STATUS "Building against GTK3...")
+   ENDIF(GTK2_FOUND)
+-  FIND_PACKAGE(wxWidgets)
++  FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_USE_LIBS})
+   if (wxWidgets_FOUND)
+     message(STATUS "Found wxWidgets webview add-on")
+     add_definitions(-DOCPN_USE_WEBVIEW)
+   else ()
+     list(REMOVE_ITEM wxWidgets_USE_LIBS webview)
+     message(STATUS "Could not find wxWidgets webview add-on")
+-    FIND_PACKAGE(wxWidgets REQUIRED)
++    FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_USE_LIBS} REQUIRED)
+   endif ()
+   MESSAGE (STATUS "Found wxWidgets..." )
+   MESSAGE (STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")

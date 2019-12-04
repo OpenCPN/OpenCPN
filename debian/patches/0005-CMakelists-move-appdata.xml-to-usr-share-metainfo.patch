@@ -3,7 +3,6 @@ Date: Wed, 20 Nov 2019 15:47:38 -0500
 Subject: CMakelists: move appdata.xml to /usr/share/metainfo
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1490
-
 ---
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
