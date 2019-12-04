@@ -18,6 +18,7 @@ Build-Depends: debhelper (>= 12),
  libsqlite3-dev,
  libtinyxml-dev,
  libunarr-dev,
+ libwxsvg-dev (>=  2:1.5.21),
  libwxgtk3.0-gtk3-dev,
  portaudio19-dev
 Standards-Version: 4.4.1
