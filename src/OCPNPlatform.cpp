@@ -219,6 +219,7 @@ extern double                   g_PlanSpeed;
 extern bool                     g_bFullScreenQuilt;
 extern bool                     g_bQuiltEnable;
 extern bool                     g_bskew_comp;
+extern bool                     g_bnorth_lock;
 
 extern bool                     g_bopengl;
 extern bool                     g_btouch;
@@ -982,6 +983,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bFullScreenQuilt = true;
     g_bQuiltEnable = true;
     g_bskew_comp = false;
+    g_bnorth_lock = false;
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bShowAISName = false;

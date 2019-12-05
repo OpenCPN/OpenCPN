@@ -94,6 +94,7 @@ extern bool             g_bShowAreaNotices;
 extern bool             bGPSValid;
 extern Routeman         *g_pRouteMan;
 extern bool             g_bskew_comp;
+extern bool             g_bnorth_lock;
 extern double           gLat, gLon, gSog, gCog, vLat, vLon;
 extern MyFrame          *gFrame;
 extern ChartGroupArray  *g_pGroupArray;
@@ -421,7 +422,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     if( !g_bBasicMenus)
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center view") + _T("...") );
 
-    if( !g_bBasicMenus){
+    if( !g_bBasicMenus && ! g_bnorth_lock){
         if( !parent->m_bCourseUp )
             MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
         else {

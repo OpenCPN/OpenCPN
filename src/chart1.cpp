@@ -472,6 +472,7 @@ int                       g_COGAvgSec = 15; // COG average period (sec.) for Cou
 double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
+bool                      g_bnorth_lock;
 bool                      g_bopengl;
 bool                      g_bSoftwareGL;
 bool                      g_bShowFPS;
@@ -5618,6 +5619,8 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( GetPrimaryCanvas()->m_bFollow );
     m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !GetPrimaryCanvas()->m_bCourseUp );
     m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->m_bCourseUp );
+    m_pMenuBar->Enable( ID_MENU_CHART_NORTHUP, !g_bnorth_lock);
+    m_pMenuBar->Enable( ID_MENU_CHART_COGUP, !g_bnorth_lock);
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
@@ -5673,6 +5676,8 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( cc->m_bFollow );
     m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !cc->m_bCourseUp );
     m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( cc->m_bCourseUp );
+    m_pMenuBar->Enable( ID_MENU_CHART_NORTHUP, !g_bnorth_lock);
+    m_pMenuBar->Enable( ID_MENU_CHART_COGUP, !g_bnorth_lock);
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( cc->GetShowOutlines() );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( cc->GetQuiltMode() );
@@ -9419,6 +9424,8 @@ void MyFrame::applySettingsString( wxString settings)
         else if(token.StartsWith( _T("prefs_navmode"))){
             bool bPrevMode = g_bCourseUp;
             bool new_val = val.IsSameAs(_T("Course Up"));
+	    if ( g_bnorth_lock)
+		new_val = false;
             if(bPrevMode != new_val)
                 ToggleCourseUp(GetPrimaryCanvas());
         }

@@ -142,6 +142,7 @@ extern bool             g_bPermanentMOBIcon;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
+extern bool             g_bnorth_lock;
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 extern bool             g_bSoftwareGL;
@@ -860,6 +861,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec );
     Read( _T ( "LookAheadMode" ), &g_bLookAhead );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp );
+    Read( _T ( "LockNorthUp" ), &g_bnorth_lock );
     
     Read( _T ( "ShowFPS" ), &g_bShowFPS );
     
@@ -2302,6 +2304,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider );
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
+    Write( _T ( "LockNorthUp" ), g_bnorth_lock );
     Write( _T ( "OpenGL" ), g_bopengl );
     Write( _T ( "SoftwareGL" ), g_bSoftwareGL );
     Write( _T ( "ShowFPS" ), g_bShowFPS );

@@ -364,6 +364,8 @@ extern ChartCanvas      *g_overlayCanvas;
 extern float            g_toolbar_scalefactor;
 extern SENCThreadManager *g_SencThreadManager;
 
+extern bool             g_bnorth_lock;
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -1081,7 +1083,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
     m_encShowLights = pcc->bShowENCLights;
     
-    m_bCourseUp = pcc->bCourseUp;
+    if (! g_bnorth_lock) 
+	    m_bCourseUp = pcc->bCourseUp;
     m_bLookAhead = pcc->bLookahead;
     
     m_singleChart = NULL;
@@ -3295,6 +3298,8 @@ void ChartCanvas::ToggleLookahead( )
 void ChartCanvas::ToggleCourseUp( )
 {
     m_bCourseUp = !m_bCourseUp;
+    if (g_bnorth_lock)
+	m_bCourseUp = false;
     
     if( m_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected

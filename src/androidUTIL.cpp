@@ -90,6 +90,7 @@ extern bool             g_bShowOutlines;
 extern bool             g_bShowChartBar;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
+extern bool             g_bnorth_lock;
 extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 extern bool             g_bShowMag;

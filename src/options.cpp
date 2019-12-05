@@ -128,6 +128,7 @@ extern bool g_bShowOutlines;
 extern bool g_bShowChartBar;
 extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
+extern bool g_bnorth_lock;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
 extern bool g_bShowTrue, g_bShowMag;
@@ -3572,6 +3573,10 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                _("De-skew Raster Charts"));
     boxCharts->Add(pSkewComp, inputFlags);
 
+    pNorthLock = new wxCheckBox(m_ChartDisplayPage, ID_NORTHLOCKBOX,
+                               _("Lock North-up mode"));
+    boxCharts->Add(pNorthLock, inputFlags);
+
 //     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
 //                                       _("Disable Full Screen Quilting"));
 //     boxCharts->Add(pFullScreenQuilt, inputFlags);
@@ -3728,6 +3733,10 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pSkewComp = new wxCheckBox(m_ChartDisplayPage, ID_SKEWCOMPBOX,
                                _("Show Skewed Raster Charts as North-Up"));
     boxCharts->Add(pSkewComp, verticleInputFlags);
+
+    pNorthLock = new wxCheckBox(m_ChartDisplayPage, ID_NORTHLOCKBOX,
+                               _("Lock North-up mode"));
+    boxCharts->Add(pNorthLock, verticleInputFlags);
 
 //     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
 //                                       _("Disable Full Screen Quilting"));
@@ -5877,6 +5886,7 @@ void options::SetInitialSettings(void) {
 //  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
   if(pSDepthUnits) pSDepthUnits->SetValue(g_bShowDepthUnits);
   if(pSkewComp) pSkewComp->SetValue(g_bskew_comp);
+  if(pNorthLock) pNorthLock->SetValue(g_bnorth_lock);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
@@ -7044,6 +7054,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if(pSDepthUnits) g_bShowDepthUnits = pSDepthUnits->GetValue();
   g_bskew_comp = pSkewComp->GetValue();
+  g_bnorth_lock = pNorthLock->GetValue();
+  if (g_bnorth_lock)
+	gFrame->GetPrimaryCanvas()->ToggleCourseUp();
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
   

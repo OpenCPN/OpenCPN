@@ -129,6 +129,7 @@ extern bool             g_bPermanentMOBIcon;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
+extern bool             g_bnorth_lock;
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 extern bool             g_bSoftwareGL;
@@ -1059,6 +1060,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider );
     
     conf->Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
+    conf->Write( _T ( "LockNorthUp" ), g_bnorth_lock );
     
     conf->Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
     conf->Write( _T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector );
@@ -1461,6 +1463,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec );
     //CHECK_INT( _T ( "LookAheadMode" ), &g_bLookAhead );
     //CHECK_INT( _T ( "SkewToNorthUp" ), &g_bskew_comp );
+    //CHECK_INT( _T ( "LockNorthUp" ), &g_bnorth_lock );
     CHECK_INT( _T ( "OpenGL" ), &g_bopengl );
     CHECK_INT( _T ( "SoftwareGL" ), &g_bSoftwareGL );
     
