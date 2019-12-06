@@ -146,7 +146,7 @@ void MipMap_ResolveRoutines()
             MipMap_24 = MipMap_24_ssse3;
     }
     
-#if (GCC_VERSION > 40800) || defined(__MSVC__)
+#if defined(__AVX2__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
     if (nIds >= 0x00000007) {
         cpuid(info,0x00000007);
 
