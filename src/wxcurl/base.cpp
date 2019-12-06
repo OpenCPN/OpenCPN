@@ -28,6 +28,7 @@
 
 #include <wx/curl/base.h>
 #include <wx/filename.h>
+#include <cmath> // for isnan
 
 
 //////////////////////////////////////////////////////////////////////
