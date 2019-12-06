@@ -208,7 +208,7 @@ if (NOT WIN32 AND NOT APPLE)
 endif ()
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
-  ${PA_DEFAULT}
+  ON
 )
 cmake_dependent_option(
   OCPN_ENABLE_SNDFILE

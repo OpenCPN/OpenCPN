@@ -38,6 +38,8 @@
 #include <multiplexer.h>
 #include "config.h"
 #include <cstdio>
+#include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #if !defined(NAN)
     static const long long lNaN = 0xfff8000000000000;
@@ -81,6 +83,7 @@ extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
 extern bool     g_bInlandEcdis;
 extern int      g_iSoundDeviceIndex;
+extern int      g_SoundPlayTime;
 extern bool     g_bWplIsAprsPosition;
 extern double gLat;
 extern double gLon;
@@ -2626,7 +2629,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    Honor the global flag
     if( !g_bAIS_CPA_Alert_Audio )
         m_bAIS_Audio_Alert_On = false;
-
+    if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+        if (++playtimes < g_SoundPlayTime)
+            return;
+        playtimes = 0;
+    }
     if( m_bAIS_Audio_Alert_On ) {
         if (!m_AIS_Sound) {
             m_AIS_Sound = SoundFactory();

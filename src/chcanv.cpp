@@ -95,6 +95,8 @@
 #include "CanvasConfig.h"
 #include "CanvasOptions.h"
 #include "mbtiles.h"
+#include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -132,6 +134,8 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 extern float  g_ChartScaleFactorExp;
 extern float  g_ShipScaleFactorExp;
+extern int    g_iSoundDeviceIndex;
+extern int    g_SoundPlayTime;
 
 #include <vector>
 //#include <wx-3.0/wx/aui/auibar.h>
@@ -6210,16 +6214,20 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
         }
     } else
         AnchorAlertOn2 = false;
-
+    if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+        if (++playtimes < g_SoundPlayTime)
+            return;
+        playtimes = 0;
+    }
     if( play_sound && !bAnchorSoundPlaying) {
         g_anchorwatch_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8) );
-        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File );
+        g_anchorwatch_sound->Load( g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
         if ( g_anchorwatch_sound->IsOk( ) ) {
             bAnchorSoundPlaying = true;
             g_anchorwatch_sound->SetFinishedCallback( onSoundFinished, NULL );
-            g_anchorwatch_sound->Play( );
+            g_anchorwatch_sound->Play();
         }
-    } else if( g_anchorwatch_sound->IsOk() ) {
+    } else if( g_anchorwatch_sound->IsOk()) {
         g_anchorwatch_sound->Stop();
     }
 

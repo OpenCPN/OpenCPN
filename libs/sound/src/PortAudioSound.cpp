@@ -25,11 +25,11 @@
 #include <atomic>
 #include <memory>
 
-#include <portaudio.h>
+#include "portaudio.h"
 #include <wx/log.h>
 
 #include "config.h"
-#include "PortAudioSound.h"
+#include <PortAudioSound.h>
 
 
 /**
@@ -42,6 +42,7 @@
  *
  */
 
+extern int g_SoundVolume;
 
 static const int BUFSIZE = 256;  // Frames per buffer.
 static const int LOCK_SLEEP_MS = 2;
@@ -101,23 +102,24 @@ static bool openStream(PaStream** stream,
                        PortAudioSound* portAudioSound)
 
 {
+
     PaStreamParameters outputParameters;
     outputParameters.device = deviceIx;
-    outputParameters.channelCount = soundLoader->GetChannelCount();
+    outputParameters.channelCount = soundLoader->GetChannelCount(); //Pa_GetDeviceInfo(outputParameters.device)->maxOutputChannels; //soundLoader->GetChannelCount();
     outputParameters.sampleFormat = paInt16;
-    outputParameters.suggestedLatency = 0;
+    outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency; //old 0;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     PaError err = Pa_OpenStream(stream,
                                 NULL, /* no input channels */
                                 &outputParameters,
                                 soundLoader->GetSamplingRate(),
                                 BUFSIZE,
-                                paNoFlag,
+                                paNoFlag,   // paClipOff,
                                 callback,
                                 portAudioSound);
     if( err != paNoError ) {
         wxLogWarning("PortAudio Create() error: %s", Pa_GetErrorText(err));
-	return false;
+    return false;
     }
     return true;
 }
@@ -134,10 +136,26 @@ static bool writeSynchronous(int deviceIx,
     if (!startStream(stream)) {
         return false;
     }
-    unsigned buff[BUFSIZE * soundLoader->GetBytesPerSample()];
+    int16_t* buff = (int16_t*) malloc(BUFSIZE * soundLoader->GetBytesPerSample());
     PaError pe = paNoError;
-    int len = soundLoader->Get(buff, sizeof(buff));
+    int i;
+    for (i = 0; i < sizeof(buff); i++)
+        *(buff + i) = 0;
+    int len = sizeof(buff) / soundLoader->GetBytesPerSample();
+    // delete the sound at the begin bad noise !
+    pe = Pa_WriteStream(stream, buff, len);
+    if (pe != paNoError) {
+        wxLogWarning("PortAudio: Cannot write stream: %s",
+            Pa_GetErrorText(pe));
+        Pa_CloseStream(stream);
+        free(buff);
+        return pe == paNoError;
+    }
+    float SoundVolume = (float) g_SoundVolume / (float) 10.0;
+    len = soundLoader->Get(buff, sizeof(buff));
     for ( ; len > 0; len = soundLoader->Get(buff, sizeof(buff))) {
+        for (i = 0; i < (sizeof(buff) / sizeof(int16_t)); ++i)
+            buff[i] = (int16_t) (buff[i] * SoundVolume);
         len /= soundLoader->GetBytesPerSample();
         pe = Pa_WriteStream(stream, buff, len);
         if (pe != paNoError) {
@@ -147,12 +165,12 @@ static bool writeSynchronous(int deviceIx,
         }
     }
     Pa_CloseStream(stream);
+    free(buff);
     return pe == paNoError;
 }
 
 PortAudioSound::PortAudioSound()
-    : m_soundLoader(SoundLoaderFactory()),
-    m_lock(ATOMIC_FLAG_INIT)
+    : m_soundLoader(SoundLoaderFactory())
 {
     m_stream = NULL;
     m_isAsynch = false;
@@ -166,7 +184,7 @@ PortAudioSound::PortAudioSound()
     SetDeviceIndex(-1);
     for (int i = 0; i < DeviceCount(); i += 1) {
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
-	wxLogMessage("Device: %d: %s", i, info->name);
+    //wxLogMessage("Device: %d: %s", i, info->name);
     }
 }
 
@@ -233,6 +251,12 @@ bool PortAudioSound::Load(const char* path, int deviceIndex)
         unlock();
         return false;
     }
+    if (!SetDeviceIndex(deviceIndex))
+    {
+        wxLogWarning("Cannot set device Index %i", deviceIndex);
+        unlock();
+        return false;
+    }
     m_OK = true;
     unlock();
     return true;
@@ -244,10 +268,11 @@ bool PortAudioSound::SetDeviceIndex(int deviceIndex)
     if (deviceIndex < -1 || deviceIndex >= DeviceCount()) {
         wxLogWarning("SetDeviceIndex: Illegal index: %d, using default",
                      deviceIndex);
-	m_deviceIx = -1;
+    m_deviceIx = Pa_GetDefaultOutputDevice();
+    return true;
     }
     m_deviceIx =
-	deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
+    deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
     return true;
 }
 
@@ -298,7 +323,7 @@ bool PortAudioSound::Play()
             unlock();
             return false;
         }
-    } 
+    }
     bool ok = startStream(m_stream);
     unlock();
     return ok;
@@ -310,15 +335,39 @@ bool PortAudioSound::Stop()
     return Pa_StopStream(m_stream) == paNoError;
 }
 
+bool PortAudioSound::Close()
+{
+    PaError err;
+    if (0 != (err = Pa_CloseStream(m_stream)))
+    {
+        wxLogError("PortAudio; cannot Close: %s", Pa_GetErrorText(err));
+        return false;
+    }
+    m_stream = NULL;
+    m_isAsynch = false;
+    m_isPaInitialized = false;
+    err = Pa_Initialize();
+    if (err != paNoError) {
+        wxLogError("PortAudio; cannot initialize: %s", Pa_GetErrorText(err));
+        return false;
+    }
+    m_isPaInitialized = true;
+    return true;
+}
+
 
 int PortAudioSound::SoundCallback(void *outputBuffer,
                                   unsigned long framesPerBuffer,
                                   const PaStreamCallbackTimeInfo* timeInfo,
                                   PaStreamCallbackFlags statusFlags)
 {
+    float SoundVolume = (float)g_SoundVolume / (float) 10.0;
     int16_t* dest = static_cast<int16_t*>(outputBuffer);
     int bufferlen = framesPerBuffer * m_soundLoader->GetBytesPerSample();
     int len = m_soundLoader->Get(dest, bufferlen);
+    // Volume
+    for (int i = 0; i < (len / sizeof(int16_t));  ++i)
+        dest[i] = (int16_t)(dest[i] * SoundVolume);
     return len == bufferlen ? paContinue : paComplete;
 }
 

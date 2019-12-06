@@ -110,6 +110,7 @@ private:
     wxString          sentence_accumulator;
     bool              m_OK;
 
+    int               playtimes = 0;
     AIS_Target_Data   *m_pLatestTargetData;
 
     bool             m_bAIS_Audio_Alert_On;

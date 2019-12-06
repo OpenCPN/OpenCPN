@@ -48,6 +48,8 @@
 #include <wx/mediactrl.h>
 #include "wx/dir.h"
 #include <wx/statline.h>
+#include "PortAudioSound.h"
+#include "SoundFactory.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -207,6 +209,8 @@ extern bool g_bPlayShipsBells;
 extern wxString g_CmdSoundString;
 
 extern int g_iSoundDeviceIndex;
+extern int g_SoundVolume;
+extern int g_SoundPlayTime;
 extern bool g_bFullscreenToolbar;
 extern bool g_bTransparentToolbar;
 extern bool g_bTransparentToolbarInOpenGLOK;
@@ -264,6 +268,8 @@ extern wxLocale* plocale_def_lang;
 #endif
 
 extern OcpnSound* g_anchorwatch_sound;
+extern OcpnSound* g_PluginSound;
+extern OcpnSound* m_AIS_Sound;
 extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
@@ -1167,7 +1173,10 @@ void options::Init(void) {
   m_pConfig = NULL;
   
   pSoundDeviceIndex = NULL;
-
+  if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+      pSoundvolume = NULL;
+      pSoundPlayTime = NULL;
+  }
   pCBNorthUp = NULL;
   pCBCourseUp = NULL;
   pCBLookAhead = NULL;
@@ -1294,7 +1303,7 @@ void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
    if (r == 0)
       return;
   OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),
-		  wxICON_WARNING | wxOK, 60 );
+          wxICON_WARNING | wxOK, 60 );
 #endif
 
 }
@@ -4930,7 +4939,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                              wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
-	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
+     itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
     
     bearingsSizer->AddSpacer(10);
@@ -5328,28 +5337,56 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
             continue;
         }
         wxString label(sound->GetDeviceInfo(i));
-        if (label == "")  {
+        if (label == "") {
             label = _("Unknown device :") + std::to_string(i);
         }
+        else
+            label = wxString::Format(wxT("%i: "), i) + label;
         labels.Add(label);
     }
-    pSoundDeviceIndex = new wxChoice();
-    if (pSoundDeviceIndex) {
-        pSoundDeviceIndex->Create(itemPanelFont,
-            wxID_ANY,
-            wxDefaultPosition,
-            wxDefaultSize,
-            labels);
-        pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
-        pSoundDeviceIndex->Show();
-        wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
-        miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
-            group_item_spacing);
+    if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+        pSoundDeviceIndex = new wxChoice();
+        if (pSoundDeviceIndex) {
+            pSoundDeviceIndex->Create(itemPanelFont,
+                wxID_ANY,
+                wxDefaultPosition,
+                wxSize(300, 20),
+                labels);
+            // Get the Selected Value <-> SounddeviveIndex
+            for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
+            {
+                if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
+                {
+                    pSoundDeviceIndex->SetSelection(tmpi);
+                    break;
+                }
+            }
+            pSoundDeviceIndex->Show();
+            wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
+            miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
+                group_item_spacing);
 
-        wxStaticText* stSoundDeviceIndex =
-            new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
-        pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-        pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+            wxStaticText* stSoundDeviceIndex =
+                new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
+            pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
+            pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+            // Volume Slider
+            wxStaticText* VolumeText =
+                new wxStaticText(itemPanelFont, wxID_STATIC, _("Volume"));
+            pSoundDeviceIndexGrid->Add(VolumeText, 0, wxALL, 5);
+            pSoundvolume =
+                new wxSlider(itemPanelFont, wxID_ANY, 10, 0, 50, wxDefaultPosition, wxSize(300, 30), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+            pSoundvolume->SetValue(g_SoundVolume);
+            pSoundDeviceIndexGrid->Add(pSoundvolume, 0, wxALL, 5);
+            // Sound Time Play Slider
+            wxStaticText* SoundPlayTimeText =
+                new wxStaticText(itemPanelFont, wxID_STATIC, _("Playtime (Sec)"));
+            pSoundDeviceIndexGrid->Add(SoundPlayTimeText, 0, wxALL, 5);
+            pSoundPlayTime =
+                new wxSlider(itemPanelFont, wxID_ANY, 4, 1, 30, wxDefaultPosition, wxSize(300, 40), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+            pSoundPlayTime->SetValue(g_SoundPlayTime);
+            pSoundDeviceIndexGrid->Add(pSoundPlayTime, 0, wxALL, 5);
+        }
     }
   }
 
@@ -5807,203 +5844,219 @@ void options::OnCanvasConfigSelectClick( int ID, bool selected)
 }
 
 void options::SetInitialSettings(void) {
-  wxString s;
+    wxString s;
 
-  m_returnChanges = 0;                  // reset the flags
-  m_bfontChanged = false;
-  
-  b_oldhaveWMM = b_haveWMM;
-  b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+    m_returnChanges = 0;                  // reset the flags
+    m_bfontChanged = false;
 
-  // Canvas configuration
-  switch(g_canvasConfig){
-      case 0:
-      default:
-          m_sconfigSelect_single->SetSelected(true);
-          m_sconfigSelect_twovertical->SetSelected(false);
-          break;
-      case 1:
-          m_sconfigSelect_single->SetSelected(false);
-          m_sconfigSelect_twovertical->SetSelected(true);
-          break;
-  }
-  m_screenConfig = g_canvasConfig;
-          
-  // ChartsLoad
-  int nDir = m_CurrentDirList.GetCount();
+    b_oldhaveWMM = b_haveWMM;
+    b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
 
-  if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    for (int i = 0; i < nDir; ++i) {
-        wxString dirname = m_CurrentDirList[i].fullpath;
-        if (!dirname.IsEmpty() && pActiveChartsList) {
-            pActiveChartsList->Append(dirname);
+    // Canvas configuration
+    switch (g_canvasConfig) {
+    case 0:
+    default:
+        m_sconfigSelect_single->SetSelected(true);
+        m_sconfigSelect_twovertical->SetSelected(false);
+        break;
+    case 1:
+        m_sconfigSelect_single->SetSelected(false);
+        m_sconfigSelect_twovertical->SetSelected(true);
+        break;
+    }
+    m_screenConfig = g_canvasConfig;
+
+    // ChartsLoad
+    int nDir = m_CurrentDirList.GetCount();
+
+    if (pActiveChartsList) {
+        pActiveChartsList->Clear();
+        for (int i = 0; i < nDir; ++i) {
+            wxString dirname = m_CurrentDirList[i].fullpath;
+            if (!dirname.IsEmpty() && pActiveChartsList) {
+                pActiveChartsList->Append(dirname);
+            }
         }
     }
-  }
 
-  // ChartGroups
-  if (pActiveChartsList && m_pWorkDirList) {
-    UpdateWorkArrayFromTextCtl();
-    groupsPanel->SetDBDirs(*m_pWorkDirList);
+    // ChartGroups
+    if (pActiveChartsList && m_pWorkDirList) {
+        UpdateWorkArrayFromTextCtl();
+        groupsPanel->SetDBDirs(*m_pWorkDirList);
 
-    // Make a deep copy of the current global Group Array
-    groupsPanel->EmptyChartGroupArray(m_pGroupArray);
-    delete m_pGroupArray;
-    m_pGroupArray = groupsPanel->CloneChartGroupArray(g_pGroupArray);
-    groupsPanel->SetGroupArray(m_pGroupArray);
-    groupsPanel->SetInitialSettings();
-  }
+        // Make a deep copy of the current global Group Array
+        groupsPanel->EmptyChartGroupArray(m_pGroupArray);
+        delete m_pGroupArray;
+        m_pGroupArray = groupsPanel->CloneChartGroupArray(g_pGroupArray);
+        groupsPanel->SetGroupArray(m_pGroupArray);
+        groupsPanel->SetInitialSettings();
+    }
 
-  if (m_pConfig) {
-    pShowStatusBar->SetValue(g_bShowStatusBar);
+    if (m_pConfig) {
+        pShowStatusBar->SetValue(g_bShowStatusBar);
 #ifndef __WXOSX__
-    pShowMenuBar->SetValue(g_bShowMenuBar);
+        pShowMenuBar->SetValue(g_bShowMenuBar);
 #endif
-    pShowCompassWin->SetValue(g_bShowCompassWin);
-  }
+        pShowCompassWin->SetValue(g_bShowCompassWin);
+    }
 
-  s.Printf(_T("%d"), g_COGAvgSec);
-  pCOGUPUpdateSecs->SetValue(s);
+    s.Printf(_T("%d"), g_COGAvgSec);
+    pCOGUPUpdateSecs->SetValue(s);
 
-  if(pCDOOutlines) pCDOOutlines->SetValue(g_bShowOutlines);
-  if(pCDOQuilting) pCDOQuilting->SetValue(g_bQuiltEnable);
-//  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
-  if(pSDepthUnits) pSDepthUnits->SetValue(g_bShowDepthUnits);
-  if(pSkewComp) pSkewComp->SetValue(g_bskew_comp);
-  pMobile->SetValue(g_btouch);
-  pResponsive->SetValue(g_bresponsive);
-  //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
-  //pOZScaleVector->SetValue(!g_oz_vector_scale);
-  pInlandEcdis->SetValue(g_bInlandEcdis);
+    if (pCDOOutlines) pCDOOutlines->SetValue(g_bShowOutlines);
+    if (pCDOQuilting) pCDOQuilting->SetValue(g_bQuiltEnable);
+    //  if(pFullScreenQuilt) pFullScreenQuilt->SetValue(!g_bFullScreenQuilt);
+    if (pSDepthUnits) pSDepthUnits->SetValue(g_bShowDepthUnits);
+    if (pSkewComp) pSkewComp->SetValue(g_bskew_comp);
+    pMobile->SetValue(g_btouch);
+    pResponsive->SetValue(g_bresponsive);
+    //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
+    //pOZScaleVector->SetValue(!g_oz_vector_scale);
+    pInlandEcdis->SetValue(g_bInlandEcdis);
 #ifdef __WXOSX__
-  pDarkDecorations->SetValue(g_bDarkDecorations);
+    pDarkDecorations->SetValue(g_bDarkDecorations);
 #endif
-  pOpenGL->SetValue(g_bopengl);
-  if(pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
-  pCBTrueShow->SetValue(g_bShowTrue);
-  pCBMagShow->SetValue(g_bShowMag);
+    pOpenGL->SetValue(g_bopengl);
+    if (pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
+    pCBTrueShow->SetValue(g_bShowTrue);
+    pCBMagShow->SetValue(g_bShowMag);
 
-  int oldLength = itemStaticTextUserVar->GetLabel().Length();
-  
-  //disable input for variation if WMM is available
-  if(b_haveWMM){
-      itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
-      wxString s;
-      s.Printf(_T("%4.1f"), gVar);
-      pMagVar->SetValue(s);
+    int oldLength = itemStaticTextUserVar->GetLabel().Length();
+
+    //disable input for variation if WMM is available
+    if (b_haveWMM) {
+        itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
+        wxString s;
+        s.Printf(_T("%4.1f"), gVar);
+        pMagVar->SetValue(s);
+    }
+    else {
+        itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
+        wxString s;
+        s.Printf(_T("%4.1f"), g_UserVar);
+        pMagVar->SetValue(s);
+    }
+
+    int newLength = itemStaticTextUserVar->GetLabel().Length();
+
+    // size hack to adjust change in static text size
+    if ((newLength != oldLength) || (b_oldhaveWMM != b_haveWMM)) {
+        wxSize sz = GetSize();
+        SetSize(sz.x + 1, sz.y);
+        SetSize(sz);
+    }
+
+    itemStaticTextUserVar2->Enable(!b_haveWMM);
+    pMagVar->Enable(!b_haveWMM);
+
+    if (pSDisplayGrid) pSDisplayGrid->SetValue(g_bDisplayGrid);
+
+    // LIVE ETA OPTION
+
+    // Checkbox
+    if (pSLiveETA) pSLiveETA->SetValue(g_bShowLiveETA);
+
+    // Defaut boat speed text input field
+    // Speed always in knots, and converted to user speed unit
+    wxString stringDefaultBoatSpeed;
+    if (!g_defaultBoatSpeed || !g_defaultBoatSpeedUserUnit)
+    {
+        g_defaultBoatSpeed = 6.0;
+        g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
+    }
+    stringDefaultBoatSpeed.Printf(_T("%d"), (int)g_defaultBoatSpeedUserUnit);
+    if (pSDefaultBoatSpeed) pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
+
+    // END LIVE ETA OPTION
+
+    if (pCBCourseUp) pCBCourseUp->SetValue(g_bCourseUp);
+    if (pCBNorthUp) pCBNorthUp->SetValue(!g_bCourseUp);
+    if (pCBLookAhead) pCBLookAhead->SetValue(g_bLookAhead);
+
+    if (fabs(wxRound(g_ownship_predictor_minutes) - g_ownship_predictor_minutes) >
+        1e-4)
+        s.Printf(_T("%6.2f"), g_ownship_predictor_minutes);
+    else
+        s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
+    m_pText_OSCOG_Predictor->SetValue(s);
+
+    if (fabs(wxRound(g_ownship_HDTpredictor_miles) -
+        g_ownship_HDTpredictor_miles) > 1e-4)
+        s.Printf(_T("%6.2f"), g_ownship_HDTpredictor_miles);
+    else
+        s.Printf(_T("%4.0f"), g_ownship_HDTpredictor_miles);
+    m_pText_OSHDT_Predictor->SetValue(s);
+
+    m_pShipIconType->SetSelection(g_OwnShipIconType);
+    wxCommandEvent eDummy;
+    OnShipTypeSelect(eDummy);
+    m_pOSLength->SetValue(
+        wxString::Format(_T("%.1f"), g_n_ownship_length_meters));
+    m_pOSWidth->SetValue(wxString::Format(_T("%.1f"), g_n_ownship_beam_meters));
+    m_pOSGPSOffsetX->SetValue(
+        wxString::Format(_T("%.1f"), g_n_gps_antenna_offset_x));
+    m_pOSGPSOffsetY->SetValue(
+        wxString::Format(_T("%.1f"), g_n_gps_antenna_offset_y));
+    m_pOSMinSize->SetValue(wxString::Format(_T("%d"), g_n_ownship_min_mm));
+    m_pText_ACRadius->SetValue(
+        wxString::Format(_T("%.3f"), g_n_arrival_circle_radius));
+
+    wxString buf;
+    if (g_iNavAidRadarRingsNumberVisible > 10)
+        g_iNavAidRadarRingsNumberVisible = 10;
+    pNavAidRadarRingsNumberVisible->SetSelection(
+        g_iNavAidRadarRingsNumberVisible);
+    buf.Printf(_T("%.3f"), g_fNavAidRadarRingsStep);
+    pNavAidRadarRingsStep->SetValue(buf);
+    m_itemRadarRingsUnits->SetSelection(g_pNavAidRadarRingsStepUnits);
+    m_colourOwnshipRangeRingColour->SetColour(g_colourOwnshipRangeRingsColour);
+
+    pScaMinChckB->SetValue(g_bUseWptScaMin);
+    m_pText_ScaMin->SetValue(wxString::Format(_T("%i"), g_iWpt_ScaMin));
+    pScaMinOverruleChckB->SetValue(g_bOverruleScaMin);
+
+    OnRadarringSelect(eDummy);
+
+    if (g_iWaypointRangeRingsNumber > 10) g_iWaypointRangeRingsNumber = 10;
+    pWaypointRangeRingsNumber->SetSelection(g_iWaypointRangeRingsNumber);
+    buf.Printf(_T("%.3f"), g_fWaypointRangeRingsStep);
+    pWaypointRangeRingsStep->SetValue(buf);
+    m_itemWaypointRangeRingsUnits->SetSelection(g_iWaypointRangeRingsStepUnits);
+    m_colourWaypointRangeRingsColour->SetColour(g_colourWaypointRangeRingsColour);
+    OnWaypointRangeRingSelect(eDummy);
+
+    pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
+    pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
+
+    pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
+    pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
+
+    if (pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
+
+    if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
+    pPlayShipsBells->SetValue(g_bPlayShipsBells);
+
+    if (g_bUIexpert && pCmdSoundString)
+        pCmdSoundString->SetValue(g_CmdSoundString);
+
+    if (pSoundDeviceIndex)
+    {
+        for (unsigned int tmpi = 0; tmpi < pSoundDeviceIndex->GetCount(); tmpi++)
+        {
+            if (atoi(pSoundDeviceIndex->GetString(tmpi).BeforeFirst(':')) == g_iSoundDeviceIndex)
+            {
+                pSoundDeviceIndex->SetSelection(tmpi);
+                break;
+            }
+        }
+    }
+    if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+        if (pSoundvolume)
+            pSoundvolume->SetValue(g_SoundVolume);
+        if (pSoundPlayTime)
+            pSoundPlayTime->SetValue(g_SoundPlayTime);
   }
-  else{
-      itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
-      wxString s;
-      s.Printf(_T("%4.1f"), g_UserVar);
-      pMagVar->SetValue(s);
-  }
-  
-  int newLength = itemStaticTextUserVar->GetLabel().Length();
-  
-  // size hack to adjust change in static text size
-  if( (newLength != oldLength) || (b_oldhaveWMM != b_haveWMM) ){
-      wxSize sz = GetSize();
-      SetSize(sz.x+1, sz.y);
-      SetSize(sz);
-  }
-  
-  itemStaticTextUserVar2->Enable(!b_haveWMM);
-  pMagVar->Enable(!b_haveWMM);
-  
-  if(pSDisplayGrid) pSDisplayGrid->SetValue(g_bDisplayGrid);
-    
-  // LIVE ETA OPTION
-    
-  // Checkbox
-  if(pSLiveETA) pSLiveETA->SetValue(g_bShowLiveETA);
-    
-  // Defaut boat speed text input field
-  // Speed always in knots, and converted to user speed unit
-  wxString stringDefaultBoatSpeed;
-  if (!g_defaultBoatSpeed || !g_defaultBoatSpeedUserUnit)
-  {
-      g_defaultBoatSpeed = 6.0;
-      g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
-  }
-  stringDefaultBoatSpeed.Printf(_T("%d"), (int)g_defaultBoatSpeedUserUnit);
-  if(pSDefaultBoatSpeed) pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
-  
-  // END LIVE ETA OPTION
-
-  if(pCBCourseUp) pCBCourseUp->SetValue(g_bCourseUp);
-  if(pCBNorthUp) pCBNorthUp->SetValue(!g_bCourseUp);
-  if(pCBLookAhead) pCBLookAhead->SetValue(g_bLookAhead);
-
-  if (fabs(wxRound(g_ownship_predictor_minutes) - g_ownship_predictor_minutes) >
-      1e-4)
-    s.Printf(_T("%6.2f"), g_ownship_predictor_minutes);
-  else
-    s.Printf(_T("%4.0f"), g_ownship_predictor_minutes);
-  m_pText_OSCOG_Predictor->SetValue(s);
-
-  if (fabs(wxRound(g_ownship_HDTpredictor_miles) -
-           g_ownship_HDTpredictor_miles) > 1e-4)
-    s.Printf(_T("%6.2f"), g_ownship_HDTpredictor_miles);
-  else
-    s.Printf(_T("%4.0f"), g_ownship_HDTpredictor_miles);
-  m_pText_OSHDT_Predictor->SetValue(s);
-
-  m_pShipIconType->SetSelection(g_OwnShipIconType);
-  wxCommandEvent eDummy;
-  OnShipTypeSelect(eDummy);
-  m_pOSLength->SetValue(
-      wxString::Format(_T("%.1f"), g_n_ownship_length_meters));
-  m_pOSWidth->SetValue(wxString::Format(_T("%.1f"), g_n_ownship_beam_meters));
-  m_pOSGPSOffsetX->SetValue(
-      wxString::Format(_T("%.1f"), g_n_gps_antenna_offset_x));
-  m_pOSGPSOffsetY->SetValue(
-      wxString::Format(_T("%.1f"), g_n_gps_antenna_offset_y));
-  m_pOSMinSize->SetValue(wxString::Format(_T("%d"), g_n_ownship_min_mm));
-  m_pText_ACRadius->SetValue(
-      wxString::Format(_T("%.3f"), g_n_arrival_circle_radius));
-
-  wxString buf;
-  if (g_iNavAidRadarRingsNumberVisible > 10)
-    g_iNavAidRadarRingsNumberVisible = 10;
-  pNavAidRadarRingsNumberVisible->SetSelection(
-      g_iNavAidRadarRingsNumberVisible);
-  buf.Printf(_T("%.3f"), g_fNavAidRadarRingsStep);
-  pNavAidRadarRingsStep->SetValue(buf);
-  m_itemRadarRingsUnits->SetSelection(g_pNavAidRadarRingsStepUnits);
-  m_colourOwnshipRangeRingColour->SetColour(g_colourOwnshipRangeRingsColour);
-  
-  pScaMinChckB->SetValue( g_bUseWptScaMin );
-  m_pText_ScaMin->SetValue( wxString::Format(_T("%i"), g_iWpt_ScaMin ));
-  pScaMinOverruleChckB->SetValue( g_bOverruleScaMin );
-  
-  OnRadarringSelect(eDummy);
-
-  if (g_iWaypointRangeRingsNumber > 10) g_iWaypointRangeRingsNumber = 10;
-  pWaypointRangeRingsNumber->SetSelection(g_iWaypointRangeRingsNumber);
-  buf.Printf(_T("%.3f"), g_fWaypointRangeRingsStep);
-  pWaypointRangeRingsStep->SetValue(buf);
-  m_itemWaypointRangeRingsUnits->SetSelection(g_iWaypointRangeRingsStepUnits);
-  m_colourWaypointRangeRingsColour->SetColour(g_colourWaypointRangeRingsColour);
-  OnWaypointRangeRingSelect(eDummy);
-
-  pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
-  pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
-
-  pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
-  pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
-
-  if(pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
-
-  if(pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
-  pPlayShipsBells->SetValue(g_bPlayShipsBells);
-
-  if ( g_bUIexpert && pCmdSoundString )
-      pCmdSoundString->SetValue(g_CmdSoundString);
-
-  if (pSoundDeviceIndex)
-      pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+  // Old : pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
   //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
   //pTransparentToolbar->SetValue(g_bTransparentToolbar);
   pSDMMFormat->Select(g_iSDMMFormat);
@@ -7097,8 +7150,28 @@ void options::OnApplyClick(wxCommandEvent& event) {
   }
 
   g_bPlayShipsBells = pPlayShipsBells->GetValue();
-  if (pSoundDeviceIndex)
-      g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
+  if (dynamic_cast<PortAudioSound*>(SoundFactory())) {
+      if (pSoundDeviceIndex)
+      {
+          if (g_iSoundDeviceIndex != atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':')))
+          {
+              // When not the same device select new and reinit
+              g_anchorwatch_sound->Stop();
+              g_anchorwatch_sound->Close();
+              if (g_PluginSound)
+              {
+                  g_PluginSound->Stop();
+                  g_PluginSound->Close();
+              }
+          }
+          g_iSoundDeviceIndex = atoi(pSoundDeviceIndex->GetString(pSoundDeviceIndex->GetSelection()).BeforeFirst(':'));
+      }
+      // old : g_iSoundDeviceIndex = pSoundDeviceIndex->GetSelection();
+      if (pSoundvolume)
+          g_SoundVolume = pSoundvolume->GetValue();
+      if (pSoundPlayTime)
+          g_SoundPlayTime = pSoundPlayTime->GetValue();
+  }
   //g_bTransparentToolbar = pTransparentToolbar->GetValue();
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
@@ -8206,8 +8279,8 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
   if (response == wxID_OK) {
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
-
-    g_anchorwatch_sound->Stop();
+        g_anchorwatch_sound->Stop();
+        g_anchorwatch_sound->Close();
   }
 }
 
@@ -8341,7 +8414,7 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
     pdg->m_element_array.reserve(psg->m_element_array.size());
 
     for(auto& elem : psg->m_element_array)
-	    pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
+        pdg->m_element_array.emplace_back(new ChartGroupElement(*elem));
 
     d->Add(pdg);
   }

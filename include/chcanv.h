@@ -516,6 +516,7 @@ public:
       void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
 
 private:
+      int playtimes = 0;
       int AdjustQuiltRefChart();
 
       bool UpdateS52State();

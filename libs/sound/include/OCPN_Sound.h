@@ -94,10 +94,9 @@ class OcpnSound
          * not playing. Returns true if stopping is supported, else false.
          */
         virtual bool Stop() = 0;
-
+        virtual bool Close() { return true; };
         /** Reflects loading errors. */
         virtual bool IsOk() const { return m_OK; }
-
         /**
          * Set system command string in case program wants to change from
          * default string.
