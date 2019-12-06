@@ -24,7 +24,6 @@
  **************************************************************************/
 
 #include <iostream>
-using namespace std;
 
 #include "wx/wxprec.h"
 
@@ -75,6 +74,8 @@ using namespace std;
 #define PRINT_WP_COURSE 2
 #define PRINT_WP_DISTANCE 3
 #define PRINT_WP_DESCRIPTION 4
+
+using namespace std;
 
 // Global print data, to remember settings during the session
 extern wxPrintData*     g_printData;
