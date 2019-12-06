@@ -278,6 +278,7 @@ extern int              g_own_ship_sog_cog_calc_damp_sec;
 
 extern bool             g_bShowMenuBar;
 extern bool             g_bShowCompassWin;
+extern bool             g_BoatCenterButton;
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -593,6 +594,7 @@ int MyConfig::LoadMyConfig()
     
     g_bShowStatusBar = 1;
     g_bShowCompassWin = 1;
+    g_BoatCenterButton = 0;
     g_iSoundDeviceIndex = -1;
     g_bFullscreenToolbar = 1;
     g_bTransparentToolbar =  0;
@@ -931,6 +933,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 #endif
     Read( _T ( "Fullscreen" ), &g_bFullscreen );
     Read( _T ( "ShowCompassWindow" ), &g_bShowCompassWin );
+    Read( _T ( "BoatCenterButton" ), &g_BoatCenterButton );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
@@ -2269,6 +2272,7 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "Fullscreen" ), g_bFullscreen );
     Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
+    Write( _T ( "BoatCenterButton" ), g_BoatCenterButton );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );

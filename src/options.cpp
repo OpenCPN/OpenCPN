@@ -300,6 +300,7 @@ options* g_pOptions;
 
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
+extern bool g_BoatCenterButton;
 
 extern bool g_btouch;
 extern bool g_bresponsive;
@@ -1153,6 +1154,7 @@ void options::Init(void) {
   pShowStatusBar = NULL;
   pShowMenuBar = NULL;
   pShowCompassWin = NULL;
+  pBoatCenterButton = NULL;
   pSelCtl = NULL;
   pActiveChartsList = NULL;
   ps57CtlListBox = NULL;
@@ -5289,6 +5291,11 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pShowCompassWin->SetValue(FALSE);
   miscOptions->Add(pShowCompassWin, 0, wxALL, border_size);
 
+  pBoatCenterButton = new wxCheckBox(itemPanelFont, wxID_ANY,
+                                   _("Boat button is center"));
+  pBoatCenterButton->SetValue(FALSE);
+  miscOptions->Add(pBoatCenterButton, 0, wxALL, border_size);
+
   wxBoxSizer* pToolbarAutoHide = new wxBoxSizer(wxHORIZONTAL);
   miscOptions->Add(pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing);
 
@@ -5867,6 +5874,7 @@ void options::SetInitialSettings(void) {
     pShowMenuBar->SetValue(g_bShowMenuBar);
 #endif
     pShowCompassWin->SetValue(g_bShowCompassWin);
+    pBoatCenterButton->SetValue(g_BoatCenterButton);
   }
 
   s.Printf(_T("%d"), g_COGAvgSec);
@@ -6903,6 +6911,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     g_bShowMenuBar = pShowMenuBar->GetValue();
 #endif
     g_bShowCompassWin = pShowCompassWin->GetValue();
+    g_BoatCenterButton = pBoatCenterButton->GetValue();
   }
 
   g_bShowChartBar = pShowChartBar->GetValue();

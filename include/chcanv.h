@@ -212,6 +212,7 @@ public:
       void ClearbFollow(void);
       void SetbFollow(void);
       void TogglebFollow( void );
+      void CenterBoat(void);
       void JumpToPosition( double lat, double lon, double scale );
       void SetFirstAuto( bool b_auto ){m_bFirstAuto = b_auto; }
       

@@ -1250,6 +1250,7 @@ void ChartCanvas::ShowCurrents(bool bShow)
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
 extern int      g_sticky_chart;
+extern bool     g_BoatCenterButton;
 
 void ChartCanvas::canvasRefreshGroupIndex( void )
 {
@@ -2718,7 +2719,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
 
     case WXK_F2:
-        TogglebFollow();
+	if (g_BoatCenterButton) 
+	     CenterBoat();
+	else
+            TogglebFollow();
         break;
 
     case WXK_F3: {
@@ -4570,9 +4574,9 @@ void ChartCanvas::SetbFollow( void )
 {
     JumpToPosition(gLat, gLon, GetVPScale());
     m_bFollow = true;
-    
+        
     if( m_toolBar )
-        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
+    	m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     UpdateFollowButtonState();
@@ -4580,12 +4584,31 @@ void ChartCanvas::SetbFollow( void )
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
-    
+	    
     // Is the OWNSHIP on-screen?
     // If not, then reset the OWNSHIP offset to 0 (center screen)
     if( (fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2) ){
         m_OSoffsetx = 0;
         m_OSoffsety = 0;
+    }
+
+    DoCanvasUpdate();
+    ReloadVP();
+    parent_frame->SetChartUpdatePeriod( );
+}
+
+void ChartCanvas::CenterBoat( void )
+{
+    if (m_bLookAhead) {
+	ClearbFollow();
+	return;
+    }
+    if (m_bFollow) {
+        // reset the OWNSHIP offset to 0 (center screen)
+        m_OSoffsetx = 0;
+        m_OSoffsety = 0;
+    } else {
+        JumpToPosition(gLat, gLon, GetVPScale());
     }
 
     DoCanvasUpdate();
@@ -11952,6 +11975,10 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
         
+        case ID_BCENTER:
+	     CenterBoat();
+	     break;
+
         case ID_CURRENT: {
             ShowCurrents( !GetbShowCurrent() );
             ReloadVP();

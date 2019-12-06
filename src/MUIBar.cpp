@@ -60,6 +60,7 @@ extern OCPNPlatform              *g_Platform;
 extern bool                      g_bEffects;
 extern ChartCanvas               *g_focusCanvas;
 extern ocpnStyle::StyleManager*   g_StyleManager;
+extern bool			 g_BoatCenterButton;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
@@ -729,8 +730,9 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
 
         case ID_FOLLOW:
         {
-            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
-            GetParent()->GetEventHandler()->AddPendingEvent( evt );
+	    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,
+		g_BoatCenterButton ? ID_BCENTER : ID_FOLLOW);
+	    GetParent()->GetEventHandler()->AddPendingEvent( evt );
 
             if(g_focusCanvas)
                 g_focusCanvas->TriggerDeferredFocus();

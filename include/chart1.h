@@ -109,6 +109,7 @@ enum
     ID_STKDN,
     ID_ROUTE,
     ID_FOLLOW,
+    ID_BCENTER,
     ID_SETTINGS,
     ID_AIS,
     ID_ENC_TEXT,

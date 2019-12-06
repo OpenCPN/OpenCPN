@@ -414,6 +414,7 @@ extern bool             g_bShowCurrent;
 extern bool             g_benableUDPNullHeader;
 extern bool             g_bShowMenuBar;
 extern bool             g_bShowCompassWin;
+extern bool             g_BoatCenterButton;
 
 extern wxString         g_uiStyle;
 extern bool             g_useMUI;
@@ -1030,6 +1031,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     
     conf->Write( _T ( "Fullscreen" ), g_bFullscreen );
     conf->Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
+    conf->Write( _T ( "BoatCenterButton" ), g_BoatCenterButton );
     conf->Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     conf->Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     conf->Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
@@ -1522,6 +1524,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
 #endif
     CHECK_INT( _T ( "Fullscreen" ), &g_bFullscreen );
     CHECK_INT( _T ( "ShowCompassWindow" ), &g_bShowCompassWin );
+    CHECK_INT( _T ( "BoatCenterButton" ), &g_BoatCenterButton );
     CHECK_INT( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     CHECK_INT( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     CHECK_INT( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );

@@ -697,6 +697,7 @@ float                     g_toolbar_scalefactor;
 float                     g_compass_scalefactor;
 bool                      g_bShowMenuBar;
 bool                      g_bShowCompassWin;
+bool                      g_BoatCenterButton;
 
 bool                      g_benable_rotate;
 
