@@ -128,6 +128,7 @@ extern RouteList        *pRouteList;
 extern wxString         g_default_wp_icon;
 extern bool              g_btouch;
 extern bool             g_bBasicMenus;
+extern bool             g_BoatCenterButton;
 
 
 
@@ -143,6 +144,8 @@ enum
     ID_DEF_MENU_MOVE_BOAT_HERE,
     ID_DEF_MENU_GOTO_HERE,
     ID_DEF_MENU_GOTOPOSITION,
+    ID_DEF_MENU_BCENTER,
+    ID_DEF_MENU_FOLLOW,
 
     ID_WP_MENU_GOTO,
     ID_WP_MENU_DELPOINT,
@@ -418,8 +421,11 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     if( !g_bBasicMenus && (!( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT )) ) )
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTO_HERE, _( "Navigate To Here" ) );
 
-    if( !g_bBasicMenus)
+    if( !g_bBasicMenus) {
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center view") + _T("...") );
+        MenuAppend1( contextMenu, ID_DEF_MENU_BCENTER, _("Center on boat") + ( g_BoatCenterButton ? _T(" (F2)") : _T("") ) );
+        MenuAppend1( contextMenu, ID_DEF_MENU_FOLLOW, (parent->m_bFollow ? _("Disable Follow") : _("Enable follow") ) + ( g_BoatCenterButton ? _T("") : _T(" (F2)") ) );
+    }
 
     if( !g_bBasicMenus){
         if( !parent->m_bCourseUp )
@@ -1086,6 +1092,14 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         pGoToPositionDialog->CheckPasteBufferForPosition();
         pGoToPositionDialog->Show();
         break;
+
+    case ID_DEF_MENU_BCENTER:
+	parent->CenterBoat();
+	break;
+
+    case ID_DEF_MENU_FOLLOW:
+	parent->TogglebFollow();
+	break;
 
     case ID_WP_MENU_DELPOINT: {
         if( m_pFoundRoutePoint == pAnchorWatchPoint1 ) {
