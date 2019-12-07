@@ -243,6 +243,8 @@ ENDIF(APPLE)
 if  (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   include(OcpnFindGtk)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+  find_package(PANGO REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
 endif ()
 
 IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
