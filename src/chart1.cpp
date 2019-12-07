@@ -5549,8 +5549,9 @@ void MyFrame::ApplyGlobalSettings( bool bnewtoolbar )
 wxString _menuText( wxString name, wxString shortcut ) {
     wxString menutext;
     menutext << name;
-    if(!g_bresponsive)
-        menutext << _T("\t") << shortcut;
+#ifndef __OCPN__ANDROID__
+    menutext << _T("\t") << shortcut;
+#endif
     return menutext;
 }
 
