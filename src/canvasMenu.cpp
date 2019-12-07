@@ -253,6 +253,7 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
     item->SetFont(sFont);
 #endif
     
+    menu->InsertSeparator(0);
     menu->Prepend(item);
 }
 
@@ -271,6 +272,7 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
 #endif
     
     menu->Append(item);
+    menu->AppendSeparator();
 }
 
 void SetMenuItemFont1(wxMenuItem *item)
@@ -497,6 +499,8 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 
     //  ChartGroup SubMenu
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
+    contextMenu->AppendSeparator();
+    
     SetMenuItemFont1(subItemChart);
     
     if( g_pGroupArray->GetCount() ) {
@@ -720,6 +724,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
+#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -734,7 +739,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 wxString item = _( "Send to new GPS" );
                 MenuAppend1( menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item );
             }
-            
+#endif            
             
         }
         //Eventually set this menu as the "focused context menu"
@@ -770,6 +775,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
             if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
+#ifndef __OCPN__ANDROID__            
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -779,7 +785,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 item.Append(_T(" )") );
             }
             MenuAppend1( menuWaypoint, ID_WPT_MENU_SENDTOGPS, item );
-
+#endif
 
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
@@ -916,8 +922,24 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     }
 
     //        Invoke the correct focused drop-down menu
+    
+#ifdef __OCPN__ANDROID__
+    androidEnableBackButton( false );
+    androidEnableOptionsMenu( false );
+
+    setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_T("Menu")));
+#endif
+    
+    
     parent->PopupMenu( menuFocus, x, y );
 
+#ifdef __OCPN__ANDROID__
+    androidEnableBackButton( true );
+    androidEnableOptionsMenu( true );
+#endif
 
     /* Cleanup if necessary.
 	Do not delete menus witch are submenu as they will be deleted by their parent menu.
@@ -1015,7 +1037,12 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
         if( !pWP->IsVisibleSelectable(this->parent) ) pWP->ShowScaleWarningMessage(parent);
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+                pRouteManagerDialog->UpdateWptListCtrl();
+            }
+        }
+        
         parent->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
         parent->undo->AfterUndoableAction( NULL );
         gFrame->RefreshAllCanvas( false );
@@ -1116,8 +1143,10 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 g_pMarkInfoDialog->UpdateProperties();
             }
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            if( pRouteManagerDialog ){
+                if( pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
+            }
 
             gFrame->RefreshAllCanvas( false );
             gFrame->InvalidateAllGL();
@@ -1411,6 +1440,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
              else {
                  SendToGpsDlg dlg;
                  dlg.SetWaypoint( m_pFoundRoutePoint );
+                 wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+                 dlg.SetFont(fo);
 
                  dlg.Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), _T("") );
                  dlg.ShowModal();
@@ -1545,7 +1576,12 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
             pConfig->DeleteConfigTrack( m_pSelectedTrack );
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            if( TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
+                ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {
+                pTrackPropDialog->Hide();
+            }
+
+            if( RoutePropDlgImpl::getInstanceFlag() && pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
                 pRouteManagerDialog->UpdateTrkListCtrl();
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }

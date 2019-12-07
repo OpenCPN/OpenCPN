@@ -584,7 +584,11 @@ class options : private Uncopyable,
   wxCheckBox *pTrackDaily, *pTrackHighlite;
 #if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL  
+#ifdef __WXGTK__
+  TimeCtrl *pTrackRotateTime;
+#else
   wxTimePickerCtrl *pTrackRotateTime;
+#endif  
 #endif
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;

@@ -1071,9 +1071,7 @@ bool isSingleChart(ChartBase *chart)
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
-//#ifndef OCPN_USE_WRAPPER
 IMPLEMENT_APP( MyApp )
-//#endif
 
 BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)

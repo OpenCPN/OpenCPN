@@ -474,7 +474,6 @@ void MarkInfoDlg::Create()
     wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_panelBasicProperties, _("Links")  );
     bSizerBasicProperties->Add( sbS_SizerLinks1, 1, wxALL | wxEXPAND, 5 );
     m_htmlList = new    wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-    m_htmlList->SetBackgroundColour(wxColour(200, 0, 200));
     
     sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
 #else
@@ -648,15 +647,21 @@ void MarkInfoDlg::Create()
             wxDefaultPosition, wxDefaultSize, 0 );
     gbSizerInnerExtProperties1->Add(m_staticTextPlSpeedUnits, 0, wxALIGN_CENTRE_VERTICAL, 0);
     
+#ifndef __OCPN__ANDROID__
     m_staticTextEta = new wxStaticText( sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("ETD") );
     gbSizerInnerExtProperties1->Add(m_staticTextEta, 0, wxALIGN_CENTRE_VERTICAL, 0);
     wxBoxSizer* bsTimestamp = new wxBoxSizer(wxHORIZONTAL);
     m_cbEtaPresent = new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxEmptyString);
     bsTimestamp->Add(m_cbEtaPresent, 0, wxALL|wxEXPAND, 5);
-#ifndef __OCPN__ANDROID__
     m_EtaDatePickerCtrl = new wxDatePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_DATEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
     bsTimestamp->Add(m_EtaDatePickerCtrl, 0, wxALL|wxEXPAND, 5);
+    
+#ifdef __WXGTK__
+    m_EtaTimePickerCtrl = new TimeCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize);
+#else
     m_EtaTimePickerCtrl = new wxTimePickerCtrl(sbSizerExtProperties->GetStaticBox(), ID_ETA_TIMEPICKERCTRL, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT, wxDefaultValidator);
+#endif
+
     bsTimestamp->Add(m_EtaTimePickerCtrl, 0, wxALL|wxEXPAND, 5);
     gbSizerInnerExtProperties1->Add(bsTimestamp, 0, wxEXPAND, 0);
 #endif
@@ -1457,20 +1462,18 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
         } else {
             m_cbEtaPresent->SetValue(false);
         }
-#else
-        m_cbEtaPresent->SetValue(false);
 #endif        
 
 
         m_staticTextPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
         m_textCtrlPlSpeed->Show(m_pRoutePoint->m_bIsInRoute);
-        m_staticTextEta->Show(m_pRoutePoint->m_bIsInRoute);
 #ifndef __OCPN__ANDROID__
+        m_staticTextEta->Show(m_pRoutePoint->m_bIsInRoute);
         m_EtaDatePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
         m_EtaTimePickerCtrl->Show(m_pRoutePoint->m_bIsInRoute);
+        m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
 #endif
         m_staticTextPlSpeedUnits->Show(m_pRoutePoint->m_bIsInRoute);
-        m_cbEtaPresent->Show(m_pRoutePoint->m_bIsInRoute);
         m_staticTextArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
         m_staticTextArrivalUnits->Show(m_pRoutePoint->m_bIsInRoute);
         m_textArrivalRadius->Show(m_pRoutePoint->m_bIsInRoute);
@@ -1500,8 +1503,8 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
 #ifndef __OCPN__ANDROID__
             m_EtaDatePickerCtrl->Enable(false);
             m_EtaTimePickerCtrl->Enable(false);
-#endif
             m_cbEtaPresent->Enable(false);
+#endif
             if( !m_textDescription->IsEmpty() ){
                 m_notebookProperties->SetSelection(1); //Show Description page
             }
@@ -1528,8 +1531,8 @@ bool MarkInfoDlg::UpdateProperties( bool positionOnly )
 #ifndef __OCPN__ANDROID__
             m_EtaDatePickerCtrl->Enable(true);
             m_EtaTimePickerCtrl->Enable(true);
-#endif            
             m_cbEtaPresent->Enable(true);
+#endif            
             m_notebookProperties->SetSelection(0);
             m_comboBoxTideStation->Enable(true);
         }

@@ -271,20 +271,6 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
 }
 
 void RoutePropDlgImpl::RecalculateSize(void) {
-//   if (!g_bresponsive){
-//     wxSize canvas_size = gFrame->GetSize();
-//     wxSize fitted_size = GetSize();
-// 
-//     fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
-//     fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
-// 
-//     SetSize(fitted_size);
-// 
-//     Fit();
-//     m_nCharWidthMax = GetSize().x / GetCharWidth();
-// 
-//     return;
-//   }
 
   wxSize esize;
   esize.x = GetCharWidth() * 110;

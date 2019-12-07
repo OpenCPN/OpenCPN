@@ -311,10 +311,14 @@ class MarkInfoDlg : public wxFrame
         wxBitmap               _img_MUI_settings_svg;
         wxButton*               m_sdbSizerButtonsCancel;
         wxButton*               m_sdbSizerButtonsOK;
- 
+
 #ifndef __OCPN__ANDROID__
         wxDatePickerCtrl*       m_EtaDatePickerCtrl;
+#ifdef __WXGTK__
+        TimeCtrl*               m_EtaTimePickerCtrl;
+#else
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;
+#endif
 #endif
         wxArrayString           m_choiceTideChoices;
         wxBitmap                m_bmTide;

@@ -1482,29 +1482,25 @@ void WayPointman::ProcessDefaultIcons()
     if(!bcacheLoaded)
     {
         g_Platform->ShowBusySpinner();
-//#ifdef __OCPN__ANDROID__
-//        androidDisplayToast( _("Processing icons"));
-//#endif        
 
-    
-    for( int ifile = 0; ifile < n_files; ifile++ ) {
-        wxString name = FileList[ifile];
-            
-        wxFileName fn( name );
-        wxString iconname = fn.GetName();
-        wxBitmap icon1;
-            
-        if( fn.GetExt().Lower() == _T("svg") ) {
-            wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+        for( int ifile = 0; ifile < n_files; ifile++ ) {
+            wxString name = FileList[ifile];
                 
+            wxFileName fn( name );
+            wxString iconname = fn.GetName();
+            wxBitmap icon1;
+                
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+                    
                 // Cache the icon as .png file
                 wxString filePNG = iconCacheDir + iconname + _T(".png");
                 iconSVG.SaveFile(filePNG, wxBITMAP_TYPE_PNG);
-            MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
-            if(pmi)
-                pmi->preScaled = true;
+                MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
+                if(pmi)
+                    pmi->preScaled = true;
+            }
         }
-    }
         g_Platform->HideBusySpinner();
 
     }
@@ -1611,16 +1607,26 @@ MarkIcon *WayPointman::ProcessExtendedIcon(wxImage &image, const wxString & key,
 
 MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description)
 {
+    double bm_size = -1.0;
+
+#ifndef __OCPN__ANDROID__
+    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
+        wxImage img = LoadSVGIcon(fileName, -1, -1 );
+        bm_size = img.GetWidth() * g_ChartScaleFactorExp;
+    }
+#else    
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
     //  Develop empirically, making a "diamond" symbol about 4 mm square
-    
-    float nominal_legacy_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
-    float pix_factor = nominal_legacy_icon_size_pixels / 68.0;          // legacy icons are 68 units in size
+    //  Android uses "density buckets", so simpple math produces poor results.
+    //  Thus, these factors have been empirically tweaked to provide good results on a variety of devices
+    float nominal_legacy_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));   
+    float pix_factor = nominal_legacy_icon_size_pixels / 68.0;          // legacy icon size
 
-        wxImage img = LoadSVGIcon(fileName, -1, -1 );
-    double bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
-        
+    wxImage img = LoadSVGIcon(fileName, -1, -1 );
+    bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
+#endif
+    
     wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size );
     wxRect rClip = CropImageOnAlpha(image);
     wxImage imageClip = image.GetSubImage(rClip);
