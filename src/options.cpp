@@ -8608,13 +8608,13 @@ static void onTestSoundFinished(void* ptr)
 }
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
-    ptest_sound = SoundFactory();
-    ptest_sound->SetCmd( g_CmdSoundString.mb_str( wxConvUTF8 ) );
-#ifdef ocpnARM
-    ptest_sound->SetFinishedCallback( onTestSoundFinished, this );
-#endif    
-    ptest_sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
-    ptest_sound->Play();
+    auto sound = SoundFactory();
+    if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
+        sound->SetCmd(g_CmdSoundString.mb_str());
+    }
+    sound->SetFinishedCallback([sound](void*) { delete sound; });
+    sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+    sound->Play();
 }
 
 

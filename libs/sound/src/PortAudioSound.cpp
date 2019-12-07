@@ -173,9 +173,6 @@ PortAudioSound::PortAudioSound()
 
 PortAudioSound::~PortAudioSound()
 {
-    if (m_stream) {
-        Pa_CloseStream( m_stream );
-    }
     if (m_isPaInitialized) {
         PaError pe = Pa_Terminate();
         if (pe != paNoError)  {
