@@ -54,14 +54,13 @@ if (NOT CAIRO_FOUND)
   message(FATAL_ERROR "Cairo component required, but not found!")
 endif ()
 
+add_library(_CAIRO INTERFACE)
 # Some systems (e.g ARMHF RPI2) require some extra libraries
 # This is not exactly a general solution, but probably harmless where
 # not needed.
 if (NOT APPLE AND NOT WIN32)
-  find_library(
-    PANGOCAIRO_LIBRARY
-    NAMES pangocairo-1.0 PATHS ${LINUX_LIB_PATHS}
-  )
+  find_package(PANGO REQUIRED)
+  target_link_libraries(_CAIRO INTERFACE ocpn::pango)
   find_library(PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS ${LINUX_LIB_PATHS})
   find_library(PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS ${LINUX_LIB_PATHS})
   find_library(
@@ -69,26 +68,25 @@ if (NOT APPLE AND NOT WIN32)
     NAMES gdk_pixbuf-2.0 PATHS ${LINUX_LIB_PATHS}
   )
   find_package_handle_standard_args("CAIRO_EXTRAS" DEFAULT_MSG
-    PANGOCAIRO_LIBRARY PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY
+    PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY
   )
 endif ()
 
 if (CAIRO_EXTRAS_FOUND)
   set(CAIRO_LIBRARIES ${CAIRO_LIBRARIES}
-    ${PANGOCAIRO_LIBRARY}
     ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY}
     ${GDK_PIXBUF_LIBRARY}
   )
 endif ()
-add_library(_CAIRO INTERFACE)
 target_link_libraries(_CAIRO INTERFACE ${CAIRO_LIBRARIES})
 
 target_include_directories(_CAIRO INTERFACE ${CAIRO_INCLUDE_DIRS})
 if (APPLE)
   target_include_directories(_CAIRO INTERFACE ${CAIRO_INCLUDE_DIRS}/..)
 endif ()
-if (PANGOCAIRO_INCLUDE_DIRS)
-  target_include_directories(_CAIRO INTERFACE ${PANGOCAIRO_INCLUDE_DIRS})
+if (HarfBuzz_FOUND)
+    target_include_directories(_CAIRO INTERFACE ${HarfBuzz_INCLUDE_DIRS})
+    target_link_libraries(_CAIRO INTERFACE ${Harfbuzz_LIBRARIES})
 endif ()
 
 add_library(ocpn::cairo ALIAS _CAIRO)
