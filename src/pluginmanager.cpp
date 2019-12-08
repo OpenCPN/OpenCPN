@@ -25,6 +25,11 @@
 
 #include <config.h>
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <typeinfo>
 #ifdef __linux__
 #include <wordexp.h>
