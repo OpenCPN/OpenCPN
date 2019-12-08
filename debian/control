@@ -4,35 +4,35 @@ Uploaders: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
 Build-Depends: debhelper (>= 12),
- cmake,
- libarchive-dev,
- libbz2-dev,
- libcurl4-gnutls-dev,
- libelf-dev,
- libexif-dev,
- libgdk-pixbuf2.0-dev,
- libgtk2.0-dev,
- liblz4-dev,
- liblzma-dev,
- libpango1.0-dev,
- libsqlite3-dev,
- libtinyxml-dev,
- libunarr-dev,
- libwxsvg-dev (>=  2:1.5.21),
- libwxgtk3.0-gtk3-dev,
- portaudio19-dev
+               cmake,
+               libarchive-dev,
+               libbz2-dev,
+               libcurl4-gnutls-dev,
+               libelf-dev,
+               libexif-dev,
+               libgdk-pixbuf2.0-dev,
+               libgtk2.0-dev,
+               liblz4-dev,
+               liblzma-dev,
+               libpango1.0-dev,
+               libsqlite3-dev,
+               libtinyxml-dev,
+               libunarr-dev,
+               libwxgtk3.0-gtk3-dev,
+               libwxsvg-dev (>= 2:1.5.21),
+               portaudio19-dev
 Standards-Version: 4.4.1
-Homepage: https://opencpn.org
 Vcs-Browser: https://salsa.debian.org/debian-gis-team/opencpn
 Vcs-Git: https://salsa.debian.org/debian-gis-team/opencpn.git
+Homepage: https://opencpn.org
 
 Package: opencpn
 Architecture: any
-Depends:
- opencpn-data (= ${source:Version}),
- bzip2,
- wx3.0-i18n,
- ${shlibs:Depends}, ${misc:Depends}
+Depends: opencpn-data (>= ${source:Version}),
+         bzip2,
+         wx3.0-i18n,
+         ${shlibs:Depends},
+         ${misc:Depends}
 Breaks: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
 Replaces: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
 Suggests: binutils
@@ -63,6 +63,7 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
 
 Package: opencpn-plugins
 Architecture: all
-Depends: opencpn (>= 4.8.6~20180801.8d20a06+dfsg.1), ${misc:Depends}
+Depends: opencpn (>= ${source:Version}),
+         ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (transition)
  This package is a transitional, empty package.
