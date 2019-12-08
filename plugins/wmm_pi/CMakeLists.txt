@@ -47,9 +47,16 @@ SET(SRC_WMM
     src/EGM9615.h
     src/WmmUIDialog.h
     src/WmmUIDialog.cpp
-    src/TexFont.cpp
-    src/TexFont.h
-	)
+    src/pi_TexFont.cpp
+    src/pi_TexFont.h
+    src/pi_ocpndc.cpp
+    src/pi_ocpndc.h
+    )
+
+IF (QT_ANDROID )
+    SET(SRC_WMM ${SRC_WMM} src/pi_shaders.h)
+    SET(SRC_WMM ${SRC_WMM} src/pi_shaders.cpp)
+ENDIF (QT_ANDROID )
 
 SET(SRC_JSON
     src/json_defs.h
@@ -70,7 +77,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     )
 endif ()
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
 if (TARGET ocpn::wxjson)
     target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
@@ -81,13 +87,22 @@ if (TARGET ocpn::wxsvg)
 endif()
 
 IF (QT_ANDROID )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
+    ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
+    
+#    add_library(ocpn  SHARED IMPORTED)
+#    set_property(TARGET ocpn PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so)
+#    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ocpn )
+
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} GLESv2 EGL z)
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+
 ENDIF(QT_ANDROID)
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
-        "-Wall" "-Wno-unused" "-fexceptions"
+        "-Wall -Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
         "-Wno-unknown-pragmas"

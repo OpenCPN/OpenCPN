@@ -68,6 +68,7 @@ ENDIF(MSVC)
 IF(QT_ANDROID)
     SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
     SET(BUILD_SHARED_LIBS "ON")
+    ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
 ELSE(QT_ANDROID)
 IF(NOT DEFINED wxWidgets_USE_FILE)
     SET(wxWidgets_USE_LIBS base core net xml html adv)
@@ -106,8 +107,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-            src/TexFont.h
-            src/TexFont.cpp
+            src/pi_TexFont.h
+            src/pi_TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/CustomGrid.h
@@ -119,11 +120,18 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
+            src/pi_ocpndc.cpp
+            src/pi_ocpndc.h
 )
 IF(WIN32)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
 ENDIF(WIN32)
+
+IF(QT_ANDROID)
+           SET(SRC_GRIB ${SRC_GRIB} src/pi_shaders.h)
+           SET(SRC_GRIB ${SRC_GRIB} src/pi_shaders.cpp)
+ENDIF(QT_ANDROID)
 
 IF(NOT UNIX)
     SET(SRC_BZIP
@@ -158,37 +166,6 @@ IF(QT_ANDROID)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 
     MESSAGE (STATUS ${SRC_GRIB})
-
-ENDIF(QT_ANDROID)
-
-# On Android, PlugIns need a specific linkage set....
-IF (QT_ANDROID )
-  # These libraries are needed to create PlugIns on Android.
-
-  SET(OCPN_Core_LIBRARIES
-        # Presently, Android Plugins are built in the core tree, so the variables {wxQT_BASE}, etc.
-        # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
-
-        # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
-
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
-
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
-        )
 
 ENDIF(QT_ANDROID)
 
@@ -234,11 +211,25 @@ IF(WIN32)
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ocpn::wxjson )
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+IF (NOT QT_ANDROID )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES} )
+    target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
+ELSE (NOT QT_ANDROID )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lGLESv1_CM" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lGLESv2" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so )
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+ENDIF(NOT QT_ANDROID)
+
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ocpn::wxjson )
 
 IF(NOT WIN32)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
@@ -269,7 +260,7 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
-        "-Wall" "-Wno-unused" "-fexceptions"
+        "-Wall -Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"

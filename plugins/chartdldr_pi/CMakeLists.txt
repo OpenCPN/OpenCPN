@@ -48,6 +48,12 @@ SET(SRC_CHARTDLDR
             src/chartcatalog.cpp
             src/chartcatalog.h
 )
+            
+IF(QT_ANDROID)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+ENDIF(QT_ANDROID)
+
 SET(SRC_UNARR
     src/unarr/common/conv.c
     src/unarr/common/crc32.c
@@ -137,6 +143,12 @@ ELSE ()
   INCLUDE_DIRECTORIES(src/unarr)
 ENDIF ()
 
+IF(QT_ANDROID)
+  ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
+  ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
+  ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
+ENDIF(QT_ANDROID)
+
 IF(TINYXML_FOUND)
   message (STATUS "chartdldr_pi: building with system tinyxml")
   INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
@@ -183,19 +195,27 @@ ELSE(LibArchive_FOUND)
   ENDIF(BZIP2_FOUND)
 ENDIF(LibArchive_FOUND)
 
+#TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
+
+#target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+
+IF (NOT QT_ANDROID )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ${wxWidgets_LIBRARIES}
     ocpn::wxjson
     ocpn::wxsvg
     ocpn::opencpn 
 )
-
-
-IF (QT_ANDROID )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lgnustl_shared")
+ELSE (NOT QT_ANDROID )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+    ${wxWidgets_LIBRARIES}
+    ocpn::wxjson 
+  )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
-ENDIF(QT_ANDROID)
+  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+ENDIF(NOT QT_ANDROID)
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
