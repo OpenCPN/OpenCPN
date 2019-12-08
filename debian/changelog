@@ -2,10 +2,11 @@ opencpn (5.0.0+dfsg.1-1) unstable; urgency=medium
 
   * New upstream release
   * Move to gtk3
-  * Drop all patches besides 2 after being upstreamed
+  * Drop all patches besides two after being upstreamed
   * Drop some lintian overrides after upstream fixes.
   * Add a patch for broken include paths.
   * Add a patch for broken FIND_WXWIDGETS in CMakeLists
+  * Disable assertion messages using the standard NDEBUG flag.
   * Move appstream data to new location, relicense
     and clean up rules.
   * Bump Standards-Version to 4.4.1, no changes.

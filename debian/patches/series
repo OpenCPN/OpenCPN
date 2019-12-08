@@ -4,3 +4,4 @@
 0004-appstream-Relicense-metadata-to-overall-GPL-2-packag.patch
 0005-CMakelists-move-appdata.xml-to-usr-share-metainfo.patch
 0006-CMakelists-Fix-broken-FIND_WXWIDGETS-invocation.patch
+0007-Add-a-linux-NDEBUG-compile-flag-1500.patch

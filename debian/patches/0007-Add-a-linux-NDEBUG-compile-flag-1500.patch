@@ -1,0 +1,20 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 8 Dec 2019 01:05:49 +0100
+Subject: Add a linux NDEBUG compile flag (#1500).
+
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f34e138..2a9029a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2085,6 +2085,7 @@ IF(WIN32)
+   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
+ ENDIF(WIN32)
+ 
++ADD_DEFINITIONS( "-DNDEBUG" )
+ 
+ IF(APPLE)
+ 
