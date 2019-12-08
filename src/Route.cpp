@@ -481,9 +481,9 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
 void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL
-    if( pRoutePointList->empty() || !m_bVisible ) return;
+    if( pRoutePointList->empty() ) return;
 
-    if(!vp.GetBBox().IntersectOut(GetBBox()))
+    if(!vp.GetBBox().IntersectOut(GetBBox()) && m_bVisible)
         DrawGLRouteLines(vp, canvas);
 
     /*  Route points  */
