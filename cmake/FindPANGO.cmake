@@ -79,7 +79,7 @@ if(PANGO_LIBRARIES AND NOT PANGO_FOUND)
     unset(PANGO_MICRO_VERSION)
 
     target_include_directories(_PANGO INTERFACE ${PANGO_INCLUDE_DIR})
-    if (PANGO_VERSION VERSION_GREATER_EQUAL "1.44")
+    if (NOT PANGO_VERSION VERSION_LESS "1.44")
       find_package(HarfBuzz REQUIRED)
       target_include_directories(_PANGO INTERFACE ${HarfBuzz_INCLUDE_DIRS})
       target_link_libraries(_PANGO INTERFACE ${HarfBuzz_LIBRARIES})
