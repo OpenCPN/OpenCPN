@@ -490,7 +490,6 @@ endif (MSVC)
 if (QT_ANDROID)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
-  add_definitions(-DOCPN_USE_WRAPPER)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
@@ -2370,7 +2369,7 @@ endif (MSVC AND OCPN_USE_CRASHREPORT)
 message(STATUS "")
 
 if (NOT SKIP_PLUGINS)
-  #add_subdirectory(plugins)
+  add_subdirectory(plugins)
 endif ()
 
 #
