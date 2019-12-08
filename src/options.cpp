@@ -8609,9 +8609,11 @@ static void onTestSoundFinished(void* ptr)
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
     auto sound = SoundFactory();
+#ifndef __OCPN__ANDROID__
     if ((bool) dynamic_cast<SystemCmdSound*>(sound)) {
         sound->SetCmd(g_CmdSoundString.mb_str());
     }
+#endif    
     sound->SetFinishedCallback([sound](void*) { delete sound; });
     sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
     sound->Play();
