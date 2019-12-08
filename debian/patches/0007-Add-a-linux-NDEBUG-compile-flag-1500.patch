@@ -2,6 +2,12 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 8 Dec 2019 01:05:49 +0100
 Subject: Add a linux NDEBUG compile flag (#1500).
 
+This is a dirty downstream fix. A proper fix needs to be done upstream.
+However,  such a fix will not apply to 5.0.0 since CMakeLists.txt
+has evolved considerably.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1500
+
 ---
  CMakeLists.txt | 1 +
  1 file changed, 1 insertion(+)
