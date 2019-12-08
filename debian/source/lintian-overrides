@@ -1,4 +1,4 @@
-# Package does not define a testsuit.
+# Package does not define a testsuite.
 testsuite-autopkgtest-missing
 
 # Used to work around #831870
