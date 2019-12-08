@@ -18,6 +18,7 @@ opencpn (5.0.0+dfsg.1-1) unstable; urgency=medium
   * Restructure control file with cme.
   * Change libgtk2.0-dev build dependency to libgtk-3-dev.
   * Update watch file to handle common issues.
+  * Rename install file to opencpn.install.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Tue, 19 Nov 2019 08:49:56 -0500
 
