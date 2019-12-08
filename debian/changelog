@@ -3,6 +3,7 @@ opencpn (5.0.0+dfsg.1-1) unstable; urgency=medium
   [ Alec Leamas ]
   * New upstream release
   * Move to gtk3
+    (closes: #946018)
   * Drop all patches besides two after being upstreamed
   * Drop some lintian overrides after upstream fixes.
   * Add a patch for broken include paths.
