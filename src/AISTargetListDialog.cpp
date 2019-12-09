@@ -60,9 +60,7 @@ extern MyFrame *gFrame;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern bool g_bAISShowTracks;
 extern bool g_btouch;
-extern bool g_bresponsive;
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 

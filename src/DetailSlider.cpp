@@ -41,7 +41,6 @@ extern int         g_chart_zoom_modifier_vector;
 extern int         g_detailslider_dialog_x;
 extern int         g_detailslider_dialog_y;
 extern MyFrame     *gFrame;
-extern bool        g_bQuiltEnable;
 
 BEGIN_EVENT_TABLE(PopUpDSlide, wxFrame)
     EVT_KEY_DOWN(PopUpDSlide::OnKeyDown )

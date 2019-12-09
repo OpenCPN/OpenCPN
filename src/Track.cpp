@@ -90,7 +90,6 @@ millions of points.
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern MyFrame *gFrame;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern Select *pSelect;

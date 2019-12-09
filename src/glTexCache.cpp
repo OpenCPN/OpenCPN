@@ -56,22 +56,17 @@
 #include "lz4.h"
 #include "lz4hc.h"
 
-extern bool g_bopengl;
-extern bool g_bDebugOGL;
 extern long g_tex_mem_used;
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
-extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 
 extern ColorScheme global_color_scheme;
 
 extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;
-extern wxString         g_PrivateDataDir;
 
 extern int              g_tile_size;
-extern int              g_uncompressed_tile_size;
 
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;

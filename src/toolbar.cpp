@@ -1263,7 +1263,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
 #include "chartdb.h"
 
 extern bool     g_bAllowShowScaled;
-extern bool     g_bShowScaled;
 extern bool     g_bTrackActive;
 extern s52plib *ps52plib;
 

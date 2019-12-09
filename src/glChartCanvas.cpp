@@ -128,18 +128,14 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
 #endif
 
-extern MyFrame *gFrame;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern bool g_btouch;
-extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
-extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
-extern Piano           *g_Piano;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
 extern std::vector<int> g_quilt_noshow_index_array;
@@ -150,17 +146,12 @@ extern int g_memCacheLimit;
 extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin         *pthumbwin;
-extern bool             g_bDisplayGrid;
 extern int g_mipmap_max_level;
 
 extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int              g_OwnShipIconType;
-extern double           g_ownship_predictor_minutes;
-extern double           g_ownship_HDTpredictor_miles;
 
-extern double           g_n_ownship_length_meters;
-extern double           g_n_ownship_beam_meters;
 
 extern ChartDB          *ChartData;
 
@@ -172,8 +163,6 @@ extern TrackList        *pTrackList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
-extern bool             g_bresponsive;
-extern float            g_ChartScaleFactorExp;
 extern float            g_ShipScaleFactorExp;
 
 float            g_GLMinSymbolLineWidth;
@@ -246,6 +235,8 @@ extern bool b_skipout;
 extern wxSize pprog_size;
 extern int pprog_count;
 extern int pprog_threads;
+extern float g_ChartScaleFactorExp;
+extern MyFrame *gFrame;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
 //const

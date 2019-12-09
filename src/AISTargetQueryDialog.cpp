@@ -49,7 +49,6 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
 extern MyFrame *gFrame;

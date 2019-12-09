@@ -64,7 +64,6 @@ class s52plib;
 extern ThumbWin     *pthumbwin;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
-extern bool         g_bopengl;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 

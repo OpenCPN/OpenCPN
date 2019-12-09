@@ -75,15 +75,11 @@ extern ocpnGLOptions g_GLOptions;
 
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
-extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
-extern MyConfig         *pConfig;
 extern bool             g_bDebugCM93;
 extern int              g_cm93_zoom_factor;
 extern PopUpDSlide       *pPopupDetailSlider;
 extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
-extern bool             g_bShowDetailSlider;
-extern wxString         g_PrivateDataDir;
 
 extern bool             g_bopengl;
 extern PlugInManager    *g_pi_manager;

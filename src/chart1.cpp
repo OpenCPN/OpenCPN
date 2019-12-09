@@ -8059,16 +8059,6 @@ void MyFrame::SetChartThumbnail( int index )
                     }
                 }
                 
-                //  We cannot let the thumbwin overlap the Piano
-                if(g_Piano){
-                    int piano_height = g_Piano->GetHeight() + 4;
-                    wxPoint cbarLocn = ClientToScreen(wxPoint(0, cc1->GetCanvasHeight() - piano_height));
-                    wxRect cbarRect = wxRect(cbarLocn.x, cbarLocn.y, cc1->GetCanvasWidth(), piano_height);
-                    if( cbarRect.Intersects( wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
-                        pos = wxPoint((cc1->GetCanvasWidth() - pthumbwin->GetSize().x)/2,
-                                      (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2 - piano_height);
-                    }
-                }
                 pthumbwin->Move( pos );
                 
             }
@@ -8149,7 +8139,6 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #endif /* __linux__ */
 
 int g_lastMemTick = -1;
-extern long g_tex_mem_used;
 
 /* Return total system RAM and size of program */
 /* Values returned are in kilobytes            */

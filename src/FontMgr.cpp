@@ -52,7 +52,6 @@ private:
 
 
 extern wxString g_locale;
-extern OCPNPlatform     *g_Platform;
 
 wxString s_locale;
 int g_default_font_size;

@@ -113,7 +113,6 @@ extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
 extern wxString          g_csv_locn;
 extern wxString          g_SENCPrefix;
-extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
 extern MyFrame*          gFrame;
@@ -122,8 +121,6 @@ extern bool              g_b_overzoom_x;
 extern bool              g_b_EnableVBO;
 extern OCPNPlatform     *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
-extern ColorScheme       global_color_scheme;
-extern int               g_nCPUCount;
 
 int                      g_SENC_LOD_pixels;
 

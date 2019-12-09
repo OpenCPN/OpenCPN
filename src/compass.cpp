@@ -42,7 +42,6 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
-extern MyFrame *gFrame;
 extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass( ChartCanvas *parent, bool bShowGPS)

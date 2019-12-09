@@ -68,16 +68,12 @@
 
 extern double             gLat, gLon, gSog, gCog;
 extern TCMgr              *ptcmgr;
-extern long               gStart_LMT_Offset;
 extern MyConfig           *pConfig;
 extern WayPointman        *pWayPointMan;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePropDlgImpl          *pRoutePropDialog;
-extern Track              *g_pActiveTrack;
-extern RouteList          *pRouteList;
-extern PlugInManager      *g_pi_manager;
 extern bool                g_bShowTrue, g_bShowMag;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -86,25 +82,18 @@ extern OCPNPlatform       *g_Platform;
 extern wxString            g_default_wp_icon;
 
 // Global print data, to remember settings during the session
-extern wxPrintData        *g_printData;
 
 // Global page setup data
-extern wxPageSetupData*   g_pageSetupData;
 
 extern float              g_ChartScaleFactorExp;
-extern int                g_GUIScaleFactor;
-extern int                g_iDistanceFormat;
-extern int                g_iSpeedFormat;
 extern MarkInfoDlg       *g_pMarkInfoDialog;
 extern double             g_n_arrival_circle_radius;
 extern int                g_iWaypointRangeRingsNumber;
 extern float              g_fWaypointRangeRingsStep;
-extern int                g_iWaypointRangeRingsStepUnits;
 extern wxColour           g_colourWaypointRangeRingsColour;
 
 extern int                g_iWpt_ScaMin;
 extern bool               g_bUseWptScaMin;
-extern bool               g_bShowWptName;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )

@@ -45,7 +45,6 @@ extern wxString GetLayerName(int id);
 
 extern double gLat;
 extern double gLon;
-extern MarkInfoDlg *g_pMarkInfoDialog;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;

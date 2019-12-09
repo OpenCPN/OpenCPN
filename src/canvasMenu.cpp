@@ -101,23 +101,18 @@ extern int              g_nAWMax;
 extern int              g_nAWDefault;
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
-extern double           AnchorPointMinDist;
-extern bool             AnchorAlertOn1;
-extern bool             AnchorAlertOn2;
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_click_stop;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MarkInfoDlg     *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
-extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 extern WayPointman      *pWayPointMan;
 extern MyConfig         *pConfig;
 extern Select           *pSelect;
 
-extern s52plib          *ps52plib;
 extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 
 extern GoToPositionDialog *pGoToPositionDialog;
@@ -125,7 +120,7 @@ extern RouteList        *pRouteList;
 extern wxString         g_default_wp_icon;
 extern bool              g_btouch;
 extern bool             g_bBasicMenus;
-
+extern TrackPropDlg     *pTrackPropDialog;
 
 
 //    Constants for right click menus
