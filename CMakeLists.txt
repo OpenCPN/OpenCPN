@@ -396,7 +396,6 @@ if (NOT WIN32 AND NOT APPLE)
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
   endif ()
-  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg ) SET(CMAKE_EXE_LINKER_FLAGS
