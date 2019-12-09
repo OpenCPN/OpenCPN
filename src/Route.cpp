@@ -35,8 +35,6 @@
 #include "chcanv.h"
 
 extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
 extern Select *pSelect;

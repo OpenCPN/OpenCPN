@@ -100,7 +100,6 @@
 #include <setjmp.h>
 
 
-extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
