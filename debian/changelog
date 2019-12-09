@@ -21,6 +21,7 @@ opencpn (5.0.0+dfsg.1-1) unstable; urgency=medium
   * Rename install file to opencpn.install.
   * Drop obsolete include-binaries file.
   * Fix typo in lintian override comment.
+  * Drop Name field from upstream metadata.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Tue, 19 Nov 2019 08:49:56 -0500
 
