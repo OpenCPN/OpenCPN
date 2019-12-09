@@ -121,6 +121,7 @@ extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
 extern int              g_nDepthUnitDisplay;
+extern wxString         g_winPluginDir;
 
 
 extern wxArrayOfConnPrm *g_pConnectionParams;
