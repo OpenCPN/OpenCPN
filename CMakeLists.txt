@@ -2366,7 +2366,9 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
 
-message(STATUS "")
+if (MINGW)
+  install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)
+endif ()
 
 if (NOT SKIP_PLUGINS)
   add_subdirectory(plugins)
