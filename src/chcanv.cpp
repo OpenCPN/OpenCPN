@@ -124,10 +124,7 @@
 #include <setjmp.h>
 
 
-extern struct sigaction sa_all;
-extern struct sigaction sa_all_old;
 
-extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
 
 extern float  g_ChartScaleFactorExp;
@@ -157,7 +154,6 @@ extern void catch_signals(int signo);
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                        wxColour color, unsigned char transparency );
 
-extern ChartBase        *Current_Vector_Ch;
 extern double           g_ChartNotRenderScaleFactor;
 extern double           gLat, gLon, gCog, gSog, gHdt;
 //extern double           vLat, vLon;
@@ -183,19 +179,13 @@ extern MarkInfoDlg      *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
-extern bool             g_bConfirmObjectDelete;
 
-extern IDX_entry        *gpIDX;
-extern int               gpIDXn;
 
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
 extern double           AnchorPointMinDist;
 extern bool             AnchorAlertOn1;
 extern bool             AnchorAlertOn2;
-extern wxString         g_AW1GUID;
-extern wxString         g_AW2GUID;
-extern int              g_nAWDefault;
 extern int              g_nAWMax;
 extern int              g_iDistanceFormat;
 
@@ -208,11 +198,8 @@ extern bool             g_bsimplifiedScalebar;
 extern bool             bDrawCurrentValues;
 
 extern s52plib          *ps52plib;
-extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 
 extern bool             bGPSValid;
-//extern bool             g_bShowOutlines;
-//extern bool             g_bShowDepthUnits;
 extern bool             g_bTempShowMenuBar;
 extern bool             g_bShowMenuBar;
 extern bool             g_bShowCompassWin;
@@ -231,23 +218,17 @@ extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
 extern bool             g_bInlandEcdis;
 
-extern bool             g_bDarkDecorations;
 
-extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
 extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
 extern PopUpDSlide       *pPopupDetailSlider;
-extern bool             g_bShowDetailSlider;
 extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
-extern int              g_cm93_zoom_factor;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-//extern bool             g_bDisplayGrid;
 
-extern bool             g_bUseGreenShip;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -256,9 +237,6 @@ extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 
-extern bool             g_bUseRaster;
-extern bool             g_bUseVector;
-extern bool             g_bUseCM93;
 
 extern double           g_COGAvg;               // only needed for debug....
 
@@ -287,12 +265,10 @@ bool                    g_bDebugOGL;
 extern bool             g_b_assume_azerty;
 
 extern ChartGroupArray  *g_pGroupArray;
-extern wxString         g_default_wp_icon;
 extern wxString         g_default_routepoint_icon;
 
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OcpnSound*        g_anchorwatch_sound;
@@ -301,10 +277,8 @@ extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
-extern wxString         g_toolbarConfigSecondary;
 
 #ifdef ocpnUSE_GL
-extern ocpnGLOptions g_GLOptions;
 #endif
 
 extern bool              g_bShowFPS;
@@ -1243,7 +1217,6 @@ void ChartCanvas::ShowCurrents(bool bShow)
 
 
 //TODO
-//extern bool     g_bLookAhead;
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
 extern int      g_sticky_chart;

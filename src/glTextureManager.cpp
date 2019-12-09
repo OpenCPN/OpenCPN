@@ -61,7 +61,6 @@ extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
-extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;

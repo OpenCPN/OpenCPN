@@ -103,7 +103,6 @@ extern AIS_Decoder     *g_pAIS;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern wxString         g_uploadConnection;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
