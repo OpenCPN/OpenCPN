@@ -3763,6 +3763,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_maintoolbar_y = tbp_incanvas.y;
         g_maintoolbar_orient = GetPrimaryCanvas()->GetToolbarOrientation();
         //g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
+        if (g_MainToolbar) {
+            g_MainToolbar->GetScreenPosition(&g_maintoolbar_x, &g_maintoolbar_y);
+        }
     }
 
     if(g_iENCToolbar){
@@ -8077,17 +8080,32 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 #include <malloc.h>
 #endif
 
+#if defined(__linux__)
+#include "sys/types.h"
+#include "sys/sysinfo.h"
+#endif /* __linux__ */
+
 int g_lastMemTick = -1;
 extern long g_tex_mem_used;
 
-bool GetMemoryStatus( int *mem_total, int *mem_used )
+/* Return total system RAM and size of program */
+/* Values returned are in kilobytes            */
+bool
+GetMemoryStatus( int *mem_total, int *mem_used )
 {
 #ifdef __OCPN__ANDROID__
     return androidGetMemoryStatus( mem_total, mem_used );
 #endif
 
 #if defined(__linux__)
-
+    // Use sysinfo to obtain total RAM
+    if (mem_total)
+    {
+        *mem_total = 0;
+        struct sysinfo sys_info;
+        if ( sysinfo(&sys_info) != -1 )
+            *mem_total = ( (uint64_t)sys_info.totalram * sys_info.mem_unit ) / 1024;
+    }
 //      Use filesystem /proc/self/statm to determine memory status
 //	Provides information about memory usage, measured in pages.  The columns are:
 //	size       total program size (same as VmSize in /proc/[pid]/status)
@@ -8098,91 +8116,21 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 //	data       data + stack
 //	dt         dirty pages (unused in Linux 2.6)
 
-    wxTextFile file;
-    wxString file_name;
-
     if(mem_used)
     {
         *mem_used = 0;
-        file_name = _T("/proc/self/statm");
-        if(file.Open(file_name))
+        FILE* file = fopen ( "/proc/self/statm", "r");
+        if ( file )
         {
-            wxString str = file.GetFirstLine();
-            wxStringTokenizer tkm(str, _T(" "));
-            wxString mem = tkm.GetNextToken();
-            mem = tkm.GetNextToken();
-            long mem_extract = 0;
-            if (mem.Len()) {
-                mem.ToLong(&mem_extract);
-                *mem_used = mem_extract *4; // XXX assume 4K page
-            }
+            fscanf( file, "%d", mem_used);
+            *mem_used *= 4; // XXX assume 4K page
+            fclose( file );
         }
     }
 
-    if(mem_total)
-    {
-        *mem_total = 0;
-        wxTextFile file_info;
-        file_name = _T("/proc/meminfo");
-        if(file_info.Open(file_name))
-        {
-            bool b_found = false;
-            wxString str;
-            for ( str = file_info.GetFirstLine(); !file_info.Eof(); str = file_info.GetNextLine() )
-            {
-                wxStringTokenizer tk(str, _T(" :"));
-                while ( tk.HasMoreTokens() )
-                {
-                    wxString token = tk.GetNextToken();
-                    if(token == _T("MemTotal"))
-                    {
-                        wxStringTokenizer tkm(str, _T(" "));
-                        wxString mem = tkm.GetNextToken();
-                        long mem_extract = 0;
-                        while(mem.Len())
-                        {
-                            mem.ToLong(&mem_extract);
-                            if(mem_extract)
-                            break;
-                            mem = tkm.GetNextToken();
-                        }
+    return true;
 
-                        *mem_total = mem_extract;
-                        b_found = true;
-                        break;
-                    }
-                    else
-                    break;
-                }
-                if(b_found)
-                break;
-            }
-        }
-    }
-    
-           struct mallinfo mi;
-
-           mi = mallinfo();
-
-           //printf("Total non-mmapped bytes (arena):       %d\n", mi.arena);
-           //printf("# of free chunks (ordblks):            %d\n", mi.ordblks);
-           //printf("# of free fastbin blocks (smblks):     %d\n", mi.smblks);
-           //printf("# of mapped regions (hblks):           %d\n", mi.hblks);
-           //printf("Bytes in mapped regions (hblkhd):      %d\n", mi.hblkhd);
-           //printf("Max. total allocated space (usmblks):  %d\n", mi.usmblks);
-           //printf("Free bytes held in fastbins (fsmblks): %d\n", mi.fsmblks);
-           //printf("Total allocated space (uordblks):      %d\n", mi.uordblks / 1000);
-           //printf("Total free space (fordblks):           %d\n", mi.fordblks);
-           //printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
-
-           //printf("\n");
-           
-           if(mem_used)
-               *mem_used = mi.uordblks / 1024;
-
-           //printf("mem_used (Mb):  %d\n", *mem_used / 1024);
-	   return true;
-#endif /* linux */
+#endif /* __linux__ */
 
 #ifdef __WXMSW__
     HANDLE hProcess;
@@ -9983,7 +9931,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew)
         g_MainToolbar->EnableRolloverBitmaps( false );
         
         g_MainToolbar->CreateConfigMenu();
-
+        g_MainToolbar->MoveDialogInScreenCoords(wxPoint(g_maintoolbar_x, g_maintoolbar_y), wxPoint(0, 0));
         g_bmasterToolbarFull = true;
         
     }
