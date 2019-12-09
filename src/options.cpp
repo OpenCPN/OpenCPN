@@ -5282,7 +5282,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   wxBoxSizer* pToolbarAutoHide = new wxBoxSizer(wxHORIZONTAL);
   miscOptions->Add(pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing);
 
-  pToolbarAutoHideCB = new wxCheckBox(itemPanelFont, ID_REPONSIVEBOX,
+  pToolbarAutoHideCB = new wxCheckBox(itemPanelFont, wxID_ANY,
                                       _("Enable Toolbar auto-hide"));
   pToolbarAutoHide->Add(pToolbarAutoHideCB, 0, wxALL, group_item_spacing);
 
