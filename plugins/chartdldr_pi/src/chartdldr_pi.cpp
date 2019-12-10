@@ -923,7 +923,7 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
-        wxMessageBox(_("Error, the URL to the chart source data seems wrong."), _("Error"));
+        OCPNMessageBox_PlugIn(this,_("Error, the URL to the chart source data seems wrong."), _("Error"));
         return;
     }
     wxFileName fn(url.GetPath());
@@ -982,7 +982,7 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
     }
     wxLogMessage( wxString::Format(_T("chartdldr_pi::UpdateAllCharts() downloaded %d out of %d charts."), attempted_to_update - failed_to_update, attempted_to_update) );
     if( failed_to_update > 0 )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."),
+        OCPNMessageBox_PlugIn( this, wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."),
                 failed_to_update, attempted_to_update ), _("Chart Downloader"), wxOK | wxICON_ERROR );
     if( attempted_to_update > failed_to_update )
         ForceChartDBUpdate();
@@ -1000,7 +1000,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
-        wxMessageBox(_("Error, the URL to the chart source data seems wrong."), _("Error"));
+        OCPNMessageBox_PlugIn(this, _("Error, the URL to the chart source data seems wrong."), _("Error"));
         return;
     }
 
@@ -1018,7 +1018,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     {
         if( !wxFileName::Mkdir(cs->GetDir(), 0755, wxPATH_MKDIR_FULL) )
         {
-            wxMessageBox(wxString::Format(_("Directory %s can't be created."), cs->GetDir().c_str()), _("Chart Downloader"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), cs->GetDir().c_str()), _("Chart Downloader"));
             return;
         }
     }
@@ -1030,7 +1030,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     
 //     wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
 //     if(!testFile.IsOpened()){
-//         wxMessageBox(wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
+//         wxMessageBox(this, wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
 //         return;
 //     }
 //     testFile.Close();
@@ -1077,13 +1077,13 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                 
             }
             else
-                wxMessageBox(wxString::Format( _("Failed to Find New Catalog: %s "), url.BuildURI().c_str() ),
+                OCPNMessageBox_PlugIn(this, wxString::Format( _("Failed to Find New Catalog: %s "), url.BuildURI().c_str() ),
                         _("Chart Downloader"), wxOK | wxICON_ERROR);
             break;
         }
         case OCPN_DL_FAILED:
         {
-            wxMessageBox(wxString::Format( _("Failed to Download Catalog: %s \nVerify there is a working Internet connection."), url.BuildURI().c_str() ),
+            OCPNMessageBox_PlugIn(this, wxString::Format( _("Failed to Download Catalog: %s \nVerify there is a working Internet connection."), url.BuildURI().c_str() ),
                     _("Chart Downloader"), wxOK | wxICON_ERROR);
             break;
         }
@@ -1306,7 +1306,7 @@ void ChartDldrPanelImpl::DownloadCharts()
     
     if( !GetCheckedChartCount() && !updatingAll )
     {
-        wxMessageBox(_("No charts selected for download."));
+        OCPNMessageBox_PlugIn(this, _("No charts selected for download."));
         return;
     }
     ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
@@ -1338,7 +1338,7 @@ void ChartDldrPanelImpl::DownloadCharts()
         m_downloading++;
         if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
         {
-            if( wxYES == wxMessageBox(
+            if( wxID_YES == OCPNMessageBox_PlugIn(this, 
                             wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
 After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
             {
@@ -1351,7 +1351,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
         if( url.IsReference() )
         {
-            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
             this->Enable();
             /// XXX undo anything? return or break?
             return;
@@ -1430,12 +1430,12 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
     if( m_failed_downloads > 0 && !updatingAll && !cancelled )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
+        OCPNMessageBox_PlugIn( this, wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
                 , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
         
     if( cancelled )
-        wxMessageBox( _("Chart download cancelled."), _("Chart Downloader"), wxOK | wxICON_INFORMATION );
+        OCPNMessageBox_PlugIn( this, _("Chart download cancelled."), _("Chart Downloader"), wxOK | wxICON_INFORMATION );
         
     if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
@@ -1525,8 +1525,8 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
 {
     if( !m_lbChartSources->GetSelectedItemCount() )
         return;
-    if( wxYES != wxMessageBox(_("Do you really want to remove the chart source?\nThe local chart files will not be removed, but you will not be able to update the charts anymore."),
-                                 _("Chart Downloader"), wxYES_NO | wxCENTRE, this) )
+    if( wxID_YES != OCPNMessageBox_PlugIn(this, _("Do you really want to remove the chart source?\nThe local chart files will not be removed,\nbut you will not be able to update the charts anymore."),
+                                 _("Chart Downloader"), wxYES_NO | wxCENTRE) )
         return;
     int ToBeRemoved = GetSelectedCatalog();
     m_lbChartSources->SetItemState(ToBeRemoved, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
@@ -1621,7 +1621,7 @@ void ChartDldrPanelImpl::DoEditSource()
                 }
             }
             if( !covered )
-                wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
+                OCPNMessageBox_PlugIn( this, wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
                              _("Chart Downloader") );
 
             pPlugIn->SaveConfig();
@@ -2135,89 +2135,82 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
         }
     }
     wxString path = fn.GetFullPath();
-    TiXmlDocument * doc = new TiXmlDocument();
-    bool ret = doc->LoadFile(path.mb_str(), TIXML_ENCODING_UTF8);
+    
+    pugi::xml_document *doc = new pugi::xml_document;
+    bool ret = doc->load_file( path.mb_str() );
     if( ret )
     {
-        TiXmlElement * root = doc->RootElement();
-        wxString rootName = wxString::FromUTF8( root->Value() );
-        TiXmlNode *child;
-        for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
-        {
-            wxString s = wxString::FromUTF8(child->Value());
-            if (s == _T("sections"))
-                LoadSections(tree, child);
+        pugi::xml_node root = doc->first_child();
+
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "sections") ){
+                LoadSections(tree, element);
+            }
         }
     }
-    doc->Clear();
     wxDELETE(doc);
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if (s == _T("section"))
-            LoadSection(root, child);
-    }
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "section") ){
+            LoadSection(root, element);
+        }
+    } 
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxTreeItemId item;
-    for( TiXmlNode *child = node->FirstChildElement(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") ){
-            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(child->FirstChild()->Value()), 0, 0);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") ){
+            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(element.first_child().value()), 0, 0);
 
             wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
             if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( item, *pFont );
         }
-        
-        if( s == _T("sections") )
-            LoadSections(item, child);
-        if( s == _T("catalogs") )
-            LoadCatalogs(item, child);
-    }
+        if( !strcmp(element.name(), "sections") )
+            LoadSections(item, element);
+        if( !strcmp(element.name(), "catalogs") )
+            LoadCatalogs(item, element);
+
+    } 
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("catalog") )
-            LoadCatalog(root, child);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "catalog") )
+            LoadCatalog(root, element);
     }
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxString name, type, location, dir;
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") )
-            name = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("type") )
-            type = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("location") )
-            location = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("dir") )
-            dir = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") )
+            name = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "type") )
+            type = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "location") )
+            location = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "dir") )
+            dir = wxString::FromUTF8(element.first_child().value());
     }
     ChartSource *cs = new ChartSource(name, location, dir);
     wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
     
     wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
     if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( id, *pFont );
-    
+
     return true;
 }
 
@@ -2281,7 +2274,7 @@ void ChartDldrPrefsDlgImpl::SetPath( const wxString path )
     //if( !wxDirExists(path) )
         //if( !wxFileName::Mkdir(path, 0755, wxPATH_MKDIR_FULL) )
         //{
-        //    wxMessageBox(wxString::Format(_("Directory %s can't be created."), m_dpDefaultDir->GetTextCtrlValue().c_str()), _("Chart Downloader"));
+        //    OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), m_dpDefaultDir->GetTextCtrlValue().c_str()), _("Chart Downloader"));
         //    return;
         //}
     m_tcDefaultDir->SetValue(path);
@@ -2329,7 +2322,7 @@ void ChartDldrGuiAddSourceDlg::OnOkClick( wxCommandEvent& event )
                 msg += wxString::Format(_("Directory %s can't be created."), m_tcChartDirectory->GetValue().c_str()) + _T("\n");
 
     if( msg != wxEmptyString )
-        wxMessageBox( msg, _("Chart source definition problem"), wxOK | wxCENTRE | wxICON_ERROR );
+        OCPNMessageBox_PlugIn( this, msg, _("Chart source definition problem"), wxOK | wxCENTRE | wxICON_ERROR );
     else {
         event.Skip();
         SetReturnCode(wxID_OK);
@@ -2350,7 +2343,7 @@ void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
     if( !wxDirExists(m_tcDefaultDir->GetValue()) ){
         if( !wxFileName::Mkdir(m_tcDefaultDir->GetValue(), 0755, wxPATH_MKDIR_FULL) )
         {
-            wxMessageBox(wxString::Format(_("Directory %s can't be created."), m_tcDefaultDir->GetValue().c_str()), _("Chart Downloader"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), m_tcDefaultDir->GetValue().c_str()), _("Chart Downloader"));
             return;
         }
     }

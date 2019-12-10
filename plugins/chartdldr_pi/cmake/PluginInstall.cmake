@@ -4,11 +4,11 @@
 ## License:     GPLv3+
 ##---------------------------------------------------------------------------
 
-IF(NOT APPLE)
+IF(NOT APPLE AND NOT QT_ANDROID)
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
         ${wxWidgets_LIBRARIES} ${PLUGINS_LIBS}
     )
-ENDIF(NOT APPLE)
+ENDIF(NOT APPLE AND NOT QT_ANDROID)
 
 IF(CMAKE_HOST_WIN32)
 

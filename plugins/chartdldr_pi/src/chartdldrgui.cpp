@@ -531,12 +531,12 @@ void ChartDldrPrefsDlg::OnDownloadMasterCatalog( wxCommandEvent& event )
     switch (ret) {
         case OCPN_DL_NO_ERROR: {
             if (!wxCopyFile(tfn.GetFullPath(), fn.GetFullPath())) {
-                wxMessageBox(wxString::Format(_("Failed to save: %s "), fn.GetFullPath().c_str()), _("Chart downloader"), wxOK | wxICON_ERROR);
+                OCPNMessageBox_PlugIn(this, wxString::Format(_("Failed to save: %s "), fn.GetFullPath().c_str()), _("Chart downloader"), wxOK | wxICON_ERROR);
             }
             break;
         }
         case OCPN_DL_FAILED: {
-            wxMessageBox(
+            OCPNMessageBox_PlugIn(this, 
                          wxString::Format(_("Failed to download: %s \nVerify there is a working Internet connection."), url.c_str()),
                          _("Chart downloader"), wxOK | wxICON_ERROR);
             break;
