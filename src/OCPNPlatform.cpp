@@ -235,7 +235,7 @@ extern int                        g_n_ownship_min_mm;
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
 
-static const char* const LINUX_PLUGIN_LOAD_PATH =
+static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
 
 #ifdef __WXMSW__
@@ -1412,8 +1412,11 @@ static wxString ExpandPaths(wxString paths, OCPNPlatform* platform);
 static  wxString GetLinuxDataPath()
 {
     wxString dirs;
-    if (!wxGetEnv("XDG_DATA_DIRS", &dirs)) {
-        dirs = LINUX_PLUGIN_LOAD_PATH;
+    if (wxGetEnv("XDG_DATA_DIRS", &dirs)) {
+        dirs = wxString("~/.local/share:") + dirs;
+    }
+    else {
+        dirs = DEFAULT_XDG_DATA_DIRS;
     }
     wxString s;
     wxStringTokenizer tokens(dirs, ':');
