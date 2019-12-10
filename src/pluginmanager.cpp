@@ -6422,8 +6422,6 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
                        const wxBitmap& bitmap,
                        wxWindow *parent, long style, int timeout_secs)
 {
-#ifdef OCPN_USE_CURL
-    
 #ifdef __OCPN__ANDROID__
 
     wxString msg = _T("Downloading file synchronously: ");
@@ -6502,7 +6500,7 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     }
 
 #else
-
+#ifdef OCPN_USE_CURL
     wxFileName tfn = wxFileName::CreateTempFileName( outputFile );
     wxFileOutputStream output( tfn.GetFullPath() );
     
@@ -6540,12 +6538,9 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     if( wxFileExists( tfn.GetFullPath() ) )
         wxRemoveFile ( tfn.GetFullPath() );
     return result;
-#endif
-    
-    return OCPN_DL_FAILED;
-    
 #else
     return OCPN_DL_FAILED;
+#endif
 #endif    
 }            
 
@@ -6554,7 +6549,6 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
 _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
                                                             wxEvtHandler *handler, long *handle)
 {
-#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     wxString msg = _T("Downloading file asynchronously: ");
@@ -6586,6 +6580,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     
     return OCPN_DL_STARTED;
 #else
+#ifdef OCPN_USE_CURL
 
     if( g_pi_manager->m_pCurlThread ) //We allow just one download at a time. Do we want more? Or at least return some other status in this case?
         return OCPN_DL_FAILED;
@@ -6636,11 +6631,10 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         g_pi_manager->m_downloadHandle = NULL;
     }
     g_pi_manager->m_pCurl = 0;
- #endif
-
-    return OCPN_DL_FAILED;
 #else
+    
     return OCPN_DL_FAILED;
+#endif
 #endif    
 }
 
