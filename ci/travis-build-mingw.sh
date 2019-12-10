@@ -25,7 +25,7 @@ docker run --privileged -d -ti -e "container=docker"  \
 DOCKER_CONTAINER_ID=$(docker ps | grep fedora | awk '{print $1}')
 docker logs $DOCKER_CONTAINER_ID
 docker exec -ti $DOCKER_CONTAINER_ID /bin/bash -xec \
-    "bash -xe /opencpn-ci/ci/docker-build-mingw.sh 31;
+    "bash -xe /opencpn-ci/ci/generic-build-mingw.sh 31;
          echo -ne \"------\nEND OPENCPN-CI BUILD\n\";"
 docker ps -a
 docker stop $DOCKER_CONTAINER_ID
