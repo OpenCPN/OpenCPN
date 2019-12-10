@@ -2295,8 +2295,9 @@ endif ()
 # Prepare CPACK configuration (MINGW)
 #
 if (MINGW)
-  set(CMD "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//' \
-    NSIS.template.in.in >build/NSIS.template.in")
+  set(
+    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+  )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
     NSIS_config ALL
