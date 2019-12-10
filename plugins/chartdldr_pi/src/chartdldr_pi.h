@@ -241,10 +241,10 @@ protected:
     void            OnCancelClick( wxCommandEvent& event );
         
     bool            LoadSources();
-    bool            LoadSections( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadSection( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadCatalogs( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadCatalog( const wxTreeItemId &root, TiXmlNode *node );
+    bool            LoadSections( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadSection( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadCatalogs( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadCatalog( const wxTreeItemId &root, pugi::xml_node &node );
 
 public:
     ChartDldrGuiAddSourceDlg( wxWindow* parent );

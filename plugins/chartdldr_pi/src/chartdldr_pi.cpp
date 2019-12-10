@@ -1720,89 +1720,82 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
         }
     }
     wxString path = fn.GetFullPath();
-    TiXmlDocument * doc = new TiXmlDocument();
-    bool ret = doc->LoadFile(path.mb_str(), TIXML_ENCODING_UTF8);
+    
+    pugi::xml_document *doc = new pugi::xml_document;
+    bool ret = doc->load_file( path.mb_str() );
     if( ret )
     {
-        TiXmlElement * root = doc->RootElement();
-        wxString rootName = wxString::FromUTF8( root->Value() );
-        TiXmlNode *child;
-        for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
-        {
-            wxString s = wxString::FromUTF8(child->Value());
-            if (s == _T("sections"))
-                LoadSections(tree, child);
+        pugi::xml_node root = doc->first_child();
+
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "sections") ){
+                LoadSections(tree, element);
+            }
         }
     }
-    doc->Clear();
     wxDELETE(doc);
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if (s == _T("section"))
-            LoadSection(root, child);
-    }
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "section") ){
+            LoadSection(root, element);
+        }
+    } 
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxTreeItemId item;
-    for( TiXmlNode *child = node->FirstChildElement(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") ){
-            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(child->FirstChild()->Value()), 0, 0);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") ){
+            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(element.first_child().value()), 0, 0);
 
             wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
             if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( item, *pFont );
         }
-        
-        if( s == _T("sections") )
-            LoadSections(item, child);
-        if( s == _T("catalogs") )
-            LoadCatalogs(item, child);
-    }
+        if( !strcmp(element.name(), "sections") )
+            LoadSections(item, element);
+        if( !strcmp(element.name(), "catalogs") )
+            LoadCatalogs(item, element);
+
+    } 
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("catalog") )
-            LoadCatalog(root, child);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "catalog") )
+            LoadCatalog(root, element);
     }
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxString name, type, location, dir;
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") )
-            name = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("type") )
-            type = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("location") )
-            location = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("dir") )
-            dir = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") )
+            name = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "type") )
+            type = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "location") )
+            location = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "dir") )
+            dir = wxString::FromUTF8(element.first_child().value());
     }
     ChartSource *cs = new ChartSource(name, location, dir);
     wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
     
     wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
     if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( id, *pFont );
-    
+
     return true;
 }
 

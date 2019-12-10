@@ -47,6 +47,9 @@ SET(SRC_CHARTDLDR
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
+            src/pugiconfig.hpp
+            src/pugixml.hpp
+            src/pugixml.cpp
 )
 SET(SRC_UNARR
     src/unarr/common/conv.c
@@ -92,11 +95,6 @@ SET(SRC_UNARR
     src/unarr/zip/inflate.h
 )
 
-IF(UNIX AND NOT APPLE)
-  INCLUDE("cmake/FindTinyXML.cmake")
-  FIND_PACKAGE(TinyXML QUIET)
-ENDIF(UNIX AND NOT APPLE)
-
 IF(APPLE)
   #Homebrew does not link libarchive to /usr/local by default to avoid conflict with the system-wide one (which in turn does not provide includes...)
   #We do not want the systemwide vrsion as it is too old and misses support for many archive formats
@@ -137,22 +135,8 @@ ELSE ()
   INCLUDE_DIRECTORIES(src/unarr)
 ENDIF ()
 
-IF(TINYXML_FOUND)
-  message (STATUS "chartdldr_pi: building with system tinyxml")
-  INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
-  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${TINYXML_LIBRARIES})
-ELSE(TINYXML_FOUND)
-  message (STATUS "chartdldr_pi: building with bundled tinyxml")
-  INCLUDE_DIRECTORIES(src/tinyxml/)
-  SET(SRC_LTINYXML
-             src/tinyxml/tinyxml.cpp
-             src/tinyxml/tinyxmlparser.cpp
-             src/tinyxml/tinyxmlerror.cpp
-  )
-  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_LTINYXML} ${SRC_CHARTDLDR})
-ENDIF(TINYXML_FOUND)
-ADD_DEFINITIONS(-DTIXML_USE_STL)
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: This is to broad, needs better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-overloaded-virtual)
