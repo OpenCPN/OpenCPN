@@ -169,6 +169,7 @@ void androidCancelTimedToast();
 void androidDisplayToast(wxString message);
 
 void androidEnableRotation( void );
+void androidDisableRotation( void );
 int androidGetScreenOrientation();
 
 //      SVG Support

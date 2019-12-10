@@ -11435,10 +11435,17 @@ void TimedMessageBox::OnTimer(wxTimerEvent &evt)
 int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
                     int timeout_sec, int x, int y  )
 {
+#ifdef __OCPN__ANDROID__
+    androidDisableRotation();
+#endif
     int ret =  wxID_OK;
 
     TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
     ret = tbox.GetRetVal() ;
+
+#ifdef __OCPN__ANDROID__
+    androidEnableRotation();
+#endif
 
     return ret;
 }

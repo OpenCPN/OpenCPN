@@ -2190,6 +2190,11 @@ void androidEnableRotation( void )
     callActivityMethod_vs("EnableRotation");
 }
 
+void androidDisableRotation( void )
+{
+    callActivityMethod_vs("DisableRotation");
+}
+
 bool androidShowDisclaimer( wxString title, wxString msg )
 {
     if(CheckPendingJNIException())
