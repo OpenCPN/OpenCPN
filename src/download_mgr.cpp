@@ -454,11 +454,12 @@ class CandidateButtonsPanel: public wxPanel
             auto flags = wxSizerFlags().Border();
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
-            vbox->Add(new InstallButton(this, *plugin), flags);
+            vbox->Add(new InstallButton(this, *plugin), 
+                                        flags.DoubleBorder(wxRIGHT));
             vbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
             m_info_btn = new WebsiteButton(this, plugin->info_url.c_str());
             m_info_btn->Hide();
-            vbox->Add(m_info_btn, flags.Bottom());
+            vbox->Add(m_info_btn, flags.Bottom().Border());
             SetSizer(vbox);
             Fit();
         }
@@ -482,15 +483,16 @@ class PluginTextPanel: public wxPanel
         PluginTextPanel(wxWindow* parent,
                         const PluginMetadata* plugin,
                         CandidateButtonsPanel* buttons)
-            :wxPanel(parent), m_descr(0), m_parent(parent), m_buttons(buttons)
+            : wxPanel(parent), m_descr(0), m_parent(parent), m_buttons(buttons)
         {
             auto flags = wxSizerFlags().Border();
 
             auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
+            m_summary = staticText(plugin->summary);
+            sum_hbox->Add(m_summary);
+            sum_hbox->AddSpacer(10);
             m_more = staticText("");
             m_more->SetLabelMarkup(MORE);
-            sum_hbox->Add(staticText(plugin->summary));
-            sum_hbox->AddSpacer(10);
             sum_hbox->Add(m_more, wxSizerFlags());
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -499,7 +501,7 @@ class PluginTextPanel: public wxPanel
             m_descr->Hide();
             vbox->Add(name, flags);
             vbox->Add(sum_hbox, flags);
-            vbox->Add(m_descr, flags);
+            vbox->Add(m_descr, flags.Expand());
             SetSizer(vbox);
 
             m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
@@ -516,8 +518,8 @@ class PluginTextPanel: public wxPanel
         {
             m_descr->Show(!m_descr->IsShown());
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
-            m_parent->Layout();
             m_buttons->HideDetails(!m_descr->IsShown());
+            m_parent->SendSizeEvent();
         }
 
     protected:
@@ -532,6 +534,7 @@ class PluginTextPanel: public wxPanel
 
         wxStaticText* m_descr;
         wxStaticText* m_more;
+        wxStaticText* m_summary;
         wxWindow* m_parent;
         CandidateButtonsPanel* m_buttons;
 };
@@ -584,8 +587,9 @@ class MainButtonsPanel: public wxPanel
             UpdateCatalogDialogBtn(wxWindow* parent)
                 :wxButton(parent, wxID_ANY, _("Advanced catalog update..."))
             {
-                 Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                     [=](wxCommandEvent&) {new CatalogDialog(GetParent(), false); });
+                 Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) {
+                      new CatalogDialog(GetParent(), false);
+                 });
             }
         
         };
@@ -603,18 +607,17 @@ class OcpnScrolledWindow : public wxScrolledWindow
             :wxScrolledWindow(parent)
         {
             auto grid = new wxFlexGridSizer(3, 0, 0);
-            grid->AddGrowableCol(0);
             grid->AddGrowableCol(1);
-            grid->AddGrowableCol(2);
-            auto flags = wxSizerFlags().Proportion(1).Expand();
+            auto flags = wxSizerFlags();
             auto box = new wxBoxSizer(wxVERTICAL);
             for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
                 if (plugin.target != PKG_TARGET) {
                     continue;
                 }
-                grid->Add(new PluginIconPanel(this, plugin.name), flags);
+                grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
-                grid->Add(new PluginTextPanel(this, &plugin, buttons), flags);
+                grid->Add(new PluginTextPanel(this, &plugin, buttons),
+                          flags.Proportion(1));
                 grid->Add(buttons, flags);
                 grid->Add(new wxStaticLine(this), flags);
                 grid->Add(new wxStaticLine(this), flags);
@@ -624,7 +627,8 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto button_panel = new MainButtonsPanel(this, parent);
             box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
             SetSizer(box);
-            //FitInside();
+            FitInside();
+            // TODO: Compute size using wxWindow::GetEffectiveMinSize()
             SetScrollRate(0, 1);
         };
 };
@@ -635,19 +639,25 @@ class OcpnScrolledWindow : public wxScrolledWindow
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     :wxDialog(parent, wxID_ANY, _("Plugin Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_DIALOG_STYLE),
+              wxDEFAULT_DIALOG_STYLE & ~wxRESIZE_BORDER),
     m_parent(parent)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto scrwin = new download_mgr::OcpnScrolledWindow(this);
-    vbox->Add(scrwin, wxSizerFlags().Proportion(1).Expand());
+    vbox->Add(scrwin, wxSizerFlags(1).Expand());
 
-    // At least GTK has bad defaults, widgets are not realized. Try to
-    // compute a reasonable minimum size:
-    wxSize minsize = GetTextExtent("abcdefghijklmnopqrst");
-    minsize = wxSize(5 * minsize.GetWidth(), 20 * minsize.GetHeight());
-    SetMinClientSize(minsize);
+    // The list has no natural height. Allocate 20 lines of text so some
+    // items are displayed initially in Layout()
+    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 20;
+    int width = GetParent()->GetClientSize().GetWidth();
 
+    // There seem to be no way have dynamic, wrapping text:
+    // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
+    SetMinClientSize(wxSize(width, min_height));
+    SetMaxClientSize(wxSize(width, -1));
+
+    SetSizer(vbox);
     Fit();
-    Center();
+    Layout();
+    SetMinClientSize(wxSize(GetClientSize()));
 }
