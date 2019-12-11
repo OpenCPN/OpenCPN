@@ -2205,7 +2205,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+#ifndef __OCPN__ANDROID__
                 OCPNPlatform::ShowBusySpinner();
+#endif
                   int cell_index = vpcells[i];
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
@@ -2284,6 +2286,9 @@ std::vector<int> cm93chart::GetVPCellArray ( const ViewPort &vpt )
 
       double ur_lon = box.GetMaxLon();
       double ur_lat = box.GetMaxLat();
+
+      // CLip upper latitude to avoid trying to fetch non-existent cells.
+      ur_lat = wxMin(ur_lat, 79.99999);
 
       // CLip upper latitude to avoid trying to fetch non-existent cells above N80.
       ur_lat = wxMin(ur_lat, 79.99999);
@@ -3430,6 +3435,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
             int nlen;
             double dival;
             int ival;
+            unsigned char *pucf;
 
             S57attVal *pattValTmp = new S57attVal;
 
@@ -3507,8 +3513,10 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
 #ifdef __ARM_ARCH
-                        float tf1;
-                        memcpy(&tf1, pf, sizeof(float));
+                        float __attribute__((aligned(16))) tf1;
+                        pucf = (unsigned char *)pf;
+
+                        memcpy(&tf1, pucf, sizeof(float));
                         *pAVR = tf1;
 #else
                         *pAVR = *pf;
@@ -4309,8 +4317,9 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     {
                                           float *pf = ( float * ) aval;
 #ifdef __ARM_ARCH
-                                          float tf1;
-                                          memcpy(&tf1, pf, sizeof(float));
+                                          float __attribute__((aligned(16))) tf1;
+                                          unsigned char *pucf = (unsigned char *)pf;
+                                          memcpy(&tf1, pucf, sizeof(float));
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
                                               tmp_transform_x = tf1;
                                           else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
@@ -5042,7 +5051,7 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
       m_vpt = vpt;                              // save a copy
 
       int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
-      m_cmscale = PrepareChartScale ( vpt, cmscale );
+      m_cmscale = PrepareChartScale ( vpt, cmscale, false );
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
       if ( m_pcm93chart_array[cmscale] )
@@ -5475,7 +5484,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             return render_return;
 
       {
-            m_pcm93chart_current->SetVPParms ( vp );
+            // This will be done later, in s57chart base class render method
+            ///m_pcm93chart_current->SetVPParms ( vp );
 
             //    Check the current chart scale to see if it covers the requested region totally
             if ( VPoint.b_quilt )
@@ -5542,9 +5552,11 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   }
 
                   //  Render the on-top Reference region/scale
+                  if(m_pcm93chart_current){
                   render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
 
                   m_Name = m_pcm93chart_current->GetName();
+                  }
 
             }
             else  // Single chart mode
@@ -6046,7 +6058,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
       if ( m_cmscale >= 7 )
           return false;
 
-#ifdef ocpnUSE_GL        
+      wxColour col;
+//#ifdef ocpnUSE_GL        
       ViewPort nvp;
       bool secondpass = false;
       glChartCanvas *glcc = cc->GetglCanvas();
@@ -6055,22 +6068,27 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
       
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
-          wxColour col = pen.GetColour();
+          col = pen.GetColour();
           
+#ifndef __WXQT__               // Some QT platforms (Android) have trouble with GL_LINE_SMOOTH
           if( g_GLOptions.m_GLLineSmoothing ) {
               glEnable( GL_LINE_SMOOTH );
               glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
           }
+#endif                    
+          
           glEnable( GL_BLEND );
           glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
           
-          glColor3ub(col.Red(), col.Green(), col.Blue());
+
           glLineWidth( g_GLMinSymbolLineWidth );
           glDisable( GL_LINE_STIPPLE );
           dc.SetGLStipple();
           
           if(g_b_EnableVBO)
               s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+
+#ifndef USE_ANDROID_GLES2
           glEnableClientState(GL_VERTEX_ARRAY);
 
           // use a viewport that allows the vertexes to be reused over many frames
@@ -6089,8 +6107,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
              ( vp.GetBBox().GetMinLon() < -180 ||
                vp.GetBBox().GetMaxLon() > 180 ))
               secondpass = true;
-      }
+      
 #endif
+      }
 
       int nss_max;
 
@@ -6163,10 +6182,14 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
                       if( secondpass ) {
 #define NORM_FACTOR 4096.0                                              
                           double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+#ifndef USE_ANDROID_GLES2
+                          glColor3ub(col.Red(), col.Green(), col.Blue());
                           glPushMatrix();
                           glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
                           RenderCellOutlinesOnGL(nvp, mcd); 
                           glPopMatrix();
+
+#endif
                       }
                       bdrawn = true;
                   } else
@@ -6182,9 +6205,11 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
       
 #ifdef ocpnUSE_GL        
       if(g_bopengl) {
+#ifndef USE_ANDROID_GLES2
           glPopMatrix();
 
           glDisableClientState(GL_VERTEX_ARRAY);
+#endif
           glDisable( GL_LINE_STIPPLE );
           glDisable( GL_LINE_SMOOTH );
           glDisable( GL_BLEND );
@@ -6324,6 +6349,8 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
         mcd->gl_screen_projection_type = vp.m_projection_type;
     }
 
+#ifndef USE_ANDROID_GLES2
+
 #if 1 // Push array (faster)
     glVertexPointer(2, GL_FLOAT, 2*sizeof(float), mcd->gl_screen_vertices);
     glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
@@ -6332,6 +6359,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
     for(int i=0; i<mcd->m_ngl_vertices; i++)
         glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
     glEnd();
+#endif
 #endif
 #endif
 }
@@ -6821,10 +6849,13 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
       m_yoff = 0;
 
       m_selected_list_index = -1;
+      m_selected_cell_index = 0;
 
       long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
       wxDialog::Create ( parent, -1, _ ( "OpenCPN CM93 Cell Offset Adjustments" ), wxPoint ( 0, 0 ), wxSize ( 800, 200 ), wstyle );
 
+      wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+      SetFont( *qFont );
 
 
 // A top-level sizer
@@ -6834,30 +6865,37 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
 
       int width;
 
-      m_pListCtrlMCOVRs = new OCPNOffsetListCtrl ( this, -1, wxDefaultPosition, wxDefaultSize,
-              wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_HRULES|wxLC_VRULES|wxBORDER_SUNKEN|wxLC_VIRTUAL );
+      long flags = wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES | wxBORDER_SUNKEN;
+      #ifndef __WXQT__
+      flags |=  wxLC_VIRTUAL;
+      #endif
+      
+      m_pListCtrlMCOVRs = new OCPNOffsetListCtrl ( this, -1, wxDefaultPosition, wxDefaultSize, flags);
 
       m_pListCtrlMCOVRs->Connect ( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler ( CM93OffsetDialog::OnCellSelected ), NULL, this );
 
-      width = 80;
+      int dx = GetCharWidth();
+      int dy = GetCharHeight();
+      
+      width = dx * 10;
       m_pListCtrlMCOVRs->InsertColumn ( tlCELL, _ ( "Cell" ), wxLIST_FORMAT_LEFT, width );
 
-      width = 80;
+      //width = 80;
       m_pListCtrlMCOVRs->InsertColumn ( tlMCOVR, _ ( "M_COVR ID" ), wxLIST_FORMAT_CENTER, width );
 
-      width = 80;
+      //width = 80;
       m_pListCtrlMCOVRs->InsertColumn ( tlSCALE, _ ( "Cell Scale" ), wxLIST_FORMAT_CENTER, width );
 
-      width = 90;
+      //width = 90;
       m_pListCtrlMCOVRs->InsertColumn ( tlXOFF, _ ( "wgsox" ), wxLIST_FORMAT_CENTER, width );
 
-      width = 90;
+      //width = 90;
       m_pListCtrlMCOVRs->InsertColumn ( tlYOFF, _ ( "wgsoy" ), wxLIST_FORMAT_CENTER, width );
 
-      width = 90;
+      //width = 90;
       m_pListCtrlMCOVRs->InsertColumn ( tlUXOFF, _ ( "User X Offset" ), wxLIST_FORMAT_CENTER, width );
 
-      width = 90;
+      //width = 90;
       m_pListCtrlMCOVRs->InsertColumn ( tlUYOFF, _ ( "User Y Offset" ), wxLIST_FORMAT_CENTER, width );
 
 
@@ -6886,6 +6924,14 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
       m_OKButton->SetDefault();
 
       topSizer->Add ( boxSizer02, 0, wxEXPAND|wxALL, 2 );
+      
+      wxSize sz(800, dy * 8);
+#ifdef __WXQT__      
+        sz = wxGetDisplaySize();
+        sz.y = dy * 8;
+#endif        
+      SetSize(sz);
+      
       topSizer->Layout();
 
       //    This is silly, but seems to be required for __WXMSW__ build
@@ -6897,12 +6943,17 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
 //      GetSizer()->SetSizeHints(this);
       Centre();
 
+#ifdef __WXQT__      
+      Move(-1, 100);
+#endif      
 
 }
 
 
 CM93OffsetDialog::~CM93OffsetDialog( )
 {
+    g_pCM93OffsetDialog = NULL;
+    
 }
 
 void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
@@ -6928,6 +6979,9 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
 void CM93OffsetDialog::OnOK ( wxCommandEvent& event )
 {
+#ifdef __WXQT__
+    UpdateOffsets();
+#endif    
       Close();
 }
 
@@ -6941,13 +6995,15 @@ void CM93OffsetDialog::OnOffSetSet ( wxCommandEvent& event )
     m_xoff = m_pSpinCtrlXoff->GetValue() / m_centerlat_cos;
     m_yoff = m_pSpinCtrlYoff->GetValue() / m_centerlat_cos;
 
+#ifndef __WXQT__
       UpdateOffsets();
+#endif    
 
 }
 
 void CM93OffsetDialog::UpdateOffsets ( void )
 {
-      if ( m_pcompchart )
+      if ( m_pcompchart && m_selected_cell_index )
       {
             //    Set the offsets of the selected cell/object
             m_pcompchart->SetSpecialCellIndexOffset ( m_selected_cell_index, m_selected_object_id, m_selected_subcell, m_xoff, m_yoff );
@@ -7071,7 +7127,25 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
                         }
                   }
 
+                  if( !m_pListCtrlMCOVRs->IsVirtual() ){
+                      if(m_pListCtrlMCOVRs->GetItemCount())
+                            m_pListCtrlMCOVRs->DeleteAllItems();
+                      
+                      for(unsigned int i=0 ; i < m_pcovr_array.GetCount() ; i++){
+                          wxListItem item;
+                          item.SetId(i);
+                          m_pListCtrlMCOVRs->InsertItem(item);
+                          for(int j=0 ; j < tlUYOFF + 1 ; j++){
+                              item.SetColumn(j);
+                              item.SetText(m_pListCtrlMCOVRs->OnGetItemText( i, j) );
+                              m_pListCtrlMCOVRs->SetItem(item);
+                          }
+                      }
+                  }
+                  else{
                   m_pListCtrlMCOVRs->SetItemCount ( m_pcovr_array.GetCount() );
+                  }
+                  
                   if ( -1 != sel_index )
                         m_pListCtrlMCOVRs->SetItemState ( sel_index, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
                   else

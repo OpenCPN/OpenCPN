@@ -134,6 +134,11 @@ class ViewPort
             bool     b_MercatorProjectionOverride;
             wxRect   rv_rect;
 
+#ifdef USE_ANDROID_GLES2
+            float    vp_transform[16];
+            float    norm_transform[16];
+#endif
+            
       private:
             LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
                                             // which contains the entire vieport

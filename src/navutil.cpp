@@ -89,6 +89,10 @@
 #include "glChartCanvas.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef __WXOSX__
 #include "DarkMode.h"
 #endif
@@ -400,6 +404,7 @@ extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
 extern int              g_default_font_size;
+extern wxString         g_default_font_facename;
 
 extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
@@ -412,6 +417,7 @@ extern float            g_ShipScaleFactorExp;
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
 extern int              g_iENCToolbarPosY;
+extern bool             g_bRollover;
 
 extern bool             g_bSpaceDropMark;
 
@@ -421,6 +427,7 @@ extern bool             g_bShowCurrent;
 extern bool             g_benableUDPNullHeader;
 
 extern wxString         g_uiStyle;
+extern bool             g_btrackContinuous;
 extern bool             g_useMUI;
 
 int                     g_nCPUCount;
@@ -432,9 +439,11 @@ extern wxString         g_lastAppliedTemplateGUID;
 
 extern int              g_route_prop_x, g_route_prop_y;
 extern int              g_route_prop_sx, g_route_prop_sy;
+extern int              g_AndroidVersionCode;
 
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
+bool                    g_bShowMuiZoomButtons = true;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -588,7 +597,7 @@ int MyConfig::LoadMyConfig()
     g_ownship_predictor_minutes = 5;
     g_cog_predictor_width = 3;
     g_ownship_HDTpredictor_miles = 1;
-    g_n_ownship_min_mm = 1;
+    g_n_ownship_min_mm = 5;
     g_own_ship_sog_cog_calc_damp_sec = 1;
     g_bFullScreenQuilt = 1;
     g_track_rotate_time_type =  TIME_TYPE_COMPUTER;
@@ -645,7 +654,7 @@ int MyConfig::LoadMyConfig()
     g_TrackDeltaDistance = 0.10;
     g_route_line_width = 2;
     g_track_line_width = 2;
-    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    g_colourTrackLineColour = wxColour( 243, 229, 47 );         //Yellow
     
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
@@ -696,7 +705,7 @@ int MyConfig::LoadMyConfig()
             g_detailslider_dialog_y =  5;
         
         g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
-        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 5);
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
@@ -749,6 +758,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 #endif /* SYSTEM_SOUND_CMD */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
+    Read( _T ( "AndroidVersionCode" ), &g_AndroidVersionCode );
+    
     Read( _T ( "UIexpert" ), &g_bUIexpert );
     
     Read( _T ( "UIStyle" ), &g_uiStyle  );
@@ -781,6 +792,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
+    Read( _T ( "DefaultFontFacename"), &g_default_font_facename );
     
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
 
@@ -822,6 +834,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
         Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
         Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
+        Read( _T ( "TrackContinuous" ), &g_btrackContinuous, false );
     }
 
     Read( _T ( "ShowTrue" ), &g_bShowTrue );
@@ -891,6 +904,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "MobileTouch" ), &g_btouch );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive );
+    Read( _T ( "EnableRolloverBlock" ), &g_bRollover );
 
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
@@ -916,7 +930,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     Read( _T ( "ShowLayers" ), &g_bShowLayers );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
@@ -973,6 +986,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
+    Read( _T ( "ShowMUIZoomButtons" ), &g_bShowMuiZoomButtons );
+    
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
     
@@ -1457,7 +1472,7 @@ void MyConfig::LoadS57Config()
     double dval;
     SetPath( _T ( "/Settings/GlobalState" ) );
 
-    Read( _T ( "bShowS57Text" ), &read_int, 0 );
+    Read( _T ( "bShowS57Text" ), &read_int, 1 );
     ps52plib->SetShowS57Text( !( read_int == 0 ) );
 
     Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
@@ -1496,15 +1511,15 @@ void MyConfig::LoadS57Config()
     Read( _T ( "bShowNationalText" ), &read_int, 0 );
     ps52plib->m_bShowNationalTexts = !( read_int == 0 );
 
-    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 3.0 ) ) {
         S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
         S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
     }
 
-    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 2.0 ) ) S52_setMarinerParam(
         S52_MAR_SHALLOW_CONTOUR, dval );
 
-    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 6.0 ) ) S52_setMarinerParam(
         S52_MAR_DEEP_CONTOUR, dval );
 
     if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
@@ -1849,6 +1864,11 @@ bool MyConfig::UpdateChartDirs( ArrayOfCDI& dir_array )
 
     }
 
+    // Avoid nonsense log errors...
+    #ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+    #endif    
+    
     Flush();
     return true;
 }
@@ -2232,6 +2252,8 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "DarkDecorations"), g_bDarkDecorations );
     
+    Write( _T ( "AndroidVersionCode" ), g_AndroidVersionCode );
+
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
 //    Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );      //Not desired for O5 MUI
@@ -2241,6 +2263,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowMenuBar" ), g_bShowMenuBar );
 #endif
     Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    Write( _T ( "DefaultFontFacename" ), g_default_font_facename );
     
     Write( _T ( "Fullscreen" ), g_bFullscreen );
     Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
@@ -2267,6 +2290,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
+    Write( _T ( "TrackContinuous" ), g_btrackContinuous );
+    
     Write( _T ( "ShowTrue" ), g_bShowTrue );
     Write( _T ( "ShowMag" ), g_bShowMag );
     Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
@@ -2287,6 +2312,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
     Write( _T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base );
+
+    Write( _T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons );
 
 #ifdef ocpnUSE_GL
     /* opengl options */
@@ -2367,6 +2394,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+    Write( _T ( "EnableRolloverBlock" ), g_bRollover );
 
     Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
     Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
@@ -2688,7 +2716,7 @@ void MyConfig::UpdateSettings()
     Flush();
 }
 
-void MyConfig::UpdateNavObj( void )
+void MyConfig::UpdateNavObj( bool bRecreate )
 {
 
 //   Create the NavObjectCollection, and save to specified file
@@ -2704,8 +2732,10 @@ void MyConfig::UpdateNavObj( void )
         wxRemoveFile( m_sNavObjSetChangesFile );
     }
 
-    //delete m_pNavObjectChangesSet;
-    //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    if(bRecreate){
+        delete m_pNavObjectChangesSet;
+        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    }
 
 }
 
@@ -2743,6 +2773,16 @@ static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName 
     return ret;
 }
 
+bool MyConfig::IsChangesFileDirty()
+{
+    if(m_pNavObjectChangesSet){
+        return m_pNavObjectChangesSet->m_bdirty;
+    }
+    else{
+        return true;
+    }
+}
+
 
 bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
@@ -2750,7 +2790,16 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+        
+#endif
+        
         delete pgpx;
 
         return true;
@@ -2764,7 +2813,13 @@ bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
         delete pgpx;
 
         return true;
@@ -2778,7 +2833,15 @@ bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const w
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
+        
         delete pgpx;
 
         return true;
@@ -2870,7 +2933,16 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
 
+        // Android 5+ requires special handling to support native app file writes to SDCard
+        // We need to use a two step copy process using a guaranteed accessible location for the first step.
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile( fn.GetFullPath() );
+#endif        
+        
         delete pgpx;
         ::wxEndBusyCursor();
 
@@ -2925,14 +2997,14 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
         wxString path;
         response = g_Platform->DoFileSelectorDialog( NULL, &path,
                                                          _( "Import GPX file" ),
-                                                         m_gpx_path,
+                                                         g_gpx_path,
                                                          _T(""),
                                                          wxT ( "*.gpx" )
                                                          );
                                                          
         file_array.Add(path);
         wxFileName fn( path );
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
                                                          
 #endif
         
@@ -4578,6 +4650,19 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         dc.CalcBoundingBox( x + size_x, y + size_y );
     } else {
 #ifdef ocpnUSE_GL
+#ifdef USE_ANDROID_GLES2
+        glEnable( GL_BLEND );
+
+        float radMod = wxMax(radius, 2.0);
+        wxColour c(color.Red(), color.Green(), color.Blue(), transparency);
+        dc.SetBrush(wxBrush(c));
+        dc.SetPen(wxPen(c, 1));
+        dc.DrawRoundedRectangle( x, y, size_x, size_y, radMod );
+        
+        glDisable( GL_BLEND );
+        
+    
+#else
         /* opengl version */
         glEnable( GL_BLEND );
 
@@ -4596,6 +4681,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
             glEnd();
         }
         glDisable( GL_BLEND );
+#endif
 #endif
     }
 }
@@ -4731,7 +4817,9 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
             win->IsKindOf(CLASSINFO(wxListBox)) 
             || win->IsKindOf(CLASSINFO(wxListCtrl)) 
             || win->IsKindOf(CLASSINFO(wxTextCtrl))
+#ifndef __OCPN__ANDROID__
             || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
+#endif            
         ) {
             win->SetBackgroundColour(col);
         }

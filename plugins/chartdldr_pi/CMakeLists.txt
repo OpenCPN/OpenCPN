@@ -16,9 +16,9 @@ SET(TITLE_NAME ChartDownloader)
 SET(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "3")
+SET(VERSION_MINOR "4")
 SET(VERSION_PATCH "0")
-SET(VERSION_DATE "2018-01-13")
+SET(VERSION_DATE "2019-12-09")
 
 IF( NOT CMAKE_BUILD_TYPE )
   SET( CMAKE_BUILD_TYPE Release CACHE STRING
@@ -51,6 +51,12 @@ SET(SRC_CHARTDLDR
             src/pugixml.hpp
             src/pugixml.cpp
 )
+            
+IF(QT_ANDROID)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
+    SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+ENDIF(QT_ANDROID)
+
 SET(SRC_UNARR
     src/unarr/common/conv.c
     src/unarr/common/crc32.c
@@ -135,6 +141,12 @@ ELSE ()
   INCLUDE_DIRECTORIES(src/unarr)
 ENDIF ()
 
+IF(QT_ANDROID)
+  ADD_DEFINITIONS(-D__STDC_LIMIT_MACROS)
+  ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS)
+  ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
+ENDIF(QT_ANDROID)
+
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
@@ -167,19 +179,31 @@ ELSE(LibArchive_FOUND)
   ENDIF(BZIP2_FOUND)
 ENDIF(LibArchive_FOUND)
 
+#TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
+
+#target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+
+IF (NOT QT_ANDROID )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
     ${wxWidgets_LIBRARIES}
     ocpn::wxjson
     ocpn::wxsvg
     ocpn::opencpn 
 )
-
-
-IF (QT_ANDROID )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lgnustl_shared")
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
-ENDIF(QT_ANDROID)
+ELSE (NOT QT_ANDROID )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE 
+    ocpn::wxjson 
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so 
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+    ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so
+    "-lz" 
+  )
+  
+  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+  #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+ENDIF(NOT QT_ANDROID)
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE

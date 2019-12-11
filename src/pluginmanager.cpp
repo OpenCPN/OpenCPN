@@ -31,7 +31,7 @@
 #endif
 
 #include <typeinfo>
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
 #include <wordexp.h>
 #endif
 #include <wx/wx.h>
@@ -98,6 +98,7 @@
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
+#include <dlfcn.h>
 #endif
 
 #ifdef ocpnUSE_GL
@@ -186,7 +187,8 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 static wxString ExpandWord(wxString word)
 {
-#ifdef __linux__
+#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+
     wordexp_t we;
     wordexp(word.mb_str(), &we, 0);
     wxString tmp = wxString(we.we_wordv[0]);
@@ -354,9 +356,11 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
 PlugInManager *s_ppim;
 
 BEGIN_EVENT_TABLE( PlugInManager, wxEvtHandler )
+#ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
     EVT_CURL_END_PERFORM( CurlThreadId, PlugInManager::OnEndPerformCurlDownload )
     EVT_CURL_DOWNLOAD( CurlThreadId, PlugInManager::OnCurlDownload )
+#endif    
 #endif    
 END_EVENT_TABLE()
 
@@ -377,13 +381,29 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
+
+#ifdef __OCPN__ANDROID__    
+    //  Due to the oddball mixed static/dynamic linking model used in the Android architecture,
+    //  all classes used in PlugIns must be present in the core, even if stubs.
+    //
+    //  Here is where we do that....
+    if(pFrame){
+        wxArrayString as;
+        as.Add(_T("Item0"));
+        wxRadioBox *box = new wxRadioBox(pFrame, -1, _T(""), wxPoint(0,0), wxSize(-1, -1), as);
+        delete box;
+    }
+    
+    
+#endif
+
     #ifdef OCPN_USE_CURL
     #ifndef __OCPN__ANDROID__
     wxCurlBase::Init();
-    #endif
     m_last_online = false;
     m_last_online_chk = -1;
     #endif
+#endif
     
     m_benable_blackdialog_done = false;
 }
@@ -1205,6 +1225,13 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
 
 #else
     // this is 3x faster than the other method
+    
+    //  But Android Plugins do not include the wxlib specification in their ELF file.
+    //  So we assume Android Plugins are compatible....
+#ifdef __OCPN__ANDROID__
+    return true;
+#endif
+    
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
 
@@ -1702,7 +1729,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
         }
     }
     
-    return bret;;
+    return bret;
 }
 
 bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
@@ -2779,14 +2806,17 @@ wxString GetActiveStyleName()
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height)
 {
 #ifdef ocpnUSE_SVG
+#ifndef __OCPN__ANDROID__
     wxSVGDocument svgDoc;
     if ( (width > 0) && (height > 0) && svgDoc.Load(filename))
         return wxBitmap(svgDoc.Render(width, height, NULL, false, true));
     else
-        return wxBitmap();
-    
+        return wxBitmap(1, 1);
+#else
+        return loadAndroidSVG( filename, width, height );
+#endif        
 #else        
-        return wxBitmap();
+        return wxBitmap(width, height);
 #endif // ocpnUSE_SVG   
 }
 
@@ -4196,6 +4226,7 @@ void PluginListPanel::MoveUp( PluginPanel *pi )
 
     m_PluginSelected = pi;
 
+    GetSizer()->Layout();
     m_parent->Layout();
     Refresh(true);
 }
@@ -4215,6 +4246,7 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
 
     m_PluginSelected = pi;
 
+    GetSizer()->Layout();
     m_parent->Layout();
     Refresh(false);
 }
@@ -4273,10 +4305,17 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    // Make an estimate of a good size for up/down icons
+    int sizeRef = plugin_icon.GetSize().y + 1;
+    
+    wxBitmap bmp = style->GetIcon( _T("up"), sizeRef, sizeRef, true  );
+//    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
+    
     m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
-    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down"), sizeRef, sizeRef, true ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
     m_pButtonUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginUp), NULL, this);
     m_pButtonDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginDown), NULL, this);
@@ -4303,7 +4342,12 @@ void PluginPanel::SetSelected( bool selected )
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
         m_pButtons->Show(true);
+#ifndef __WXQT__
         m_pButtonsUpDown->Show(true);
+#else        
+        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
+        m_pButtonsUpDown->Show(false);
+#endif        
         Layout();
         //FitInside();
     }
@@ -4311,11 +4355,17 @@ void PluginPanel::SetSelected( bool selected )
     {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
+#ifndef __WXQT__
         m_pButtons->Show(false);
+#else        
+        m_pButtons->Show(true);
+#endif        
         m_pButtonsUpDown->Show(false);
         Layout();
         //FitInside();
     }
+    Refresh(true);
+    
 #ifdef __WXOSX__
     if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
@@ -4931,7 +4981,10 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
                     ps52plib->m_last_clip_rect = upd.GetRect();
+
+#ifndef USE_ANDROID_GLES2
                     glPushMatrix(); //    Adjust for rotation
+#endif
                     glChartCanvas::RotateToViewPort(VPoint);
 
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
@@ -4940,7 +4993,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     else if(ppicb_gl)
                         ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                     glPopMatrix();
+#endif
                     glChartCanvas::DisableClipRegion();
                     
                     
@@ -4971,7 +5026,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
         if(!Region.Empty() && ppicb_x)
         {
             
+#ifndef USE_ANDROID_GLES2
             glPushMatrix(); //    Adjust for rotation
+#endif
             
             // Start with a clean slate
             glChartCanvas::SetClipRect(VPoint, VPoint.rv_rect, false);
@@ -4984,7 +5041,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
             
             ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
 
+#ifndef USE_ANDROID_GLES2
             glPopMatrix();
+#endif
             delete r;
             
         }
@@ -5003,13 +5062,17 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
                     glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
                     
                     ps52plib->m_last_clip_rect = upd.GetRect();
+#ifndef USE_ANDROID_GLES2
                     glPushMatrix(); //    Adjust for rotation
+#endif
                     glChartCanvas::RotateToViewPort(VPoint);
                     
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
                     ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                     glPopMatrix();
+#endif
                     glChartCanvas::DisableClipRegion();
                     
                     
@@ -5038,14 +5101,17 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLTextOnly( const wxGLContext &glc, c
             wxRegion *r = Region.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( Region ); upd.HaveRects(); upd.NextRect()) {
                 
+#ifndef USE_ANDROID_GLES2
                 glPushMatrix(); //    Adjust for rotation
+#endif
                 glChartCanvas::RotateToViewPort(VPoint);
                     
                 PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint );
                 ppicb_x->RenderRegionViewOnGLTextOnly( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                 glPopMatrix();
-                    
+#endif
                     
             } //for
             delete r;
@@ -6101,6 +6167,15 @@ void ForceChartDBUpdate()
     if( g_options )
     {
         g_options->pScanCheckBox->SetValue(true);
+        g_options->pUpdateCheckBox->SetValue(true);
+    }
+}
+
+void ForceChartDBRebuild()
+{
+    if( g_options )
+    {
+        g_options->pUpdateCheckBox->SetValue(true);
     }
 }
 
@@ -6352,8 +6427,6 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
                        const wxBitmap& bitmap,
                        wxWindow *parent, long style, int timeout_secs)
 {
-#ifdef OCPN_USE_CURL
-    
 #ifdef __OCPN__ANDROID__
 
     wxString msg = _T("Downloading file synchronously: ");
@@ -6364,12 +6437,22 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     if(!g_piEventHandler)
         g_piEventHandler = new PI_DLEvtHandler;
 
+    //  Reset global status indicators
+    g_download_status = OCPN_DL_UNKNOWN;
+    g_download_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+    
     //  Create a connection for the expected events from Android Activity
     g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
      
     long dl_ID = -1;
     
-    int res = startAndroidFileDownload( url, outputFile, g_piEventHandler, &dl_ID );
+    // Make sure the outputfile is a file URI
+    wxString fURI = outputFile;
+    if(!fURI.StartsWith(_T("file://"))){
+        fURI.Prepend(_T("file://"));
+    }
+    
+    int res = startAndroidFileDownload( url, fURI, g_piEventHandler, &dl_ID );
     //  Started OK?
     if(res){
         finishAndroidFileDownload();
@@ -6422,7 +6505,7 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     }
 
 #else
-
+#ifdef OCPN_USE_CURL
     wxFileName tfn = wxFileName::CreateTempFileName( outputFile );
     wxFileOutputStream output( tfn.GetFullPath() );
     
@@ -6460,12 +6543,9 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     if( wxFileExists( tfn.GetFullPath() ) )
         wxRemoveFile ( tfn.GetFullPath() );
     return result;
-#endif
-    
-    return OCPN_DL_FAILED;
-    
 #else
     return OCPN_DL_FAILED;
+#endif
 #endif    
 }            
 
@@ -6474,7 +6554,6 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
 _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
                                                             wxEvtHandler *handler, long *handle)
 {
-#ifdef OCPN_USE_CURL
     
 #ifdef __OCPN__ANDROID__
     wxString msg = _T("Downloading file asynchronously: ");
@@ -6506,6 +6585,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     
     return OCPN_DL_STARTED;
 #else
+#ifdef OCPN_USE_CURL
 
     if( g_pi_manager->m_pCurlThread ) //We allow just one download at a time. Do we want more? Or at least return some other status in this case?
         return OCPN_DL_FAILED;
@@ -6556,10 +6636,10 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         g_pi_manager->m_downloadHandle = NULL;
     }
     g_pi_manager->m_pCurl = 0;
- #endif
-
-    return OCPN_DL_FAILED;
 #else
+    
+    return OCPN_DL_FAILED;
+#endif
     return OCPN_DL_FAILED;
 #endif    
 }
@@ -6589,11 +6669,10 @@ void OCPN_cancelDownloadFileBackground( long handle )
 
 _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs )
 {
+#ifndef __OCPN__ANDROID__    
+    
 #ifdef OCPN_USE_CURL
     
-#ifdef __OCPN__ANDROID__
-    //TODO
-#else
     wxCurlHTTP post;
     post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
     size_t res = post.Post( parameters.ToAscii(), parameters.Len(), url );
@@ -6606,20 +6685,32 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
         result = wxEmptyString;
     
     return OCPN_DL_FAILED;
-#endif
 #else
     return OCPN_DL_FAILED;
+#endif
+#else
+
+    wxString lparms = parameters;
+    wxString postResult = doAndroidPOST( url, lparms, timeout_secs * 1000);
+    if(postResult.IsSameAs(_T("NOK")))
+    return OCPN_DL_FAILED;
+    
+    result = postResult;
+    return OCPN_DL_NO_ERROR;
+    
 #endif    
     
 }
 
 bool OCPN_isOnline()
 {
+#ifdef __OCPN__ANDROID__
+    return androidCheckOnline();
+#endif    
+
+#ifndef __OCPN__ANDROID__    
 #ifdef OCPN_USE_CURL
     
-#ifdef __OCPN__ANDROID__
-    //TODO
-#else
     if (wxDateTime::GetTimeNow() > g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY)
     {
         wxCurlHTTP get;
@@ -6629,9 +6720,9 @@ bool OCPN_isOnline()
         g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();
     }
     return g_pi_manager->m_last_online;
-#endif
 #else
     return false;
+#endif    
 #endif    
 }
 
@@ -6727,6 +6818,15 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThrea
 #endif
 #endif
 
+
+bool LaunchDefaultBrowser_Plugin( wxString url )
+{
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser( url );
+    
+    return true;
+}
+    
 /* API 1.14 */
 
 void PlugInAISDrawGL( wxGLCanvas* glcanvas, const PlugIn_ViewPort &vp )
@@ -6940,4 +7040,12 @@ int GetCanvasCount( )
 int GetLatLonFormat()
 {
     return g_iSDMMFormat;
+}
+
+wxRect GetMasterToolbarRect()
+{
+    if(g_MainToolbar)
+        return g_MainToolbar->GetRect();
+    else
+        return wxRect(0,0,1,1);
 }

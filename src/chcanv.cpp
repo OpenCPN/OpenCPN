@@ -284,6 +284,7 @@ extern bool              g_bresponsive;
 extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
+extern bool              g_bRollover;
 
 extern bool              g_bSpaceDropMark;
 extern bool              g_bAutoHideToolbar;
@@ -869,6 +870,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Compass->Show(m_bShowCompassWin);
 
     m_bToolbarEnable = false;
+    m_pianoFrozen = false;
+    
+    SetMinSize(wxSize(200,200));
 }
 
 ChartCanvas::~ChartCanvas()
@@ -955,6 +959,7 @@ void ChartCanvas::CanvasApplyLocale()
 
 void ChartCanvas::SetupGlCanvas( )
 {
+#ifndef __OCPN__ANDROID__    
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
@@ -964,6 +969,11 @@ void ChartCanvas::SetupGlCanvas( )
 
         // We use one context for all GL windows, so that textures etc will be automatically shared
             if(IsPrimaryCanvas()){
+                //qDebug() << "Creating Primary Context";
+                
+//             wxGLContextAttrs ctxAttr;
+//             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
+//             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
                 wxGLContext *pctx = new wxGLContext(m_glcc);
                 m_glcc->SetContext(pctx);
                 g_pGLcontext = pctx;                // Save a copy of the common context
@@ -978,11 +988,63 @@ void ChartCanvas::SetupGlCanvas( )
         }
     }
 #endif
+#endif
+
+#ifdef __OCPN__ANDROID__   //ocpnUSE_GL
+    if ( !g_bdisable_opengl )
+    {
+        if(g_bopengl){
+            //qDebug() << "SetupGlCanvas";
+            wxLogMessage( _T("Creating glChartCanvas") );
+
+        // We use one context for all GL windows, so that textures etc will be automatically shared
+            if(IsPrimaryCanvas()){
+                qDebug() << "Creating Primary glChartCanvas";
+                
+//             wxGLContextAttrs ctxAttr;
+//             ctxAttr.PlatformDefaults().CoreProfile().OGLVersion(3, 2).EndList();
+//             wxGLContext *pctx = new wxGLContext(m_glcc, NULL, &ctxAttr);
+                m_glcc = new glChartCanvas(this);
+
+                wxGLContext *pctx = new wxGLContext(m_glcc);
+                m_glcc->SetContext(pctx);
+                g_pGLcontext = pctx;                // Save a copy of the common context
+                m_glcc->m_pParentCanvas = this;
+                //m_glcc->Reparent(this);
+            }
+            else{
+                qDebug() << "Creating Secondary glChartCanvas";
+                //QGLContext *pctx = gFrame->GetPrimaryCanvas()->GetglCanvas()->GetQGLContext();
+                //qDebug() << "pctx: " << pctx;
+                
+                
+                 m_glcc = new glChartCanvas(gFrame, gFrame->GetPrimaryCanvas()->GetglCanvas());   //Shared
+//                 m_glcc = new glChartCanvas(this, pctx);   //Shared
+//                 m_glcc = new glChartCanvas(this, wxPoint(900, 0));
+                 wxGLContext *pwxctx = new wxGLContext(m_glcc);
+                 m_glcc->SetContext(pwxctx);
+                 m_glcc->m_pParentCanvas = this;
+                 //m_glcc->Reparent(this);
+       
+                
+
+                
+            }
+        }
+    }
+#endif
+
 }
  
 void ChartCanvas::OnKillFocus( wxFocusEvent& WXUNUSED(event) )
 {
-    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ), false );
+    
+    // On Android, we get a KillFocus on just about every keystroke.
+    //  Why?
+#ifdef __OCPN__ANDROID__
+    return;
+#endif
     
     // Special logic:
     //  On OSX in GL mode, each mouse click causes a kill and immediate regain of canvas focus.  Why???  Who knows...
@@ -1004,7 +1066,7 @@ void ChartCanvas::OnSetFocus( wxFocusEvent& WXUNUSED(event) )
     // Try to keep the global top-line menubar selections up to date with the current "focus" canvas
     gFrame->UpdateGlobalMenuItems( this );
 
-    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ) );
+    RefreshRect( wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix ), false );
 }
 
 
@@ -2239,10 +2301,12 @@ void ChartCanvas::SetDisplaySizeMM( double size )
 {
     m_display_size_mm = size;
     
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
+    //int sx, sy;
+    //wxDisplaySize( &sx, &sy );
     
-    double max_physical = wxMax(sx, sy);
+    // Calculate pixels per mm for later reference
+    wxSize sd = g_Platform->getDisplaySize();
+    double max_physical = wxMax(sd.x, sd.y);
     
     m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
     m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
@@ -2252,10 +2316,15 @@ void ChartCanvas::SetDisplaySizeMM( double size )
         ps52plib->SetPPMM( m_pix_per_mm );
     
      wxString msg;
-     msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
+     msg.Printf(_T("Metrics:  m_display_size_mm: %g     g_Platform->getDisplaySize():  %d:%d   "), m_display_size_mm, sd.x, sd.y);
      wxLogMessage(msg);
     
-     m_focus_indicator_pix = std::round(1 * GetPixPerMM());
+    int ssx, ssy;
+    ::wxDisplaySize(&ssx, &ssy);
+    msg.Printf(_T("wxDisplaySize(): %d %d"), ssx, ssy);
+     wxLogMessage(msg);
+    
+     m_focus_indicator_pix = /*std::round*/wxRound(1 * GetPixPerMM());
 
 }
 #if 0
@@ -2885,11 +2954,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( !pPopupDetailSlider ) {
                 if( VPoint.b_quilt ) 
                     {
+                        if (m_pQuilt) 
+                        { 
                             if (m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y )) ) // = null if no chart loaded for this point
                             {
                                 ChartType = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartType();
                                 ChartFam = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartFamily();
                             }
+                    }
                     }
                 else
                     {
@@ -3636,9 +3708,8 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {
-#ifdef __OCPN__ANDROID__
+    if(!g_bRollover)
     return;
-#endif
     
     bool b_need_refresh = false;
 
@@ -4500,13 +4571,6 @@ void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
     
-    //    Center the screen on the GPS position, for lack of a better place
-    m_vLat = gLat;
-    m_vLon = gLon;
-    
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(false);
-    #endif
    
     if( m_toolBar )
         m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
@@ -4530,10 +4594,6 @@ void ChartCanvas::SetbFollow( void )
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     UpdateFollowButtonState();
-    
-    #ifdef __OCPN__ANDROID__
-    androidSetFollowTool(true);
-    #endif
     
     // Is the OWNSHIP on-screen?
     // If not, then reset the OWNSHIP offset to 0 (center screen)
@@ -4559,6 +4619,19 @@ void ChartCanvas::UpdateFollowButtonState( void )
                 m_muiBar->SetFollowButtonState( 1 );
         }
    }
+   
+#ifdef __OCPN__ANDROID__
+   if(!m_bFollow)
+      androidSetFollowTool(0);
+   else
+   {
+        if(m_bLookAhead)
+            androidSetFollowTool(2);
+        else
+            androidSetFollowTool(1);
+   }
+#endif
+
 }
 
 void ChartCanvas::JumpToPosition( double lat, double lon, double scale_ppm )
@@ -4637,11 +4710,11 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     //    But this only works on north-up projections
     // TODO: can we remove this now?
-    if( ( ( fabs( GetVP().skew ) < .001 ) ) && ( fabs( GetVP().rotation ) < .001 ) ) {
-
-        if( dx == 0 ) dlon = clon;
-        if( dy == 0 ) dlat = clat;
-    }
+//     if( ( ( fabs( GetVP().skew ) < .001 ) ) && ( fabs( GetVP().rotation ) < .001 ) ) {
+// 
+//         if( dx == 0 ) dlon = clon;
+//         if( dy == 0 ) dlat = clat;
+//     }
 
     int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
 
@@ -4705,7 +4778,7 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 
     VPoint.Invalidate();
 
-    m_pQuilt->Invalidate();
+    if( m_pQuilt ) m_pQuilt->Invalidate();
 
     //  Make sure that the Selected Group is sensible...
 //    if( m_groupIndex > (int) g_pGroupArray->GetCount() )
@@ -4726,7 +4799,10 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
 
 double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
 {
+    if(m_pQuilt)
     return m_pQuilt->GetBestStartScale(dbi_hint, vp);
+    else
+        return vp.view_scale_ppm;
 }
 
 
@@ -4735,8 +4811,7 @@ double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
 int ChartCanvas::AdjustQuiltRefChart()
 {
     int ret = -1;
-    wxASSERT(m_pQuilt);
-
+    if(m_pQuilt){
         wxASSERT(ChartData);
         ChartBase *pc = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
         if( pc ) {
@@ -4796,6 +4871,7 @@ int ChartCanvas::AdjustQuiltRefChart()
         }
         else
             ret = -1;
+    }
     
     return ret;
 }
@@ -4809,8 +4885,10 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     wxASSERT(ChartData);
     ChartData->BuildChartStack( m_pCurrentStack, VPoint.clat, VPoint.clon, m_groupIndex );
 
+    if( m_pQuilt ) {
     m_pQuilt->Compose( VPoint );
     SetFocus();
+}
 }
 
 bool ChartCanvas::SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE )
@@ -4909,6 +4987,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
 
+    bool bwasValid = VPoint.IsValid();
     VPoint.Validate();                     // Mark this ViewPoint as OK
 
     //  Has the Viewport scale changed?  If so, invalidate the vp
@@ -5117,7 +5196,24 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 //                unsigned long hash1 = m_pQuilt->GetXStackHash();
  
 //                wxStopWatch sw;
+
+#ifdef __OCPN__ANDROID__
+                // This is an optimization for panning on touch screen systems.
+                //  The quilt composition is deferred until the OnPaint() message gets finally
+                //  removed and processed from the message queue.
+                // Takes advantage of the fact that touch-screen pan gestures are usually short in distance,
+                //  so not requiring a full quilt rebuild until the pan gesture is complete.
+                if( (last_vp.view_scale_ppm != scale_ppm) || !bwasValid ){
+ //                   qDebug() << "Force compose";
                 m_pQuilt->Compose( VPoint );
+                }
+                else{
+                    m_pQuilt->Invalidate();
+                }
+#else
+                m_pQuilt->Compose( VPoint );
+#endif
+                
 //                printf("comp time %ld\n", sw.Time());
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
@@ -5552,7 +5648,7 @@ void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
                                          wxPoint &GPSOffsetPixels, wxPoint lGPSPoint,
                                          float &scale_factor_x, float &scale_factor_y)
 {
-    float screenResolution = (float) ::wxGetDisplaySize().x / g_display_size_mm;
+    float screenResolution = m_pix_per_mm;
 
     //  Calculate the true ship length in exact pixels
     double ship_bow_lat, ship_bow_lon;
@@ -6074,8 +6170,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             dist /= 2;
 
         wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
-        wxColour black = GetGlobalColor( _T ( "UBLCK" ) );
-        wxPen pen1 = wxPen( black , 3, wxPENSTYLE_SOLID );
+        wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
         double rotation = -VPoint.rotation;
 
         ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
@@ -6092,7 +6187,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         dc.DrawLine( x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
 
         dc.SetFont( *m_pgridFont );
-        dc.SetTextForeground( black );
+        dc.SetTextForeground( GetGlobalColor( _T ( "UBLCK" ) ) );
         int w, h;
         dc.GetTextExtent(s, &w, &h);
         dc.DrawText( s, x_origin + l1/2 - w/2, y_origin - h - 1 );
@@ -6410,7 +6505,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     yt_margin = m_canvas_height * 5 / 100;
     yb_margin = m_canvas_height * 95 / 100;
 
-    m_pQuilt->SetQuiltParameters( m_canvas_scale_factor, m_canvas_width );
+    if( m_pQuilt ) m_pQuilt->SetQuiltParameters( m_canvas_scale_factor, m_canvas_width );
 
 //    Resize the current viewport
 
@@ -6885,7 +6980,11 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
  
 //      Retrigger the route leg / AIS target popup timer
-    if( !g_btouch )
+    bool bRoll = !g_btouch;
+#ifdef __OCPN__ANDROID__
+    bRoll = g_bRollover;
+#endif    
+    if( bRoll )
     {
        if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) ||
 	   (m_pTrackRolloverWin && m_pTrackRolloverWin->IsActive()) ||
@@ -9101,7 +9200,7 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     m_canvasMenu = NULL;
 
 #ifdef __WXQT__
-    gFrame->SurfaceToolbar();
+    //gFrame->SurfaceToolbar();
     //g_MainToolbar->Raise();
 #endif
     
@@ -9171,12 +9270,14 @@ void ChartCanvas::FinishRoute( void )
         if( m_pMouseRoute )
             m_pMouseRoute->SetHiLite(0);
 
-        if( pRoutePropDialog && pRoutePropDialog->IsShown() ) {
+        if( RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
+        if(RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog){
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateRouteListCtrl();
+        }
 
     }
     m_bAppendingRoute = false;
@@ -9227,6 +9328,9 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 {
     if( !m_bShowOutlines ) return;
 
+    if(!ChartData)
+        return;
+    
     int nEntry = ChartData->GetChartTableEntries();
 
     for( int i = 0; i < nEntry; i++ ) {
@@ -9281,7 +9385,7 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 #ifdef ocpnUSE_GL
     if(g_bopengl && m_glcc) {
         /* opengl version specially optimized */
-        m_glcc->RenderChartOutline(dbIndex, vp);
+        m_glcc->RenderChartOutline(dc, dbIndex, vp);
         return;
     }
 #endif
@@ -9516,6 +9620,8 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if(route){
             int np = route->GetnPoints();
             if(np){
+                if(g_btouch && (np > 1))
+                    np --;
                 RoutePoint rp = route->GetPoint(np);
                 render_lat = rp.m_lat;
                 render_lon = rp.m_lon;
@@ -9592,7 +9698,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         double disp_length = route->m_route_length;
         if( !g_btouch)
-            disp_length += dist;
+            disp_length += dist;                // Add in the to-be-created leg.
         s0 += FormatDistanceAdaptive( disp_length );
 
         RouteLegInfo( dc, r_rband, routeInfo, s0 );
@@ -9617,7 +9723,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         return;
     
     if( VPoint.b_quilt ){          // quilted
-        if( !m_pQuilt->IsComposed() ) 
+        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
             return;  // not ready
             
         if(m_pQuilt->IsQuiltVector()){    
@@ -9812,7 +9918,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //  Blit pan acceleration
     if( VPoint.b_quilt )          // quilted
     {
-        if( !m_pQuilt->IsComposed() ) 
+        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
             return;  // not ready
 
         bool bvectorQuilt = m_pQuilt->IsQuiltVector();    
@@ -11235,10 +11341,28 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif
 
+#if 0
     // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
     //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
     float nominal_icon_size_pixels = 48;  // 3 x 16
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+#endif
+
+    //  Yet another method goes like this:
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a symbol about 16 mm tall
+    double symHeight = icon_pixelRefDim / GetPixPerMM();           // from draw instructions, symbol is xx pix high
+    double targetHeight0 = 16.0;  
+    
+    // But we want to scale the size down for smaller displays
+    double displaySize = m_display_size_mm;
+    displaySize = wxMax(displaySize, 100);
+    
+    float targetHeight = wxMin(targetHeight0, displaySize / 15);
+    
+    double pix_factor = targetHeight / symHeight;
+
     
     scale_factor *= pix_factor;
     
@@ -11499,11 +11623,27 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     nominal_icon_size_mm = wxMin(nominal_icon_size_mm, 4);
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif    
+
+#if 0
     // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
     //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
     float nominal_icon_size_pixels = 6;  // 16 / 3
-
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
+#endif
+    
+    //  Yet another method goes like this:
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a symbol about 16 mm tall
+    double symHeight = icon_pixelRefDim / GetPixPerMM();           // from draw instructions, symbol is xx pix high
+    double targetHeight0 = 2.0;  
+    
+    // But we want to scale the size down for smaller displays
+    double displaySize = m_display_size_mm;
+    displaySize = wxMax(displaySize, 100);
+
+    float targetHeight = wxMin(targetHeight0, displaySize / 50);
+    double pix_factor = targetHeight / symHeight;
     
     scale_factor *= pix_factor;
     
@@ -12638,6 +12778,8 @@ void ChartCanvas::HandlePianoRollover( int selected_index, int selected_dbIndex 
 
 void ChartCanvas::UpdateCanvasControlBar( void )
 {
+    if(m_pianoFrozen)
+        return;
     
     if( !GetpCurrentStack() ) return;
     if( !ChartData) return;
@@ -12706,10 +12848,11 @@ void ChartCanvas::UpdateCanvasControlBar( void )
     m_Piano->SetSkewIndexArray( piano_skew_chart_index_array );
     m_Piano->SetTmercIndexArray( piano_tmerc_chart_index_array );
     m_Piano->SetPolyIndexArray( piano_poly_chart_index_array );
-    m_Piano->FormatKeys();
+    
     
     wxString new_hash = m_Piano->GenerateAndStoreNewHash();
     if(new_hash != old_hash) {
+        m_Piano->FormatKeys();
         //SetChartThumbnail( -1 );
         HideChartInfoWindow();
         m_Piano->ResetRollover();

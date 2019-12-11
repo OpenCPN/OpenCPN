@@ -2726,6 +2726,14 @@ int S57Reader::FindAndApplyUpdates( const char * pszPath )
 /*      efficiently as possible for this transfer.                      */
 /************************************************************************/
 
+// Android uses clang compiler.
+//  At optimization -O3, this function has trouble with alignment of values,
+//  Specifically, conversion of an int32 from a buffer into double.
+//  Workaround: We disable optimization for this little used function.
+#ifdef __ARM_ARCH
+[[clang::optnone]]
+#endif
+
 OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
 
 {
@@ -2747,7 +2755,7 @@ OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
 /*      coordinates.                                                    */
 /* -------------------------------------------------------------------- */
     int         bGotExtents = FALSE;
-    int         nXMin=0, nXMax=0, nYMin=0, nYMax=0;
+    double      nXMin=0, nXMax=0, nYMin=0, nYMax=0;
 
     apoIndex[0] = &oVI_Index;
     apoIndex[1] = &oVC_Index;
@@ -2775,17 +2783,20 @@ OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
                     nX = CPL_LSBWORD32(panData[i*3+1]);
                     nY = CPL_LSBWORD32(panData[i*3+0]);
 
+                    double dnX = nX / (double)nCOMF;
+                    double dnY = nY / (double)nCOMF;
+                    
                     if( bGotExtents )
                     {
-                        nXMin = MIN(nXMin,nX);
-                        nXMax = MAX(nXMax,nX);
-                        nYMin = MIN(nYMin,nY);
-                        nYMax = MAX(nYMax,nY);
+                        nXMin = MIN(nXMin,dnX);
+                        nXMax = MAX(nXMax,dnX);
+                        nYMin = MIN(nYMin,dnY);
+                        nYMax = MAX(nYMax,dnY);
                     }
                     else
                     {
-                        nXMin = nXMax = nX;
-                        nYMin = nYMax = nY;
+                        nXMin = nXMax = dnX;
+                        nYMin = nYMax = dnY;
                         bGotExtents = TRUE;
                     }
                 }
@@ -2801,17 +2812,20 @@ OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
                     nX = CPL_LSBWORD32(panData[i*2+1]);
                     nY = CPL_LSBWORD32(panData[i*2+0]);
 
+                    double dnX = nX / (double)nCOMF;
+                    double dnY = nY / (double)nCOMF;
+                    
                     if( bGotExtents )
                     {
-                        nXMin = MIN(nXMin,nX);
-                        nXMax = MAX(nXMax,nX);
-                        nYMin = MIN(nYMin,nY);
-                        nYMax = MAX(nYMax,nY);
+                        nXMin = MIN(nXMin,dnX);
+                        nXMax = MAX(nXMax,dnX);
+                        nYMin = MIN(nYMin,dnY);
+                        nYMax = MAX(nYMax,dnY);
                     }
                     else
                     {
-                        nXMin = nXMax = nX;
-                        nYMin = nYMax = nY;
+                        nXMin = nXMax = dnX;
+                        nYMin = nYMax = dnY;
                         bGotExtents = TRUE;
                     }
                 }
@@ -2823,10 +2837,10 @@ OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
         return OGRERR_FAILURE;
     else
     {
-        psExtent->MinX = nXMin / (double) nCOMF;
-        psExtent->MaxX = nXMax / (double) nCOMF;
-        psExtent->MinY = nYMin / (double) nCOMF;
-        psExtent->MaxY = nYMax / (double) nCOMF;
+        psExtent->MinX = nXMin;
+        psExtent->MaxX = nXMax;
+        psExtent->MinY = nYMin;
+        psExtent->MaxY = nYMax;
 
         return OGRERR_NONE;
     }

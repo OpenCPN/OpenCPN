@@ -69,6 +69,8 @@ extern ocpnGLOptions    g_GLOptions;
 extern int              g_tile_size;
 
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
+extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
+extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
 extern wxString CompressedCachePath(wxString path);
 extern glTextureManager   *g_glTextureManager;
@@ -272,6 +274,7 @@ bool glTexFactory::OnTimer()
     return false;
 }
 
+#if 0
 #ifdef __OCPN__ANDROID__
     // delete any uncompressed textures if texture memory is more than 30
     // on android??   Maybe this should be removed now
@@ -287,6 +290,7 @@ bool glTexFactory::OnTimer()
         }
     }
 #endif    
+#endif
 
 void glTexFactory::AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size)
 {
@@ -634,7 +638,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     ptd->m_colorscheme = color_scheme;
     
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
+    //glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
     
     if(!BuildTexture(ptd, base_level, rect))
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
