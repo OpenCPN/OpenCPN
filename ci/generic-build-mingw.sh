@@ -19,5 +19,5 @@ cmake \
 make -j3
 make package
 
-sudo dnf install python3-pip python3-setuptools
+sudo dnf install -y python3-pip python3-setuptools
 sudo python3 -m pip install -q cloudsmith-cli
