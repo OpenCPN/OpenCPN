@@ -28,7 +28,6 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #include "wx/wxprec.h"
 
@@ -73,6 +72,8 @@ using namespace std;
 #endif
 
 #include "printtable.h"
+
+using namespace std;
 
 void PrintCell::Init( const wxString& _content, wxDC* _dc, int _width, int _cellpadding, bool _bold_font )
 {
