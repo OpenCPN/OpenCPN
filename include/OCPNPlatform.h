@@ -212,7 +212,7 @@ private:
 //      Private colourPicker control
 //--------------------------------------------------------------------------
 
-class WXDLLIMPEXP_CORE OCPNColourPickerCtrl : public wxBitmapButton
+class OCPNColourPickerCtrl : public wxBitmapButton
 {
 public:
     OCPNColourPickerCtrl();
