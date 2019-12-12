@@ -3200,13 +3200,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
 
-#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
-    if( (osMajor >= 10) && (osMinor >= 12) ){
-        if( g_bDarkDecorations ) {
-            applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
-        }
-    }
-#endif
 
 }
 
