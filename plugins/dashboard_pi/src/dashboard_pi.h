@@ -335,7 +335,7 @@ private:
 // OCPNFontButton: a button which brings up a wxFontDialog
 //-----------------------------------------------------------------------------
 
-class WXDLLIMPEXP_CORE OCPNFontButton : public wxButton
+class OCPNFontButton : public wxButton
 {
 public:
     OCPNFontButton() {}
