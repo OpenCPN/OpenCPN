@@ -183,7 +183,6 @@ else ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE JASPER)
 endif ()
 
-
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: Need better handling after 5.0.0
     target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)
@@ -194,6 +193,7 @@ IF(WIN32)
   IF(MSVC)
       TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	  PRIVATE "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib"
+          "GLU_static"
       )
   ELSE(MSVC)
     SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

@@ -101,6 +101,11 @@ ELSE (NOT QT_ANDROID )
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
 ENDIF(NOT QT_ANDROID)
 
+IF(WIN32)
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "GLU_static" )
+ENDIF(WIN32)
+    
+
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
         "-Wall -Wno-unused" "-fexceptions"

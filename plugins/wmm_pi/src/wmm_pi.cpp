@@ -42,6 +42,7 @@
 #include "qdebug.h"
 #endif
 
+float g_piGLMinSymbolLineWidth;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) { WMMLogMessage1(wxString::FromAscii(s)); }
@@ -231,6 +232,17 @@ int wmm_pi::Init(void)
     m_pWmmDialog = NULL;
     m_oDC = NULL;
 
+#ifdef ocpnUSE_GL
+        //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
+#else
+    glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
+    
     return ret_flag;
 }
 
