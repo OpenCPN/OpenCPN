@@ -28,6 +28,7 @@
 #include "pugixml.hpp"
 #include <wx/string.h>
 #include <wx/checkbox.h>
+#include "bbox.h"
 
 class Track;
 class TrackList;
@@ -105,14 +106,16 @@ public:
     bool AddGPXWaypoint(RoutePoint *pWP );
     
     bool CreateAllGPXObjects();
-    bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates );
+    bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates, bool b_compute_bbox = false);
     int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz, wxCheckBoxState b_namesviz);
     
     bool SaveFile( const wxString filename );
 
     void SetRootGPXNode(void);
     bool IsOpenCPN();
+    LLBBox &GetBBox( ) { return BBox;};
     
+    LLBBox     BBox;
     pugi::xml_node      m_gpx_root;
 };
 
@@ -133,7 +136,8 @@ public:
     
     wxString    m_filename;
     FILE *      m_changes_file;
-    
+    bool        m_bdirty;
+ 
 };
 
 

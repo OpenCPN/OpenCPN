@@ -107,6 +107,12 @@ static bool RecordIsWind(GribRecord *rec)
          rec->getDataType()==GRB_WIND_DIR || rec->getDataType()==GRB_WIND_SPEED;
 }
 
+static bool RecordIsCurrent(GribRecord *rec)
+{
+  return rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD ||
+         rec->getDataType()==GRB_CUR_DIR || rec->getDataType()==GRB_CUR_SPEED;
+}
+
 void GribReader::readAllGribRecords()
 {
     //--------------------------------------------------------
@@ -212,10 +218,10 @@ void GribReader::readAllGribRecords()
 			&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
             storeRecordInMap(rec);
 
-        else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+        else if((rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+                 || rec->getDataType()==GRB_COMP_REFL)
                     && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
             storeRecordInMap(rec);
-
         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
             storeRecordInMap(rec);
 
@@ -234,7 +240,7 @@ void GribReader::readAllGribRecords()
         else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
             storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
 
-        else if( (rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD))          // rtofs model sea current current
+        else if( RecordIsCurrent(rec))          // rtofs model sea current current
             storeRecordInMap(rec);
 
         else if(rec->getDataType() == GRB_CAPE && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) //Potential energy

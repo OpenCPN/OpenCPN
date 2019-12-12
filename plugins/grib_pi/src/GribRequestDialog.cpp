@@ -37,7 +37,7 @@
 #define RESOLUTIONS 4
 
 enum { SAILDOCS,ZYGRIB };                   //grib providers
-enum { GFS,COAMPS,RTOFS };                  //forecast models
+enum { GFS,COAMPS,RTOFS,HRRR };                  //forecast models
 
 wxString toMailFormat ( int NEflag, int a )                 //convert position to mail necessary format
 {
@@ -108,7 +108,7 @@ void GribRequestSetting::InitRequestConfig()
         m_RequestConfigBase = _T( "000220XX.............." );
     }
     //populate model, mail to, waves model choices
-    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
+    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS"),_T("HRRR")};
     for( unsigned int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
@@ -350,13 +350,15 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     const wxString res[][RESOLUTIONS] = {
         {_T("0.25"), _T("0.5"), _T("1.0"), _T("2.0")},
         {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
-        {_T("0.05"), _T("0.25"), _T("1.0"), wxEmptyString}
+        {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},  // RTOFS
+        {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString}   // HRRR
     };
 
     IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
     if(IsZYGRIB) m_pModel->SetSelection(GFS);                       //Model is always GFS when Zygrib selected
     IsGFS = m_pModel->GetCurrentSelection() == GFS;
     bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
+    bool IsHRRR = m_pModel->GetCurrentSelection() == HRRR;
 
     //populate resolution choice
     m_pResolution->Clear();
@@ -368,14 +370,18 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
 
     unsigned l;
      //populate time interval choice
-    l = IsGFS ? 3 : IsRTOFS ? 12 : 6;
+    l = IsGFS ? 3 : IsRTOFS ? 3 : IsHRRR ? 1: 6;
+
+    unsigned m;
+    m = IsHRRR ? 2: 25;
+
     m_pInterval->Clear();
-    for( unsigned i=l; i<25; i*=2)
+    for( unsigned i= l; i< m; i*=2)
         m_pInterval->Append( wxString::Format(_T("%d"), i));
     m_pInterval->SetSelection(wxMin(it,m_pInterval->GetCount()-1));
 
     //populate time range choice
-    l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : 3;
+    l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsHRRR? 2: 3;
     m_pTimeRange->Clear();
     for( unsigned i=2; i<l+1; i++)
         m_pTimeRange->Append( wxString::Format(_T("%d"), i));
@@ -386,18 +392,19 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pPress->SetValue( !IsRTOFS );
     m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' && IsGFS );
     m_pWaves->Enable( IsGFS && m_pTimeRange->GetCurrentSelection() < 7 );      //gfs & time range less than 8 days
-    m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && IsGFS );
-    m_pRainfall->Enable( IsGFS );
+    m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && (IsGFS || IsHRRR));
+    m_pRainfall->Enable( IsGFS || IsHRRR);
     m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' && IsGFS );
     m_pCloudCover->Enable( IsGFS );
-    m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' && IsGFS );
-    m_pAirTemp->Enable( IsGFS );
-    m_pSeaTemp->SetValue( (m_RequestConfigBase.GetChar(12) == 'X' && (!IsZYGRIB && IsGFS)) || IsRTOFS );
-    m_pSeaTemp->Enable( !IsZYGRIB && IsGFS );
-    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsGFS);
-    m_pWindGust->Enable( IsGFS );
-    m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
-    m_pCAPE->Enable( IsGFS );
+    m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' && (IsGFS || IsHRRR) );
+    m_pAirTemp->Enable( IsGFS || IsHRRR);
+    m_pSeaTemp->SetValue( m_RequestConfigBase.GetChar(12) == 'X' && ((!IsZYGRIB && IsGFS) || IsRTOFS || IsHRRR));
+    m_pSeaTemp->Enable( !IsZYGRIB && (IsGFS || IsHRRR));
+    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && (IsGFS || IsHRRR));
+    m_pWindGust->Enable( IsGFS || IsHRRR);
+    m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && (IsGFS || IsHRRR) );
+    m_pCAPE->Enable( IsGFS || IsHRRR);
+    m_pReflectivity->Enable( false );
 
     m_pAltitudeData->SetValue( IsGFS ? m_RequestConfigBase.GetChar(17) == 'X' : false );        //altitude data zigrib + saildocs only GFS
     m_pAltitudeData->Enable( IsGFS );
@@ -535,6 +542,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
     } else {
 
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
     TexFont m_TexFontlabel;
     m_TexFontlabel.Build(*font);
 
@@ -587,6 +595,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
 
    glPopAttrib();
    
+#endif
 #endif
     }
     return true;
@@ -835,6 +844,19 @@ wxString GribRequestSetting::WriteMail()
         break;
     case RTOFS:                                                                           //RTOFS
         r_parameters = wxT("CUR,WTMP");                                   //the default parameters for this model
+        break;
+    case HRRR:                                                                            //HRRR
+        r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
+        if( m_pRainfall->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][0] );
+        if( m_pAirTemp->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][2] );
+        if( m_pSeaTemp->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][4] );
+        if( m_pWindGust->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
+        if( m_pCAPE->IsChecked() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][6] );
         break;
     }
     if( !IsZYGRIB && m_cMovingGribEnabled->IsChecked())            //moving grib

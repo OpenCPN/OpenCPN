@@ -29,6 +29,10 @@
 #include "Track.h"
 #include "Route.h"
 
+#ifdef __OCPN__ANDROID__
+#include <QDebug>
+#endif
+
 extern WayPointman *pWayPointMan;
 extern Routeman    *g_pRouteMan;
 extern MyConfig    *pConfig;
@@ -37,11 +41,7 @@ extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern Select *pSelect;
 //extern bool g_bIsNewLayer;
-//extern bool g_bLayerViz;
 
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
@@ -110,7 +110,13 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
         else
         if( !strcmp( pcn, "name") ) {
-                NameString = wxString::FromUTF8( child.first_child().value() );
+            NameString = wxString::FromUTF8( child.first_child().value() );
+            if(NameString.StartsWith("@~~")) {
+                // Convert the legacy tidal event definition and change the name so
+                // that it does not kick in next time and cause overiding subsequent changes
+                TideStation = NameString.Right(NameString.length() - 3);
+                NameString.Replace("@~~", "@-~");
+            }
         } 
         
         else
@@ -1076,10 +1082,10 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
 }
                        
 
-void InsertRouteA( Route *pTentRoute )
+static bool InsertRouteA( Route *pTentRoute )
 {
     if( !pTentRoute )
-        return;
+        return false;
     
     bool bAddroute = true;
     //    If the route has only 1 point, don't load it.
@@ -1143,12 +1149,13 @@ void InsertRouteA( Route *pTentRoute )
         
         delete pTentRoute;
     }
+    return bAddroute;
 }
                        
-void InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
+static bool  InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
 {
     if(!pTentTrack)
-        return;
+        return false;
     
     bool bAddtrack = true;
     //    If the track has only 1 point, don't load it.
@@ -1181,6 +1188,8 @@ void InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
         }
     } else
         delete pTentTrack;
+
+    return bAddtrack;
 }                       
                        
 static void UpdateRouteA( Route *pTentRoute )
@@ -1284,6 +1293,9 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 {
     // Routes
+    if(!pRouteList)
+        return false;
+    
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
@@ -1414,7 +1426,7 @@ bool NavObjectCollection1::SaveFile( const wxString filename )
     return true;
 }
 
-bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates )
+bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates, bool b_compute_bbox  )
 {
     wpt_duplicates = 0;
     pugi::xml_node objects = this->child("gpx");
@@ -1430,6 +1442,9 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
                     if( NULL != pWayPointMan )
                         pWayPointMan->AddRoutePoint( pWp );
                      pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );
+                     LLBBox wptbox;
+                     wptbox.Set(pWp->m_lat, pWp->m_lon, pWp->m_lat, pWp->m_lon);
+                     BBox.Expand(wptbox);
             }
             else {
                 delete pWp;
@@ -1439,13 +1454,16 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicat
         else
             if( !strcmp(object.name(), "trk") ) {
                 Track *pTrack = GPXLoadTrack1( object, b_full_viz, false, false, 0);
-                InsertTrack( pTrack );
-                //delete pTrack
+                if (InsertTrack( pTrack ) && b_compute_bbox && pTrack->IsVisible()) {
+                        //BBox.Expand(pTrack->GetBBox());
+                }
             }
             else
                 if( !strcmp(object.name(), "rte") ) {
                     Route *pRoute = GPXLoadRoute1( object, b_full_viz, false, false, 0, false );
-                    InsertRouteA( pRoute );
+                    if (InsertRouteA( pRoute ) && b_compute_bbox && pRoute->IsVisible()) {
+                        BBox.Expand(pRoute->GetBBox());
+                    }
                 }
                 
                 
@@ -1502,6 +1520,7 @@ NavObjectChanges::NavObjectChanges()
 : NavObjectCollection1()
 {
     m_changes_file = 0;
+    m_bdirty = false;
 }
 
 
@@ -1512,8 +1531,7 @@ NavObjectChanges::NavObjectChanges(wxString file_name)
     m_filename = file_name;
     
     m_changes_file = fopen(m_filename.mb_str(), "a");
-    
-    
+    m_bdirty = false;
 }
 
 NavObjectChanges::~NavObjectChanges()
@@ -1541,6 +1559,7 @@ void NavObjectChanges::AddRoute( Route *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrack( Track *pr, const char *action )
@@ -1557,6 +1576,7 @@ void NavObjectChanges::AddTrack( Track *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
@@ -1573,6 +1593,7 @@ void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const wxString& parent_GUID )
@@ -1593,6 +1614,7 @@ void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 
@@ -1667,7 +1689,7 @@ bool NavObjectChanges::ApplyChanges(void)
             
             else
                 if( !strcmp(object.name(), "rte") && g_pRouteMan) {
-                    Route *pRoute = GPXLoadRoute1( object, true, false, false, 0, true );
+                    Route *pRoute = GPXLoadRoute1( object, false, false, false, 0, true );
                     
                     if(pRoute ) {
                         pugi::xml_node xchild = object.child("extensions");

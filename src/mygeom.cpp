@@ -35,9 +35,9 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#ifdef USE_S57
-#include "mygdal/ogr_geometry.h"
-#endif
+#include "config.h"
+
+#include "gdal/ogr_geometry.h"
 
 #include "cutil.h"
 

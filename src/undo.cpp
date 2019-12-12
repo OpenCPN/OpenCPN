@@ -26,6 +26,8 @@
  *
  */
 
+#include "config.h"
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -50,7 +52,6 @@ extern MyConfig *pConfig;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern WayPointman *pWayPointMan;
-extern MyFrame *gFrame;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 
 Undo::Undo( ChartCanvas *parent)

@@ -61,7 +61,6 @@ extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
-extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;
@@ -257,6 +256,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
 {
     if( !s_glGetCompressedTexImage )
         return false;
+#ifndef USE_ANDROID_GLES2
     
     GLuint comp_tex;
     if(!inplace) {
@@ -291,6 +291,9 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
         glDeleteTextures(1, &comp_tex);
     
     return true;
+#else
+    return false;
+#endif
 }
 
 static 
@@ -1466,7 +1469,7 @@ void glTextureManager::BuildCompressedCache()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
 
-        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        wxString filename = cte.GetFullSystemPath();
 
         compress_target *pct = new compress_target;
         pct->distance = distance;

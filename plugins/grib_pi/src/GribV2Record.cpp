@@ -988,6 +988,11 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 6: ret = GRB_CAPE; break; // DATA_TO_GRBV2[DATA_CAPE] = grb2DataType(0,7,6);
             }
             break;
+        case 16: // Meteorological products, Forecast Radar Imagery category
+            switch (dataNum) {
+            case 196: ret =  GRB_COMP_REFL; break; // = grb2DataType(0,16, 196);
+            }
+            break;
         }
         break;
     case 10: // productDiscipline Oceanographic products 
@@ -1019,10 +1024,8 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 
         case 1: // Currents 
             switch (dataNum) {
-            #if 0
                 case 0: ret = GRB_CUR_DIR; break;
                 case 1: ret = GRB_CUR_SPEED; break;
-            #endif
                 case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
                 case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
             }
@@ -1038,7 +1041,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        erreur("unknown %d %d %d", productDiscipline,  dataCat,dataNum);
+        erreur("unknown Discipline %d dataCat %d dataNum %d", productDiscipline,  dataCat, dataNum);
     }
 #endif    
     return ret;    
@@ -1263,6 +1266,9 @@ void  GribV2Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
+        if (dataType == GRB_TEMP          //gfs Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
     }
     //------------------------
 	//DNMI-NEurope.grb

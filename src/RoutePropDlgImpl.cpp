@@ -32,6 +32,7 @@
 #include "routeprintout.h"
 #include "chcanv.h"
 #include "tcmgr.h"
+#include "ocpn_plugin.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014
@@ -44,7 +45,6 @@ extern wxString GetLayerName(int id);
 
 extern double gLat;
 extern double gLon;
-extern MarkInfoDlg *g_pMarkInfoDialog;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
@@ -238,6 +238,7 @@ RoutePropDlgImpl::RoutePropDlgImpl( wxWindow* parent, wxWindowID id, const wxStr
     if(g_route_prop_x > 0 && g_route_prop_y > 0 && g_route_prop_x < wxGetDisplaySize().x && g_route_prop_y < wxGetDisplaySize().y) {
         SetPosition(wxPoint(10,10));
     }
+    RecalculateSize();
     
     Connect( wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(RoutePropDlgImpl::OnRoutePropMenuSelected), NULL, this );
@@ -251,6 +252,8 @@ RoutePropDlgImpl::~RoutePropDlgImpl()
 }
 
 bool RoutePropDlgImpl::instanceFlag = false;
+bool RoutePropDlgImpl::getInstanceFlag(){ return  RoutePropDlgImpl::instanceFlag; }
+
 RoutePropDlgImpl* RoutePropDlgImpl::single = NULL;
 RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
 {
@@ -265,6 +268,27 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
         return single;
     }
 }
+
+void RoutePropDlgImpl::RecalculateSize(void) {
+
+  wxSize esize;
+  esize.x = GetCharWidth() * 110;
+  esize.y = GetCharHeight() * 40;
+
+  wxSize dsize = GetParent()->GetSize();  // GetClientSize();
+  esize.y = wxMin(esize.y, dsize.y - 0 /*(2 * GetCharHeight())*/);
+  esize.x = wxMin(esize.x, dsize.x - 0 /*(2 * GetCharHeight())*/);
+  SetSize(esize);
+
+  wxSize fsize = GetSize();
+  wxSize canvas_size = GetParent()->GetSize();
+  wxPoint screen_pos = GetParent()->GetScreenPosition();
+  int xp = (canvas_size.x - fsize.x) / 2;
+  int yp = (canvas_size.y - fsize.y) / 2;
+  Move(screen_pos.x + xp, screen_pos.y + yp);
+  
+}
+
 
 void RoutePropDlgImpl::UpdatePoints()
 {
@@ -340,7 +364,15 @@ void RoutePropDlgImpl::UpdatePoints()
             crs = _("Arrived");
         }
 
-        data.push_back( wxVariant(in == 0 ? "---" : std::to_string(in)) );
+        if(in == 0)
+            data.push_back( wxVariant("---"));
+        else{
+            std::ostringstream stm ;
+            stm << in ;
+            data.push_back( wxVariant(stm.str()));
+        }
+        
+        data.push_back( wxVariant("---" ));
         data.push_back( wxVariant(name) ); // To
         slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
         data.push_back( wxVariant(slen) ); // Distance
@@ -502,7 +534,10 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         m_tcName->SetValue( m_pRoute->m_RouteNameString );
         m_tcFrom->SetValue( m_pRoute->m_RouteStartString );
         m_tcTo->SetValue( m_pRoute->m_RouteEndString );
+        m_tcDescription->SetValue( m_pRoute->m_RouteDescription );
+
         m_tcName->SetFocus();
+#ifndef __OCPN__ANDROID__        
         if( m_pRoute->m_PlannedDeparture.IsValid() && m_pRoute->m_PlannedDeparture.GetValue() > 0 ) {
             m_dpDepartureDate->SetValue(toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon).GetDateOnly());
             m_tpDepartureTime->SetValue(toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
@@ -510,6 +545,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
             m_dpDepartureDate->SetValue(toUsrDateTime(wxDateTime::Now(), m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon).GetDateOnly());
             m_tpDepartureTime->SetValue(toUsrDateTime(wxDateTime::Now(), m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
         }
+#endif        
     }
     
     if( m_pRoute->m_Colour == wxEmptyString ) {
@@ -564,8 +600,10 @@ void RoutePropDlgImpl::DepartureTimeOnTimeChanged( wxDateEvent& event )
 void RoutePropDlgImpl::TimezoneOnChoice( wxCommandEvent& event )
 {
     m_tz_selection = m_choiceTimezone->GetSelection();
+#ifndef __OCPN__ANDROID__
     m_dpDepartureDate->SetValue(toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon).GetDateOnly());
     m_tpDepartureTime->SetValue(toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection , m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon));
+#endif
     UpdatePoints();
     event.Skip();
 }
@@ -601,7 +639,7 @@ void RoutePropDlgImpl::PlanSpeedOnKillFocus( wxFocusEvent& event )
     event.Skip();
 }
 
-int ev_col;
+static int ev_col;
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemEditingDone( wxDataViewEvent& event )
 {
     //There is a bug in wxWidgets, the EDITING_DONE event does not contain the new value, so we must save the data and do the work later in the value changed event.
@@ -636,10 +674,15 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
         ts.Trim(true);
         ts.Trim(false);
         
-        if( !etd.ParseDateTime(ts, &end) ) {
-            etd = wxInvalidDateTime;
+        if( !ts.IsEmpty() ) {
+            if( !etd.ParseDateTime(ts, &end) ) {
+                p->SetETD(wxInvalidDateTime);
+            } else {
+                p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
+            }
+        } else {
+            p->SetETD(wxInvalidDateTime);
         }
-        p->SetETD(fromUsrDateTime(etd, m_tz_selection, p->m_lon).FormatISOCombined());
     }
     UpdatePoints();
 #endif
@@ -647,7 +690,8 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged( wxDataViewEv
 
 void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEvent& event )
 {
-    if( m_dvlcWaypoints->GetSelectedRow() > 0 && m_dvlcWaypoints->GetSelectedRow() < m_dvlcWaypoints->GetItemCount() - 1 ) {
+    long selected_row = m_dvlcWaypoints->GetSelectedRow();
+    if( selected_row > 0 && selected_row < m_dvlcWaypoints->GetItemCount() - 1 ) {
         m_btnSplit->Enable(true);
     } else {
         m_btnSplit->Enable(false);
@@ -657,16 +701,30 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged( wxDataViewEv
     } else {
         m_btnExtend->Enable(false);
     }
+    if( selected_row >= 0 && selected_row < m_dvlcWaypoints->GetItemCount()) {
+        RoutePoint *prp = m_pRoute->GetPoint(selected_row + 1);
+        if( prp ) {
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
+#ifdef __WXMSW__
+            if(m_dvlcWaypoints)
+                m_dvlcWaypoints->SetFocus();
+#endif
+        }
+    }
 }
 
 
 wxDateTime RoutePropDlgImpl::GetDepartureTS()
 {
+#ifndef __OCPN__ANDROID__
     wxDateTime dt = m_dpDepartureDate->GetValue();
     dt.SetHour(m_tpDepartureTime->GetValue().GetHour());
     dt.SetMinute(m_tpDepartureTime->GetValue().GetMinute());
     dt.SetSecond(m_tpDepartureTime->GetValue().GetSecond());
     return fromUsrDateTime(dt, m_tz_selection, m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon);;
+#else
+    return wxDateTime::Now();
+#endif    
 }
 
 
@@ -794,6 +852,7 @@ void RoutePropDlgImpl::SaveChanges()
         m_pRoute->m_RouteNameString = m_tcName->GetValue();
         m_pRoute->m_RouteStartString = m_tcFrom->GetValue();
         m_pRoute->m_RouteEndString = m_tcTo->GetValue();
+        m_pRoute->m_RouteDescription  = m_tcDescription->GetValue();
         if( m_choiceColor->GetSelection() == 0 ) {
             m_pRoute->m_Colour = wxEmptyString;
         } else {

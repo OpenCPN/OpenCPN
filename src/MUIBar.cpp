@@ -43,11 +43,12 @@
 #include "styles.h"
 
 #ifdef ocpnUSE_SVG
-#include "wxsvg/include/wxSVG/svg.h"
+#include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
+#include "qdebug.h"
 #endif
 
 
@@ -57,19 +58,23 @@
 //------------------------------------------------------------------------------
 
 extern OCPNPlatform              *g_Platform;
-extern bool                      g_bEffects;
 extern ChartCanvas               *g_focusCanvas;
 extern ocpnStyle::StyleManager*   g_StyleManager;
+extern bool                       g_bShowMuiZoomButtons;
 
 //  Helper utilities
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {
     #ifdef ocpnUSE_SVG
+#ifdef __OCPN__ANDROID__
+    return loadAndroidSVG( filename, width, height );
+#else    
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
+#endif    
     #else
         return wxBitmap(width, height);
     #endif // ocpnUSE_SVG
@@ -474,6 +479,9 @@ void MUIBar::Init()
 {
     m_zinButton = NULL;
     m_zoutButton = NULL;
+    m_followButton = NULL;
+    m_menuButton = NULL;
+    
     m_canvasOptions = NULL;
     m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
     m_backcolorString = _T("GREY3");
@@ -484,6 +492,10 @@ void MUIBar::Init()
     
     CanvasOptionTimer.SetOwner( this, CANVAS_OPTIONS_TIMER );
     m_coAnimateByBitmaps = false;
+    m_bEffects = true;
+#ifdef __OCPN__ANDROID__
+    m_bEffects =false;
+#endif    
     
 }
 
@@ -538,6 +550,7 @@ void MUIBar::CreateControls()
         
         // Buttons
         
+        if(g_bShowMuiZoomButtons){
         m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 0, wxSHAPED);
     
@@ -545,7 +558,9 @@ void MUIBar::CreateControls()
         barSizer->Add(m_zoutButton, 0, wxSHAPED);
     
         barSizer->AddSpacer(2);
+        }
         
+#ifndef __OCPN__ANDROID__        
         //  Scale 
         m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
         wxColour textbackColor = GetGlobalColor( _T("GREY1") );
@@ -553,16 +568,12 @@ void MUIBar::CreateControls()
         barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL );
         barSizer->AddSpacer(5);
         
-        
-//         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-//         barSizer->Add(pl1, 1);
-        
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
                                         iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 0, wxSHAPED);
         
         barSizer->AddSpacer(2);
-        
+#endif        
         m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 0,  wxSHAPED);
     }
@@ -574,7 +585,7 @@ void MUIBar::CreateControls()
         topSizer->Add(barSizer, 0, wxEXPAND );
         
         // Buttons
-        
+        if(g_bShowMuiZoomButtons){
         m_zinButton = new MUIButton( this, ID_ZOOMIN, m_scaleFactor, iconDir + _T("MUI_zoom-in.svg"));
         barSizer->Add(m_zinButton, 1, wxSHAPED);
         
@@ -582,22 +593,15 @@ void MUIBar::CreateControls()
         barSizer->Add(m_zoutButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
-#if 0        
-        //  Scale 
-        m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:400000"));
-        m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
-        barSizer->Add(m_scaleTextBox, 1, wxALIGN_CENTER_VERTICAL );
+        }
         
-#endif
-
-//         wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-//         barSizer->Add(pl1, 1);
-        
+#ifndef __OCPN__ANDROID__        
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
                                         iconDir + _T("MUI_follow.svg"), iconDir + _T("MUI_follow_active.svg"), iconDir + _T("MUI_follow_ahead.svg"));
         barSizer->Add(m_followButton, 1, wxSHAPED);
         
         barSizer->AddSpacer(5);
+#endif        
         
         m_menuButton = new MUIButton( this, ID_MUI_MENU, m_scaleFactor, iconDir + _T("MUI_menu.svg"));
         barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
@@ -701,11 +705,13 @@ void MUIBar::UpdateDynamicValues()
     else
         scaleString.Printf(_T("1:%4.1f MM"), scale / 1e6);
     
+    if(m_scaleTextBox)
     m_scaleTextBox->SetLabel(scaleString);
 }
 
 void MUIBar::SetFollowButtonState( int state )
 {
+    if(m_followButton)
     m_followButton->SetState( state );
 }
 
@@ -893,7 +899,7 @@ void MUIBar::PullCanvasOptions()
     int coy = m_COTopOffset;
         m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
 
-    if(!g_bEffects){
+    if(!m_bEffects){
         m_canvasOptions->Move(m_targetCOPos);
         m_canvasOptions->Show();
         return;
@@ -937,7 +943,7 @@ void MUIBar::PullCanvasOptions()
 
 void MUIBar::PushCanvasOptions()
 {
-    if(!g_bEffects){
+    if(!m_bEffects){
         m_canvasOptions->Hide();
         return;
     }

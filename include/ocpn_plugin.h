@@ -27,12 +27,14 @@
 #define _PLUGIN_H_
 
 #ifndef DECL_EXP
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__CYGWIN__)
 #  define DECL_EXP     __declspec(dllexport)
+#elif defined __GNUC__ && __GNUC__ >= 4
+#  define DECL_EXP     __attribute__((visibility("default")))
+#elif defined __WXOSX__
+#  define DECL_EXP     __attribute__((visibility("default")))
 #else
-# ifdef __GNUC__
-# define DECL_EXP       __attribute__((visibility("default")))
-# endif
+#  define DECL_EXP
 #endif
 #endif
 
@@ -43,9 +45,15 @@
 #endif    
 
 #include <wx/xml/xml.h>
+#include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/menuitem.h>
+#include <wx/gdicmn.h>
+
 
 #ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
+#include <wx/bitmap.h>
 #endif // ocpnUSE_SVG
 
 #include <memory>
@@ -536,7 +544,6 @@ class DECL_EXP opencpn_plugin_115 : public opencpn_plugin_114
 public:
     opencpn_plugin_115(void *pmgr);
     virtual ~opencpn_plugin_115();
-
 };
 
 class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
@@ -1097,6 +1104,7 @@ extern DECL_EXP void SetCanvasTilt(double tilt);
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
+extern DECL_EXP void ForceChartDBRebuild();
 
 extern  DECL_EXP wxString GetWritableDocumentsDir( void );
 extern  DECL_EXP wxDialog *GetActiveOptionsDialog();
@@ -1172,7 +1180,7 @@ enum OCPN_DLDialogStyle
 
 /*   Synchronous (Blocking) download of a single file  */
 
-extern DECL_EXP _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFile, 
+extern DECL_EXP _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFile,
                                        const wxString &title, const wxString &message, 
                                        const wxBitmap& bitmap,
                                        wxWindow *parent, long style, int timeout_secs);
@@ -1250,6 +1258,13 @@ extern   DECL_IMP wxEventType wxEVT_DOWNLOAD_EVENT;
 extern   DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT;
 #endif
 
+
+/* API 1.14  */
+/* API 1.14  adds some more common functions to avoid unnecessary code duplication */
+
+bool LaunchDefaultBrowser_Plugin( wxString url );
+    
+    
 // API 1.14 Extra canvas Support
 
 /* Allow drawing of objects onto other OpenGL canvases */
@@ -1260,7 +1275,7 @@ extern DECL_EXP bool PlugInSetFontColor(const wxString TextElement, const wxColo
 extern DECL_EXP double PlugInGetDisplaySizeMM();
 
 // 
-extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family, 
+extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
                     wxFontStyle style, wxFontWeight weight, bool underline = false,
                     const wxString &facename = wxEmptyString,
                     wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
@@ -1318,6 +1333,10 @@ extern DECL_EXP wxWindow *GetCanvasByIndex( int canvasIndex );
 extern DECL_EXP int GetCanvasCount( );
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
 extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );
+
+// API 1.17
+//
+extern DECL_EXP wxRect GetMasterToolbarRect();
 
 enum SDDMFORMAT
 {

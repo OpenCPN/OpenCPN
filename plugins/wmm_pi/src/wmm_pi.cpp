@@ -39,6 +39,7 @@
 #else
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h
 #include "GL/gl_private.h"
+#include "qdebug.h"
 #endif
 
 
@@ -58,6 +59,10 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
+
+wmm_pi *g_pi;
+
+bool g_compact;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -120,6 +125,8 @@ wmm_pi::wmm_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
+    
+    g_pi = this;
 }
 
 int wmm_pi::Init(void)
@@ -144,11 +151,20 @@ int wmm_pi::Init(void)
     //    And load the configuration items
     LoadConfig();
 
+#ifdef __OCPN__ANDROID__
+    g_compact = true;
+    m_bShowPlotOptions = false;
+    m_iViewType = 1;
+#endif
+    
+    
     m_buseable = true;
 
     m_LastVal = wxEmptyString;
 
-    pFontSmall = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    //pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    pFontSmall = OCPNGetFont( _("WMM_Live_Overlay"), 10);
+    
     m_shareLocn =*GetpSharedDataLocation() +
     _T("plugins") + wxFileName::GetPathSeparator() +
     _T("wmm_pi") + wxFileName::GetPathSeparator() +
@@ -213,6 +229,7 @@ int wmm_pi::Init(void)
     }
 
     m_pWmmDialog = NULL;
+    m_oDC = NULL;
 
     return ret_flag;
 }
@@ -246,7 +263,11 @@ bool wmm_pi::DeInit(void)
         Geoid.GeoidHeightBuffer = NULL;
     }*/
     
-    delete pFontSmall;
+    //delete pFontSmall;
+    
+    if(m_oDC)
+        delete m_oDC;
+    
     return true;
 }
 
@@ -411,7 +432,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     
 }
 
-void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
+void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp)
 {
     if(!m_bShowPlot)
       return;
@@ -423,22 +444,45 @@ void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
 
 bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
-    RenderOverlayBoth(&dc, vp);
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(&dc);
+    
+    RenderOverlayBoth(m_oDC, vp);
+    
     return true;
 }
 
 bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(NULL);
+    
+#ifndef USE_ANDROID_GLES2    
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT );
     
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+#endif
 
-    RenderOverlayBoth(0, vp);
+    RenderOverlayBoth(m_oDC, vp);
 
+#ifndef USE_ANDROID_GLES2
     glPopAttrib();
+#endif
 
     return true;
 }
@@ -466,6 +510,9 @@ void wmm_pi::RecomputePlot()
 
 void wmm_pi::SetCursorLatLon(double lat, double lon)
 {
+    if(!m_pWmmDialog)
+        return;
+    
     if (!m_bShowAtCursor)
         return; //We don't want to waste CPU cycles that much...
     if (lat < -90 || lat > 90 || lon < -180 || lon > 180 || NULL == m_pWmmDialog || !m_pWmmDialog->IsShown())
@@ -568,13 +615,12 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
                 //   No smaller than 8 pt.
                 int w;
                 wxScreenDC sdc;
-                sdc.SetFont(*pFontSmall);
-                sdc.GetTextExtent(NewVal, &w, NULL);
+                sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
+
                 while( (w > (icon.GetWidth() * 8 / 10) ) && (point_size >= 8) ){
                     point_size--;
                     pFontSmall->SetPointSize(point_size);
-                    sdc.SetFont(*pFontSmall);
-                    sdc.GetTextExtent(NewVal, &w, NULL);
+                    sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
                 }
             }
             dc.SetFont(*pFontSmall);
@@ -839,6 +885,59 @@ bool wmm_pi::SaveConfig(void)
     }
     else
         return false;
+}
+
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
 }
 
 void wmm_pi::ShowPreferencesDialog( wxWindow* parent )

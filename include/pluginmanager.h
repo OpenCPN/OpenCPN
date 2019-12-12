@@ -35,15 +35,15 @@
 #include <wx/glcanvas.h>
 #endif
 
+#include "config.h"
+
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 //#include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 
-#ifdef USE_S57
 #include "s57chart.h"               // for Object list
-#endif
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -52,7 +52,7 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
 #include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
 #endif
@@ -70,8 +70,8 @@
 #undef MAX
 #endif
 
-#include "wx/json_defs.h"
-#include "wx/jsonwriter.h"
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
 
 //    Assorted static helper routines
 
@@ -351,7 +351,7 @@ private:
       wxString GetPluginOrder();
     
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
       
 public:
       wxCurlDownloadThread *m_pCurlThread;
@@ -432,8 +432,6 @@ private:
 //  API 1.11 adds access to S52 Presentation library
 //  These are some wrapper conversion utilities
 
-#ifdef USE_S57
-
 class S52PLIB_Context
 {
 public:
@@ -466,10 +464,8 @@ public:
 };
 
 
-
 void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pctx );
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
-#endif
 
 #endif            // _PLUGINMGR_H_
 

@@ -27,16 +27,15 @@
 #include <wx/textfile.h>
 #include <wx/filename.h>
 
+#include "config.h"
+
 #include "s57RegistrarMgr.h"
 #include "S57ClassRegistrar.h"
 
-#ifdef USE_S57
 extern S57ClassRegistrar *g_poRegistrar;
-#endif
 
 static int s57_initialize( const wxString& csv_dir, FILE *flog )
 {
-
     //      Get one instance of the s57classregistrar,
     //      And be prepared to give it to any module that needs it
 

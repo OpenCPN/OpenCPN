@@ -23,9 +23,8 @@
  */
 
 #include "wx/wxprec.h"
-
-
 #include "wx/osx/private.h"
 
-void applyDarkAppearanceToWindow(NSWindow *window, bool vibrant = false, bool flat = false, bool subviews = false);
+void setAppLevelDarkMode(bool enabled = true);
 
+void setWindowLevelDarkMode(NSWindow *window, bool enabled = true);

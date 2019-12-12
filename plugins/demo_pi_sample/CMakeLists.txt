@@ -20,8 +20,7 @@
  
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
 
 PROJECT(demo_pi)
 
@@ -64,7 +63,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
- ADD_DEFINITIONS( "-Wall -g -fexceptions -fvisibility=hidden" )
+ ADD_COMPILE_OPTIONS("-Wall" "-g" "-fexceptions" "-fvisibility=hidden")
 
  IF(NOT APPLE)
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
@@ -138,6 +137,8 @@ SET(SRC_NMEA0183
 INCLUDE_DIRECTORIES(nmea0183)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )
+
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn )
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

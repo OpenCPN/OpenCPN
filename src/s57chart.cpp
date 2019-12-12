@@ -53,10 +53,10 @@
 #include "wx28compat.h"
 #include "ChartDataInputStream.h"
 
-#include "mygdal/cpl_csv.h"
+#include "gdal/cpl_csv.h"
 #include "setjmp.h"
 
-#include "mygdal/ogr_s57.h"
+#include "ogr_s57.h"
 
 #include "pluginmanager.h"                      // for S57 lights overlay
 
@@ -74,6 +74,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+#include "linmath.h"
 #endif
 
 #include <algorithm>          // for std::sort
@@ -97,6 +98,14 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+
+#ifndef USE_ANDROID_GLES2
+#define glGenBuffers (s_glGenBuffers);
+#define glBindBuffer (s_glBindBuffer);
+#define glBufferData (s_glBufferData);
+#define glDeleteBuffers (s_glDeleteBuffers);
+#endif
+
 #endif
 
 
@@ -104,16 +113,14 @@ extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
 extern wxString          g_csv_locn;
 extern wxString          g_SENCPrefix;
-extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
 extern bool              g_b_EnableVBO;
+extern OCPNPlatform     *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
-extern ColorScheme       global_color_scheme;
-extern int               g_nCPUCount;
 
 int                      g_SENC_LOD_pixels;
 
@@ -327,7 +334,7 @@ s57chart::~s57chart()
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
-        s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+        glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
     free (m_this_chart_context);    
 
@@ -1436,17 +1443,21 @@ void s57chart::BuildLineVBO( void )
 
         //      Create the VBO
         GLuint vboId;
-        (s_glGenBuffers)(1, &vboId);
+        glGenBuffers(1, &vboId);
 
          // bind VBO in order to use
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
         // upload data to VBO
+#ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-        (s_glBufferData)(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
+#endif
+        glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
 
+#ifndef USE_ANDROID_GLES2
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
+#endif
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         //  Loop and populate all the objects
         for( int i = 0; i < PRIO_NUM; ++i ) {
@@ -1516,14 +1527,17 @@ bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& V
     
     SetVPParms( VPoint );
     
+#ifndef USE_ANDROID_GLES2
     glPushMatrix(); //    Adjust for rotation
+#endif
     glChartCanvas::RotateToViewPort(VPoint);
            
     glChartCanvas::DisableClipRegion();
     DoRenderOnGLText( glc, VPoint );
             
+#ifndef USE_ANDROID_GLES2
     glPopMatrix();
-    
+#endif
     
 #endif
     return true;
@@ -1542,7 +1556,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
     SetVPParms( VPoint );
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -1583,15 +1597,68 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                 // for now I will revert to the faster rectangle clipping now that rendering order is resolved
 //                glChartCanvas::SetClipRegion(cvp, chart_region);
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                ps52plib->m_last_clip_rect = upd.GetRect();
             }
             else
-                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            {
+#ifdef OPT_USE_ANDROID_GLES2
+
+                // GLES2 will be faster if we setup and use a smaller viewport for each rectangle render.
+                // This is because when using shaders, clip operations (e.g. scissor, stencil) happen after the fragment shader executes.
+                // However, with a smaller viewport, the fragment shader will not be invoked if the vertices are all outside the vieport.
+                
+                wxRect r = upd.GetRect();
+                ViewPort *vp = &cvp;
+                glViewport( r.x, vp->pix_height - (r.y + r.height), r.width, r.height );
+                
+                //mat4x4 m;
+                 //mat4x4_identity(m);
+                
+                mat4x4 I, Q;
+                mat4x4_identity(I);
+
+                float yp = vp->pix_height - (r.y + r.height);
+                // Translate
+                I[3][0]  = (-r.x - (float)r.width/2) *  (  2.0 / (float)r.width);
+                I[3][1]  = (r.y + (float)r.height/2) * (  2.0 / (float)r.height);
+                
+                // Scale
+                I[0][0] *= 2.0 / (float)r.width;
+                I[1][1] *= -2.0 / (float)r.height;
+                
+                //Rotate
+                float angle = 0;
+                mat4x4_rotate_Z(Q, I, angle);
+                
+                mat4x4_dup((float (*)[4])vp->vp_transform, Q);
+
+#else
+                //glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                glChartCanvas::SetClipRegion(cvp, chart_region);
 
             ps52plib->m_last_clip_rect = upd.GetRect();
+                
+                
+#endif                
+                
+            }
+
+//            ps52plib->m_last_clip_rect = upd.GetRect();
+#ifndef USE_ANDROID_GLES2
             glPushMatrix(); //    Adjust for rotation
+#endif
             glChartCanvas::RotateToViewPort(VPoint);
+            
+            wxRect r = upd.GetRect();
+            //qDebug() << "Rect" << r.x << r.y << r.width << r.height;
+            
+            //qDebug() << "Start DoRender" << sw.GetTime();
             DoRenderOnGL( glc, cvp );
+            //qDebug() << "End DoRender" << sw.GetTime();
+            
+#ifndef USE_ANDROID_GLES2
             glPopMatrix();
+#endif
             glChartCanvas::DisableClipRegion();
         }
     }
@@ -1615,6 +1682,7 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
     ObjRazRules *crnt;
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
+#if 1    
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
@@ -1630,6 +1698,33 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
         }
     }
 
+#else    
+    //      Render the areas quickly
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( PI_GetPLIBBoundaryStyle() == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
+            else
+                top = razRules[i][3];           // Area Plain Boundaries
+                
+                while( top != NULL ) {
+                    crnt = top;
+                    top = top->next;               // next object
+                    crnt->sm_transform_parms = &vp_transform;
+                    
+                    // This may be a deferred tesselation
+                    // Don't pre-process the geometry unless the object is to be actually rendered
+                    if(!crnt->obj->pPolyTessGeo->IsOk() ){ 
+                        if(ps52plib->ObjectRenderCheckRules( crnt, &tvp, true )){
+                            if(!crnt->obj->pPolyTessGeo->m_pxgeom)
+                                crnt->obj->pPolyTessGeo->m_pxgeom = buildExtendedGeom( crnt->obj );
+                        }
+                    }
+                    ps52plib->RenderAreaToGL( glc, crnt, &tvp );
+                }
+    }
+#endif    
+//qDebug() << "Done areas" << sw.GetTime();
+    
     //    Render the lines and points
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
@@ -1642,7 +1737,10 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
+    }
+    //qDebug() << "Done Boundaries" << sw.GetTime();
 
+    for( i = 0; i < PRIO_NUM; ++i ) {
         top = razRules[i][2];           //LINES
         while( top != NULL ) {
             crnt = top;
@@ -1650,7 +1748,11 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
+    }
+ 
+ //qDebug() << "Done Lines" << sw.GetTime();
 
+    for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
             top = razRules[i][0];       //SIMPLIFIED Points
         else
@@ -1662,8 +1764,9 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
-
     }
+    //qDebug() << "Done Points" << sw.GetTime();
+
 
 #endif          //#ifdef ocpnUSE_GL
 
@@ -1826,7 +1929,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 
     if( Region != m_last_Region ) force_new_view = true;
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -1907,7 +2010,7 @@ bool s57chart::RenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint )
 
     SetVPParms( VPoint );
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -2362,9 +2465,9 @@ bool s57chart::DCRenderText( wxMemoryDC& dcinput, const ViewPort& vp )
 
 
 
-bool s57chart::IsCellOverlayType( char *pFullPath )
+bool s57chart::IsCellOverlayType( const wxString &FullPath )
 {
-    wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
+    wxFileName fn( FullPath );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
     if(cname.Length() >= 3)
@@ -3875,8 +3978,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 {
     
     //  LOD calculation
-    double display_ppm = 1 / .00025;     // nominal for most LCD displays
-    double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
+    double display_pix_per_meter  = g_Platform->GetDisplayDPmm() * 1000;
+    double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_pix_per_meter;
     m_LOD_meters = meters_per_pixel_max_scale * g_SENC_LOD_pixels;
 
     //  Establish a common reference point for the chart
@@ -4547,6 +4650,10 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 //  This is too big for pick area, can be confusing....
                 //  So make a temporary box at the light's lat/lon, with select_radius size
                 if( !strncmp( obj->FeatureName, "LIGHTS", 6 ) ) {
+                    
+                    double sectrTest;
+                    bool hasSectors = GetDoubleAttr( obj, "SECTR1", sectrTest );
+                    if(hasSectors){
                     double olon, olat;
                     fromSM( ( obj->x * obj->x_rate ) + obj->x_origin,
                             ( obj->y * obj->y_rate ) + obj->y_origin, ref_lat, ref_lon, &olat,
@@ -4558,10 +4665,16 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     LLBBox sbox;
                     sbox.Set(olat, olon, olat, olon);
 
-                    if( sbox.ContainsMarge( lat, lon, select_radius ) ) return true;
+                        if( sbox.ContainsMarge( lat, lon, select_radius ) )
+                            return true;
+                    }
+                    else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                        return true;
+                    
                 }
 
-                else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return true;
+                else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                    return true;
             }
 
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
@@ -4860,7 +4973,7 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                         }
                     }
                 }
-                else {
+                else if(ppg->data_type == DATA_TYPE_FLOAT) {
                     float *p_vertex = (float *)pTP->p_vertex;
 
                     switch( pTP->type ){
@@ -4919,6 +5032,10 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                             break;
                         }
                     }
+                }
+                else{
+                    ret = true;         // Unknown data type, accept the entire TriPrim via coarse test.
+                    break;
                 }
             }
             pTP = pTP->p_next;
@@ -5531,10 +5648,16 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 wxString color = thisLight->attributeValues.Item( attrIndex );
                 if( color == _T("red (3)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green (4)") )
+                else if( color == _T("green (4)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white (1)") )
+                else if( color == _T("white (1)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("yellow (6)") )
                     colorStr = _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else if( color == _T("blue (5)") )
+                    colorStr = _T("<table border=0><tr><td bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                else
+                    colorStr = _T("<table border=0><tr><td bgcolor=grey>&nbsp;?&nbsp;</td></tr></table> ");
             }
 
             int visIndex = thisLight->attributeNames.Index( _T("LITVIS") );

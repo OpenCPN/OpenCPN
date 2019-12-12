@@ -15,13 +15,21 @@ matrix:
       compiler: gcc
       script:
         - ./ci/travis-build-debian.sh
-
     - env:
         - OCPN_TARGET=osx
       os: osx
+      osx_image: xcode10.2
       compiler: clang
       script:
         - ./ci/travis-build-osx.sh
+
+    - env:
+        - OCPN_TARGET=mingw
+      services:
+        - docker
+      script:
+        - ./ci/travis-build-mingw.sh
+
 
 before_install:
   - >
