@@ -7,6 +7,7 @@
 
 #include "chartdldrgui.h"
 #include <wx/msgdlg.h>
+#include <wx/scrolwin.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -111,8 +112,9 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
         m_treeCtrlPredefSrcs = new wxTreeCtrl( m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_HIDE_ROOT|wxTR_HAS_BUTTONS );
 	bSizerPredefTree->Add( m_treeCtrlPredefSrcs, 1, wxALL|wxEXPAND, 5 );
+#ifdef __OCPN__ANDROID__
         m_treeCtrlPredefSrcs->SetScrollRate(0,1);
-
+#endif
 	m_panelPredefined->SetSizer( bSizerPredefTree );
         m_panelPredefined->Layout();
         bSizerPredefTree->Fit( m_treeCtrlPredefSrcs/*m_panelPredefined*/ );

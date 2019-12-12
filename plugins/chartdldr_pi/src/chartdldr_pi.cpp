@@ -2099,8 +2099,9 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im4);
     
+#ifdef __OCPN__ANDROID__    
     m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
-
+#endif
     m_treeCtrlPredefSrcs->SetIndent( w );
     
     m_base_path = wxEmptyString;
