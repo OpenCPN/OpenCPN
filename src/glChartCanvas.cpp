@@ -4112,11 +4112,10 @@ void glChartCanvas::Render()
             return;
         }
 
-        
 #ifdef USE_ANDROID_GLES2
 
     OCPNStopWatch sw;
-
+    
     if(m_inFade)
         return;
 
@@ -4444,7 +4443,7 @@ void glChartCanvas::Render()
                     glClear(GL_COLOR_BUFFER_BIT);
                     
                     // Render the new content
-                    OCPNStopWatch swr1;
+                    //OCPNStopWatch swr1;
  //                   RenderCharts(gldc, update_region);
                     glViewport( 0, 0, (GLint) sx, (GLint) sy );
                     
