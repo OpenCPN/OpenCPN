@@ -70,6 +70,13 @@ extern GLint circle_filled_shader_program;
 extern GLint texture_2D_shader_program;
 #endif
 
+//----------------------------------------------------------------------------
+//   constants
+//----------------------------------------------------------------------------
+#ifndef PI
+#define PI        3.1415926535897931160E0      /* pi */
+#endif
+
 extern MyFrame *gFrame;
 
 //----------------------------------------------------------------------------
@@ -1451,13 +1458,21 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         
         
 #else        
-        
+       
+                       
+        glPushMatrix();
+        glTranslatef(xoffset, yoffset, 0);
+
+        float deg = 180/PI * ( angle  );
+        glRotatef(deg, 0, 0, 1);
+
+
         if( ConfigureBrush() ) {
             if( g_GLOptions.m_GLPolygonSmoothing )
                 glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
-                glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
+                glVertex2f( (points[i].x * scale), (points[i].y * scale) );
             glEnd();
             glDisable( GL_POLYGON_SMOOTH );
         }
@@ -1467,10 +1482,12 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
                 glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
-                glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
+                glVertex2f( (points[i].x * scale), (points[i].y * scale) );
             glEnd();
             glDisable( GL_LINE_SMOOTH );
         }
+        
+        glPopMatrix();
 #endif
 
         SetGLAttrs( false ); 
