@@ -138,6 +138,16 @@ class PlugIn_ViewPort
             bool     bValid;                 // This VP is valid
 };
 
+class Plugin_Active_Leg_Info
+{
+public:
+  double Xte;               // Left side of the track -> negative XTE
+  double Btw;
+  double Dtw;
+  wxString wp_name;         // Name of destination waypoint for active leg
+  bool arrival;             // True when within arrival circle
+};
+
 class PlugIn_Position_Fix
 {
    public:
@@ -556,6 +566,14 @@ public:
     virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
     virtual void PrepareContextMenu( int canvasIndex);
 
+};
+
+class DECL_EXP opencpn_plugin_117 : public opencpn_plugin_116
+{
+public:
+  opencpn_plugin_117(void *pmgr);
+  virtual ~opencpn_plugin_117();
+  virtual void SetActiveLegInfo(Plugin_Active_Leg_Info &leg_info);
 };
 
 //------------------------------------------------------------------
@@ -1336,5 +1354,9 @@ enum SDDMFORMAT
 };
 
 extern DECL_EXP int GetLatLonFormat(void);
+
+// API 1.17
+extern "C"  DECL_EXP void ZeroXTE();
+
 
 #endif //_PLUGIN_H_

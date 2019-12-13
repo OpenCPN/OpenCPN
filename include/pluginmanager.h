@@ -288,6 +288,7 @@ public:
 
       void SendNMEASentenceToAllPlugIns(const wxString &sentence);
       void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
+      void SendActiveLegInfoToAllPlugIns(ActiveLegDat *infos);
       void SendAISSentenceToAllPlugIns(const wxString &sentence);
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
