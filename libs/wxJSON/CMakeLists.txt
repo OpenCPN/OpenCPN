@@ -31,4 +31,4 @@ add_library(ocpn::wxjson ALIAS WXJSON)
 
 set_property(TARGET WXJSON PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXJSON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
+target_link_libraries(WXJSON PRIVATE ${wxWidgets_LIBRARIES})
