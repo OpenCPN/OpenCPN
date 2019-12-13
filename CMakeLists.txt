@@ -844,6 +844,7 @@ set(
   include/ocpn_pixel.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
+  include/semantic_vers.h
   include/OCPNRegion.h
   include/ocpn_types.h
   include/options.h
@@ -952,6 +953,7 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
+  src/semantic_vers.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/options.cpp

@@ -50,6 +50,12 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <algorithm>
+#include <cstdio>
+#include <string>
+#include <sstream>
+#include <iostream>
+
 #ifdef ocpnUSE_SVG
 #include <wxSVG/svg.h>
 #endif // ocpnUSE_SVG
@@ -297,6 +303,23 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     return vp;
 }
 
+SemanticVersion PlugInContainer::GetVersion() 
+{
+    auto plugin_117 = dynamic_cast<opencpn_plugin_117*>(m_pplugin);
+    if (plugin_117) {
+        return SemanticVersion(plugin_117->GetPlugInVersionMajor(),
+                               plugin_117->GetPlugInVersionMinor(),
+                               plugin_117->GetPlugInVersionPatch(),
+                               plugin_117->GetPlugInVersionPost(),
+                               plugin_117->GetPlugInVersionPre(),
+                               plugin_117->GetPlugInVersionBuild());
+    }
+    else {
+        return SemanticVersion(m_pplugin->GetAPIVersionMajor(),
+                               m_pplugin->GetAPIVersionMinor());
+    }
+
+}
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
@@ -4081,6 +4104,20 @@ void opencpn_plugin_116::PrepareContextMenu( int canvasIndex)
     return;
 }
 
+//    Opencpn_Plugin_117 Implementation
+opencpn_plugin_117::opencpn_plugin_117(void *pmgr)
+    :opencpn_plugin_116(pmgr)
+{}
+
+int opencpn_plugin_117::GetPlugInVersionPatch() { return 0; };
+
+int opencpn_plugin_117::GetPlugInVersionPost() { return 0; };
+
+const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
+
+const char* opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
+
+
 //          Helper and interface classes
 
 //-------------------------------------------------------------------------------
@@ -4284,8 +4321,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
     itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
-    m_pVersion = new wxStaticText( this, wxID_ANY,
-                                   wxString::Format(_T("%d.%d"), m_pPlugin->m_version_major, m_pPlugin->m_version_minor) );
+
+    m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
     m_pVersion->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
@@ -4337,35 +4374,30 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 void PluginPanel::SetSelected( bool selected )
 {
     m_bSelected = selected;
-    if (selected)
-    {
+    std::ostringstream version;
+    version << m_pPlugin->GetVersion();
+    if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
-        m_pButtons->Show(true);
-#ifndef __WXQT__
-        m_pButtonsUpDown->Show(true);
-#else        
-        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
-        m_pButtonsUpDown->Show(false);
-#endif        
-        Layout();
-        //FitInside();
+        std::ostringstream os(m_pVersion->GetLabel().ToStdString());
+        version <<  _(" -- requires API version ")  << m_pPlugin->m_api_version;
     }
-    else
-    {
+    else {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
-#ifndef __WXQT__
-        m_pButtons->Show(false);
-#else        
-        m_pButtons->Show(true);
-#endif        
-        m_pButtonsUpDown->Show(false);
-        Layout();
-        //FitInside();
     }
-    Refresh(true);
     
+    m_pButtons->Show(selected);   // For most platforms, show buttons if selected
+    m_pButtonsUpDown->Show(selected);
+#ifdef __OCPN__ANDROID__
+    // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
+    m_pButtonsUpDown->Show(false);
+    m_pButtons->Show(true);     // Always enable buttons for Android
+#endif
+    
+    m_pVersion->SetLabel(version.str());
+    Layout();
+
 #ifdef __WXOSX__
     if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
