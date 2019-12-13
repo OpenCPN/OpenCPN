@@ -47,6 +47,7 @@ protected:
 #endif
     void m_htmlWinHelpOnHtmlLinkClicked( wxHtmlLinkEvent& event ) { m_btnBack->Enable(); event.Skip(); }
 
+    void RecalculateSize( void );
     
 public:
     ~AboutFrameImpl() {};

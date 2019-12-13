@@ -83,9 +83,6 @@
 extern bool              g_b_EnableVBO;
 
 #ifdef ocpnUSE_GL
-extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
-extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
-extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 #endif
 

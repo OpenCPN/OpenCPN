@@ -21,6 +21,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/tokenzr.h>
 
 #include "config.h"
@@ -81,18 +86,11 @@
 extern OCPNPlatform     *g_Platform;
 extern MyFrame          *gFrame;
 
-extern double           g_ChartNotRenderScaleFactor;
 extern int              g_restore_stackindex;
 extern int              g_restore_dbindex;
-extern RouteList        *pRouteList;
-extern TrackList        *pTrackList;
 extern LayerList        *pLayerList;
-extern int              g_LayerIdx;
-extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern ArrayOfCDI       g_ChartDirArray;
 extern double           initial_scale_ppm, initial_rotation;
-extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowTrue, g_bShowMag;
 extern double           g_UserVar;
@@ -101,19 +99,13 @@ extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
 extern int              g_nDepthUnitDisplay;
 
-extern wxToolBarBase    *toolBar;
 
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AIS_Decoder      *g_pAIS;
 extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
-extern WayPointman      *pWayPointMan;
-extern Routeman         *g_pRouteMan;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -128,13 +120,9 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
-extern bool             g_bdisable_opengl;
 extern bool             g_bSoftwareGL;
 extern bool             g_bShowFPS;
 extern bool             g_bsmoothpanzoom;
-extern bool             g_fog_overzoom;
-extern double           g_overzoom_emphasis_base;
-extern bool             g_oz_vector_scale;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
@@ -159,14 +147,11 @@ extern int              g_route_prop_sx, g_route_prop_sy;
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
-extern wxRect           g_blink_rect;
 
-extern wxArrayString    *pMessageOnceArray;
 
 // LIVE ETA OPTION
 extern bool             g_bShowLiveETA;
 extern double           g_defaultBoatSpeed;
-extern double           g_defaultBoatSpeedUserUnit;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -236,13 +221,10 @@ extern wxColour         g_colourOwnshipRangeRingsColour;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
-extern wxString         g_toolbarConfigSecondary;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern int              gps_watchdog_timeout_ticks;
 
-extern int              g_nCacheLimit;
-extern int              g_memCacheLimit;
 
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
@@ -261,9 +243,7 @@ extern bool             g_b_legacy_input_filter_behaviour;
 extern bool             g_bShowDetailSlider;
 extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 
-extern bool             g_bUseGreenShip;
 
-extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -275,15 +255,11 @@ extern double           g_n_arrival_circle_radius;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
 
-extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
 
 extern wxString         g_locale;
 extern wxString         g_localeOverride;
 
-extern bool             g_bUseRaster;
-extern bool             g_bUseVector;
-extern bool             g_bUseCM93;
 
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
@@ -291,22 +267,18 @@ extern int              g_COGAvgSec;
 extern bool             g_bMagneticAPB;
 extern bool             g_bShowChartBar;
 
-extern int              g_MemFootSec;
 extern int              g_MemFootMB;
 
 extern int              g_nCOMPortCheck;
 
-extern bool             g_bbigred;
 
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_BSBImgDebug;
 
-extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
 extern wxString        g_config_version_string;
 
-extern wxString        g_CmdSoundString;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -316,7 +288,6 @@ extern bool             g_bDebugGPSD;
 
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
-extern int              g_SOGFilterSec;
 
 extern int              g_navobjbackups;
 
@@ -330,7 +301,6 @@ extern int              g_maintoolbar_x;
 extern int              g_maintoolbar_y;
 extern long             g_maintoolbar_orient;
 
-extern int              g_GPU_MemSize;
 
 extern int              g_lastClientRectx;
 extern int              g_lastClientRecty;
@@ -350,23 +320,16 @@ extern ChartGroupArray  *g_pGroupArray;
 extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
-extern int              g_current_arrow_scale;
-extern int              g_tide_rectangle_scale;
-extern int              g_tcwin_scale;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern wxString         g_uploadConnection;
 
-extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
-extern Multiplexer      *g_pMUX;
-extern bool             portaudio_initialized;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
 
-extern bool             bGPSValid;              // for track recording
 extern bool             g_bGLexpert;
 
 extern int              g_SENC_LOD_pixels;
@@ -394,9 +357,7 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
-extern float            g_ChartScaleFactorExp;
 extern int              g_ShipScaleFactor;
-extern float            g_ShipScaleFactorExp;
 
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
@@ -404,8 +365,6 @@ extern int              g_iENCToolbarPosY;
 
 extern bool             g_bSpaceDropMark;
 
-extern bool             g_bShowTide;
-extern bool             g_bShowCurrent;
 
 extern bool             g_benableUDPNullHeader;
 extern bool             g_bShowMenuBar;
@@ -415,13 +374,9 @@ extern wxString         g_uiStyle;
 extern bool             g_useMUI;
 extern wxString         g_gpx_path;
 
-extern int              g_nCPUCount;
 
 extern bool             g_bDarkDecorations;
 extern unsigned int     g_canvasConfig;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
-//extern OCPN_AUIManager  *g_pauimgr;
-//extern arrayofCanvasPtr  g_canvasArray;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;

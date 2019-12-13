@@ -188,7 +188,7 @@ private:
 struct ChartTableEntry
 {
     ChartTableEntry() { Clear(); }
-    ChartTableEntry(ChartBase &theChart);
+    ChartTableEntry(ChartBase &theChart, wxString& utf8Path);
     ~ChartTableEntry();
 
     bool IsEqualTo(const ChartTableEntry &cte) const;
@@ -221,15 +221,16 @@ struct ChartTableEntry
     float GetLatMax() const { return LatMax; }
     float GetLatMin() const { return LatMin; }
     int GetScale() const { return Scale; }
-    int GetChartType() const { return ChartType; }
-    int GetChartFamily() const { return ChartFamily; }
+    int GetChartType() const  { return ChartType; }
+    int GetChartFamily() const  { return ChartFamily; }
     int GetChartProjectionType() const { return ProjectionType; }
     float GetChartSkew() const { return Skew; }
 
     bool GetbValid(){ return bValid;}
     void SetEntryOffset(int n) { EntryOffset = n;}
     const wxString *GetpFileName(void) const { return m_pfilename; }
-    wxString *GetpsFullPath(void){ return m_psFullPath; }
+    wxString *GetpsFullPath(void) const { return m_psFullPath; }
+    wxString GetFullSystemPath() const { return m_fullSystemPath; }
     
     const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
     void ClearGroupArray(void) { m_GroupArray.clear(); }
@@ -274,6 +275,8 @@ struct ChartTableEntry
     std::vector<int> m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
+    wxString    m_fullSystemPath;
+    
     LLBBox m_bbox;
     bool        m_bavail;
     
@@ -366,14 +369,17 @@ public:
     std::vector<float> GetReducedPlyPoints(int dbIndex);
     std::vector<float> GetReducedAuxPlyPoints(int dbIndex, int iTable);
 
+    bool IsBusy(){ return m_b_busy; }
+
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
     void SetValid(bool valid) { bValid = valid; }
-    ChartTableEntry *CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc);
+    ChartTableEntry *CreateChartTableEntry(const wxString &filePath, wxString &utf8Path, ChartClassDescriptor &chart_desc);
 
     ArrayOfChartClassDescriptor    m_ChartClassDescriptorArray;
     ArrayOfCDI    m_dir_array;
+    bool              m_b_busy;
 
 private:
     bool IsChartDirUsed(const wxString &theDir);
@@ -381,7 +387,7 @@ private:
     int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog);
 
     int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProgressDialog *pprog, wxString& dir_magic, bool bForce);
-    bool DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog);
+    bool DetectDirChange(const wxString & dir_path, const wxString & prog_label, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog);
 
     bool AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog,
                    int isearch, bool bthis_dir_in_dB );

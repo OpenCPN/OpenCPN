@@ -7,10 +7,14 @@
 # bailout on errors and echo commands
 set -xe
 
-brew install cairo libexif xz
+set -o pipefail
+for pkg in cairo cmake libexif wget xz; do
+    brew list $pkg 2>/dev/null | head -10 || brew install $pkg
+done
+
 export MACOSX_DEPLOYMENT_TARGET=10.9
 # We need to build own libarchive
-wget https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
+wget -q https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
 tar zxf libarchive-3.3.3.tar.gz
 cd libarchive-3.3.3
 ./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
@@ -18,7 +22,7 @@ make
 make install
 cd ..
 
-wget http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz
+wget -q http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz
 tar xJf wx312_opencpn50_macos109.tar.xz -C /tmp
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile

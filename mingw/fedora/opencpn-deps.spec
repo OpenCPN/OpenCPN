@@ -6,8 +6,10 @@ Summary:	Empty package with opencpn build dependencies
 License:	MIT
 URL:		https://github.com/leamas/opencpn
 
+BuildRequires: binutils
 BuildRequires: cmake
 BuildRequires: gettext
+BuildRequires: git
 BuildRequires: make
 BuildRequires: mingw-binutils-generic
 BuildRequires: mingw-filesystem-base

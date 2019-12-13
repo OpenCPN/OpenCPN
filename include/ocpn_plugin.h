@@ -554,7 +554,6 @@ class DECL_EXP opencpn_plugin_115 : public opencpn_plugin_114
 public:
     opencpn_plugin_115(void *pmgr);
     virtual ~opencpn_plugin_115();
-
 };
 
 class DECL_EXP opencpn_plugin_116 : public opencpn_plugin_115
@@ -1123,6 +1122,7 @@ extern DECL_EXP void SetCanvasTilt(double tilt);
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
+extern DECL_EXP void ForceChartDBRebuild();
 
 extern  DECL_EXP wxString GetWritableDocumentsDir( void );
 extern  DECL_EXP wxDialog *GetActiveOptionsDialog();
@@ -1276,6 +1276,13 @@ extern   DECL_IMP wxEventType wxEVT_DOWNLOAD_EVENT;
 extern   DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT;
 #endif
 
+
+/* API 1.14  */
+/* API 1.14  adds some more common functions to avoid unnecessary code duplication */
+
+bool LaunchDefaultBrowser_Plugin( wxString url );
+    
+    
 // API 1.14 Extra canvas Support
 
 /* Allow drawing of objects onto other OpenGL canvases */
@@ -1344,6 +1351,10 @@ extern DECL_EXP wxWindow *GetCanvasByIndex( int canvasIndex );
 extern DECL_EXP int GetCanvasCount( );
 extern DECL_EXP bool CheckMUIEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta, int canvasIndex );
 extern DECL_EXP void SetMUICursor_PlugIn( wxCursor *pCursor, int canvasIndex );
+
+// API 1.17
+//
+extern DECL_EXP wxRect GetMasterToolbarRect();
 
 enum SDDMFORMAT
 {

@@ -35,6 +35,11 @@
 #include "GL/gl.h"
 #endif
 
+#ifdef USE_ANDROID_GLES2
+#include <gl2.h>
+#endif
+
+#include "pi_ocpndc.h"
 
 #include "TexFont.h"
 
@@ -47,7 +52,7 @@ public:
     GribOverlay( void )
     {
         m_iTexture = 0;
-        m_pDCBitmap = NULL;
+        m_pDCBitmap = NULL, m_pRGBA = NULL;
     }
 
     ~GribOverlay( void )
@@ -58,11 +63,19 @@ public:
           glDeleteTextures( 1, &m_iTexture );
         }
 #endif
-        delete m_pDCBitmap;
+        delete m_pDCBitmap, delete[] m_pRGBA;
     }
 
     unsigned int m_iTexture, m_iTextureDim[2]; /* opengl mode */
+    unsigned int m_iTexDataDim[2];
+    
     wxBitmap *m_pDCBitmap; /* dc mode */
+    unsigned char *m_pRGBA;
+
+    int m_width;
+    int m_height;
+
+    double m_dwidth, m_dheight;
 };
 
 #define MAX_PARTICLE_HISTORY 8
@@ -85,7 +98,7 @@ struct ParticleMap {
 public:
     ParticleMap(int settings)
     : m_Setting(settings), history_size(0), array_size(0),
-      color_array(NULL), vertex_array(NULL) 
+      color_array(NULL), vertex_array(NULL) , color_float_array(NULL)
     {
        // XXX should be done in default PlugIn_ViewPort CTOR
         last_viewport.bValid = false;
@@ -94,6 +107,7 @@ public:
     ~ParticleMap() {
         delete [] color_array;
         delete [] vertex_array;
+        delete [] color_float_array;
     }
 
     std::vector<Particle> m_Particles;
@@ -106,6 +120,7 @@ public:
     unsigned int array_size;
     unsigned char *color_array;
     float *vertex_array;
+    float *color_float_array;
 
     PlugIn_ViewPort last_viewport;
 };
@@ -170,6 +185,8 @@ public:
 
     wxSize  m_ParentSize;
 
+    pi_ocpnDC *m_oDC;
+    
 private:
     void InitColorsTable( );
 
@@ -181,6 +198,7 @@ private:
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribParticles( int settings, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void DrawLineBuffer(LineBuffer &buffer);
     void OnParticleTimer( wxTimerEvent & event );
 
     wxString GetRefString( GribRecord *rec, int map );
@@ -200,10 +218,10 @@ private:
 
 
 #ifdef ocpnUSE_GL
-    void texcoord(double u, double v, GribRecord *pGR);
     void DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp );
     void GetCalibratedGraphicColor(int settings, double val_in, unsigned char *data);
     bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR );
+    void DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double xs, double ys );
 #endif
     wxImage CreateGribImage( int config, GribRecord *pGR, PlugIn_ViewPort *vp,
                              int grib_pixel_size, const wxPoint &porg );

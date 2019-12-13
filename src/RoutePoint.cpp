@@ -36,6 +36,7 @@
 #include "georef.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "glChartCanvas.h"
 #include "Select.h"
 #include "chart1.h"
 
@@ -47,7 +48,6 @@ extern wxRect       g_blink_rect;
 extern Multiplexer  *g_pMUX;
 extern MyFrame      *gFrame;
 extern bool         g_btouch;
-extern bool         g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double       g_n_arrival_circle_radius;
 extern int          g_iWaypointRangeRingsNumber;
@@ -55,7 +55,6 @@ extern float        g_fWaypointRangeRingsStep;
 extern int          g_iWaypointRangeRingsStepUnits;
 extern wxColour     g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-extern Select       *pSelect;
 extern float        g_ChartScaleFactorExp;
 extern int          g_iWpt_ScaMin;
 extern bool         g_bUseWptScaMin;
@@ -843,12 +842,10 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
-        glColor3f(1, 1, 1);
         
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
@@ -863,6 +860,24 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         float ys = r.y - hs/2.;
         float u = (float)w/glw, v = (float)h/glh;
         
+#ifdef USE_ANDROID_GLES2        
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#else        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+        glColor3f(1, 1, 1);
+        
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
         glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
@@ -870,12 +885,7 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
-//         glBegin(GL_QUADS);
-//         glTexCoord2f(0, 0); glVertex2f(x, y);
-//         glTexCoord2f(u, 0); glVertex2f(x+w, y);
-//         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
-//         glTexCoord2f(0, v); glVertex2f(x, y+h);
-//         glEnd();
+#endif
 
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
@@ -926,10 +936,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
         
-            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
             
             int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
             float u = (float)w/m_iTextTextureWidth, v = (float)h/m_iTextTextureHeight;
+#ifndef USE_ANDROID_GLES2            
+            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
+            
             glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(x, y);
             glTexCoord2f(u, 0); glVertex2f(x+w, y);
@@ -937,6 +949,20 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
 
+#else
+            float coords[8];
+            float uv[8];
+            //normal uv
+            uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+            uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+            
+            // pixels
+            coords[0] = x; coords[1] = y; coords[2] = x+w; coords[3] = y;
+            coords[4] = x+w; coords[5] = y+h; coords[6] = x, coords[7] = y+h;
+            
+            glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+            
+#endif            
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
         }
@@ -981,12 +1007,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         //  A line, southeast, scaled to the size of the icon
         double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
         
-        wxColor dh_color = wxColor(0,0,0);
+        wxColor dh_color = GetGlobalColor( _T ( "YELO1" ) );
         wxPen ppPen1( dh_color, 3 * platform_pen_width );
         dc.SetPen( ppPen1 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
  
-        dh_color = GetGlobalColor( _T ( "YELO1" ) );
+        dh_color = wxColor(0,0,0);
         wxPen ppPen2( dh_color, platform_pen_width );
         dc.SetPen( ppPen2 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
@@ -996,12 +1022,6 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        glColor3f(1, 1, 1);
         
         int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
         
@@ -1013,6 +1033,14 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         float ys = y - hs/2.;
         float u = (float)w/m_dragIconTextureWidth, v = (float)h/m_dragIconTextureWidth;
         
+#ifndef USE_ANDROID_GLES2        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glColor3f(1, 1, 1);
+        
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
         glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
@@ -1020,6 +1048,20 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
+#else
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#endif
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
 
@@ -1181,11 +1223,12 @@ double RoutePoint::GetPlannedSpeed() {
 wxDateTime RoutePoint::GetETD()
 {
     if( m_seg_etd.IsValid() ) {
-        if(GetETA().IsValid() && m_seg_etd < GetETA()) {
+        if(!GetETA().IsValid() || m_seg_etd > GetETA()) {
+            return m_seg_etd;
+        } else {
             return GetETA();
         }
-        return m_seg_etd;
-    }
+    } else {
     if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
             wxDateTime etd = wxInvalidDateTime;
             wxString s_etd = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
@@ -1210,8 +1253,10 @@ wxDateTime RoutePoint::GetETD()
                     m_MarkDescription.Replace( s_etd, wxEmptyString);
                     m_seg_etd = etd;
                     return m_seg_etd;
+                } else {
+                    return GetETA();
                 }
-                return GetETA();
+                }
             }
     }
     return wxInvalidDateTime;
@@ -1248,7 +1293,7 @@ void RoutePoint::SetETE(wxLongLong secs)
 
 void RoutePoint::SetETD(const wxDateTime &etd) {
     m_seg_etd = etd;
-    m_manual_etd = (etd != wxInvalidDateTime);
+    m_manual_etd = TRUE;
 }
 
 bool RoutePoint::SetETD(const wxString &ts)
@@ -1262,11 +1307,10 @@ bool RoutePoint::SetETD(const wxString &ts)
     wxString::const_iterator end;
     if ( tmp.ParseISOCombined(ts) ) {
         SetETD(tmp);
-        return true;
-    }
-    if( tmp.ParseDateTime(ts, &end) ) {
+        return TRUE;
+    } else if( tmp.ParseDateTime(ts, &end) ) {
         SetETD(tmp);
-        return true;
+        return TRUE;
     }
-    return false;
+    return FALSE;
 }
