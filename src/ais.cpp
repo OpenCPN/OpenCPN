@@ -1735,14 +1735,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
-        glLineWidth(2);
-        glColor3ub(c.Red(), c.Green(), c.Blue());
-        glBegin(GL_LINE_STRIP);
+        if (TrackLength > 1){
+            glLineWidth(2);
+            glColor3ub(c.Red(), c.Green(), c.Blue());
+            glBegin(GL_LINE_STRIP);
         
-                for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
+            for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
                     glVertex2i(TrackPoints[TrackPointCount].x, TrackPoints[TrackPointCount].y);
         
-        glEnd();
+            glEnd();
+        }
 #else
         if ( TrackLength > 1 )
             dc.DrawLines(TrackPointCount, TrackPoints);
