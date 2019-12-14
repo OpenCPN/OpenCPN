@@ -9159,9 +9159,9 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 #ifdef ocpnUPDATE_SYSTEM_TIME
 //      Use the fix time to update the local system clock, only once per session
     if( ( sfixtime.Len() ) && s_bSetSystemTime && ( m_bTimeIsSet == false ) ) {
-        wxDateTime Fix_Time;
+        wxDateTime Fix_Time( wxDateTime::Now()) ;
 
-        if( 6 == sfixtime.Len() )                   // perfectly recognised format?
+        if( 6 == sfixtime.Len() || 6 == sfixtime.find('.') )       // perfectly recognised format?
                 {
             wxString a;
             long b;
