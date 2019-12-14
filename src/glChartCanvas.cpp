@@ -2727,7 +2727,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 //                                                         0, 42, 0, -42       };
 
                 wxPoint shipPoints[6];
-                
+
                 wxColour colour = m_pParentCanvas->ShipColor();
                 wxPen ppPen ( *wxBLACK, 1 );
                 wxBrush ppBrush( colour );
@@ -2784,9 +2784,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
             img_height = ownShipLength * scale_factor_y;
         
-#if 1
         //      Reference point, where the GPS antenna is
-            if( m_pParentCanvas->m_pos_image_user ) gps_circle_radius = 1;
+        if( m_pParentCanvas->m_pos_image_user ) gps_circle_radius = 1;
  
         float cx = lGPSPoint.x, cy = lGPSPoint.y;
         wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
@@ -2796,32 +2795,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         dc.StrokeCircle(cx, cy, gps_circle_radius);
 
     }
-#else    
-            //      Reference point, where the GPS antenna is
-            int circle_rad = 3;
-            if( m_pParentCanvas->m_pos_image_user ) circle_rad = 1;
-               
-            float cx = lGPSPoint.x, cy = lGPSPoint.y;
-            // store circle coordinates at compile time
-            const int v = 12;
-            float circle[4*v];
-            for( int i=0; i<2*v; i+=2) {
-                float a = i * (float)PI / v;
-                float s = sinf( a ), c = cosf( a );
-                circle[i+0] = cx + (circle_rad+1) * s;
-                circle[i+1] = cy + (circle_rad+1) * c;
-                circle[i+2*v] = cx + circle_rad * s;
-                circle[i+2*v+1] = cy + circle_rad * c;
-            }
-
-            glVertexPointer(2, GL_FLOAT, 2*sizeof(float), circle);
-
-            glColor4ub(0, 0, 0, 255);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, v);
-            glColor4ub(255, 255, 255, 255);
-            glDrawArrays(GL_TRIANGLE_FAN, v, v);
-        }
-#endif        
 
 //        glDisableClientState(GL_VERTEX_ARRAY);
         glDisable( GL_LINE_SMOOTH );

@@ -44,6 +44,7 @@
 #include "chartimg.h"
 
 #include "s57chart.h"               // for Object list
+#include "semantic_vers.h"
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -168,6 +169,12 @@ class PlugInContainer
             int               m_version_major;
             int               m_version_minor;
             wxBitmap         *m_bitmap;
+            /** 
+             * Return version from plugin API. Older pre-117 plugins just
+             * support major and minor version, newer plugins have
+             * complete semantic version data.
+             */
+            SemanticVersion   GetVersion();
 
 };
 

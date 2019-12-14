@@ -26,6 +26,11 @@
 
 #include "wx/wxprec.h"
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers

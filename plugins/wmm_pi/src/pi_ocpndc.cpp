@@ -1497,6 +1497,13 @@ typedef union {
 } GLvertex;
 
 #ifndef USE_ANDROID_GLES2
+
+#ifdef __WXMAC__
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#endif
+
 void APIENTRY pi_ocpnDCcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
         GLdouble **dataOut )
 {
