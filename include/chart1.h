@@ -47,6 +47,7 @@
 #include "SencManager.h"
 
 #include "gdal/cpl_error.h"
+#include "SignalKEventHandler.h"
 
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
@@ -260,6 +261,7 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
+class OCPN_SignalKEvent;
 class DataStream;
 class AIS_Target_Data;
 
@@ -341,6 +343,7 @@ class MyApp: public wxApp
 
 class MyFrame: public wxFrame
 {
+    friend class SignalKEventHandler;
   public:
     MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size, long style);
 
@@ -359,6 +362,8 @@ class MyFrame: public wxFrame
     bool DoChartUpdate(void);
     void OnEvtTHREADMSG(OCPN_ThreadMessageEvent& event);
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
+    void OnEvtOCPN_SignalK(OCPN_SignalKEvent &event);
+    void OnEvtOCPN_SIGNALK_Test(OCPN_SignalKEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
@@ -551,6 +556,16 @@ class MyFrame: public wxFrame
     static void RebuildChartDatabase();
     void PositionIENCToolbar();
 
+    bool ParsePosition(const LATLONG &Position);
+    void setSatelitesInView(int no);
+    void setPosition(double lat, double lon);
+    void setSpeedOverGround(double sog);
+    void setCourseOverGround(double cog);
+    void setHeadingTrue(double heading);
+    void setHeadingMagnetic(double heading);
+    void setMagneticVariation(double var);
+
+
   private:
 
     void CheckToolbarPosition();
@@ -617,6 +632,8 @@ class MyFrame: public wxFrame
     int                 m_nMasterToolCountShown;
     wxTimer             m_recaptureTimer;
     
+    SignalKEventHandler m_signalKHandler;
+
     DECLARE_EVENT_TABLE()
 };
 

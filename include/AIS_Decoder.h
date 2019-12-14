@@ -26,6 +26,7 @@
 #define __AIS_DECODER_H__
 
 #include "ais.h"
+#include "OCPN_SignalKEvent.h"
 #include <map>
 
 #define TRACKTYPE_DEFAULT       0
@@ -65,6 +66,7 @@ public:
     ~AIS_Decoder(void);
 
     void OnEvtAIS(OCPN_DataStreamEvent& event);
+    void OnEvtSignalK(OCPN_SignalKEvent& event);
     AIS_Error Decode(const wxString& str);
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
     AIS_Target_Hash *GetAreaNoticeSourcesList(void) {return AIS_AreaNotice_Sources;}
@@ -95,7 +97,14 @@ private:
     void BuildERIShipTypeHash(void);
     AIS_Target_Data *ProcessDSx( const wxString& str, bool b_take_dsc = false );
     void SendJSONMsg( AIS_Target_Data *pTarget );
-    
+
+    void getAISTarget(long mmsi, AIS_Target_Data *&pTargetData, AIS_Target_Data *&pStaleTarget, bool &bnewtarget,
+                      int &last_report_ticks, wxDateTime &now);
+
+    void handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &update);
+    void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &item, wxString &sfixtime) const;
+
+    wxString m_signalk_selfid;
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
     AIS_Target_Name_Hash *AISTargetNamesC;
@@ -125,6 +134,7 @@ private:
     
     bool             m_bAIS_AlertPlaying;
 DECLARE_EVENT_TABLE()
+
 };
 
 #endif
