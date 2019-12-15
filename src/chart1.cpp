@@ -240,6 +240,7 @@ RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
 double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+wxString                  gRmcDate, gRmcTime;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
 
@@ -7315,6 +7316,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
         gSog = NAN;
         gCog = NAN;
+        gRmcDate.Empty();
+        gRmcTime.Empty();
     }
 
 //  Update and check watchdog timer for Mag Heading data source
@@ -8873,6 +8876,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     }
                     
                     sfixtime = m_NMEA0183.Rmc.UTCTime;
+                    gRmcTime = sfixtime;
+                    gRmcDate = m_NMEA0183.Rmc.Date;
                 }
                 break;
 

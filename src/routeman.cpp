@@ -89,7 +89,7 @@ extern wxRect           g_blink_rect;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;
-
+extern wxString         gRmcDate, gRmcTime;
 extern bool             g_bMagneticAPB;
 
 extern RoutePoint       *pAnchorWatchPoint1;
@@ -714,13 +714,20 @@ bool Routeman::UpdateAutopilot()
             } else
                 m_NMEA0183.Rmc.MagneticVariation = 361.; // A signal to NMEA converter, gVAR is unknown
 
-            wxDateTime now = wxDateTime::Now();
-            wxDateTime utc = now.ToUTC();
-            wxString time = utc.Format( _T("%H%M%S") );
-            m_NMEA0183.Rmc.UTCTime = time;
+            // Send GPS time to autopilot if available else send local system time
+            if ( !gRmcTime.IsEmpty() && !gRmcDate.IsEmpty() ) {
+                m_NMEA0183.Rmc.UTCTime = gRmcTime;
+                m_NMEA0183.Rmc.Date = gRmcDate;
+            }
+            else {
+                wxDateTime now = wxDateTime::Now();
+                wxDateTime utc = now.ToUTC();
+                wxString time = utc.Format( _T("%H%M%S") );
+                m_NMEA0183.Rmc.UTCTime = time;
+                wxString date = utc.Format( _T("%d%m%y") );
+                m_NMEA0183.Rmc.Date = date;
+            }
 
-            wxString date = utc.Format( _T("%d%m%y") );
-            m_NMEA0183.Rmc.Date = date;
             m_NMEA0183.Rmc.FAAModeIndicator = "A";
             m_NMEA0183.Rmc.Write( snt );
 
