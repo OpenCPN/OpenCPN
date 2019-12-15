@@ -689,6 +689,7 @@ bool PlugInManager::CallLateInit(void)
             case 114:
             case 115:
             case 116:
+            case 117:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;
@@ -722,8 +723,9 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 case 112:
                 case 113:
                 case 114:
-		case 115:
+                case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -1500,6 +1502,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         break;
         
     case 116:
+    case 117:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
         break;
         
@@ -1575,6 +1578,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             break;
                         }
                         case 116:
+                        case 117:
                         {
                             opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                             if (ppi) {
@@ -1639,6 +1643,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             break;
                         }
                         case 116:
+                        case 117:
                         {
                             opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                             if (ppi) {
@@ -1712,6 +1717,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                         break;
                     }
                     case 116:
+                    case 117:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if (ppi) {
@@ -1749,7 +1755,8 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     case 113:
                     case 114:
                     case 115:
-                    case 116:    
+                    case 116:
+                    case 117:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                         if(ppi)
@@ -1782,7 +1789,8 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                         case 113:
                         case 114:
                         case 115:
-                        case 116:    
+                        case 116: 
+                        case 117:
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
                             if(ppi && ppi->KeyboardEventHook( event ))
@@ -1846,6 +1854,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 114:
             case 115:
             case 116:    
+            case 117:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -2027,6 +2036,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 114:
                 case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2108,6 +2118,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 114:
                 case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2120,6 +2131,48 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
             }
         }
     }
+}
+
+void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info)
+{
+  Plugin_Active_Leg_Info leg;
+  leg.Btw = leg_info->Btw;
+  leg.Dtw = leg_info->Dtw;
+  leg.wp_name = leg_info->wp_name;
+  leg.Xte = leg_info->Xte;
+  leg.arrival = leg_info->arrival;
+  for (unsigned int i = 0; i < plugin_array.GetCount(); i++)
+  {
+    PlugInContainer *pic = plugin_array[i];
+    if (pic->m_bEnabled && pic->m_bInitState)
+    {
+      if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
+      {
+        switch (pic->m_api_version)
+        {
+        case 108:
+        case 109:
+        case 110:
+        case 111:
+        case 112:
+        case 113:
+        case 114:
+        case 115:
+        case 116:
+          break;
+        case 117:
+        {
+          opencpn_plugin_117 *ppi = dynamic_cast<opencpn_plugin_117 *>(pic->m_pplugin);
+          if (ppi)
+            ppi->SetActiveLegInfo(leg);
+          break;
+        }
+        default:
+          break;
+        }
+      }
+    }
+  }
 }
 
 void PlugInManager::SendResizeEventToAllPlugIns(int x, int y)
@@ -2156,6 +2209,7 @@ void PlugInManager::PrepareAllPluginContextMenus()
                 switch(pic->m_api_version)
                 {
                     case 116:
+                    case 117:
                     {
                         opencpn_plugin_116 *ppi = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                         if(ppi)
@@ -4128,6 +4182,9 @@ int opencpn_plugin_117::GetPlugInVersionPost() { return 0; };
 const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
 
 const char* opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
+
+void opencpn_plugin_117::SetActiveLegInfo(Plugin_Active_Leg_Info &leg_info)
+{}
 
 
 //          Helper and interface classes
@@ -7092,4 +7149,12 @@ wxRect GetMasterToolbarRect()
         return g_MainToolbar->GetRect();
     else
         return wxRect(0,0,1,1);
+}
+
+/* API 1.17 */
+
+void ZeroXTE() {
+  if (g_pRouteMan) {
+    g_pRouteMan->ZeroCurrentXTEToActivePoint();
+  }
 }
