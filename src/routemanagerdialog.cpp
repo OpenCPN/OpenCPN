@@ -2489,7 +2489,7 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
     if( !layer ) return;
     // Check if this file is a persistent layer.
     // If added in this session the listctrl file path is origin dir and not yet /layers
-    bool ispers;
+    bool ispers = false;
     wxString destf, f, name, ext;
     f = layer->m_LayerFileName;
     wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
