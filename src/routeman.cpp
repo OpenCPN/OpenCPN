@@ -644,6 +644,20 @@ bool Routeman::UpdateAutopilot()
    double r_Sog(0.0), r_Cog(0.0);
    if (!std::isnan(gSog)) r_Sog = gSog;
    if (!std::isnan(gCog)) r_Cog = gCog;
+
+   // Send active leg info directly to plugins
+
+   ActiveLegDat leg_info;
+   leg_info.Btw = CurrentBrgToActivePoint;
+   leg_info.Dtw = CurrentRngToActivePoint;
+   leg_info.Xte = CurrentXTEToActivePoint;
+   if (XTEDir < 0) {
+     leg_info.Xte = -leg_info.Xte;    // Left side of the track -> negative XTE
+   }
+   leg_info.wp_name = pActivePoint->GetName().Truncate(6);
+   leg_info.arrival = m_bArrival;
+   g_pi_manager->SendActiveLegInfoToAllPlugIns(&leg_info);
+
     //RMB
         {
 
