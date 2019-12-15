@@ -1,0 +1,517 @@
+<?xml version="1.0" ?>
+<plugins>
+  <version>0.0.0</version>
+  <date>2019-11-18 20:10</date>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 3.3.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+    <target>ubuntu</target>
+    <target-version>16.04</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-ubuntu-16.04-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_ubuntu-16.04.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 1.0.17 </version>
+    <release> 6 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version>  </api-version>
+    <open-source> no </open-source>
+    <author>  </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+    <target>flatpak</target>
+    <target-version>18.08</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-flatpak-18.08-tarball/versions/v1.0.17.6/squiddio_pi-1.0.17.6_flatpak-18.08.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+the format used by many hydrographic authorities throughout the world.
+Supported charts must have been installed with appropriate encryption
+certificates in place.
+</description>
+    <target>msvc</target>
+    <target-version>10.0.14393</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-msvc-10.0.14393-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_msvc-10.0.14393.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+    <target>mingw</target>
+    <target-version>10</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-mingw-10-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_mingw-10.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+    <target>ubuntu</target>
+    <target-version>16.04</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-ubuntu-16.04-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_ubuntu-16.04.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 1.0.17 </version>
+    <release> 6 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version> </api-version>
+    <open-source> no </open-source>
+    <author> </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+</description>
+    <target>msvc</target>
+    <target-version>10.0.14393</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-msvc-10.0.14393-tarball/versions/v1.0.17.6/squiddio_pi-1.0.17.6_msvc-10.0.14393.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+    <target>fedora</target>
+    <target-version>29</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-fedora-29-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_fedora-29.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 3.3.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+    <target>fedora</target>
+    <target-version>29</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-fedora-29-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_fedora-29.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+    BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+    the format used by many hydrographic authorities throughout the world.
+    Supported charts must have been installed with appropriate encryption
+    certificates in place.
+  </description>
+    <target>mingw</target>
+    <target-version>10</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-mingw-10-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_mingw-10.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 1.0.17 </version>
+    <release> 6 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version>  </api-version>
+    <open-source> no </open-source>
+    <author>  </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+    <target>ubuntu</target>
+    <target-version>16.04</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-ubuntu-16.04-tarball/versions/v1.0.17.6/opencpn-plugin-squiddio-1.0.17.6_ubuntu-16.04.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 1.0.17 </version>
+    <release> 6 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version>  </api-version>
+    <open-source> no </open-source>
+    <author>  </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+    <target>darwin</target>
+    <target-version>10.13.6</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-darwin-10.13.6-tarball/versions/v1.0.17.6/squiddio_pi-1.0.17.6_darwin-10.13.6.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+    BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+    the format used by many hydrographic authorities throughout the world.
+    Supported charts must have been installed with appropriate encryption
+    certificates in place.
+  </description>
+    <target>flatpak</target>
+    <target-version>18.08</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-flatpak-18.08-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_flatpak-18.08.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 3.3.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+    <target>mingw</target>
+    <target-version>10</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-mingw-10-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_mingw-10.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 3.3.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+    <target>darwin</target>
+    <target-version>10.13.6</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-darwin-10.13.6-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_darwin-10.13.6.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 0.7.1 </version>
+    <release> 1 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> Mauro Calvi </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+    <target>fedora</target>
+    <target-version>29</target-version>
+    <tarball-url>
+    https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-unstable/raw/files/squiddio_pi-0.7.1-1_fedora-29.tar.gz
+  </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+    BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+    the format used by many hydrographic authorities throughout the world.
+    Supported charts must have been installed with appropriate encryption
+    certificates in place.
+  </description>
+    <target>fedora</target>
+    <target-version>29</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-fedora-29-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_fedora-29.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+    BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+    the format used by many hydrographic authorities throughout the world.
+    Supported charts must have been installed with appropriate encryption
+    certificates in place.
+  </description>
+    <target>darwin</target>
+    <target-version>10.13.6</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-darwin-10.13.6-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_darwin-10.13.6.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture. Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars. Multiple brands can be mixed.
+</description>
+    <target>msvc</target>
+    <target-version>10.0.14393</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-msvc-10.0.14393-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_msvc-10.0.14393.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 1.2.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+  </description>
+    <target>flatpak</target>
+    <target-version>18.08</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-flatpak-18.08-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_flatpak-18.08.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> squiddio </name>
+    <version> 1.0.17 </version>
+    <release> 6 </release>
+    <summary> Repository of sailing destination waypoints </summary>
+    <api-version>  </api-version>
+    <open-source> no </open-source>
+    <author>  </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+Squiddio Plugin makes its global user-sourced and user-maintained
+repository of sailing destinations (marinas, anchorages, yacht clubs,
+docks, fuel stations etc.) available as waypoints in OpenCPN. OpenCPN
+Android comes with sQuiddio built in.
+  </description>
+    <target>mingw</target>
+    <target-version>10</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-mingw-10-tarball/versions/v1.0.17.6/squiddio_pi-1.0.17.6_mingw-10.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+    <target>darwin</target>
+    <target-version>10.13.6</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-darwin-10.13.6-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_darwin-10.13.6.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> oesenc </name>
+    <version> 3.3.0 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for encrypted OCPN Vector Charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/oesenc_pi </source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/oesenc.html </info-url>
+    <description>
+OCPN Vector Charts licensed and sourced from chart providers like
+Hydrographic Offices.
+While the charts are not officially approved official ENC charts they
+are based on the same data -- the legal conditions are described in the
+EULA. The charts has world-wide coverage and provides a cost-effective
+way to access the national chart databases. Charts are encrypted and
+can only be used after purchasing decryption keys from o-charts.org.
+</description>
+    <target>msvc</target>
+    <target-version>10.0.14393</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/oesenc-msvc-10.0.14393-tarball/versions/v1.2.0.3/oesenc_pi-1.2.0-3_msvc-10.0.14393.tar.gz </tarball-url>
+  </plugin>
+  <plugin version="1">
+    <name> radar </name>
+    <version> 5.0.4-beta2 </version>
+    <release> 3 </release>
+    <summary> Overlays the radar picture on OpenCPN </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/opencpn-radar-pi/radar_pi </source>
+    <description>
+This plugin overlays the radar picture on OpenCPN. A versatile plugin that
+can be easily adapted to most broadband radars.
+Support for OpenCPN V 5.0 and multi canvas with simultaneous overlay of two
+different radars. Revised multi radar type architecture.  Adding a new radar
+only requires radar knowledge and can reuse the existing display technology.
+Support for four simultaneously active radars.  Multiple brands can be mixed.
+  </description>
+    <target>flatpak</target>
+    <target-version>18.08</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/radar-flatpak-18.08-tarball/versions/v5.0.4.3-beta2/radar_pi-5.0.4-beta2.3_flatpak-18.08.tar.gz </tarball-url>
+    <info-url> https://opencpn.org/OpenCPN/plugins/radarPI.html </info-url>
+  </plugin>
+  <plugin version="1">
+    <name> bsb4 </name>
+    <version> 1.5 </version>
+    <release> 3 </release>
+    <summary> OpenCPN support for BSB4 raster charts </summary>
+    <api-version> 1.16 </api-version>
+    <open-source> no </open-source>
+    <author> David S Register </author>
+    <source> https://github.com/bdbcat/bsb4_pi</source>
+    <info-url> https://opencpn.org/OpenCPN/plugins/bsb4.html </info-url>
+    <description>
+    BSB4 plugin for OpenCPN provides support of BSB Version 4 Raster charts,
+    the format used by many hydrographic authorities throughout the world.
+    Supported charts must have been installed with appropriate encryption
+    certificates in place.
+  </description>
+    <target>ubuntu</target>
+    <target-version>16.04</target-version>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/bsb4-ubuntu-16.04-tarball/versions/v1.5.0.3/bsb4_pi-1.5.0.3_ubuntu-16.04.tar.gz </tarball-url>
+  </plugin>
+</plugins>

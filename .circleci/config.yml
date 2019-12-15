@@ -1,0 +1,83 @@
+---
+version: 2
+jobs:
+   build-xenial:
+     docker:
+       - image: circleci/buildpack-deps:xenial-scm
+     environment:
+       - OCPN_TARGET:  xenial
+     steps:
+       - checkout
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
+   build-trusty:
+     docker:
+       - image: circleci/buildpack-deps:trusty-scm
+     environment:
+       - OCPN_TARGET:  trusty
+     steps:
+       - checkout
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty-updates main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
+   build-mingw:
+     docker:
+         - image: fedora:29
+     environment:
+       - OCPN_TARGET:  mingw
+     steps:
+       - run: su -c "dnf install -q -y git openssh-clients openssh-server"
+       - checkout
+       - run: ci/generic-build-mingw.sh
+       - run: ci/generic-upload.sh
+   build-macos:
+     macos:
+       xcode: "10.0.0"
+     environment:
+       - OCPN_TARGET:  macos
+     steps:
+       - checkout
+       - run: ci/generic-build-macos.sh
+       - run: ci/generic-upload.sh
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build-xenial:
+          filters:
+            branches:
+              only:
+                - plug-mgr
+                - plugins
+      - build-trusty:
+          filters:
+            branches:
+              only:
+                - plug-mgr
+                - plugins
+      - build-macos:
+          filters:
+            branches:
+              only:
+                - plug-mgr
+                - plugins
+      - build-mingw:
+          filters:
+            branches:
+              only:
+                - plug-mgr
+                - plugins

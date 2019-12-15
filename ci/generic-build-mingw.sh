@@ -1,22 +1,23 @@
 #!/bin/sh  -xe
 
 #
-# Actually build the Travis mingw artifacts inside teh Fedora container
+# Build the mingw artifacts inside the Fedora container
 #
 set -xe
 
-df -h
 su -c "dnf install -y sudo dnf-plugins-core"
 sudo dnf copr enable -y --nogpgcheck leamas/opencpn-mingw 
-sudo dnf builddep  -y /opencpn-ci/mingw/fedora/opencpn-deps.spec
-cd /opencpn-ci
+
+test -d /opencpn-ci && cd /opencpn-ci || :
+sudo dnf builddep  -y mingw/fedora/opencpn-deps.spec
 rm -rf build; mkdir build; cd build
 cmake \
     -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
     -DOCPN_CI_BUILD:BOOL=ON \
     ..
 
-make -j2
-# VERBOSE=1 make -j2
-
+make -j3
 make package
+
+sudo dnf install -y python3-pip python3-setuptools
+sudo python3 -m pip install -q cloudsmith-cli

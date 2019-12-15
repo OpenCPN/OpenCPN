@@ -34,11 +34,19 @@
 #cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_SNDFILE
 
+// The os compatible plugins are are built for
+#define PKG_TARGET "${PKG_TARGET}"
+
+// The os version compatible plugins are are built for
+#define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
+
 // Command line to play a sound in system(3), like "aplay %s".
 #define SYSTEM_SOUND_CMD  ${SYSTEM_SOUND_CMD}
 
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11
+
+#define OCPN_LINUX_LOAD_PATH  "${OCPN_LINUX_LOAD_PATH}"
 
 
 #define VERSION_MAJOR ${VERSION_MAJOR}
