@@ -26,6 +26,11 @@
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
 #include <wx/spinctrl.h>
@@ -33,13 +38,17 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
-#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/colourdata.h>
+
+#if wxUSE_TIMEPICKCTRL
  #include <wx/timectrl.h>
 #endif
+
 #ifdef __WXGTK__
 //wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
 #include "time_textbox.h"
 #endif
+
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -67,6 +76,7 @@ class MMSIProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
 class OCPNIconCombo;
+class OCPNColourPickerCtrl;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -187,6 +197,7 @@ enum {
   ID_SETSTDLIST,
   ID_VECZOOM,
   ID_INLANDECDISBOX,
+  ID_ROLLOVERBOX,
   ID_SOGCOGFROMLLCHECKBOX,
   ID_SOGCOGDAMPINTTEXTCTRL,
   // LIVE ETA OPTION
@@ -196,7 +207,8 @@ enum {
   ID_SCREENCONFIG1,
   ID_SCREENCONFIG2,
   ID_CONFIGEDIT_OK,
-  ID_CONFIGEDIT_CANCEL
+  ID_CONFIGEDIT_CANCEL,
+  ID_ZOOMBUTTONS
 };
 
 /* Define an int bit field for dialog return value
@@ -215,6 +227,8 @@ enum {
 #define TIDES_CHANGED 2048
 #define GL_CHANGED 4096
 #define REBUILD_RASTER_CACHE 8192
+#define NEED_NEW_OPTIONS 16384
+#define PARSE_ENC 32768
 #define CONFIG_CHANGED 8192 * 2
 
 #ifndef wxCLOSE_BOX
@@ -355,7 +369,7 @@ class options : private Uncopyable,
 
   size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
   size_t m_pageUI, m_pagePlugins;
-  int lastPage;
+  int lastPage, lastSubPage;
   wxPoint lastWindowPos;
   wxSize lastWindowSize;
   wxButton *m_ApplyButton, *m_OKButton, *m_CancelButton;
@@ -374,7 +388,9 @@ class options : private Uncopyable,
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pDarkDecorations;
+//  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover, *pDarkDecorations;
+  wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
 
@@ -558,9 +574,9 @@ class options : private Uncopyable,
   wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
-  wxColourPickerCtrl *m_colourOwnshipRangeRingColour;
+  OCPNColourPickerCtrl *m_colourOwnshipRangeRingColour;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
-  wxColourPickerCtrl *m_colourTrackLineColour;;
+  OCPNColourPickerCtrl *m_colourTrackLineColour;;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
   wxCheckBox *pSogCogFromLLCheckBox;
@@ -572,15 +588,19 @@ class options : private Uncopyable,
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
 #if wxCHECK_VERSION(2, 9, 0)
+#if wxUSE_TIMEPICKCTRL  
 #ifdef __WXGTK__
   TimeCtrl *pTrackRotateTime;
 #else
   wxTimePickerCtrl *pTrackRotateTime;
+#endif  
 #endif
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
-  wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
+  OCPNColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxChoice *pSoundDeviceIndex;
+  wxStaticText *stSoundDeviceIndex;
+  
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
   wxArrayString *m_pSerialArray;
@@ -648,8 +668,9 @@ class options : private Uncopyable,
   int m_screenConfig;
   
   wxNotebookPage *m_groupsPage;
+  wxFont  *dialogFont, *dialogFontPlus;
   wxFont smallFont;
-  wxFont *dialogFont;
+//  wxFont *dialogFont;
   wxSize m_small_button_size;
   wxTimer m_BTScanTimer;
   wxArrayString m_BTscan_results;
@@ -663,6 +684,9 @@ class options : private Uncopyable,
   wxBoxSizer *m_boxSizerConfigs;
   wxColour m_panelBackgroundUnselected;
   wxString m_selectedConfigPanelGUID;
+  wxSize  m_colourPickerDefaultSize;
+
+  wxSize m_sliderSize;
   
   DECLARE_EVENT_TABLE()
 };
@@ -724,6 +748,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
 
   bool modified, m_UIcomplete, m_settingscomplete, m_treespopulated;
 
+  wxScrolledWindow *m_panel;
+  
  private:
   int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
                       wxString *pbranch_adder);
@@ -745,6 +771,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
 
   int m_border_size, m_group_item_spacing, m_GroupSelectedPage;
   
+  wxBoxSizer *m_topSizer;
+
   DECLARE_EVENT_TABLE()
 };
 

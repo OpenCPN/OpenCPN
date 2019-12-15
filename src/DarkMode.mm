@@ -24,40 +24,16 @@
 
 #import "DarkMode.h"
 
-void updateDarkModeStateForTreeStartingAtView(__kindof NSView *rootView, bool vibrant = false)
+void setAppLevelDarkMode(bool enabled)
 {
-    for (NSView *view in rootView.subviews) {
-        if( vibrant ) {
-            view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
-        }
-        if ([view isKindOfClass:[NSVisualEffectView class]]) {
-            [(NSVisualEffectView *)view setMaterial:NSVisualEffectMaterialDark];
-        }
-        
-        if ([view isKindOfClass:[NSClipView class]] ||
-            [view isKindOfClass:[NSScrollView class]] ||
-            [view isKindOfClass:[NSMatrix class]] ||
-            [view isKindOfClass:[NSTextView class]] ||
-            [view isKindOfClass:NSClassFromString(@"TBrowserTableView")] ||
-            [view isKindOfClass:NSClassFromString(@"TIconView")]) {
-            [view performSelector:@selector(setBackgroundColor:) withObject:[NSColor colorWithCalibratedWhite:0.1 alpha:1.0]];
-        }
-        
-        if (view.subviews.count > 0)
-            updateDarkModeStateForTreeStartingAtView(view, vibrant);
+    if (@available(macOS 10.14, *)) {
+        NSAppearance *appearance = (enabled ? [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua] : nil);
+        [[NSApplication sharedApplication] setAppearance:appearance];
     }
 }
 
-void applyDarkAppearanceToWindow (NSWindow *window, bool vibrant, bool flat, bool subviews)
+void setWindowLevelDarkMode(NSWindow *window, bool enabled)
 {
-    if( vibrant ) {
-        [window setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]];
-    }
-    if( flat ) {
-        window.titlebarAppearsTransparent = true; // gives it "flat" look
-    }
-    [window setBackgroundColor:[NSColor blackColor]];
-    if( subviews ) {
-        updateDarkModeStateForTreeStartingAtView(window.contentView, vibrant);
-    }
+    NSAppearance *appearance = (enabled ? [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark] : nil);
+    [window setAppearance: appearance];
 }

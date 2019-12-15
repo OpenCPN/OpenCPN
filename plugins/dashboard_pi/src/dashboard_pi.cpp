@@ -35,6 +35,7 @@
 #include <cmath>
 // xw 2.8
 #include <wx/filename.h>
+#include <wx/fontdlg.h>
 
 #include <typeinfo>
 #include "dashboard_pi.h"
@@ -61,6 +62,9 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -73,6 +77,74 @@ extern "C" DECL_EXP void destroy_pi( opencpn_plugin* p )
 {
     delete p;
 }
+
+#ifdef __OCPN__ANDROID__
+
+QString qtStyleSheet = "QScrollBar:horizontal {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+height: 35px;\
+margin: 0px 1px 0 1px;\
+}\
+QScrollBar::handle:horizontal {\
+background-color: rgb(200, 200, 200);\
+min-width: 20px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: right;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: left;\
+subcontrol-origin: margin;\
+}\
+QScrollBar:vertical {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+width: 35px;\
+margin: 1px 0px 1px 0px;\
+}\
+QScrollBar::handle:vertical {\
+background-color: rgb(200, 200, 200);\
+min-height: 20px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: top;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: bottom;\
+subcontrol-origin: margin;\
+}\
+QCheckBox {\
+spacing: 25px;\
+}\
+QCheckBox::indicator {\
+width: 30px;\
+height: 30px;\
+}\
+";
+
+#endif
+
+#ifdef __OCPN__ANDROID__
+#include <QtWidgets/QScroller>
+#endif
+
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -1268,6 +1340,23 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
     DashboardPreferencesDialog *dialog = new DashboardPreferencesDialog( parent, wxID_ANY,
             m_ArrayOfDashboardWindow );
 
+    dialog->RecalculateSize();
+
+#ifdef __OCPN__ANDROID__
+    dialog->GetHandle()->setStyleSheet( qtStyleSheet);
+#endif
+    
+    wxWindow *ccwin = GetOCPNCanvasWindow();
+    
+    if( ccwin ){
+        int xmax = ccwin->GetSize().GetWidth();
+        int ymax = ccwin->GetParent()->GetSize().GetHeight();  // This would be the Frame itself
+        dialog->SetSize( xmax, ymax );
+        dialog->Layout();
+        
+        dialog->Move(0,0);
+    }
+    
     if( dialog->ShowModal() == wxID_OK ) {
         delete g_pFontTitle;
         g_pFontTitle = new wxFont( dialog->m_pFontPickerTitle->GetSelectedFont() );
@@ -1427,6 +1516,15 @@ void dashboard_pi::UpdateAuiStatus( void )
         // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
         
+#ifdef __WXQT__        
+        if(pane.IsShown()){
+            pane.Show(false);
+            m_pauimgr->Update();
+            pane.Show(true);
+            m_pauimgr->Update();
+        }
+#endif        
+        
     }
     m_pauimgr->Update();
     
@@ -1445,14 +1543,32 @@ bool dashboard_pi::LoadConfig( void )
         wxString version;
         pConf->Read( _T("Version"), &version, wxEmptyString );
         wxString config;
-        pConf->Read( _T("FontTitle"), &config, wxEmptyString );
-        if( !config.IsEmpty() ) g_pFontTitle->SetNativeFontInfo( config );
-        pConf->Read( _T("FontData"), &config, wxEmptyString );
-        if( !config.IsEmpty() ) g_pFontData->SetNativeFontInfo( config );
-        pConf->Read( _T("FontLabel"), &config, wxEmptyString );
-        if( !config.IsEmpty() ) g_pFontLabel->SetNativeFontInfo( config );
-        pConf->Read( _T("FontSmall"), &config, wxEmptyString );
-        if( !config.IsEmpty() ) g_pFontSmall->SetNativeFontInfo( config );
+
+        // Set some sensible defaults
+        wxString TitleFont;
+        wxString DataFont;
+        wxString LabelFont;
+        wxString SmallFont;
+        
+#ifdef __OCPN__ANDROID__
+        TitleFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
+        DataFont =  _T("Roboto,16,-1,5,50,0,0,0,0,0");
+        LabelFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
+        SmallFont = _T("Roboto,14,-1,5,50,0,0,0,0,0");
+#endif        
+        
+        
+        pConf->Read( _T("FontTitle"), &config, TitleFont );
+        LoadFont(&g_pFontTitle, config);
+        
+        pConf->Read( _T("FontData"), &config, DataFont );
+        LoadFont(&g_pFontData, config);
+        
+        pConf->Read( _T("FontLabel"), &config, LabelFont );
+        LoadFont(&g_pFontLabel, config);
+        
+        pConf->Read( _T("FontSmall"), &config, SmallFont );
+        LoadFont(&g_pFontSmall, config);
 
         pConf->Read( _T("SpeedometerMax"), &g_iDashSpeedMax, 12 );
         pConf->Read( _T("COGDamp"), &g_iDashCOGDamp, 0);
@@ -1486,9 +1602,16 @@ bool dashboard_pi::LoadConfig( void )
                 }
             } else {
                 // This is the default instrument list
+#ifndef __OCPN__ANDROID__    
                 ar.Add( ID_DBP_I_POS );
                 ar.Add( ID_DBP_D_COG );
                 ar.Add( ID_DBP_D_GPS );
+#else
+                ar.Add( ID_DBP_I_POS );
+                ar.Add( ID_DBP_D_COG );
+                ar.Add( ID_DBP_I_SOG );
+                 
+#endif                
             }
 
             DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, MakeName(), _("Dashboard"), _T("V"), ar );
@@ -1543,6 +1666,19 @@ bool dashboard_pi::LoadConfig( void )
     } else
         return false;
 }
+
+void dashboard_pi::LoadFont(wxFont **target, wxString native_info)
+{
+    if( !native_info.IsEmpty() ){
+#ifdef __OCPN__ANDROID__
+        wxFont *nf = new wxFont( native_info );
+        *target = nf;
+#else
+        (*target)->SetNativeFontInfo( native_info );
+#endif
+    }
+}
+
 
 bool dashboard_pi::SaveConfig( void )
 {
@@ -1622,6 +1758,13 @@ void dashboard_pi::ApplyConfig( void )
                 //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                // sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
+            
+            #ifdef __OCPN__ANDROID__
+            wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
+            pane.Dockable( false );
+            
+            #endif            
+            
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
@@ -1670,6 +1813,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
         wxDialog( parent, id, _("Dashboard preferences"), wxDefaultPosition, wxDefaultSize,
                 wxDEFAULT_DIALOG_STYLE )
 {
+    
+#ifdef __WXQT__    
+    wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+    SetFont( *pF );
+#endif
+
+    wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") + wxFileName::GetPathSeparator() +
+    _T("dashboard_pi") + wxFileName::GetPathSeparator()
+    + _T("data") + wxFileName::GetPathSeparator();
+    
     Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DashboardPreferencesDialog::OnCloseDialog ),
             NULL, this );
 
@@ -1695,11 +1848,27 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxBoxSizer *itemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
     itemFlexGridSizer01->Add( itemBoxSizer01, 1, wxEXPAND | wxTOP | wxLEFT, border_size );
 
-    wxImageList *imglist1 = new wxImageList( 32, 32, true, 1 );
-    imglist1->Add( *_img_dashboard_pi );
+    // Scale the images in the dashboard list control
+    int imageRefSize = 32 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist1 = new wxImageList( imageRefSize, imageRefSize, true, 1 );
+    
+    wxBitmap bmDashBoard;
+#ifdef ocpnUSE_SVG
+    wxString filename = shareLocn + _T("Dashboard.svg");
+    bmDashBoard = GetBitmapFromSVGFile(filename, imageRefSize, imageRefSize);
+#else
+    wxImage dash1 = wxBitmap( *_img_dashboard_pi ).ConvertToImage();
+    wxImage dash1s = dash1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
+    bmDashBoard = wxBitmap(dash1s);
+#endif
+    
+    imglist1->Add( bmDashBoard );
 
     m_pListCtrlDashboards = new wxListCtrl( itemPanelNotebook01, wxID_ANY, wxDefaultPosition,
-            wxSize( 50, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+                                            wxSize( imageRefSize * 3/2, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+    
+    
     m_pListCtrlDashboards->AssignImageList( imglist1, wxIMAGE_LIST_SMALL );
     m_pListCtrlDashboards->InsertColumn( 0, _T("") );
     m_pListCtrlDashboards->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -1711,12 +1880,27 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxBoxSizer *itemBoxSizer02 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer01->Add( itemBoxSizer02 );
 
-    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, *_img_plus,
+    wxBitmap bmPlus, bmMinus;
+#ifdef ocpnUSE_SVG    
+    bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), imageRefSize/2, imageRefSize/2);
+    bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), imageRefSize/2, imageRefSize/2);
+#else
+    wxImage plus1 = wxBitmap( *_img_plus ).ConvertToImage();
+    wxImage plus1s = plus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
+    bmPlus = wxBitmap(plus1s);
+    
+    wxImage minus1 = wxBitmap( *_img_minus ).ConvertToImage();
+    wxImage minus1s = minus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
+    bmMinus = wxBitmap(minus1s);
+#endif
+    
+    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmPlus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonAddDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonAddDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnDashboardAdd), NULL, this );
-    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, *_img_minus,
+    
+    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmMinus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonDeleteDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonDeleteDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
@@ -1746,28 +1930,59 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer->Add( itemStaticText01, 0, wxEXPAND | wxALL, border_size );
     m_pTextCtrlCaption = new wxTextCtrl( m_pPanelDashboard, wxID_ANY, _T(""), wxDefaultPosition,
-            wxDefaultSize );
-    itemFlexGridSizer->Add( m_pTextCtrlCaption, 0, wxEXPAND | wxALL, border_size );
+                                         wxSize( 220, -1 ) );
+    itemFlexGridSizer->Add( m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL, border_size );
+    
+#ifdef __OCPN__ANDROID__
+    itemStaticText01->Hide();
+    m_pTextCtrlCaption->Hide();
+#endif    
 
     wxStaticText* itemStaticText02 = new wxStaticText( m_pPanelDashboard, wxID_ANY,
             _("Orientation:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer->Add( itemStaticText02, 0, wxEXPAND | wxALL, border_size );
     m_pChoiceOrientation = new wxChoice( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
-            wxSize( 120, -1 ) );
+            wxSize( 220, -1 ) );
     m_pChoiceOrientation->Append( _("Vertical") );
     m_pChoiceOrientation->Append( _("Horizontal") );
     itemFlexGridSizer->Add( m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL, border_size );
 
-    wxImageList *imglist = new wxImageList( 20, 20, true, 2 );
-    imglist->Add( *_img_instrument );
-    imglist->Add( *_img_dial );
+    int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
+
+    wxBitmap bmDial, bmInst;
+#ifdef ocpnUSE_SVG    
+    bmDial = GetBitmapFromSVGFile(shareLocn + _T("dial.svg"), instImageRefSize, instImageRefSize);
+    bmInst = GetBitmapFromSVGFile(shareLocn + _T("instrument.svg"), instImageRefSize, instImageRefSize);
+#else
+    wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
+    wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    bmDial = wxBitmap(dial1);
+    
+    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
+    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    bmInst = wxBitmap(inst1s);
+#endif
+    
+    imglist->Add( bmInst );
+    imglist->Add( bmDial );
 
     wxStaticBox* itemStaticBox03 = new wxStaticBox( m_pPanelDashboard, wxID_ANY, _("Instruments") );
     wxStaticBoxSizer* itemStaticBoxSizer03 = new wxStaticBoxSizer( itemStaticBox03, wxHORIZONTAL );
     itemBoxSizer03->Add( itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size );
 
+    int vsize = 200;
+    
+    #ifdef __OCPN__ANDROID__
+    int dw, dh;
+    wxDisplaySize(&dw, &dh);
+    vsize = dh * 50 / 100;
+    #endif
+    
     m_pListCtrlInstruments = new wxListCtrl( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
-            wxSize( -1, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+            wxSize( -1, vsize ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+    
     itemStaticBoxSizer03->Add( m_pListCtrlInstruments, 1, wxEXPAND | wxALL, border_size );
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
@@ -1894,7 +2109,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText09, 0, wxEXPAND | wxALL, border_size );
     wxString m_SpeedUnitChoices[] = { _("Honor OpenCPN settings"), _("Kts"), _("mph"), _("km/h"), _("m/s") };
     int m_SpeedUnitNChoices = sizeof( m_SpeedUnitChoices ) / sizeof( wxString );
-    m_pChoiceSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_SpeedUnitNChoices, m_SpeedUnitChoices, 0 );
+    m_pChoiceSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_SpeedUnitNChoices, m_SpeedUnitChoices, 0 );
     m_pChoiceSpeedUnit->SetSelection( g_iDashSpeedUnit + 1 );
     itemFlexGridSizer04->Add( m_pChoiceSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
@@ -1935,7 +2150,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText0b, 0, wxEXPAND | wxALL, border_size );
     wxString m_DistanceUnitChoices[] = { _("Honor OpenCPN settings"), _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
     int m_DistanceUnitNChoices = sizeof( m_DistanceUnitChoices ) / sizeof( wxString );
-    m_pChoiceDistanceUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_DistanceUnitNChoices, m_DistanceUnitChoices, 0 );
+    m_pChoiceDistanceUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_DistanceUnitNChoices, m_DistanceUnitChoices, 0 );
     m_pChoiceDistanceUnit->SetSelection( g_iDashDistanceUnit + 1 );
     itemFlexGridSizer04->Add( m_pChoiceDistanceUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
@@ -1944,7 +2159,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText0a, 0, wxEXPAND | wxALL, border_size );
     wxString m_WSpeedUnitChoices[] = { _("Kts"), _("mph"), _("km/h"), _("m/s") };
     int m_WSpeedUnitNChoices = sizeof( m_WSpeedUnitChoices ) / sizeof( wxString );
-    m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
+    m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
     m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
     itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
@@ -1960,10 +2175,32 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     }
     m_pListCtrlDashboards->SetColumnWidth( 0, wxLIST_AUTOSIZE );
 
+    m_pListCtrlDashboards->SetItemState(0, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+    curSel = 0;
+    
     UpdateDashboardButtonsState();
     UpdateButtonsState();
-    SetMinSize( wxSize( 450, -1 ) );
+    //SetMinSize( wxSize( 450, -1 ) );
+    SetMinSize( wxSize( 200, -1 ) );
     Fit();
+}
+
+void DashboardPreferencesDialog::RecalculateSize( void )
+{
+
+#ifdef __OCPN__ANDROID__    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 40;
+    
+    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize(); 
+    esize.y = wxMin( esize.y, dsize.y -(3 * GetCharHeight()) );
+    esize.x = wxMin( esize.x, dsize.x -(3 * GetCharHeight()) );
+    SetSize(esize);
+
+    CentreOnScreen();
+#endif
+    
 }
 
 void DashboardPreferencesDialog::OnCloseDialog( wxCloseEvent& event )
@@ -2105,7 +2342,23 @@ void DashboardPreferencesDialog::OnInstrumentAdd( wxCommandEvent& event )
 {
     AddInstrumentDlg pdlg( (wxWindow *) event.GetEventObject(), wxID_ANY );
 
-    if( pdlg.ShowModal() == wxID_OK ) {
+#ifdef __OCPN__ANDROID__    
+    wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+    pdlg.SetFont( *pF );
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 40;
+    
+    wxSize dsize = GetOCPNCanvasWindow()->GetClientSize(); 
+    esize.y = wxMin( esize.y, dsize.y -(3 * GetCharHeight()) );
+    esize.x = wxMin( esize.x, dsize.x -(3 * GetCharHeight()) );
+    pdlg.SetSize(esize);
+    
+    pdlg.CentreOnScreen();
+#endif
+    pdlg.ShowModal();
+    if( pdlg.GetReturnCode() == wxID_OK ) {
         wxListItem item;
         getListItemForInstrument( item, pdlg.GetInstrumentAdded() );
         item.SetId( m_pListCtrlInstruments->GetItemCount() );
@@ -2139,10 +2392,15 @@ void DashboardPreferencesDialog::OnInstrumentUp( wxCommandEvent& event )
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID - 1 );
+    //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item );
-    m_pListCtrlInstruments->SetItemState( itemID - 1, wxLIST_STATE_SELECTED,
-            wxLIST_STATE_SELECTED );
+    
+    for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
+        m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    
+    m_pListCtrlInstruments->SetItemState( itemID - 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+    
     UpdateButtonsState();
 }
 
@@ -2156,10 +2414,15 @@ void DashboardPreferencesDialog::OnInstrumentDown( wxCommandEvent& event )
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID + 1 );
+    //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item );
-    m_pListCtrlInstruments->SetItemState( itemID + 1, wxLIST_STATE_SELECTED,
-            wxLIST_STATE_SELECTED );
+    
+    for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
+        m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    
+    m_pListCtrlInstruments->SetItemState( itemID + 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+
     UpdateButtonsState();
 }
 
@@ -2179,24 +2442,54 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
             _("Select instrument to add:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer01->Add( itemStaticText01, 0, wxEXPAND | wxALL, 5 );
 
-    wxImageList *imglist = new wxImageList( 20, 20, true, 2 );
-    imglist->Add( *_img_instrument );
-    imglist->Add( *_img_dial );
+    int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
+    
+    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
+    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(inst1s) );
+    
+    wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
+    wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(dial1s) );
+    
+    
+    
+    
+    int vsize = 180;
+    
+    #ifdef __OCPN__ANDROID__
+    int dw, dh;
+    wxDisplaySize(&dw, &dh);
+    vsize = dh * 50 / 100;
+    #endif
 
-    m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( 250, 180 ),
+    m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( -1, vsize/*250, 180 */),
             wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING );
     itemBoxSizer01->Add( m_pListCtrlInstruments, 0, wxEXPAND | wxALL, 5 );
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
+
+    wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+    m_pListCtrlInstruments->SetFont( *pF );
+    
+    #ifdef __OCPN__ANDROID__
+    m_pListCtrlInstruments->GetHandle()->setStyleSheet( qtStyleSheet);
+    ///QScroller::ungrabGesture(m_pListCtrlInstruments->GetHandle());
+    #endif
+
     wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
     itemBoxSizer01->Add( DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5 );
 
+    long ident = 0;
     for( unsigned int i = ID_DBP_I_POS; i < ID_DBP_LAST_ENTRY; i++ ) { //do not reference an instrument, but the last dummy entry in the list
         wxListItem item;
         if( IsObsolete( i ) ) continue;
         getListItemForInstrument( item, i );
-        item.SetId( i );
+        item.SetId( ident );
         m_pListCtrlInstruments->InsertItem( item );
+        id++;
     }
 
     m_pListCtrlInstruments->SetColumnWidth( 0, wxLIST_AUTOSIZE );
@@ -2221,9 +2514,11 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 // wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
 DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr,
         dashboard_pi* plugin, int orient, DashboardWindowContainer* mycont ) :
-        wxWindow( pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE,
-                _T("Dashboard") )
+        wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, 0)
 {
+    
+    //wxDialog::Create(pparent, id, _("tileMine"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("Dashboard"));
+    
     m_pauimgr = auimgr;
     m_plugin = plugin;
     m_Container = mycont;
@@ -2236,6 +2531,29 @@ DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager
             this );
     Connect( wxEVT_COMMAND_MENU_SELECTED,
             wxCommandEventHandler( DashboardWindow::OnContextMenuSelect ), NULL, this );
+    
+    
+    
+#ifdef __OCPN__ANDROID__ 
+    Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
+    Connect( wxEVT_LEFT_UP, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
+    Connect( wxEVT_MOTION, wxMouseEventHandler( DashboardWindow::OnMouseEvent ) );
+    
+    GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
+    GetHandle()->grabGesture(Qt::PinchGesture);
+    GetHandle()->grabGesture(Qt::PanGesture);
+    
+    Connect( wxEVT_QT_PINCHGESTURE,
+            (wxObjectEventFunction) (wxEventFunction) &DashboardWindow::OnEvtPinchGesture, NULL, this );
+    Connect( wxEVT_QT_PANGESTURE,
+             (wxObjectEventFunction) (wxEventFunction) &DashboardWindow::OnEvtPanGesture, NULL, this );
+#endif
+    
+    Hide();
+    
+    m_binResize = false;
+    m_binPinch = false;
+    
 }
 
 DashboardWindow::~DashboardWindow()
@@ -2245,6 +2563,286 @@ DashboardWindow::~DashboardWindow()
         delete pdic;
     }
 }
+
+
+
+#ifdef __OCPN__ANDROID__
+void DashboardWindow::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
+{
+    
+    float zoom_gain = 0.3;
+    float zoom_val;
+    float total_zoom_val;
+    
+    if( event.GetScaleFactor() > 1)
+        zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
+    
+    if( event.GetTotalScaleFactor() > 1)
+        total_zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
+    
+
+    wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
+    
+    wxSize currentSize = wxSize( pane.floating_size.x, pane.floating_size.y );
+    double aRatio = (double)currentSize.y / (double)currentSize.x;
+
+    wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
+    wxPoint par_pos = wxPoint( pane.floating_pos.x, pane.floating_pos.y );
+    
+    switch(event.GetState()){
+        case GestureStarted:
+            m_binPinch = true;
+            break;
+            
+        case GestureUpdated:
+            currentSize.y *= zoom_val;
+            currentSize.x *= zoom_val;
+
+            if((par_pos.y + currentSize.y) > par_size.y)
+                currentSize.y = par_size.y - par_pos.y;
+            
+            if((par_pos.x + currentSize.x) > par_size.x)
+                currentSize.x = par_size.x - par_pos.x;
+            
+            
+            ///vertical
+            currentSize.x = currentSize.y / aRatio;
+                
+            currentSize.x = wxMax(currentSize.x, 150);
+            currentSize.y = wxMax(currentSize.y, 150);
+            
+            pane.FloatingSize(currentSize);
+            m_pauimgr->Update();
+            
+            
+            break;
+            
+        case GestureFinished:{
+
+            if(itemBoxSizer->GetOrientation() == wxVERTICAL){
+                currentSize.y *= total_zoom_val;
+                currentSize.x = currentSize.y / aRatio;
+            }
+            else{
+                currentSize.x *= total_zoom_val;
+                currentSize.y = currentSize.x * aRatio;
+            }
+            
+            
+            //  Bound the resulting size
+            if((par_pos.y + currentSize.y) > par_size.y)
+                currentSize.y = par_size.y - par_pos.y;
+            
+            if((par_pos.x + currentSize.x) > par_size.x)
+                currentSize.x = par_size.x - par_pos.x;
+ 
+            // not too small
+            currentSize.x = wxMax(currentSize.x, 150);
+            currentSize.y = wxMax(currentSize.y, 150);
+                
+            //  Try a manual layout of the window, to estimate a good primary size..
+
+            // vertical
+            if(itemBoxSizer->GetOrientation() == wxVERTICAL){
+                int total_y = 0;
+                for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+                    DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+                    wxSize is = inst->GetSize( itemBoxSizer->GetOrientation(), currentSize );
+                    total_y += is.y;
+                }
+        
+                currentSize.y = total_y;
+            }
+    
+    
+            pane.FloatingSize(currentSize);
+            
+            // Reshow the window
+            for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+                DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+                inst->Show();
+            }
+            
+            m_pauimgr->Update();
+            
+            m_binPinch = false;
+            m_binResize = false;
+            
+            break;
+        }
+        
+        case GestureCanceled:
+            m_binPinch = false;
+            m_binResize = false;
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+
+void DashboardWindow::OnEvtPanGesture( wxQT_PanGestureEvent &event)
+{
+    if(m_binPinch)
+        return;
+
+    if(m_binResize)
+        return;
+        
+    int x = event.GetOffset().x;
+    int y = event.GetOffset().y;
+    
+    int lx = event.GetLastOffset().x;
+    int ly = event.GetLastOffset().y;
+    
+    int dx = x - lx;
+    int dy = y - ly;
+    
+    switch(event.GetState()){
+        case GestureStarted:
+            if(m_binPan)
+                break;
+            
+            m_binPan = true;
+            break;
+            
+        case GestureUpdated:
+            if(m_binPan){
+                
+                wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
+                wxPoint par_pos_old = ClientToScreen( wxPoint( 0, 0 ) ); //GetPosition();
+                
+                wxPoint par_pos = par_pos_old;
+                par_pos.x += dx;
+                par_pos.y += dy;
+                
+                par_pos.x = wxMax(par_pos.x, 0);
+                par_pos.y = wxMax(par_pos.y, 0);
+                
+                wxSize mySize = GetSize();
+                
+                if((par_pos.y + mySize.y) > par_size.y)
+                    par_pos.y = par_size.y - mySize.y;
+                
+                
+                if((par_pos.x + mySize.x) > par_size.x)
+                    par_pos.x = par_size.x - mySize.x;
+                
+                wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
+                pane.FloatingPosition( par_pos).Float();
+                m_pauimgr->Update();
+                
+            }
+            break;
+            
+        case GestureFinished:
+            if(m_binPan){
+            }
+            m_binPan = false;
+            
+            break;
+            
+        case GestureCanceled:
+            m_binPan = false; 
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+}
+    
+    
+void DashboardWindow::OnMouseEvent( wxMouseEvent& event )
+{
+    if(m_binPinch)
+        return;
+
+    if(m_binResize){
+        
+        wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
+        wxSize currentSize = wxSize( pane.floating_size.x, pane.floating_size.y );
+        double aRatio = (double)currentSize.y / (double)currentSize.x;
+        
+        wxSize par_size = GetOCPNCanvasWindow()->GetClientSize();
+        wxPoint par_pos = wxPoint( pane.floating_pos.x, pane.floating_pos.y );
+        
+        if(event.LeftDown()){
+            m_resizeStartPoint = event.GetPosition();
+            m_resizeStartSize = currentSize;
+            m_binResize2 = true;
+         }
+
+        if(m_binResize2){ 
+            if(event.Dragging()){
+                wxPoint p = event.GetPosition();
+                
+                wxSize dragSize = m_resizeStartSize;
+                
+                dragSize.y += p.y - m_resizeStartPoint.y;
+                dragSize.x += p.x - m_resizeStartPoint.x;;
+
+                if((par_pos.y + dragSize.y) > par_size.y)
+                    dragSize.y = par_size.y - par_pos.y;
+                
+                if((par_pos.x + dragSize.x) > par_size.x)
+                    dragSize.x = par_size.x - par_pos.x;
+                
+                
+                ///vertical
+                //dragSize.x = dragSize.y / aRatio;
+
+                // not too small
+                dragSize.x = wxMax(dragSize.x, 150);
+                dragSize.y = wxMax(dragSize.y, 150);
+                
+                pane.FloatingSize(dragSize);
+                m_pauimgr->Update();
+                    
+            }
+            
+            if(event.LeftUp()){
+                wxPoint p = event.GetPosition();
+                
+                wxSize dragSize = m_resizeStartSize;
+                
+                dragSize.y += p.y - m_resizeStartPoint.y;
+                dragSize.x += p.x - m_resizeStartPoint.x;;
+
+                if((par_pos.y + dragSize.y) > par_size.y)
+                    dragSize.y = par_size.y - par_pos.y;
+                
+                if((par_pos.x + dragSize.x) > par_size.x)
+                    dragSize.x = par_size.x - par_pos.x;
+
+                // not too small
+                dragSize.x = wxMax(dragSize.x, 150);
+                dragSize.y = wxMax(dragSize.y, 150);
+/*
+                for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+                    DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+                    inst->Show();
+                }
+*/
+                pane.FloatingSize(dragSize);
+                m_pauimgr->Update();
+                
+                
+                m_binResize = false;
+                m_binResize2 = false;
+            }
+        }
+    }
+}
+#endif
+
 
 void DashboardWindow::OnSize( wxSizeEvent& event )
 {
@@ -2261,6 +2859,22 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 {
     wxMenu* contextMenu = new wxMenu();
 
+#ifdef __WXQT__    
+    wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+    
+    // add stuff
+    wxMenuItem *item1 = new wxMenuItem(contextMenu, ID_DASH_PREFS, _("Preferences..."));
+    item1->SetFont(*pf);
+    contextMenu->Append(item1);
+
+    wxMenuItem *item2 = new wxMenuItem(contextMenu, ID_DASH_RESIZE, _("Resize..."));
+    item2->SetFont(*pf);
+    contextMenu->Append(item2);
+    
+     
+#else    
+    
+
     wxAuiPaneInfo &pane = m_pauimgr->GetPane( this );
     if ( pane.IsOk( ) && pane.IsDocked( ) ) {
         contextMenu->Append( ID_DASH_UNDOCK, _( "Undock" ) );
@@ -2275,6 +2889,9 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 
     contextMenu->AppendSeparator();
     contextMenu->Append( ID_DASH_PREFS, _("Preferences...") );
+    
+#endif
+    
     PopupMenu( contextMenu );
     delete contextMenu;
 }
@@ -2290,6 +2907,17 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
         case ID_DASH_PREFS: {
             m_plugin->ShowPreferencesDialog( this );
             return; // Does it's own save.
+        }
+        case ID_DASH_RESIZE: {
+/*            
+            for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+                DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+                inst->Hide();
+            }
+*/            
+            m_binResize = true;
+            
+            return; 
         }
         case ID_DASH_VERTICAL: {
             ChangePaneOrientation( wxVERTICAL, true );
@@ -2334,6 +2962,12 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
         m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
         !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(
         sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( m_Container->m_bIsVisible ) );
+    
+#ifdef __OCPN__ANDROID__
+    wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
+    pane.Dockable( false );
+#endif            
+    
     if ( updateAUImgr ) m_pauimgr->Update();
 }
 
@@ -2646,6 +3280,19 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             }
         }
     }
+
+    //  In the absense of any other hints, build the default instrument sizes by taking the 
+    //  calculated with of the first (and succeeding) instruments as hints for the next.
+    //  So, best in default loads to start with an instrument that accurately calculates its minimum width.
+    //  e.g. DashboardInstrument_Position
+    
+    wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
+    for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+        DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+        inst->SetMinSize( inst->GetSize( itemBoxSizer->GetOrientation(), Hint ) );
+        Hint = inst->GetMinSize();
+    }
+    
     Fit();
     Layout();
     SetMinSize( itemBoxSizer->GetMinSize() );
@@ -2677,6 +3324,124 @@ void DashboardWindow::SendUtcTimeToAllInstruments( wxDateTime value )
 //                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Sun ) )
 //                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Moon ) ) ) )
             ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime( value );
+    }
+}
+
+
+
+//#include "wx/fontpicker.h"
+
+//#include "wx/fontdlg.h"
+
+
+// ============================================================================
+// implementation
+// ============================================================================
+
+IMPLEMENT_DYNAMIC_CLASS(OCPNFontButton, wxButton)
+
+// ----------------------------------------------------------------------------
+// OCPNFontButton
+// ----------------------------------------------------------------------------
+
+bool OCPNFontButton::Create( wxWindow *parent, wxWindowID id,
+                                  const wxFont &initial, const wxPoint &pos,
+                                  const wxSize &size, long style,
+                                  const wxValidator& validator, const wxString &name)
+{
+    wxString label = (style & wxFNTP_FONTDESC_AS_LABEL) ?
+    wxString() : // label will be updated by UpdateFont
+    _("Choose font");
+    
+    // create this button
+    if (!wxButton::Create( parent, id, label, pos,
+        size, style, validator, name ))
+    {
+        wxFAIL_MSG( wxT("OCPNFontButton creation failed") );
+        return false;
+    }
+    
+    // and handle user clicks on it
+    Connect(GetId(), wxEVT_BUTTON,
+            wxCommandEventHandler(OCPNFontButton::OnButtonClick),
+            NULL, this);
+    
+    InitFontData();
+    
+    m_selectedFont = initial.IsOk() ? initial : *wxNORMAL_FONT;
+    UpdateFont();
+    
+    return true;
+}
+
+void OCPNFontButton::InitFontData()
+{
+    m_data.SetAllowSymbols(true);
+    m_data.SetColour(*wxBLACK);
+    m_data.EnableEffects(true);
+}
+
+void OCPNFontButton::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
+{
+    // update the wxFontData to be shown in the dialog
+    m_data.SetInitialFont(m_selectedFont);
+    
+    // create the font dialog and display it
+    wxFontDialog dlg(this, m_data);
+    
+    wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+    dlg.SetFont( *pF );
+    
+#ifdef __WXQT__
+    // Make sure that font dialog will fit on the screen without scrolling
+    // We do this by setting the dialog font size "small enough" to show "n" lines
+    wxSize proposed_size = GetParent()->GetSize();
+    float n_lines = 30;
+    float font_size = pF->GetPointSize();
+    
+    if ( ( proposed_size.y / font_size ) < n_lines ) {
+        float new_font_size = proposed_size.y / n_lines;
+        wxFont *smallFont = new wxFont( *pF );
+        smallFont->SetPointSize( new_font_size );
+        dlg.SetFont( *smallFont );
+    }
+    
+    dlg.SetSize(GetParent()->GetSize());
+    dlg.Centre();
+#endif    
+    
+   
+    
+    
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        m_data = dlg.GetFontData();
+        m_selectedFont = m_data.GetChosenFont();
+        
+        // fire an event
+        wxFontPickerEvent event(this, GetId(), m_selectedFont);
+        GetEventHandler()->ProcessEvent(event);
+    }
+}
+
+void OCPNFontButton::UpdateFont()
+{
+    if ( !m_selectedFont.IsOk() )
+        return;
+    
+    SetForegroundColour(m_data.GetColour());
+    
+    if (HasFlag(wxFNTP_USEFONT_FOR_LABEL))
+    {
+        // use currently selected font for the label...
+        wxButton::SetFont(m_selectedFont);
+    }
+    
+    if (HasFlag(wxFNTP_FONTDESC_AS_LABEL))
+    {
+        SetLabel(wxString::Format(wxT("%s, %d"),
+                                  m_selectedFont.GetFaceName().c_str(),
+                                  m_selectedFont.GetPointSize()));
     }
 }
 

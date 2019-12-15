@@ -34,10 +34,14 @@
 
 #include <wx/log.h>
 #include <wx/stdpaths.h>
+#include <wx/clrpicker.h>
+#include <wx/colourdata.h>
+#include <wx/colordlg.h>
 
 #include <stdio.h>
 
 class MyConfig;
+class ArrayOfCDI;
 
 typedef struct {
     char    tsdk[20];
@@ -49,10 +53,10 @@ typedef struct {
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
 
-#ifdef __WXQT__
-extern bool LoadQtStyleSheet(wxString &sheet_file);
-extern QString getQtStyleSheet( void );
-#endif
+// #ifdef __WXQT__
+// extern bool LoadQtStyleSheet(wxString &sheet_file);
+// extern QString getQtStyleSheet( void );
+// #endif
 
 
 class OCPNPlatform
@@ -89,6 +93,7 @@ public:
     
 
     void SetDefaultOptions( void );
+    void SetUpgradeOptions( wxString vString, wxString vStringConfig );
 
     void applyExpertMode(bool mode);
     
@@ -100,12 +105,13 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
+    double GetDisplayAreaCM2();
+
     void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
     unsigned int GetSelectRadiusPix();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
-    void onStagedResizeFinal();
     
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
@@ -115,9 +121,11 @@ public:
     int GetStatusBarFieldCount();
     bool GetFullscreen();
     bool SetFullscreen( bool bFull );
+    bool AllowAlertDialog(const wxString& class_name);
     double GetDisplayDensityFactor();
-    
     double m_pt_per_pixel;
+    long GetDefaultToolbarOrientation();
+    
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
@@ -140,7 +148,7 @@ public:
     
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
-    int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);
+    int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir, bool b_addFiles = true);
     
     bool InitializeLogFile( void );
     void CloseLogFile( void );
@@ -157,6 +165,10 @@ public:
 #define PLATFORM_CAP_PLUGINS   1
 #define PLATFORM_CAP_FASTPAN   2
     void LaunchLocalHelp();
+    void DoHelpDialog( void );
+
+    int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
+    void platformLaunchDefaultBrowser( wxString URL );
 
     void SetLocaleSearchPrefixes( void );
     wxString GetDefaultSystemLocale();
@@ -194,6 +206,52 @@ private:
     int         m_monitorWidth, m_monitorHeight;
     bool        m_bdisableWindowsDisplayEnum;
 };
+
+
+//--------------------------------------------------------------------------
+//      Private colourPicker control
+//--------------------------------------------------------------------------
+
+class OCPNColourPickerCtrl : public wxBitmapButton
+{
+public:
+    OCPNColourPickerCtrl();
+    OCPNColourPickerCtrl(wxWindow *parent,
+                   wxWindowID id,
+                   const wxColour& initial = *wxBLACK,
+                   const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxDefaultSize,
+                   long style = 0,
+                   const wxValidator& validator = wxDefaultValidator,
+                   const wxString& name = _T(""));
+
+    bool Create(wxWindow *parent,
+                wxWindowID id,
+                const wxColour& initial = *wxBLACK,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = 0,
+                const wxValidator& validator = wxDefaultValidator,
+                const wxString& name = _T(""));
+
+    void OnButtonClick(wxCommandEvent& WXUNUSED(ev));
+    void InitColourData();
+    void SetColour( wxColour& c);
+    wxColour GetColour( void );
+    
+protected:
+    virtual void UpdateColour();
+    wxSize DoGetBestSize() const;
+
+private:
+    wxBitmap m_bitmap;
+    wxColour m_colour;
+    wxColourData ms_data;
+
+};
+
+
+
 
 
 #endif          //guard

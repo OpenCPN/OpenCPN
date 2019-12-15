@@ -32,7 +32,11 @@
 #endif
 
 #ifdef __POSIX__
+    #ifdef __OCPN__ANDROID__
+        #include <termios.h>
+    #else
 	#include <sys/termios.h>
+    #endif
 #endif
 
 #define DS_RX_BUFFER_SIZE 4096

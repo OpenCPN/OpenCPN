@@ -35,6 +35,10 @@
 #include "instrument.h"
 #include "wx28compat.h"
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
 //----------------------------------------------------------------
 //
 //    Generic DashboardInstrument Implementation
@@ -64,7 +68,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       //  Strangely, this does not work for GTK...
       //  See: http://trac.wxwidgets.org/ticket/15417
       
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
       Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
 #endif      
 }
@@ -261,6 +265,8 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
             }
             else
                 m_data = _T("---");
+      
+            Refresh();
       }
 }
 

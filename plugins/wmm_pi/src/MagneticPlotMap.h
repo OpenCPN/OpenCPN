@@ -26,10 +26,12 @@
  */
 
 #include <list>
-#include "TexFont.h"
+#include "pi_TexFont.h"
 #include "GeomagnetismHeader.h"
 
 enum MagneticPlotType {DECLINATION_PLOT, INCLINATION_PLOT, FIELD_STRENGTH_PLOT};
+
+class pi_ocpnDC;
 
 /* must be a power of 2, and also divide 360 and 176;
    really only 8 works without more modifications */
@@ -92,10 +94,10 @@ public:
     void PlotRegion(std::list<PlotLineSeg*> &region,
                     double lat1, double lon1, double lat2, double lon2);
     bool Recompute(wxDateTime date);
-    void Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color);
+    void Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color);
 
     void ClearMap();
-    void DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon);
+    void DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon);
 
     MagneticPlotType m_type;
     bool m_bEnabled;

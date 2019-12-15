@@ -41,7 +41,6 @@
 #endif
 
 extern double               gLat, gLon;
-extern RouteList           *pRouteList;
 extern TrackList           *pTrackList;
 extern ActiveTrack         *g_pActiveTrack;
 extern Routeman            *g_pRouteMan;

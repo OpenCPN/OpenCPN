@@ -22,6 +22,11 @@
  ***************************************************************************
  */
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include "wx/tokenzr.h"
 
 #include "SoundFactory.h"
@@ -48,10 +53,6 @@ extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
 extern MyFrame *gFrame;
-extern int g_ais_alert_dialog_x;
-extern int g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx;
-extern int g_ais_alert_dialog_sy;
 extern bool bGPSValid;
 extern bool     g_bCPAMax;
 extern double   g_CPAMax_NM;
@@ -63,9 +64,6 @@ extern bool     g_bMarkLost;
 extern double   g_MarkLost_Mins;
 extern bool     g_bRemoveLost;
 extern double   g_RemoveLost_Mins;
-extern bool     g_bShowCOG;
-extern double   g_ShowCOG_Mins;
-extern bool     g_bAISShowTracks;
 extern double   g_AISShowTracks_Mins;
 extern bool     g_bHideMoored;
 extern double   g_ShowMoored_Kts;
@@ -73,10 +71,6 @@ extern wxString g_sAIS_Alert_Sound_File;
 extern bool     g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool     g_bAIS_ACK_Timeout;
 extern double   g_AckTimeout_Mins;
-extern bool     g_bShowAreaNotices;
-extern bool     g_bDrawAISSize;
-extern bool     g_bShowAISName;
-extern int      g_Show_Target_Name_Scale;
 extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
 extern bool     g_bInlandEcdis;
@@ -87,8 +81,6 @@ extern double gLon;
 extern double gCog;
 extern double gSog;
 extern double gHdt;
-extern double gHdm;
-extern double gVar;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
@@ -858,18 +850,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             //  Extract the MMSI
             if( !mmsi ) mmsi = strbit.GetInt( 9, 30 );
             long mmsi_long = mmsi;
-
-            // Check to see if this MMSI has been configured to be ignored completely...
-            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                MMSIProperties *props =  g_MMSI_Props_Array[i];
-                if(mmsi == props->MMSI){
-                    if(props->m_bignore)
-                        return AIS_NoError;
-                    else
-                        break;
-                }
-            }        
-             //  Search the current AISTargetList for an MMSI match
+            //  Search the current AISTargetList for an MMSI match
             AIS_Target_Hash::iterator it = AISTargetList->find( mmsi );
             if( it == AISTargetList->end() )                  // not found
                     {
@@ -880,8 +861,51 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData = it->second;          // find current entry
                 pStaleTarget = pTargetData;        // save a pointer to stale data
             }
-            // XXX Should be ?
-            // assert(pTargetData != 0);
+            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                MMSIProperties *props =  g_MMSI_Props_Array[i];
+                if(mmsi == props->MMSI){
+                    // Check to see if this MMSI has been configured to be ignored completely...
+                    if(props->m_bignore)
+                        return AIS_NoError;
+                    // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
+                    else if (props->m_bVDM){
+                        
+                        //Only single line VDM messages to be translated
+                        if( str.Mid( 3, 9 ).IsSameAs( wxT("VDM,1,1,,") ) )  
+                        {  
+                            int message_ID = strbit.GetInt( 1, 6 );        // Parse on message ID
+                            // Only translate the dynamic positionreport messages (1, 2, 3 or 18)
+                            if ( (message_ID <= 3) || (message_ID == 18) )
+                            {
+                                // set OwnShip to prevent target from being drawn
+                                pTargetData->b_OwnShip = true;
+                                //Rename nmea sentence to AIVDO and calc a new checksum
+                                wxString aivdostr = str;
+                                aivdostr.replace(1, 5, "AIVDO");
+                                unsigned char calculated_checksum = 0;
+                                wxString::iterator i;
+                                for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
+                                    calculated_checksum ^= static_cast<unsigned char> (*i);
+                                // if i is not at least 3 positons befoere end, there is no checksum added
+                                // so also no need to add one now.
+                                if ( i <= aivdostr.end()-3 )
+                                    aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
+
+                                gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
+                                //add the changed sentence into nmea stream
+                                OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+                                std::string s = std::string( aivdostr.mb_str() );
+                                event.SetNMEAString( s );
+                                event.SetStream( NULL );
+                                g_pMUX->AddPendingEvent( event ); 
+                            }
+                        }
+                        return AIS_NoError;
+                    }
+                    else
+                        break;
+                }
+            }        
 
             //  Grab the stale targets's last report time
              wxDateTime now = wxDateTime::Now();
@@ -1017,42 +1041,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     // The track persistency enabled in the query window
                     pTargetData->b_PersistTrack = true;
                 }
-                pTargetData->b_NoTrack = false;
-                // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
-                for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                    MMSIProperties *props =  g_MMSI_Props_Array[i];
-                    if(mmsi == props->MMSI)
-                    {
-                       if (props->m_bVDM){
-                            // set OwnShip to prevent target from being drawn
-                            pTargetData->b_OwnShip = true;
-                            //Rename nmea sentence to AIVDO and calc a new checksum
-                            wxString aivdostr = str;
-                            aivdostr.replace(1, 5, "AIVDO");
-                            unsigned char calculated_checksum = 0;
-                            wxString::iterator i;
-                            for( i = aivdostr.begin()+1; i != aivdostr.end() && *i != '*'; ++i)
-                                calculated_checksum ^= static_cast<unsigned char> (*i);
-                            // if i is not at least 3 positons befoere end, there is no checksum added
-                            // so also no need to add one now.
-                            if ( i <= aivdostr.end()-3 )
-                                aivdostr.replace( i+1, i+3, wxString::Format(_("%02X"), calculated_checksum));
-
-                            gps_watchdog_timeout_ticks = 60;  //increase watchdog time up to 1 minute
-                            //replace the changed sentence in nemea stream
-                            OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-                            std::string s = std::string( aivdostr.mb_str() );
-                            event.SetNMEAString( s );
-                            event.SetStream( NULL );
-                            g_pMUX->AddPendingEvent( event );                   
-                        }
-                        else{
-                            pTargetData->b_PersistTrack = (props->m_bPersistentTrack);
-                            pTargetData->b_NoTrack = (props->TrackType == TRACKTYPE_NEVER);
-                        }
-                        break;
-                    }
-                }
+                pTargetData->b_NoTrack = false;                
             }
 
             //  If the message was decoded correctly

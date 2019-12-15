@@ -26,6 +26,7 @@
 #define __S57QUERYDIALOG_H__
 
 #include <wx/frame.h>
+#include <wx/html/htmlwin.h>
 
 class wxHtmlWindow;
 

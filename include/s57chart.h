@@ -229,7 +229,7 @@ public:
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
 
       char GetUsageChar(void){ return m_usage_char; }
-      static bool IsCellOverlayType(char *pFullPath);
+      static bool IsCellOverlayType(const wxString &pFullPath);
 
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
@@ -299,9 +299,10 @@ private:
 
 
       wxArrayString *m_tmpup_array;
-      std::unique_ptr<PixelCache> pDIB;
+      PixelCache   *pDIB;
 
-      std::unique_ptr<wxBitmap> m_pCloneBM;
+      wxBitmap     *m_pCloneBM;
+      wxMask       *m_pMask;
 
       bool         bGLUWarningSent;
 
@@ -318,7 +319,7 @@ private:
 
 
 //  Raw ENC DataSet members
-      std::unique_ptr<OGRS57DataSource> m_pENCDS;
+      OGRS57DataSource *m_pENCDS;
 
 //  DEPCNT VALDCO array members
       int         m_nvaldco;
