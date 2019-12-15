@@ -372,7 +372,6 @@ void RoutePropDlgImpl::UpdatePoints()
             data.push_back( wxVariant(stm.str()));
         }
         
-        data.push_back( wxVariant("---" ));
         data.push_back( wxVariant(name) ); // To
         slen.Printf( wxT("%5.1f ") + getUsrDistanceUnit(), toUsrDistance(distance) );
         data.push_back( wxVariant(slen) ); // Distance

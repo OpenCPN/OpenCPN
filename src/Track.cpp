@@ -1095,7 +1095,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
     pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
     pWP_prev = pWP_dst;
 // add intermediate points as needed
-
+    int dProg = 0;
     for(size_t i = 1; i < TrackPoints.size();) {
         TrackPoint *prp = TrackPoints[i];
         prpnodeX = i;
@@ -1181,7 +1181,12 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
             i++;
             next_ic++;
         }
-        if( pprog ) pprog->Update( ( i * 100 ) / nPoints );
+        int iProg = (i * 100) / nPoints;
+        if (pprog && (iProg > dProg))
+        {
+            dProg = iProg;
+            pprog->Update(dProg);
+        }
     }
 
 // add last point, if needed
