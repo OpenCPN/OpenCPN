@@ -9,6 +9,13 @@ su -c "dnf install -y sudo dnf-plugins-core"
 sudo dnf copr enable -y --nogpgcheck leamas/opencpn-mingw 
 
 test -d /opencpn-ci && cd /opencpn-ci || :
+
+if [ -n "$CIRCLECI" ]; then
+    # horrible patch for circleci, does not work on travis despite same
+    # cmake version.
+    sed -i -e '/define NSIS_PACKEDVERSION/s/;!/!/'  NSIS.template.in.in
+fi
+
 sudo dnf builddep  -y mingw/fedora/opencpn-deps.spec
 rm -rf build; mkdir build; cd build
 cmake \

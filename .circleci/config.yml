@@ -61,23 +61,19 @@ workflows:
           filters:
             branches:
               only:
-                - plug-mgr
-                - plugins
+                - master
       - build-trusty:
           filters:
             branches:
               only:
-                - plug-mgr
-                - plugins
+                - master
       - build-macos:
           filters:
             branches:
               only:
-                - plug-mgr
-                - plugins
+                - master
       - build-mingw:
           filters:
             branches:
               only:
-                - plug-mgr
-                - plugins
+                - master
