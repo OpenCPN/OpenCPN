@@ -2859,6 +2859,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 
         wxGenericProgressDialog *pprog = nullptr;
         int count = pWayPointMan->GetWaypointList()->GetCount();
+        int progStep = count / 32;
         if( count > 200) {
             pprog = new wxGenericProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
@@ -2868,17 +2869,17 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
         //WPTs
-        int ic = 0;
+        int ic = 1;
 
         wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
         RoutePoint *pr;
         while( node ) {
-            if(pprog) {
+            if( pprog && !(ic % progStep) ) {
                 wxString msg;
                 msg.Printf(_T("%d/%d"), ic, count);
                 pprog->Update( ic, msg );
-                ic++;
             }
+            ic++;
 
             pr = node->GetData();
 
