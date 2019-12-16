@@ -2,7 +2,7 @@
 
 expand() { for arg in "$@"; do test -f $arg && echo $arg; done }
 
-REPO="alec-leamas/opencpn"
+REPO="david-register/opencpn-unstable"
 
 test -z "$TRAVIS_BUILD_DIR" || cd $TRAVIS_BUILD_DIR
 cd build
