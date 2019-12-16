@@ -20,6 +20,7 @@ fi
 
 rm -rf build && mkdir build && cd build
 cmake $WEBVIEW_OPT \
+    -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DOCPN_CI_BUILD:BOOL=ON \
     ..

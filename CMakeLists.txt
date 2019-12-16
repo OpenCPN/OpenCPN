@@ -2471,7 +2471,7 @@ endif ()
 #
 if (MINGW)
   set(
-    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+      CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
   )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
