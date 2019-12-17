@@ -83,6 +83,8 @@ void SignalKDataStream::Open(void) {
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);              // Short timeout
 
+    SetConnectTime(wxDateTime::Now());
+
     wxSocketClient* tcp_socket = static_cast<wxSocketClient*>(GetSock());
     tcp_socket->Connect(GetAddr(), FALSE);
     SetBrxConnectEvent(false);
@@ -137,6 +139,23 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
             GetSocketTimer()->Stop();
             SetBrxConnectEvent(true);
             SetConnectTime(wxDateTime::Now());
+            
+            //char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
+            char sub1[] = " {\"context\": \"vessels.self\",  \"subscribe\": [{          \
+                    \"path\": \"navigation.speedThroughWater\",                         \
+                    \"period\": 1000,                                                   \
+                    \"format\": \"delta\",                                              \
+                    \"policy\": \"ideal\",                                              \
+                    \"minPeriod\": 200                                                  \
+                    }, {                                                                \
+                    \"path\": \"navigation.logTrip\",                                   \
+                    \"period\": 10000                                                   \
+                    }]                                                                  \
+                    }";
+                    
+            char sub2[]  = "{\"context\":\"vessels.self\",\"subscribe\":[{\"path\":\"navigation.*\"}]}\r\n";
+            GetSock()->Write(sub2, strlen(sub2));
+
             break;
         }
 
