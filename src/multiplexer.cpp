@@ -32,9 +32,9 @@
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
 
-// balp removed #ifdef USE_GARMINHOST
-//#include "garmin_wrapper.h"
-//#endif
+#ifdef USE_GARMINHOST
+#include "garmin_wrapper.h"
+#endif
 #include "OCPN_SignalKEvent.h"
 #include "datastream.h"
 #include "SerialDataStream.h"
@@ -385,7 +385,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
         StopAndRemoveStream( old_stream );
     }
 
-#ifdef BALPUSE_GARMINHOST               // TODO later
+#ifdef USE_GARMINHOST         
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
@@ -955,7 +955,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         StopAndRemoveStream( old_stream );
     }
 
-#ifdef BALPUSE_GARMINHOST //TODO
+#ifdef USE_GARMINHOST 
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {

@@ -52,8 +52,9 @@
 #include "datastream.h"
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
-#include "garmin/jeeps/garmin_wrapper.h"
+#include "garmin_wrapper.h"
 #include "GarminProtocolHandler.h"
+#include "nmea0183.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1094,7 +1095,6 @@ void *GARMIN_USB_Thread::Entry()
         }
 
     }
-
     thread_prexit:
     m_parent->m_Thread_run_flag = -1;
     return 0;
