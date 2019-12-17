@@ -15,7 +15,7 @@
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
     auto root = event.GetValue();
-#if 0
+#if 1
     wxString dbg;
     wxJSONWriter writer;
     writer.Write(root, dbg);
@@ -26,7 +26,7 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 #endif
 
     if(root.HasMember("self")) {
-        m_self = _T("vessels.") + (root["self"].AsString());
+        m_self = /*_T("vessels.") + */(root["self"].AsString());
     }
     if(root.HasMember("context")
        && root["context"].IsString()) {
@@ -112,7 +112,7 @@ void SignalKEventHandler::updateNavigationPosition(wxJSONValue &value, const wxS
         wxLogMessage(_T(" ***** Position Update"));
         m_frame->setPosition(value["latitude"].AsDouble(),
                              value["longitude"].AsDouble());
-        m_frame->PostProcessNNEA(true, false, sfixtime);
+        m_frame->PostProcessNMEA(true, false, sfixtime);
     }
 }
 
@@ -122,7 +122,7 @@ void SignalKEventHandler::updateNavigationSpeedOverGround(wxJSONValue &value,
     double sog_knot = sog_ms * ms_to_knot_factor;
     wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
     m_frame->setSpeedOverGround(sog_knot);
-    m_frame->PostProcessNNEA(false, true, sfixtime);
+    m_frame->PostProcessNMEA(false, true, sfixtime);
 }
 
 void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
@@ -131,7 +131,7 @@ void SignalKEventHandler::updateNavigationCourseOverGround(wxJSONValue &value,
     double cog_deg = GEODESIC_RAD2DEG(cog_rad);
     wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
     m_frame->setCourseOverGround(cog_deg);
-    m_frame->PostProcessNNEA(false, true, sfixtime);
+    m_frame->PostProcessNMEA(false, true, sfixtime);
 }
 
 void SignalKEventHandler::updateGnssSatellites(wxJSONValue &value,
