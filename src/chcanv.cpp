@@ -8897,13 +8897,13 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
         g_pMarkInfoDialog = new MarkInfoDlg(this);
 
-    if( 1/*g_bresponsive*/ ) {
-
         wxSize canvas_size = GetSize();
         wxPoint canvas_pos = GetPosition();
-        wxSize fitted_size = g_pMarkInfoDialog->GetSize();;
-
-        bool newFit = false;
+        wxSize fitted_size = g_pMarkInfoDialog->GetSize();
+        fitted_size.x *= 1.10;  // GetSize() is somewhat conservative
+        // First run y is very low?
+        if (fitted_size.y < 100) fitted_size.y = 550;
+        
         if(canvas_size.x < fitted_size.x){
             fitted_size.x = canvas_size.x - 40;
             if(canvas_size.y < fitted_size.y)
@@ -8915,12 +8915,9 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
                 fitted_size.x -= 40;                // scrollbar added
         }
 
-        if(newFit){
-            g_pMarkInfoDialog->SetSize( fitted_size );
-            g_pMarkInfoDialog->Centre();
-        }
-    }
-
+        g_pMarkInfoDialog->SetMinSize(fitted_size);
+        g_pMarkInfoDialog->Centre();
+        
     markPoint->m_bRPIsBeingEdited = false;
     
     g_pMarkInfoDialog->SetRoutePoint( markPoint );
