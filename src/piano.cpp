@@ -321,7 +321,7 @@ void Piano::BuildGLTexture()
     // put the bitmaps in below
     wxBitmap *bitmaps[] = {m_pInVizIconBmp, m_pTmercIconBmp, m_pSkewIconBmp, m_pPolyIconBmp};
 
-    for(unsigned int i = 0; i < (sizeof bitmaps) / (sizeof *bitmaps); i++) {
+    for(unsigned int i = 0; i < 4; i++) {
         int iw = bitmaps[i]->GetWidth(), ih = bitmaps[i]->GetHeight();
 
         wxImage im = bitmaps[i]->ConvertToImage();
