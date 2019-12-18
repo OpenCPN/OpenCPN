@@ -448,7 +448,7 @@ void MarkInfoDlg::Create()
     m_textDescription->SetMinSize( wxSize( -1, 80 ) );
     bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
 
-    m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _T("..."),  wxDefaultPosition, wxSize( 20, -1 ), 0 );
+    m_buttonExtDescription = new wxButton( m_panelBasicProperties, ID_BTN_DESC_BASIC, _T("..."),  wxDefaultPosition, wxSize( GetCharHeight() * 15 / 10, -1 ), 0 );
     bSizer14->Add( m_buttonExtDescription, 0, wxALL | wxEXPAND, 5 );
 
     bSizerTextProperties->Add( bSizer14, 1, wxEXPAND, 5 );
@@ -459,12 +459,15 @@ void MarkInfoDlg::Create()
 
     bSizerBasicProperties->Add( sbSizerProperties, 2, wxALL | wxEXPAND, 5 );
 
-#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....   
-    wxStaticBoxSizer* sbS_SizerLinks1 = new wxStaticBoxSizer(wxHORIZONTAL, m_panelBasicProperties, _("Links")  );
-    bSizerBasicProperties->Add( sbS_SizerLinks1, 1, wxALL | wxEXPAND, 5 );
-    m_htmlList = new    wxSimpleHtmlListBox(sbS_SizerLinks1->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-    
-    sbS_SizerLinks1->Add(m_htmlList, 1,  wxBOTTOM|wxLEFT|wxEXPAND, 5 );
+#ifndef __OCPN__ANDROID__                       // wxSimpleHtmlListBox is broken on Android....
+    wxStaticText *staticTextLinks = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Links"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerTextProperties->Add( staticTextLinks, 0, wxALL, 5 );
+
+    wxBoxSizer *bSizer19 = new wxBoxSizer( wxHORIZONTAL );
+    bSizerTextProperties->Add( bSizer19, 1, wxEXPAND, 5 );
+
+    m_htmlList = new    wxSimpleHtmlListBox(m_panelBasicProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    bSizer19->Add( m_htmlList, 1, wxALL | wxEXPAND, 5 );
 #else
 
     sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
@@ -767,8 +770,6 @@ void MarkInfoDlg::RecalculateSize( void )
     Layout();
 
     wxSize dsize = GetParent()->GetClientSize();
-    //qDebug() << "dsize" << dsize.x << dsize.y;
-    
     
     wxSize esize;
 
