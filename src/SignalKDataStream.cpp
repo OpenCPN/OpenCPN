@@ -183,7 +183,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_INPUT:
         {
-#if 0
+#if 1
             wxLogMessage(wxString::Format(_T("SignalKDataStream input: %s"),
                                           GetPort().c_str()));
 #endif
