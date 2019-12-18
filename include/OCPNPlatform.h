@@ -136,7 +136,29 @@ public:
     wxString &GetSharedDataDir();
     wxString &GetPrivateDataDir();
     wxString GetWritableDocumentsDir();
+
+    /** The original in-tree plugin directory, sometimes not user-writable.*/
     wxString &GetPluginDir();
+
+    /**
+     * Base directory for user writable windows plugins, reflects
+     * winPluginDir option, defaults to %LOCALAPPDATA%/opencpn.
+     **/
+     wxString GetWinPluginBaseDir();
+
+    /**
+     * Return ';'-separated list of base directories for plugin data. The
+     * list always includes the main installation directory. Some platforms
+     * prepends this with user-writable path(s), each of which ending in
+     * "opencpn". All paths are guaranteed to exist.
+     *
+     * For Linux, return paths ending in .../share. 
+     */
+    wxString GetPluginDataPath();
+
+    /** Return true if ocpn is running in a flatpak sandbox. */
+    bool isFlatpacked() { return m_isFlatpacked; }
+
     wxString &GetConfigFileName();
     wxString *GetPluginDirPtr();
     wxString *GetSharedDataDirPtr();
@@ -194,6 +216,7 @@ private:
     wxString    m_PrivateDataDir;
     wxString    m_PluginsDir;
     wxString    m_config_file_name;
+    wxString    m_pluginDataPath;
     
     wxString    mlog_file;
     FILE        *flog;
@@ -205,6 +228,7 @@ private:
     
     int         m_monitorWidth, m_monitorHeight;
     bool        m_bdisableWindowsDisplayEnum;
+    bool        m_isFlatpacked;
 };
 
 

@@ -129,6 +129,7 @@
 #include "MUIBar.h"
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
+#include "PluginHandler.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -240,6 +241,7 @@ RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
 double                    gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
+wxString                  gRmcDate, gRmcTime;
 double                    vLat, vLon;
 double                    initial_scale_ppm, initial_rotation;
 
@@ -260,6 +262,7 @@ wxString                  ChartListFileName;
 wxString                  AISTargetNameFileName;
 wxString                  gWorldMapLocation, gDefaultWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
+wxString                  g_winPluginDir;    // Base plugin directory on Windows.
 wxString                  g_csv_locn;
 wxString                  g_SENCPrefix;
 wxString                  g_UserPresLibData;
@@ -1100,11 +1103,14 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddParam("import GPX files",
                         wxCMD_LINE_VAL_STRING,
                         wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
+    parser.AddLongSwitch( "unit_test_2" );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
     long number;
+    wxString repo;
+    wxString plugin;
 
     g_unit_test_2 = parser.Found( _T("unit_test_2") );
     g_bportable = parser.Found( _T("p") );
@@ -6902,7 +6908,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if (m_initializing)
                 break;
             m_initializing = true;
-            g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+            g_pi_manager->LoadAllPlugIns( true, false );
 
 //            RequestNewToolbars();
             RequestNewMasterToolbar();
@@ -7315,6 +7321,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
         gSog = NAN;
         gCog = NAN;
+        gRmcDate.Empty();
+        gRmcTime.Empty();
     }
 
 //  Update and check watchdog timer for Mag Heading data source
@@ -8873,6 +8881,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     }
                     
                     sfixtime = m_NMEA0183.Rmc.UTCTime;
+                    gRmcTime = sfixtime;
+                    gRmcDate = m_NMEA0183.Rmc.Date;
                 }
                 break;
 
@@ -9159,9 +9169,9 @@ void MyFrame::PostProcessNMEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 #ifdef ocpnUPDATE_SYSTEM_TIME
 //      Use the fix time to update the local system clock, only once per session
     if( ( sfixtime.Len() ) && s_bSetSystemTime && ( m_bTimeIsSet == false ) ) {
-        wxDateTime Fix_Time;
+        wxDateTime Fix_Time( wxDateTime::Now()) ;
 
-        if( 6 == sfixtime.Len() )                   // perfectly recognised format?
+        if( 6 == sfixtime.Len() || 6 == sfixtime.find('.') )       // perfectly recognised format?
                 {
             wxString a;
             long b;

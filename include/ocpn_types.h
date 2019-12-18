@@ -110,4 +110,13 @@ typedef struct {
     int    nSats;
 } GenericPosDatEx;
 
+//    A collection of active leg Data structure
+typedef struct {
+  double Xte;               // Left side of the track -> negative XTE
+  double Btw;
+  double Dtw;
+  wxString wp_name;         // Name of destination waypoint for active leg;
+  bool arrival;
+} ActiveLegDat;
+
 #endif

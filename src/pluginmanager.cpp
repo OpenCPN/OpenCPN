@@ -36,19 +36,28 @@
 #endif
 #include <wx/wx.h>
 #include <wx/dir.h>
+#include <wx/event.h>
 #include <wx/filename.h>
 #include <wx/aui/aui.h>
+#include <wx/platinfo.h>
+#include <wx/popupwin.h>
+#include <wx/progdlg.h>
 #include <wx/statline.h>
 #include <wx/tokenzr.h>
+#include <wx/tooltip.h>
 #include <wx/app.h>
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
 #ifndef __WXMSW__
 #include <cxxabi.h>
 #endif // __WXMSW__
+
 #include <stdint.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <cstdio>
+#include <string>
+#include <iostream>
 
 #include <algorithm>
 #include <cstdio>
@@ -66,19 +75,24 @@
 #include <gelf.h>
 #endif
 
+#include <sstream>
+#include <fstream>
 #include "config.h"
 #include "SoundFactory.h"
 #include "dychart.h"
+#include "PluginHandler.h"
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"
 #include "chartbase.h"        // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
+#include "Downloader.h"
 #include "ocpndc.h"
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
+#include "ocpn_utils.h"
 #include "piano.h"
 #include "routeman.h"
 #include "FontMgr.h"
@@ -95,12 +109,14 @@
 #include "gshhs.h"
 #include "mygeom.h"
 #include "OCPNPlatform.h"
+#include "PluginPaths.h"
 #include "toolbar.h"
 #include "Track.h"
 #include "Route.h"
 #include "OCPN_AUIManager.h"
 #include "chcanv.h"
 #include "canvasMenu.h"
+#include "download_mgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -110,6 +126,8 @@
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
+
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
@@ -156,18 +174,6 @@ extern unsigned int     g_canvasConfig;
 
 extern wxString         g_CmdSoundString;
 
-#ifdef __WXMSW__
-static const char PATH_SEP = ';';
-#else
-static const char PATH_SEP = ':';
-#endif
-
-static const char* const DEFAULT_DATA_DIRS =
-    "~/.local/share:/usr/local/share:/usr/share";
-
-static const char* const DEFAULT_PLUGIN_DIRS =
-    "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
-
 extern int              g_iSDMMFormat;
 
 unsigned int      gs_plib_flags;
@@ -181,6 +187,9 @@ extern arrayofCanvasPtr  g_canvasArray;
 
 extern MyFrame    *gFrame;
 
+const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
+const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -191,39 +200,15 @@ WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 
-static wxString ExpandWord(wxString word)
-{
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
-
-    wordexp_t we;
-    wordexp(word.mb_str(), &we, 0);
-    wxString tmp = wxString(we.we_wordv[0]);
-    wordfree(&we);
-    return tmp;
-#else
-    wxString tmp = wxExpandEnvVars(word);
-    return tmp;
-#endif
-}
-
 wxString GetPluginDataDir(const char* plugin_name)
 {
-    const char* const sharedDataLoc = *GetpSharedDataLocation();
-#ifdef __linux__
-    const char* const envdirs = getenv("XDG_DATA_DIRS");
-    wxString datadirs(envdirs ? envdirs : DEFAULT_DATA_DIRS);
-    if (envdirs == 0 && datadirs.Find(sharedDataLoc) == wxNOT_FOUND)
-        datadirs.Append(wxString(PATH_SEP) + sharedDataLoc);
-    wxLogMessage(_T("PlugInManager: Using data dirs from: ") + datadirs);
-#else
-    wxString datadirs(sharedDataLoc);
-#endif
     static const wxString sep = wxFileName::GetPathSeparator();
-    wxStringTokenizer dirs(datadirs, PATH_SEP);
+
+    wxString datadirs = g_Platform->GetPluginDataPath();
+    wxLogMessage(_T("PlugInManager: Using data dirs from: ") + datadirs);
+    wxStringTokenizer dirs(datadirs, ";");
     while (dirs.HasMoreTokens()) {
-        wxString dir = ExpandWord(dirs.GetNextToken()) + sep;
-	dir +=
-            dir.EndsWith("opencpn") ? "plugins" : "opencpn" + sep + "plugins";
+        wxString dir = dirs.GetNextToken();
         wxFileName tryDirName(dir);
         wxDir tryDir;
         if (!tryDir.Open(tryDirName.GetFullPath()))
@@ -238,6 +223,7 @@ wxString GetPluginDataDir(const char* plugin_name)
             }
             more = tryDir.GetNext(&next);
         }
+	tryDir.Close();
     }
     wxLogMessage(_T("Warnińg: no data directory found, using \"\""));
     return "";
@@ -441,23 +427,75 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
+/**
+ *
+ * For linux, set up LD_LIBRARY_PATH to the same value as the path used
+ * to load plugins, assuring helper binaries can load libraries installed
+ * in the same directory as the plugin.mac is handled the same way using
+ * DYLD_LIBRARY_PATH. For windows, setup PATH in the likewise.
+ */
+static void setLoadPath()
 {
-#ifdef __linux__
-    const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
-    wxString dirs(envdirs ? envdirs : DEFAULT_PLUGIN_DIRS);
-    if (envdirs == 0  && dirs.Find(plugin_dir) == wxNOT_FOUND)
-        dirs = dirs.Append(wxString(PATH_SEP) + plugin_dir);
-#else
-    wxString dirs = plugin_dir;
-#endif
-    wxLogMessage( _T("PlugInManager: plugins loading from ") + dirs);
+    using namespace std;
+
+    auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
+    vector<string> dirs = PluginPaths::getInstance()->Libdirs();
+    if (osSystemId & wxOS_UNIX_LINUX) {
+        string path = ocpn::join(dirs, ':');
+        wxString envPath;
+        if (wxGetEnv("LD_LIBRARY_PATH", &envPath)) {
+            path = path + ":" + envPath.ToStdString(); 
+        }
+        wxLogMessage("Using LD_LIBRARY_PATH: %s", path.c_str());
+        wxSetEnv("LD_LIBRARY_PATH", path.c_str());
+    }
+    else if (osSystemId & wxOS_WINDOWS) {
+        // On windows, Libdirs() and Bindirs() are the same.
+        string path = ocpn::join(dirs, ';');
+        wxString envPath;
+        if (wxGetEnv("PATH", &envPath)) {
+            path = path + ";" + envPath.ToStdString(); 
+        }
+        wxLogMessage("Using PATH: %s", path);
+        wxSetEnv("PATH", path);
+    }
+    else if (osSystemId & wxOS_MAC) {
+        string path = ocpn::join(dirs, ':');
+        wxString envPath;
+        if (wxGetEnv("DYLD_LIBRARY_PATH", &envPath)) {
+            path = path + ":" + envPath.ToStdString(); 
+        }
+        wxLogMessage("Using DYLD_LIBRARY_PATH: %s", path.c_str());
+        wxSetEnv("DYLD_LIBRARY_PATH", path.c_str());
+     }
+    else {
+        wxLogWarning("SetLoadPath: Unsupported platform.");
+    }
+    if (osSystemId & wxOS_MAC || osSystemId & wxOS_UNIX_LINUX) {
+        vector<string> dirs = PluginPaths::getInstance()->Bindirs();
+        string path = ocpn::join(dirs, ':');
+        wxString envPath;
+        wxGetEnv("PATH", &envPath);
+        path = path + ":" + envPath.ToStdString();
+        wxLogMessage("Using PATH: %s", path);
+        wxSetEnv("PATH", path);
+    }
+} 
+
+
+bool PlugInManager::LoadAllPlugIns(bool load_enabled, bool b_enable_blackdialog)
+{
+    using namespace std;
+    static const wxString sep = wxFileName::GetPathSeparator();
+    vector<string> dirs = PluginPaths::getInstance()->Libdirs();
+    wxLogMessage(_T("PlugInManager: loading plugins from %s"),
+                 ocpn::join(dirs, ';'));
+    setLoadPath();
     bool any_dir_loaded = false;
-    wxStringTokenizer tokens(dirs, PATH_SEP);
-    while (tokens.HasMoreTokens()) {
-        wxString dir = tokens.GetNextToken();
-        dir = ExpandWord(dir);
-        if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
+    for (auto dir: dirs) {
+        wxString wxdir(dir);
+wxLogMessage("Loading plugins from dir: %s", wxdir.mb_str().data());
+        if (LoadPlugInDirectory(wxdir, load_enabled, b_enable_blackdialog))
             any_dir_loaded = true;
     }
     return any_dir_loaded;
@@ -465,7 +503,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
 
 
 // Static helper function: loads all plugins from a single directory
-bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
+bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
     pConfig->SetPath( _T("/PlugIns/") );
     SetPluginOrder( pConfig->Read( _T("PluginOrder"), wxEmptyString ) );
@@ -481,12 +519,10 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
 
 #ifdef __WXMSW__
     wxString pispec = _T("*_pi.dll");
-#else
-#ifdef __WXOSX__
+#elif defined(__WXOSX__)
     wxString pispec = _T("*_pi.dylib");
 #else
     wxString pispec = _T("*_pi.so");
-#endif
 #endif
 
     if(!::wxDirExists(m_plugin_location))
@@ -516,9 +552,11 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
     bool ret = false; // return true if at least one new plugins gets loaded/unloaded
     wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
     
+    wxLogMessage("Found %d candidates", (int)file_list.GetCount());
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
         wxString plugin_file = wxFileName(file_name).GetFullName();
+        wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
         wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
 
         // this gets called every time we switch to the plugins tab.
@@ -566,8 +604,10 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
         pConfig->Read ( _T ( "bEnabled" ), &enabled, false );
 
         // only loading enabled plugins? check that it is enabled
-        if(load_enabled && !enabled)
+        if(load_enabled && !enabled) {
+            wxLogMessage("Skipping not enabled candidate.");
             continue;
+        }
             
         bool b_compat = CheckPluginCompatibility(file_name);
             
@@ -606,7 +646,15 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
 #endif
                     pic->m_bInitState = true;
                 }
-                    
+                PluginMetadata* found = 0;
+                for (auto p: PluginHandler::getInstance()->getInstalled()) {
+                    if (p.name == pic->m_common_name.Lower()) {
+                        found = &p;
+                        break;
+                    }
+                }
+                pic->m_version_str =
+                    found && !found->readonly ? found->version : "";
                 pic->m_short_description = pic->m_pplugin->GetShortDescription();
                 pic->m_long_description = pic->m_pplugin->GetLongDescription();
                 pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
@@ -689,6 +737,7 @@ bool PlugInManager::CallLateInit(void)
             case 114:
             case 115:
             case 116:
+            case 117:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;
@@ -722,8 +771,9 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 case 112:
                 case 113:
                 case 114:
-		case 115:
+                case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -825,10 +875,13 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         wxString msg(_T("PlugInManager: Deactivating PlugIn: "));
         msg += pic->m_plugin_file;
         wxLogMessage(msg);
-
         if(pic->m_bInitState){
             pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
+        }
+        else {
+             // Already deactivated
+             return true;
         }
 
         //    Deactivate (Remove) any ToolbarTools added by this PlugIn
@@ -900,27 +953,36 @@ bool PlugInManager::UpdateConfig()
     return true;
 }
 
-bool PlugInManager::UnLoadAllPlugIns()
+
+bool PlugInManager::UnLoadPlugIn(size_t ix)
 {
-    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
-    {
-        PlugInContainer *pic = plugin_array[i];
-
-        DeactivatePlugIn( pic );
-        
-        pic->m_destroy_fn(pic->m_pplugin);
-
-        delete pic->m_plibrary;            // This will unload the PlugIn
-
-        pic->m_bInitState = false;
-
-        delete pic;
+    if (ix >= plugin_array.GetCount()) {
+        wxLogWarning("Attempt to remove non-existing plugin %d", ix);
+        return false;
     }
-    
-    plugin_array.Empty();
-    
+    PlugInContainer *pic = plugin_array[ix];
+    if (!DeactivatePlugIn(pic)) {
+        return false;
+    }
+    pic->m_destroy_fn(pic->m_pplugin);
+    delete pic->m_plibrary;            // This will unload the PlugIn
+    pic->m_bInitState = false;
+    delete pic;
+    plugin_array.RemoveAt(ix);
     return true;
 }
+
+
+bool PlugInManager::UnLoadAllPlugIns()
+{
+    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+        if (!UnLoadPlugIn(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 
 bool PlugInManager::DeactivateAllPlugIns()
 {
@@ -1284,7 +1346,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     fclose(f);
 #endif
 #endif // __WXGTK__
-
+    wxLogMessage("PLugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }
 
@@ -1500,6 +1562,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         break;
         
     case 116:
+    case 117:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
         break;
         
@@ -1575,7 +1638,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             break;
                         }
                         case 116:
+                        case 117:
                         {
+                            opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                            if (ppi) {
+                              ppi->RenderOverlay(*pdc, &pivp);
+                            }
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116) 
                                 ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex);
@@ -1635,7 +1703,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                             break;
                         }
                         case 116:
+                        case 117:
                         {
+                            opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                            if (ppi) {
+                                b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                            }
                             opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                             if (ppi116) 
                                 b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp, g_canvasConfig);
@@ -1704,7 +1777,12 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                         break;
                     }
                     case 116:
+                    case 117:
                     {
+                        opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                        if (ppi) {
+                            ppi->RenderGLOverlay(pcontext, &pivp);
+                        }
                         opencpn_plugin_116 *ppi116 = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                         if (ppi116) {
                             ppi116->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex);
@@ -1737,7 +1815,8 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     case 113:
                     case 114:
                     case 115:
-                    case 116:    
+                    case 116:
+                    case 117:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                         if(ppi)
@@ -1770,7 +1849,8 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                         case 113:
                         case 114:
                         case 115:
-                        case 116:    
+                        case 116: 
+                        case 117:
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
                             if(ppi && ppi->KeyboardEventHook( event ))
@@ -1834,6 +1914,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 114:
             case 115:
             case 116:    
+            case 117:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1858,21 +1939,25 @@ void PlugInManager::NotifySetupOptions()
     }
 }
 
-void PlugInManager::CloseAllPlugInPanels( int ok_apply_cancel)
+void PlugInManager::ClosePlugInPanel(PlugInContainer* pic, int ok_apply_cancel)
 {
-    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
-    {
-        PlugInContainer *pic = plugin_array[i];
-        if(pic->m_bEnabled && pic->m_bInitState)
+    if(pic->m_bEnabled && pic->m_bInitState) {
+        if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) && pic->m_bToolboxPanel)
         {
-            if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)/* && ( pic->m_bToolboxPanel)*/)
-            {
-                pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
-                pic->m_bToolboxPanel = false;
-            }
+            pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
+            pic->m_bToolboxPanel = false;
         }
     }
+}
 
+void PlugInManager::CloseAllPlugInPanels(int ok_apply_cancel)
+{
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++) {
+        PlugInContainer *pic = plugin_array[i];
+        if (pic) {
+            ClosePlugInPanel(pic, ok_apply_cancel);
+        }
+    }
 }
 
 int PlugInManager::AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin, const char *name )
@@ -2015,6 +2100,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 114:
                 case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2096,6 +2182,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 114:
                 case 115:
                 case 116:
+                case 117:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2108,6 +2195,48 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
             }
         }
     }
+}
+
+void PlugInManager::SendActiveLegInfoToAllPlugIns(ActiveLegDat *leg_info)
+{
+  Plugin_Active_Leg_Info leg;
+  leg.Btw = leg_info->Btw;
+  leg.Dtw = leg_info->Dtw;
+  leg.wp_name = leg_info->wp_name;
+  leg.Xte = leg_info->Xte;
+  leg.arrival = leg_info->arrival;
+  for (unsigned int i = 0; i < plugin_array.GetCount(); i++)
+  {
+    PlugInContainer *pic = plugin_array[i];
+    if (pic->m_bEnabled && pic->m_bInitState)
+    {
+      if (pic->m_cap_flag & WANTS_NMEA_EVENTS)
+      {
+        switch (pic->m_api_version)
+        {
+        case 108:
+        case 109:
+        case 110:
+        case 111:
+        case 112:
+        case 113:
+        case 114:
+        case 115:
+        case 116:
+          break;
+        case 117:
+        {
+          opencpn_plugin_117 *ppi = dynamic_cast<opencpn_plugin_117 *>(pic->m_pplugin);
+          if (ppi)
+            ppi->SetActiveLegInfo(leg);
+          break;
+        }
+        default:
+          break;
+        }
+      }
+    }
+  }
 }
 
 void PlugInManager::SendResizeEventToAllPlugIns(int x, int y)
@@ -2144,6 +2273,7 @@ void PlugInManager::PrepareAllPluginContextMenus()
                 switch(pic->m_api_version)
                 {
                     case 116:
+                    case 117:
                     {
                         opencpn_plugin_116 *ppi = dynamic_cast<opencpn_plugin_116 *>(pic->m_pplugin);
                         if(ppi)
@@ -3531,7 +3661,6 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint *dst, /* const*/ RoutePoint *sr
 bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint *pwaypoint)
 {
     //  Find the RoutePoint
-    bool b_found = false;
     RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( GUID );
 
     if(!prp)
@@ -3666,7 +3795,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
 {
     Track *track = new Track();
 
-    PlugIn_Waypoint *pwp;
+    PlugIn_Waypoint *pwp = 0;
     TrackPoint *pWP_src = 0;
     int ip = 0;
 
@@ -4117,6 +4246,9 @@ const char* opencpn_plugin_117::GetPlugInVersionPre() { return ""; };
 
 const char* opencpn_plugin_117::GetPlugInVersionBuild() { return ""; };
 
+void opencpn_plugin_117::SetActiveLegInfo(Plugin_Active_Leg_Info &leg_info)
+{}
+
 
 //          Helper and interface classes
 
@@ -4160,57 +4292,157 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
 //    PluginListPanel & PluginPanel Implementation
 //-------------------------------------------------------------------------------
 
-PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
-//      :wxPanel( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL )
-    :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL )
-
+static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 {
-    Hide();
-    m_pPluginArray = pPluginArray;
-    m_PluginSelected = NULL;
-
-    m_pitemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
-    SetSizer( m_pitemBoxSizer01 );
-
-    int max_dy = 0;
-
-    for( unsigned int i = 0; i < pPluginArray->GetCount() ; i++ )
-    {
-        PluginPanel *pPluginPanel = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item( pPluginArray->GetCount() - i -1 ) );
-        m_pitemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND|wxALL, 0 );
-        m_PluginItems.Add( pPluginPanel );
-
-        wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-        m_pitemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
-
-        //    When a child Panel is selected, its size grows to include "Preferences" and Enable" buttons.
-        //    As a consequence, the vertical size of the ListPanel grows as well.
-        //    Calculate and add a spacer to bottom of ListPanel so that initial ListPanel
-        //    minimum size calculations account for selected Panel size growth.
-        //    Sadly, this does not work right on wxQt.  So, just punt for now...
-
-        pPluginPanel->SetSelected( false );       // start unselected
-        m_pitemBoxSizer01->Layout();
-        wxSize nsel_size = pPluginPanel->GetSize();
-
-        pPluginPanel->SetSelected( true );        // switch to selected, a bit bigger
-        m_pitemBoxSizer01->Layout();
-        wxSize sel_size = pPluginPanel->GetSize();
-
-#ifndef __WXQT__        
-        pPluginPanel->SetSelected( false );       // reset to unselected
-        m_pitemBoxSizer01->Layout();
-#endif
-        
-        int dy = sel_size.y - nsel_size.y;
-        dy += 10;                                 // fluff
-        max_dy = wxMax(dy, max_dy);
+    wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
+    if (img.IsOk()) {
+        bitmap = wxBitmap(img);
     }
-
-    m_pitemBoxSizer01->AddSpacer(max_dy);
-    
-    Show();
 }
+
+
+/*
+ * Panel with a single + sign which opens the "Add/download plugin" dialog.
+ */
+AddPluginPanel::AddPluginPanel(wxWindow* parent)
+    :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
+    m_parent(parent)
+{
+    wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
+    path.AppendDir("uidata");
+    auto size = GetTextExtent("+");
+    SetMinSize(wxSize( 2 * size.GetHeight(),  2 * size.GetHeight()));
+    LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
+    if (!m_bitmap.IsOk()) {
+        wxLogMessage("AddPluginPanel: bitmap is not OK!");
+    }
+    auto hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
+    m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
+    hbox->Add(m_staticBitmap, wxSizerFlags(0));
+    SetSizer(hbox);
+    SetToolTip(new wxToolTip(_("Download and install/update plugins")));
+    Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+    m_staticBitmap->Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+}
+
+void AddPluginPanel::OnClick(wxMouseEvent& event)
+{
+    // Locate the options wxWindow parent. If not hidden, it steals focus.
+    auto opts = dynamic_cast<options*>(m_parent->GetParent()->GetParent());
+    wxASSERT(opts != 0);
+    auto dialog = new PluginDownloadDialog(this);
+    dialog->ShowModal();
+    dialog->Destroy();
+}
+
+AddPluginPanel::~AddPluginPanel()
+{
+    Unbind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
+    m_staticBitmap->Unbind(wxEVT_LEFT_DOWN,
+                           &AddPluginPanel::OnClick,
+                           this);
+}
+
+PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
+                                 const wxPoint &pos, const wxSize &size,
+                                 ArrayOfPlugIns *pPluginArray )
+    :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL ),
+    m_PluginSelected(0)
+{
+    SetSizer(new wxBoxSizer(wxVERTICAL));
+    m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
+    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Expand());
+    ReloadPlugins(pPluginArray);
+    SetScrollRate(0, 1);
+}
+
+/**
+ * Clear m_PluginsItems and remove everything in this instance besides:
+ *   - The empty m_pitemBoxSizer01.
+ *   - The AddPluginPanel
+ */
+void PluginListPanel::Clear()
+{
+    for (auto it = GetChildren().GetFirst(); it; it = it->GetNext()) {
+        if (dynamic_cast<PluginPanel*>(it->GetData())) {
+            it->GetData()->Destroy();
+        }
+        else if (dynamic_cast<wxStaticLine*>(it->GetData())) {
+            it->GetData()->Destroy();
+        }
+    }
+    m_pitemBoxSizer01->Clear();
+    m_PluginItems.Clear();
+
+    if (GetSizer()->GetItemCount() > 2) {
+        // Remove old spacer
+        GetSizer()->Remove(2);
+    }
+    wxASSERT(m_pitemBoxSizer01->IsEmpty());
+    wxASSERT(m_PluginItems.IsEmpty());
+    auto items = GetSizer()->GetItemCount();
+    wxASSERT(items == 2 || items == 1);
+    wxASSERT(GetChildren().GetCount() == 0);
+}
+
+
+void PluginListPanel::ReloadPlugins(ArrayOfPlugIns* plugins)
+{
+    m_pPluginArray = plugins;
+    Hide();
+    Clear();
+    m_PluginSelected = 0;
+    for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
+        AddPlugin(m_pPluginArray->Item(i - 1));
+    }
+    int dy = ComputePluginSpace(m_PluginItems, m_pitemBoxSizer01);
+    GetSizer()->AddSpacer(dy);
+    Layout();
+    Show();
+    Refresh(true);
+}
+
+
+void PluginListPanel::AddPlugin(PlugInContainer* pic)
+{
+    auto  pPluginPanel = new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
+    pPluginPanel->SetSelected(false);
+    m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
+    m_PluginItems.Add( pPluginPanel );
+
+    wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
+}
+
+//    When a child Panel is selected, its size grows to include "Preferences"
+//    and Enable" buttons.  As a consequence, the vertical size of the
+//    ListPanel grows as well.Calculate and add a spacer to bottom of
+//    ListPanel so that initial ListPanel minimum size calculations account
+//    for selected Panel size growth. Sadly, this does not work right on wxQt.
+//    So, just punt for now...
+int PluginListPanel::ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer)
+{
+    int max_dy = 0;
+    for (size_t i = 0; i < plugins.GetCount(); i++) {
+        auto panel = plugins.Item(i);
+        bool was_selected = panel->GetSelected();
+        panel->SetSelected(false);
+        sizer->Layout();
+        wxSize unselected = panel->GetSize();
+
+        panel->SetSelected(true);        // switch to selected, a bit bigger
+        sizer->Layout();
+        wxSize selected = panel->GetSize();
+
+        int dy = selected.GetHeight() - unselected.GetHeight();
+        max_dy = wxMax(max_dy, dy);
+        panel->SetSelected(was_selected);
+    }
+    return max_dy;
+}
+
+
 
 void PluginListPanel::UpdatePluginsOrder()
 {
@@ -4220,6 +4452,7 @@ void PluginListPanel::UpdatePluginsOrder()
         m_pPluginArray->Insert(m_PluginItems[i]->GetPluginPtr(), 0);
     }
 }
+
 
 PluginListPanel::~PluginListPanel()
 {
@@ -4288,6 +4521,21 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
     Refresh(false);
 }
 
+
+static bool canUninstall(std::string name)
+{
+    PluginHandler* pluginHandler = PluginHandler::getInstance();
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+
+    for (auto plugin: pluginHandler->getInstalled()) {
+        if (plugin.name == name) {
+            return !plugin.readonly;
+        }
+    }
+    return false;
+}
+
+
 PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
@@ -4297,26 +4545,25 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
     SetSizer(itemBoxSizer01);
-    Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(PluginPanel::OnPluginSelected), NULL, this);
+    Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
-    wxStaticBitmap *itemStaticBitmap;
     wxImage plugin_icon = m_pPlugin->m_bitmap->ConvertToImage();
     if(plugin_icon.IsOk()){
-        itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap(plugin_icon.Copy()));
+        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap(plugin_icon.Copy()));
     }
     else{
         ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-        itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,  wxBitmap(style->GetIcon( _T("default_pi"))));
+        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,  wxBitmap(style->GetIcon( _T("default_pi"))));
     }
         
-    itemBoxSizer01->Add(itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
-    itemStaticBitmap->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+    itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
+    m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
     wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer02->Add(itemBoxSizer03);
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
-    m_pName->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+    m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
     wxFont font = *wxNORMAL_FONT;
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
@@ -4324,22 +4571,27 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
-    m_pVersion->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+    m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
     itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
-    m_pDescription->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
+    m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
-    m_pButtons = new wxFlexGridSizer(2);
+    m_pButtons = new wxFlexGridSizer(3);
     m_pButtons->AddGrowableCol(1);
 
 //      m_pButtons = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer02->Add( m_pButtons, 1, wxEXPAND|wxALL, 0 );
     m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
+    m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
+    m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
+    m_pButtonUninstall->Enable(canUninstall(m_pPlugin->m_common_name.ToStdString()));
     m_pButtonEnable = new wxButton( this, wxID_ANY, _("Disable"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add(m_pButtonEnable, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonPreferences->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginPreferences), NULL, this);
-    m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
+    m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
+    m_pButtonEnable->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnable, this);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -4354,16 +4606,31 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
     m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down"), sizeRef, sizeRef, true ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginUp), NULL, this);
-    m_pButtonDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginDown), NULL, this);
+    m_pButtonUp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
+    m_pButtonDown->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
     itemBoxSizer01->Add(m_pButtonsUpDown, 0, wxALL, 0);
     
     SetSelected( m_bSelected );
+    SetAutoLayout(true);
+    FitInside();
 }
 
 PluginPanel::~PluginPanel()
 {
+    Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    m_itemStaticBitmap->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    m_pName->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    m_pVersion->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    m_pDescription->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+    if (m_pButtonUninstall) {
+        m_pButtonUninstall->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
+    }
+    m_pButtonPreferences->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
+    m_pButtonEnable->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnable, this);
+    m_pButtonUp->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
+    m_pButtonDown->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
 }
+
 
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
@@ -4381,10 +4648,24 @@ void PluginPanel::SetSelected( bool selected )
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
         std::ostringstream os(m_pVersion->GetLabel().ToStdString());
         version <<  _(" -- requires API version ")  << m_pPlugin->m_api_version;
+        m_pButtons->Show(true);
+#ifndef __WXQT__
+        m_pButtonsUpDown->Show(true);
+#else        
+        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
+        m_pButtonsUpDown->Show(false);
+#endif        
+        Layout();
     }
     else {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
+#ifndef __WXQT__
+        m_pButtons->Show(false);
+#else        
+        m_pButtons->Show(true);
+#endif        
+        Layout();
     }
     
     m_pButtons->Show(selected);   // For most platforms, show buttons if selected
@@ -4426,6 +4707,20 @@ void PluginPanel::OnPluginEnable( wxCommandEvent& event )
 {
     SetEnabled(!m_pPlugin->m_bEnabled);
 }
+
+
+void PluginPanel::OnPluginUninstall( wxCommandEvent& event )
+{
+    PluginHandler* handler = PluginHandler::getInstance();
+    std::string plugName(m_pPlugin->m_common_name.Lower().ToStdString());
+    if (!handler->uninstall(plugName)) {
+        wxLogWarning("Cannot uninstall plugin %s", plugName.c_str());
+    }
+    auto listWindow = dynamic_cast<PluginListPanel*>(m_parent);
+    wxASSERT(listWindow != 0);
+    listWindow->ReloadPlugins(g_pi_manager->GetPlugInArray());
+}
+
 
 void PluginPanel::SetEnabled( bool enabled )
 {
@@ -6943,7 +7238,6 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin( const wxString& GUID)
 
    // PlugIn_Waypoint *pwp;
    RoutePoint *src_wp;
-   int ip = 0;
    wxRoutePointListNode *node = route->pRoutePointList->GetFirst();
 
    while( node ) {
@@ -7080,4 +7374,12 @@ wxRect GetMasterToolbarRect()
         return g_MainToolbar->GetRect();
     else
         return wxRect(0,0,1,1);
+}
+
+/* API 1.17 */
+
+void ZeroXTE() {
+  if (g_pRouteMan) {
+    g_pRouteMan->ZeroCurrentXTEToActivePoint();
+  }
 }
