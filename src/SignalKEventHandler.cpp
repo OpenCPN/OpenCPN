@@ -26,8 +26,12 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 #endif
 
     if(root.HasMember("self")) {
-        m_self = /*_T("vessels.") + */(root["self"].AsString());
+        if(root["self"].AsString().StartsWith(_T("vessels.")))
+            m_self = (root["self"].AsString());                                 // for java server
+        else
+            m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
     }
+    
     if(root.HasMember("context")
        && root["context"].IsString()) {
         auto context = root["context"].AsString();
