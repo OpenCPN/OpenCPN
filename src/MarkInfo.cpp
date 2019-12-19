@@ -766,6 +766,7 @@ void MarkInfoDlg::OnNotebookPageChanged( wxNotebookEvent& event )
 
 void MarkInfoDlg::RecalculateSize( void )
 {
+#ifdef __OCPN__ANDROID__    
     
     Layout();
 
@@ -793,6 +794,7 @@ void MarkInfoDlg::RecalculateSize( void )
     SetSize(wxSize(-1, fsize.y));
 
     m_defaultClientSize = GetClientSize();
+#endif
     
     Center();
 }
