@@ -79,7 +79,6 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
-extern PFNGLBUFFERPARAMETERSIVPROC         s_glGetBufferParameteriv;
 
 #ifndef USE_ANDROID_GLES2
 #define glGenBuffers(a,b) (s_glGenBuffers)(a,b);

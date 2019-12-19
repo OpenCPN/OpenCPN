@@ -401,8 +401,6 @@ void GetglEntryPoints( OCPN_GLCaps *pcaps )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         pcaps->m_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
-        pcaps->m_glGetBufferParameteriv = (PFNGLBUFFERPARAMETERSIVPROC)
-            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
 
              
     }
@@ -495,9 +493,6 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
-        s_glGetBufferParameteriv = (PFNGLBUFFERPARAMETERSIVPROC)
-            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
-
             
     }
 
