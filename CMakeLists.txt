@@ -255,9 +255,10 @@ endif ()
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     if (EXISTS "/usr/lib64")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib"
-	)
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
     endif ()
     set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
         CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
