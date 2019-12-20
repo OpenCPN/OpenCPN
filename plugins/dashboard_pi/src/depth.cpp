@@ -76,9 +76,9 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
 
             for (int idx = 1; idx < DEPTH_RECORD_COUNT; idx++)
             {
-                  m_ArrayDepth[idx-1] = m_ArrayDepth[idx];
+                m_ArrayDepth[idx - 1] = m_ArrayDepth[idx];
             }
-            m_ArrayDepth[DEPTH_RECORD_COUNT-1] = data;
+            m_ArrayDepth[DEPTH_RECORD_COUNT - 1] = data;
             m_DepthUnit = unit;
       }
       else if (st == OCPN_DBP_STC_TMP)
@@ -177,7 +177,10 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
-      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
+      if (m_DepthUnit != _T("-") & m_Depth != NAN) { //Watchdog
+          dc->DrawText(wxString::Format(_T("%.1f "), m_Depth) + m_DepthUnit, 10, m_TitleHeight); 
+      } else
+          dc->DrawText(_T("---"), 10, m_TitleHeight);
 
       dc->SetFont(*g_pFontLabel);
       int width, height;
