@@ -84,6 +84,9 @@ void ConnectionParams::Deserialize(const wxString &configStr)
     if (prms.Count() >= 19){
         UserComment = prms[18];
     }
+    if (prms.Count() >= 20){
+        AutoSKDiscover = !!wxAtoi(prms[19]);
+    }
     
 }
 
@@ -103,7 +106,7 @@ wxString ConnectionParams::Serialize() const
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s"),
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d"),
                                      Type,
                                      NetProtocol,
                                      NetworkAddress.c_str(),
@@ -122,7 +125,8 @@ wxString ConnectionParams::Serialize() const
                                      GarminUpload,
                                      FurunoGP3X,
                                      bEnabled,
-                                     UserComment.c_str()
+                                     UserComment.c_str(),
+                                     AutoSKDiscover
                                    );
 
     return ret;
@@ -148,6 +152,7 @@ ConnectionParams::ConnectionParams()
     bEnabled = true;
     b_IsSetup = false;
     m_optionsPanel = NULL;
+    AutoSKDiscover = false;
 }
 
 ConnectionParams::~ConnectionParams()
@@ -588,6 +593,8 @@ void ConnectionParamsPanel::CreateControls( void ){
                 proto = _T("TCP"); break;
             case GPSD:
                 proto = _T("GPSD"); break;
+            case SIGNALK:
+                proto = _T("Signal K"); break;
             default:
                 proto = _("Undefined"); break;
         }
@@ -835,6 +842,8 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
                 proto = _T("TCP"); break;
             case GPSD:
                 proto = _T("GPSD"); break;
+            case SIGNALK:
+                proto = _T("Signal K"); break;
             default:
                 proto = _("Undefined"); break;
         }

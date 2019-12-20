@@ -141,6 +141,7 @@ public:
     bool            Garmin;
     bool            GarminUpload;
     bool            FurunoGP3X;
+    bool            AutoSKDiscover;
     dsPortType      IOSelect;
     ListType        InputSentenceListType;
     wxArrayString   InputSentenceList;

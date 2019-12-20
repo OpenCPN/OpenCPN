@@ -2607,6 +2607,13 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
   fgSizer5->Add(m_choicePrecision, 0, wxALL, 5);
 
+  // signalK discovery enable
+  m_cbCheckSKDiscover = new wxCheckBox(m_pNMEAForm, wxID_ANY, _("Automatic server discovery"),
+                                wxDefaultPosition, wxDefaultSize, 0);
+  m_cbCheckSKDiscover->SetValue(TRUE);
+  m_cbCheckSKDiscover->SetToolTip(_("If checked, signal K server will be discovered automatically"));
+  fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 5);
+
   sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
@@ -2753,6 +2760,8 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_cbFurunoGP3X->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                           wxCommandEventHandler(options::OnUploadFormatChange),
                           NULL, this);
+  m_cbCheckSKDiscover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                        wxCommandEventHandler(options::OnConnValChange), NULL, this);
   m_rbIAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(options::OnRbAcceptInput), NULL,
                        this);
@@ -7068,6 +7077,7 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
+  pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
   pConnectionParams->Garmin = m_cbGarminHost->GetValue();
   pConnectionParams->InputSentenceList =
       wxStringTokenize(m_tcInputStc->GetValue(), _T(","));
@@ -9349,6 +9359,7 @@ void options::ShowNMEACommon(bool visible) {
   m_stTalkerIdText->Show(visible);
   m_TalkerIdText->Show(visible);
   m_cbCheckCRC->Show(visible);
+  m_cbCheckSKDiscover->Show(visible);
   if (visible) {
     const bool output = m_cbOutput->IsChecked();
     m_stPrecision->Enable(output);
@@ -9477,6 +9488,71 @@ wxString StringArrayToString(wxArrayString arr) {
   return ret;
 }
 
+void options::SetDSFormOptionVizStates(void) {
+    m_cbCheckSKDiscover->Show();
+    m_cbInput->Show();
+    m_cbOutput->Show();
+    m_cbCheckCRC->Show();
+    m_stPrecision->Show();
+    m_choicePrecision->Show();
+    m_stTalkerIdText->Show();
+    m_TalkerIdText->Show();
+    sbSizerInFilter->GetStaticBox()->Show();
+    m_rbIAccept->Show();
+    m_rbIIgnore->Show();
+    sbSizerOutFilter->GetStaticBox()->Show();
+    m_rbOAccept->Show();
+    m_rbOIgnore->Show();
+    m_tcInputStc->Show();
+    m_btnInputStcList->Show();
+    m_tcOutputStc->Show();
+    m_btnOutputStcList->Show();
+ 
+  
+  if (m_rbTypeSerial->GetValue()) {
+  } else if (m_rbNetProtoGPSD->GetValue()) {
+    m_cbCheckSKDiscover->Hide();
+    m_cbInput->Hide();
+    m_cbOutput->Hide();
+    sbSizerOutFilter->GetStaticBox()->Hide();
+    m_rbOAccept->Hide();
+    m_rbOIgnore->Hide();
+    m_tcOutputStc->Hide();
+    m_btnOutputStcList->Hide();
+    m_stPrecision->Hide();
+    m_choicePrecision->Hide();
+    m_stTalkerIdText->Hide();
+    m_TalkerIdText->Hide();
+
+
+  } else if (m_rbNetProtoSignalK->GetValue()) {
+    //here
+    m_cbInput->Hide();
+    m_cbOutput->Hide();
+    m_cbCheckCRC->Hide();
+    m_stPrecision->Hide();
+    m_choicePrecision->Hide();
+    m_stTalkerIdText->Hide();
+    m_TalkerIdText->Hide();
+    sbSizerInFilter->GetStaticBox()->Hide();
+    m_rbIAccept->Hide();
+    m_rbIIgnore->Hide();
+    sbSizerOutFilter->GetStaticBox()->Hide();
+    m_rbOAccept->Hide();
+    m_rbOIgnore->Hide();
+    m_tcInputStc->Hide();
+    m_btnInputStcList->Hide();
+    m_tcOutputStc->Hide();
+    m_btnOutputStcList->Hide();
+ 
+ 
+  } else {
+    m_cbCheckSKDiscover->Hide();
+
+  }
+}
+  
+
 void options::SetDSFormRWStates(void) {
   if (m_rbTypeSerial->GetValue()) {
     m_cbInput->Enable(FALSE);
@@ -9503,6 +9579,7 @@ void options::SetDSFormRWStates(void) {
     m_cbOutput->Enable(FALSE);
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
+    
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(_T("10110"));
@@ -9512,6 +9589,12 @@ void options::SetDSFormRWStates(void) {
     m_rbOIgnore->Enable(TRUE);
     m_btnOutputStcList->Enable(TRUE);
   }
+  
+  SetDSFormOptionVizStates();
+  m_pNMEAForm->FitInside();
+  //Fit();
+  //RecalculateSize();
+
 }
 
 void options::SetConnectionParams(ConnectionParams* cp) {
@@ -9524,6 +9607,8 @@ void options::SetConnectionParams(ConnectionParams* cp) {
   m_cbGarminHost->SetValue(cp->Garmin);
   m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
   m_cbOutput->SetValue(cp->IOSelect != DS_TYPE_INPUT);
+  m_cbCheckSKDiscover->SetValue(cp->AutoSKDiscover);
+
   if (cp->InputSentenceListType == WHITELIST)
     m_rbIAccept->SetValue(TRUE);
   else
