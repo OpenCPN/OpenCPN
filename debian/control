@@ -30,10 +30,10 @@ Homepage: https://opencpn.org
 Package: opencpn
 Architecture: any
 Depends: opencpn-data (>= ${source:Version}),
-         bzip2,
-         wx3.0-i18n,
-         ${shlibs:Depends},
-         ${misc:Depends}
+ bzip2,
+ wx3.0-i18n,
+ ${shlibs:Depends},
+ ${misc:Depends}
 Breaks: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
 Replaces: opencpn-plugins (<< 4.8.6~20180801.8d20a06+dfsg.1)
 Suggests: binutils
@@ -64,7 +64,6 @@ Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
 
 Package: opencpn-plugins
 Architecture: all
-Depends: opencpn (>= ${source:Version}),
-         ${misc:Depends}
+Depends: opencpn (>= ${source:Version}), ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (transition)
  This package is a transitional, empty package.
