@@ -35,6 +35,7 @@
 #include "OCPN_SignalKEvent.h"
 #include "OCPN_DataStreamEvent.h"
 
+#include "zeroconf.hpp"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -75,8 +76,19 @@ END_EVENT_TABLE()
 
 
 void SignalKDataStream::Open(void) {
+    
     wxLogMessage(wxString::Format(_T("Opening Signal K client: %s"),
             m_params->GetDSPort().c_str()));
+
+    wxString discoveredIP;
+    int discoveredPort;
+    if(m_params->AutoSKDiscover){
+        if( DiscoverSKServer( discoveredIP, discoveredPort, 1) )        // 1 second scan
+            wxLogMessage(wxString::Format(_T("SK server autodiscovery finds: %s:%d"), discoveredIP.c_str(), discoveredPort));
+        else
+            wxLogMessage(_T("SK server autodiscovery finds no server."));
+    }
+    
     SetSock(new wxSocketClient());
     GetSock()->SetEventHandler(*this, SIGNALK_SOCKET_ID);
     GetSock()->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
@@ -90,7 +102,36 @@ void SignalKDataStream::Open(void) {
     SetBrxConnectEvent(false);
 }
 
+bool SignalKDataStream::DiscoverSKServer( wxString &ip, int &port, int tSec){
+    std::vector<Zeroconf::mdns_responce> result;
+    bool st = Zeroconf::Resolve("_signalk-tcp._tcp.local", tSec, &result);
 
+    for(size_t i = 0 ; i < result.size() ; i++){
+      sockaddr_storage sas = result[i].peer;                 // Address of the responded machine
+      sockaddr_in *sai = (sockaddr_in*)&sas;
+      ip = wxString(inet_ntoa(sai->sin_addr));
+      
+      std::vector<uint8_t> data = result[i].data;
+
+      std::vector<Zeroconf::Detail::mdns_record> records = result[i].records;
+      for(size_t j = 0 ; j < records.size() ; j++){
+
+        uint16_t type = records[j].type;
+        if(type == 33){                                 // SRV
+            size_t pos = records[j].pos;
+            //size_t len = records[j].len;
+            //std::string name = records[j].name;
+            
+            // TODO This is pretty ugly, but I cannot find a definition of SRV record
+            unsigned char portHi = data[pos + 16];
+            unsigned char portLo = data[pos + 17];
+            port = (portHi * 256) + portLo;
+            return true;
+        }
+      }
+    }
+    return false;
+}    
 
 void SignalKDataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
 {

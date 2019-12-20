@@ -442,7 +442,8 @@ class options : private Uncopyable,
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton *m_configDeleteButton, *m_configApplyButton;
+  wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
+  wxStaticText *m_StaticTextSKServerStatus;
   
   void OnSelectDatasource(wxListEvent &event);
   void OnAddDatasourceClick(wxCommandEvent &event);
@@ -468,7 +469,8 @@ class options : private Uncopyable,
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
   void EnableConnection( ConnectionParams *conn, bool value);
-
+  void OnDiscoverButton(wxCommandEvent &event); 
+  void UpdateDiscoverStatus( wxString stat);
   
   void OnCanvasConfigSelectClick( int ID, bool selected);
   

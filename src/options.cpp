@@ -54,6 +54,7 @@
 #include "wx/dir.h"
 #include "wx/odcombo.h"
 #include <wx/statline.h>
+#include "SignalKDataStream.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -120,6 +121,8 @@ extern GLuint g_raster_format;
 
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
+
+#include "SignalKDataStream.h"
 
 #if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -2614,6 +2617,14 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_cbCheckSKDiscover->SetToolTip(_("If checked, signal K server will be discovered automatically"));
   fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 5);
 
+  // signal K "Discover now" button
+  m_ButtonSKDiscover = new wxButton(m_pNMEAForm, wxID_ANY, _("Discover now..."),  wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 5);
+
+  // signalK Server Status
+  m_StaticTextSKServerStatus = new wxStaticText(m_pNMEAForm, wxID_ANY, _T(""),  wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
+ 
   sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
@@ -2762,6 +2773,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                           NULL, this);
   m_cbCheckSKDiscover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                         wxCommandEventHandler(options::OnConnValChange), NULL, this);
+  m_ButtonSKDiscover->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                        wxCommandEventHandler(options::OnDiscoverButton), NULL, this);
+  
   m_rbIAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(options::OnRbAcceptInput), NULL,
                        this);
@@ -9489,7 +9503,6 @@ wxString StringArrayToString(wxArrayString arr) {
 }
 
 void options::SetDSFormOptionVizStates(void) {
-    m_cbCheckSKDiscover->Show();
     m_cbInput->Show();
     m_cbOutput->Show();
     m_cbCheckCRC->Show();
@@ -9507,7 +9520,9 @@ void options::SetDSFormOptionVizStates(void) {
     m_btnInputStcList->Show();
     m_tcOutputStc->Show();
     m_btnOutputStcList->Show();
- 
+    m_cbCheckSKDiscover->Show();
+    m_ButtonSKDiscover->Show();
+    m_StaticTextSKServerStatus->Show();
   
   if (m_rbTypeSerial->GetValue()) {
   } else if (m_rbNetProtoGPSD->GetValue()) {
@@ -9523,6 +9538,9 @@ void options::SetDSFormOptionVizStates(void) {
     m_choicePrecision->Hide();
     m_stTalkerIdText->Hide();
     m_TalkerIdText->Hide();
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
 
 
   } else if (m_rbNetProtoSignalK->GetValue()) {
@@ -9548,7 +9566,9 @@ void options::SetDSFormOptionVizStates(void) {
  
   } else {
     m_cbCheckSKDiscover->Hide();
-
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
   }
 }
   
@@ -9579,6 +9599,7 @@ void options::SetDSFormRWStates(void) {
     m_cbOutput->Enable(FALSE);
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
+    UpdateDiscoverStatus( wxEmptyString );
     
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
@@ -9898,6 +9919,27 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
     ClearNMEAForm();
   }
      
+}
+
+void options::OnDiscoverButton(wxCommandEvent &event){
+
+    wxString ip;
+    int port;
+    if(SignalKDataStream::DiscoverSKServer( ip, port, 1))               // 1 second scan
+    {
+        m_tNetAddress->SetValue( ip);
+        m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
+        UpdateDiscoverStatus(_("Signal K server available."));
+    }
+    else{
+        UpdateDiscoverStatus(_("Signal K server not found."));
+    }
+    
+    event.Skip();
+}
+
+void options::UpdateDiscoverStatus(wxString stat){
+    m_StaticTextSKServerStatus->SetLabel(stat);
 }
 
 void options::OnBtnIStcs(wxCommandEvent& event) {

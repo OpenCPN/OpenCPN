@@ -64,6 +64,8 @@ public:
         Open();
     }
 
+    static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
+
     virtual ~SignalKDataStream() {
         Close();
     }
