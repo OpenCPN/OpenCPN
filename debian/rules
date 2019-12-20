@@ -28,6 +28,10 @@ override_dh_auto_install:
 	-mv debian/tmp/usr/share/opencpn/sounds/README.bells \
 	    debian/tmp/usr/share/opencpn/tcdata/README.harmonics \
 	    debian/tmp/usr/share/doc/opencpn
+	# Use existing license files instead of bundled copy
+	rm -f debian/tmp/usr/share/doc/opencpn/license.txt
+	ln -s /usr/share/common-licenses/GPL-2 \
+	    debian/tmp/usr/share/doc/opencpn/license.txt
 
 
 override_dh_missing:

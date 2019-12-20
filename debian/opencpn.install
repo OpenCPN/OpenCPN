@@ -6,5 +6,6 @@ usr/share/man/man1/opencpn.1
 usr/share/metainfo/opencpn.appdata.xml
 usr/share/doc/opencpn/changelog
 usr/share/doc/opencpn/copyright
+usr/share/doc/opencpn/license.txt
 usr/share/doc/opencpn/README.harmonics
 usr/share/doc/opencpn/README.bells
