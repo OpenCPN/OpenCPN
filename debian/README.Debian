@@ -8,6 +8,10 @@ at https://opencpn.org/OpenCPN/info/downloads.html.
 Third-party plugins (.so files) should be installed in /usr/lib/opencpn
 with possible data located in /usr/share/opencpn/plugins/<plugin>
 
+Note that from 5.0.0 opencpn is built against gtk3. This breaks the
+binary compatibility for most plugins available -- such plugins must be
+recompiled against gtk3.
+
 Free NOAA nautical charts can be downloaded from:
   http://www.nauticalcharts.noaa.gov/mcd/Raster/
 
