@@ -248,7 +248,7 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
     item->SetFont(sFont);
 #endif
     
-    menu->InsertSeparator(0);
+    if(g_btouch) menu->InsertSeparator(0);
     menu->Prepend(item);
 }
 
@@ -267,7 +267,7 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
 #endif
     
     menu->Append(item);
-    menu->AppendSeparator();
+    if(g_btouch) menu->AppendSeparator();
 }
 
 void SetMenuItemFont1(wxMenuItem *item)
@@ -494,7 +494,7 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
 
     //  ChartGroup SubMenu
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
-    contextMenu->AppendSeparator();
+    if(g_btouch) contextMenu->AppendSeparator();
     
     SetMenuItemFont1(subItemChart);
     
