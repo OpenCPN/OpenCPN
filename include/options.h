@@ -58,6 +58,7 @@
 #endif
 
 #include "datastream.h"
+#include "pluginmanager.h"  // FIXME: Refactor
 
 #ifndef __OCPN__ANDROID__
 #define __OCPN__OPTIONS_USE_LISTBOOK__
@@ -570,6 +571,7 @@ class options : private Uncopyable,
 
   // For "PlugIns" Panel
   PluginListPanel *m_pPlugInCtrl;
+  AddPluginPanel* m_AddPluginPanel;
   wxScrolledWindow *itemPanelPlugins;
   wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;

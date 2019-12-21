@@ -23,7 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #include "wx/wxprec.h"
 
 #ifdef __MINGW32__
@@ -39,6 +38,7 @@
 #include <wx/apptrait.h>
 #include "wx/stdpaths.h"
 #include <wx/filename.h>
+#include <wx/tokenzr.h>
 
 #include "config.h"
 
@@ -48,6 +48,7 @@
 #include "cutil.h"
 #include "styles.h"
 #include "navutil.h"
+#include "ocpn_utils.h"
 #include "ConnectionParams.h"
 #include "FontMgr.h"
 #include "s52s57.h"
@@ -111,6 +112,7 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 
 extern OCPNPlatform              *g_Platform;
+extern wxString                  g_winPluginDir;
 extern bool                      g_bFirstRun;
 extern bool                      g_bUpgradeInProcess;
 
@@ -233,6 +235,24 @@ extern int                        g_n_ownship_min_mm;
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
 
+static const char* const DEFAULT_XDG_DATA_DIRS =
+    "~/.local/share:/usr/local/share:/usr/share";
+
+#ifdef __WXMSW__
+static const char PATH_SEP = ';';
+#else
+static const char PATH_SEP = ':';
+#endif
+
+static bool checkIfFlatpacked()
+{
+    wxString id;
+    if (!wxGetEnv("FLATPAK_ID", &id)) {
+        return false;
+    }
+    return id == "org.opencpn.OpenCPN";
+}
+
 
 
 //  OCPN Platform implementation
@@ -245,6 +265,8 @@ OCPNPlatform::OCPNPlatform()
     m_displaySizeMM = wxSize(0,0);
     m_monitorWidth = m_monitorHeight = 0;
     m_displaySizeMMOverride = 0;
+    m_isFlatpacked = checkIfFlatpacked();
+    m_pluginDataPath = "";
 }
 
 OCPNPlatform::~OCPNPlatform()
@@ -541,6 +563,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif            
             
 }
+
 
 //  Called from MyApp() immediately before creation of MyFrame()
 //  Config is known to be loaded and stable
@@ -1379,8 +1402,120 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         m_PrivateDataDir = androidGetPrivateDir();
 #endif
     }
-    
     return m_PrivateDataDir;
+}
+
+
+static wxString ExpandPaths(wxString paths, OCPNPlatform* platform);
+
+
+static  wxString GetLinuxDataPath()
+{
+    wxString dirs;
+    if (wxGetEnv("XDG_DATA_DIRS", &dirs)) {
+        dirs = wxString("~/.local/share:") + dirs;
+    }
+    else {
+        dirs = DEFAULT_XDG_DATA_DIRS;
+    }
+    wxString s;
+    wxStringTokenizer tokens(dirs, ':');
+    while (tokens.HasMoreTokens()) {
+        wxString dir = tokens.GetNextToken();
+        if (dir.EndsWith("/")) {
+            dir = dir.SubString(0, dir.length() - 1);
+        }
+        if (!dir.EndsWith("/opencpn/plugins")) {
+            dir += "/opencpn/plugins";
+        }
+        s += dir + (tokens.HasMoreTokens() ? ";" : "");
+    }
+    return s;
+}
+
+
+wxString OCPNPlatform::GetPluginDataPath()
+{
+    if (m_pluginDataPath != "" ) {
+        return m_pluginDataPath;
+    }
+    wxString dirs("");
+    auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
+    if (g_Platform->isFlatpacked()) {
+        dirs="~/.var/app/org.opencpn.OpenCPN/data";
+    }
+    else if (osSystemId & wxOS_UNIX_LINUX) {
+        dirs = GetLinuxDataPath();
+    }
+    else if (osSystemId & wxOS_WINDOWS) {
+        dirs = GetWinPluginBaseDir();
+    }
+    m_pluginDataPath = ExpandPaths(dirs, this);
+    if (m_pluginDataPath != "") {
+        m_pluginDataPath += PATH_SEP;
+    }
+    m_pluginDataPath += GetPluginDir();
+    if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
+	m_pluginDataPath.RemoveLast();
+    }
+    wxLogMessage("Using plugin data path: %s",
+                 m_pluginDataPath.mb_str().data());
+    return m_pluginDataPath;
+}
+
+
+wxString OCPNPlatform::GetWinPluginBaseDir()
+{
+    if (g_winPluginDir != "") {
+        wxLogMessage("winPluginDir: Using value from ini file.");
+	wxFileName fn(g_winPluginDir);
+	if (!fn.DirExists()) {
+	    wxLogWarning("Plugin dir %s does not exist",
+                         fn.GetFullPath().mb_str().data());
+	}
+        fn.Normalize();
+        return fn.GetFullPath();
+    }
+    wxString winPluginDir;
+    // Standard case: c:\Users\%USERPROFILE%\AppData\Local
+    bool ok = wxGetEnv( _T("LOCALAPPDATA"), &winPluginDir);
+    if (!ok) {
+        wxLogMessage("winPluginDir: Cannot lookup LOCALAPPDATA");
+        // Without %LOCALAPPDATA%: Use default location if it exists.
+        std::string path(wxGetHomeDir().ToStdString());
+        path += "\\AppData\\Local";
+        if (ocpn::exists(path)) {
+            winPluginDir = wxString(path.c_str());
+            wxLogMessage("winPluginDir: using %s",
+                         winPluginDir.mb_str().data());
+            ok = true;
+        }
+    }
+    if (!ok) {
+        // Usually: c:\Users\%USERPROFILE%\AppData\Roaming
+        ok = wxGetEnv( _T("APPDATA"), &winPluginDir);
+    }
+    if (!ok) {
+        // Without %APPDATA%: Use default location if it exists.
+        wxLogMessage("winPluginDir: Cannot lookup APPDATA");
+        std::string path(wxGetHomeDir().ToStdString());
+        path += "\\AppData\\Roaming";
+        if (ocpn::exists(path)) {
+            winPluginDir = wxString(path.c_str());
+            ok = true;
+            wxLogMessage("winPluginDir: using %s",
+                         winPluginDir.mb_str().data());
+        }
+    }
+    if (!ok) {
+       // {Documents and Settings}\.. on W7, else \ProgramData
+       winPluginDir = GetHomeDir();
+    }
+    wxFileName path(winPluginDir);
+    path.Normalize();
+    winPluginDir = path.GetFullPath()  + "\\opencpn";
+    wxLogMessage("Using private plugin dir: %s", winPluginDir);
+    return winPluginDir;
 }
 
 
@@ -1408,9 +1543,7 @@ wxString &OCPNPlatform::GetPluginDir()
         m_PluginsDir = fdir.GetPath();
 #endif        
         
-        
     }
-    
     return m_PluginsDir;
 }
 
@@ -1426,6 +1559,21 @@ wxString OCPNPlatform::NormalizePath(const wxString &full_path) {
     }
     return path;
   }
+}
+
+static wxString ExpandPaths(wxString paths, OCPNPlatform* platform)
+{
+    wxStringTokenizer tokens(paths, ';');
+    wxString s = "";
+    while (tokens.HasMoreTokens()) {
+        wxFileName filename(tokens.GetNextToken());
+        filename.Normalize();
+        s += platform->NormalizePath(filename.GetFullPath());
+        if (tokens.HasMoreTokens()) {
+            s += ';';
+        }
+    }
+    return s;
 }
 
 wxString &OCPNPlatform::GetConfigFileName()

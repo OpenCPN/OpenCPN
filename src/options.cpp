@@ -135,7 +135,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern WayPointman *pWayPointMan;
-
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 
@@ -8511,7 +8510,7 @@ void options::DoOnPageChange(size_t page) {
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
     // load the disabled plugins finally because the user might want to enable
     // them
-    if (g_pi_manager->LoadAllPlugIns(g_Platform->GetPluginDir(), FALSE)) {
+    if (g_pi_manager->LoadAllPlugIns(FALSE)) {
       delete m_pPlugInCtrl;
       m_pPlugInCtrl = NULL;
     }
@@ -8524,9 +8523,11 @@ void options::DoOnPageChange(size_t page) {
           new PluginListPanel(itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
                               wxDefaultSize, g_pi_manager->GetPlugInArray());
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
-
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
+      m_AddPluginPanel = new AddPluginPanel(itemPanelPlugins);
+      itemBoxSizerPanelPlugins->Add(m_AddPluginPanel,
+                                    wxSizerFlags(0).Expand().TripleBorder());
       itemBoxSizerPanelPlugins->Layout();
 
       //  Update the PlugIn page to reflect the state of individual selections

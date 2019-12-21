@@ -102,7 +102,6 @@ typedef class{
     
     PFNGLCOMPRESSEDTEXIMAGE2DPROC       m_glCompressedTexImage2D;
     PFNGLGETCOMPRESSEDTEXIMAGEPROC      m_glGetCompressedTexImage;
-
     
 }OCPN_GLCaps;
 

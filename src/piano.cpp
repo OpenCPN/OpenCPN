@@ -235,7 +235,12 @@ static void SetColor(unsigned char color[4], const wxBrush &brush)
 // this texture is only updated if the color scheme or chart bar height change
 void Piano::BuildGLTexture()
 {
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
+    
+    // Defer building until auxiliary bitmaps have been loaded 
+    if( !m_pInVizIconBmp || !m_pTmercIconBmp || !m_pSkewIconBmp ||! m_pPolyIconBmp)
+        return;
+
     int h = GetHeight();
 
     wxBrush tbackBrush; // transparent back brush
@@ -321,7 +326,7 @@ void Piano::BuildGLTexture()
     // put the bitmaps in below
     wxBitmap *bitmaps[] = {m_pInVizIconBmp, m_pTmercIconBmp, m_pSkewIconBmp, m_pPolyIconBmp};
 
-    for(unsigned int i = 0; i < (sizeof bitmaps) / (sizeof *bitmaps); i++) {
+    for(unsigned int i = 0; i < 4; i++) {
         int iw = bitmaps[i]->GetWidth(), ih = bitmaps[i]->GetHeight();
 
         wxImage im = bitmaps[i]->ConvertToImage();
@@ -345,6 +350,9 @@ void Piano::DrawGL(int off)
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
+
+    if(m_tex_piano_height != h)
+        return;
 
     int y1 = off, y2 = y1 + h;
 

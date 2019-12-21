@@ -8395,6 +8395,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( b_useVBO ){        
         //  Has a VBO been built for this object?
             if( 1 ) {
+                glGetError(); // clear it
                  
                  if(rzRules->obj->auxParm0 <= 0) {
 #ifdef xUSE_ANDROID_GLES2
@@ -8639,7 +8640,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #else
                 if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
-                    glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                    if(vbo_offset + p_tp->nVert * 2 * array_data_size <= ppg_vbo->single_buffer_size) 
+                        glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else {
                     if(vp->m_projection_type == PROJECTION_MERCATOR) {

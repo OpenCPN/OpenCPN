@@ -121,6 +121,7 @@ extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
 extern int              g_nDepthUnitDisplay;
+extern wxString         g_winPluginDir;
 
 
 extern wxArrayOfConnPrm *g_pConnectionParams;
@@ -390,6 +391,8 @@ extern int              g_chart_zoom_modifier_vector;
 extern int              g_NMEAAPBPrecision;
 
 extern wxString         g_TalkerIdText;
+extern bool             g_bShowTrackPointTime;
+
 extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -444,6 +447,9 @@ extern int              g_AndroidVersionCode;
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
 bool                    g_bShowMuiZoomButtons = true;
+
+wxString                g_catalog_custom_url;
+wxString                g_catalog_channel;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -824,6 +830,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+
+    // Plugin catalog handler persistent variables.
+    Read( "CatalogCustomURL", &g_catalog_custom_url);
+    Read( "CatalogChannel", &g_catalog_channel);
     
     
     //  NMEA connection options.
@@ -867,6 +877,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T( "TalkerIdText" ), &g_TalkerIdText );
     Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength );
 
+    Read( _T( "ShowTrackPointTime" ), &g_bShowTrackPointTime, true );
     /* opengl options */
 #ifdef ocpnUSE_GL
     if(!bAsTemplate ){
@@ -1172,6 +1183,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "GPXIODir" ), &g_gpx_path );           // Get the Directory name
     Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
     Read( _T ( "BasemapDir"), &gWorldMapLocation );
+    Read( _T ( "pluginInstallDir"), &g_winPluginDir );
+    wxLogMessage("winPluginDir, read from ini file: %s",
+                 g_winPluginDir.mb_str().data());
+
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
@@ -2286,6 +2301,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+
+    // Plugin catalog persistent values.
+    Write( _T( "CatalogCustomURL"), g_catalog_custom_url);
+    Write( _T( "CatalogChannel"), g_catalog_channel);
     
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
@@ -2372,6 +2391,7 @@ void MyConfig::UpdateSettings()
     Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
     
     Write( _T("TalkerIdText"), g_TalkerIdText );
+    Write( _T("ShowTrackPointTime"), g_bShowTrackPointTime );
 
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
@@ -2600,6 +2620,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), g_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
     Write( _T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation) );
+    Write( _T ( "pluginInstallDir" ), g_Platform->NormalizePath(g_winPluginDir) );
     
     SetPath( _T ( "/Settings/NMEADataSource" ) );
     wxString connectionconfigs;

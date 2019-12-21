@@ -65,10 +65,19 @@ properly.
 On other platforms, the plugin data directories always lives in a common
 parent defined at installation time.
 
+.SH LIBRARY LOADING AND LD_LIBRARY_PATH
+
+If \fILD_LIBRARY_PATH\fR exists in the environment \fBopencpn\fR uses it
+without modifications.
+.P
+Otherwise \fILD_LIBRARY_PATH\fR is set to the same path as from which plugins are
+loaded, see above. This ensures that helper binaries can load possible libraries
+installed in the same directories as the plugin.
+
 .SH NOTES
 
 The support for OPENCPN_PLUGIN_DIRS and XDG_DATA_DIRS was introduced in
-version TBD. Prior to this, all plugins was loaded from a single directory
+version 5.0.0. Prior to this, all plugins was loaded from a single directory
 and all plugin data directories had a common parent.
 
 .SH SEE ALSO

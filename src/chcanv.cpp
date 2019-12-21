@@ -300,6 +300,8 @@ static bool mouse_leftisdown;
 
 bool g_brouteCreating;
 
+bool g_bShowTrackPointTime;
+
 int r_gamma_mult;
 int g_gamma_mult;
 int b_gamma_mult;
@@ -3933,10 +3935,12 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                         s.Append( _("(unnamed)") );
                     else
                         s.Append( pt->GetName() );
+                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive(pt->Length());
 
-                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pt->Length())
-                    << _T("\n");
+                    if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
+                        s << _T("\n") << _("Segment Created: ") << segShow_point_b->GetTimeString();
 
+                    s << _T("\n");
                     if( g_bShowTrue )
                         s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
                     if( g_bShowMag ){
