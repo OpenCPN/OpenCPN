@@ -2619,6 +2619,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   // signal K "Discover now" button
   m_ButtonSKDiscover = new wxButton(m_pNMEAForm, wxID_ANY, _("Discover now..."),  wxDefaultPosition, wxDefaultSize, 0);
+  m_ButtonSKDiscover->Hide();
   fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 5);
 
   // signalK Server Status
@@ -9565,7 +9566,6 @@ void options::SetDSFormOptionVizStates(void) {
  
  
   } else {
-    m_cbCheckSKDiscover->Hide();
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();

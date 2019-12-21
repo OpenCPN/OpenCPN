@@ -36,7 +36,6 @@
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
-#include <winioctl.h>
 #include <initguid.h>
 #endif
 #include <string>
@@ -62,13 +61,14 @@ public:
         m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 3);
 
         Open();
+
     }
+
+    void Close();
 
     static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
 
-    virtual ~SignalKDataStream() {
-        Close();
-    }
+    virtual ~SignalKDataStream(); 
 
 private:
     const ConnectionParams *m_params;

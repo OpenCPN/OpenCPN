@@ -1,6 +1,8 @@
 //
 // Created by balp on 2018-07-28.
 //
+#include "zeroconf.hpp"
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -27,6 +29,10 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
+#ifdef __WXMSW__
+#include <Ws2tcpip.h>           // for ip_mreq
+#endif
+
 #include "dychart.h"
 
 #include "datastream.h"
@@ -35,7 +41,6 @@
 #include "OCPN_SignalKEvent.h"
 #include "OCPN_DataStreamEvent.h"
 
-#include "zeroconf.hpp"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -73,7 +78,15 @@ BEGIN_EVENT_TABLE(SignalKDataStream, wxEvtHandler)
                 EVT_TIMER(TIMER_SOCKET + 3, SignalKDataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
+SignalKDataStream::~SignalKDataStream(){
 
+    if (GetSock()->IsOk()){
+        char unsub[]  = "{\"context\":\"*\",\"unsubscribe\":[{\"path\":\"*\"}]}\r\n";
+        GetSock()->Write(unsub, strlen(unsub));
+    }
+
+    Close();
+}
 
 void SignalKDataStream::Open(void) {
     
@@ -181,19 +194,6 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
             SetBrxConnectEvent(true);
             SetConnectTime(wxDateTime::Now());
             
-            //char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
-            char sub1[] = " {\"context\": \"vessels.self\",  \"subscribe\": [{          \
-                    \"path\": \"navigation.speedThroughWater\",                         \
-                    \"period\": 1000,                                                   \
-                    \"format\": \"delta\",                                              \
-                    \"policy\": \"ideal\",                                              \
-                    \"minPeriod\": 200                                                  \
-                    }, {                                                                \
-                    \"path\": \"navigation.logTrip\",                                   \
-                    \"period\": 10000                                                   \
-                    }]                                                                  \
-                    }";
-                    
             char sub2[]  = "{\"context\":\"vessels.self\",\"subscribe\":[{\"path\":\"navigation.*\"}]}\r\n";
             GetSock()->Write(sub2, strlen(sub2));
 
@@ -269,3 +269,35 @@ bool SignalKDataStream::SetOutputSocketOptions(wxSocketBase* sock)
     unsigned long outbuf_size = 1024;
     return (sock->SetOption(SOL_SOCKET,SO_SNDBUF,&outbuf_size, sizeof(outbuf_size)) && ret);
 }
+
+void SignalKDataStream::Close()
+{
+    wxLogMessage( wxString::Format(_T("Closing Signal K DataStream %s"), GetPort().c_str()) );
+    //    Kill off the TCP Socket if alive
+    if(m_sock)
+    {
+        m_sock->Notify(FALSE);
+        m_sock->Destroy();
+    }
+
+#if 0    
+    if(m_tsock)
+    {
+        m_tsock->Notify(FALSE);
+        m_tsock->Destroy();
+    }
+
+    if(m_socket_server)
+    {
+        m_socket_server->Notify(FALSE);
+        m_socket_server->Destroy();
+    }
+#endif
+
+    m_socket_timer.Stop();
+    m_socketread_watchdog_timer.Stop();
+
+
+    DataStream::Close();
+}
+

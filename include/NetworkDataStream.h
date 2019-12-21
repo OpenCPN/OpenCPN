@@ -62,14 +62,12 @@
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
-#include <winioctl.h>
 #include <initguid.h>
 #endif
 #include <string>
 #include "ConnectionParams.h"
 #include "dsPortType.h"
 #include "datastream.h"
-
 
 class NetworkDataStream : public DataStream {
 public:
@@ -160,7 +158,7 @@ private:
         m_mrq.imr_multiaddr.s_addr = addr;
         m_mrq.imr_interface.s_addr = INADDR_ANY;
     }
-
+    
     struct ip_mreq& GetMrq() { return m_mrq; }
 
     wxTimer* GetSocketTimer() { return &m_socket_timer; }

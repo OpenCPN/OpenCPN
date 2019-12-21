@@ -9743,7 +9743,6 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
 //    printf("OnResume...%d\n", now.GetTicks());
     wxLogMessage(_T("System resumed from suspend."));
 
-<<<<<<< HEAD
     if((now.GetTicks() - g_last_resume_ticks) > 5){
         wxLogMessage(_T("Restarting streams."));
  //       printf("   Restarting streams\n");
@@ -9768,12 +9767,6 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
             SetSize( wxSize(sz.x - 1, sz.y));
             wxYield();
             SetSize( sz );
-=======
-            if( cp->bEnabled ) {
-                g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
-                cp->b_IsSetup = TRUE;
-            }
->>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
         }
     }
 
