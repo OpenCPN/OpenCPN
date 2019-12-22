@@ -29,7 +29,7 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__) && !defined(__MINGW32__)
 #include <Ws2tcpip.h>           // for ip_mreq
 #endif
 
