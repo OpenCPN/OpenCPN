@@ -34,7 +34,6 @@
 
 #ifdef __WXMSW__
 	#include <windows.h>
-	#include <winioctl.h>
 	#include <initguid.h>
 	#include "setupapi.h"                   // presently stored in opencpn/src
 #endif

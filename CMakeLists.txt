@@ -926,6 +926,12 @@ set(
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
+  include/SerialDataStream.h
+  include/NetworkDataStream.h
+  include/SignalKDataStream.h
+  include/SignalKEventHandler.h
+  include/GarminProtocolHandler.h
+  include/OCPN_SignalKEvent.h
   ${CMAKE_BINARY_DIR}/include/config.h
 )
 
@@ -1035,6 +1041,14 @@ set(
   src/TTYWindow.cpp
   src/undo.cpp
   src/viewport.cpp
+  
+         src/SerialDataStream.cpp
+        src/NetworkDataStream.cpp
+        src/SignalKDataStream.cpp
+        src/SignalKEventHandler.cpp
+        src/GarminProtocolHandler.cpp
+        src/OCPN_SignalKEvent.cpp
+
 )
 
 if (OCPN_USE_GARMINHOST)

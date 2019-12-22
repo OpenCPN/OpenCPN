@@ -416,6 +416,7 @@ class options : private Uncopyable,
   wxRadioButton *m_rbTypeSerial, *m_rbTypeNet, *m_rbTypeInternalGPS;
   wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
   wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
+  wxRadioButton *m_rbNetProtoSignalK;
   wxRadioButton *m_rbOIgnore;
   wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
@@ -437,12 +438,13 @@ class options : private Uncopyable,
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
-  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost;
+  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost, *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton *m_configDeleteButton, *m_configApplyButton;
+  wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
+  wxStaticText *m_StaticTextSKServerStatus;
   
   void OnSelectDatasource(wxListEvent &event);
   void OnAddDatasourceClick(wxCommandEvent &event);
@@ -468,7 +470,8 @@ class options : private Uncopyable,
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
   void EnableConnection( ConnectionParams *conn, bool value);
-
+  void OnDiscoverButton(wxCommandEvent &event); 
+  void UpdateDiscoverStatus( wxString stat);
   
   void OnCanvasConfigSelectClick( int ID, bool selected);
   
@@ -660,6 +663,7 @@ class options : private Uncopyable,
   void SetConnectionParams(ConnectionParams *cp);
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();
+  void SetDSFormOptionVizStates();
   void FillSourceList();
   void UpdateSourceList( bool bResort );
   bool SortSourceList(void);
