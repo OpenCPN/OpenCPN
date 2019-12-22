@@ -11,6 +11,11 @@
 #include <memory>
 #include <chrono>
 
+#if (defined(_WIN32) || defined(__WIN32__)) && \
+     !defined(WIN32)
+#define WIN32
+#endif
+
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
