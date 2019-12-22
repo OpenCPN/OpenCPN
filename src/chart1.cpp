@@ -8754,7 +8754,7 @@ void MyFrame::setPosition(double lat, double lon)
 void MyFrame::setCourseOverGround(double cog)
 {
     if(!g_own_ship_sog_cog_calc) {
-        wxLogMessage(wxString::Format(_T("COG: %f"), cog));
+        wxLogDebug(wxString::Format(_T("COG: %f"), cog));
         gCog = cog;
         gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
@@ -8763,7 +8763,7 @@ void MyFrame::setCourseOverGround(double cog)
 void MyFrame::setSpeedOverGround(double sog)
 {
     if(!g_own_ship_sog_cog_calc) {
-        wxLogMessage(wxString::Format(_T("SOG: %f"), sog));
+        wxLogDebug(wxString::Format(_T("SOG: %f"), sog));
         gSog = sog;
         gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
@@ -8771,7 +8771,7 @@ void MyFrame::setSpeedOverGround(double sog)
 
 void MyFrame::setMagneticVariation(double var)
 {
-    wxLogMessage(wxString::Format(_T("Var: %f"), var));
+    wxLogDebug(wxString::Format(_T("Var: %f"), var));
     gVar = var;
     g_bVAR_Rx = true;
     gVAR_Watchdog = gps_watchdog_timeout_ticks;
@@ -8779,7 +8779,7 @@ void MyFrame::setMagneticVariation(double var)
 
 void MyFrame::setSatelitesInView(int no)
 {
-    wxLogMessage(wxString::Format(_T("SatsInView: %d"), no));
+    wxLogDebug(wxString::Format(_T("SatsInView: %d"), no));
     g_SatsInView = no;
     gSAT_Watchdog = sat_watchdog_timeout_ticks;
     g_bSatValid = true;
@@ -8787,7 +8787,7 @@ void MyFrame::setSatelitesInView(int no)
 
 void MyFrame::setHeadingTrue(double heading)
 {
-    wxLogMessage(wxString::Format(_T("setHeadingTrue: %f"), heading));
+    wxLogDebug(wxString::Format(_T("setHeadingTrue: %f"), heading));
     gHdt = heading;
     if (!wxIsNaN(heading)) {
         g_bHDT_Rx = true;
@@ -8798,7 +8798,7 @@ void MyFrame::setHeadingTrue(double heading)
 
 void MyFrame::setHeadingMagnetic(double heading)
 {
-    wxLogMessage(wxString::Format(_T("setHeadingMagnetic: %f"), heading));
+    wxLogDebug(wxString::Format(_T("setHeadingMagnetic: %f"), heading));
     gHdm = heading;
     if (!wxIsNaN(heading)) {
         gHDx_Watchdog = gps_watchdog_timeout_ticks;
