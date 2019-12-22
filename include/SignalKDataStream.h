@@ -91,7 +91,7 @@ private:
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
 
     NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
-
+    std::string         m_sock_buffer;
 
     void Open();
 

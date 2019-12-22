@@ -117,7 +117,7 @@ void SignalKDataStream::Open(void) {
 
 bool SignalKDataStream::DiscoverSKServer( wxString &ip, int &port, int tSec){
     std::vector<Zeroconf::mdns_responce> result;
-    bool st = Zeroconf::Resolve("_signalk-tcp._tcp.local", tSec, &result);
+    bool st = Zeroconf::Resolve("_signalk-tcp._tcp.local", tSec, &result);              // Works for node.js server
 
     for(size_t i = 0 ; i < result.size() ; i++){
       sockaddr_storage sas = result[i].peer;                 // Address of the responded machine
@@ -224,34 +224,74 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_INPUT:
         {
-#if 1
-            wxLogMessage(wxString::Format(_T("SignalKDataStream input: %s"),
-                                          GetPort().c_str()));
-#endif
+            #define RD_BUF_SIZE    4096 // Allows handling of high volume data streams.
             wxJSONReader jsonReader;
             wxJSONValue root;
-            wxSocketInputStream stream(*event.GetSocket());
-            int errors = jsonReader.Parse(stream, &root);
-            if (errors > 0) {
-                wxLogMessage(
-                            wxString::Format(_T("SignalKDataStream ERROR: the JSON document is not well-formed:%d: %s"),
-                                             errors,
-                                             GetPort().c_str()));
 
-            } else {
-#if 0
-                wxString dbg;
-                wxJSONWriter writer;
-                writer.Write(root, dbg);
-                wxLogMessage(dbg);
-#endif
-                if( GetConsumer() ) {
-                    OCPN_SignalKEvent signalKEvent(0,
-                                                   EVT_OCPN_SIGNALKSTREAM,
-                                                   root);
-                    GetConsumer()->AddPendingEvent(signalKEvent);
-                }
+            std::vector<char> data(RD_BUF_SIZE+1);
+            event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
+            if(!event.GetSocket()->Error())
+            {
+                size_t count = event.GetSocket()->LastCount();
+                m_sock_buffer.append(&data.front(), count);
             }
+
+            bool done = false;
+
+            while(!done){
+                int sk_tail = 2;
+                size_t sk_end = m_sock_buffer.find_first_of("\r\n"); // detect the end of an SK string by finding the EOL
+
+                if (sk_end == wxString::npos) // No termination characters: continue reading
+                    break;
+
+
+                size_t bufl = m_sock_buffer.size();
+                if(sk_end <= m_sock_buffer.size() - sk_tail){
+                    std::string sk_line = m_sock_buffer.substr(0,sk_end + sk_tail);
+
+                    //  If, due to some logic error, the {nmea_end} parameter is larger than the length of the
+                    //  socket buffer, then std::string::substr() will throw an exception.
+                    //  We don't want that, so test for it.
+                    //  If found, the simple solution is to clear the socket buffer, and carry on
+                    //  This has been seen on high volume TCP feeds, Windows only.
+                    //  Hard to catch.....
+                    if(sk_end > m_sock_buffer.size())
+                        m_sock_buffer.clear();
+                    else
+                        m_sock_buffer = m_sock_buffer.substr(sk_end + sk_tail);
+
+                    size_t sk_start = 0; 
+                    if(sk_start != wxString::npos){
+                        sk_line = sk_line.substr(sk_start);
+                        if(sk_line.size()){
+                            
+                            int errors = jsonReader.Parse(sk_line, &root);
+                            if (errors > 0) {
+                                wxLogMessage(
+                                            wxString::Format(_T("SignalKDataStream ERROR: the JSON document is not well-formed:%d: %s"),
+                                                errors,
+                                                GetPort().c_str()));
+
+                            } else {
+                                if( GetConsumer() ) {
+                                    OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, root);
+                                    GetConsumer()->AddPendingEvent(signalKEvent);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    done = true;
+            }
+
+            // Prevent non-nmea junk from consuming to much memory by limiting carry-over buffer size.
+            if(m_sock_buffer.size()>RD_BUF_SIZE)
+                m_sock_buffer = m_sock_buffer.substr(m_sock_buffer.size()-RD_BUF_SIZE);
+
+            m_dog_value = N_DOG_TIMEOUT;                // feed the dog
+
             break;
         }
         default :
