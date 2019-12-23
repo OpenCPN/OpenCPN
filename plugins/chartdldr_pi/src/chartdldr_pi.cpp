@@ -115,7 +115,6 @@
     
 #define CHART_DIR "Charts"
 
-#define NEW_LIST
     
 void write_file( const wxString extract_file, char *data, unsigned long datasize )
 {

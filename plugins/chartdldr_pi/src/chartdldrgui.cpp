@@ -5,6 +5,7 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
+#include "chartdldr_pi.h"
 #include "chartdldrgui.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
@@ -284,6 +285,7 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     m_chartsLabel = new wxStaticText( chartsPanel, wxID_ANY, _("Charts") );
     chartsPanelBoxSizer->Add( m_chartsLabel, 0, wxALL, 4 * border_size );
     
+#ifdef NEW_LIST
     m_scrollWinChartList = new wxScrolledWindow( chartsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL);
     chartsPanelBoxSizer->Add( m_scrollWinChartList, 0, wxEXPAND );
     m_scrollWinChartList->SetScrollRate(5, 5);
@@ -292,10 +294,10 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     m_boxSizerCharts = new wxBoxSizer(wxVERTICAL);
     m_scrollWinChartList->SetSizer(m_boxSizerCharts);
     
-    m_clCharts = new wxCheckedListCtrl(m_scrollWinChartList, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL);
-    
+#else
+    m_clCharts = new wxCheckedListCtrl(chartsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL);
     m_clCharts->SetMinSize( wxSize( 100,10 * GetCharHeight() ) );
-    
+#endif    
 
     //  Buttons
     
@@ -375,9 +377,11 @@ void ChartDldrPanel::OnSize( wxSizeEvent& event )
     double ratio = 0.7;
     if(sz.y > sz.x)                     // Portait mode
         ratio = 0.8;
+    
     m_lbChartSources->SetMinSize( wxSize( -1, yAvail * ratio ));
+#ifdef NEW_LIST
     m_scrollWinChartList->SetMinSize( wxSize( -1, yAvail * ratio ));
-
+#endif
     Layout();
     
     event.Skip();
