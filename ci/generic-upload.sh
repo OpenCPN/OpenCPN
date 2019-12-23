@@ -42,7 +42,7 @@ else
     if pyenv versions >/dev/null 2>&1; then   # circleci image
         pyenv versions
         pyenv global $(pyenv versions | tail -1)
-        sudo -H python -m pip install cloudsmith-cli
+        sudo -H python3 -m pip install cloudsmith-cli
         pyenv rehash
     else
         # Assuming builders have installed python3 + pip
