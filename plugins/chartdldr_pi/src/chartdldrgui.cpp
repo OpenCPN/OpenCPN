@@ -324,8 +324,11 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     m_bEditSource->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::EditSource ), NULL, this );
     m_bUpdateChartList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::UpdateChartList ), NULL, this );
     m_bUpdateAllCharts->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::UpdateAllCharts ), NULL, this );
-  //  m_clCharts->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
-  //  m_scrollWinChartList->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#ifdef NEW_LIST
+    m_scrollWinChartList->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#else
+    m_clCharts->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#endif    
     //m_bHelp->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::DoHelp ), NULL, this );
     m_bDnldCharts->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::OnDownloadCharts ), NULL, this );
     //m_bShowLocal->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::OnShowLocalDir ), NULL, this );
@@ -344,8 +347,11 @@ ChartDldrPanel::~ChartDldrPanel()
     m_bEditSource->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::EditSource ), NULL, this );
     m_bUpdateChartList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::UpdateChartList ), NULL, this );
     m_bUpdateAllCharts->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::UpdateAllCharts ), NULL, this );
-    m_clCharts->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#ifdef NEW_LIST
     m_scrollWinChartList->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#else
+    m_clCharts->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+#endif
     //m_bHelp->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::DoHelp ), NULL, this );
     m_bDnldCharts->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::OnDownloadCharts ), NULL, this );
     //m_bShowLocal->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ChartDldrPanel::OnShowLocalDir ), NULL, this );
@@ -402,6 +408,7 @@ ChartPanel::ChartPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, cons
     m_cb = new wxCheckBox(this, wxID_ANY, Name);
     m_cb->SetValue(bcheck);
     m_sizer->Add(m_cb, 0, wxTOP | wxLEFT | wxRIGHT, 4);
+    m_cb->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
     
     m_stat = stat;
     m_latest = latest;
@@ -411,9 +418,12 @@ ChartPanel::ChartPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, cons
     
      m_chartInfo = new wxStaticText( this, wxID_ANY, stat );
      statSizer->Add(m_chartInfo, 0, wxLEFT, 4 * GetCharHeight());
+     m_chartInfo->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
+
      m_chartInfo2 = new wxStaticText( this, wxID_ANY, latest );
      statSizer->Add(m_chartInfo2, 0, wxLEFT, 2 * GetCharHeight());
-     
+     m_chartInfo2->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
+
 //     wxString info = _T("           ") + stat + _T("   ") + latest;
 //     m_chartInfo = new wxStaticText( this, wxID_ANY, info );
 //     m_chartInfo->Wrap(-1);
@@ -429,6 +439,10 @@ ChartPanel::ChartPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos, cons
 
 ChartPanel::~ChartPanel()
 {
+    m_cb->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
+    m_chartInfo->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
+    m_chartInfo2->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartPanel::OnContextMenu ), NULL, this );
+
     delete m_cb;
     delete m_chartInfo;
     delete m_chartInfo2;
@@ -438,6 +452,7 @@ void ChartPanel::OnContextMenu( wxMouseEvent& event )
 {
     if(m_dldrPanel)
         return m_dldrPanel->OnContextMenu( event );
+    event.Skip();
     
 }
 
