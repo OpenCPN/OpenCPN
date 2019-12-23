@@ -267,7 +267,9 @@ private:
     wxString        m_base_path;
     wxString        m_last_path;
     wxImageList    *p_iconList;
+#ifdef __OCPN__ANDROID__    
     wxImageList    *p_buttonIconList;
+#endif /* __OCPN__ANDROID__ */
 };
 
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg
