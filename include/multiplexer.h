@@ -67,6 +67,7 @@ class Multiplexer : public wxEvtHandler
         int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress);
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
+        void OnEvtSignalK(OCPN_SignalKEvent& event);
         
         void LogOutputMessage(const wxString &msg, wxString stream_name, bool b_filter);
         void LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color);
@@ -79,17 +80,7 @@ class Multiplexer : public wxEvtHandler
         wxEvtHandler        *m_gpsconsumer;
 
         //      A set of temporarily saved parameters for a DataStream
-        ConnectionType type_save;
-        wxString port_save;
-        wxString baud_rate_save;
-        dsPortType port_type_save;
-        int priority_save;
-        wxArrayString input_sentence_list_save;
-        ListType input_sentence_list_type_save;
-        wxArrayString output_sentence_list_save;
-        ListType output_sentence_list_type_save;
-        bool bchecksum_check_save;
-        bool bGarmin_GRMN_mode_save;
+        const ConnectionParams* params_save;
 
 };
 #endif // __MULTIPLEXER_H__

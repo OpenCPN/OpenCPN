@@ -97,7 +97,12 @@
 #include "toolbar.h"
 #include "compass.h"
 #include "datastream.h"
+#ifdef __WXMSW__
+#include "GarminProtocolHandler.h"  // Used for port probing on Windows
+#endif
+
 #include "OCPN_DataStreamEvent.h"
+#include "OCPN_SignalKEvent.h"
 #include "multiplexer.h"
 #include "routeprintout.h"
 #include "Select.h"
@@ -130,6 +135,7 @@
 #include "OCPN_Sound.h"
 #include "SoundFactory.h"
 #include "PluginHandler.h"
+#include "SignalKEventHandler.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -995,8 +1001,6 @@ void BuildiENCToolbar( bool bnew )
 
 }
 
-
-
 int ShowNavWarning()
 {
     wxString msg0(
@@ -1039,7 +1043,6 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
         return (infoDlg.GetReturnCode() );
 #endif        
 }
-
 
 wxString newPrivateFileName(wxString home_locn, const char *name, const char *windowsName)
 {
@@ -2755,8 +2758,9 @@ static void onBellsFinishedCB(void* ptr)
 // My frame constructor
 MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
         long style ) :
-        wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
+        wxFrame( frame, -1, title, pos, size, style ), //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
+        m_signalKHandler(this)
 {
     m_last_track_rotation_ts = 0;
     m_ulLastNMEATicktime = 0;
@@ -2829,7 +2833,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX->SetAISHandler(g_pAIS);
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
+    wxLogMessage(" **** Connect stuff");
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_SignalK );
 
     b_autofind = false;
     
@@ -3637,7 +3643,6 @@ void MyFrame::SwitchKBFocus( ChartCanvas *pCanvas )
         }
     }
 }
-
 
 void MyFrame::FastClose(){
     
@@ -4969,9 +4974,6 @@ void MyFrame::setStringVP(wxString VPS)
     cc->SetViewPoint( lat, lon, scale_ppm, 0, cc->GetVPRotation() );
     
 }
-
-
-
 
 void MyFrame::DoSettings()
 {
@@ -6878,24 +6880,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     }
     #endif
 
-                    dsPortType port_type = cp->IOSelect;
-                    DataStream *dstr = new DataStream( g_pMUX,
-                                                    cp->Type,
-                                                    cp->GetDSPort(),
-                                                    wxString::Format(wxT("%i"),cp->Baudrate),
-                                                    port_type,
-                                                    cp->Priority,
-                                                    cp->Garmin
-                        );
-                    dstr->SetInputFilter(cp->InputSentenceList);
-                    dstr->SetInputFilterType(cp->InputSentenceListType);
-                    dstr->SetOutputFilter(cp->OutputSentenceList);
-                    dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                    dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                    cp->b_IsSetup = true;
-
-                    g_pMUX->AddStream(dstr);
+                    g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
+                    cp->b_IsSetup = TRUE;
                 }
             }
 
@@ -8101,8 +8087,6 @@ void MyFrame::selectChartDisplay( int type, int family)
      UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
 }
 
-
-
 //----------------------------------------------------------------------------------
 //      DoChartUpdate
 //      Create a chartstack based on current lat/lon.
@@ -8134,7 +8118,6 @@ void MyFrame::MouseEvent( wxMouseEvent& event )
 
 
 //      Memory monitor support
-
 #ifdef __WXMAC__
 #include <mach/mach.h>
 #include <mach/message.h>  // for mach_msg_type_number_t
@@ -8754,18 +8737,91 @@ static void UpdatePositionCalculatedSogCog()
     }
 }
 
-static bool ParsePosition(const LATLONG &Position)
+void MyFrame::setPosition(double lat, double lon)
+{
+    gLat = lat;
+    gLon = lon;
+    if( g_own_ship_sog_cog_calc ) {
+        UpdatePositionCalculatedSogCog();
+    }
+
+    gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    wxDateTime now = wxDateTime::Now();
+    m_fixtime = now.GetTicks();
+
+}
+
+void MyFrame::setCourseOverGround(double cog)
+{
+    if(!g_own_ship_sog_cog_calc) {
+        wxLogDebug(wxString::Format(_T("COG: %f"), cog));
+        gCog = cog;
+        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    }
+}
+
+void MyFrame::setSpeedOverGround(double sog)
+{
+    if(!g_own_ship_sog_cog_calc) {
+        wxLogDebug(wxString::Format(_T("SOG: %f"), sog));
+        gSog = sog;
+        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    }
+}
+
+void MyFrame::setMagneticVariation(double var)
+{
+    wxLogDebug(wxString::Format(_T("Var: %f"), var));
+    gVar = var;
+    g_bVAR_Rx = true;
+    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+}
+
+void MyFrame::setSatelitesInView(int no)
+{
+    wxLogDebug(wxString::Format(_T("SatsInView: %d"), no));
+    g_SatsInView = no;
+    gSAT_Watchdog = sat_watchdog_timeout_ticks;
+    g_bSatValid = true;
+}
+
+void MyFrame::setHeadingTrue(double heading)
+{
+    wxLogDebug(wxString::Format(_T("setHeadingTrue: %f"), heading));
+    gHdt = heading;
+    if (!wxIsNaN(heading)) {
+        g_bHDT_Rx = true;
+        gHDT_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+}
+
+void MyFrame::setHeadingMagnetic(double heading)
+{
+    wxLogDebug(wxString::Format(_T("setHeadingMagnetic: %f"), heading));
+    gHdm = heading;
+    if (!wxIsNaN(heading)) {
+        gHDx_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+}
+
+bool MyFrame::ParsePosition(const LATLONG &Position)
 {
     bool ll_valid = true;
     double llt = Position.Latitude.Latitude;
+    double lat = gLat;
+    double lon = gLon;
+
     if( !std::isnan(llt) )
     {
         int lat_deg_int = (int) ( llt / 100 );
         double lat_deg = lat_deg_int;
         double lat_min = llt - ( lat_deg * 100 );
-        gLat = lat_deg + ( lat_min / 60. );
+
+        lat = lat_deg + (lat_min / 60. );
         if( Position.Latitude.Northing == South )
-            gLat = -gLat;
+            lat = -lat;
     }
     else
         ll_valid = false;
@@ -8776,18 +8832,23 @@ static bool ParsePosition(const LATLONG &Position)
         int lon_deg_int = (int) ( lln / 100 );
         double lon_deg = lon_deg_int;
         double lon_min = lln - ( lon_deg * 100 );
-        gLon = lon_deg + ( lon_min / 60. );
+
+        lon = lon_deg + (lon_min / 60. );
         if( Position.Longitude.Easting == West )
-            gLon = -gLon;
+            lon = -lon;
     }
     else
         ll_valid = false;
 
-    if( ll_valid && g_own_ship_sog_cog_calc ) {
-        UpdatePositionCalculatedSogCog();
+    if( ll_valid ) {
+        setPosition(lat, lon);
     }
 
     return ll_valid;
+}
+void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
+{
+    m_signalKHandler.OnEvtOCPN_SignalK(event);
 }
 
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
@@ -8848,6 +8909,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
         if( m_NMEA0183.Parse() )
         {
+#if 1
             switch(id)
             {
             case RMC:
@@ -8930,15 +8992,68 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( !g_own_ship_sog_cog_calc && !std::isnan(m_NMEA0183.Vtg.SpeedKnots) &&
                     !std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+#else  // balp, use new "setters"
+            switch(id) {
+                case RMC:
+                    if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
+                        pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
+
+                        // course is not valid in this case
+                        // but also my gps occasionally outputs RMC
+                        // messages with valid lat and lon but
+                        // 0.0 for speed and course which messes up the filter
+                        if (!g_own_ship_sog_cog_calc && m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
+                            setSpeedOverGround(m_NMEA0183.Rmc.SpeedOverGroundKnots);
+                            setCourseOverGround(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue);
+                            cog_sog_valid = true;
+                        }
+
+                        if (!wxIsNaN(m_NMEA0183.Rmc.MagneticVariation)) {
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
+                                setMagneticVariation(m_NMEA0183.Rmc.MagneticVariation);
+                            else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
+                                setMagneticVariation(-m_NMEA0183.Rmc.MagneticVariation);
+                        }
+
+                        sfixtime = m_NMEA0183.Rmc.UTCTime;
+                    }
+                    break;
+
+                case HDT:
+                    setHeadingTrue(m_NMEA0183.Hdt.DegreesTrue);
+                    break;
+
+                case HDG:
+                    setHeadingMagnetic(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees);
+
+                    if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
+                        setMagneticVariation(m_NMEA0183.Hdg.MagneticVariationDegrees);
+                    else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
+                        setMagneticVariation(-m_NMEA0183.Hdg.MagneticVariationDegrees);
+                    break;
+
+                case HDM:
+                    setHeadingMagnetic(m_NMEA0183.Hdm.DegreesMagnetic);
+                    break;
+
+                case VTG:
+                    // should we allow either Sog or Cog but not both to be valid?
+                    if (!g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots)) {
+                        setSpeedOverGround(m_NMEA0183.Vtg.SpeedKnots);
+                    }
+                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
+                    !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
+                    setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
+>>>>>>> 1f7f17e0a7cd430bc7d73457a91958a3d01eecfa
+#endif
                     cog_sog_valid = true;
-                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
                 }
                 break;
 
             case GSV:
-                g_SatsInView = m_NMEA0183.Gsv.SatsInView;
-                gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                g_bSatValid = true;
+                setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
                 break;
 
             case GGA:
@@ -8946,10 +9061,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
                     sfixtime = m_NMEA0183.Gga.UTCTime;
-                    
-                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
-                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                    g_bSatValid = true;
+                    setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
                 }
                 break;
 
@@ -8962,12 +9074,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
             }
 
-            if(pos_valid)
-            {
-                gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                wxDateTime now = wxDateTime::Now();
-                m_fixtime = now.GetTicks();
-            }
 
         } else if( g_nNMEADebug ) {
             wxString msg( _T("   ") );
@@ -9498,7 +9604,6 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
     }
 
 }
-
 
 void MyFrame::applySettingsString( wxString settings)
 {

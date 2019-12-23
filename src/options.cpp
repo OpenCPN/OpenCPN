@@ -54,6 +54,7 @@
 #include "wx/dir.h"
 #include "wx/odcombo.h"
 #include <wx/statline.h>
+#include "SignalKDataStream.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -120,6 +121,8 @@ extern GLuint g_raster_format;
 
 #include "OCPNPlatform.h"
 #include "ConfigMgr.h"
+
+#include "SignalKDataStream.h"
 
 #if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -1786,6 +1789,11 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_rbNetProtoGPSD->SetValue(TRUE);
   bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
 
+  m_rbNetProtoSignalK = new wxRadioButton(m_pNMEAForm, wxID_ANY, _("Signal K"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_rbNetProtoSignalK->Enable(TRUE);
+  bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+
   wxFlexGridSizer* fgSizer1a = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer1a->SetFlexibleDirection(wxBOTH);
   fgSizer1a->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
@@ -2038,6 +2046,9 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(options::OnNetProtocolSelected), NULL, this);
   m_rbNetProtoGPSD->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(options::OnNetProtocolSelected), NULL, this);
+  m_rbNetProtoSignalK->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(options::OnNetProtocolSelected), NULL, this);
   m_tNetAddress->Connect(wxEVT_COMMAND_TEXT_UPDATED,
@@ -2424,6 +2435,11 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_rbNetProtoGPSD->SetValue(TRUE);
   bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
 
+  m_rbNetProtoSignalK = new wxRadioButton(m_pNMEAForm, wxID_ANY, _("Signal K"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_rbNetProtoSignalK->Enable(TRUE);
+  bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+
   gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
 
   m_stNetAddr = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Address"),
@@ -2593,6 +2609,22 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
   fgSizer5->Add(m_choicePrecision, 0, wxALL, 5);
 
+  // signalK discovery enable
+  m_cbCheckSKDiscover = new wxCheckBox(m_pNMEAForm, wxID_ANY, _("Automatic server discovery"),
+                                wxDefaultPosition, wxDefaultSize, 0);
+  m_cbCheckSKDiscover->SetValue(TRUE);
+  m_cbCheckSKDiscover->SetToolTip(_("If checked, signal K server will be discovered automatically"));
+  fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 5);
+
+  // signal K "Discover now" button
+  m_ButtonSKDiscover = new wxButton(m_pNMEAForm, wxID_ANY, _("Discover now..."),  wxDefaultPosition, wxDefaultSize, 0);
+  m_ButtonSKDiscover->Hide();
+  fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 5);
+
+  // signalK Server Status
+  m_StaticTextSKServerStatus = new wxStaticText(m_pNMEAForm, wxID_ANY, _T(""),  wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
+ 
   sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
@@ -2704,6 +2736,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_rbNetProtoGPSD->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(options::OnNetProtocolSelected), NULL, this);
+  m_rbNetProtoSignalK->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(options::OnNetProtocolSelected), NULL, this);
   m_tNetAddress->Connect(wxEVT_COMMAND_TEXT_UPDATED,
                          wxCommandEventHandler(options::OnConnValChange), NULL,
                          this);
@@ -2736,6 +2771,11 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_cbFurunoGP3X->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                           wxCommandEventHandler(options::OnUploadFormatChange),
                           NULL, this);
+  m_cbCheckSKDiscover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                        wxCommandEventHandler(options::OnConnValChange), NULL, this);
+  m_ButtonSKDiscover->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                        wxCommandEventHandler(options::OnDiscoverButton), NULL, this);
+  
   m_rbIAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(options::OnRbAcceptInput), NULL,
                        this);
@@ -7041,12 +7081,17 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
     pConnectionParams->NetProtocol = TCP;
   else if (m_rbNetProtoUDP->GetValue())
     pConnectionParams->NetProtocol = UDP;
-  else
+  else if (m_rbNetProtoGPSD->GetValue())
     pConnectionParams->NetProtocol = GPSD;
+  else if (m_rbNetProtoSignalK->GetValue())
+    pConnectionParams->NetProtocol = SIGNALK;
+  else
+    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
+  pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
   pConnectionParams->Garmin = m_cbGarminHost->GetValue();
   pConnectionParams->InputSentenceList =
       wxStringTokenize(m_tcInputStc->GetValue(), _T(","));
@@ -7336,17 +7381,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
 
     if (!cp->bEnabled) continue;
-    dsPortType port_type = cp->IOSelect;
-    DataStream* dstr = new DataStream(g_pMUX, cp->Type, cp->GetDSPort(),
-                                      wxString::Format(wxT("%i"), cp->Baudrate),
-                                      port_type, cp->Priority, cp->Garmin);
-    dstr->SetInputFilter(cp->InputSentenceList);
-    dstr->SetInputFilterType(cp->InputSentenceListType);
-    dstr->SetOutputFilter(cp->OutputSentenceList);
-    dstr->SetOutputFilterType(cp->OutputSentenceListType);
-    dstr->SetChecksumCheck(cp->ChecksumCheck);
-    g_pMUX->AddStream(dstr);
-
+    g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
     cp->b_IsSetup = TRUE;
   }
 
@@ -9340,6 +9375,8 @@ void options::ShowNMEACommon(bool visible) {
   m_stTalkerIdText->Show(visible);
   m_TalkerIdText->Show(visible);
   m_cbCheckCRC->Show(visible);
+  m_cbCheckSKDiscover->Show(visible);
+  m_ButtonSKDiscover->Show(visible);
   if (visible) {
     const bool output = m_cbOutput->IsChecked();
     m_stPrecision->Enable(output);
@@ -9361,6 +9398,7 @@ void options::ShowNMEANet(bool visible) {
   m_stNetPort->Show(visible);
   m_tNetPort->Show(visible);
   m_stNetProto->Show(visible);
+  m_rbNetProtoSignalK->Show(visible);
   m_rbNetProtoGPSD->Show(visible);
   m_rbNetProtoTCP->Show(visible);
   m_rbNetProtoUDP->Show(visible);
@@ -9467,6 +9505,80 @@ wxString StringArrayToString(wxArrayString arr) {
   return ret;
 }
 
+void options::SetDSFormOptionVizStates(void) {
+    m_cbInput->Show();
+    m_cbOutput->Show();
+    m_cbCheckCRC->Show();
+    m_stPrecision->Show();
+    m_choicePrecision->Show();
+    m_stTalkerIdText->Show();
+    m_TalkerIdText->Show();
+    sbSizerInFilter->GetStaticBox()->Show();
+    m_rbIAccept->Show();
+    m_rbIIgnore->Show();
+    sbSizerOutFilter->GetStaticBox()->Show();
+    m_rbOAccept->Show();
+    m_rbOIgnore->Show();
+    m_tcInputStc->Show();
+    m_btnInputStcList->Show();
+    m_tcOutputStc->Show();
+    m_btnOutputStcList->Show();
+    m_cbCheckSKDiscover->Show();
+    m_ButtonSKDiscover->Show();
+    m_StaticTextSKServerStatus->Show();
+  
+  if (m_rbTypeSerial->GetValue()) {
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
+
+  } else if (m_rbNetProtoGPSD->GetValue()) {
+    m_cbCheckSKDiscover->Hide();
+    m_cbInput->Hide();
+    m_cbOutput->Hide();
+    sbSizerOutFilter->GetStaticBox()->Hide();
+    m_rbOAccept->Hide();
+    m_rbOIgnore->Hide();
+    m_tcOutputStc->Hide();
+    m_btnOutputStcList->Hide();
+    m_stPrecision->Hide();
+    m_choicePrecision->Hide();
+    m_stTalkerIdText->Hide();
+    m_TalkerIdText->Hide();
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
+
+
+  } else if (m_rbNetProtoSignalK->GetValue()) {
+    //here
+    m_cbInput->Hide();
+    m_cbOutput->Hide();
+    m_cbCheckCRC->Hide();
+    m_stPrecision->Hide();
+    m_choicePrecision->Hide();
+    m_stTalkerIdText->Hide();
+    m_TalkerIdText->Hide();
+    sbSizerInFilter->GetStaticBox()->Hide();
+    m_rbIAccept->Hide();
+    m_rbIIgnore->Hide();
+    sbSizerOutFilter->GetStaticBox()->Hide();
+    m_rbOAccept->Hide();
+    m_rbOIgnore->Hide();
+    m_tcInputStc->Hide();
+    m_btnInputStcList->Hide();
+    m_tcOutputStc->Hide();
+    m_btnOutputStcList->Hide();
+ 
+ 
+  } else {
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
+  }
+}
+  
+
 void options::SetDSFormRWStates(void) {
   if (m_rbTypeSerial->GetValue()) {
     m_cbInput->Enable(FALSE);
@@ -9484,6 +9596,17 @@ void options::SetDSFormRWStates(void) {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     m_btnOutputStcList->Enable(FALSE);
+  } else if (m_rbNetProtoSignalK->GetValue()) {
+    if (m_tNetPort->GetValue() == wxEmptyString)
+      m_tNetPort->SetValue(_T("8375"));
+    m_cbInput->SetValue(TRUE);
+    m_cbInput->Enable(FALSE);
+    m_cbOutput->SetValue(FALSE);
+    m_cbOutput->Enable(FALSE);
+    m_rbOAccept->Enable(FALSE);
+    m_rbOIgnore->Enable(FALSE);
+    UpdateDiscoverStatus( wxEmptyString );
+    
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(_T("10110"));
@@ -9493,6 +9616,12 @@ void options::SetDSFormRWStates(void) {
     m_rbOIgnore->Enable(TRUE);
     m_btnOutputStcList->Enable(TRUE);
   }
+  
+  SetDSFormOptionVizStates();
+  m_pNMEAForm->FitInside();
+  //Fit();
+  //RecalculateSize();
+
 }
 
 void options::SetConnectionParams(ConnectionParams* cp) {
@@ -9505,6 +9634,8 @@ void options::SetConnectionParams(ConnectionParams* cp) {
   m_cbGarminHost->SetValue(cp->Garmin);
   m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
   m_cbOutput->SetValue(cp->IOSelect != DS_TYPE_INPUT);
+  m_cbCheckSKDiscover->SetValue(cp->AutoSKDiscover);
+
   if (cp->InputSentenceListType == WHITELIST)
     m_rbIAccept->SetValue(TRUE);
   else
@@ -9531,6 +9662,10 @@ void options::SetConnectionParams(ConnectionParams* cp) {
     m_rbNetProtoTCP->SetValue(TRUE);
   else if (cp->NetProtocol == UDP)
     m_rbNetProtoUDP->SetValue(TRUE);
+  else if (cp->NetProtocol == GPSD)
+    m_rbNetProtoGPSD->SetValue(TRUE);
+  else if (cp->NetProtocol == SIGNALK)
+    m_rbNetProtoSignalK->SetValue(TRUE);
   else
     m_rbNetProtoGPSD->SetValue(TRUE);
 
@@ -9714,6 +9849,8 @@ void options::OnAddDatasourceClick(wxCommandEvent& event) {
   m_buttonRemove->Hide();//Disable();
   m_buttonAdd->Hide(); //Disable();
 
+  SetDSFormRWStates();
+  
   RecalculateSize();
   
   //  Scroll the panel to allow the user to see more of the NMEA parameter settings area
@@ -9792,6 +9929,27 @@ void options::SetSelectedConnectionPanel( ConnectionParamsPanel *panel ) {
      
 }
 
+void options::OnDiscoverButton(wxCommandEvent &event){
+
+    wxString ip;
+    int port;
+    if(SignalKDataStream::DiscoverSKServer( ip, port, 1))               // 1 second scan
+    {
+        m_tNetAddress->SetValue( ip);
+        m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
+        UpdateDiscoverStatus(_("Signal K server available."));
+    }
+    else{
+        UpdateDiscoverStatus(_("Signal K server not found."));
+    }
+    
+    event.Skip();
+}
+
+void options::UpdateDiscoverStatus(wxString stat){
+    m_StaticTextSKServerStatus->SetLabel(stat);
+}
+
 void options::OnBtnIStcs(wxCommandEvent& event) {
   const ListType type = m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST;
   const wxArrayString list =
@@ -9817,6 +9975,8 @@ void options::OnNetProtocolSelected(wxCommandEvent& event) {
     if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "10110" ));
     if (m_tNetAddress->GetValue().IsEmpty())
       m_tNetAddress->SetValue(_T( "0.0.0.0" ));
+  } else if (m_rbNetProtoSignalK->GetValue()) {
+    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "8375" ));
   } else if (m_rbNetProtoTCP->GetValue()) {
     if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "10110" ));
   }
