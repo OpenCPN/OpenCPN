@@ -115,7 +115,6 @@
     
 #define CHART_DIR "Charts"
 
-#define NEW_LIST
     
 void write_file( const wxString extract_file, char *data, unsigned long datasize )
 {
@@ -2061,22 +2060,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
 #ifdef __OCPN__ANDROID__
     w = 6 * g_androidDPmm;      // mm nominal size
     h = w;
-#endif
-    
-    p_iconList = new wxImageList(w, h);
-    
-    fn.SetFullName(_T("folder.png"));
-    wxImage ima(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-    ima.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-    p_iconList->Add(ima);
 
-    fn.SetFullName(_T("file.png"));
-    wxImage imb(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-    imb.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-    p_iconList->Add(imb);
-
-    m_treeCtrlPredefSrcs->AssignImageList(p_iconList);
-    
     p_buttonIconList = new wxImageList(w, h);
 
     fn.SetFullName(_T("button_right.png"));
@@ -2099,9 +2083,23 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSour
     im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
     p_buttonIconList->Add(im4);
     
-#ifdef __OCPN__ANDROID__    
     m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
-#endif
+#else
+    p_iconList = new wxImageList(w, h);
+
+    fn.SetFullName(_T("folder.png"));
+    wxImage ima(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    ima.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(ima);
+
+    fn.SetFullName(_T("file.png"));
+    wxImage imb(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    imb.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(imb);
+
+    m_treeCtrlPredefSrcs->AssignImageList(p_iconList);
+#endif    /* __OCPN__ANDROID__ */
+
     m_treeCtrlPredefSrcs->SetIndent( w );
     
     m_base_path = wxEmptyString;

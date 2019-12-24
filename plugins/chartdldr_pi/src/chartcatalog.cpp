@@ -351,7 +351,7 @@ EncCell::EncCell( pugi::xml_node &xmldata ) : Chart( xmldata )
     isdt = wxInvalidDateTime;
     
     for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
-        if( !strcmp(element.name(), "number")) {
+        if( !strcmp(element.name(), "name")) {
             number = wxString::FromUTF8(element.first_child().value());
         }
         else if( !strcmp(element.name(), "src_chart")) {
