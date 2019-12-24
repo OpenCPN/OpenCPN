@@ -646,15 +646,14 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
 #endif
                     pic->m_bInitState = true;
                 }
-                PluginMetadata* found = 0;
+                std::string found_version;
                 for (auto p: PluginHandler::getInstance()->getInstalled()) {
                     if (p.name == pic->m_common_name.Lower()) {
-                        found = &p;
+                        found_version = p.readonly ? "" : p.version;
                         break;
                     }
                 }
-                pic->m_version_str =
-                    found && !found->readonly ? found->version : "";
+                pic->m_version_str = found_version;
                 pic->m_short_description = pic->m_pplugin->GetShortDescription();
                 pic->m_long_description = pic->m_pplugin->GetLongDescription();
                 pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
