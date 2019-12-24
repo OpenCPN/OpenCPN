@@ -29,6 +29,13 @@
  ***************************************************************************
  *
  */
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <ws2tcpip.h>
+#include <windows.h>
+#endif
+
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
