@@ -56,7 +56,7 @@ void PluginPaths::initWindowsPaths()
         g_Platform->GetWinPluginBaseDir().ToStdString();
     m_userLibdir = winPluginBaseDir + "\\plugins";
     m_userBindir = winPluginBaseDir + "\\plugins";
-    m_userDatadir = winPluginBaseDir;
+    m_userDatadir = winPluginBaseDir + "\\plugins";
     m_unknownPathDir = winPluginBaseDir + "\\unknown-prefix";
 
     m_libdirs.push_back(m_userLibdir);
