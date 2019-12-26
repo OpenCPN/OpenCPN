@@ -737,20 +737,26 @@ bool PlugInManager::CallLateInit(void)
             case 115:
             case 116:
             case 117:
-                if(pic->m_cap_flag & WANTS_LATE_INIT) {
-                    wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
-                    msg += pic->m_plugin_file;
-                    wxLogMessage(msg);
-
-                    opencpn_plugin_110* ppi = dynamic_cast<opencpn_plugin_110*>(pic->m_pplugin);
-                    if (ppi)
-                        ppi->LateInit();
-                    }
+                ProcessLateInit(pic);
                 break;
         }
     }
 
     return bret;
+}
+
+void PlugInManager::ProcessLateInit(PlugInContainer *pic)
+{
+    if(pic->m_cap_flag & WANTS_LATE_INIT) {
+        wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
+        msg += pic->m_plugin_file;
+        wxLogMessage(msg);
+
+        opencpn_plugin_110* ppi = dynamic_cast<opencpn_plugin_110*>(pic->m_pplugin);
+        if (ppi)
+            ppi->LateInit();
+    }
+
 }
 
 void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale)
@@ -822,6 +828,7 @@ bool PlugInManager::UpdatePlugIns()
             pic->m_cap_flag = pic->m_pplugin->Init();
             pic->m_pplugin->SetDefaults();
             pic->m_bInitState = true;
+            ProcessLateInit(pic);
             pic->m_short_description = pic->m_pplugin->GetShortDescription();
             pic->m_long_description = pic->m_pplugin->GetLongDescription();
             pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
