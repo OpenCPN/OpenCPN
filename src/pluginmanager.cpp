@@ -77,6 +77,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <unordered_map>
 #include "config.h"
 #include "SoundFactory.h"
 #include "dychart.h"
@@ -190,6 +191,7 @@ extern MyFrame    *gFrame;
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -199,6 +201,70 @@ enum
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
+static const std::vector<std::string> SYSTEM_PLUGINS = {
+    "chartdownloader", "wmm", "dashboard", "grib"
+};
+
+enum class PluginStatus { 
+    System,    // One of the four system plugins, unmanaged.
+    Managed,   // Managed by installer.
+    Unmanaged, // Unmanaged, probably a package.
+    Ghost      // Managed, shadowing another (packaged?) plugin.
+};
+
+static std::unordered_map<PluginStatus, const char*> message_by_status({
+    {PluginStatus::System,
+        _("Plugin is a system plugin which cannot be changed") },
+    {PluginStatus::Managed,
+        _("Plugin is managed by OpenCPN") },
+    {PluginStatus::Unmanaged,
+        _("Plugin cannot be managed by OpenCPN") },
+    {PluginStatus::Ghost,
+        _("Plugin shadows a packaged plugin which should be uninstalled") }
+});
+
+
+static std::unordered_map<PluginStatus, const char*> icon_by_status({
+    {PluginStatus::System,    "emblem-system.svg" },
+    {PluginStatus::Managed,   "emblem-default.svg" },
+    {PluginStatus::Unmanaged, "emblem-readonly.svg" },
+    {PluginStatus::Ghost,     "ghost.svg" },
+});
+
+/**
+ * Return number of existing files named filename in the list of
+ * dirs.
+ */
+static int count_files_in_dirs(const char* filename,
+                               const std::vector<std::string> dirs)
+{
+    int count = 0;
+    for (auto dir: dirs) {
+        const std::string sep(1, wxFileName::GetPathSeparator());
+        auto path = dir + sep + filename;
+        if (ocpn::exists(path)) {
+            count += 1;
+        }
+    }
+    return count;
+}
+
+static PluginStatus get_plugin_status(const std::string& plugin,
+                                      const std::string& library) 
+{
+    std::string name(plugin);
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    auto r = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(), name);
+    if (r != SYSTEM_PLUGINS.end()) {
+        return PluginStatus::System;
+    }
+    if (!PluginHandler::getInstance()->isPluginWritable(plugin)) {
+        return PluginStatus::Unmanaged;
+    }
+    auto libs = count_files_in_dirs(library.c_str(),
+                                    PluginPaths::getInstance()->Libdirs());
+    return libs > 1 ? PluginStatus::Ghost: PluginStatus::Managed;
+}
 
 wxString GetPluginDataDir(const char* plugin_name)
 {
@@ -306,6 +372,72 @@ SemanticVersion PlugInContainer::GetVersion()
     }
 
 }
+
+/**
+ * A svg status icon, scaled to about 1/3 of available space
+ *
+ * Load icons from .../uidata/.
+ *
+ * Dont unbind in destructor:
+ *      https://forums.wxwidgets.org/viewtopic.php?t=36399
+ */
+class StatusIconPanel: public wxPanel
+{
+    public:
+        StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
+            :wxPanel(parent)
+        {
+            auto plug_sts =
+                get_plugin_status(pic->m_common_name.ToStdString(),
+                                  pic->m_plugin_filename.ToStdString());
+            SetToolTip(message_by_status[plug_sts]);
+            m_icon_name = icon_by_status[plug_sts];
+
+            SetBackgroundColour(GetGlobalColor(_T("DILG0")));
+            auto size = GetClientSize();
+            auto minsize = GetTextExtent("OpenCPN");
+            SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
+            Layout();
+            Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
+       }
+
+        void OnPaint(wxPaintEvent& event)
+        {
+            auto size = GetClientSize();
+            int minsize = wxMin(size.GetHeight(), size.GetWidth());
+            auto offset = minsize / 4;
+
+            LoadIcon(m_icon_name.c_str(), m_bitmap,   minsize / 3);
+            wxPaintDC dc(this);
+            if (!m_bitmap.IsOk()) {
+                wxLogMessage("StatusPluginPanel: bitmap is not OK!");
+                return;
+            }
+            dc.DrawBitmap(m_bitmap, offset, offset, true);
+         }
+
+    protected:
+        wxBitmap m_bitmap;
+        std::string m_icon_name;
+
+        void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
+        {
+            wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
+            path.AppendDir("uidata");
+            path.AppendDir("traditional");
+            bool ok = false;
+            if (path.IsFileReadable()) {
+                wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
+                bitmap = wxBitmap(img);
+                ok = bitmap.IsOk();
+            }
+            if (!ok) {
+                auto style = g_StyleManager->GetCurrentStyle();
+                bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+            }
+        }
+};
+
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
@@ -4551,6 +4683,7 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pPlugin = p_plugin;
     m_bSelected = false;
 
+    m_status_icon = new StatusIconPanel(this, m_pPlugin);
     wxBoxSizer* itemBoxSizer01 = new wxBoxSizer(wxHORIZONTAL);
     SetSizer(itemBoxSizer01);
     Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4568,6 +4701,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
+    itemBoxSizer01->Add(m_status_icon, 0, wxEXPAND);
+
     wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer02->Add(itemBoxSizer03);
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
@@ -4653,7 +4788,12 @@ void PluginPanel::SetSelected( bool selected )
     version << m_pPlugin->GetVersion();
     if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-        m_pDescription->SetLabel( m_pPlugin->m_long_description );
+        auto plug_sts =
+            get_plugin_status(m_pPlugin->m_common_name.ToStdString(),
+                              m_pPlugin->m_plugin_filename.ToStdString());
+        auto plug_msg = message_by_status[plug_sts];
+        m_pDescription->SetLabelMarkup(
+            m_pPlugin->m_long_description + "\n\n<b>" + plug_msg + "</b>");
         m_pButtons->Show(true);
 #ifndef __WXQT__
         m_pButtonsUpDown->Show(true);
@@ -4673,7 +4813,7 @@ void PluginPanel::SetSelected( bool selected )
 #endif        
         Layout();
     }
-    
+    m_status_icon->Show(!selected);    
     m_pButtons->Show(selected);   // For most platforms, show buttons if selected
     m_pButtonsUpDown->Show(selected);
 #ifdef __OCPN__ANDROID__
@@ -4756,8 +4896,15 @@ void PluginPanel::SetEnabled( bool enabled )
             m_pButtonEnable->SetLabel(_("Enable"));
     }
     
-    if(m_bSelected)
-        m_pDescription->SetLabel( m_pPlugin->m_long_description ); //Pick up translation, if any
+    if(m_bSelected) {
+        auto plug_sts =
+            get_plugin_status(m_pPlugin->m_common_name.ToStdString(),
+                              m_pPlugin->m_plugin_filename.ToStdString());
+        auto const plug_msg = message_by_status[plug_sts];
+        m_pDescription->SetLabelMarkup(
+                m_pPlugin->m_long_description + "\n<b>" + plug_msg + "</b>");
+        //Pick up translation, if any
+    }
         
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
     
