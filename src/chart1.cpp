@@ -522,7 +522,6 @@ bool                      g_bportable;
 bool                      g_bdisable_opengl;
 
 ChartGroupArray           *g_pGroupArray;
-int                       g_GroupIndex;
 
 wxString                  g_GPS_Ident;
 
