@@ -2647,6 +2647,14 @@ int MyApp::OnExit()
     delete phost_name;
     delete pInit_Chart_Dir;
 
+    if (pTrackList)
+    {
+        pTrackList->DeleteContents(true);
+        pTrackList->Clear();
+        delete pTrackList;
+        pTrackList = NULL;
+    }
+
     delete g_pRouteMan;
     delete pWayPointMan;
 
@@ -2897,7 +2905,6 @@ MyFrame::~MyFrame()
     }
     delete pRouteList;
     pRouteList = NULL;
-    
     
     Disconnect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
     Disconnect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
