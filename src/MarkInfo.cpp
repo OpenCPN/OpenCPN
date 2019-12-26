@@ -391,7 +391,7 @@ void MarkInfoDlg::Create()
 
     m_checkBoxShowName = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show name"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
-    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL, 5 );
 
     ///
     wxBoxSizer* bSizer8 = new wxBoxSizer( wxHORIZONTAL );
