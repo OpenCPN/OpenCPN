@@ -77,7 +77,7 @@ int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 #define    EVTWILIGHT    5
 #define    NIGHT        6
 
-wxString GetDaylightString(int index)
+static wxString GetDaylightString(int index)
 {
     switch (index)
     {
@@ -127,7 +127,7 @@ static double FNrange( double x )
     return ( a );
 }
 
-double getDaylightEvent( double glat, double glong, int riset, double altitude, int y, int m,
+static double getDaylightEvent( double glat, double glong, int riset, double altitude, int y, int m,
                         int d )
 {
     double day = FNday( y, m, d, 0 );
@@ -176,7 +176,7 @@ static double getLMT( double ut, double lon )
         return ( t + 24. );
 }
 
-int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
+static int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
 {
     if( fabs( lat ) > 60. ) return ( 0 );
     int y = utcDateTime.GetYear();
@@ -261,12 +261,8 @@ RoutePropDlgImpl* RoutePropDlgImpl::getInstance( wxWindow* parent )
     {
         single = new RoutePropDlgImpl( parent );
         instanceFlag = true;
-        return single;
     }
-    else
-    {
-        return single;
-    }
+    return single;
 }
 
 void RoutePropDlgImpl::RecalculateSize(void) {
@@ -298,8 +294,6 @@ void RoutePropDlgImpl::UpdatePoints()
     int selected_row = m_dvlcWaypoints->GetSelectedRow();
     m_dvlcWaypoints->DeleteAllItems();
     
-    if( NULL == m_pRoute )
-        return;
     wxVector<wxVariant> data;
     
     m_pRoute->UpdateSegmentDistances( m_pRoute->m_PlannedSpeed );           // to fix ETA properties
@@ -466,15 +460,11 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
     //  Fetch any config file values
     if ( !only_points )
     {
-        m_tz_selection = 1; // Local PC time by default
+        if( !pR->m_PlannedDeparture.IsValid() )
+            pR->m_PlannedDeparture = wxDateTime::Now().ToUTC();
         
-        if( pR == m_pRoute ) {
-            if( !pR->m_PlannedDeparture.IsValid() )
-                pR->m_PlannedDeparture = wxDateTime::Now();
-        } else {
-            if( !pR->m_PlannedDeparture.IsValid() )
-                pR->m_PlannedDeparture = wxDateTime::Now();
-
+        m_tz_selection = 1; // Local PC time by default
+        if( pR != m_pRoute ) {
             if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
                 m_tz_selection = 0;
             else if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL )
@@ -546,6 +536,10 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
         }
 #endif        
     }
+
+    m_btnSplit->Enable(false);
+    if (!m_pRoute)
+        return;
     
     if( m_pRoute->m_Colour == wxEmptyString ) {
         m_choiceColor->Select( 0 );
@@ -574,7 +568,6 @@ void RoutePropDlgImpl::SetRouteAndUpdate( Route *pR, bool only_points )
     
     UpdatePoints();
     
-    m_btnSplit->Enable(false);
     m_btnExtend->Enable(IsThisRouteExtendable());
 }
 

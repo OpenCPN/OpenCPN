@@ -1904,7 +1904,8 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     bool isOK(false);
     bool polarWind(false);
     bool polarCurrent(false);
-
+    bool sigWave(false);
+    bool sigH(false);
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1964,7 +1965,18 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         break;
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
-                    case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_HTSGW:
+                        sigH = true;
+                        idx = Idx_HTSIGW;
+                        break;
+                    case GRB_PER:
+                        sigWave = true;
+                        idx = Idx_WVPER;
+                        break;
+                    case GRB_DIR:
+                        sigWave = true;
+                        idx = Idx_WVDIR;
+                        break;
                     case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
@@ -2021,18 +2033,32 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
                         // already one
                         GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
-                        // we favor UV over DIR/SPEED
-                        if (polarWind) {
-                            if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                        if (idx == Idx_PRESSURE) {
+                            skip = (oRec->getLevelType() == LV_MSL);
+                        } 
+                        else {
+                            // we favor UV over DIR/SPEED
+                            if (polarWind) {
+                                if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                                    skip = true;
+                            }
+                            if (polarCurrent) {
+                                if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
+                                    skip = true;
+                            }
+                            // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
+                            if (!skip && (oRec->getTimeRange() == 3)) {
                                 skip = true;
-                        }
-                        else if (polarCurrent) {
-                            if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
-                                skip = true;
-                        }
-                        // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
-                        if (!skip && (oRec->getTimeRange() == 3)) {
-                            skip = true;
+                            }
+                            // we favor significant Wave other wind wave.
+                            if (sigH) {
+                                if (oRec->getDataType() == GRB_HTSGW)
+                                    skip = true;
+                            }
+                            if (sigWave) {
+                                if (oRec->getDataType() == GRB_DIR || oRec->getDataType() == GRB_PER)
+                                    skip = true;
+                            }
                         }
                     }
                     if (!skip) {
