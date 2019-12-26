@@ -317,7 +317,6 @@ extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
-extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
 extern wxString         g_GPS_Ident;
@@ -1045,7 +1044,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     
     conf->Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     conf->Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
-    conf->Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
     
     conf->Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     conf->Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
@@ -1413,8 +1411,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     
     CHECK_INT( _T ( "ShowFPS" ), &g_bShowFPS );
     
-    //Read( _T ( "ActiveChartGroup" ), &g_GroupIndex );
-
     CHECK_INT( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision );
     
     CHECK_STR( _T( "TalkerIdText" ), g_TalkerIdText );

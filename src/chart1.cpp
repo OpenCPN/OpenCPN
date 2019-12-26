@@ -522,7 +522,6 @@ bool                      g_bportable;
 bool                      g_bdisable_opengl;
 
 ChartGroupArray           *g_pGroupArray;
-int                       g_GroupIndex;
 
 wxString                  g_GPS_Ident;
 
@@ -7218,8 +7217,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
-            if( g_GroupIndex > 0 ) {
-                while (ut_index < ChartData->GetChartTableEntries() && !ChartData->IsChartInGroup( ut_index, g_GroupIndex ) ) {
+            if( cc->m_groupIndex > 0 ) {
+                while (ut_index < ChartData->GetChartTableEntries() && !ChartData->IsChartInGroup( ut_index, cc->m_groupIndex ) ) {
                     ut_index++;
                 }
             }
