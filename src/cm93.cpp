@@ -6175,8 +6175,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
                       continue;
 #ifdef ocpnUSE_GL        
                   if (g_bopengl) {
+#ifndef USE_ANDROID_GLES2
+                      glColor3ub(col.Red(), col.Green(), col.Blue());
                       RenderCellOutlinesOnGL(nvp, mcd);
-                                      
+#endif                                      
                       // if signs don't agree we need to render a second pass
                       // translating around the world
                       if( secondpass ) {
