@@ -115,7 +115,10 @@ bool SemanticVersion::operator != (const SemanticVersion& other)
 
 std::ostream& operator << (std::ostream& s, const SemanticVersion& v)
 {
-    s << v.major << '.' << v.minor << '.' << v.patch;
+    s << v.major << '.' << v.minor;
+    if (v.patch != -1) {
+        s << '.' << v.patch;
+    }
     if (v.post != 0) {
         s << '.' << v.post;
     }
