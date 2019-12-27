@@ -254,7 +254,7 @@ endif ()
 
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     if (EXISTS "/usr/lib64")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64:/usr/local/lib:/usr/lib")
     elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
