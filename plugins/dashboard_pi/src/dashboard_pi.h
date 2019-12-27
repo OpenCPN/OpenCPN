@@ -190,6 +190,10 @@ private:
       int                  mHDT_Watchdog;
       int                  mGPS_Watchdog;
       int                  mVar_Watchdog;
+      int                  mMWVA_Watchdog;
+      int                  mMWVT_Watchdog;
+      int                  mDPT_DBT_Watchdog;
+      int                  mSTW_Watchdog;
 
       iirfilter            mSOGFilter;
       iirfilter            mCOGFilter;

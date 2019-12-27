@@ -99,14 +99,12 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
-    // Filter out undefined data, normally comes through as "999".
-    // Test value must be greater than 360 to enable some compass-type displays.
-      if ( (st == m_MainValueCap) && (data < 1200.0) )
+      if ( (st == m_MainValueCap))
       {
             m_MainValue = data;
             m_MainValueUnit = unit;
       }
-      else if ( (st == m_ExtraValueCap) && (data < 1200.0) )
+      else if ( (st == m_ExtraValueCap))
       {
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;

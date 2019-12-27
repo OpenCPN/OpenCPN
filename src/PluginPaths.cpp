@@ -56,7 +56,7 @@ void PluginPaths::initWindowsPaths()
         g_Platform->GetWinPluginBaseDir().ToStdString();
     m_userLibdir = winPluginBaseDir + "\\plugins";
     m_userBindir = winPluginBaseDir + "\\plugins";
-    m_userDatadir = winPluginBaseDir;
+    m_userDatadir = winPluginBaseDir + "\\plugins";
     m_unknownPathDir = winPluginBaseDir + "\\unknown-prefix";
 
     m_libdirs.push_back(m_userLibdir);
@@ -104,13 +104,13 @@ void PluginPaths::initLinuxPaths()
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
     const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
     string dirlist = envdirs ? envdirs : OCPN_LINUX_LOAD_PATH;
-    if (envdirs == 0 && dirlist.find(platform_dir) == string::npos) {
-        dirlist = dirlist + ":" + platform_dir;
-    }
     m_libdirs = split(dirlist, ':');
     for (auto& dir: m_libdirs) {
         dir += "/opencpn";
         dir = expand(dir);
+    }
+    if (envdirs == 0 && dirlist.find(platform_dir) == string::npos) {
+        m_libdirs.push_back(expand(platform_dir));
     }
     m_bindirs = m_libdirs;
     for (auto& dir: m_bindirs) {

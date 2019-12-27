@@ -3,6 +3,14 @@
 #
 # Build the Travis Debian artifacts
 #
+
+
+# https://askubuntu.com/questions/793182/update-not-working-on-ubuntu-14-04-4-lts
+if [ "$OCPN_TARGET" = "trusty" ]; then
+     sudo apt-key adv \
+         --keyserver keyserver.ubuntu.com --recv-keys 6B05F25D762E3157
+fi
+
 set -xe
 sudo apt-get -qq update
 sudo apt-get install -q devscripts equivs

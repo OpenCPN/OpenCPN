@@ -2,7 +2,7 @@
 
 expand() { for arg in "$@"; do test -f $arg && echo $arg; done }
 
-REPO="david-register/opencpn-unstable"
+REPO=${CLOUDSMITH_REPO:-"david-register/opencpn-unstable"}
 
 test -z "$TRAVIS_BUILD_DIR" || cd $TRAVIS_BUILD_DIR
 cd build
@@ -42,7 +42,7 @@ else
     if pyenv versions >/dev/null 2>&1; then   # circleci image
         pyenv versions
         pyenv global $(pyenv versions | tail -1)
-        sudo -H python -m pip install cloudsmith-cli
+        sudo -H python3 -m pip install cloudsmith-cli
         pyenv rehash
     else
         # Assuming builders have installed python3 + pip

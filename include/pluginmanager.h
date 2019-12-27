@@ -341,6 +341,7 @@ private:
       bool UpDateChartDataTypes(void);
       bool CheckPluginCompatibility(wxString plugin_file);
       bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog);
+      void ProcessLateInit(PlugInContainer *pic);
 
       MyFrame                 *pParent;
 

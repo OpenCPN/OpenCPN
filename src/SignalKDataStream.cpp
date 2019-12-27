@@ -1,6 +1,12 @@
 //
 // Created by balp on 2018-07-28.
 //
+
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include "zeroconf.hpp"
 
 #include "wx/wxprec.h"
