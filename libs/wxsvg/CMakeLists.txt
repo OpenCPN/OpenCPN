@@ -14,6 +14,9 @@ if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
+include(FindGlib2)
+MESSAGE (STATUS "GLIB2 ${GLib_INCLUDE_DIRS}")
+
 set(SRC
     src/CSSStyleDeclaration.cpp
     src/CSSValue.cpp
@@ -111,15 +114,18 @@ if (NOT wxWidgets_INCLUDE_DIRS)
 endif (NOT wxWidgets_INCLUDE_DIRS)
 add_library(WXSVG_CAIRO INTERFACE)
 
+
 target_include_directories(WXSVG_CAIRO INTERFACE
     ${CAIRO_INCLUDE_DIRS}
     ${EXPAT_INCLUDE_DIRS}
     ${GLIB2_INCLUDE_DIRS}
+    ${GLib_INCLUDE_DIRS}
 )
 target_link_libraries(WXSVG_CAIRO INTERFACE
     ${CAIRO_LIBRARIES}
     ${EXPAT_LIBRARIES}
     ${GLIB2_LIBRARIES}
+    ${GLib_LIBRARY}
 )
 add_library(wxsvg::cairo ALIAS WXSVG_CAIRO)
 
