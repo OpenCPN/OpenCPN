@@ -114,7 +114,12 @@ void PluginPaths::initLinuxPaths()
     }
     m_bindirs = m_libdirs;
     for (auto& dir: m_bindirs) {
-        size_t pos = dir.find_last_of("/lib/opencpn");
+        // Fails on Debian multilib paths like /usr/lib/x86_64-linux-gnu.
+        // But we don't use those even on Debian.
+        size_t pos = dir.rfind("/lib/opencpn");
+        if (pos == string::npos) {
+            pos = dir.rfind("/lib64/opencpn");
+        }
         dir = pos == string::npos ? dir : dir.substr(0, pos) + "/bin";
     }
     const char* const xdg_data_dirs = getenv("XDG_DATA_DIRS");
