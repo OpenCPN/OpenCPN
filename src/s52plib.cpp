@@ -3678,7 +3678,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     //   Has line segment PBO been allocated for this chart?
     if(b_useVBO){
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
+        glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
     }
 
     
@@ -3832,7 +3832,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     }
     
      if(b_useVBO) 
-         (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+         glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
     
 #ifndef USE_ANDROID_GLES2
     glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
