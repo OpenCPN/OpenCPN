@@ -569,6 +569,29 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
+static void cleanup(const std::string& filelist, const std::string& plugname)
+{
+    wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
+    std::istringstream files(filelist);
+    while (!files.eof()) {
+        char line[256];
+        files.getline(line, sizeof(line));
+        if (isRegularFile(line)) {
+            int r = remove(line);
+            if (r != 0) {
+                wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+            }
+        }
+    }
+    std::string path = fileListPath(plugname);
+    if (ocpn::exists(path)) {
+        remove(path.c_str());
+    }
+    remove(dirListPath(plugname).c_str());  // Best effort try, failures
+    remove(versionPath(plugname).c_str());  // are non-critical.
+}
+
+
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
@@ -618,6 +641,7 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
         std::ostringstream os;
         os << "Cannot unpack plugin: " << plugin.name  << " at " << path;
         last_error_msg = os.str();
+        cleanup(filelist, plugin.name);
         return false;
     }
     remove(path.c_str());
@@ -632,6 +656,7 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
                  before, after);
     if (before >= after) {
         last_error_msg = "Cannot load the installed plugin";
+        cleanup(filelist, plugin.name);
     }
     //std::cout << "Installed: " << plugin.name << std::endl;
 
