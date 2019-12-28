@@ -56,13 +56,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <cstdio>
-#include <string>
+#include <memory>
 #include <iostream>
 
 #include <algorithm>
 #include <cstdio>
 #include <string>
-#include <sstream>
 #include <iostream>
 
 #ifdef ocpnUSE_SVG
@@ -212,7 +211,19 @@ enum class PluginStatus {
     Ghost      // Managed, shadowing another (packaged?) plugin.
 };
 
-static std::unordered_map<PluginStatus, const char*> message_by_status({
+
+struct EnumClassHash
+{
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
+
+
+static std::unordered_map<PluginStatus, const char*, EnumClassHash>
+message_by_status({
     {PluginStatus::System,
         _("Plugin is a system plugin which cannot be changed") },
     {PluginStatus::Managed,
@@ -224,7 +235,8 @@ static std::unordered_map<PluginStatus, const char*> message_by_status({
 });
 
 
-static std::unordered_map<PluginStatus, const char*> icon_by_status({
+static std::unordered_map<PluginStatus, const char*, EnumClassHash>
+icon_by_status({
     {PluginStatus::System,    "emblem-system.svg" },
     {PluginStatus::Managed,   "emblem-default.svg" },
     {PluginStatus::Unmanaged, "emblem-readonly.svg" },
