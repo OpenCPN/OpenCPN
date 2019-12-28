@@ -274,11 +274,12 @@ class GuiDownloader: public Downloader
         long m_downloaded;
         wxProgressDialog* m_dialog;
         PluginMetadata m_plugin;
+        wxWindow* m_parent;
 
     public:
-        GuiDownloader(PluginMetadata plugin)
+        GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             :Downloader(plugin.tarball_url),
-            m_downloaded(0), m_dialog(0), m_plugin(plugin)
+            m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
         {}
 
         void run(wxWindow* parent)
@@ -292,33 +293,41 @@ class GuiDownloader: public Downloader
                             wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
             std::string path("");
             bool ok = download(path);
+            if (!ok) {
+                showErrorDialog("Download error");
+                return;
+            }
             if (m_dialog == 0) {
                 ok = false;
             } else {
                 delete m_dialog;
             }
+            if (!ok) {
+                showErrorDialog("Download aborted");
+                return;
+            }
             m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
             wxMessageDialog* dlg = 0;
-            ok = ok ? pluginHandler->install(m_plugin, path) : false;
+            ok = pluginHandler->install(m_plugin, path);
+            if (!ok) {
+                showErrorDialog("Installation error");
+                return;
+            }
             auto pic = PlugInByName(m_plugin.name,
                                     g_pi_manager->GetPlugInArray());
-            ok = pic ? ok : false;
-            if (ok) {
+            if (!pic) {
+                showErrorDialog("Installation verification error");
+                return;
+            }
+            else {
                 dlg = new wxMessageDialog(
-                        parent,
+                        m_parent,
                         m_plugin.name + " " + m_plugin.version
                               + _(" successfully installed"),
                         _("Installation complete"),
                         wxOK | wxCENTRE | wxICON_INFORMATION);
+                dlg->ShowModal();
             }
-            else {
-                dlg = new wxMessageDialog(
-                        parent,
-                        _("Download or install errors, check logs"),
-                        _("Installation error"),
-                        wxOK | wxCENTRE | wxICON_ERROR);
-            }
-            dlg->ShowModal();
         }
 
         void on_chunk(const char* buff, unsigned bytes) override
@@ -330,6 +339,23 @@ class GuiDownloader: public Downloader
                 delete m_dialog;
                 m_dialog = 0;
             }
+        }
+
+        void showErrorDialog(const char* msg)
+        {
+            auto dlg = new wxMessageDialog(
+                    m_parent,
+                    "",
+                    _("Installation error"),
+                    wxOK | wxCENTRE | wxICON_ERROR);
+            auto last_error_msg = last_error();
+            std::string text = msg;
+            if (last_error_msg != "") {
+                text = text + ": " + error_msg;
+            }
+            text = text + "\nPlease check system log for more info.";
+            dlg->SetMessage(text);
+            dlg->ShowModal();
         }
 };
 
@@ -369,7 +395,7 @@ class InstallButton: public wxPanel
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
             wxLogMessage("Installing %s", m_metadata.name.c_str());
-            auto downloader = new GuiDownloader(m_metadata);
+            auto downloader = new GuiDownloader(this, m_metadata);
             downloader->run(this);
             auto pic = PlugInByName(m_metadata.name,
                                     g_pi_manager->GetPlugInArray());
