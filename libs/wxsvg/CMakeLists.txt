@@ -15,7 +15,9 @@ if (NOT CMAKE_MODULE_PATH)
 endif ()
 
 include(FindGlib2)
-MESSAGE (STATUS "GLIB2 ${GLib_INCLUDE_DIRS}")
+#MESSAGE (STATUS "GLIB2 ${GLib_INCLUDE_DIRS}")
+#MESSAGE (STATUS "GLIB2 ${GLib_LIBRARY}")
+
 
 set(SRC
     src/CSSStyleDeclaration.cpp
@@ -90,6 +92,17 @@ set(SRC
 add_library(WXSVG STATIC ${SRC})
 add_library(ocpn::wxsvg ALIAS WXSVG)
 set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
+     
+   # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.
+   # We look for and add it explicitely
+if (UNIX)
+        # Assume pkg-config is available.
+        pkg_search_module(GOBJECT REQUIRED gobject-2.0)
+        #MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
+        target_link_libraries(WXSVG PRIVATE ${GOBJECT_LDFLAGS})
+endif (UNIX)
+
 
 include(FindEXIF)
 if (EXIF_FOUND)
