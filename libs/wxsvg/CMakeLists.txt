@@ -101,6 +101,11 @@ if (UNIX)
         pkg_search_module(GOBJECT REQUIRED gobject-2.0)
         #MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
         target_link_libraries(WXSVG PRIVATE ${GOBJECT_LDFLAGS})
+        
+        find_library(PANGOCAIRO_LIBRARY NAMES pangocairo-1.0 PATHS ${LINUX_LIB_PATHS})
+        MESSAGE (STATUS "    PANGOCAIRO: " ${PANGOCAIRO_LIBRARY})
+        target_link_libraries(WXSVG PRIVATE ${PANGOCAIRO_LIBRARY})
+        
 endif (UNIX)
 
 
