@@ -4654,8 +4654,6 @@ void PluginPanel::SetSelected( bool selected )
     if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
-        std::ostringstream os(m_pVersion->GetLabel().ToStdString());
-        version <<  _(" -- requires API version ")  << m_pPlugin->m_api_version;
         m_pButtons->Show(true);
 #ifndef __WXQT__
         m_pButtonsUpDown->Show(true);
@@ -4684,7 +4682,6 @@ void PluginPanel::SetSelected( bool selected )
     m_pButtons->Show(true);     // Always enable buttons for Android
 #endif
     
-    m_pVersion->SetLabel(version.str());
     Layout();
 
 #ifdef __WXOSX__

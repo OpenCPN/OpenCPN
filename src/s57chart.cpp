@@ -100,10 +100,10 @@ extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 #ifndef USE_ANDROID_GLES2
-#define glGenBuffers (s_glGenBuffers);
-#define glBindBuffer (s_glBindBuffer);
-#define glBufferData (s_glBufferData);
-#define glDeleteBuffers (s_glDeleteBuffers);
+#define glGenBuffers(a,b) (s_glGenBuffers)(a,b);
+#define glBindBuffer(a,b) (s_glBindBuffer)(a,b);
+#define glBufferData(a,b,c,d) (s_glBufferData)(a,b,c,d);
+#define glDeleteBuffers(a,b) (s_glDeleteBuffers)(a,b);
 #endif
 
 #endif

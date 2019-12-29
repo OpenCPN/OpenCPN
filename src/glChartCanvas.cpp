@@ -209,8 +209,8 @@ PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 #ifndef USE_ANDROID_GLES2
-#define glDeleteFramebuffers (s_glDeleteFramebuffers);
-#define glDeleteRenderbuffers (s_glDeleteRenderbuffers);
+#define glDeleteFramebuffers(a,b) (s_glDeleteFramebuffers)(a,b);
+#define glDeleteRenderbuffers(a,b) (s_glDeleteRenderbuffers)(a,b);
 #endif
 
 
