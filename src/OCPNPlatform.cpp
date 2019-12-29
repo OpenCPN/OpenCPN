@@ -94,7 +94,7 @@
 #endif
 
 #ifdef __WXGTK__
-#include <gdk/gdk.h>
+//#include <gdk/gdk.h>
 #endif
 
 #include <cstdlib>
@@ -1999,7 +1999,8 @@ double  OCPNPlatform::GetDisplaySizeMM()
         m_displaySizeMM = wxGetDisplaySizeMM();
 
     double ret = m_displaySizeMM.GetWidth();
-    
+  
+#if 0    
 #ifdef __WXGTK__
     GdkScreen *screen = gdk_screen_get_default();
     wxSize resolution = getDisplaySize();
@@ -2014,7 +2015,7 @@ double  OCPNPlatform::GetDisplaySizeMM()
     if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
         ret = gdk_monitor_mm;
 #endif    
-    
+#endif    
     
 #ifdef __WXMSW__    
     int w,h;
