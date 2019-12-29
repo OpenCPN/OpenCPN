@@ -301,8 +301,9 @@ SemanticVersion PlugInContainer::GetVersion()
                                plugin_117->GetPlugInVersionBuild());
     }
     else {
-        return SemanticVersion(m_pplugin->GetAPIVersionMajor(),
-                               m_pplugin->GetAPIVersionMinor());
+        return SemanticVersion(m_pplugin->GetPlugInVersionMajor(),
+                               m_pplugin->GetPlugInVersionMinor(),
+                               -1); // Don't print .patch. It's unknown
     }
 
 }
