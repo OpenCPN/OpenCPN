@@ -32,10 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GribSettingsDialog.h"
 #include "GribOverlayFactory.h"
 
-#ifdef __WXGTK__
-#include <gdk/gdk.h>
-#endif
-
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
 #endif
