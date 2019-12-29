@@ -605,9 +605,9 @@ message(STATUS "Using python executable: ${Python_EXECUTABLE}")
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  include(OcpnFindGtk)
-endif ()
+#if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+#  include(OcpnFindGtk)
+#endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
@@ -704,12 +704,12 @@ if (NOT QT_ANDROID)
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
   endif (MSVC)
 
-#  if (GTK2_FOUND)
-  set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+#  if (s2_FOUND)
+#  set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
 
-  if (GTK3_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
-  endif ()
+# if (GTK3_FOUND)
+#    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+#  endif ()
 
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
