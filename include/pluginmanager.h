@@ -456,6 +456,7 @@ private:
       PluginListPanel *m_PluginListPanel;
       bool             m_bSelected;
       PlugInContainer *m_pPlugin;
+      wxWindow        *m_status_icon;
       wxStaticText    *m_pName;
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
