@@ -576,7 +576,7 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
                 Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new CatalogDialog(GetParent(), true);
+                   [=](wxCommandEvent&) {new CatalogDialog(this, true);
                 });
             }
         
@@ -591,7 +591,7 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Advanced catalog update..."))
             {
                  Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) {
-                      new CatalogDialog(GetParent(), false);
+                      new CatalogDialog(this, false);
                  });
             }
         

@@ -54,6 +54,10 @@ wxDEFINE_EVENT(CHANNELS_PARSE_DONE, wxCommandEvent);
 wxDEFINE_EVENT(CATALOG_DL_DONE, wxCommandEvent);
 wxDEFINE_EVENT(CATALOG_PARSE_DONE, wxCommandEvent);
 
+
+/** Posted by  CatalogUpdate on close. */
+wxDEFINE_EVENT(CATALOG_DLG_CLOSE, wxCommandEvent);
+
 #ifdef _WIN32
 static const std::string SEP("\\");
 #else
@@ -122,9 +126,12 @@ class CatalogUpdate: public wxDialog, Helpers
 
             auto done = makeButton("Done");
             sizer->Add(done, wxSizerFlags().Border().Right());
-            done->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                       [=] (wxCommandEvent e) { closeMyWindow(); });
-
+            done->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=] (wxCommandEvent e) {
+                EndModal(wxID_OK);
+                wxCommandEvent evt(CATALOG_DLG_CLOSE);
+                wxPostEvent(GetParent(), evt);
+                e.Skip();
+            });
             toggleUrlEdit();
 
 
@@ -132,6 +139,14 @@ class CatalogUpdate: public wxDialog, Helpers
             auto size = getWindowSize();
             size.SetHeight(1);
             SetMinClientSize(size);
+
+            Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent& e) {
+                EndModal(wxID_OK);
+                wxCommandEvent cmd_evt(CATALOG_DLG_CLOSE);
+                wxPostEvent(GetParent(), cmd_evt);
+                e.Skip();
+            });
+            parent->Hide();
 
             Fit();
             ShowModal();
@@ -147,11 +162,6 @@ class CatalogUpdate: public wxDialog, Helpers
         UrlEdit* m_url_edit;
         wxStaticText* m_advanced;
         bool m_show_edit;
-
-        void closeMyWindow() { 
-            EndModal(wxID_OK);
-            GetParent()->Close(true);
-        }
 
         /**
          * The window width  is determined by the normally hidden custom
@@ -502,13 +512,6 @@ class CatalogLoad: public wxPanel, public Helpers
                  [=](wxCommandEvent& ev) { workerDone(ev); });
         }
 
-        bool Close(bool force)
-        {
-            GetParent()->Close();
-            Destroy();
-            return true;
-        }
-
         void PostEvent(int evt_id, catalog_status status, std::string message)
         {
             wxCommandEvent evt(evt_id);
@@ -645,21 +648,16 @@ class CatalogLoad: public wxPanel, public Helpers
                 auto cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
                 sizer->Add(cancel, flags);
                 m_ok = new wxButton(this, wxID_OK, _("OK"));
+                m_ok->Enable(false);
                 sizer->Add(m_ok, flags);
                 SetSizer(sizer);
                 Fit();
                 Show();
             }
 
-            void closeWindow() 
-            { 
-                GetParent()->GetParent()->Close();
-            }
-
             void ActivateOk()
             {
-                m_ok->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                           [=](wxCommandEvent& ev) { closeWindow(); });
+                m_ok->Enable(true);
             }
 
             wxButton* m_ok;
@@ -684,7 +682,12 @@ CatalogDialog::CatalogDialog(wxWindow* parent, bool simple)
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
     vbox->Add(new catalog_mgr::CatalogLoad(this, simple),
               wxSizerFlags(1).Expand());
+    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) {
+            wxLogMessage("CLOSING: CatalogLoad");
+            Destroy();
+    });
     SetSizer(vbox);
+
     Fit();
-    ShowModal();
+    Show();
 }
