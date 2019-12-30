@@ -94,6 +94,7 @@ class CatalogUpdate: public wxDialog, Helpers
 {
     protected:
         class UrlEdit; //forward
+        class ActiveCatalogGrid; //forward
 
     public:
         CatalogUpdate(wxWindow* parent)
@@ -106,12 +107,12 @@ class CatalogUpdate: public wxDialog, Helpers
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border();
 
-            auto catalog_grid = new ActiveCatalogGrid(this);
+            m_catalog_grid = new ActiveCatalogGrid(this);
             sizer->Add(new UrlStatus(this), flags);
-            sizer->Add(new UrlChannel(this, catalog_grid), flags);
+            sizer->Add(new UrlChannel(this, m_catalog_grid), flags);
             sizer->Add(new wxStaticLine(this), flags);
 
-            sizer->Add(catalog_grid, flags);
+            sizer->Add(m_catalog_grid, flags);
             sizer->Add(new wxStaticLine(this), flags);
 
             m_advanced  = new wxStaticText(this, wxID_ANY, "");
@@ -122,7 +123,8 @@ class CatalogUpdate: public wxDialog, Helpers
             m_url_box = new wxBoxSizer(wxVERTICAL);
             m_url_edit = new UrlEdit(this);
             m_url_box->Add(m_url_edit, flags);
-            m_url_box->Add(new Buttons(this), wxSizerFlags().Border().Right());
+            m_url_box->Add(new Buttons(this, m_catalog_grid),
+                           wxSizerFlags().Border().Right());
             sizer->Add(m_url_box, flags);
             sizer->Add(new wxStaticLine(this), flags);
 
@@ -161,6 +163,7 @@ class CatalogUpdate: public wxDialog, Helpers
             _("<span foreground='blue'>Advanced &gt;&gt;&gt;</span>");
 
         wxBoxSizer* m_url_box;
+        ActiveCatalogGrid* m_catalog_grid;
         UrlEdit* m_url_edit;
         wxStaticText* m_advanced;
         bool m_show_edit;
@@ -187,59 +190,6 @@ class CatalogUpdate: public wxDialog, Helpers
             m_advanced->SetLabelMarkup(m_show_edit ? HIDE : ADVANCED);
             Fit();
         }
-
-        /** The buttons below custom url: Use Default and Update. */
-        struct Buttons: public wxPanel, public Helpers
-        {
-            Buttons(wxWindow* parent): wxPanel(parent), Helpers(this),
-                m_parent(dynamic_cast<CatalogUpdate*>(GetParent()))
-            {
-                auto sizer = new wxBoxSizer(wxHORIZONTAL);
-                auto flags = wxSizerFlags().Right().Bottom().Border();
-
-                auto clear = makeButton(_("Clear"));
-                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                            [=](wxCommandEvent& ev) { clearUrl(); });
-                sizer->Add(clear, flags);
-
-                auto use_default = makeButton(_("Use default location"));
-                use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                                  [=](wxCommandEvent& ev) { useDefaultUrl(); });
-                sizer->Add(use_default, flags);
-
-                auto update = makeButton(_("Save"));
-                sizer->Add(update, flags);
-                update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                             [=](wxCommandEvent& ev) { updateUrl(); });
-
-                SetSizer(sizer);
-                Fit();
-                Show();
-            }
-
-            void useDefaultUrl()
-            {
-                auto handler = CatalogHandler::getInstance();
-                auto url = handler->GetDefaultUrl();
-                m_parent->m_url_edit->setText(url);
-            }
-
-            void clearUrl()
-            {
-                m_parent->m_url_edit->clear();
-            }
-
-            void updateUrl()
-            {
-                auto text =  m_parent->m_url_edit->getText();
-                auto handler = CatalogHandler::getInstance();
-                handler->SetCustomUrl(text.c_str());
-            }
-
-            CatalogUpdate* m_parent;
-
-        };
-
         /** The Url Status line at top */
         struct UrlStatus: public wxPanel, public Helpers
         {
@@ -387,6 +337,68 @@ class CatalogUpdate: public wxDialog, Helpers
 
         };
 
+        /** The buttons below custom url: Use Default and Update. */
+        struct Buttons: public wxPanel, public Helpers
+        {
+            Buttons(wxWindow* parent, ActiveCatalogGrid* catalog_grid)
+                : wxPanel(parent), Helpers(this),
+                m_catalog_grid(catalog_grid),
+                m_parent(dynamic_cast<CatalogUpdate*>(GetParent()))
+            {
+                auto sizer = new wxBoxSizer(wxHORIZONTAL);
+                auto flags = wxSizerFlags().Right().Bottom().Border();
+
+                auto clear = makeButton(_("Clear"));
+                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                            [=](wxCommandEvent& ev) { clearUrl(); });
+                sizer->Add(clear, flags);
+
+                auto use_default = makeButton(_("Use default location"));
+                use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                                  [=](wxCommandEvent& ev) { useDefaultUrl(); });
+                sizer->Add(use_default, flags);
+
+                auto update = makeButton(_("Save"));
+                sizer->Add(update, flags);
+                update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                             [=](wxCommandEvent& ev) { updateUrl(); });
+
+                SetSizer(sizer);
+                Fit();
+                Show();
+            }
+
+            void useDefaultUrl()
+            {
+                auto handler = CatalogHandler::getInstance();
+                auto url = handler->GetDefaultUrl();
+                m_parent->m_url_edit->setText(url);
+            }
+
+            void clearUrl()
+            {
+                m_parent->m_url_edit->clear();
+            }
+
+            void updateUrl()
+            {
+                auto text =  m_parent->m_url_edit->getText();
+                auto handler = CatalogHandler::getInstance();
+                handler->SetCustomUrl(text.c_str());
+                std::ostringstream xml;
+                auto status = handler->DownloadCatalog(&xml);
+                // TODO: check status
+                status = handler->ParseCatalog(xml.str(), true);
+                // TODO: check status
+                m_catalog_grid->UpdateVersions();
+            }
+
+            ActiveCatalogGrid* m_catalog_grid;
+            CatalogUpdate* m_parent;
+
+        };
+
+
         /** Combobox where user selects active catalog channel. */
         struct UrlChannel: public wxPanel, public Helpers
         {
@@ -421,7 +433,7 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void onChannelChange(wxCommandEvent& ev)
             {
-                auto url =ev.GetString().ToStdString().c_str() ;
+                auto url = ev.GetString().ToStdString().c_str() ;
                 auto handler = CatalogHandler::getInstance();
                 handler->SetActiveChannel(url);
                 std::ostringstream xml;
