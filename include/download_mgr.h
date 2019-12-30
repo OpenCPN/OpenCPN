@@ -29,6 +29,9 @@
 #include <wx/dialog.h>
 #include <wx/window.h>
 
+// Accepted by PluginDownloadDialog, reloads plugin list.
+wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
+
 class PluginDownloadDialog: public wxDialog
 {
     public:

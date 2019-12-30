@@ -54,6 +54,9 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 #undef major                // walk around gnu's major() and minor() macros.
 #undef minor
 
+// Main window reload event
+wxDEFINE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
+
 namespace download_mgr {
 
 /**
@@ -608,11 +611,13 @@ class OcpnScrolledWindow : public wxScrolledWindow
             :wxScrolledWindow(parent),
             m_grid(new wxFlexGridSizer(3, 0, 0))
         {
-            populateGrid(m_grid);
             auto box = new wxBoxSizer(wxVERTICAL);
+            populateGrid(m_grid);
             box->Add(m_grid, wxSizerFlags().Proportion(1).Expand());
             auto button_panel = new MainButtonsPanel(this, parent);
             box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
+            Bind(EVT_PLUGINS_RELOAD, [&](wxCommandEvent& ev) { Reload(); });
+
             SetSizer(box);
             FitInside();
             // TODO: Compute size using wxWindow::GetEffectiveMinSize()
