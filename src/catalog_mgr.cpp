@@ -33,6 +33,7 @@
 #include <wx/debug.h>
 #include <wx/filename.h>
 #include <wx/log.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/progdlg.h>
 #include <wx/sizer.h>
@@ -160,7 +161,7 @@ class CatalogUpdate: public wxDialog, Helpers
         const char* const HIDE =
             _("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
         const char* const ADVANCED =
-            _("<span foreground='blue'>Advanced &gt;&gt;&gt;</span>");
+            _("<span foreground='blue'>Ultra advanced &gt;&gt;&gt;</span>");
 
         wxBoxSizer* m_url_box;
         ActiveCatalogGrid* m_catalog_grid;
@@ -307,6 +308,29 @@ class CatalogUpdate: public wxDialog, Helpers
                 return path;
             }
 
+            void ReloadAvailableVersion(const std::string url)
+            {
+                auto handler = CatalogHandler::getInstance();
+                std::ostringstream xml;
+                auto status = handler->DownloadCatalog(&xml);
+                std::string message;
+                if (status != CatalogHandler::ServerStatus::OK) {
+                    message = "Cannot download data form url";
+                } 
+                status = handler->ParseCatalog(xml.str(), true);
+                if (status != CatalogHandler::ServerStatus::OK) {
+                    message = "Cannot parse downloaded data";
+                } 
+                if (message != "") {
+                    wxMessageBox(message,
+                                 "catalog update problem",
+                                 wxICON_ERROR);
+                }
+                else {
+                    UpdateVersions();
+                }
+            }
+ 
             std::string GetPrivateCatalogPath()
             {
                 auto plugin_handler = PluginHandler::getInstance();
@@ -383,14 +407,8 @@ class CatalogUpdate: public wxDialog, Helpers
             void updateUrl()
             {
                 auto text =  m_parent->m_url_edit->getText();
-                auto handler = CatalogHandler::getInstance();
-                handler->SetCustomUrl(text.c_str());
-                std::ostringstream xml;
-                auto status = handler->DownloadCatalog(&xml);
-                // TODO: check status
-                status = handler->ParseCatalog(xml.str(), true);
-                // TODO: check status
-                m_catalog_grid->UpdateVersions();
+                CatalogHandler::getInstance()->SetCustomUrl(text.c_str());
+                m_catalog_grid->ReloadAvailableVersion(text);
             }
 
             ActiveCatalogGrid* m_catalog_grid;
@@ -433,15 +451,9 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void onChannelChange(wxCommandEvent& ev)
             {
-                auto url = ev.GetString().ToStdString().c_str() ;
-                auto handler = CatalogHandler::getInstance();
-                handler->SetActiveChannel(url);
-                std::ostringstream xml;
-                auto status = handler->DownloadCatalog(&xml);
-                // TODO: check status
-                status = handler->ParseCatalog(xml.str(), true);
-                // TODO: check status
-                m_catalog_grid->UpdateVersions();
+                auto url = ev.GetString().ToStdString().c_str();
+                CatalogHandler::getInstance()->SetActiveChannel(url);
+                m_catalog_grid->ReloadAvailableVersion(url);
             };
 
             std::string m_active_channel;
