@@ -23,6 +23,12 @@ if (NOT SQLITE_FOUND OR APPLE OR WIN32 OR QT_ANDROID)
   target_include_directories(
       _SQLITE INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
   )
+  
+  # We do not need extensions, and using them in a static library causes trouble with libdl linking order.
+  if (UNIX AND NOT APPLE)
+     add_definitions(" -DSQLITE_OMIT_LOAD_EXTENSION")
+  endif (UNIX AND NOT APPLE)
+
 else ()
   target_include_directories(_SQLITE INTERFACE ${SQLITE_INCLUDE_DIR})
   target_link_libraries(_SQLITE INTERFACE ${SQLITE_LIBRARIES})

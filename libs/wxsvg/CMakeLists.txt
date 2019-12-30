@@ -14,6 +14,11 @@ if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
+if(UNIX)
+  include(FindGlib2)
+endif(UNIX)
+
+
 set(SRC
     src/CSSStyleDeclaration.cpp
     src/CSSValue.cpp
@@ -88,6 +93,22 @@ add_library(WXSVG STATIC ${SRC})
 add_library(ocpn::wxsvg ALIAS WXSVG)
 set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
+     
+   # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.
+   # We look for and add it explicitely
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
+        # Assume pkg-config is available.
+        pkg_search_module(GOBJECT REQUIRED gobject-2.0)
+        #MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
+        target_link_libraries(WXSVG PRIVATE ${GOBJECT_LDFLAGS})
+        
+        find_library(PANGOCAIRO_LIBRARY NAMES pangocairo-1.0 PATHS ${LINUX_LIB_PATHS})
+        #MESSAGE (STATUS "    PANGOCAIRO: " ${PANGOCAIRO_LIBRARY})
+        target_link_libraries(WXSVG PRIVATE ${PANGOCAIRO_LIBRARY})
+        
+endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
 include(FindEXIF)
 if (EXIF_FOUND)
     target_sources(WXSVG PRIVATE src/ExifHandler.cpp)
@@ -111,16 +132,22 @@ if (NOT wxWidgets_INCLUDE_DIRS)
 endif (NOT wxWidgets_INCLUDE_DIRS)
 add_library(WXSVG_CAIRO INTERFACE)
 
+
 target_include_directories(WXSVG_CAIRO INTERFACE
     ${CAIRO_INCLUDE_DIRS}
     ${EXPAT_INCLUDE_DIRS}
     ${GLIB2_INCLUDE_DIRS}
+    ${GLib_INCLUDE_DIRS}
 )
 target_link_libraries(WXSVG_CAIRO INTERFACE
     ${CAIRO_LIBRARIES}
     ${EXPAT_LIBRARIES}
     ${GLIB2_LIBRARIES}
 )
+if(UNIX)
+    target_link_libraries(WXSVG_CAIRO INTERFACE ${GLib_LIBRARY})
+endif(UNIX)
+
 add_library(wxsvg::cairo ALIAS WXSVG_CAIRO)
 
 target_include_directories(WXSVG
