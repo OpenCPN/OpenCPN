@@ -217,11 +217,6 @@ class PluginIconPanel: public wxPanel
             Bind(wxEVT_PAINT, &PluginIconPanel::OnPaint, this);
         }
 
-        ~PluginIconPanel()
-        {
-            Unbind(wxEVT_PAINT, &PluginIconPanel::OnPaint, this);
-        }
-
         void OnPaint(wxPaintEvent& event)
         {
             auto size = GetClientSize();
@@ -383,12 +378,6 @@ class InstallButton: public wxPanel
             Bind(wxEVT_COMMAND_BUTTON_CLICKED, &InstallButton::OnClick, this);
         }
 
-        ~InstallButton()
-        {
-            Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   &InstallButton::OnClick, this);
-        }
-
         void OnClick(wxCommandEvent& event) {
             if (m_remove) {
                 wxLogMessage("Uninstalling %s", m_metadata.name.c_str());
@@ -456,12 +445,6 @@ class WebsiteButton: public wxPanel
             SetSizer(vbox);
             Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                  [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
-        }
-
-        ~WebsiteButton()
-        {
-            Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
         }
 
     protected:
@@ -532,12 +515,6 @@ class PluginTextPanel: public wxPanel
 
             m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
             m_descr->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
-        }
-
-        ~PluginTextPanel()
-        {
-            m_more->Unbind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
-            m_descr->Unbind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
         }
 
         void OnClick(wxMouseEvent& event)
