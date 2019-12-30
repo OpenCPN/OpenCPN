@@ -62,6 +62,8 @@
 
 #include <wx/cmdline.h>
 
+#include <archive.h>
+
 #include "catalog_parser.h"
 
 
@@ -94,7 +96,7 @@ class PluginHandler {
 	/** Uninstall an installed plugin. */
         bool uninstall(const std::string plugin);
 
-        std::string getLastErrorMsg();
+        std::string getLastErrorMsg() { return last_error_msg; }
 
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */
@@ -104,6 +106,12 @@ class PluginHandler {
         std::string metadataPath;
         std::vector<PluginMetadata> installed;
         CatalogData catalogData;
+        std::string last_error_msg;
+        bool explodeTarball(struct archive* src,
+                            struct archive* dest,
+                            std::string& filelist);
+        bool extractTarball(const std::string path, std::string& filelist);
+        bool archive_check(int r, const char* msg, struct archive* a);
 
 };
 
