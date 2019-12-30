@@ -4,6 +4,12 @@ matrix:
   include:
 
   - env:
+    - OCPN_TARGET=bionic
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - env:
     - OCPN_TARGET=xenial
     dist: xenial
     compiler: gcc

@@ -8,7 +8,7 @@ test -z "$TRAVIS_BUILD_DIR" || cd $TRAVIS_BUILD_DIR
 cd build
 
 case "$OCPN_TARGET" in
-    xenial|trusty) 
+    xenial|trusty|bionic) 
         for src in $(expand *.deb); do
             old=$(basename $src)
             new=$(echo $old | sed "s/opencpn/opencpn-${OCPN_TARGET}/")
