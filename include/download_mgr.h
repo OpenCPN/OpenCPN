@@ -36,8 +36,6 @@ class PluginDownloadDialog: public wxDialog
 
         wxWindow* GetRealParent() { return  m_parent; }
 
-    private:
-        wxWindow* m_parent;
 };
 
 #endif // DOWNLOAD_MGR_H__
