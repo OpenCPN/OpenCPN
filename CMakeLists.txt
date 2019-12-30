@@ -713,7 +713,6 @@ if (NOT QT_ANDROID)
     message(STATUS "Main: ${wxWidgets_FIND_COMPONENTS}")
 
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
-  #find_package(wxWidgets)
   if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")
     add_definitions(-DwxUSE_WEBVIEW=1 -DHAVE_WEBVIEW)
