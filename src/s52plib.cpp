@@ -2259,18 +2259,15 @@ extern GLenum       g_texture_rectangle_format;
             int xp = x;
             int yp = y;
             
-            
             if(fabs(vp->rotation) > 0.01){
-                float cx = vp->pix_width/2.;
-                float cy = vp->pix_height/2.;
-                float c = cosf(vp->rotation );
-                float s = sinf(vp->rotation );
-                float xn = x - cx;
-                float yn = y - cy;
-                xp =  xn*c - yn*s + cx;
-                yp =  xn*s + yn*c + cy;
+                float c = cosf(-vp->rotation );
+                float s = sinf(-vp->rotation );
+                float x = xadjust;
+                float y = yadjust;
+                xadjust =  x*c - y*s;
+                yadjust =  x*s + y*c;
             }
-            
+          
             xp+= xadjust;
             yp+= yadjust;
             
