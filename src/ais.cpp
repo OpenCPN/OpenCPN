@@ -1471,7 +1471,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
             wxBrush realtime_brush = wxBrush( GetGlobalColor( "GREY1" ) );
             dc.SetBrush( realtime_brush );
-            dc.StrokePolygon( nPoints, iconPoints, Point.x, Point.y, scale_factor );
+            dc.StrokePolygon( nPoints, iconPoints, Point.x, Point.y, AIS_scale_factor);
         }
         dc.SetBrush( target_brush );
         
