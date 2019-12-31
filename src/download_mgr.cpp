@@ -645,8 +645,12 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
         void Reload()
         {
+            Hide();
             m_grid->Clear();
             populateGrid(m_grid);
+            Layout();
+            Show();
+            Refresh(true);
         }
 
     private:

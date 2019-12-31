@@ -316,11 +316,11 @@ class CatalogUpdate: public wxDialog, Helpers
                 std::string message;
                 if (status != CatalogHandler::ServerStatus::OK) {
                     message = "Cannot download data form url";
-                } 
+                }
                 status = handler->ParseCatalog(xml.str(), true);
                 if (status != CatalogHandler::ServerStatus::OK) {
                     message = "Cannot parse downloaded data";
-                } 
+                }
                 if (message != "") {
                     wxMessageBox(message,
                                  "catalog update problem",
@@ -330,7 +330,7 @@ class CatalogUpdate: public wxDialog, Helpers
                     UpdateVersions();
                 }
             }
- 
+
             std::string GetPrivateCatalogPath()
             {
                 auto plugin_handler = PluginHandler::getInstance();
