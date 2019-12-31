@@ -16,10 +16,9 @@ Build-Depends: debhelper (>= 9),
  libsndfile1-dev,
  libsqlite3-dev,
  libtinyxml-dev,
- libunarr-dev | base-files (<< 11),
  libwxgtk3.0-dev,
  libwxgtk3.0-0v5 | libwxgtk3.0-0,
- libwxgtk-webview3.0-dev | base-files (<< 9),
+ libwxgtk-webview3.0-dev | base-files (<< 11),
  libwxsvg-dev | base-files (<< 11),
  portaudio19-dev
 
