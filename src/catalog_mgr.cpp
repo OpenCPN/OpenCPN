@@ -294,7 +294,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 UpdateVersion(grid, data, 5);
                 data = CatalogHandler::getInstance()->LatestCatalogData();
                 UpdateVersion(grid, data, 9);
-                Refresh();
+                Refresh(true);
                 Update();
             }
 
