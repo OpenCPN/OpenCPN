@@ -2961,36 +2961,33 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     scale_factor *=  g_ChartScaleFactorExp;
     scale_factor *= g_scaminScale;
     
-    //  Set the onscreen size of the symbol
-    //  Compensate for various display resolutions
-    //  Develop empirically, making a buoy about 4 mm tall
-    double boyHeight = 21. / GetPPMM();           // from raster symbol definitions, boylat is xx pix high
-    
-    double targetHeight0 = 4.0;  
-    
-    // But we want to scale the size for smaller displays
-    double displaySize = m_display_size_mm;
-    displaySize = wxMax(displaySize, 100);
-    
-    float targetHeight = wxMin(targetHeight0, displaySize / 30);
-    
-    double pix_factor = targetHeight / boyHeight;
-    
-    
-    
-    //qDebug() << "scaleing" << m_display_size_mm  << targetHeight0 << targetHeight << GetPPMM() << boyHeight << pix_factor;
-    
-    // for Hubert, and my moto 
-    //scaleing 93.98 93 4 3.33333 12.7312 1.64949 2.02082
-    
-    // My nvidia tab
-    //scaleing 144.78 144 4 4 12.6667 1.65789 2.4127
-    
-    // judgement: all OK
-    
-    
-    
-    scale_factor *= pix_factor;
+    if(m_display_size_mm < 200){                //about 8 inches, implying some sort of smaller mobile device
+        //  Set the onscreen size of the symbol
+        //  Compensate for various display resolutions
+        //  Develop empirically, making a buoy about 4 mm tall
+        double boyHeight = 21. / GetPPMM();           // from raster symbol definitions, boylat is xx pix high
+        
+        double targetHeight0 = 4.0;  
+        
+        // But we want to scale the size for smaller displays
+        double displaySize = m_display_size_mm;
+        displaySize = wxMax(displaySize, 100);
+        
+        float targetHeight = wxMin(targetHeight0, displaySize / 30);
+        
+        double pix_factor = targetHeight / boyHeight;
+        
+        //qDebug() << "scaleing" << m_display_size_mm  << targetHeight0 << targetHeight << GetPPMM() << boyHeight << pix_factor;
+        
+        // for Hubert, and my moto 
+        //scaleing 93.98 93 4 3.33333 12.7312 1.64949 2.02082
+        // My nvidia tab
+        //scaleing 144.78 144 4 4 12.6667 1.65789 2.4127
+        // judgement: all OK
+        
+        
+        scale_factor *= pix_factor;
+    }
     
     if(g_oz_vector_scale && vp->b_quilt){
         double sfactor = vp->ref_scale/vp->chart_scale;
