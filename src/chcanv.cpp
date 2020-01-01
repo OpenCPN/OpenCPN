@@ -1514,9 +1514,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
     if(ChartData->IsBusy())
         return false;
     
-    int last_nEntry = -1;
     if( m_pCurrentStack )
-        last_nEntry = m_pCurrentStack->nEntry;
     
     //    Startup case:
     //    Quilting is enabled, but the last chart seen was not quiltable
@@ -4394,7 +4392,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     {
         b_do_zoom = true;
 
-        double zoom_factor = factor;
+        //double zoom_factor = factor;
 
         ChartBase *pc = NULL;
 
@@ -4431,8 +4429,6 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
         
     } else if(factor < 1) {
-        double zoom_factor = 1/factor;
-
         b_do_zoom = true;
 
         ChartBase *pc = NULL;
@@ -4682,7 +4678,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     extendedSectorLegs.clear();
 
-    double clat = VPoint.clat, clon = VPoint.clon;
+    //double clat = VPoint.clat, clon = VPoint.clon;
     double dlat, dlon;
     wxPoint2DDouble p(VPoint.pix_width / 2.0, VPoint.pix_height / 2.0);
 
@@ -6013,7 +6009,7 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
 
     double nlat, elon, slat, wlon;
     float lat, lon;
-    float dlat, dlon;
+    float dlon;
     float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
     wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxPENSTYLE_SOLID );
@@ -6026,7 +6022,6 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
 
     GetCanvasPixPoint( 0, 0, nlat, wlon ); // get lat/lon of upper left point of the window
     GetCanvasPixPoint( w, h, slat, elon ); // get lat/lon of lower right point of the window
-    dlat = nlat - slat; // calculate how many degrees of latitude are shown in the window
     dlon = elon - wlon; // calculate how many degrees of longitude are shown in the window
     if( dlon < 0.0 ) // concider datum border at 180 degrees longitude
     {
@@ -6858,7 +6853,6 @@ bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
 bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 {
     int x, y;
-    int mx, my;
 
     bool bret = false;
     
@@ -6878,8 +6872,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     mouse_x = x;
     mouse_y = y;
     mouse_leftisdown = event.LeftDown();
-    mx = x;
-    my = y;
     GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
 
     //  Establish the event region
@@ -7448,8 +7440,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         }
         
         //      Double tap with selected RoutePoint or Mark
-        bool bt1 = m_bMarkEditing;
-        RoutePoint *pp = m_pRoutePointEditTarget;
         
         if(m_pRoutePointEditTarget){
             if( b_onRPtarget ) {
@@ -7710,11 +7700,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             
             else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
             {
-                double rlat, rlon;
-                
                 SetCursor( *pCursorPencil );
-                rlat = m_cursor_lat;
-                rlon = m_cursor_lon;
                 
                 if( m_nMeasureState == 1 ) {
                     m_pMeasureRoute = new Route();
@@ -7995,7 +7981,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     
     if( event.LeftUp() ) {
         bool b_startedit_route = false;
-        bool b_startedit_mark = false;
         m_dragoffsetSet = false;
 
         if(g_btouch) {
@@ -8163,11 +8148,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     m_bedge_pan = false;
                     return false;
                 }
-                
-                double rlat, rlon;
-                
-                rlat = m_cursor_lat;
-                rlon = m_cursor_lon;
                 
                 if( m_nMeasureState == 1 ) {
                     m_pMeasureRoute = new Route();
@@ -8967,8 +8947,8 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
         pRoutePropDialog->SetSize( fitted_size );
         pRoutePropDialog->Centre();
 
-        int xp = (canvas_size.x - fitted_size.x)/2;
-        int yp = (canvas_size.y - fitted_size.y)/2;
+//        int xp = (canvas_size.x - fitted_size.x)/2;
+//        int yp = (canvas_size.y - fitted_size.y)/2;
 
         wxPoint xxp = ClientToScreen(canvas_pos);
 //        pRoutePropDialog->Move(xxp.x + xp, xxp.y + yp);
@@ -9606,13 +9586,10 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         (m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 )) ) {
 
         Route* route = 0;
-        int state;
         if( m_pMeasureRoute ) {
             route = m_pMeasureRoute;
-            state = m_nMeasureState;
         } else {
             route = m_pMouseRoute;
-            state = m_routeState;
         }
         
         if(!route)
@@ -12345,7 +12322,6 @@ void ChartCanvas::UpdateAISTBTool( void )
     if(!g_pAIS) return;
     if(!m_toolBar) return;
     
-    bool b_need_refresh = false;
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     
     wxString iconName;

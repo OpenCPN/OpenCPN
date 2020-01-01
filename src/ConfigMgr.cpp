@@ -830,7 +830,6 @@ wxPanel *ConfigMgr::GetConfigPanel( wxWindow *parent, wxString GUID )
 OCPNConfigObject *ConfigMgr::GetConfig( wxString GUID )
 {
     // Find the GUID-matching config in the member list
-    OCPNConfigObject *config = NULL;
     for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
     {
         OCPNConfigObject *look = node->GetData();
@@ -879,9 +878,6 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
     
     //  Found it?
     if(config){
-        // Record current canvas config
-        unsigned int last_canvasConfig = g_canvasConfig;
-        
         wxString thisConfig = GetConfigDir() + config->templateFileName;
 
         // Special case for Recovery template

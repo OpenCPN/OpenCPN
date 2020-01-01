@@ -495,7 +495,6 @@ void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, doubl
 
       const double s0 = sin(lat0 * DEGREE);
       const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
-      const double y4 = y3 - y30;
 
     //Add eccentricity terms
 
@@ -971,9 +970,6 @@ void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon
 
       dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
 
-      const double dh = (dx * clat * clon) + (dy * clat * slon) + (dz * slat)
-                  - (da * (from_a / rn)) + ((df * rn * ssqlat) / adb);
-
     } 
     
     *to_lon = lon + dlon/DEGREE;
@@ -1055,7 +1051,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
     int ellipse;
     double geod_f;
     double geod_a;
-    double es, onef, f, f64, f2, f4;
+    double es, onef, f, f4;
     
     /*      Setup the static parameters  */
     phi1 = lat * DEGREE;            /* Initial Position  */
@@ -1077,9 +1073,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
         es = 2 * f - f * f;
         onef = sqrt(1. - es);
         geod_f = 1 - onef;
-        f2 = geod_f/2;
         f4 = geod_f/4;
-        f64 = geod_f*geod_f/64;
         
         al12 = adjlon(al12); /* reduce to  +- 0-PI */
         signS = fabs(al12) > HALFPI ? 1 : 0;
@@ -1196,13 +1190,6 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
         return;
     }
     else{
-       
-        double distance, az;
-        double lat1r = lat1 * DEGREE;
-        double lat2r = lat2 * DEGREE;
-        double lon1r = lon1 * DEGREE;
-        double lon2r = lon2 * DEGREE;
-        
         /*   Input/Output from geodesic functions   */
         double al12;           /* Forward azimuth */
         double al21;           /* Back azimuth    */
@@ -1349,7 +1336,8 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
     //void geod_inv(struct georef_state *state)
     {
         double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
-        sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
+        sindthm,L,E,cosd,d,X,Y,T,sind,D,A,B;
+	//double    tandlammp,u,v;
         
         
         /*   Stuff the WGS84 projection parameters as necessary
@@ -1406,9 +1394,9 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
               geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
                           f64 * (X * (A + (T - .5 * (A - E)) * X) -
                           Y * (B + E * Y) + D * X * Y));
-              tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
-                          (f2 * T + f64 * (32. * T - (20. * T - A)
-                          * X - (B + 4.) * Y)) * tan(dlam)));
+//              tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
+//                          (f2 * T + f64 * (32. * T - (20. * T - A)
+//                          * X - (B + 4.) * Y)) * tan(dlam)));
         } else {
             geod_S = geod_a * d;
 //            tandlammp = tan(dlamm);

@@ -28,7 +28,7 @@
     <CheckBoxPreference
         android:key="prefb_showoutlines"
         android:title="Show Chart Outlines"
-        android:summary="Individual chart outlines shown as constrasting overlay"
+        android:summary="Individual chart outlines shown as contrasting overlay"
         android:defaultValue="false" />
 
     <CheckBoxPreference

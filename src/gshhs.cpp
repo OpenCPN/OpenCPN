@@ -765,7 +765,6 @@ GshhsPolyReader::~GshhsPolyReader()
 //-------------------------------------------------------------------------
 int GshhsPolyReader::ReadPolyVersion()
 {
-    char txtn = 'c';
     wxString fname = GshhsReader::getFileName_Land( 0 );
     if( fpoly ) fclose( fpoly );
     fpoly = fopen( fname.mb_str(), "rb" );

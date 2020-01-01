@@ -621,8 +621,6 @@ void Track::Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     if(!pointlists.size())
         return;
 
-    unsigned short int FromSegNo = 1;
-
     //  Establish basic colour
     wxColour basic_colour;
     if( IsRunning() )

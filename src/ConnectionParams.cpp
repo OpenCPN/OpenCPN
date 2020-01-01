@@ -903,13 +903,8 @@ void ConnectionParamsPanel::OnPaint( wxPaintEvent &event )
         
         dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
         
-        int base_offset = height / 10;
-        
         // Draw the thumbnail
-        int scaledWidth = height;
         
-        
-        int text_x = scaledWidth * 12 / 10;
         dc.SetTextForeground(wxColour(0,0,0));
     }
     else{
@@ -921,8 +916,6 @@ void ConnectionParamsPanel::OnPaint( wxPaintEvent &event )
         int offset = height / 10;
         dc.DrawRectangle( offset, offset, width - (2 * offset), height - (2 * offset));
 
-        int scaledWidth = height;
-        
         dc.SetTextForeground(wxColour(128, 128, 128));
     }
     

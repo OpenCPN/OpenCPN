@@ -69,7 +69,6 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     bool bshared = false;
     bool b_propvizname = false;
     bool b_propviz = false;
-    bool bviz_waypointrangerings = false;
 
     wxString SymString = def_symbol_name;       // default icon
     wxString NameString;
@@ -1067,8 +1066,6 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
-    
-    unsigned short int GPXTrkSegNo1 = 1;
     
     while( node2  ) {
         prp = node2->GetData();

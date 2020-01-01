@@ -261,6 +261,7 @@ ViewPort            s_tessVP;
 #endif
 
 
+#if 0
 /* for debugging */
 static void print_region(OCPNRegion &Region)
 {
@@ -272,6 +273,7 @@ static void print_region(OCPNRegion &Region)
         upd.NextRect();
     }
 }
+#endif
 
 GLboolean QueryExtension( const char *extName )
 {
@@ -2519,9 +2521,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     
         if( m_pParentCanvas->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
         {
-            double nominal_line_width_pix = wxMax(1.0, floor(m_pParentCanvas->GetPixPerMM() / 2 ));             //0.5 mm nominal, but not less than 1 pixel
-        
-
             float scale_factor = 1.0;
         // Scale the generic icon to ChartScaleFactor, slightly softened....
             if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 ))
@@ -2637,8 +2636,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 //            glEnableClientState(GL_VERTEX_ARRAY);
 
             int x = lShipMidPoint.x, y = lShipMidPoint.y;
-            float deg = 180/PI * ( icon_rad - PI/2 );
-
         
             // Scale the generic icon to ChartScaleFactor, slightly softened....
             if((g_ShipScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
@@ -2806,7 +2803,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
     //  Draw any active or selected routes now
     extern Routeman                  *g_pRouteMan;
-    extern Track                     *g_pActiveTrack;
+//    extern Track                     *g_pActiveTrack;
     Route *active_route = g_pRouteMan->GetpActiveRoute();
 
 //    if( active_route ) active_route->DrawGL( vp, region );
@@ -3586,7 +3583,6 @@ void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_
             QuiltPatch *pqp = m_pParentCanvas->m_pQuilt->GetCurrentPatch();
             if( pqp->b_Valid ) {
                 LLRegion get_region = pqp->ActiveRegion;
-                bool b_rendered = false;
                 
                 if( !pqp->b_overlay ) {
                     if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
@@ -5547,7 +5543,7 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
         m_runswidth = m_lastfbo_swidth;
         m_runsheight = m_lastfbo_sheight;
     }
-    
+
     if(!zoomTimer.IsRunning())
         zoomTimer.Start(m_nStep);
         m_zoomFinal = false;

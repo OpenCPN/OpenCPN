@@ -847,7 +847,7 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
         
-        int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
+        int w = r1.width, h = r1.height;
         
         float scale = 1.0;
         if(!m_bPreScaled){

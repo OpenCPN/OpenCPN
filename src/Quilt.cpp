@@ -1301,8 +1301,6 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort 
         //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
 
         if(  cte.Scale_ge( reference_scale) || ( zoom_factor > .2 ) ) {
-            bool b_add = true;
-
             //    Special case for S57 ENC
             //    Add the chart only if the chart's fractional area exceeds n%
             /* if( CHART_TYPE_S57 == reference_type ) { 
@@ -1409,7 +1407,6 @@ int Quilt::AdjustRefSelection(const ViewPort &vp_in)
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
     vp_local.SetRotationAngle( 0. );
  
-    bool bfull = vp_in.b_FullScreenQuilt;
     BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
     
     ChartFamilyEnum family = CHART_FAMILY_RASTER;
@@ -1453,7 +1450,7 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     }
 
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
-    double saved_vp_rotation = vp_local.rotation;                      // save a copy
+    //double saved_vp_rotation = vp_local.rotation;                      // save a copy
     vp_local.SetRotationAngle( 0. );
 
     BuildExtendedChartStackAndCandidateArray(tentative_ref_index, vp_local);
@@ -2765,7 +2762,6 @@ bool Quilt::DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, O
         //  Walk the quilt, drawing each chart from largest scale to smallest
         
         ChartBase *chart = GetLargestScaleChart();
-        int chartsDrawn = 0;
         
         while( chart ) {
                 QuiltPatch *pqp = GetCurrentPatch();

@@ -707,7 +707,6 @@ static void *DEPARE01(void *param)
 
    //   Create a string of the proper color reference
 
-    bool shallow  = TRUE;
     wxString rule_str =_T("AC(DEPIT)");
 
 
@@ -720,7 +719,6 @@ static void *DEPARE01(void *param)
             drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
     }
     else
@@ -733,14 +731,12 @@ static void *DEPARE01(void *param)
                 drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
 
         if (drval1 >= S52_getMarinerParam(S52_MAR_DEEP_CONTOUR)  &&
                 drval2 >  S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
 
     }
@@ -753,7 +749,6 @@ static void *DEPARE01(void *param)
         if (!drval1_found) //If DRVAL1 was not defined...
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
         rule_str.Append(_T(";AP(DRGARE01)"));
         rule_str.Append(_T(";LS(DASH,1,CHGRF)"));
@@ -822,7 +817,6 @@ static void *DEPCNT02 (void *param)
 //      int      objl      = 0;
 //      GString *quaposstr = NULL;
 //      int      quapos    = 0;
-      double   depth_value;
       double drval1, drval2;
       bool safe = FALSE;
       wxString rule_str;
@@ -898,8 +892,6 @@ static void *DEPCNT02 (void *param)
                               */
             }
 
-            depth_value = drval1;
-
       }
       else
       {
@@ -908,8 +900,6 @@ static void *DEPCNT02 (void *param)
             GetDoubleAttr(obj, "VALDCO", valdco);
 //            GString *valdcostr = S57_getAttVal(geo, "VALDCO");
 //            double   valdco    = (NULL == valdcostr) ? 0.0 : atof(valdcostr->str);
-
-            depth_value = valdco;
 
             if (valdco == safety_contour)
                   safe = TRUE;   // this is useless !?!?

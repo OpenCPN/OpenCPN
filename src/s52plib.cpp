@@ -608,7 +608,6 @@ bool s52plib::GetAnchorOn()
     //  Investigate and report the logical condition that "Anchoring Condition" is shown
     
     int old_vis =  0;
-    OBJLElement *pOLE = NULL;
         
     if(  MARINERS_STANDARD == GetDisplayCategory()){
         old_vis = m_anchorOn;
@@ -629,8 +628,7 @@ bool s52plib::GetQualityOfData()
     //  Investigate and report the logical condition that "Quality of Data Condition" is shown
     
     int old_vis =  0;
-    OBJLElement *pOLE = NULL;
-        
+
     if(  MARINERS_STANDARD == GetDisplayCategory()){
             for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
                 OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
@@ -2674,7 +2672,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 
 //            if ( rzRules->obj->Primitive_type == GEO_POINT )
         {
-            double latmin, lonmin, latmax, lonmax, extent = 0;
+            double latmin, lonmin, latmax, lonmax;
 
             GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &latmin, &lonmin, vp );
             GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &latmax, &lonmax, vp );
@@ -2721,10 +2719,6 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         // assume the symbol length 
         float sym_length = 30;
         float scaled_length = sym_length / vp->view_scale_ppm;
-        
-        double fac1 = scaled_length / fsf;
-        
-        
         float target_length = 1852;
         
         xscale = target_length / scaled_length;
@@ -3574,10 +3568,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double margin = BBView.GetLonRange() * .05;
     BBView.EnLarge( margin );
 
-    //  Try to determine if the feature needs to be drawn in the most efficient way
-    //  We need to look at priority and visibility of each segment
-    int bdraw = 0;
-    
     //  Get the current display priority
     //  Default comes from the LUP, unless overridden
     int priority_current = rzRules->LUP->DPRI - '0';
@@ -3643,8 +3633,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else
         glDisable( GL_LINE_STIPPLE );
 #endif    
-        
-    GLuint textureDot = -1;
 
 
 #ifndef USE_ANDROID_GLES2
@@ -4951,7 +4939,6 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         wxPoint lp;
         float *ppt;
         
-        int direction = 1;
         int ndraw = 0;
         while(ls){
             if( ls->priority == priority_current  ) {  
@@ -5051,7 +5038,6 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     index = 0;
                     idouble = 0;
                     lp = wxPoint(0,0);
-                    direction = 1;
                 }
                 
                 
@@ -5154,8 +5140,6 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         VE_Hash *ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash; 
         VC_Hash *vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
-        
-        VE_Element *ptedge = (*ve_hash)[0];
         
         unsigned int nls_max;
         if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load
@@ -5327,8 +5311,6 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
     if( rzRules->obj->m_ls_list_legacy )
     {
-        float *ppt;
-        
         VE_Element *pedge;
         PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
         
@@ -6198,9 +6180,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     // Let us declare that the width of the arc should be no less than X mm
     float wx = 1.0;
     
-    float pd_scale = 1.0;
+    //float pd_scale = 1.0;
     float nominal_arc_width_pix = wxMax(1.0, floor(GetPPMM() * wx));             // { wx } mm nominal, but not less than 1 pixel
-    pd_scale = nominal_arc_width_pix / arc_width;
+    //pd_scale = nominal_arc_width_pix / arc_width;
     
     //scale_factor *= pd_scale;
     //qDebug() << GetPPMM() << arc_width << nominal_arc_width_pix << pd_scale;
@@ -7320,14 +7302,12 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
 
     //      Create edge arrays using fast integer DDA
     int m, x, dy, count;
-    bool dda8 = false;
     bool cw;
 
     if( ( abs( xmax - xmin ) > 32768 ) || ( abs( xmid - xmin ) > 32768 )
             || ( abs( xmax - xmid ) > 32768 ) || ( abs( ymax - ymin ) > 32768 )
             || ( abs( ymid - ymin ) > 32768 ) || ( abs( ymax - ymid ) > 32768 ) || ( xmin > 32768 )
             || ( xmid > 32768 ) ) {
-        dda8 = true;
 
         dy = ( ymax - ymin );
         if( dy ) {
@@ -8138,10 +8118,6 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
         wxPoint *ptp = (wxPoint *) malloc(
                 ( obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof(wxPoint) );
 
-        //  Allow a little slop in calculating whether a triangle
-        //  is within the requested Viewport
-        double margin = BBView.GetLonRange() * .05;
-
         PolyTriGroup *ppg = obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
         TriPrim *p_tp = ppg->tri_prim_head;
@@ -8847,8 +8823,6 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     double z_clip_geom = 1.0;
     double z_tex_geom = 0.;
-
-    GLuint clip_list = 0;
 
     LLBBox BBView = vp->GetBBox();
 
@@ -10709,8 +10683,6 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
 
 void s52plib::SetAnchorOn(bool val)
 {
-    OBJLElement *pOLE = NULL;
-            
     const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
     unsigned int num = sizeof(categories) / sizeof(categories[0]);
             

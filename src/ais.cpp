@@ -579,19 +579,6 @@ static void TargetFrame( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
-static void Draw_Triangle_PointUp( ocpnDC &dc, int x, int y, int base)
-	{
-		dc.DrawLine( x - base, y , x + base, y  );
-		dc.DrawLine( x + base, y , x , y - base );
-		dc.DrawLine( x , y - base, x - base, y );
-	}
-static void Draw_Triangle_PointDown( ocpnDC &dc, int x, int y, int base)
-	{
-		dc.DrawLine( x , y , x + base, y - base );
-		dc.DrawLine( x + base, y - base , x - base, y - base );
-		dc.DrawLine( x - base, y - base, x , y );
-	}
-
 static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data* td )
 {    
 	//    Constants?
