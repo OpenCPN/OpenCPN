@@ -129,7 +129,7 @@ class CatalogUpdate: public wxDialog, Helpers
             sizer->Add(m_url_box, flags);
             sizer->Add(new wxStaticLine(this), flags);
 
-            auto done = makeButton("Done");
+            auto done = makeButton(_("Done"));
             sizer->Add(done, wxSizerFlags().Border().Right());
             done->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=] (wxCommandEvent e) {
                 EndModal(wxID_OK);
@@ -139,20 +139,18 @@ class CatalogUpdate: public wxDialog, Helpers
             });
             toggleUrlEdit();
 
-
-            SetSizer(sizer);
-            auto size = getWindowSize();
-            size.SetHeight(1);
-            SetMinClientSize(size);
-
             Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent& e) {
                 EndModal(wxID_OK);
                 wxCommandEvent cmd_evt(CATALOG_DLG_CLOSE);
                 wxPostEvent(GetParent(), cmd_evt);
                 e.Skip();
             });
-            parent->Hide();
 
+            SetSizer(sizer);
+            auto size = getWindowSize();
+            size.SetHeight(1);
+            SetMinClientSize(size);
+            parent->Hide();
             Fit();
             ShowModal();
         }
@@ -191,6 +189,7 @@ class CatalogUpdate: public wxDialog, Helpers
             m_advanced->SetLabelMarkup(m_show_edit ? HIDE : ADVANCED);
             Fit();
         }
+
         /** The Url Status line at top */
         struct UrlStatus: public wxPanel, public Helpers
         {
@@ -210,7 +209,6 @@ class CatalogUpdate: public wxDialog, Helpers
                 Show();
             }
         };
-
 
         /**
          * Active catalog: The current active, the default and latest
@@ -300,7 +298,6 @@ class CatalogUpdate: public wxDialog, Helpers
 
             std::string GetDefaultCatalogPath()
             {
-                auto plugin_handler = PluginHandler::getInstance();
                 std::string path
                     = g_Platform->GetSharedDataDir().ToStdString();
                 path += SEP ;
@@ -315,15 +312,15 @@ class CatalogUpdate: public wxDialog, Helpers
                 auto status = handler->DownloadCatalog(&xml);
                 std::string message;
                 if (status != CatalogHandler::ServerStatus::OK) {
-                    message = "Cannot download data form url";
+                    message = _("Cannot download data from url");
                 }
                 status = handler->ParseCatalog(xml.str(), true);
                 if (status != CatalogHandler::ServerStatus::OK) {
-                    message = "Cannot parse downloaded data";
+                    message = _("Cannot parse downloaded data");
                 }
                 if (message != "") {
                     wxMessageBox(message,
-                                 "catalog update problem",
+                                 _("Catalog update problem"),
                                  wxICON_ERROR);
                 }
                 else {
@@ -334,10 +331,9 @@ class CatalogUpdate: public wxDialog, Helpers
             std::string GetPrivateCatalogPath()
             {
                 auto plugin_handler = PluginHandler::getInstance();
-                std::string path
-                    = g_Platform->GetPrivateDataDir().ToStdString();
-                path += SEP ;
-                path += "ocpn-plugins.xml";
+                std::string path =
+                    g_Platform->GetPrivateDataDir().ToStdString();
+                path += SEP + "ocpn-plugins.xml";
                 return path;
             }
 
@@ -358,7 +354,6 @@ class CatalogUpdate: public wxDialog, Helpers
                catalog->ClearCatalogData();
                UpdateVersions();
             }
-
         };
 
         /** The buttons below custom url: Use Default and Update. */
@@ -394,8 +389,7 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void useDefaultUrl()
             {
-                auto handler = CatalogHandler::getInstance();
-                auto url = handler->GetDefaultUrl();
+                auto url = CatalogHandler::getInstance()->GetDefaultUrl();
                 m_parent->m_url_edit->setText(url);
             }
 
@@ -413,7 +407,6 @@ class CatalogUpdate: public wxDialog, Helpers
 
             ActiveCatalogGrid* m_catalog_grid;
             CatalogUpdate* m_parent;
-
         };
 
 
@@ -459,7 +452,6 @@ class CatalogUpdate: public wxDialog, Helpers
             std::string m_active_channel;
             ActiveCatalogGrid* m_catalog_grid;
         };
-
 
 
         /** Custom url edit control, a text line. */
@@ -517,7 +509,6 @@ class CatalogLoad: public wxPanel, public Helpers
         CatalogLoad(wxWindow* parent, bool use_latest = false)
             :wxPanel(parent), Helpers(this), m_simple(use_latest)
         {
-
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border() ;
             m_grid = new DialogGrid(this);
@@ -561,7 +552,7 @@ class CatalogLoad: public wxPanel, public Helpers
         {
             m_grid->CellDone(ev, 5);
             if (m_simple) {
-                std::string message = "Catalog updated";
+                std::string message =_("Catalog updated").ToStdString();
                 std::string path =
                     g_Platform->GetPrivateDataDir().ToStdString();
                 path += SEP;
@@ -587,7 +578,6 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
-                wxLogMessage("Running CatalogUpdate.");
                 new CatalogUpdate(this);
             }
         }
@@ -626,7 +616,7 @@ class CatalogLoad: public wxPanel, public Helpers
             }
         }
 
-        /** grid with  Server is Reachable..., Check channel... etc. */
+        /** Grid with  Server is Reachable..., Check channel... etc. */
         struct DialogGrid: public wxPanel, public Helpers
         {
             DialogGrid(wxWindow* parent): wxPanel(parent), Helpers(this)
@@ -655,7 +645,7 @@ class CatalogLoad: public wxPanel, public Helpers
             /* Update status values in grid. */
             void CellDone(const wxCommandEvent& event, size_t index)
             {
-                wxLogMessage("CellDone: event %d", event.GetInt());
+                //wxLogMessage("CellDone: event %d", event.GetInt());
                 auto cell = GetSizer()->GetItem(index)->GetWindow();
                 auto code = static_cast<catalog_status>(event.GetInt());
                 if (code == catalog_status::OK) {
@@ -721,11 +711,8 @@ AdvancedCatalogDialog::AdvancedCatalogDialog(wxWindow* parent)
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
     vbox->Add(new catalog_mgr::CatalogLoad(this, false),
               wxSizerFlags(1).Expand());
-    Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent& e) { Destroy(); });
-    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) {
-            wxLogMessage("CLOSING: CatalogLoad");
-            Destroy();
-    });
+    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& e) { Destroy(); });
+    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) { Destroy(); });
     SetSizer(vbox);
 
     Fit();
