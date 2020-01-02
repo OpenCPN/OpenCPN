@@ -491,10 +491,10 @@ void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, doubl
 
 // y =.5 ln( (1 + sin t) / (1 - sin t) )
       const double s = sin(lat * DEGREE);
-      const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+      //const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
 
       const double s0 = sin(lat0 * DEGREE);
-      const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+      //const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
 
     //Add eccentricity terms
 
@@ -1318,15 +1318,15 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         return d5;    
     
     /*   Input/Output from geodesic functions   */
-    double al12;           /* Forward azimuth */
-    double al21;           /* Back azimuth    */
+    //double al12;           /* Forward azimuth */
+    //double al21;           /* Back azimuth    */
     double geod_S;         /* Distance        */
     double phi1, lam1, phi2, lam2;
     
     int ellipse;
     double geod_f;
     double geod_a;
-    double es, onef, f, f64, f2, f4;
+    double es, onef, f, f64, f4;
     
     phi1 = slat * DEGREE;
     lam1 = slon * DEGREE;
@@ -1351,7 +1351,7 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         es = 2 * f - f * f;
         onef = sqrt(1. - es);
         geod_f = 1 - onef;
-        f2 = geod_f/2;
+        //f2 = geod_f/2;
         f4 = geod_f/4;
         f64 = geod_f*geod_f/64;
         
@@ -1367,7 +1367,6 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         dthm = .5 * (th2 - th1);
         dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
         if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
-            al12 =  al21 = geod_S = 0.;
             return 0.0;
         }
         sindlamm = sin(dlamm);

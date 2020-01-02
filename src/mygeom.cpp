@@ -545,8 +545,6 @@ int PolyTessGeo::BuildTessGLU()
       }
 
       //  Apply LOD reduction
-    int beforeLOD = ptValid;
-   
  
     if(ptValid > 20 && (m_LOD_meters > .01)) {
         std::vector<bool> bool_keep(ptValid, false);
@@ -574,8 +572,6 @@ int PolyTessGeo::BuildTessGLU()
                 kept_LOD++;
             }
         }
-
-        beforeLOD = ptValid;
 
         // Copy the lod points back into the vertex buffer
         memcpy(geoPt, LOD_result, kept_LOD * 3 * sizeof(double));

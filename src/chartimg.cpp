@@ -2223,8 +2223,7 @@ bool ChartBaseBSB::CreateLineIndex()
     {
         int offset = ifs_bitmap->TellI();
 
-        int iscan;
-        iscan = BSBScanScanline(ifs_bitmap);
+        int iscan = BSBScanScanline(ifs_bitmap);
 
         //  There is no sense reporting an error here, since we are recreating after an error
 /*

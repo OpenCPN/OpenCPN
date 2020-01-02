@@ -1174,7 +1174,6 @@ void ocpnFloatingToolbarDialog::Realize()
                 for( wxToolBarToolsList::compatibility_iterator node = m_ptoolbar->m_tools.GetFirst(); node; node = node->GetNext() ) {
                     wxToolBarToolBase *tool = node->GetData();
                     ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
-                    wxRect toolRect = tools->trect;
 
                     sdc.DrawRoundedRectangle( tools->m_x, tools->m_y, tool_size.x, tool_size.y,
                                               m_style->GetToolbarCornerRadius() );
