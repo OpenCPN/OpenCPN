@@ -487,14 +487,14 @@ class CatalogLoad: public wxPanel, public Helpers
             m_grid = new DialogGrid(this);
             sizer->Add(m_grid, flags);
             sizer->Add(1, 1, 1, wxEXPAND);   // Expanding spacer
-            m_buttons = new Buttons(this);
-            sizer->Add(m_buttons, flags.Bottom().Right());
-
+            if (m_simple) {
+                m_buttons = new Buttons(this);
+                sizer->Add(m_buttons, flags.Bottom().Right());
+            }
             auto size = GetTextExtent(_("Check latest release..."));
             size.SetHeight(size.GetHeight() * 10);
             size.SetWidth(size.GetWidth() * 5 / 2);
             SetMinClientSize(size);
-
             std::thread worker([=]() { Worker(); });
             worker.detach();
 
@@ -642,6 +642,8 @@ class CatalogLoad: public wxPanel, public Helpers
         {
             Buttons(wxWindow* parent) : wxPanel(parent)
             {
+                using CmdEvt = wxCommandEvent;
+
                 auto sizer = new wxBoxSizer(wxHORIZONTAL);
                 auto flags = wxSizerFlags().Right().Bottom().Border();
                 sizer->Add(1, 1, 100, wxEXPAND);   // Expanding spacer
@@ -652,6 +654,7 @@ class CatalogLoad: public wxPanel, public Helpers
                 sizer->Add(m_ok, flags);
                 SetSizer(sizer);
                 Fit();
+                SetFocus();
                 Show();
             }
 
@@ -674,14 +677,15 @@ class CatalogLoad: public wxPanel, public Helpers
 
 
 /** Top-level plugin catalog dialog. */
-CatalogDialog::CatalogDialog(wxWindow* parent, bool simple)
-    :wxDialog(parent, wxID_ANY, _("Catalog Manager"),
+AdvancedCatalogDialog::AdvancedCatalogDialog(wxWindow* parent)
+    :wxFrame(parent, wxID_ANY, _("Catalog Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+              wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER)
 {
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
-    vbox->Add(new catalog_mgr::CatalogLoad(this, simple),
+    vbox->Add(new catalog_mgr::CatalogLoad(this, false),
               wxSizerFlags(1).Expand());
+    Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent& e) { Destroy(); });
     Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) {
             wxLogMessage("CLOSING: CatalogLoad");
             Destroy();
@@ -689,5 +693,26 @@ CatalogDialog::CatalogDialog(wxWindow* parent, bool simple)
     SetSizer(vbox);
 
     Fit();
+    Center();
     Show();
 }
+
+SimpleCatalogDialog::SimpleCatalogDialog(wxWindow* parent)
+    :wxDialog(parent, wxID_ANY, _("Catalog Manager"),
+              wxDefaultPosition , wxDefaultSize,
+              wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER)
+{
+    auto vbox = new wxBoxSizer(wxHORIZONTAL);
+    vbox->Add(new catalog_mgr::CatalogLoad(this, true),
+              wxSizerFlags(1).Expand());
+    Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { EndModal(wxID_OK); });
+    Bind(CATALOG_DLG_CLOSE, [&](wxCommandEvent& ev) { EndModal(wxID_OK); });
+    SetSizer(vbox);
+
+    Fit();
+    ShowModal();
+    Destroy();
+}
+
+
+
