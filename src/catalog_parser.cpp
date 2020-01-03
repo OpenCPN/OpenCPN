@@ -101,7 +101,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
             ctx->date = ocpn::trim(buff);
         }
     }
-    
+
     else if (strcmp(name, "name") == 0) {
        ctx->plugin->name = ocpn::trim(buff);
     } else if (strcmp(name, "version") == 0) {
@@ -140,7 +140,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
     if (strcmp(name, "plugin") == 0) {
         if(!ctx->plugin)
             return;
-    
+
         //  Add a new plugin if required, otherwise merge the tentative plugin metadata
         bool bmerged = false;
         for(auto candidatePlugin: ctx->plugins) {
@@ -152,7 +152,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
                 break;
             }
         }
-        
+
         // No match found, must be a "new" plugin, so add this one
         if(!bmerged){
             ctx->plugins.push_back(*ctx->plugin);
@@ -180,7 +180,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         ok = false;
     }
     XML_ParserFree(parser);
-    
+
     // Now look for embedded meta info redirection tags, semi-recursively
     unsigned int index = 0;
     while(index < ctx->plugins.size()){
@@ -192,9 +192,9 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
             if (stat == CatalogHandler::ServerStatus::OK) {
                 std::ifstream ifpath(filePath);
                 std::string xml((std::istreambuf_iterator<char>(ifpath)), std::istreambuf_iterator<char>());
-                
+
                 //TODO  Should validate the XML against the XSD schema here....
-                
+
                 XML_Parser parser = XML_ParserCreate(NULL);
                 ctx->buff.clear();
                 ctx->depth = 0;
@@ -221,7 +221,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         else
             index++;
     }
-        
+
     if (ctx->plugins.size() == 0) {
         wxLogWarning("ParseCatalog: No plugins found.");
         ok = false;
