@@ -54,6 +54,9 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 #undef major                // walk around gnu's major() and minor() macros.
 #undef minor
 
+// Main window reload event
+wxDEFINE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
+
 namespace download_mgr {
 
 /**
@@ -217,11 +220,6 @@ class PluginIconPanel: public wxPanel
             Bind(wxEVT_PAINT, &PluginIconPanel::OnPaint, this);
         }
 
-        ~PluginIconPanel()
-        {
-            Unbind(wxEVT_PAINT, &PluginIconPanel::OnPaint, this);
-        }
-
         void OnPaint(wxPaintEvent& event)
         {
             auto size = GetClientSize();
@@ -383,12 +381,6 @@ class InstallButton: public wxPanel
             Bind(wxEVT_COMMAND_BUTTON_CLICKED, &InstallButton::OnClick, this);
         }
 
-        ~InstallButton()
-        {
-            Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   &InstallButton::OnClick, this);
-        }
-
         void OnClick(wxCommandEvent& event) {
             if (m_remove) {
                 wxLogMessage("Uninstalling %s", m_metadata.name.c_str());
@@ -458,12 +450,6 @@ class WebsiteButton: public wxPanel
                  [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
         }
 
-        ~WebsiteButton()
-        {
-            Unbind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
-        }
-
     protected:
         const std::string m_url;
 };
@@ -475,7 +461,7 @@ class CandidateButtonsPanel: public wxPanel
     public:
 
         CandidateButtonsPanel(wxWindow* parent, const PluginMetadata* plugin)
-            :wxPanel(parent), m_parent(parent)
+            :wxPanel(parent)
         {
             auto flags = wxSizerFlags().Border();
 
@@ -493,11 +479,10 @@ class CandidateButtonsPanel: public wxPanel
         void HideDetails(bool hide)
         {
             m_info_btn->Show(!hide);
-            m_parent->Layout();
+            GetParent()->Layout();
         }
 
     private:
-        wxWindow* m_parent;
         WebsiteButton* m_info_btn;
 };
 
@@ -509,7 +494,7 @@ class PluginTextPanel: public wxPanel
         PluginTextPanel(wxWindow* parent,
                         const PluginMetadata* plugin,
                         CandidateButtonsPanel* buttons)
-            : wxPanel(parent), m_descr(0), m_parent(parent), m_buttons(buttons)
+            : wxPanel(parent), m_descr(0), m_buttons(buttons)
         {
             auto flags = wxSizerFlags().Border();
 
@@ -534,18 +519,12 @@ class PluginTextPanel: public wxPanel
             m_descr->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
         }
 
-        ~PluginTextPanel()
-        {
-            m_more->Unbind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
-            m_descr->Unbind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
-        }
-
         void OnClick(wxMouseEvent& event)
         {
             m_descr->Show(!m_descr->IsShown());
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
-            m_parent->SendSizeEvent();
+            GetParent()->SendSizeEvent();
         }
 
     protected:
@@ -561,7 +540,6 @@ class PluginTextPanel: public wxPanel
         wxStaticText* m_descr;
         wxStaticText* m_more;
         wxStaticText* m_summary;
-        wxWindow* m_parent;
         CandidateButtonsPanel* m_buttons;
 };
 
@@ -599,7 +577,7 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
                 Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new CatalogDialog(GetParent(), true);
+                   [=](wxCommandEvent&) {new SimpleCatalogDialog(this);
                 });
             }
         
@@ -614,7 +592,7 @@ class MainButtonsPanel: public wxPanel
                 :wxButton(parent, wxID_ANY, _("Advanced catalog update..."))
             {
                  Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) {
-                      new CatalogDialog(GetParent(), false);
+                      new AdvancedCatalogDialog(this);
                  });
             }
         
@@ -630,12 +608,26 @@ class OcpnScrolledWindow : public wxScrolledWindow
 {
     public:
         OcpnScrolledWindow(wxWindow* parent)
-            :wxScrolledWindow(parent)
+            :wxScrolledWindow(parent),
+            m_grid(new wxFlexGridSizer(3, 0, 0))
         {
-            auto grid = new wxFlexGridSizer(3, 0, 0);
-            grid->AddGrowableCol(1);
-            auto flags = wxSizerFlags();
             auto box = new wxBoxSizer(wxVERTICAL);
+            populateGrid(m_grid);
+            box->Add(m_grid, wxSizerFlags().Proportion(1).Expand());
+            auto button_panel = new MainButtonsPanel(this, parent);
+            box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
+            Bind(EVT_PLUGINS_RELOAD, [&](wxCommandEvent& ev) { Reload(); });
+
+            SetSizer(box);
+            FitInside();
+            // TODO: Compute size using wxWindow::GetEffectiveMinSize()
+            SetScrollRate(0, 1);
+        };
+
+        void populateGrid(wxFlexGridSizer* grid)
+        {
+            auto flags = wxSizerFlags();
+            grid->SetCols(3);
             for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
                 if (plugin.target != PKG_TARGET) {
                     continue;
@@ -649,24 +641,29 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 grid->Add(new wxStaticLine(this), flags);
                 grid->Add(new wxStaticLine(this), flags);
             }
-            box->Add(grid, wxSizerFlags().Proportion(1).Expand());
-            auto button_panel = new MainButtonsPanel(this, parent);
-            box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
-            SetSizer(box);
-            FitInside();
-            // TODO: Compute size using wxWindow::GetEffectiveMinSize()
-            SetScrollRate(0, 1);
-        };
+        }
+
+        void Reload()
+        {
+            Hide();
+            m_grid->Clear();
+            populateGrid(m_grid);
+            Layout();
+            Show();
+            Refresh(true);
+        }
+
+    private:
+        wxFlexGridSizer* m_grid;
+
+
 };
 
 }  // namespace download_mgr
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxDialog(parent, wxID_ANY, _("Plugin Manager"),
-              wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_DIALOG_STYLE & ~wxRESIZE_BORDER),
-    m_parent(parent)
+    :wxDialog(parent, wxID_ANY, _("Plugin Manager"))
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto scrwin = new download_mgr::OcpnScrolledWindow(this);
