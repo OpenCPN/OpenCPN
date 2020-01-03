@@ -143,8 +143,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
     
         //  Add a new plugin if required, otherwise merge the tentative plugin metadata
         bool bmerged = false;
-        for(unsigned int i=0 ; i < ctx->plugins.size() ; i++){
-            PluginMetadata candidatePlugin = ctx->plugins[i];
+        for(auto candidatePlugin: ctx->plugins) {
             if(ctx->plugin->IsSameAs(&candidatePlugin)){
                 candidatePlugin = *ctx->plugin;
                 // clear the merged plugin meta-info
