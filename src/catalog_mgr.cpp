@@ -351,6 +351,7 @@ class CatalogUpdate: public wxDialog, Helpers
                auto catalog = CatalogHandler::getInstance();
                std::ofstream dest(GetPrivateCatalogPath());
                catalog->DownloadCatalog(&dest);
+               dest.close();
                catalog->ClearCatalogData();
                UpdateVersions();
             }
