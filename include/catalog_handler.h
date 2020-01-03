@@ -88,6 +88,12 @@ class CatalogHandler {
         /** Download the latest catalog to local path. */
         ServerStatus DownloadCatalog(std::string& path);
 
+        /** Download the specified catalog to given stream. */
+        ServerStatus DownloadCatalog(std::ostream* stream, std::string url);
+
+        /** Download the specified catalog to local path. */
+        ServerStatus DownloadCatalog(std::string& filePath, std::string url);
+
         /** Parse XML contents, save as latest data if latest is true. */
         ServerStatus ParseCatalog(const std::string xml, bool latest = false);
 
