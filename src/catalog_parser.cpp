@@ -78,25 +78,6 @@ bool PluginMetadata::IsSameAs( PluginMetadata *other ){
 }
 
 
-void PluginMetadata::MergeFrom( std::unique_ptr<PluginMetadata> &other ){
-    version = other->version;
-    release = other->release;
-    summary = other->summary;
-    api_version = other->api_version;
-    author = other->author;
-    description = other->description;
-    git_commit = other->git_commit;
-    git_date = other->git_date;
-    source = other->source;
-    tarball_url = other->tarball_url;
-    info_url = other->info_url;
-    openSource = other->openSource;
-    target = other->target;
-    target_version = other->target_version;
-    meta_url = other->meta_url;
-}
-
-
 static void XMLCALL elementData(void* userData, const XML_Char* s, int len)
 {
     catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
@@ -173,7 +154,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
         for(unsigned int i=0 ; i < ctx->plugins.size() ; i++){
             PluginMetadata candidatePlugin = ctx->plugins[i];
             if(ctx->plugin->IsSameAs(&candidatePlugin)){
-                candidatePlugin.MergeFrom(ctx->plugin);
+                candidatePlugin = *ctx->plugin;
                 // clear the merged plugin meta-info
                 candidatePlugin.meta_url.clear();
                 bmerged =true;
