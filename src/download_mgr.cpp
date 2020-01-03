@@ -264,7 +264,6 @@ class PluginIconPanel: public wxPanel
         }
 };
 
-
 /** Add progress and final message dialogs to the basic Downloader. */
 class GuiDownloader: public Downloader
 {
@@ -576,8 +575,10 @@ class MainButtonsPanel: public wxPanel
             UpdateCatalogNowBtn(wxWindow* parent)
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
-                Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new SimpleCatalogDialog(this);
+                Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) {
+                        new SimpleCatalogDialog(this);
+                        wxCommandEvent evt(EVT_PLUGINS_RELOAD);
+                        wxPostEvent(GetParent(), evt);
                 });
             }
         
