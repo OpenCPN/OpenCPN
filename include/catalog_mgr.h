@@ -27,18 +27,29 @@
 #define CATALOG_MGR_H__
 
 #include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/window.h>
 
 /** Catalog handler GUI.  */
-class CatalogDialog: public wxDialog
+class AdvancedCatalogDialog: public wxFrame
 {
     public:
 
         /**
-         * Ctor. Simple reflects whether to just install the last catalog
-         * or invoke the advanced dialog instead. 
+         * Invoke the advanced catalog dialog after a status check.
          */
-        CatalogDialog(wxWindow* parent, bool simple);
+        AdvancedCatalogDialog(wxWindow* parent);
 };
+
+class SimpleCatalogDialog: public wxDialog
+{
+    public:
+
+        /**
+         * Perform a simple catalog update without options.
+         */
+        SimpleCatalogDialog(wxWindow* parent);
+};
+
 
 #endif // CATALOG_MGR_H__

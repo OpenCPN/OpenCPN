@@ -52,14 +52,14 @@ extern wxString                 g_catalog_custom_url;
 extern wxString                 g_catalog_channel;
 extern OCPNPlatform*            g_Platform;
 
-static const char* const DOWNLOAD_REPO = 
-    "https://raw.githubusercontent.com/leamas/plugins";
+//static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/leamas/plugins";
+static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/opencpn/plugins";
 
-static const char* const DOWNLOAD_PATH = 
-    "/@branch@/ocpn-plugins.xml";
+static const char* const DOWNLOAD_PATH = "/@branch@/ocpn-plugins.xml";
 
 static const char* const API_ENDPOINT = "https://api.github.com/repos";
-static const char* const API_PATH = "/leamas/plugins/branches";
+//static const char* const API_PATH = "/leamas/plugins/branches";
+static const char* const API_PATH = "/opencpn/plugins/branches";
 
 
 CatalogHandler::CatalogHandler()
@@ -106,20 +106,48 @@ catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream)
     return ServerStatus::CURL_ERROR;
 }
 
-
-catalog_status CatalogHandler::DownloadCatalog(std::string& path)
+catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream, std::string url)
 {
-    if (path == "") {
-        path = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
+    Downloader downloader(url);
+    bool ok = downloader.download(stream);
+    if (ok) {
+        return ServerStatus::OK;
+    } 
+    error_msg = downloader.last_error();
+    return ServerStatus::CURL_ERROR;
+}
+
+
+catalog_status CatalogHandler::DownloadCatalog(std::string& filePath)
+{
+    if (filePath == "") {
+        filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
     }
     std::ofstream stream;
-    stream.open(path.c_str(), std::ios::out | std::ios::trunc);
+    stream.open(filePath.c_str(), std::ios::out | std::ios::trunc);
     if (!stream.is_open()) {
-        wxLogMessage("CatalogHandler: Cannot open %s for write", path);
+        wxLogMessage("CatalogHandler: Cannot open %s for write", filePath);
         error_msg = strerror(errno);
         return ServerStatus::OS_ERROR;
     }
     auto status = DownloadCatalog(&stream);
+    stream.close();
+    return status;
+}
+
+catalog_status CatalogHandler::DownloadCatalog(std::string& filePath, std::string url)
+{
+    if (filePath == "") {
+        filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
+    }
+    std::ofstream stream;
+    stream.open(filePath.c_str(), std::ios::out | std::ios::trunc);
+    if (!stream.is_open()) {
+        wxLogMessage("CatalogHandler: Cannot open %s for write", filePath);
+        error_msg = strerror(errno);
+        return ServerStatus::OS_ERROR;
+    }
+    auto status = DownloadCatalog(&stream, url);
     stream.close();
     return status;
 }

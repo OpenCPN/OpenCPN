@@ -58,13 +58,16 @@ struct PluginMetadata {
     std::string target;
     std::string target_version;
     std::string info_url;
-
+    std::string meta_url;
+    
     bool openSource;
 
     bool readonly;                // Can plugin be removed?
     int ix;                       // Index in list of installed or available.
     void clear() { *this = PluginMetadata(); }
     PluginMetadata() :  readonly(true), ix(-1) {}
+    bool IsSameAs( PluginMetadata *other );
+    void MergeFrom( std::unique_ptr<PluginMetadata> &other );
 };
 
 

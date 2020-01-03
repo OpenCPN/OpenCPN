@@ -410,18 +410,21 @@ static void entry_set_install_path(struct archive_entry* entry,
 }
 
 
-static bool archive_check(int r, const char* msg, struct archive* a)
+bool PluginHandler::archive_check(int r, const char* msg, struct archive* a)
 {
     if (r < ARCHIVE_OK) {
-        wxLogMessage(msg, archive_error_string(a));
+        std::string s(msg);
+        s = s + ": " + archive_error_string(a);
+        wxLogMessage(s.c_str());
+        last_error_msg = s;
     }
     return r >= ARCHIVE_WARN;
 }
 
 
-static bool explodeTarball(struct archive* src,
-                           struct archive* dest,
-                           std::string& filelist)
+bool PluginHandler::explodeTarball(struct archive* src,
+                                   struct archive* dest,
+                                   std::string& filelist)
 {
     struct archive_entry* entry = 0;
     pathmap_t pathmap = getInstallPaths();
@@ -430,7 +433,7 @@ static bool explodeTarball(struct archive* src,
         if (r == ARCHIVE_EOF) {
             return true;
         }
-        if (!archive_check(r, "Error reading install archive: %s", src)) {
+        if (!archive_check(r, "archive read header error", src)) {
             return false;
         }
         entry_set_install_path(entry, pathmap);
@@ -439,15 +442,15 @@ static bool explodeTarball(struct archive* src,
         }
         filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
         r = archive_write_header(dest, entry);
-        archive_check(r, "Error writing install header: %s", dest);
+        archive_check(r, "archive write install header error", dest);
         if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
             r = copy_data(src, dest);
-            if (!archive_check(r, "Error writing install archive: %s", dest)) {
+            if (!archive_check(r, "archive copy data error", dest)) {
                 return false;
             }
         }
         r = archive_write_finish_entry(dest);
-        if (!archive_check(r, "Error writing on finish %s", dest)) {
+        if (!archive_check(r, "archive finish write error", dest)) {
             return false;
         }
     }
@@ -480,16 +483,21 @@ static bool explodeTarball(struct archive* src,
  *   - src: Readable libarchive source instance.
  *   - dest: Writable libarchive disk-writer instance.
  *   - filelist: On exit, list of installed files.
+ *   - last_error_msg: Updated when returning false.
  *
  */
-static bool extractTarball(const std::string path, std::string& filelist)
+bool PluginHandler::extractTarball(const std::string path,
+                                   std::string& filelist)
 {
     struct archive* src = archive_read_new();
     archive_read_support_filter_gzip(src);
     archive_read_support_format_tar(src);
     int r = archive_read_open_filename(src, path.c_str(), 10240);
     if (r != ARCHIVE_OK) {
-        wxLogWarning("Cannot read installation tarball: %s", path);
+        std::ostringstream os;
+        os << "Cannot read installation tarball: " << path;
+        wxLogWarning(os.str().c_str());
+        last_error_msg = os.str();
         return false;
     }
     struct archive* dest = archive_write_disk_new();
@@ -561,6 +569,29 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
+static void cleanup(const std::string& filelist, const std::string& plugname)
+{
+    wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
+    std::istringstream files(filelist);
+    while (!files.eof()) {
+        char line[256];
+        files.getline(line, sizeof(line));
+        if (isRegularFile(line)) {
+            int r = remove(line);
+            if (r != 0) {
+                wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+            }
+        }
+    }
+    std::string path = fileListPath(plugname);
+    if (ocpn::exists(path)) {
+        remove(path.c_str());
+    }
+    remove(dirListPath(plugname).c_str());  // Best effort try, failures
+    remove(versionPath(plugname).c_str());  // are non-critical.
+}
+
+
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
@@ -607,8 +638,10 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
 {
     std::string filelist;
     if ( !extractTarball(path, filelist)) {
-        std::cout << "Cannot unpack plugin: " << plugin.name  << " at "
-            << path << std::endl;
+        std::ostringstream os;
+        os << "Cannot unpack plugin: " << plugin.name  << " at " << path;
+        last_error_msg = os.str();
+        cleanup(filelist, plugin.name);
         return false;
     }
     remove(path.c_str());
@@ -621,9 +654,13 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
     int after = g_pi_manager->GetPlugInArray()->GetCount();
     wxLogMessage("install: Reloading plugins, before: %d, after:  %d",
                  before, after);
-    std::cout << "Installed: " << plugin.name << std::endl;
+    if (before >= after) {
+        last_error_msg = "Cannot load the installed plugin";
+        cleanup(filelist, plugin.name);
+    }
+    //std::cout << "Installed: " << plugin.name << std::endl;
 
-    return true;
+    return after > before;
 }
 
 

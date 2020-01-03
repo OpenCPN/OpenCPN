@@ -33,6 +33,7 @@
 #include <wx/debug.h>
 #include <wx/filename.h>
 #include <wx/log.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
 #include <wx/progdlg.h>
 #include <wx/sizer.h>
@@ -44,6 +45,7 @@
 #include "ocpn_utils.h"
 #include "OCPNPlatform.h"
 #include "PluginHandler.h"
+#include "download_mgr.h"
 
 extern OCPNPlatform*            g_Platform;
 
@@ -53,6 +55,10 @@ wxDEFINE_EVENT(CHANNELS_DL_DONE, wxCommandEvent);
 wxDEFINE_EVENT(CHANNELS_PARSE_DONE, wxCommandEvent);
 wxDEFINE_EVENT(CATALOG_DL_DONE, wxCommandEvent);
 wxDEFINE_EVENT(CATALOG_PARSE_DONE, wxCommandEvent);
+
+
+/** Posted by  CatalogUpdate on close. */
+wxDEFINE_EVENT(CATALOG_DLG_CLOSE, wxCommandEvent);
 
 #ifdef _WIN32
 static const std::string SEP("\\");
@@ -89,6 +95,7 @@ class CatalogUpdate: public wxDialog, Helpers
 {
     protected:
         class UrlEdit; //forward
+        class ActiveCatalogGrid; //forward
 
     public:
         CatalogUpdate(wxWindow* parent)
@@ -101,11 +108,12 @@ class CatalogUpdate: public wxDialog, Helpers
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border();
 
+            m_catalog_grid = new ActiveCatalogGrid(this);
             sizer->Add(new UrlStatus(this), flags);
-            sizer->Add(new UrlChannel(this), flags);
+            sizer->Add(new UrlChannel(this, m_catalog_grid), flags);
             sizer->Add(new wxStaticLine(this), flags);
 
-            sizer->Add(new ActiveCatalogGrid(this), flags);
+            sizer->Add(m_catalog_grid, flags);
             sizer->Add(new wxStaticLine(this), flags);
 
             m_advanced  = new wxStaticText(this, wxID_ANY, "");
@@ -116,23 +124,33 @@ class CatalogUpdate: public wxDialog, Helpers
             m_url_box = new wxBoxSizer(wxVERTICAL);
             m_url_edit = new UrlEdit(this);
             m_url_box->Add(m_url_edit, flags);
-            m_url_box->Add(new Buttons(this), wxSizerFlags().Border().Right());
+            m_url_box->Add(new Buttons(this, m_catalog_grid),
+                           wxSizerFlags().Border().Right());
             sizer->Add(m_url_box, flags);
             sizer->Add(new wxStaticLine(this), flags);
 
-            auto done = makeButton("Done");
+            auto done = makeButton(_("Done"));
             sizer->Add(done, wxSizerFlags().Border().Right());
-            done->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                       [=] (wxCommandEvent e) { closeMyWindow(); });
-
+            done->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=] (wxCommandEvent e) {
+                EndModal(wxID_OK);
+                wxCommandEvent evt(CATALOG_DLG_CLOSE);
+                wxPostEvent(GetParent(), evt);
+                e.Skip();
+            });
             toggleUrlEdit();
 
+            Bind(wxEVT_CLOSE_WINDOW, [=](wxCloseEvent& e) {
+                EndModal(wxID_OK);
+                wxCommandEvent cmd_evt(CATALOG_DLG_CLOSE);
+                wxPostEvent(GetParent(), cmd_evt);
+                e.Skip();
+            });
 
             SetSizer(sizer);
             auto size = getWindowSize();
             size.SetHeight(1);
             SetMinClientSize(size);
-
+            parent->Hide();
             Fit();
             ShowModal();
         }
@@ -141,17 +159,13 @@ class CatalogUpdate: public wxDialog, Helpers
         const char* const HIDE =
             _("<span foreground='blue'>Hide &lt;&lt;&lt;</span>");
         const char* const ADVANCED =
-            _("<span foreground='blue'>Advanced &gt;&gt;&gt;</span>");
+            _("<span foreground='blue'>Ultra advanced &gt;&gt;&gt;</span>");
 
         wxBoxSizer* m_url_box;
+        ActiveCatalogGrid* m_catalog_grid;
         UrlEdit* m_url_edit;
         wxStaticText* m_advanced;
         bool m_show_edit;
-
-        void closeMyWindow() { 
-            EndModal(wxID_OK);
-            GetParent()->Close(true);
-        }
 
         /**
          * The window width  is determined by the normally hidden custom
@@ -176,58 +190,6 @@ class CatalogUpdate: public wxDialog, Helpers
             Fit();
         }
 
-        /** The buttons below custom url: Use Default and Update. */
-        struct Buttons: public wxPanel, public Helpers
-        {
-            Buttons(wxWindow* parent): wxPanel(parent), Helpers(this),
-                m_parent(dynamic_cast<CatalogUpdate*>(GetParent()))
-            {
-                auto sizer = new wxBoxSizer(wxHORIZONTAL);
-                auto flags = wxSizerFlags().Right().Bottom().Border();
-
-                auto clear = makeButton(_("Clear"));
-                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                            [=](wxCommandEvent& ev) { clearUrl(); });
-                sizer->Add(clear, flags);
-
-                auto use_default = makeButton(_("Use default location"));
-                use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                                  [=](wxCommandEvent& ev) { useDefaultUrl(); });
-                sizer->Add(use_default, flags);
-
-                auto update = makeButton(_("Save"));
-                sizer->Add(update, flags);
-                update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                             [=](wxCommandEvent& ev) { updateUrl(); });
-
-                SetSizer(sizer);
-                Fit();
-                Show();
-            }
-
-            void useDefaultUrl()
-            {
-                auto handler = CatalogHandler::getInstance();
-                auto url = handler->GetDefaultUrl();
-                m_parent->m_url_edit->setText(url);
-            }
-
-            void clearUrl()
-            {
-                m_parent->m_url_edit->clear();
-            }
-
-            void updateUrl()
-            {
-                auto text =  m_parent->m_url_edit->getText();
-                auto handler = CatalogHandler::getInstance();
-                handler->SetCustomUrl(text.c_str());
-            }
-
-            CatalogUpdate* m_parent;
-
-        };
-
         /** The Url Status line at top */
         struct UrlStatus: public wxPanel, public Helpers
         {
@@ -247,49 +209,6 @@ class CatalogUpdate: public wxDialog, Helpers
                 Show();
             }
         };
-
-
-        /** Combobox where user selects active catalog channel. */
-        struct UrlChannel: public wxPanel, public Helpers
-        {
-            UrlChannel(wxWindow* parent)
-                : wxPanel(parent), Helpers(this)
-            {
-                auto sizer = new wxBoxSizer(wxHORIZONTAL);
-                auto flags = wxSizerFlags()
-                    .Expand().Border().Align(wxALIGN_CENTER_VERTICAL);
-                sizer->Add(staticText(_("Catalog channel: ")), flags);
-                auto catalog = CatalogHandler::getInstance();
-                wxArrayString channel_list;
-                for (auto channel: catalog->GetChannels()) {
-                    channel_list.Add(channel.c_str());
-                }
-                auto channels = new wxChoice(this, wxID_ANY,
-                                             wxDefaultPosition,
-                                             wxDefaultSize,
-                                             channel_list);
-                auto current =
-                    CatalogHandler::getInstance()->GetActiveChannel();
-                int ix = channels->FindString(current.c_str());
-                channels->SetSelection(ix != wxNOT_FOUND ? ix : 0);
-                channels->Bind(
-                        wxEVT_CHOICE,
-                       [=](wxCommandEvent& e) { onChannelChange(e); });
-                sizer->Add(channels, flags);
-                SetSizer(sizer);
-                Fit();
-                Show();
-            }
-
-            void onChannelChange(wxCommandEvent& ev)
-            {
-                CatalogHandler::getInstance()->SetActiveChannel(
-                        ev.GetString().ToStdString().c_str());
-            };
-
-            std::string m_active_channel;
-        };
-
 
         /**
          * Active catalog: The current active, the default and latest
@@ -359,7 +278,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 date->SetLabel(data.date);
             }
 
-            /** 
+            /**
              * Update version and date for default, latest and active
              * catalog.
              */
@@ -373,11 +292,12 @@ class CatalogUpdate: public wxDialog, Helpers
                 UpdateVersion(grid, data, 5);
                 data = CatalogHandler::getInstance()->LatestCatalogData();
                 UpdateVersion(grid, data, 9);
+                Refresh(true);
+                Update();
             }
 
             std::string GetDefaultCatalogPath()
             {
-                auto plugin_handler = PluginHandler::getInstance();
                 std::string path
                     = g_Platform->GetSharedDataDir().ToStdString();
                 path += SEP ;
@@ -385,13 +305,35 @@ class CatalogUpdate: public wxDialog, Helpers
                 return path;
             }
 
+            void ReloadAvailableVersion(const std::string url)
+            {
+                auto handler = CatalogHandler::getInstance();
+                std::ostringstream xml;
+                auto status = handler->DownloadCatalog(&xml);
+                std::string message;
+                if (status != CatalogHandler::ServerStatus::OK) {
+                    message = _("Cannot download data from url");
+                }
+                status = handler->ParseCatalog(xml.str(), true);
+                if (status != CatalogHandler::ServerStatus::OK) {
+                    message = _("Cannot parse downloaded data");
+                }
+                if (message != "") {
+                    wxMessageBox(message,
+                                 _("Catalog update problem"),
+                                 wxICON_ERROR);
+                }
+                else {
+                    UpdateVersions();
+                }
+            }
+
             std::string GetPrivateCatalogPath()
             {
                 auto plugin_handler = PluginHandler::getInstance();
-                std::string path
-                    = g_Platform->GetPrivateDataDir().ToStdString();
-                path += SEP ;
-                path += "ocpn-plugins.xml";
+                std::string path =
+                    g_Platform->GetPrivateDataDir().ToStdString();
+                path += SEP + "ocpn-plugins.xml";
                 return path;
             }
 
@@ -412,7 +354,103 @@ class CatalogUpdate: public wxDialog, Helpers
                catalog->ClearCatalogData();
                UpdateVersions();
             }
+        };
 
+        /** The buttons below custom url: Use Default and Update. */
+        struct Buttons: public wxPanel, public Helpers
+        {
+            Buttons(wxWindow* parent, ActiveCatalogGrid* catalog_grid)
+                : wxPanel(parent), Helpers(this),
+                m_catalog_grid(catalog_grid),
+                m_parent(dynamic_cast<CatalogUpdate*>(GetParent()))
+            {
+                auto sizer = new wxBoxSizer(wxHORIZONTAL);
+                auto flags = wxSizerFlags().Right().Bottom().Border();
+
+                auto clear = makeButton(_("Clear"));
+                clear->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                            [=](wxCommandEvent& ev) { clearUrl(); });
+                sizer->Add(clear, flags);
+
+                auto use_default = makeButton(_("Use default location"));
+                use_default->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                                  [=](wxCommandEvent& ev) { useDefaultUrl(); });
+                sizer->Add(use_default, flags);
+
+                auto update = makeButton(_("Save"));
+                sizer->Add(update, flags);
+                update->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                             [=](wxCommandEvent& ev) { updateUrl(); });
+
+                SetSizer(sizer);
+                Fit();
+                Show();
+            }
+
+            void useDefaultUrl()
+            {
+                auto url = CatalogHandler::getInstance()->GetDefaultUrl();
+                m_parent->m_url_edit->setText(url);
+            }
+
+            void clearUrl()
+            {
+                m_parent->m_url_edit->clear();
+            }
+
+            void updateUrl()
+            {
+                auto text =  m_parent->m_url_edit->getText();
+                CatalogHandler::getInstance()->SetCustomUrl(text.c_str());
+                m_catalog_grid->ReloadAvailableVersion(text);
+            }
+
+            ActiveCatalogGrid* m_catalog_grid;
+            CatalogUpdate* m_parent;
+        };
+
+
+        /** Combobox where user selects active catalog channel. */
+        struct UrlChannel: public wxPanel, public Helpers
+        {
+            UrlChannel(wxWindow* parent, ActiveCatalogGrid* catalog_grid)
+                : wxPanel(parent), Helpers(this), m_catalog_grid(catalog_grid)
+            {
+                auto sizer = new wxBoxSizer(wxHORIZONTAL);
+                auto flags = wxSizerFlags()
+                    .Expand().Border().Align(wxALIGN_CENTER_VERTICAL);
+                sizer->Add(staticText(_("Catalog channel: ")), flags);
+                auto catalog = CatalogHandler::getInstance();
+                wxArrayString channel_list;
+                for (auto channel: catalog->GetChannels()) {
+                    channel_list.Add(channel.c_str());
+                }
+                auto channels = new wxChoice(this, wxID_ANY,
+                                             wxDefaultPosition,
+                                             wxDefaultSize,
+                                             channel_list);
+                auto current =
+                    CatalogHandler::getInstance()->GetActiveChannel();
+                int ix = channels->FindString(current.c_str());
+                channels->SetSelection(ix != wxNOT_FOUND ? ix : 0);
+                channels->Bind(
+                        wxEVT_CHOICE,
+                       [=](wxCommandEvent& e) { onChannelChange(e); });
+                sizer->Add(channels, flags);
+                SetSizer(sizer);
+                Fit();
+                Show();
+            }
+
+            void onChannelChange(wxCommandEvent& ev)
+            {
+                auto url = ev.GetString().ToStdString().c_str();
+                CatalogHandler::getInstance()->SetActiveChannel(url);
+                m_catalog_grid->ReloadAvailableVersion(url);
+            };
+
+            std::string m_active_channel;
+            ActiveCatalogGrid* m_catalog_grid;
         };
 
 
@@ -471,20 +509,19 @@ class CatalogLoad: public wxPanel, public Helpers
         CatalogLoad(wxWindow* parent, bool use_latest = false)
             :wxPanel(parent), Helpers(this), m_simple(use_latest)
         {
-
             auto sizer = new wxBoxSizer(wxVERTICAL);
             auto flags = wxSizerFlags().Expand().Border() ;
             m_grid = new DialogGrid(this);
             sizer->Add(m_grid, flags);
             sizer->Add(1, 1, 1, wxEXPAND);   // Expanding spacer
-            m_buttons = new Buttons(this);
-            sizer->Add(m_buttons, flags.Bottom().Right());
-
+            if (m_simple) {
+                m_buttons = new Buttons(this);
+                sizer->Add(m_buttons, flags.Bottom().Right());
+            }
             auto size = GetTextExtent(_("Check latest release..."));
             size.SetHeight(size.GetHeight() * 10);
             size.SetWidth(size.GetWidth() * 5 / 2);
             SetMinClientSize(size);
-
             std::thread worker([=]() { Worker(); });
             worker.detach();
 
@@ -502,13 +539,6 @@ class CatalogLoad: public wxPanel, public Helpers
                  [=](wxCommandEvent& ev) { workerDone(ev); });
         }
 
-        bool Close(bool force)
-        {
-            GetParent()->Close();
-            Destroy();
-            return true;
-        }
-
         void PostEvent(int evt_id, catalog_status status, std::string message)
         {
             wxCommandEvent evt(evt_id);
@@ -522,7 +552,7 @@ class CatalogLoad: public wxPanel, public Helpers
         {
             m_grid->CellDone(ev, 5);
             if (m_simple) {
-                std::string message = "Catalog updated";
+                std::string message =_("Catalog updated").ToStdString();
                 std::string path =
                     g_Platform->GetPrivateDataDir().ToStdString();
                 path += SEP;
@@ -548,7 +578,6 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
-                wxLogMessage("Running CatalogUpdate.");
                 new CatalogUpdate(this);
             }
         }
@@ -587,7 +616,7 @@ class CatalogLoad: public wxPanel, public Helpers
             }
         }
 
-        /** grid with  Server is Reachable..., Check channel... etc. */
+        /** Grid with  Server is Reachable..., Check channel... etc. */
         struct DialogGrid: public wxPanel, public Helpers
         {
             DialogGrid(wxWindow* parent): wxPanel(parent), Helpers(this)
@@ -616,7 +645,7 @@ class CatalogLoad: public wxPanel, public Helpers
             /* Update status values in grid. */
             void CellDone(const wxCommandEvent& event, size_t index)
             {
-                wxLogMessage("CellDone: event %d", event.GetInt());
+                //wxLogMessage("CellDone: event %d", event.GetInt());
                 auto cell = GetSizer()->GetItem(index)->GetWindow();
                 auto code = static_cast<catalog_status>(event.GetInt());
                 if (code == catalog_status::OK) {
@@ -639,27 +668,25 @@ class CatalogLoad: public wxPanel, public Helpers
         {
             Buttons(wxWindow* parent) : wxPanel(parent)
             {
+                using CmdEvt = wxCommandEvent;
+
                 auto sizer = new wxBoxSizer(wxHORIZONTAL);
                 auto flags = wxSizerFlags().Right().Bottom().Border();
                 sizer->Add(1, 1, 100, wxEXPAND);   // Expanding spacer
                 auto cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
                 sizer->Add(cancel, flags);
                 m_ok = new wxButton(this, wxID_OK, _("OK"));
+                m_ok->Enable(false);
                 sizer->Add(m_ok, flags);
                 SetSizer(sizer);
                 Fit();
+                SetFocus();
                 Show();
-            }
-
-            void closeWindow() 
-            { 
-                GetParent()->GetParent()->Close();
             }
 
             void ActivateOk()
             {
-                m_ok->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                           [=](wxCommandEvent& ev) { closeWindow(); });
+                m_ok->Enable(true);
             }
 
             wxButton* m_ok;
@@ -676,15 +703,36 @@ class CatalogLoad: public wxPanel, public Helpers
 
 
 /** Top-level plugin catalog dialog. */
-CatalogDialog::CatalogDialog(wxWindow* parent, bool simple)
-    :wxDialog(parent, wxID_ANY, _("Catalog Manager"),
+AdvancedCatalogDialog::AdvancedCatalogDialog(wxWindow* parent)
+    :wxFrame(parent, wxID_ANY, _("Catalog Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+              wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER)
 {
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
-    vbox->Add(new catalog_mgr::CatalogLoad(this, simple),
+    vbox->Add(new catalog_mgr::CatalogLoad(this, false),
               wxSizerFlags(1).Expand());
+    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& e) { Destroy(); });
+    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) { Destroy(); });
     SetSizer(vbox);
+
+    Fit();
+    Center();
+    Show();
+}
+
+SimpleCatalogDialog::SimpleCatalogDialog(wxWindow* parent)
+    :wxDialog(parent, wxID_ANY, _("Catalog Manager"),
+              wxDefaultPosition , wxDefaultSize,
+              wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER)
+{
+    auto vbox = new wxBoxSizer(wxHORIZONTAL);
+    vbox->Add(new catalog_mgr::CatalogLoad(this, true),
+              wxSizerFlags(1).Expand());
+    Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) { EndModal(wxID_OK); });
+    Bind(CATALOG_DLG_CLOSE, [&](wxCommandEvent& ev) { EndModal(wxID_OK); });
+    SetSizer(vbox);
+
     Fit();
     ShowModal();
+    Destroy();
 }
