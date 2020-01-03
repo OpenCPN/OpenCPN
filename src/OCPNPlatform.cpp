@@ -618,6 +618,11 @@ void OCPNPlatform::Initialize_3( void )
     if(bAndroid){
         g_btouch = true;
     }
+
+    if (g_bFirstRun || g_bUpgradeInProcess) {
+        if (!g_bRollover)  //Not explicit set before
+            g_bRollover = g_btouch ? false : true;
+    }
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
