@@ -3524,14 +3524,13 @@ ChartCanvas *MyFrame::GetCanvasUnderMouse()
 int MyFrame::GetCanvasIndexUnderMouse()
 {
     wxPoint screenPoint = ::wxGetMousePosition();
-    ChartCanvas *canvas = NULL;
     canvasConfig *cc;
     
     switch(g_canvasConfig){
         case 1:
             cc = g_canvasConfigArray.Item(0);
             if(cc ){
-                //ChartCanvas *canvas = cc->canvas;
+                ChartCanvas *canvas = cc->canvas;
                 if(canvas->GetScreenRect().Contains(/*canvas->ScreenToClient*/(screenPoint)))
                     return 0;
             }
