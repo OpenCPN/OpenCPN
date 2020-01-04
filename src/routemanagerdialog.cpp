@@ -178,8 +178,6 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
 #endif
 
 {
-    wxListCtrl *lc = (wxListCtrl*)list;
-
     RoutePoint *pRP1 = (RoutePoint *)item1;
     RoutePoint *pRP2 = (RoutePoint *)item2;
 
@@ -1516,7 +1514,6 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
         case TRACK_MERGE: {
             Track* targetTrack = NULL;
-            Track* mergeTrack = NULL;
             TrackPoint* tPoint;
             TrackPoint* newPoint;
             TrackPoint* lastPoint;

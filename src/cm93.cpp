@@ -1327,25 +1327,6 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
 }
 
 
-static int get_dval ( int native_scale )
-{
-      int dval;
-      switch ( native_scale )
-      {
-            case 20000000: dval = 120; break;         // Z
-            case  3000000: dval =  60; break;         // A
-            case  1000000: dval =  30; break;         // B
-            case   200000: dval =  12; break;         // C
-            case   100000: dval =   3; break;         // D
-            case    50000: dval =   1; break;         // E
-            case    20000: dval =   1; break;         // F
-            case     7500: dval =   1; break;         // G
-            default: dval =   1; break;
-      }
-      return dval;
-}
-
-
 static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
 {
       //    Read header, populate Cell_Info_Block
@@ -3397,14 +3378,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       u[200] = '\0';
       memcpy ( pobj->FeatureName, u, 7 );
 
-      //  Touch up the geom types
-      int geomtype_sub = geomtype;
-      if ( geomtype == 8 )                    // sounding....
-            geomtype_sub = 1;
-
-      if ( geomtype == 4 )                    // convert cm93 area(4) to GDAL area(3)...
-            geomtype_sub = 3;
-
       pobj->attVal =  new wxArrayOfS57attVal();
 
 
@@ -3435,7 +3408,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
             int nlen;
             double dival;
             int ival;
-            unsigned char *pucf;
 
             S57attVal *pattValTmp = new S57attVal;
 
@@ -3514,7 +3486,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                       pf = ( float * ) aval;
 #ifdef __ARM_ARCH
                         float __attribute__((aligned(16))) tf1;
-                        pucf = (unsigned char *)pf;
+                        unsigned char *pucf = (unsigned char *)pf;
 
                         memcpy(&tf1, pucf, sizeof(float));
                         *pAVR = tf1;
@@ -6124,7 +6096,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, Ch
       bool bdrawn = false;
 
       nss_max = 7;
-      int cnt = 0;
 
 #if 0 /* only if chart outlines are rendered grounded to the charts */
       if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning

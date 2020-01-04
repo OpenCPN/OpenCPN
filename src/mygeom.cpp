@@ -545,9 +545,6 @@ int PolyTessGeo::BuildTessGLU()
       }
 
       //  Apply LOD reduction
-    int beforeLOD = ptValid;
-    int afterLOD = beforeLOD;
-   
  
     if(ptValid > 20 && (m_LOD_meters > .01)) {
         std::vector<bool> bool_keep(ptValid, false);
@@ -575,9 +572,6 @@ int PolyTessGeo::BuildTessGLU()
                 kept_LOD++;
             }
         }
-
-        beforeLOD = ptValid;
-        afterLOD = kept_LOD;
 
         // Copy the lod points back into the vertex buffer
         memcpy(geoPt, LOD_result, kept_LOD * 3 * sizeof(double));
@@ -829,7 +823,6 @@ int PolyTessGeo::BuildTess(void)
 //    int nvflags = 0;
 #else
     int allocated = 0;
-    double t0 = 0, t1 = 0;
 #endif
 
 #ifdef USE_POOL
@@ -1581,20 +1574,6 @@ void vertexCallback(GLvoid *vertex, void *polyData)
 
     pThis->m_nvcall++;
 
-}
-
-void  vertexCallbackND(GLvoid *vertex)
-{
-    GLdouble *pointer;
-
-    pointer = (GLdouble *) vertex;
-
-
-    double x = pointer[0];
-    double y = pointer[1];
-    
-    int yyp = 4;
-    
 }
 
 /*  combineCallback is used to create a new vertex when edges

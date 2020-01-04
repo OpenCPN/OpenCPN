@@ -169,7 +169,6 @@ void PopUpDSlide::OnChangeValue( wxScrollEvent& event )
 
 {
     ::wxBeginBusyCursor();
-    int delta=0;
 
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         g_cm93_zoom_factor = m_p_DetailSlider->GetValue();

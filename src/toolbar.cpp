@@ -1174,7 +1174,6 @@ void ocpnFloatingToolbarDialog::Realize()
                 for( wxToolBarToolsList::compatibility_iterator node = m_ptoolbar->m_tools.GetFirst(); node; node = node->GetNext() ) {
                     wxToolBarToolBase *tool = node->GetData();
                     ocpnToolBarTool *tools = (ocpnToolBarTool *) tool;
-                    wxRect toolRect = tools->trect;
 
                     sdc.DrawRoundedRectangle( tools->m_x, tools->m_y, tool_size.x, tool_size.y,
                                               m_style->GetToolbarCornerRadius() );
@@ -1576,25 +1575,19 @@ bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple
         if( pttc->position == -1 )                  // PlugIn has requested default positioning
                 {
             wxBitmap *ptool_bmp;
-            wxBitmap *ptool_bmp_Rollover;
 
         switch( m_cs ){
                 case GLOBAL_COLOR_SCHEME_DAY:
                     ptool_bmp = pttc->bitmap_day;
-                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
-                    ;
                     break;
                 case GLOBAL_COLOR_SCHEME_DUSK:
                     ptool_bmp = pttc->bitmap_dusk;
-                    ptool_bmp_Rollover = pttc->bitmap_Rollover_dusk;
                     break;
                 case GLOBAL_COLOR_SCHEME_NIGHT:
                     ptool_bmp = pttc->bitmap_night;
-                    ptool_bmp_Rollover = pttc->bitmap_Rollover_night;
                     break;
                 default:
                     ptool_bmp = pttc->bitmap_day;
-                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
                     break;
             }
 

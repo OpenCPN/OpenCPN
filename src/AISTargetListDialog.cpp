@@ -747,7 +747,6 @@ void AISTargetListDialog::SetColorScheme()
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
-    wxAuiPaneInfo *pane = event.pane;
     if( event.pane->name == _T("AISTargetList") ) {
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
     }
