@@ -1514,8 +1514,6 @@ bool ChartCanvas::DoCanvasUpdate( void )
     if(ChartData->IsBusy())
         return false;
     
-    if( m_pCurrentStack )
-    
     //    Startup case:
     //    Quilting is enabled, but the last chart seen was not quiltable
     //    In this case, drop to single chart mode, set persistence flag,
