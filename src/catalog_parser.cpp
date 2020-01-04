@@ -62,11 +62,11 @@
 
 //      PluginMetadata Implementation
 bool PluginMetadata::IsSameAs( PluginMetadata *other ){
-    return other->name == name
-        && other->target == target
-        && other->target_version == target_version
-        && other->version == version
-        && other->release == release;
+    return !other->name.empty() && other->name == name
+        && !other->target.empty() &&  other->target == target
+        && !other->target_version.empty() &&  other->target_version == target_version
+        && !other->version.empty() &&  other->version == version
+        && !other->release.empty() &&  other->release == release;
 }
 
 
