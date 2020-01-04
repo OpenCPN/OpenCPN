@@ -135,7 +135,7 @@ void RolloverWin::SetBitmap( int rollover )
         case LEG_ROLLOVER: text = _("RouteLegInfoRollover");  break;
     }
     
-    if(usegl && m_bmaincanvas)
+    if(m_bmaincanvas)
         AlphaBlending( dc, 0, 0, m_size.x, m_size.y, radius, GetGlobalColor( _T ( "YELO1" ) ), 172 );
     
     mdc.SetTextForeground( FontMgr::Get().GetFontColor( text ) );
