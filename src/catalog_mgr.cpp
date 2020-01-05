@@ -305,7 +305,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 return path;
             }
 
-            void ReloadAvailableVersion(const std::string url)
+            void ReloadAvailableVersion()
             {
                 auto handler = CatalogHandler::getInstance();
                 std::ostringstream xml;
@@ -403,7 +403,7 @@ class CatalogUpdate: public wxDialog, Helpers
             {
                 auto text =  m_parent->m_url_edit->getText();
                 CatalogHandler::getInstance()->SetCustomUrl(text.c_str());
-                m_catalog_grid->ReloadAvailableVersion(text);
+                m_catalog_grid->ReloadAvailableVersion();
             }
 
             ActiveCatalogGrid* m_catalog_grid;
@@ -447,8 +447,7 @@ class CatalogUpdate: public wxDialog, Helpers
             {
                 auto channel = ev.GetString().ToStdString().c_str();
                 CatalogHandler::getInstance()->SetActiveChannel(channel);
-                auto url =  CatalogHandler::getInstance()->GetDefaultUrl();
-                m_catalog_grid->ReloadAvailableVersion(url);
+                m_catalog_grid->ReloadAvailableVersion();
             };
 
             std::string m_active_channel;
