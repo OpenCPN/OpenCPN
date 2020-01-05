@@ -30,6 +30,7 @@
 #include <wx/bitmap.h>
 #include <wx/button.h>
 #include <wx/debug.h>
+#include <wx/file.h>
 #include <wx/image.h>
 #include <wx/log.h>
 #include <wx/panel.h>
@@ -263,7 +264,6 @@ class PluginIconPanel: public wxPanel
             }
         }
 };
-
 
 /** Add progress and final message dialogs to the basic Downloader. */
 class GuiDownloader: public Downloader
@@ -576,8 +576,10 @@ class MainButtonsPanel: public wxPanel
             UpdateCatalogNowBtn(wxWindow* parent)
                 :wxButton(parent, wxID_ANY, _("Update plugin catalog"))
             {
-                Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [=](wxCommandEvent&) {new SimpleCatalogDialog(this);
+                Bind(wxEVT_COMMAND_BUTTON_CLICKED, [=](wxCommandEvent&) {
+                        new SimpleCatalogDialog(this);
+                        wxCommandEvent evt(EVT_PLUGINS_RELOAD);
+                        wxPostEvent(GetParent(), evt);
                 });
             }
         
@@ -617,6 +619,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto button_panel = new MainButtonsPanel(this, parent);
             box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
             Bind(EVT_PLUGINS_RELOAD, [&](wxCommandEvent& ev) { Reload(); });
+            m_sOsLike.erase();
 
             SetSizer(box);
             FitInside();
@@ -629,8 +632,29 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto flags = wxSizerFlags();
             grid->SetCols(3);
             for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
+                bool l_bOsLike = false;
                 if (plugin.target != PKG_TARGET) {
-                    continue;
+                    if(plugin.target == "ubuntu") {
+                        if(m_sOsLike == "") {
+                            wxFile *l_File = new wxFile("/etc/os-release");
+                            if(l_File->IsOpened()) {
+                                wxString *l_InString = new wxString();
+                                if(l_File->ReadAll(l_InString)) {
+                                    // Find OS_LIKE in string
+                                    int l_nPos = l_InString->Find("ID_LIKE=");
+                                    if(l_nPos != wxNOT_FOUND) {
+                                        l_nPos += 8;
+                                        int l_nEnd = l_InString->find('\n', l_nPos);
+                                        m_sOsLike.append(l_InString->SubString(l_nPos, l_nEnd - 1));
+                                    }
+                                }
+                                l_File->Close();
+                            }
+
+                        }
+                    }
+                    if (plugin.target != m_sOsLike)
+                        continue;
                 }
                 grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
@@ -655,6 +679,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
     private:
         wxFlexGridSizer* m_grid;
+        wxString m_sOsLike;
 
 
 };

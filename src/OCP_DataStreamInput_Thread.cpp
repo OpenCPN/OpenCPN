@@ -317,7 +317,7 @@ void *OCP_DataStreamInput_Thread::Entry()
         } //while b_qdata
 
     }
-thread_exit:
+//thread_exit:
     CloseComPortPhysical();
     m_launcher->SetSecThreadInActive();             // I am dead
     m_launcher->m_Thread_run_flag = -1;

@@ -393,7 +393,6 @@ void about::RecalculateSize( void )
 void about::CreateControls( void )
 {
     //  Set the nominal vertical size of the embedded controls
-    int v_size = g_bresponsive ? -1 : 300;
 
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( mainSizer );

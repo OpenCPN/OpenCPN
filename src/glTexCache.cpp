@@ -807,9 +807,6 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 
             tile->box.Set(latmin, lonmin, latmax, lonmax);
 
-            double sx = rect.width;
-            double sy = rect.height;
-                                
             double xs = rect.width / xsplits;
             double ys = rect.height / ysplits;
             double x1 = rect.x, u1 = 0;

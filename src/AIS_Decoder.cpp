@@ -112,7 +112,6 @@ static int n_msgs;
 static int n_msg1;
 static int n_msg5;
 static int n_msg24;
-static int n_newname;
 static bool b_firstrx;
 static int first_rx_ticks;
 static int rx_ticks;
@@ -741,8 +740,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     
     bool bdecode_result = false; 
     
-    bool  b_dsx = false;
-    
     int gpsg_mmsi = 0;
     int arpa_mmsi = 0;
     int aprs_mmsi = 0;
@@ -769,8 +766,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     bool arpa_lost = true;
     bool arpa_nottracked = false;
 
-    double aprs_sog = 0.;
-    double aprs_cog = 0.;
     double aprs_lat = 0.;
     double aprs_lon = 0.;
     char aprs_name_str[21];
@@ -1170,8 +1165,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( pStaleTarget )
                 pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
 
-            bool bhad_name = false;
-            if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid; 
             if (pTargetData) {
               if( gpsg_mmsi ) {
                 pTargetData->PositionReportTicks = now.GetTicks();
@@ -1429,7 +1422,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     n_msgs++;
 #ifdef AIS_DEBUG
     if((n_msgs % 10000) == 0)
-    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d  n_new5: %10d \n", n_msgs, m_n_targets, n_msg1, n_msg5 + n_msg24, n_newname);
+    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d \n", n_msgs, m_n_targets, n_msg1, n_msg5 + n_msg24);
 #endif
 
     return ret;
@@ -1465,10 +1458,6 @@ void AIS_Decoder::getAISTarget(long mmsi,
     // Delete the stale AIS Target selectable point
     if( pStaleTarget )
         pSelectAIS->DeleteSelectablePoint( (void *) mmsi, SELTYPE_AISTARGET );
-
-    bool bhad_name = false;
-    if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid;
-
 }
 
 AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
@@ -1562,8 +1551,6 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         mmsi = (int) dse_mmsi;
     }
     
-    long mmsi_long = mmsi;
-
     //  Get the last report time for this target, if it exists
     wxDateTime now = wxDateTime::Now();
     now.MakeGMT();
@@ -2640,8 +2627,6 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     std::vector<int> remove_array;                    // collector for MMSI of targets to be removed
     
     while( it != ( *current_targets ).end() ) {
-        bool b_new_it = false;
-
         AIS_Target_Data *td = it->second;
 
         if( NULL == td )                        // This should never happen, but I saw it once....
@@ -2778,7 +2763,6 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         pAISMOBRoute = NULL;                // Reset the AISMOB auto route.
         double tcpa_min = 1e6;             // really long
         double sart_range = 1e6;
-        double dsc_range = 1e6;
         AIS_Target_Data *palert_target_cpa = NULL;
         AIS_Target_Data *palert_target_sart = NULL;
         AIS_Target_Data *palert_target_dsc = NULL;

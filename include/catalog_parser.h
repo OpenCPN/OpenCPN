@@ -67,7 +67,6 @@ struct PluginMetadata {
     void clear() { *this = PluginMetadata(); }
     PluginMetadata() :  readonly(true), ix(-1) {}
     bool IsSameAs( PluginMetadata *other );
-    void MergeFrom( std::unique_ptr<PluginMetadata> &other );
 };
 
 

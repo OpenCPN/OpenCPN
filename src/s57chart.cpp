@@ -141,15 +141,6 @@ static int              s_bInS57;         // Exclusion flag to prvent recursion 
                                           // Init() is not reentrant due to static wxProgressDialog callback....
 int s_cnt;
 
-static bool s_ProgressCallBack( void )
-{
-    bool ret = true;
-    s_cnt++;
-    if( ( s_cnt % 100 ) == 0 ) {
-    }
-    return ret;
-}
-
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
 {
     const uint64_t    m = 0x880355f21e6d1965ULL;
@@ -1330,7 +1321,6 @@ void s57chart::AssembleLineGeometry( void )
     //      and recording each segment's offset in the array
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
         VE_Element *pedge = it->second;
-        int key = it->first;
         if( pedge ) {
             memcpy(lvr, pedge->pPoints, pedge->nCount * 2 * sizeof(float));
             lvr += pedge->nCount * 2;
@@ -2043,7 +2033,6 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     double easting_ul, northing_ul;
     double easting_lr, northing_lr;
     double prev_easting_ul = 0., prev_northing_ul = 0.;
-    double prev_easting_lr, prev_northing_lr;
 
     if( ps52plib->GetPLIBColorScheme() != m_lastColorScheme ) bReallyNew = true;
     m_lastColorScheme = ps52plib->GetPLIBColorScheme();
@@ -2084,8 +2073,6 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
                 - ( ( m_last_vp.pix_width / 2 ) / m_view_scale_ppm );
         prev_northing_ul = last_northing_vp_center
                 + ( ( m_last_vp.pix_height / 2 ) / m_view_scale_ppm );
-        prev_easting_lr = easting_ul + ( m_last_vp.pix_width / m_view_scale_ppm );
-        prev_northing_lr = northing_ul - ( m_last_vp.pix_height / m_view_scale_ppm );
 
         double dx = ( easting_ul - prev_easting_ul ) * m_view_scale_ppm;
         double dy = ( prev_northing_ul - northing_ul ) * m_view_scale_ppm;
@@ -2367,10 +2354,10 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
     for( i = 0; i < PRIO_NUM; ++i ) {
 //      Set up a Clipper for Lines
         wxDCClipper *pdcc = NULL;
-        if( rect ) {
-            wxRect nr = *rect;
+//      if( rect ) {
+//         wxRect nr = *rect;
 //         pdcc = new wxDCClipper(dcinput, nr);
-        }
+//      }
 
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
             top = razRules[i][4]; // Area Symbolized Boundaries
@@ -3406,7 +3393,6 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
 //    Read the .S57 SENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromSENC( void )
 {
-    bool ret_val = true;
     if(CURRENT_SENC_FORMAT_VERSION >= 200)
         return CreateHeaderDataFromoSENC();
 
@@ -6203,7 +6189,6 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
 
                     attrCounter = 0;
                     int noAttr = 0;
-                    bool inDepthRange = false;
                     s57Sector_t sector;
 
                     bleading_attribute = false;

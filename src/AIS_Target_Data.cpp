@@ -51,7 +51,6 @@ void clear_hash_ERI()
 
 static wxString FormatTimeAdaptive( int seconds )
 {
-    int s = seconds % 60;
     int m = seconds / 60;
     if( seconds < 100 )
         return wxString::Format( _T("%3ds"), seconds );

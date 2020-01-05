@@ -224,11 +224,13 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
     }
 }
 
+#if 0
 static void SetColor(unsigned char color[4], const wxBrush &brush)
 {
     const wxColour &c = brush.GetColour();
     color[0] = c.Red(), color[1] = c.Green(), color[2] = c.Blue(), color[3] = 255;
 }
+#endif
 
 
 // build a texture to hold minimum sized rectangles and icons used to render the chart bar

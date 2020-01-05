@@ -711,8 +711,16 @@ AdvancedCatalogDialog::AdvancedCatalogDialog(wxWindow* parent)
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
     vbox->Add(new catalog_mgr::CatalogLoad(this, false),
               wxSizerFlags(1).Expand());
-    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& e) { Destroy(); });
-    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent& ev) { Destroy(); });
+    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent&) {
+            wxCommandEvent evt(EVT_PLUGINS_RELOAD);
+            wxPostEvent(GetParent(), evt);
+            Destroy();
+    });
+    Bind(CATALOG_DLG_CLOSE, [this](wxCommandEvent&) {
+            wxCommandEvent evt(EVT_PLUGINS_RELOAD);
+            wxPostEvent(GetParent(), evt);
+            Destroy();
+    });
     SetSizer(vbox);
 
     Fit();

@@ -2223,8 +2223,7 @@ bool ChartBaseBSB::CreateLineIndex()
     {
         int offset = ifs_bitmap->TellI();
 
-        int iscan;
-        iscan = BSBScanScanline(ifs_bitmap);
+        int iscan = BSBScanScanline(ifs_bitmap);
 
         //  There is no sense reporting an error here, since we are recreating after an error
 /*
@@ -3187,8 +3186,6 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
       bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) GetCOVRTableHead ( 0 ), GetCOVRTablenPoints ( 0 ), vp_proposed.clon, vp_proposed.clat );
       if(!bInside)
             return false;
-
-      ViewPort vp_save = vp_proposed;                 // save a copy
 
       int ret_val = 0;
       double binary_scale_factor = GetPPM() / vp_proposed.view_scale_ppm;
@@ -4286,9 +4283,9 @@ int   ChartBaseBSB::BSBScanScanline(wxInputStream *pinStream )
             while( ((byNext = pinStream->GetC()) != 0 ) && (iPixel < Size_X))
             {
 
-                  int   nPixValue;
+                  //int   nPixValue;
                   int nRunCount;
-                  nPixValue = (byNext & byValueMask) >> nValueShift;
+                  //nPixValue = (byNext & byValueMask) >> nValueShift;
 
                   nRunCount = byNext & byCountMask;
 
@@ -4377,7 +4374,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
 
 {
       unsigned char *prgb = pLineBuf;
-      int nValueShift, iPixel = 0;
+      int nValueShift;
       unsigned char byValueMask, byCountMask;
       unsigned char byNext;
       CachedLine *pt = NULL, cached_line;
@@ -4615,8 +4612,6 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
       }
 
 nocachestart:
-      unsigned int i = 0;
-
       nValueShift = 7 - nColorSize;
       byValueMask = (((1 << nColorSize)) - 1) << nValueShift;
       byCountMask = (1 << (7 - nColorSize)) - 1;
@@ -4806,12 +4801,8 @@ bool ChartBaseBSB::AnalyzeSkew(void)
     double latmin = 90.;
     double latmax = -90.;
     
-    int plonmin = 100000;
-    int plonmax = 0;
-    int platmin = 100000;
-    int platmax = 0;
-    int nlonmin, nlonmax, nlatmax, nlatmin;
-    nlonmin =0; nlonmax=0; nlatmax=0; nlatmin=0;
+    int nlonmin, nlonmax;
+    nlonmin =0; nlonmax=0;
     
     if(0 == nRefpoint)                  // bad chart georef...
             return (1);
@@ -4822,13 +4813,11 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         if(pRefTable[n].lonr > lonmax)
         {
             lonmax = pRefTable[n].lonr;
-            plonmax = (int)pRefTable[n].xr;
             nlonmax = n;
         }
         if(pRefTable[n].lonr < lonmin)
         {
             lonmin = pRefTable[n].lonr;
-            plonmin = (int)pRefTable[n].xr;
             nlonmin = n;
         }
         
@@ -4836,14 +4825,10 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         if(pRefTable[n].latr < latmin)
         {
             latmin = pRefTable[n].latr;
-            platmin = (int)pRefTable[n].yr;
-            nlatmin = n;
         }
         if(pRefTable[n].latr > latmax)
         {
             latmax = pRefTable[n].latr;
-            platmax = (int)pRefTable[n].yr;
-            nlatmax = n;
         }
     }
 
@@ -4869,13 +4854,11 @@ bool ChartBaseBSB::AnalyzeSkew(void)
                 if(pRefTable[n].lonr > lonmax)
                 {
                     lonmax = pRefTable[n].lonr;
-                    plonmax = (int)pRefTable[n].xr;
                     nlonmax = n;
                 }
                 if(pRefTable[n].lonr < lonmin)
                 {
                     lonmin = pRefTable[n].lonr;
-                    plonmin = (int)pRefTable[n].xr;
                     nlonmin = n;
                 }
                 
@@ -4883,14 +4866,10 @@ bool ChartBaseBSB::AnalyzeSkew(void)
                 if(pRefTable[n].latr < latmin)
                 {
                     latmin = pRefTable[n].latr;
-                    platmin = (int)pRefTable[n].yr;
-                    nlatmin = n;
                 }
                 if(pRefTable[n].latr > latmax)
                 {
                     latmax = pRefTable[n].latr;
-                    platmax = (int)pRefTable[n].yr;
-                    nlatmax = n;
                 }
             }
         }
@@ -5032,8 +5011,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
       int plonmax = 0;
       int platmin = 100000;
       int platmax = 0;
-      int nlonmin, nlonmax, nlatmax, nlatmin;
-      nlonmin =0; nlonmax=0; nlatmax=0; nlatmin=0;
+      int nlonmin = 0, nlonmax = 0;
 
       if(0 == nRefpoint)                  // bad chart georef...
             return (1);
@@ -5059,13 +5037,11 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
             {
                   latmin = pRefTable[n].latr;
                   platmin = (int)pRefTable[n].yr;
-                  nlatmin = n;
             }
             if(pRefTable[n].latr > latmax)
             {
                   latmax = pRefTable[n].latr;
                   platmax = (int)pRefTable[n].yr;
-                  nlatmax = n;
             }
       }
 
@@ -5106,13 +5082,11 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
                         {
                               latmin = pRefTable[n].latr;
                               platmin = (int)pRefTable[n].yr;
-                              nlatmin = n;
                         }
                         if(pRefTable[n].latr > latmax)
                         {
                               latmax = pRefTable[n].latr;
                               platmax = (int)pRefTable[n].yr;
-                              nlatmax = n;
                         }
                   }
             }
@@ -5313,10 +5287,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
              for(int n=0 ; n<nRefpoint ; n++)
              {
-                   double lata, lona;
-                   lata = pRefTable[n].latr;
-                   lona = pRefTable[n].lonr;
-
                    double easting, northing;
                    toPOLY(pRefTable[n].latr, pRefTable[n].lonr, m_proj_lat, m_proj_lon, &easting, &northing);
 
@@ -5412,7 +5382,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
         double xpl_err_max = 0;
         double ypl_err_max = 0;
-        double xpl_err_max_meters, ypl_err_max_meters;
         int px, py;
 
         int pxref, pyref;
@@ -5445,10 +5414,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
                     ypl_err_max = pRefTable[i].ypl_error;
               if(fabs(pRefTable[i].xpl_error) > fabs(xpl_err_max))
                     xpl_err_max = pRefTable[i].xpl_error;
-
-              xpl_err_max_meters = fabs(xpl_err_max * 60 * 1852.0);
-              ypl_err_max_meters = fabs(ypl_err_max * 60 * 1852.0);
-
         }
 
         Chart_Error_Factor = fmax(fabs(xpl_err_max/(lonmax - lonmin)), fabs(ypl_err_max/(latmax - latmin)));
@@ -5517,10 +5482,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
                           ypl_err_max = pRefTable[i].ypl_error;
                     if(fabs(pRefTable[i].xpl_error) > fabs(xpl_err_max))
                           xpl_err_max = pRefTable[i].xpl_error;
-
-                    xpl_err_max_meters = fabs(xpl_err_max * 60 * 1852.0);
-                    ypl_err_max_meters = fabs(ypl_err_max * 60 * 1852.0);
-
               }
 
               Chart_Error_Factor = fmax(fabs(xpl_err_max/(lonmax - lonmin)), fabs(ypl_err_max/(latmax - latmin)));

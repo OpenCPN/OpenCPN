@@ -271,7 +271,7 @@ ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, dou
       /* Cohen-Sutherland clipping algorithm for line P0=(x1,y0) to P1=(x1,y1)
     and clip rectangle with diagonal from (xmin,ymin) to (xmax,ymax).*/
     struct LOC_cohen_sutherland_line_clip V;
-    int accept = CFALSE, done = CFALSE;
+    int done = CFALSE;
     ClipResult clip = Visible;
     outcode outcode0, outcode1, outcodeOut;
     /*Outcodes for P0,P1, and whichever point lies outside the clip rectangle*/
@@ -285,7 +285,6 @@ ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, dou
     CompOutCode(*x1, *y1, &outcode1, &V);
     do {
         if (outcode0 == 0 && outcode1 == 0) {   /*Trivial accept and exit*/
-            accept = CTRUE;
             done = CTRUE;
         } else if ((outcode0 & outcode1) != 0) {
             clip = Invisible;
@@ -568,14 +567,12 @@ void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon, std::ve
 void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, std::vector<int> *keep)
 {
     // Find the point with the maximum distance
-    double dmax = 0;
     int index = 0;
     double lmax = 0;
     
     vector2D va(PointList[2*fp] - PointList[2*lp],
                 PointList[2*fp+1] - PointList[2*lp+1]);
     
-    double da = va.x*va.x + va.y*va.y;
     for(int i = fp+1 ; i < lp ; ++i) {
         vector2D vb(PointList[2*i] - PointList[2*fp],
                     PointList[2*i + 1] - PointList[2*fp+1]);

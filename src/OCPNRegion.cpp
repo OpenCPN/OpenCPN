@@ -587,12 +587,9 @@ wxObjectRefData *OCPNRegion::CloneRefData(const wxObjectRefData *data) const
 
 bool OCPNRegion::ODoIsEqual(const OCPNRegion& region) const
 {
-    OGdkRegion *a = ((OCPNRegionRefData *)m_refData)->m_region;
-    
     if(!region.m_refData)
         return false;
     
-    OGdkRegion *b = ((OCPNRegionRefData *)(region.m_refData))->m_region;
     return ogdk_region_equal(M_REGIONDATA->m_region, M_REGIONDATA_OF(region)->m_region);
 }
 

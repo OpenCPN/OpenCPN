@@ -6543,9 +6543,6 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
         for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++) {
             OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
 
-            if( !strncmp(pOLE->OBJLName, "CBLARE", 6))
-                int yyp = 3;
-                
             wxString item;
             if (iPtr < ps52plib->OBJLDescriptions.size()) {
                 item = ps52plib->OBJLDescriptions[iPtr];

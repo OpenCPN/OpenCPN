@@ -62,38 +62,11 @@
 
 //      PluginMetadata Implementation
 bool PluginMetadata::IsSameAs( PluginMetadata *other ){
-    bool result = false;
-    if(strlen(other->name.c_str()) && !strcmp(name.c_str(), other->name.c_str())){
-        if(strlen(other->target.c_str()) && !strcmp(target.c_str(), other->target.c_str())){
-            if(strlen(other->target_version.c_str()) && !strcmp(target_version.c_str(), other->target_version.c_str())){
-                if(strlen(other->version.c_str()) && !strcmp(version.c_str(), other->version.c_str())){
-                    if(strlen(other->release.c_str()) && !strcmp(release.c_str(), other->release.c_str())){
-                        result = true;
-                    }
-                }
-            }
-        }
-    }
-    return result;
-}
-
-
-void PluginMetadata::MergeFrom( std::unique_ptr<PluginMetadata> &other ){
-    version = other->version;
-    release = other->release;
-    summary = other->summary;
-    api_version = other->api_version;
-    author = other->author;
-    description = other->description;
-    git_commit = other->git_commit;
-    git_date = other->git_date;
-    source = other->source;
-    tarball_url = other->tarball_url;
-    info_url = other->info_url;
-    openSource = other->openSource;
-    target = other->target;
-    target_version = other->target_version;
-    meta_url = other->meta_url;
+    return !other->name.empty() && other->name == name
+        && !other->target.empty() &&  other->target == target
+        && !other->target_version.empty() &&  other->target_version == target_version
+        && !other->version.empty() &&  other->version == version
+        && !other->release.empty() &&  other->release == release;
 }
 
 
@@ -128,7 +101,7 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
             ctx->date = ocpn::trim(buff);
         }
     }
-    
+
     else if (strcmp(name, "name") == 0) {
        ctx->plugin->name = ocpn::trim(buff);
     } else if (strcmp(name, "version") == 0) {
@@ -167,20 +140,19 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
     if (strcmp(name, "plugin") == 0) {
         if(!ctx->plugin)
             return;
-    
+
         //  Add a new plugin if required, otherwise merge the tentative plugin metadata
         bool bmerged = false;
-        for(unsigned int i=0 ; i < ctx->plugins.size() ; i++){
-            PluginMetadata candidatePlugin = ctx->plugins[i];
+        for(auto candidatePlugin: ctx->plugins) {
             if(ctx->plugin->IsSameAs(&candidatePlugin)){
-                candidatePlugin.MergeFrom(ctx->plugin);
+                candidatePlugin = *ctx->plugin;
                 // clear the merged plugin meta-info
                 candidatePlugin.meta_url.clear();
                 bmerged =true;
                 break;
             }
         }
-        
+
         // No match found, must be a "new" plugin, so add this one
         if(!bmerged){
             ctx->plugins.push_back(*ctx->plugin);
@@ -208,7 +180,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         ok = false;
     }
     XML_ParserFree(parser);
-    
+
     // Now look for embedded meta info redirection tags, semi-recursively
     unsigned int index = 0;
     while(index < ctx->plugins.size()){
@@ -220,9 +192,9 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
             if (stat == CatalogHandler::ServerStatus::OK) {
                 std::ifstream ifpath(filePath);
                 std::string xml((std::istreambuf_iterator<char>(ifpath)), std::istreambuf_iterator<char>());
-                
+
                 //TODO  Should validate the XML against the XSD schema here....
-                
+
                 XML_Parser parser = XML_ParserCreate(NULL);
                 ctx->buff.clear();
                 ctx->depth = 0;
@@ -249,7 +221,7 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         else
             index++;
     }
-        
+
     if (ctx->plugins.size() == 0) {
         wxLogWarning("ParseCatalog: No plugins found.");
         ok = false;
