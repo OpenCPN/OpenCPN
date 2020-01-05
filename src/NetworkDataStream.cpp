@@ -86,15 +86,6 @@ extern bool g_benableUDPNullHeader;
 DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7, 0x22, 0xc0);
 #endif
 
-#ifdef __OCPN__ANDROID__
-#include <netdb.h>
-int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *)
-{
-    wxLogMessage(_T("Called stub gethostbyaddr_r()"));
-    return 0;
-}
-#endif
-
 BEGIN_EVENT_TABLE(NetworkDataStream, wxEvtHandler)
                 EVT_TIMER(TIMER_SOCKET, NetworkDataStream::OnTimerSocket)
                 EVT_SOCKET(DS_SOCKET_ID, NetworkDataStream::OnSocketEvent)

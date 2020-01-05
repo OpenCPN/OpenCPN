@@ -210,7 +210,8 @@ protected:
     void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
     wxEvtHandler* GetConsumer() { return m_consumer; }
-
+    wxString GetPortString(){ return m_portstring; }
+    
     void SetConnectTime(wxDateTime time) { m_connect_time = time; }
     wxDateTime GetConnectTime() { return m_connect_time; }
 
