@@ -3485,11 +3485,13 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
 #ifdef __ARM_ARCH
+                      {
                         float __attribute__((aligned(16))) tf1;
                         unsigned char *pucf = (unsigned char *)pf;
 
                         memcpy(&tf1, pucf, sizeof(float));
                         *pAVR = tf1;
+                      }
 #else
                         *pAVR = *pf;
 #endif
