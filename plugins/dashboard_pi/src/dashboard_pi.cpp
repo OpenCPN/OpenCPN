@@ -790,9 +790,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
                 }
                 if( mPriHeadingM >= 1 ) {
-                    mPriHeadingM = 1;
-                    mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0") );
+                    if (m_NMEA0183.Hdg.MagneticSensorHeadingDegrees < 999.) {
+                        mPriHeadingM = 1;
+                        mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, _T("\u00B0"));
+                    }
                 }
                 if( !std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
@@ -817,9 +819,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") ) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriHeadingM >= 2 ) {
-                    mPriHeadingM = 2;
-                    mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M") );
+                    if (m_NMEA0183.Hdm.DegreesMagnetic < 999.) {
+                        mPriHeadingM = 2;
+                        mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M"));
+                    }
                 }
                 if( !std::isnan(m_NMEA0183.Hdm.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
@@ -1091,9 +1095,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
                 }
                 if( mPriHeadingM >= 3 ) {
-                    mPriHeadingM = 3;
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, m_NMEA0183.Vhw.DegreesMagnetic,
-                            _T("\u00B0M") );
+                    if (m_NMEA0183.Vhw.DegreesMagnetic < 999.) {
+                        mPriHeadingM = 3;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, m_NMEA0183.Vhw.DegreesMagnetic,
+                            _T("\u00B0M"));
+                    }
                 }
                 if( m_NMEA0183.Vhw.Knots < 999. ) {
                     SendSentenceToAllInstruments( OCPN_DBP_STC_STW, toUsrSpeed_Plugin( m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit ),
