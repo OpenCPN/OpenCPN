@@ -85,6 +85,7 @@
 #ifdef __MSVC__
 //    __MSVC__ randomly does not link snprintf, or _snprintf
 //    Replace it with a local version, code is in cutil.c
+#undef snprintf
 #define snprintf mysnprintf
 #endif
 
