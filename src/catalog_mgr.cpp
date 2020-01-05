@@ -445,8 +445,9 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void onChannelChange(wxCommandEvent& ev)
             {
-                auto url = ev.GetString().ToStdString().c_str();
-                CatalogHandler::getInstance()->SetActiveChannel(url);
+                auto channel = ev.GetString().ToStdString().c_str();
+                CatalogHandler::getInstance()->SetActiveChannel(channel);
+                auto url =  CatalogHandler::getInstance()->GetDefaultUrl();
                 m_catalog_grid->ReloadAvailableVersion(url);
             };
 
