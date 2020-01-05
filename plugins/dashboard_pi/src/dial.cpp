@@ -99,12 +99,12 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
-      if ( (st == m_MainValueCap))
+      if (st == m_MainValueCap)
       {
             m_MainValue = data;
             m_MainValueUnit = unit;
       }
-      else if ( (st == m_ExtraValueCap))
+      else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;
