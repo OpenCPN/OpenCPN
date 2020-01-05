@@ -3325,7 +3325,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
 // printf("%d\n", iobject);
 
-
       int npub_year = 1993;                     // silly default
 
       int iclass = pobject->otype;
@@ -3482,6 +3481,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         break;
                   }
                   case 'R':
+                  {
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
 #ifdef __ARM_ARCH
@@ -3496,6 +3496,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         pattValTmp->valType = OGR_REAL;
                         pattValTmp->value   = pAVR;
                         break;
+                  }
                   default:
                         sattr.Clear();               // Unknown, TODO track occasional case '?'
                         break;
