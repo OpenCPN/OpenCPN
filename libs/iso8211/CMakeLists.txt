@@ -25,3 +25,5 @@ set_property(TARGET ISO8211 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../gdal/include)
+ADD_DEFINITIONS( "-fno-strict-aliasing" )
+
