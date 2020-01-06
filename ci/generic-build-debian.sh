@@ -21,8 +21,8 @@ sudo apt-get --allow-unauthenticated install -f
 # Ancient cmake cannot handle multi-line block comments:
 sed -i '/#\[\[/,/#\]\]/{//!d}' CMakeLists.txt
 
-# Trusty finds webview header but not the library:
-if [ "$OCPN_TARGET" = "trusty" ]; then \
+# Trusty and xenial finds webview header but not the library:
+if [ "$OCPN_TARGET" = "trusty"  -o "$OCPN_TARGET" = "xenial" ]; then \
     WEBVIEW_OPT="-DOCPN_USE_WEBVIEW:BOOL=OFF"
 fi
 

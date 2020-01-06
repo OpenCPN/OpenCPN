@@ -27,7 +27,10 @@ Homepage: https://opencpn.org
 
 Description: Packages needed to build opencpn on debian.
  The Build-Depends field can be used to install dependencies
- using mk-build-deps.
+ using something like:
+ .
+ .   sudo apt install devscripts equivs
+ .   sudo mk-build-deps --install ci/control
  .
  These packages are available in trusty+. The base-files
  fallback is for optional packages available in later releases.
