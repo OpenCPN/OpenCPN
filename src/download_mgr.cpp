@@ -568,7 +568,7 @@ class MainButtonsPanel: public wxPanel
 
     protected:
         
-        /**  Invokes the update catalog procedure. */
+        /**  Invokes the simple update catalog procedure. */
         class UpdateCatalogNowBtn: public wxButton
         {
             public:
@@ -585,7 +585,7 @@ class MainButtonsPanel: public wxPanel
         
         };
 
-        /**  Button invoking the update catalog dialog. */
+        /**  Button invoking the advanced  catalog dialog. */
         class UpdateCatalogDialogBtn: public wxButton
         {
             public:
