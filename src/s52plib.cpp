@@ -8347,7 +8347,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                 free(p_tp->p_vertex);
                                 p_tp->p_vertex = (double *)p_run;
                                 
-                                p_run += p_tp->nVert * 2;
+                                p_run += p_tp->nVert * 2 * sizeof(float);
                                 
                                 p_tp = p_tp->p_next; // pick up the next in chain
                             }
