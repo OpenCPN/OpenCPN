@@ -52,14 +52,13 @@ extern wxString                 g_catalog_custom_url;
 extern wxString                 g_catalog_channel;
 extern OCPNPlatform*            g_Platform;
 
-//static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/leamas/plugins";
-static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/opencpn/plugins";
+static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/OpenCPN/plugins";
 
 static const char* const DOWNLOAD_PATH = "/@branch@/ocpn-plugins.xml";
 
 static const char* const API_ENDPOINT = "https://api.github.com/repos";
 //static const char* const API_PATH = "/leamas/plugins/branches";
-static const char* const API_PATH = "/opencpn/plugins/branches";
+static const char* const API_PATH = "/OpenCPN/plugins/branches";
 
 
 CatalogHandler::CatalogHandler()
