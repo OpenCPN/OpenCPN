@@ -36,7 +36,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT MSVC)
-    ADD_COMPILE_OPTIONS( "-fvisibility=hidden" )
+    ADD_COMPILE_OPTIONS( "-fvisibility=hidden" "-fno-strict-aliasing" )
  IF(PROFILING)
      ADD_COMPILE_OPTIONS(
          "-Wall" "-g" "-fprofile-arcs" "-ftest-coverage" "-fexceptions")

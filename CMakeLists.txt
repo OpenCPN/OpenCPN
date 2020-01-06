@@ -422,10 +422,9 @@ if (NOT WIN32 AND NOT APPLE)
   if (NOT OCPN_PEDANTIC)
     add_compile_options(
       "-Wno-unused"
+      "-Wno-deprecated-declarations"
       "-fexceptions"
       "-rdynamic"
-      "-fno-strict-aliasing"
-      "-Wno-deprecated-declarations"
     )
   endif ()
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -445,7 +444,6 @@ if (MINGW)
       "-Wno-unused"
       "-Wno-cpp"
       "-fexceptions"
-      "-fno-strict-aliasing"
     )
   endif ()
   add_definitions("-DPSAPI_VERSION=1")
@@ -459,7 +457,6 @@ if (APPLE)
       "-Wno-unused"
       "-fexceptions"
       "-Wno-overloaded-virtual"
-      "-fno-strict-aliasing"
       "-Wno-deprecated"
       "-Wno-deprecated-declarations"
       "-Wno-unknown-pragmas"

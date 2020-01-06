@@ -10,7 +10,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 IF(NOT WIN32 AND NOT APPLE )
     #  ADD_COMPILE_OPTIONS( "-Wall" "-Wno-unused" "-fexceptions" "-rdynamic" )
-    #  ADD_COMPILE_OPTIONS( " -g" "-fno-strict-aliasing" "-O2")
+    #  ADD_COMPILE_OPTIONS( " -g" "-O2")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
