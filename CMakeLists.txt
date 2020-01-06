@@ -188,19 +188,13 @@ macro (BUNDLE_GSHHS_OPT value)
   )
 endmacro (BUNDLE_GSHHS_OPT)
 
-# If on Windows or Apple, build the monolithic package, to override use a non-
-# sense values from the commandline (due to cmake inability to distinguish
+# Build the monolithic package, to override use non-sense values
+# from the commandline (due to cmake inability to distinguish
 # between not set and set to FALSE): cmake -DOCPN_BUNDLE_DOCS=BLAH
 # -DOCPN_BUNDLE_TCDATA=BLAH -DOCPN_BUNDLE_GSHHS=BLAH ..
-if (APPLE OR WIN32)
-  bundle_docs_opt("ON")
-  bundle_tcdata_opt("ON")
-  bundle_gshhs_opt("CRUDE")
-else (APPLE OR WIN32)
-  bundle_docs_opt("OFF")
-  bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("NONE")
-endif (APPLE OR WIN32)
+bundle_docs_opt("ON")
+bundle_tcdata_opt("ON")
+bundle_gshhs_opt("CRUDE")
 
 option(OCPN_VERBOSE "Make verbose builds"  ON)
 option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
