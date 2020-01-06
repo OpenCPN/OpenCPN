@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include <set>
 #include <sstream>
 
 #include <wx/bitmap.h>
@@ -624,35 +625,31 @@ class OcpnScrolledWindow : public wxScrolledWindow
             SetSizer(box);
             FitInside();
             // TODO: Compute size using wxWindow::GetEffectiveMinSize()
-            SetScrollRate(0, 1);
+            SetScrollRate(1, 1);
         };
 
         void populateGrid(wxFlexGridSizer* grid)
         {
+            /** Compare two PluginMetadata objects for being equal. */
+            struct metadata_compare{
+                bool operator() (const PluginMetadata& lhs,
+                                 const PluginMetadata& rhs) const
+                {
+                    return lhs.key() < rhs.key();
+                }
+            };
+
             auto flags = wxSizerFlags();
             grid->SetCols(3);
+            auto available = PluginHandler::getInstance()->getAvailable();
+            std::set<PluginMetadata, metadata_compare> unique_plugins;
             for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
+                unique_plugins.insert(plugin);
+            }
+            for (auto plugin: unique_plugins) {
                 bool l_bOsLike = false;
                 if (plugin.target != PKG_TARGET) {
-                    if(plugin.target == "ubuntu") {
-                        if(m_sOsLike == "") {
-                            wxFile *l_File = new wxFile("/etc/os-release");
-                            if(l_File->IsOpened()) {
-                                wxString *l_InString = new wxString();
-                                if(l_File->ReadAll(l_InString)) {
-                                    // Find OS_LIKE in string
-                                    int l_nPos = l_InString->Find("ID_LIKE=");
-                                    if(l_nPos != wxNOT_FOUND) {
-                                        l_nPos += 8;
-                                        int l_nEnd = l_InString->find('\n', l_nPos);
-                                        m_sOsLike.append(l_InString->SubString(l_nPos, l_nEnd - 1));
-                                    }
-                                }
-                                l_File->Close();
-                            }
-
-                        }
-                    }
+                    find_compat_target(plugin.target);
                     if (plugin.target != m_sOsLike)
                         continue;
                 }
@@ -674,13 +671,44 @@ class OcpnScrolledWindow : public wxScrolledWindow
             populateGrid(m_grid);
             Layout();
             Show();
+            FitInside();
             Refresh(true);
         }
 
     private:
         wxFlexGridSizer* m_grid;
         wxString m_sOsLike;
-
+        void find_compat_target(const std::string& plugin_target)
+        {
+            if (m_sOsLike != "") {
+                return;
+            }
+            if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+               // Undocumented test hook.
+               m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
+               return;
+            }
+            if (plugin_target != "ubuntu") {
+                return;
+            }
+            if(m_sOsLike == "") {
+                wxFile *l_File = new wxFile("/etc/os-release");
+                if(l_File->IsOpened()) {
+                    wxString *l_InString = new wxString();
+                    if(l_File->ReadAll(l_InString)) {
+                        // Find OS_LIKE in string
+                        int l_nPos = l_InString->Find("ID_LIKE=");
+                        if(l_nPos != wxNOT_FOUND) {
+                            l_nPos += 8;
+                            int l_nEnd = l_InString->find('\n', l_nPos);
+                            m_sOsLike.append(l_InString->SubString(l_nPos, l_nEnd - 1));
+                        }
+                    }
+                    l_File->Close();
+                }
+            }
+        }
+ 
 
 };
 
