@@ -59,14 +59,19 @@ struct PluginMetadata {
     std::string target_version;
     std::string info_url;
     std::string meta_url;
-    
+
     bool openSource;
 
     bool readonly;                // Can plugin be removed?
     int ix;                       // Index in list of installed or available.
     void clear() { *this = PluginMetadata(); }
+    std::string key() const
+    {
+       return std::string(name) + version + release + target + target_version;
+    }
+
+
     PluginMetadata() :  readonly(true), ix(-1) {}
-    bool IsSameAs( PluginMetadata *other );
 };
 
 
@@ -74,13 +79,19 @@ struct PluginMetadata {
  * The result from parsing the xml catalog i. e., ocpn-plugins.xml.
  */
 struct catalog_ctx {
+    // list of plugins parsed
     std::vector<PluginMetadata> plugins;
+
+    // list meta-urls found when parsing last plugin.
+    std::vector<std::string> meta_urls;
+
     std::string version;
     std::string date;
 
     // Internal data used while parsing, undefined on exit.
-    std::unique_ptr<PluginMetadata> plugin;    
+    std::unique_ptr<PluginMetadata> plugin;
     std::string buff;
+    std::string meta_url;
     int depth;
     catalog_ctx(): depth(0) {}
 };
