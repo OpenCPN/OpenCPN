@@ -528,6 +528,9 @@ class PluginTextPanel: public wxPanel
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
             GetParent()->SendSizeEvent();
+            GetParent()->GetParent()->GetParent()->Layout();
+            GetParent()->GetParent()->GetParent()->Refresh(true);
+            GetParent()->GetParent()->GetParent()->Update();
         }
 
     protected:
