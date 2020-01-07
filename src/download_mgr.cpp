@@ -426,9 +426,11 @@ class InstallButton: public wxPanel
             OcpnVersion newVersion(metadata.version);
             if (newVersion > currentVersion) {
                 return _("Update");
-            } else if (newVersion == currentVersion) {
+            }
+            else if (newVersion == currentVersion) {
                 return _("Reinstall");
-            } else {
+            }
+            else {
                 return _("Downgrade");
             }
         }
@@ -456,7 +458,7 @@ class WebsiteButton: public wxPanel
 };
 
 
-/** The two buttons 'install' and 'website'; the latter optionally hidden. */
+/** The two buttons 'install' and 'website', the latter optionally hidden. */
 class CandidateButtonsPanel: public wxPanel
 {
     public:
@@ -550,7 +552,6 @@ class PluginTextPanel: public wxPanel
  */
 class MainButtonsPanel: public wxPanel
 {
-
     public:
         MainButtonsPanel(wxWindow* parent, wxWindow* victim)
             :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32))
@@ -583,7 +584,6 @@ class MainButtonsPanel: public wxPanel
                         wxPostEvent(GetParent(), evt);
                 });
             }
-        
         };
 
         /**  Button invoking the advanced  catalog dialog. */
@@ -598,7 +598,6 @@ class MainButtonsPanel: public wxPanel
                       new AdvancedCatalogDialog(this);
                  });
             }
-        
         };
 };
 
@@ -612,7 +611,8 @@ class OcpnScrolledWindow : public wxScrolledWindow
     public:
         OcpnScrolledWindow(wxWindow* parent)
             :wxScrolledWindow(parent),
-            m_grid(new wxFlexGridSizer(3, 0, 0))
+            m_grid(new wxFlexGridSizer(3, 0, 0)),
+            m_sOsLike("")
         {
             auto box = new wxBoxSizer(wxVERTICAL);
             populateGrid(m_grid);
@@ -620,7 +620,6 @@ class OcpnScrolledWindow : public wxScrolledWindow
             auto button_panel = new MainButtonsPanel(this, parent);
             box->Add(button_panel, wxSizerFlags().Right().Border().Expand());
             Bind(EVT_PLUGINS_RELOAD, [&](wxCommandEvent& ev) { Reload(); });
-            m_sOsLike.erase();
 
             SetSizer(box);
             FitInside();
@@ -630,7 +629,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
         void populateGrid(wxFlexGridSizer* grid)
         {
-            /** Compare two PluginMetadata objects for being equal. */
+            /** Compare two PluginMetadata objects, a named c++ requirement. */
             struct metadata_compare{
                 bool operator() (const PluginMetadata& lhs,
                                  const PluginMetadata& rhs) const
@@ -648,7 +647,6 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 unique_plugins.insert(plugin);
             }
             for (auto plugin: unique_plugins) {
-                bool l_bOsLike = false;
                 if (plugin.target != PKG_TARGET) {
                     find_compat_target(plugin.target);
                     if (plugin.target != m_sOsLike)
@@ -685,32 +683,29 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 return;
             }
             if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-               // Undocumented test hook.
-               m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
-               return;
+                // Undocumented test hook.
+                m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
+                return;
             }
             if (plugin_target != "ubuntu") {
                 return;
             }
-            if(m_sOsLike == "") {
-                wxFile *l_File = new wxFile("/etc/os-release");
-                if(l_File->IsOpened()) {
-                    wxString *l_InString = new wxString();
-                    if(l_File->ReadAll(l_InString)) {
-                        // Find OS_LIKE in string
-                        int l_nPos = l_InString->Find("ID_LIKE=");
-                        if(l_nPos != wxNOT_FOUND) {
-                            l_nPos += 8;
-                            int l_nEnd = l_InString->find('\n', l_nPos);
-                            m_sOsLike.append(l_InString->SubString(l_nPos, l_nEnd - 1));
-                        }
-                    }
-                    l_File->Close();
+            wxFile file("/etc/os-release");
+            if(!file.IsOpened()) {
+                return;
+            }
+            wxString l_InString;
+            if(file.ReadAll(&l_InString)) {
+                // Find OS_LIKE in string
+                int l_nPos = l_InString.Find("ID_LIKE=");
+                if(l_nPos != wxNOT_FOUND) {
+                    l_nPos += 8;
+                    int l_nEnd = l_InString.find('\n', l_nPos);
+                    m_sOsLike.append(l_InString.SubString(l_nPos, l_nEnd - 1));
                 }
             }
+            file.Close();
         }
- 
-
 };
 
 }  // namespace download_mgr
@@ -728,10 +723,10 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     // The list has no natural height. Allocate 20 lines of text so some
     // items are displayed initially in Layout()
     int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 20;
-    int width = GetParent()->GetClientSize().GetWidth();
 
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
+    int width = GetParent()->GetClientSize().GetWidth();
     SetMinClientSize(wxSize(width, min_height));
 
     SetSizer(vbox);
