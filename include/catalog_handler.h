@@ -118,6 +118,7 @@ class CatalogHandler {
         CatalogHandler();
 
         void LoadCatalogData(const std::string& path, CatalogData& data);
+        ServerStatus DoParseCatalog(const std::string xml, catalog_ctx* ctx);
 
         const char* const GET_BRANCHES_PATH =
             "/repos/OpenCPN/plugins/branches";
