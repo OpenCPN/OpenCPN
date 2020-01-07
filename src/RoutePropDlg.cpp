@@ -119,22 +119,21 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_stDeparture->Wrap( -1 );
 	bSizerDeparture->Add( m_stDeparture, 0, wxALL, 5 );
 
-	wxBoxSizer* bSizerDepartureTS;
-	bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
+        wxBoxSizer* bSizerDepartureTS;
+        bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
+        bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
 
 #ifndef __OCPN__ANDROID__        
 	m_dpDepartureDate = new wxDatePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 	bSizerDepartureTS->Add( m_dpDepartureDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 #ifdef __WXGTK__
-    m_tpDepartureTime = new TimeCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize );
+        m_tpDepartureTime = new TimeCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize );
 #else
-	m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+        m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 #endif
+        bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 #endif
-	bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
-
 
 	wSizerParams->Add( bSizerDeparture, 1, wxEXPAND, 0 );
 
