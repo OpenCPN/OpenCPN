@@ -468,11 +468,11 @@ class CandidateButtonsPanel: public wxPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             vbox->Add(new InstallButton(this, *plugin), 
-                                        flags.DoubleBorder(wxRIGHT));
+                                        flags.DoubleBorder().Top().Right());
             vbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
             m_info_btn = new WebsiteButton(this, plugin->info_url.c_str());
             m_info_btn->Hide();
-            vbox->Add(m_info_btn, flags.Bottom().Border());
+            vbox->Add(m_info_btn, flags.DoubleBorder().Bottom().Right());
             SetSizer(vbox);
             Fit();
         }
@@ -641,6 +641,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
             auto flags = wxSizerFlags();
             grid->SetCols(3);
+            grid->AddGrowableCol(2);
             auto available = PluginHandler::getInstance()->getAvailable();
             std::set<PluginMetadata, metadata_compare> unique_plugins;
             for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
@@ -656,11 +657,11 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
                 grid->Add(new PluginTextPanel(this, &plugin, buttons),
-                          flags.Proportion(1));
-                grid->Add(buttons, flags);
-                grid->Add(new wxStaticLine(this), flags);
-                grid->Add(new wxStaticLine(this), flags);
-                grid->Add(new wxStaticLine(this), flags);
+                          flags.Proportion(1).Right());
+                grid->Add(buttons, flags.DoubleBorder());
+                grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+                grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+                grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
             }
         }
 
@@ -716,7 +717,9 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
 /** Top-level install plugins dialog. */
 PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
-    :wxDialog(parent, wxID_ANY, _("Plugin Manager"))
+    :wxDialog(parent, wxID_ANY, _("Plugin Manager"),
+              wxDefaultPosition , wxDefaultSize,
+              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto scrwin = new download_mgr::OcpnScrolledWindow(this);
@@ -730,10 +733,8 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
     SetMinClientSize(wxSize(width, min_height));
-    SetMaxClientSize(wxSize(width, -1));
 
     SetSizer(vbox);
     Fit();
     Layout();
-    SetMinClientSize(wxSize(GetClientSize()));
 }
