@@ -31,6 +31,7 @@ cmake $WEBVIEW_OPT \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DOCPN_CI_BUILD:BOOL=ON \
+    -DOCPN_USE_BUNDLED_LIBS=OFF \
     ..
 make -sj2
 make package
