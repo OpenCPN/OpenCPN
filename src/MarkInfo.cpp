@@ -682,7 +682,7 @@ void MarkInfoDlg::Create()
     btnSizer->Add(m_sdbSizerButtons, 0, wxALL, 5);
 
 
-    SetMinSize(wxSize(-1, 600));
+    //SetMinSize(wxSize(-1, 600));
     
     // Connect Events
     m_textLatitude->Connect( wxEVT_CONTEXT_MENU, wxCommandEventHandler( MarkInfoDlg::OnRightClickLatLon ), NULL, this );
