@@ -253,7 +253,7 @@ class MarkInfoDlg : public wxFrame
         wxObject*               m_contextObject;
         wxScrolledWindow*       m_panelBasicProperties;
         wxPanel*                m_panelDescription;
-        wxPanel*                m_panelExtendedProperties;
+        wxScrolledWindow*       m_panelExtendedProperties;
         wxSimpleHtmlListBox*    m_htmlList;
         wxSize                  m_defaultClientSize;
         wxChoice*               m_ChoiceWaypointRangeRingsNumber;

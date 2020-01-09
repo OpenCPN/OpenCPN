@@ -523,16 +523,18 @@ void MarkInfoDlg::Create()
 
 /////////////////////////////////////////////////////// EXTENDED ///////////////////////////////////////////////////////
     
-    m_panelExtendedProperties = new wxPanel(m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_panelExtendedProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
+                                                   wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
+    #ifdef __OCPN__ANDROID__
+    m_panelExtendedProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
+    #endif
+    
+    m_panelExtendedProperties->SetScrollRate(0, 2);
+
     wxBoxSizer* fSizerExtProperties = new wxBoxSizer(wxVERTICAL);
     m_panelExtendedProperties->SetSizer(fSizerExtProperties);
     m_notebookProperties->AddPage(m_panelExtendedProperties, _("Extended"), false);
 
-    #ifdef __OCPN__ANDROID__
-    m_panelExtendedProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
-    #endif
-
-    
     sbSizerExtProperties = new wxStaticBoxSizer(wxVERTICAL, m_panelExtendedProperties, _("Extended Properties"));
     wxFlexGridSizer* gbSizerInnerExtProperties = new wxFlexGridSizer(3, 0, 0);
     gbSizerInnerExtProperties->AddGrowableCol(2);
