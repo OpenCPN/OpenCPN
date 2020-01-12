@@ -368,9 +368,8 @@ void NetworkDataStream::OnSocketEvent(wxSocketEvent& event)
 
                 GetSocketThreadWatchdogTimer()->Stop();
                 GetSocketTimer()->Start(retry_time, wxTIMER_ONE_SHOT);     // Schedule a re-connect attempt
-
-                break;
             }
+            break;
         }
 
         case wxSOCKET_CONNECTION :
