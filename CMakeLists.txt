@@ -156,14 +156,6 @@ ENDIF(DEFINED _wx_selected_config)
 include(FindPkgConfig)
 include(CMakeDependentOption)
 
-# Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
-# to avoid multilib plugin paths. After all, we do not install any
-# "real" libraries.
-if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib")
-endif ()
-include(GNUInstallDirs)
-
 #
 # Options
 #
@@ -215,6 +207,10 @@ else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
 
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  option(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+endif ()
+
 if (NOT WIN32 AND NOT APPLE)
   set(PA_DEFAULT "ON")
 endif ()
@@ -245,24 +241,14 @@ set(
 if (WIN32 AND NOT UNIX)
   option(OCPN_BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
   option(OCPN_BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
+  option(
+    BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
+  )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   option(OCPN_ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
   set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
-endif ()
-
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-    if (EXISTS "/usr/lib64")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
-    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
-    else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
-    endif ()
-    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
-        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
-    )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.9)
@@ -510,6 +496,7 @@ if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
 endif (MSVC)
 
+
 if (QT_ANDROID)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
@@ -528,6 +515,24 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
 endif (QT_ANDROID)
 
+
+#
+# Installation directory setup
+#
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+    if (EXISTS "/usr/lib64")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
+    else ()
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+    endif ()
+    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+    )
+endif ()
+
+
 set(
   LINUX_LIB_PATHS
   /usr/local/lib
@@ -537,6 +542,14 @@ set(
   /usr/lib
   /usr/lib64
 )
+
+# Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
+# to avoid multilib plugin paths. After all, we do not install any
+# "real" libraries.
+if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif ()
+include(GNUInstallDirs)
 
 set(PREFIX_BIN ${CMAKE_INSTALL_BINDIR})
 set(PREFIX_INCLUDE ${CMAKE_INSTALL_INCLUDEDIR})
@@ -585,9 +598,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 # Bundled data: docs, tcdata, gshhs
 #
 
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  option(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
-endif ()
 
 if (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will include documentation ***")
@@ -2446,9 +2456,6 @@ if (WIN32 AND NOT UNIX)
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
   endif (OCPN_BUNDLE_VCDLLS)
-  option(
-    BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
-  )
   if (BUNDLE_LIBARCHIVEDLLS)
     file(
       GLOB
