@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
-# Author:      Dave Register DEB 
-# config from: antonm - Anton Martchukov <anton@martchukov.com> 
-# Update:      sethdart (Jean-Eudes Onfray) 
+# Author:      Dave Register DEB
+# config from: antonm - Anton Martchukov <anton@martchukov.com>
+# Update:      sethdart (Jean-Eudes Onfray)
 #                 with parts from balp (Anders Arnholm)
 # ***************************************************************************
 # - Copyright (C) 2010 by David S. Register                               *
@@ -92,7 +92,7 @@ To build for android, use something like:
 
 Silent/Verbose builds:
     cmake's handling of these issues is underwhelming. On most platforms the
-    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make 
+    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make
     a silent build. The OCPN_VERBOSE value can be overridden using
     'make VERBOSE=1' or 'make -s'
 #]]
@@ -150,7 +150,7 @@ IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "androideabi-qt")
     MESSAGE (STATUS "Building for wxQt-Android")
     SET(QT_ANDROID "ON")
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")  
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
 include(FindPkgConfig)
@@ -308,8 +308,8 @@ IF (QT_ANDROID)
   SET(OCPN_USE_CURL ON)
   SET(ENABLE_PORTAUDIO OFF)
   SET(ENABLE_SYSTEM_CMD_SOUND OFF)
-  SET(ENABLE_SNDFILE OFF) 
-  SET(OCPN_USE_LZMA OFF) 
+  SET(ENABLE_SNDFILE OFF)
+  SET(OCPN_USE_LZMA OFF)
 ENDIF (QT_ANDROID)
 
 # Check if a given library should use the bundled source
@@ -503,7 +503,7 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
-  
+
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
         "-Wno-overloaded-virtual"
@@ -522,7 +522,7 @@ endif (QT_ANDROID)
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     if (EXISTS "/usr/lib64")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
-    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
     else ()
         set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
@@ -635,7 +635,7 @@ IF(DEFINED _wx_selected_config)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
-  
+
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
     SET(USE_GLES2 ON )
     MESSAGE (STATUS "Using GLESv2 for Android")
@@ -793,13 +793,13 @@ IF(QT_ANDROID)
     ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-    
+
     ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
- 
+
     )
 ENDIF(QT_ANDROID)
 
