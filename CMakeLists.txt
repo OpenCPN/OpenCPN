@@ -1835,65 +1835,56 @@ if (APPLE)
     set_source_files_properties(
       ${gshhs}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/gshhs
+        MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
     )
   endif ()
 
   set_source_files_properties(
     ${uiData}
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/uidata
+      MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
   set_source_files_properties(
     ${s57data}
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/s57data
+      MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     set_source_files_properties(
       ${tcData}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/tcdata
+        MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
   endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
 
   set_source_files_properties(
     data/license.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/authors.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/opencpn.png
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/CoC-909_2013-InlandECDIS_20170308.pdf
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
   install(
       FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
@@ -1909,8 +1900,7 @@ if (APPLE)
     set_source_files_properties(
       ${_pluginIcon}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/uidata/plugins
+        MACOSX_PACKAGE_LOCATION SharedSupport/uidata/plugins
     )
   endforeach ()
   install(
@@ -1924,8 +1914,7 @@ if (APPLE)
     set_source_files_properties(
       ${_currentSoundFile}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/sounds
+        MACOSX_PACKAGE_LOCATION SharedSupport/sounds
     )
   endforeach (_currentSoundFile)
 
@@ -1934,8 +1923,7 @@ if (APPLE)
     set_source_files_properties(
       ${_currentConfigFile}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/configs
+        MACOSX_PACKAGE_LOCATION SharedSupport/configs
     )
   endforeach (_currentConfigFile)
 
@@ -1948,8 +1936,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/traditional
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/traditional
       )
     endforeach ()
 
@@ -1959,8 +1946,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/journeyman
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman
       )
     endforeach ()
 
@@ -1974,8 +1960,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/journeyman_flat
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat
       )
     endforeach ()
 
@@ -1985,8 +1970,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/MUI_flat
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/MUI_flat
       )
     endforeach (_currentSvgFile)
 
@@ -1996,8 +1980,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/markicons
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/markicons
       )
     endforeach ()
 
@@ -2016,16 +1999,14 @@ if (APPLE)
   set_source_files_properties(
     data/doc/help_web.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/doc
+      MACOSX_PACKAGE_LOCATION SharedSupport/doc
   )
 
   if (OCPN_BUNDLE_DOCS MATCHES "ON")
     set_source_files_properties(
       data/doc/help_en_US.html
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/doc
+        MACOSX_PACKAGE_LOCATION SharedSupport/doc
     )
 
     file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -2045,8 +2026,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentWikiDocFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        ${_location}
+          MACOSX_PACKAGE_LOCATION ${_location}
       )
     endforeach (_currentWikiDocFile)
 
@@ -2055,15 +2035,13 @@ if (APPLE)
   set_source_files_properties(
     buildosx/opencpn.icns
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    Resources
+      MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
     buildosx/MainMenu.xib
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    Resources/English.lproj
+      MACOSX_PACKAGE_LOCATION Resources/English.lproj
   )
 
   # These variables get substituted into the Info.plist template file at build
@@ -2421,13 +2399,8 @@ if (WIN32 OR APPLE)
       install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
-        RENAME
-          wxstd.mo
-          PERMISSIONS
-          OWNER_READ
-          OWNER_WRITE
-          GROUP_READ
-          WORLD_READ
+        RENAME wxstd.mo
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
     endif (APPLE)
 
