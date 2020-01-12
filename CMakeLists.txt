@@ -827,9 +827,9 @@ endif (QT_ANDROID)
 
 set(
   HDRS
-  include/about.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
+  include/about.h
   include/AIS_Bitstring.h
   include/AIS_Decoder.h
   include/ais.h
@@ -862,6 +862,7 @@ set(
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
+  include/GarminProtocolHandler.h
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
@@ -879,6 +880,7 @@ set(
   include/multiplexer.h
   include/NavObjectCollection.h
   include/navutil.h
+  include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
@@ -886,16 +888,16 @@ set(
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
-  include/ocpn_utils.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
-  include/semantic_vers.h
   include/OCPNRegion.h
+  include/OCPN_SignalKEvent.h
   include/ocpn_types.h
+  include/ocpn_utils.h
   include/options.h
   include/piano.h
-  include/pluginmanager.h
   include/PluginHandler.h
+  include/pluginmanager.h
   include/PluginPaths.h
   include/PositionParser.h
   include/printtable.h
@@ -915,7 +917,11 @@ set(
   include/S57Sector.h
   include/Select.h
   include/SelectItem.h
+  include/semantic_vers.h
   include/SendToGpsDlg.h
+  include/SerialDataStream.h
+  include/SignalKDataStream.h
+  include/SignalKEventHandler.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -938,12 +944,6 @@ set(
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
-  include/SerialDataStream.h
-  include/NetworkDataStream.h
-  include/SignalKDataStream.h
-  include/SignalKEventHandler.h
-  include/GarminProtocolHandler.h
-  include/OCPN_SignalKEvent.h
   ${CMAKE_BINARY_DIR}/include/config.h
 )
 
@@ -960,12 +960,12 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/bbox.cpp
-  src/catalog_handler.cpp
-  src/catalog_mgr.cpp
-  src/catalog_parser.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
+  src/catalog_handler.cpp
+  src/catalog_mgr.cpp
+  src/catalog_parser.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
@@ -985,6 +985,7 @@ set(
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
+  src/GarminProtocolHandler.cpp
   src/garmin_wrapper.h
   src/geodesic.cpp
   src/georef.cpp
@@ -1003,6 +1004,7 @@ set(
   src/multiplexer.cpp
   src/NavObjectCollection.cpp
   src/navutil.cpp
+  src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
@@ -1011,15 +1013,15 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
-  src/semantic_vers.cpp
-  src/ocpn_utils.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
+  src/OCPN_SignalKEvent.cpp
+  src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
   src/PluginHandler.cpp
-  src/PluginPaths.cpp
   src/pluginmanager.cpp
+  src/PluginPaths.cpp
   src/PositionParser.cpp
   src/printtable.cpp
   src/pugixml.cpp
@@ -1035,7 +1037,11 @@ set(
   src/S57QueryDialog.cpp
   src/Select.cpp
   src/SelectItem.cpp
+  src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
+  src/SerialDataStream.cpp
+  src/SignalKDataStream.cpp
+  src/SignalKEventHandler.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/TCDataFactory.cpp
@@ -1053,14 +1059,6 @@ set(
   src/TTYWindow.cpp
   src/undo.cpp
   src/viewport.cpp
-  
-         src/SerialDataStream.cpp
-        src/NetworkDataStream.cpp
-        src/SignalKDataStream.cpp
-        src/SignalKEventHandler.cpp
-        src/GarminProtocolHandler.cpp
-        src/OCPN_SignalKEvent.cpp
-
 )
 
 if (OCPN_USE_GARMINHOST)
