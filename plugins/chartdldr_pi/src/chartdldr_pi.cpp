@@ -687,6 +687,7 @@ void ChartDldrPanelImpl::SetSource( int id )
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
         FillFromFile(cs->GetUrl(), cs->GetDir(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
+        m_chartsLabel->SetLabel(wxString::Format(_("Charts: %s"), cs->GetName().c_str()));
         if (::wxIsBusy()) ::wxEndBusyCursor();
     }
     else
@@ -789,7 +790,6 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             
             m_boxSizerCharts->Add( pC, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 );
             m_panelArray.Add( pC );
-
         }
         
         
@@ -971,6 +971,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
     }
     updatingAll = true;
     cancelled = false;
+    // Flip to the list of charts so user can observe the download progress
+    int oldPage = m_DLoadNB->SetSelection(1);
     for( long chartIndex = 0; chartIndex < m_lbChartSources->GetItemCount(); chartIndex++ )
     {
         m_lbChartSources->SetItemState(chartIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -989,6 +991,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
         ForceChartDBUpdate();
     updatingAll = false;
     cancelled = false;
+    // Flip back to the original page
+    m_DLoadNB->SetSelection(oldPage);
 }
 
 
@@ -1057,7 +1061,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
 
     bok = wxCopyFile( tfn.GetFullPath(), fn.GetFullPath() );
     wxRemoveFile ( tfn.GetFullPath() );
-    
+
 #endif
     
 //    wxLogMessage(_T("chartdldr_pi:  OCPN_downloadFile done:"));
@@ -1071,7 +1075,6 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                 long id = GetSelectedCatalog();
                 SetSource(id);
                 
-                FillFromFile(url.GetPath(), fn.GetPath(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
                 m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
                 m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
                 m_lbChartSources->SetItem(id, 2, cs->GetDir());
@@ -1324,7 +1327,7 @@ void ChartDldrPanelImpl::DownloadCharts()
     wxFileName downloaded_p;
     int idx = -1;
 
-    for( int i = 0; i < GetChartCount(); i++ )
+    for( int i = 0; i < GetChartCount() && to_download; i++ )
     {
         if( cancelled )
             break;
