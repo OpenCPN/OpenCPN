@@ -8653,9 +8653,13 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
-      m_AddPluginPanel = new AddPluginPanel(itemPanelPlugins);
-      itemBoxSizerPanelPlugins->Add(m_AddPluginPanel,
+      
+      m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
+      m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
+      
+      itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel,
                                     wxSizerFlags(0).Expand().TripleBorder());
+      
       itemBoxSizerPanelPlugins->Layout();
 
       //  Update the PlugIn page to reflect the state of individual selections
