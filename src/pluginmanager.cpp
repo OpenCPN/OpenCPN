@@ -4773,6 +4773,8 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     if(m_PluginListPanel)
         m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
+    OCPNMessageBox(this, _("Catalog update successful"), _("OpenCPN Catalog update"), wxICON_INFORMATION  | wxOK);
+
 }
 
 wxString CatalogMgrPanel::GetCatalogText()
