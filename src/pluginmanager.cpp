@@ -416,6 +416,7 @@ PlugInContainer::PlugInContainer()
     m_bToolboxPanel = false;
     m_bitmap = NULL;
     m_pluginStatus =  PluginStatus::Unknown;
+    m_api_version = 0;
 }
 
 SemanticVersion PlugInContainer::GetVersion() 
@@ -1129,10 +1130,20 @@ void PlugInManager::UpdateManagedPlugins()
                 pic->m_ManagedMetadata = plugin;
             }
             
-            // If the new plugin is not installed, then the status must be "PluginStatus::LegacyUpdateAvailable"
+            // If the new plugin is not installed....
             else{
-                pic->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
-                pic->m_ManagedMetadata = plugin;
+
+                // If the plugin is actually loaded, but the new plugin is known not to be installed,
+                //  then there must be a legacy plugin loaded.
+                //  and the new status must be "PluginStatus::LegacyUpdateAvailable"
+                if(pic->m_api_version){
+                    pic->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
+                    pic->m_ManagedMetadata = plugin;
+                }
+                // Otherwise, this is an uninstalled managed plugin.
+                else{
+                    pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
+                }
             }
                
 
