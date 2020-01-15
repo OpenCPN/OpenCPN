@@ -4783,7 +4783,7 @@ wxString CatalogMgrPanel::GetCatalogText()
 
     // Check the config file to learn what was the last catalog downloaded.
     pConfig->SetPath( _T("/PlugIns/") );
-    wxString latestCatalog = pConfig->Read( _T("LatestCatalogDownloaded"), _T("Master") );
+    wxString latestCatalog = pConfig->Read( _T("LatestCatalogDownloaded"), _T("default") );
     catalog += latestCatalog;
     
     //  Get the version from the currently active catalog, by which we mean
