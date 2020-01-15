@@ -429,6 +429,7 @@ void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
     wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
     dialog->SetFont(fo);
     
+#ifdef __OCPN__ANDROID__
     if( m_parent_window ){
         int xmax = m_parent_window->GetSize().GetWidth();
         int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
@@ -440,22 +441,23 @@ void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
     
     wxColour cl = wxColour(214,218,222);
     SetBackColor( dialog, cl );
+#endif
     
     dialog->SetPath(m_base_chart_dir);
     dialog->SetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
     
-    dialog->Show();
+    dialog->ShowModal();
+    dialog->Destroy();
 }
 
 void chartdldr_pi::UpdatePrefs(ChartDldrPrefsDlgImpl *dialog)
-    {
-        m_base_chart_dir = dialog->GetPath();
-        dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-        SaveConfig();
-        if(m_dldrpanel)
-            m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
-        
-    }
+{
+    m_base_chart_dir = dialog->GetPath();
+    dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
+    SaveConfig();
+    if(m_dldrpanel)
+        m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
+}
 
 bool getDisplayMetrics()
 {
@@ -2351,19 +2353,24 @@ void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
         g_pi->UpdatePrefs(this);
     }
     
-    Hide();
-    Close();
+    event.Skip();
+    EndModal( wxID_OK );
+
+    //Hide();
+    //Close();
 }
 
 void ChartDldrPrefsDlg::OnCancelClick( wxCommandEvent& event )
 {
-    Close();
+    event.Skip();
+    EndModal( wxID_CANCEL );
+    //Close();
 }
 
 void ChartDldrPrefsDlg::OnOkClick( wxCommandEvent& event )
 {
     event.Skip();
-    Close();
+    //Close();
 }
 
 

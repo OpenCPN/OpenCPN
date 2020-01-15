@@ -2012,8 +2012,6 @@ bool MyApp::OnInit()
     
     
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-    if( lang_list[0] ) {};                 // silly way to avoid compiler warnings
-
     
     //  Where are the opencpn.mo files?
     g_Platform->SetLocaleSearchPrefixes();

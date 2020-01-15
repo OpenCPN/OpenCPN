@@ -69,6 +69,7 @@
 #include "Select.h"
 #include "routeman.h"
 #include "CanvasOptions.h"
+#include "SerialDataStream.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -3720,6 +3721,15 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
             
             if( cp->bEnabled ) {
                 dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = makeSerialDataStream(g_pMUX,
+                                                   cp->Type,
+                                                   cp->GetDSPort(),
+                                                   wxString::Format(wxT("%i"), cp->Baudrate),
+                                                   port_type,
+                                                   cp->Priority,
+                                                   cp->Garmin);
+
+#if 0                
                 DataStream *dstr = new DataStream( g_pMUX,
                                                    cp->Type,
                                                    cp->GetDSPort(),
@@ -3727,6 +3737,7 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                                                                     port_type,
                                                                     cp->Priority,
                                                                     cp->Garmin);
+#endif                
                                                    dstr->SetInputFilter(cp->InputSentenceList);
                                                    dstr->SetInputFilterType(cp->InputSentenceListType);
                                                    dstr->SetOutputFilter(cp->OutputSentenceList);
@@ -3832,6 +3843,7 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                         
                         if( cp->bEnabled ) {
                             dsPortType port_type = cp->IOSelect;
+#if 0
                             DataStream *dstr = new DataStream( g_pMUX,
                                                                cp->Type,
                                                                cp->GetDSPort(),
@@ -3839,6 +3851,15 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                                                                port_type,
                                                                cp->Priority,
                                                                cp->Garmin);
+#endif                            
+                            DataStream *dstr = makeSerialDataStream(g_pMUX,
+                                                   cp->Type,
+                                                   cp->GetDSPort(),
+                                                   wxString::Format(wxT("%i"), cp->Baudrate),
+                                                   port_type,
+                                                   cp->Priority,
+                                                   cp->Garmin);
+
                             dstr->SetInputFilter(cp->InputSentenceList);
                             dstr->SetInputFilterType(cp->InputSentenceListType);
                             dstr->SetOutputFilter(cp->OutputSentenceList);

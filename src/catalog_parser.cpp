@@ -60,16 +60,6 @@
 #endif
 
 
-//      PluginMetadata Implementation
-bool PluginMetadata::IsSameAs( PluginMetadata *other ){
-    return !other->name.empty() && other->name == name
-        && !other->target.empty() &&  other->target == target
-        && !other->target_version.empty() &&  other->target_version == target_version
-        && !other->version.empty() &&  other->version == version
-        && !other->release.empty() &&  other->release == release;
-}
-
-
 static void XMLCALL elementData(void* userData, const XML_Char* s, int len)
 {
     catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
@@ -94,14 +84,17 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
     catalog_ctx* ctx = static_cast<catalog_ctx*>(userData);
     std::string buff = ctx->buff;
     if (ctx->depth <= 0)  {
-        if (strcmp(name, "version") == 0) {
+        if (strcmp(name, "version") == 0 && ctx->version == "") {
             ctx->version = ocpn::trim(buff);
         }
-        else if (strcmp(name, "date") == 0) {
+        else if (strcmp(name, "date")  == 0 && ctx->date == "") {
             ctx->date = ocpn::trim(buff);
         }
     }
-
+    else if (strcmp(name, "meta-url") == 0) {
+        auto url = ocpn::trim(buff);
+        ctx->meta_url = url;
+    }
     else if (strcmp(name, "name") == 0) {
        ctx->plugin->name = ocpn::trim(buff);
     } else if (strcmp(name, "version") == 0) {
@@ -132,32 +125,15 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
         ctx->plugin->target_version = ocpn::trim(buff);
     } else if (strcmp(name, "open-source") == 0) {
         ctx->plugin->openSource = ocpn::trim(buff) == "yes";
-    } else if (strcmp(name, "meta-url") == 0) {
-        ctx->plugin->meta_url = ocpn::trim(buff);
-    }
-
-    // Done with "plugin" clause
-    if (strcmp(name, "plugin") == 0) {
-        if(!ctx->plugin)
-            return;
-
-        //  Add a new plugin if required, otherwise merge the tentative plugin metadata
-        bool bmerged = false;
-        for(auto candidatePlugin: ctx->plugins) {
-            if(ctx->plugin->IsSameAs(&candidatePlugin)){
-                candidatePlugin = *ctx->plugin;
-                // clear the merged plugin meta-info
-                candidatePlugin.meta_url.clear();
-                bmerged =true;
-                break;
-            }
-        }
-
-        // No match found, must be a "new" plugin, so add this one
-        if(!bmerged){
+    } else if (strcmp(name, "plugin") == 0) {
+        if (ctx->meta_url != "") {
+            ctx->meta_urls.push_back(ctx->meta_url);
+            ctx->meta_url = "";
+        }  
+        else {
             ctx->plugins.push_back(*ctx->plugin);
-            ctx->depth -= 1;
         }
+        ctx->depth -= 1;
     }
 }
 
@@ -180,51 +156,5 @@ bool ParseCatalog(const std::string xml, catalog_ctx* ctx)
         ok = false;
     }
     XML_ParserFree(parser);
-
-    // Now look for embedded meta info redirection tags, semi-recursively
-    unsigned int index = 0;
-    while(index < ctx->plugins.size()){
-        PluginMetadata plugin = ctx->plugins[index];
-        if(strlen(plugin.meta_url.c_str())){
-            auto handler = CatalogHandler::getInstance();
-            std::string filePath = "";
-            CatalogHandler::ServerStatus stat = handler->DownloadCatalog(filePath, plugin.meta_url);
-            if (stat == CatalogHandler::ServerStatus::OK) {
-                std::ifstream ifpath(filePath);
-                std::string xml((std::istreambuf_iterator<char>(ifpath)), std::istreambuf_iterator<char>());
-
-                //TODO  Should validate the XML against the XSD schema here....
-
-                XML_Parser parser = XML_ParserCreate(NULL);
-                ctx->buff.clear();
-                ctx->depth = 0;
-
-                XML_SetUserData(parser, ctx);
-                XML_SetElementHandler(parser, startElement, endElement);
-                XML_SetCharacterDataHandler(parser, elementData);
-
-                if (XML_Parse(parser, xml.c_str(), xml.size(), true) == XML_STATUS_ERROR) {
-                    wxLogWarning(_T("While processing redirected metaURL..."));
-                    wxLogWarning("%" XML_FMT_STR " at line %" XML_FMT_INT_MOD "u\n",
-                     XML_ErrorString(XML_GetErrorCode(parser)),
-                     XML_GetCurrentLineNumber(parser));
-                    ok = false;
-                }
-                XML_ParserFree(parser);
-
-            }
-            ctx->plugins[index].meta_url.clear();   // tag as processed
-                                                    // This may leave a "blank" plugin in the vector, no real harm?
-                                                    // TODO scrub the vector when all done parsing, removing blanks.
-            index = 0;          // restart the vector traverse
-        }
-        else
-            index++;
-    }
-
-    if (ctx->plugins.size() == 0) {
-        wxLogWarning("ParseCatalog: No plugins found.");
-        ok = false;
-    }
     return ok;
 }

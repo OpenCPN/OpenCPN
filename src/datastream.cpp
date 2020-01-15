@@ -232,15 +232,15 @@ void DataStream::Open(void)
 void InternalBTDataStream::Open(void)
 {
 #ifdef __OCPN__ANDROID__
-    SetOk(androidStartBT(m_consumer, m_portstring ));
+    SetOk(androidStartBT(GetConsumer(), GetPortString() ));
 #endif
 }
 
 void InternalGPSDataStream::Open(void)
 {
 #ifdef __OCPN__ANDROID__
-    androidStartNMEA(m_consumer);
-    SetOk(true)
+    androidStartNMEA(GetConsumer());
+    SetOk(true);
 #endif
 
 }

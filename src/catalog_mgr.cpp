@@ -101,7 +101,7 @@ class CatalogUpdate: public wxDialog, Helpers
         CatalogUpdate(wxWindow* parent)
             :wxDialog(parent, wxID_ANY, _("Manage Plugin Catalog"),
                       wxDefaultPosition , wxDefaultSize,
-                      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+                      wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP),
             Helpers(this),
             m_show_edit(true)
         {
@@ -150,7 +150,6 @@ class CatalogUpdate: public wxDialog, Helpers
             auto size = getWindowSize();
             size.SetHeight(1);
             SetMinClientSize(size);
-            parent->Hide();
             Fit();
             ShowModal();
         }
@@ -305,7 +304,7 @@ class CatalogUpdate: public wxDialog, Helpers
                 return path;
             }
 
-            void ReloadAvailableVersion(const std::string url)
+            void ReloadAvailableVersion()
             {
                 auto handler = CatalogHandler::getInstance();
                 std::ostringstream xml;
@@ -351,6 +350,7 @@ class CatalogUpdate: public wxDialog, Helpers
                auto catalog = CatalogHandler::getInstance();
                std::ofstream dest(GetPrivateCatalogPath());
                catalog->DownloadCatalog(&dest);
+               dest.close();
                catalog->ClearCatalogData();
                UpdateVersions();
             }
@@ -402,7 +402,7 @@ class CatalogUpdate: public wxDialog, Helpers
             {
                 auto text =  m_parent->m_url_edit->getText();
                 CatalogHandler::getInstance()->SetCustomUrl(text.c_str());
-                m_catalog_grid->ReloadAvailableVersion(text);
+                m_catalog_grid->ReloadAvailableVersion();
             }
 
             ActiveCatalogGrid* m_catalog_grid;
@@ -444,9 +444,9 @@ class CatalogUpdate: public wxDialog, Helpers
 
             void onChannelChange(wxCommandEvent& ev)
             {
-                auto url = ev.GetString().ToStdString().c_str();
-                CatalogHandler::getInstance()->SetActiveChannel(url);
-                m_catalog_grid->ReloadAvailableVersion(url);
+                CatalogHandler::getInstance()
+                    ->SetActiveChannel(ev.GetString());
+                m_catalog_grid->ReloadAvailableVersion();
             };
 
             std::string m_active_channel;
@@ -578,6 +578,9 @@ class CatalogLoad: public wxPanel, public Helpers
                 CatalogData catalog_data;
                 auto handler = CatalogHandler::getInstance();
                 catalog_data = handler->LatestCatalogData();
+                Hide();
+                Refresh(true);
+                Update();
                 new CatalogUpdate(this);
             }
         }
@@ -725,13 +728,15 @@ AdvancedCatalogDialog::AdvancedCatalogDialog(wxWindow* parent)
 
     Fit();
     Center();
+    Raise();
+    SetFocus();
     Show();
 }
 
 SimpleCatalogDialog::SimpleCatalogDialog(wxWindow* parent)
     :wxDialog(parent, wxID_ANY, _("Catalog Manager"),
               wxDefaultPosition , wxDefaultSize,
-              wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER)
+              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     auto vbox = new wxBoxSizer(wxHORIZONTAL);
     vbox->Add(new catalog_mgr::CatalogLoad(this, true),

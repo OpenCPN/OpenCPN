@@ -52,14 +52,13 @@ extern wxString                 g_catalog_custom_url;
 extern wxString                 g_catalog_channel;
 extern OCPNPlatform*            g_Platform;
 
-//static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/leamas/plugins";
-static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/opencpn/plugins";
+static const char* const DOWNLOAD_REPO = "https://raw.githubusercontent.com/OpenCPN/plugins";
 
 static const char* const DOWNLOAD_PATH = "/@branch@/ocpn-plugins.xml";
 
 static const char* const API_ENDPOINT = "https://api.github.com/repos";
 //static const char* const API_PATH = "/leamas/plugins/branches";
-static const char* const API_PATH = "/opencpn/plugins/branches";
+static const char* const API_PATH = "/OpenCPN/plugins/branches";
 
 
 CatalogHandler::CatalogHandler()
@@ -135,6 +134,8 @@ catalog_status CatalogHandler::DownloadCatalog(std::string& filePath)
     return status;
 }
 
+
+
 catalog_status CatalogHandler::DownloadCatalog(std::string& filePath, std::string url)
 {
     if (filePath == "") {
@@ -152,20 +153,34 @@ catalog_status CatalogHandler::DownloadCatalog(std::string& filePath, std::strin
     return status;
 }
 
+catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
+                                              catalog_ctx* ctx)
+{
+    bool ok = ::ParseCatalog(xml, ctx);
+    while (ok && ctx->meta_urls.size() > 0) {
+        std::ostringstream xml;
+        std::string url = ctx->meta_urls.back();
+        ctx->meta_urls.pop_back();
+        DownloadCatalog(&xml, url);
+        ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
+    }
+    if (!ok){
+       wxLogWarning("Cannot parse xml starting with: %s",
+                    xml.substr(0,60).c_str());
+    }
+    return ok ? ServerStatus::OK : ServerStatus::XML_ERROR;
+}
 
 catalog_status CatalogHandler::ParseCatalog(const std::string xml, bool latest)
 {
     catalog_ctx ctx;
-    bool ok = ::ParseCatalog(xml, &ctx);
-    if (ok && latest) {
+    auto status = DoParseCatalog(xml, &ctx);
+    if (status == ServerStatus::OK && latest) {
         this->latest_data.version = ctx.version;
         this->latest_data.date = ctx.date;
         this->latest_data.undef = false;
-        return ServerStatus::OK;
     }
-    wxLogWarning("Cannot parse xml starting with: %s", xml.substr(0,60).c_str());
-    return ok ? ServerStatus::OK : ServerStatus::XML_ERROR;
-
+    return status;
 }
 
 
@@ -228,7 +243,8 @@ CatalogHandler::LoadCatalogData(const std::string& path, CatalogData& data)
                         std::istreambuf_iterator<char>());
         file.close();
         catalog_ctx ctx;
-        if (::ParseCatalog(xml, &ctx)) {
+        auto status = DoParseCatalog(xml, &ctx);
+        if (status == ServerStatus::OK) {
             data.version = ctx.version;
             data.date = ctx.date;
             data.undef = false;

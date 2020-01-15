@@ -8876,8 +8876,12 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         g_pMarkInfoDialog = new MarkInfoDlg(this);
 
     if( 1/*g_bresponsive*/ ) {
-
         wxSize canvas_size = GetSize();
+
+        g_pMarkInfoDialog->SetMinSize(wxSize(-1, wxMin(600, canvas_size.y)));
+
+        g_pMarkInfoDialog->Layout();
+        
         wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = g_pMarkInfoDialog->GetSize();;
 

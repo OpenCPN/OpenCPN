@@ -246,6 +246,7 @@ namespace Zeroconf
                     raw_responce item;
                     item.data.resize(MdnsMessageMaxLength);                    
 
+#ifndef __OCPN__ANDROID__
                     auto cb = recvfrom(
                         fd, 
                         reinterpret_cast<char*>(&item.data[0]), 
@@ -253,7 +254,15 @@ namespace Zeroconf
                         0, 
                         reinterpret_cast<sockaddr*>(&item.peer), 
                         &salen);
-
+#else
+                    auto cb = recvfrom(
+                        fd, 
+                        reinterpret_cast<char*>(&item.data[0]), 
+                        item.data.size(), 
+                        0, 
+                        reinterpret_cast<sockaddr*>(&item.peer), 
+                        (int *)&salen);
+#endif                    
                     if (cb < 0)
                     {
                         Log::Error("Failed to receive with code " + std::to_string(GetSocketError()));
@@ -322,7 +331,7 @@ namespace Zeroconf
                     return false;
                 }
 
-                for (auto i = 0; i < cb; i++)
+                for (unsigned int i = 0; i < cb; i++)
                     is.ignore(); // qname
         
                 is.read(reinterpret_cast<char*>(&u16), 2); // qtype
@@ -405,7 +414,7 @@ namespace Zeroconf
             
             for (auto& raw: responces)
             {
-                mdns_responce parsed = {0};
+                mdns_responce parsed = {{0}};
                 if (Parse(raw, &parsed))
                     result->push_back(parsed);
             }
