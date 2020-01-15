@@ -5098,6 +5098,29 @@ void PluginListPanel::OnPluginPanelAction( wxCommandEvent& event )
             break;
         }
 
+        case  ActionVerb::INSTALL_MANAGED_VERSION:
+        {
+            // Grab a copy of the managed metadata
+            auto metaSave = g_actionPIC->m_ManagedMetadata;
+            
+            wxLogMessage("Installing %s", metaSave.name.c_str());
+            auto downloader = new GuiDownloader(this, metaSave);
+            downloader->run(this);
+            
+            // Provisional error check
+             std::string manifestPath = fileListPath(metaSave.name);
+             if(!isRegularFile(manifestPath.c_str())) {
+                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
+                 cleanup(manifestPath, metaSave.name);
+             }
+
+            //  Reload all plugins, which will bring in the action results.
+            g_pi_manager->LoadAllPlugIns( false );
+            ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            SelectByName(name);
+            break;
+        }
+
         case  ActionVerb::UNINSTALL_MANAGED_VERSION:
         {
             wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
@@ -5282,13 +5305,12 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 void PluginPanel::SetSelected( bool selected )
 {
     m_bSelected = selected;
-    std::ostringstream version;
-    version << m_pPlugin->GetVersion();
+    
+    if(m_pPlugin->m_ManagedMetadata.version.size())
+        m_pVersion->SetLabel(wxString( m_pPlugin->m_ManagedMetadata.version.c_str()));
+        
     if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
-        auto plug_sts = m_pPlugin->m_pluginStatus;
-        auto plug_msg = message_by_status[plug_sts];
-        m_pDescription->SetLabelMarkup(m_pPlugin->m_long_description + "\n\n<b>" + plug_msg + "</b>");
         m_pButtons->Show(true);
         m_pButtonUninstall->Show(canUninstall(m_pPlugin->m_common_name.ToStdString()));
         m_rgSizer->Show(true);
@@ -5311,6 +5333,16 @@ void PluginPanel::SetSelected( bool selected )
                 g_actionVerb = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
+
+            case PluginStatus::ManagedInstallAvailable:
+                label = _("Install Version ");
+                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                label += wxString(newVersion.to_string().c_str());
+                
+                g_actionVerb = ActionVerb::INSTALL_MANAGED_VERSION;
+                m_pButtonAction->Enable();
+                break;
+                
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
                 label = _("Upgrade to Version ");
@@ -5360,7 +5392,7 @@ void PluginPanel::SetSelected( bool selected )
     }
     else {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-        m_pDescription->SetLabel( m_pPlugin->m_short_description );
+        //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
         //m_pButtons->Show(false);
 #else        
@@ -5462,25 +5494,26 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-        m_pDescription->SetLabel( m_pPlugin->m_short_description );  //Pick up translation, if any
     }
     else
     {
         m_pName->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
         m_pDescription->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-        m_pDescription->SetLabel( m_pPlugin->m_short_description ); //Pick up translation, if any
     }
     
     if(m_bSelected) {
-        auto plug_sts =
-            get_plugin_status(m_pPlugin->m_common_name.ToStdString(),
-                              m_pPlugin->m_plugin_filename.ToStdString());
-        auto const plug_msg = message_by_status[plug_sts];
-        m_pDescription->SetLabelMarkup(
-                m_pPlugin->m_long_description + "\n<b>" + plug_msg + "</b>");
-        //Pick up translation, if any
+        wxString description = m_pPlugin->m_long_description;
+        if(description.IsEmpty())
+            description = wxString(m_pPlugin->m_ManagedMetadata.description.c_str());
+        m_pDescription->SetLabel( description );
     }
+    else{
+        wxString description = m_pPlugin->m_short_description;
+        if(description.IsEmpty())
+            description = wxString(m_pPlugin->m_ManagedMetadata.summary.c_str());
+        m_pDescription->SetLabel( description );
+    }        
         
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
     if(enabled)
