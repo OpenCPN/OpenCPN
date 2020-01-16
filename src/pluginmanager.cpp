@@ -1088,12 +1088,12 @@ void PlugInManager::UpdateManagedPlugins()
         bool bfound = false;
         for (size_t i = 0; i < plugin_array.GetCount(); i++) {
             pic = plugin_array.Item(i);
-            if(!strcmp(plugin_array.Item(i)->m_common_name.c_str(), plugin.name.c_str())){
+            if(plugin_array.Item(i)->m_common_name.IsSameAs(wxString(plugin.name.c_str()))){
                 bfound = true;
                 break;
             }
         }
-        
+
         //  No match found, so add a container, and populate it
         if(!bfound){
             PlugInContainer *new_pic = new PlugInContainer;
@@ -1272,8 +1272,10 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
     if (!DeactivatePlugIn(pic)) {
         return false;
     }
-    pic->m_destroy_fn(pic->m_pplugin);
-    delete pic->m_plibrary;            // This will unload the PlugIn
+    if(pic->m_bInitState){
+        pic->m_destroy_fn(pic->m_pplugin);
+        delete pic->m_plibrary;            // This will unload the PlugIn
+    }
     pic->m_bInitState = false;
     delete pic;
     plugin_array.RemoveAt(ix);
