@@ -493,6 +493,17 @@ private:
       wxBoxSizer         *m_pitemBoxSizer01;
 };
 
+/** Invokes client browser on plugin info_url when clicked. */
+class WebsiteButton: public wxPanel
+{
+    public:
+        WebsiteButton(wxWindow* parent, const char* url);
+        ~WebsiteButton(){};
+        void SetURL( std::string url){ m_url = url; }
+    protected:
+        std::string m_url;
+};
+
 class PluginPanel: public wxPanel
 {
 public:
@@ -522,7 +533,6 @@ private:
       wxStaticText    *m_pName;
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
-//      wxFlexGridSizer *m_pButtons;
       wxBoxSizer      *m_pButtons;
       wxStaticBitmap  *m_itemStaticBitmap;
       wxButton        *m_pButtonEnable;
@@ -533,6 +543,7 @@ private:
       wxButton        *m_pButtonUp;
       wxButton        *m_pButtonDown;
       wxRadioButton   *m_rbEnable, *m_rbDisable;
+      WebsiteButton   *m_info_btn;
 };
 
 

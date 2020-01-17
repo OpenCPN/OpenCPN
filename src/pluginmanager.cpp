@@ -5227,6 +5227,10 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     wxBoxSizer *enableSizer = new wxBoxSizer(wxHORIZONTAL);
     topSizer->Add( enableSizer, 0, wxALIGN_RIGHT );
+
+    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+    m_info_btn->Hide();
+    enableSizer->Add(m_info_btn, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
     
     m_rgSizer = new wxBoxSizer(wxVERTICAL);
     enableSizer->Add(m_rgSizer, 0, wxALIGN_RIGHT|wxALL, 2);
@@ -5318,6 +5322,12 @@ void PluginPanel::SetSelected( bool selected )
         m_pButtons->Show(true);
         m_pButtonUninstall->Show(canUninstall(m_pPlugin->m_common_name.ToStdString()));
         m_rgSizer->Show(true);
+        
+        if(m_pPlugin->m_ManagedMetadata.info_url.size()){
+            m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
+            m_info_btn->Show();
+        }
+
 #ifndef __WXQT__
         m_pButtonsUpDown->Show(true);
 #else        
@@ -5406,6 +5416,7 @@ void PluginPanel::SetSelected( bool selected )
         
         m_pButtons->Show(false);
         m_rgSizer->Show(false);
+        m_info_btn->Hide();
 
         Layout();
     }
@@ -5511,12 +5522,17 @@ void PluginPanel::SetEnabled( bool enabled )
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.description.c_str());
         m_pDescription->SetLabel( description );
+        if(m_pPlugin->m_ManagedMetadata.info_url.size()){
+            m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
+            m_info_btn->Show();
+        }
     }
     else{
         wxString description = m_pPlugin->m_short_description;
         if(description.IsEmpty())
             description = wxString(m_pPlugin->m_ManagedMetadata.summary.c_str());
         m_pDescription->SetLabel( description );
+
     }        
         
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
@@ -5537,6 +5553,19 @@ void PluginPanel::OnPluginDown( wxCommandEvent& event )
     m_PluginListPanel->MoveDown( this );
 }
 
+
+/** Invokes client browser on plugin info_url when clicked. */
+WebsiteButton::WebsiteButton(wxWindow* parent, const char* url)
+            :wxPanel(parent), m_url(url)
+{
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    auto button = new wxButton(this, wxID_ANY, _("Website"));
+    button->Enable(strlen(url) > 0);
+    vbox->Add(button);
+    SetSizer(vbox);
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                 [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
+}
 
 
 // ----------------------------------------------------------------------------

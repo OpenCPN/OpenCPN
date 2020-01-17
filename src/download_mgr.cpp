@@ -254,25 +254,6 @@ class InstallButton: public wxPanel
 };
 
 
-/** Invokes client browser on plugin info_url when clicked. */
-class WebsiteButton: public wxPanel
-{
-    public:
-        WebsiteButton(wxWindow* parent, const char* url)
-            :wxPanel(parent), m_url(url)
-        {
-            auto vbox = new wxBoxSizer(wxVERTICAL);
-            auto button = new wxButton(this, wxID_ANY, _("Website"));
-            button->Enable(strlen(url) > 0);
-            vbox->Add(button);
-            SetSizer(vbox);
-            Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                 [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
-        }
-
-    protected:
-        const std::string m_url;
-};
 
 
 /** The two buttons 'install' and 'website', the latter optionally hidden. */
