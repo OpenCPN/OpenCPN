@@ -50,6 +50,7 @@ private:
     void initFlatpackPaths();
     void initLinuxPaths();
     void initApplePaths();
+    void initAndroidPaths();
 
     std::string m_home;
     std::string m_userDatadir;

@@ -682,7 +682,12 @@ static void setLoadPath()
         wxSetEnv("DYLD_LIBRARY_PATH", path.c_str());
      }
     else {
-        wxLogWarning("SetLoadPath: Unsupported platform.");
+        wxString os_name = wxPlatformInfo::Get().GetPortIdName();
+        if(os_name.Contains(_T("wxQT"))){
+            wxLogMessage(_T("setLoadPath() using Android library path"));
+        }
+        else
+            wxLogWarning("SetLoadPath: Unsupported platform.");
     }
     if (osSystemId & wxOS_MAC || osSystemId & wxOS_UNIX_LINUX) {
         vector<string> dirs = PluginPaths::getInstance()->Bindirs();
@@ -4875,11 +4880,11 @@ void PluginListPanel::Clear()
         // Remove old spacer
         GetSizer()->Remove(2);
     }
-    wxASSERT(m_pitemBoxSizer01->IsEmpty());
-    wxASSERT(m_PluginItems.IsEmpty());
-    auto items = GetSizer()->GetItemCount();
-    wxASSERT(items == 2 || items == 1);
-    wxASSERT(GetChildren().GetCount() == 0);
+//    wxASSERT(m_pitemBoxSizer01->IsEmpty());
+//    wxASSERT(m_PluginItems.IsEmpty());
+//    auto items = GetSizer()->GetItemCount();
+//    wxASSERT(items == 2 || items == 1);
+//    wxASSERT(GetChildren().GetCount() == 0);
 }
 
 void PluginListPanel::SelectByName(wxString &name)
@@ -5445,6 +5450,20 @@ void PluginPanel::SetSelected( bool selected )
     }
 #endif
     SetEnabled( m_pPlugin->m_bEnabled );
+
+#ifdef __OCPN__ANDROID__
+    // Android (wxQT) sizers have troubles...
+    // So we set some layout factors to avoid re-sizing on select/deselect.
+    m_rgSizer->Show(true);
+    m_pButtons->Show(true);
+    m_pButtonAction->Hide();
+    m_pButtonUninstall->Hide();
+
+    Fit();
+    m_PluginListPanel->m_pitemBoxSizer01->Layout();
+#endif
+    
+
 }
 
 void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
@@ -5540,7 +5559,7 @@ void PluginPanel::SetEnabled( bool enabled )
         m_rbEnable->SetValue(true);
     else
         m_rbDisable->SetValue(true);
-        
+    
 }
 
 void PluginPanel::OnPluginUp( wxCommandEvent& event )
