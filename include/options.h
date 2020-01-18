@@ -575,6 +575,7 @@ class options : private Uncopyable,
   // For "PlugIns" Panel
   PluginListPanel *m_pPlugInCtrl;
   AddPluginPanel* m_AddPluginPanel;
+  CatalogMgrPanel *m_PluginCatalogMgrPanel;
   wxScrolledWindow *itemPanelPlugins;
   wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;

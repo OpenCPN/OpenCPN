@@ -32,9 +32,11 @@
 #include <streambuf>
 #include <sstream>
 #include <unordered_map>
+#include <set>
 
 #include <wx/jsonreader.h>
 #include <wx/string.h>
+#include <wx/file.h>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -54,6 +56,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "navutil.h"
 #include "ocpn_utils.h"
 #include "catalog_parser.h"
+#include "catalog_handler.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -95,7 +98,7 @@ inline std::string basename(const std::string path)
 }
 
 
-static bool isRegularFile(const char* path)
+bool isRegularFile(const char* path)
 {
     wxFileName wxFile(path);
     return wxFile.FileExists() && !wxFile.IsDir();
@@ -121,7 +124,7 @@ static void mkdir(const std::string path)
 static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins)
 {
     for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
-        if (name == plugins->Item(i)->m_common_name.Lower().ToStdString()) {
+        if (name == plugins->Item(i)->m_common_name.ToStdString()) {
             return i;
         }
     }
@@ -144,7 +147,7 @@ static std::string pluginsConfigDir()
 }
 
 
-static std::string fileListPath(std::string name)
+std::string fileListPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".files";
@@ -157,7 +160,7 @@ static std::string dirListPath(std::string name)
     return pluginsConfigDir() + SEP + name + ".dirs";
 }
 
-static std::string versionPath(std::string name)
+std::string versionPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".version";
@@ -569,7 +572,7 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
-static void cleanup(const std::string& filelist, const std::string& plugname)
+void cleanup(const std::string& filelist, const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
     std::istringstream files(filelist);
@@ -595,11 +598,28 @@ static void cleanup(const std::string& filelist, const std::string& plugname)
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
-
     catalog_ctx ctx;
-    parseMetadata(getMetadataPath(), ctx);
-    catalogData.date = ctx.date;
-    catalogData.version = ctx.version;
+
+    auto catalogHandler = CatalogHandler::getInstance();
+    
+    //std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+    //path += SEP;
+    //path += "ocpn-plugins.xml";
+    std::string path = getMetadataPath();
+    if (!ocpn::exists(path)) {
+        return ctx.plugins;
+    }
+    std::ifstream file;
+    file.open(path, std::ios::in);
+    if (file.is_open()) {
+        std::string xml((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+        file.close();
+        auto status = catalogHandler->DoParseCatalog(xml, &ctx);
+        if (status == CatalogHandler::ServerStatus::OK) {
+        }
+    }
+
     return ctx.plugins;
 }
 
@@ -615,7 +635,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled()
             PlugInContainer* p = mgr_plugins->Item(i);
             PluginMetadata plugin;
             auto name = string(p->m_common_name);
-            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+            //std::transform(name.begin(), name.end(), name.begin(), ::tolower);
             plugin.name = name;
             std::stringstream ss;
             ss << p->m_version_major << "." << p->m_version_minor;
@@ -634,7 +654,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled()
 }
 
 
-bool PluginHandler::install(PluginMetadata plugin, std::string path)
+bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
 {
     std::string filelist;
     if ( !extractTarball(path, filelist)) {
@@ -649,6 +669,8 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
     saveDirlist(plugin.name);
     saveVersion(plugin.name, plugin.version);
 
+    return true;
+#if 0    
     int before = g_pi_manager->GetPlugInArray()->GetCount();
     g_pi_manager->LoadAllPlugIns(false);
     int after = g_pi_manager->GetPlugInArray()->GetCount();
@@ -661,10 +683,11 @@ bool PluginHandler::install(PluginMetadata plugin, std::string path)
     //std::cout << "Installed: " << plugin.name << std::endl;
 
     return after > before;
+#endif    
 }
 
 
-bool PluginHandler::install(PluginMetadata plugin)
+bool PluginHandler::installPlugin(PluginMetadata plugin)
 {
     std::string path;
     char fname[4096];
@@ -681,7 +704,7 @@ bool PluginHandler::install(PluginMetadata plugin)
     auto downloader = Downloader(plugin.tarball_url);
     downloader.download(&stream);
 
-    return install(plugin, path);
+    return installPlugin(plugin, path);
 }
 
 
@@ -720,3 +743,70 @@ bool PluginHandler::uninstall(const std::string plugin_name)
 
     return true;
 }
+
+std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
+{
+               /** Compare two PluginMetadata objects, a named c++ requirement. */
+    struct metadata_compare{
+        bool operator() (const PluginMetadata& lhs,
+                                 const PluginMetadata& rhs) const
+        {
+            return lhs.key() < rhs.key();
+        }
+    };
+
+    std::vector<PluginMetadata> returnArray;
+    
+    std::set<PluginMetadata, metadata_compare> unique_plugins;
+    for (auto plugin: getAvailable()) {
+        unique_plugins.insert(plugin);
+    }
+    for (auto plugin: unique_plugins) {
+        if (plugin.target != PKG_TARGET) {
+            find_compat_target(plugin.target);
+            if (plugin.target != m_sOsLike)
+                continue;
+        }
+        returnArray.push_back(plugin);
+    }
+    
+    return returnArray;
+}
+
+/**
+ * Used to compare plugin versions. Versions are basically semantic
+ * versioning: major.minor.revision.build for example 1.2.6.1-deadbee. The
+ * values major, minor and revision should be integers. The build is a
+ * free-format string sorted lexically.
+ *
+ * Note: The version installed is saved in text files since it's not
+ * available in the plugin interface besides major.minor. See
+ * https://github.com/OpenCPN/OpenCPN/issues/1443
+ */
+OcpnVersion::OcpnVersion()
+        :major(0), minor(0), revision(0), build("")
+    {}
+
+OcpnVersion::OcpnVersion(std::string version_release)
+{
+        char buff[255] = {0};
+        std::sscanf(version_release.c_str(),
+                    "%d.%d.%d.%s", &major, &minor, &revision, buff);
+        build = std::string(buff);
+}
+
+OcpnVersion::OcpnVersion(int major, int minor, int revision, std::string build)
+{
+        this->major = major;
+        this->minor = minor;
+        this->revision = revision;
+        this->build = build;
+}
+
+std::string OcpnVersion::to_string()
+{
+        std::ostringstream os;
+        os << *this;
+        return os.str();
+}
+
