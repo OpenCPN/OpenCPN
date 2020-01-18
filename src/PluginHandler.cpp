@@ -56,6 +56,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "navutil.h"
 #include "ocpn_utils.h"
 #include "catalog_parser.h"
+#include "catalog_handler.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -597,11 +598,28 @@ void cleanup(const std::string& filelist, const std::string& plugname)
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
-
     catalog_ctx ctx;
-    parseMetadata(getMetadataPath(), ctx);
-    catalogData.date = ctx.date;
-    catalogData.version = ctx.version;
+
+    auto catalogHandler = CatalogHandler::getInstance();
+    
+    //std::string path = g_Platform->GetPrivateDataDir().ToStdString();
+    //path += SEP;
+    //path += "ocpn-plugins.xml";
+    std::string path = getMetadataPath();
+    if (!ocpn::exists(path)) {
+        return ctx.plugins;
+    }
+    std::ifstream file;
+    file.open(path, std::ios::in);
+    if (file.is_open()) {
+        std::string xml((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+        file.close();
+        auto status = catalogHandler->DoParseCatalog(xml, &ctx);
+        if (status == CatalogHandler::ServerStatus::OK) {
+        }
+    }
+
     return ctx.plugins;
 }
 
