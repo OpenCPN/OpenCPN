@@ -4773,9 +4773,16 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     pConfig->Write( _T("LatestCatalogDownloaded"), m_choiceChannel->GetString(m_choiceChannel->GetSelection()) );
     pConfig->Flush();
 
+    // Reset the PluginHandler catalog file source.
+    // This will case the Handler to find, load, and parse the just-downloaded catalog
+    // as copied to g_Platform->GetPrivateDataDir()...
+    auto pluginHandler = PluginHandler::getInstance();
+    pluginHandler->setMetadata("");
+
     //  Reload all plugins, which will also update the status fields
     g_pi_manager->LoadAllPlugIns( false );
 
+    // Update this Panel, and the entire list.
     m_catalogText->SetLabel(GetCatalogText());
     if(m_PluginListPanel)
         m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
