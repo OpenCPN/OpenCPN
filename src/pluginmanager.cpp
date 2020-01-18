@@ -4699,7 +4699,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
      rowSizer1->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
      m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
-     m_choiceChannel->SetSelection(GetChannelIndex());
+     m_choiceChannel->SetSelection(GetChannelIndex(&channels));
 
      // Next line
      wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
@@ -4830,10 +4830,13 @@ void CatalogMgrPanel::OnChannelSelected(wxCommandEvent &event)
 
 }
 
-unsigned int CatalogMgrPanel::GetChannelIndex()
+unsigned int CatalogMgrPanel::GetChannelIndex(const wxArrayString* channels)
 {
-    return 0;
-}
+    wxString current =
+        pConfig->Read( "LatestCatalogDownloaded", "default");
+    int ix = channels->Index(current);
+    return  ix == -1 ? 0 : ix;
+ }
 
 void CatalogMgrPanel::SetUpdateButtonLabel()
 {

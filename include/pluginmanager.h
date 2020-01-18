@@ -448,7 +448,7 @@ class CatalogMgrPanel: public wxPanel
         void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
     protected:
         wxString GetCatalogText();
-        unsigned int GetChannelIndex();
+        unsigned int GetChannelIndex(const wxArrayString* channels);
         void SetUpdateButtonLabel();
 
         wxButton *m_updateButton, *m_advancedButton;
