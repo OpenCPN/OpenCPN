@@ -47,10 +47,8 @@ static std::string check_file_path()
  */
 void check_last_start()
 {
-    std::string path = g_Platform->GetPrivateDataDir().ToStdString();
-    path += SEP;
-    path += "start-check.dat";
-    if (ocpn::exists(path)) {
+    std::string path = check_file_path();
+    if (!ocpn::exists(path)) {
         std::ofstream dest(path, std::ios::binary);
         dest << "Internal opencpn use" << std::endl;
         dest.close();
