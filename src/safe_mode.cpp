@@ -10,6 +10,7 @@
 #include "safe_mode.h"
 
 extern OCPNPlatform*            g_Platform;
+extern bool                     g_bdisable_opengl;
 
 namespace safe_mode {
 
@@ -17,7 +18,11 @@ static bool safe_mode = false;
 
 bool get_mode() { return safe_mode; }
 
-void set_mode(bool mode) { safe_mode = mode; }
+void set_mode(bool mode)
+{
+    safe_mode = mode;
+    g_bdisable_opengl = g_bdisable_opengl || mode;
+}
 
 static const char* LAST_RUN_ERROR_MSG = \
     "The last opencpn run seems to have failed. Do you want to run\n"
