@@ -29,6 +29,9 @@
 #include <wx/dialog.h>
 #include <wx/window.h>
 
+#include "Downloader.h"
+#include "catalog_parser.h"
+
 // Accepted by PluginDownloadDialog, reloads plugin list.
 wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
@@ -40,5 +43,23 @@ class PluginDownloadDialog: public wxDialog
         wxWindow* GetRealParent() { return  m_parent; }
 
 };
+
+/** Add progress and final message dialogs to the basic Downloader. */
+
+class GuiDownloader: public Downloader
+{
+    private:
+        long m_downloaded;
+        wxProgressDialog* m_dialog;
+        PluginMetadata m_plugin;
+        wxWindow* m_parent;
+
+    public:
+        GuiDownloader(wxWindow* parent, PluginMetadata plugin);
+        void run(wxWindow* parent);
+        void on_chunk(const char* buff, unsigned bytes) override;
+        void showErrorDialog(const char* msg);
+};
+
 
 #endif // DOWNLOAD_MGR_H__

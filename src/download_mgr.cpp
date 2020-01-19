@@ -61,97 +61,6 @@ wxDEFINE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
 namespace download_mgr {
 
-/**
- * Used to compare plugin versions. Versions are basically semantic
- * versioning: major.minor.revision.build for example 1.2.6.1-deadbee. The
- * values major, minor and revision should be integers. The build is a
- * free-format string sorted lexically.
- *
- * Note: The version installed is saved in text files since it's not
- * available in the plugin interface besides major.minor. See
- * https://github.com/OpenCPN/OpenCPN/issues/1443
- */
-struct OcpnVersion
-{
-    int major;
-    int minor;
-    int revision;
-    std::string build;
-
-    OcpnVersion()
-        :major(0), minor(0), revision(0), build("")
-    {}
-
-    OcpnVersion(std::string version_release)
-    {
-        char buff[255] = {0};
-        std::sscanf(version_release.c_str(),
-                    "%d.%d.%d.%s", &major, &minor, &revision, buff);
-        build = std::string(buff);
-    }
-
-    OcpnVersion(int major, int minor, int revision=0, std::string build = "")
-    {
-        this->major = major;
-        this->minor = minor;
-        this->revision = revision;
-        this->build = build;
-    }
-
-    bool operator < (const OcpnVersion& other)
-    {
-        if (major < other.major) return true;
-        if (minor < other.minor) return true;
-        if (revision < other.revision) return true;
-        if (build < other.build) return true;
-        return false;
-    }
-
-    bool operator == (const OcpnVersion& other)
-    {
-        return major == other.major
-            && minor == other.minor
-            && revision == other.revision
-            && build == other.build;
-    }
-
-    bool operator > (const OcpnVersion& other)
-    {
-        return !(*this == other) && !(*this < other);
-    }
-
-    bool operator <= (const OcpnVersion& other)
-    {
-        return (*this == other) || (*this < other);
-    }
-
-    bool operator >= (const OcpnVersion& other)
-    {
-        return (*this == other) || (*this > other);
-    }
-
-    bool operator != (const OcpnVersion& other)
-    {
-        return !(*this == other);
-    }
-
-    friend std::ostream& operator << (std::ostream& s, const OcpnVersion& v)
-    {
-        s << v.major << '.' << v.minor << '.' << v.revision;
-        if (v.build != "" ) {
-            s << '.' << v.build;
-        }
-        return s;
-    }
-
-    std::string to_string()
-    {
-        std::ostringstream os;
-        os << *this;
-        return os.str();
-    }
-};
-
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
@@ -266,98 +175,6 @@ class PluginIconPanel: public wxPanel
         }
 };
 
-/** Add progress and final message dialogs to the basic Downloader. */
-class GuiDownloader: public Downloader
-{
-    private:
-        long m_downloaded;
-        wxProgressDialog* m_dialog;
-        PluginMetadata m_plugin;
-        wxWindow* m_parent;
-
-    public:
-        GuiDownloader(wxWindow* parent, PluginMetadata plugin)
-            :Downloader(plugin.tarball_url),
-            m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
-        {}
-
-        void run(wxWindow* parent)
-        {
-            auto pluginHandler = PluginHandler::getInstance();
-            long size = get_filesize();
-            std::string label(_("Downloading "));
-            label += url;
-            m_dialog = new wxProgressDialog(
-                            _("Downloading"), label.c_str(), size, parent,
-                            wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
-            std::string path("");
-            bool ok = download(path);
-            if (!ok) {
-                showErrorDialog("Download error");
-                return;
-            }
-            if (m_dialog == 0) {
-                ok = false;
-            } else {
-                delete m_dialog;
-            }
-            if (!ok) {
-                showErrorDialog("Download aborted");
-                return;
-            }
-            m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
-            wxMessageDialog* dlg = 0;
-            ok = pluginHandler->install(m_plugin, path);
-            if (!ok) {
-                showErrorDialog("Installation error");
-                return;
-            }
-            auto pic = PlugInByName(m_plugin.name,
-                                    g_pi_manager->GetPlugInArray());
-            if (!pic) {
-                showErrorDialog("Installation verification error");
-                return;
-            }
-            else {
-                dlg = new wxMessageDialog(
-                        m_parent,
-                        m_plugin.name + " " + m_plugin.version
-                              + _(" successfully installed"),
-                        _("Installation complete"),
-                        wxOK | wxCENTRE | wxICON_INFORMATION);
-                dlg->ShowModal();
-            }
-        }
-
-        void on_chunk(const char* buff, unsigned bytes) override
-        {
-            Downloader::on_chunk(buff, bytes);
-            m_downloaded += bytes;
-            if (m_dialog && !m_dialog->Update(m_downloaded)) {
-                // User pushed Cancel button
-                delete m_dialog;
-                m_dialog = 0;
-            }
-        }
-
-        void showErrorDialog(const char* msg)
-        {
-            auto dlg = new wxMessageDialog(
-                    m_parent,
-                    "",
-                    _("Installation error"),
-                    wxOK | wxCENTRE | wxICON_ERROR);
-            auto last_error_msg = last_error();
-            std::string text = msg;
-            if (last_error_msg != "") {
-                text = text + ": " + error_msg;
-            }
-            text = text + "\nPlease check system log for more info.";
-            dlg->SetMessage(text);
-            dlg->ShowModal();
-        }
-};
-
 
 /** Download and install a PluginMetadata item when clicked. */
 class InstallButton: public wxPanel
@@ -403,7 +220,7 @@ class InstallButton: public wxPanel
             auto listPanels =
                 dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
             wxASSERT(listPanels != 0);
-            listPanels->ReloadPlugins(g_pi_manager->GetPlugInArray());
+            listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();
             auto btn = dynamic_cast<wxButton*>(window);
             wxASSERT(btn != 0);
@@ -437,25 +254,6 @@ class InstallButton: public wxPanel
 };
 
 
-/** Invokes client browser on plugin info_url when clicked. */
-class WebsiteButton: public wxPanel
-{
-    public:
-        WebsiteButton(wxWindow* parent, const char* url)
-            :wxPanel(parent), m_url(url)
-        {
-            auto vbox = new wxBoxSizer(wxVERTICAL);
-            auto button = new wxButton(this, wxID_ANY, _("Website"));
-            button->Enable(strlen(url) > 0);
-            vbox->Add(button);
-            SetSizer(vbox);
-            Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                 [=](wxCommandEvent&) {wxLaunchDefaultBrowser(m_url);});
-        }
-
-    protected:
-        const std::string m_url;
-};
 
 
 /** The two buttons 'install' and 'website', the latter optionally hidden. */
@@ -736,3 +534,89 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
     Fit();
     Layout();
 }
+
+/** Add progress and final message dialogs to the basic Downloader. */
+GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
+            :Downloader(plugin.tarball_url),
+            m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
+        {}
+
+void GuiDownloader::run(wxWindow* parent)
+{
+            auto pluginHandler = PluginHandler::getInstance();
+            long size = get_filesize();
+            std::string label(_("Downloading "));
+            label += url;
+            m_dialog = new wxProgressDialog(
+                            _("Downloading"), label.c_str(), size, parent,
+                            wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
+            std::string path("");
+            bool ok = download(path);
+            if (!ok) {
+                showErrorDialog("Download error");
+                return;
+            }
+            if (m_dialog == 0) {
+                ok = false;
+            } else {
+                delete m_dialog;
+            }
+            if (!ok) {
+                showErrorDialog("Download aborted");
+                return;
+            }
+            m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
+            wxMessageDialog* dlg = 0;
+            ok = pluginHandler->installPlugin(m_plugin, path);
+            if (!ok) {
+                showErrorDialog("Installation error");
+                return;
+            }
+#if 0            
+            auto pic = PlugInByName(m_plugin.name,
+                                    g_pi_manager->GetPlugInArray());
+#endif
+  bool pic = true;
+            if (!pic) {
+                showErrorDialog("Installation verification error");
+                return;
+            }
+            else {
+                dlg = new wxMessageDialog(
+                        m_parent,
+                        m_plugin.name + " " + m_plugin.version
+                              + _(" successfully installed"),
+                        _("Installation complete"),
+                        wxOK | wxCENTRE | wxICON_INFORMATION);
+                dlg->ShowModal();
+            }
+}
+
+void GuiDownloader::on_chunk(const char* buff, unsigned bytes) 
+{
+            Downloader::on_chunk(buff, bytes);
+            m_downloaded += bytes;
+            if (m_dialog && !m_dialog->Update(m_downloaded)) {
+                // User pushed Cancel button
+                delete m_dialog;
+                m_dialog = 0;
+            }
+}
+
+void GuiDownloader::showErrorDialog(const char* msg)
+{
+            auto dlg = new wxMessageDialog(
+                    m_parent,
+                    "",
+                    _("Installation error"),
+                    wxOK | wxCENTRE | wxICON_ERROR);
+            auto last_error_msg = last_error();
+            std::string text = msg;
+            if (last_error_msg != "") {
+                text = text + ": " + error_msg;
+            }
+            text = text + "\nPlease check system log for more info.";
+            dlg->SetMessage(text);
+            dlg->ShowModal();
+}
+

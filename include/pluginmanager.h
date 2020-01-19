@@ -42,6 +42,7 @@
 //#include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
+#include "catalog_parser.h"
 
 #include "s57chart.h"               // for Object list
 #include "semantic_vers.h"
@@ -137,6 +138,31 @@ private:
 
 extern  const wxEventType wxEVT_OCPN_MSG;
 
+enum class PluginStatus { 
+    System,    // One of the four system plugins, unmanaged.
+    Managed,   // Managed by installer.
+    Unmanaged, // Unmanaged, probably a package.
+    Ghost,      // Managed, shadowing another (packaged?) plugin.
+    Unknown,
+    LegacyUpdateAvailable,
+    ManagedInstallAvailable,
+    ManagedInstalledUpdateAvailable,
+    ManagedInstalledCurrentVersion,
+    ManagedInstalledDowngradeAvailable
+};
+
+enum ActionVerb {
+    NOP = 0,
+    UPGRADE_TO_MANAGED_VERSION,
+    UPGRADE_INSTALLED_MANAGED_VERSION,
+    REINSTALL_MANAGED_VERSION,
+    DOWNGRADE_INSTALLED_MANAGED_VERSION,
+    UNINSTALL_MANAGED_VERSION,
+    INSTALL_MANAGED_VERSION
+};
+
+// Fwd definitions
+class StatusIconPanel;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -146,11 +172,7 @@ extern  const wxEventType wxEVT_OCPN_MSG;
 class PlugInContainer
 {
       public:
-            PlugInContainer(){ m_pplugin = NULL;
-                               m_bEnabled = false;
-                               m_bInitState = false;
-                               m_bToolboxPanel = false;
-                               m_bitmap = NULL; }
+            PlugInContainer();
 
             opencpn_plugin    *m_pplugin;
             bool              m_bEnabled;
@@ -176,7 +198,8 @@ class PlugInContainer
              */
             SemanticVersion   GetVersion();
             wxString          m_version_str;          // Complete version as of OcpnVersion
-
+            PluginStatus      m_pluginStatus;
+            PluginMetadata    m_ManagedMetadata;
 };
 
 //    Declare an array of PlugIn Containers
@@ -323,6 +346,8 @@ public:
       void SendBaseConfigToAllPlugIns();
       void SendS52ConfigToAllPlugIns( bool bReconfig = false );
       
+      void UpdateManagedPlugins();
+
       wxArrayString GetPlugInChartClassNameArray(void);
 
       ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
@@ -409,8 +434,38 @@ class AddPluginPanel: public wxPanel
         wxWindow* m_parent;
 };
 
+
+/*
+ * Panel with buttons to control plugin catalog management.
+ */
+class CatalogMgrPanel: public wxPanel
+{
+    public:
+        CatalogMgrPanel(wxWindow* parent);
+        ~CatalogMgrPanel();
+        void OnUpdateButton(wxCommandEvent &event);
+        void OnChannelSelected(wxCommandEvent &event);
+        void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
+    protected:
+        wxString GetCatalogText();
+        unsigned int GetChannelIndex(const wxArrayString* channels);
+        void SetUpdateButtonLabel();
+
+        wxButton *m_updateButton, *m_advancedButton;
+        wxStaticText *m_catalogText, *m_customText;
+        wxChoice *m_choiceChannel;
+        wxTextCtrl *m_tcCustomURL;
+        wxWindow* m_parent;
+        PluginListPanel *m_PluginListPanel;
+};
+
+
+#define ID_CMD_BUTTON_PERFORM_ACTION 27663
+
 class PluginListPanel: public wxScrolledWindow
 {
+      DECLARE_EVENT_TABLE()
+
 public:
       PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray );
       ~PluginListPanel();
@@ -420,19 +475,34 @@ public:
       void MoveDown( PluginPanel *pi );
       void UpdateSelections();
       void UpdatePluginsOrder();
+      void OnPluginPanelAction( wxCommandEvent& event );
 
-      /** Complete reload from plugins. */
-      void ReloadPlugins(ArrayOfPlugIns* plugins);
+      /** Complete reload from plugins array. */
+      void ReloadPluginPanels(ArrayOfPlugIns* plugins);
+      void SelectByName(wxString &name);
+
+      wxBoxSizer         *m_pitemBoxSizer01;
 
 private:
       void AddPlugin(PlugInContainer* pic);
       int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
       void Clear();
+
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
       
-      wxBoxSizer         *m_pitemBoxSizer01;
+};
+
+/** Invokes client browser on plugin info_url when clicked. */
+class WebsiteButton: public wxPanel
+{
+    public:
+        WebsiteButton(wxWindow* parent, const char* url);
+        ~WebsiteButton(){};
+        void SetURL( std::string url){ m_url = url; }
+    protected:
+        std::string m_url;
 };
 
 class PluginPanel: public wxPanel
@@ -445,30 +515,36 @@ public:
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
       void OnPluginEnable( wxCommandEvent& event );
+      void OnPluginAction( wxCommandEvent& event );
       void OnPluginUninstall( wxCommandEvent& event );
       void OnPluginUp( wxCommandEvent& event );
       void OnPluginDown( wxCommandEvent& event );
+      void OnRBEnable( wxCommandEvent& event );
+      void OnRBDisable( wxCommandEvent& event );
       void SetEnabled( bool enabled );
       bool GetSelected(){ return m_bSelected; }
       PlugInContainer* GetPluginPtr() { return m_pPlugin; };
+      void SetActionLabel( wxString &label);
 
 private:
       PluginListPanel *m_PluginListPanel;
       bool             m_bSelected;
       PlugInContainer *m_pPlugin;
-      wxWindow        *m_status_icon;
+      StatusIconPanel *m_status_icon;
       wxStaticText    *m_pName;
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
-      wxFlexGridSizer      *m_pButtons;
+      wxBoxSizer      *m_pButtons;
       wxStaticBitmap  *m_itemStaticBitmap;
       wxButton        *m_pButtonEnable;
       wxButton        *m_pButtonPreferences;
-      wxButton        *m_pButtonUninstall;
+      wxButton        *m_pButtonAction, *m_pButtonUninstall;
       
-      wxBoxSizer      *m_pButtonsUpDown;
+      wxBoxSizer      *m_pButtonsUpDown, *m_rgSizer;
       wxButton        *m_pButtonUp;
-      wxButton        *m_pButtonDown;    
+      wxButton        *m_pButtonDown;
+      wxRadioButton   *m_rbEnable, *m_rbDisable;
+      WebsiteButton   *m_info_btn;
 };
 
 

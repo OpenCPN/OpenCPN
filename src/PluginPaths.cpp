@@ -152,6 +152,22 @@ void PluginPaths::initApplePaths()
     m_datadirs.push_back( "/Applications/OpenCPN.app/Contents/plugins");
 }
 
+void PluginPaths::initAndroidPaths()
+{
+    using namespace std;
+
+    // Initial Android implementation cannot use new PluginManager scheme
+    // So we default to standard R/O location as used by system plugins.
+
+    //m_userLibdir = m_home + "/.local/lib";
+    //m_userBindir = m_home + "/.local/bin";
+    //m_userDatadir = m_home + "/.local/share";
+    //m_unknownPathDir = m_home + "/.local/share/opencpn/unknown-prefix";
+
+    const string platform_dir = g_Platform->GetPluginDir().ToStdString();
+    m_libdirs.push_back(expand(platform_dir));
+}
+
 
 PluginPaths::PluginPaths()
 {
@@ -175,6 +191,12 @@ PluginPaths::PluginPaths()
         initApplePaths();
     }
     else {
-        wxLogWarning("PluginPaths: Unknown platform");
+        wxString os_name = wxPlatformInfo::Get().GetPortIdName();
+        wxLogMessage(_T("OS_NAME: ") + os_name);
+        if(os_name.Contains(_T("wxQT"))){
+            initAndroidPaths();
+        }
+        else
+            wxLogWarning("PluginPaths: Unknown platform");
     }
 }

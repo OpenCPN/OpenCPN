@@ -66,6 +66,11 @@
 
 #include "catalog_parser.h"
 
+//  Some useful static functions
+extern bool isRegularFile(const char* path);
+extern std::string fileListPath(std::string name);
+extern std::string versionPath(std::string name);
+extern void cleanup(const std::string& filelist, const std::string& plugname);
 
 class PluginHandler {
 
@@ -81,6 +86,9 @@ class PluginHandler {
         /** Return list of available, not installed plugins. */
         const std::vector<PluginMetadata> getAvailable();
 
+        /** Return list of available, unique plugins from configured XML catalog */
+        std::vector<PluginMetadata> getAvailableUniquePlugins();
+
         /** Return path to metadata XML file. */
         std::string getMetadataPath();
 
@@ -88,19 +96,21 @@ class PluginHandler {
         void setMetadata(std::string path) { metadataPath = path; }
 
         /** Download and install a new, not installed plugin. */
-        bool install(PluginMetadata plugin);
+        bool installPlugin(PluginMetadata plugin);
 
         /** Install a new, downloaded but not installed plugin tarball. */
-        bool install(PluginMetadata plugin, std::string path);
+        bool installPlugin(PluginMetadata plugin, std::string path);
 
 	/** Uninstall an installed plugin. */
         bool uninstall(const std::string plugin);
 
         std::string getLastErrorMsg() { return last_error_msg; }
 
+        CatalogData *GetCatalogData(){ return &catalogData; }
+        
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */
-        PluginHandler() {}
+        PluginHandler() { m_sOsLike = ""; }
 
     private:
         std::string metadataPath;
@@ -112,6 +122,109 @@ class PluginHandler {
                             std::string& filelist);
         bool extractTarball(const std::string path, std::string& filelist);
         bool archive_check(int r, const char* msg, struct archive* a);
+
+        wxString m_sOsLike;
+        void find_compat_target(const std::string& plugin_target)
+        {
+            if (m_sOsLike != "") {
+                return;
+            }
+            if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+                // Undocumented test hook.
+                m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
+                return;
+            }
+            if (plugin_target != "ubuntu") {
+                return;
+            }
+            wxFile file("/etc/os-release");
+            if(!file.IsOpened()) {
+                return;
+            }
+            wxString l_InString;
+            if(file.ReadAll(&l_InString)) {
+                // Find OS_LIKE in string
+                int l_nPos = l_InString.Find("ID_LIKE=");
+                if(l_nPos != wxNOT_FOUND) {
+                    l_nPos += 8;
+                    int l_nEnd = l_InString.find('\n', l_nPos);
+                    m_sOsLike.append(l_InString.SubString(l_nPos, l_nEnd - 1));
+                }
+            }
+            file.Close();
+        }
+
+};
+
+/**
+ * Used to compare plugin versions. Versions are basically semantic
+ * versioning: major.minor.revision.build for example 1.2.6.1-deadbee. The
+ * values major, minor and revision should be integers. The build is a
+ * free-format string sorted lexically.
+ *
+ * Note: The version installed is saved in text files since it's not
+ * available in the plugin interface besides major.minor. See
+ * https://github.com/OpenCPN/OpenCPN/issues/1443
+ */
+class OcpnVersion
+{
+    int major;
+    int minor;
+    int revision;
+    std::string build;
+
+public:
+    OcpnVersion();
+
+    OcpnVersion(std::string version_release);
+    OcpnVersion(int major, int minor, int revision=0, std::string build = "");
+    std::string to_string();
+
+    bool operator < (const OcpnVersion& other)
+    {
+            if (major < other.major) return true;
+            if (minor < other.minor) return true;
+            if (revision < other.revision) return true;
+            if (build < other.build) return true;
+            return false;
+    }
+
+    bool operator == (const OcpnVersion& other)
+    {
+            return major == other.major
+                && minor == other.minor
+                && revision == other.revision
+                && build == other.build;
+    }
+
+    bool operator > (const OcpnVersion& other)
+    {
+            return !(*this == other) && !(*this < other);
+    }
+
+    bool operator <= (const OcpnVersion& other)
+    {
+            return (*this == other) || (*this < other);
+    }
+
+    bool operator >= (const OcpnVersion& other)
+    {
+            return (*this == other) || (*this > other);
+    }
+
+    bool operator != (const OcpnVersion& other)
+    {
+            return !(*this == other);
+    }
+
+    friend std::ostream& operator << (std::ostream& s, const OcpnVersion& v)
+    {
+            s << v.major << '.' << v.minor << '.' << v.revision;
+            if (v.build != "" ) {
+                s << '.' << v.build;
+            }
+            return s;
+    }
 
 };
 
