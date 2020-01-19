@@ -1186,7 +1186,7 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
     // For small distances do an ordinary mercator calc. (To prevent return of nan's )
     if ((fabs(lon2-lon1)<0.1) &&  (fabs(lat2-lat1)<0.1)) 
     {
-        DistanceBearingMercator( lat1, lon1, lat2, lon2, bearing, dist);
+        DistanceBearingMercator( lat2, lon2, lat1, lon1, bearing, dist);
         return;
     }
     else{
@@ -1412,7 +1412,7 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
 }
 
 
-void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist)
+void DistanceBearingMercator(double lat1, double lon1, double lat0, double lon0, double *brg, double *dist)
 {
     //Calculate bearing and distance between two points
     double latm = (lat0 + lat1)/2 * DEGREE; //median of latitude
