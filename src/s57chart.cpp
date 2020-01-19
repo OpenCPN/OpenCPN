@@ -74,6 +74,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+#include "linmath.h"
 #endif
 
 #include <algorithm>          // for std::sort
@@ -97,6 +98,14 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+
+#ifndef USE_ANDROID_GLES2
+#define glGenBuffers(a,b) (s_glGenBuffers)(a,b);
+#define glBindBuffer(a,b) (s_glBindBuffer)(a,b);
+#define glBufferData(a,b,c,d) (s_glBufferData)(a,b,c,d);
+#define glDeleteBuffers(a,b) (s_glDeleteBuffers)(a,b);
+#endif
+
 #endif
 
 
@@ -104,16 +113,14 @@ extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
 extern wxString          g_csv_locn;
 extern wxString          g_SENCPrefix;
-extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
 extern bool              g_b_EnableVBO;
+extern OCPNPlatform     *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
-extern ColorScheme       global_color_scheme;
-extern int               g_nCPUCount;
 
 int                      g_SENC_LOD_pixels;
 
@@ -133,15 +140,6 @@ WX_DEFINE_LIST(ListOfObjRazRules);   // Implement a list ofObjRazRules
 static int              s_bInS57;         // Exclusion flag to prvent recursion in this class init call.
                                           // Init() is not reentrant due to static wxProgressDialog callback....
 int s_cnt;
-
-static bool s_ProgressCallBack( void )
-{
-    bool ret = true;
-    s_cnt++;
-    if( ( s_cnt % 100 ) == 0 ) {
-    }
-    return ret;
-}
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
 {
@@ -227,6 +225,9 @@ s57chart::s57chart()
     m_Chart_Scale = 1;                              // Will be fetched during Init()
     m_Chart_Skew = 0.0;
 
+    pDIB = NULL;
+    m_pCloneBM = NULL;
+
 // Create ATON arrays, needed by S52PLIB
     pFloatingATONArray = new wxArrayPtrVoid;
     pRigidATONArray = new wxArrayPtrVoid;
@@ -237,6 +238,8 @@ s57chart::s57chart()
     m_depth_unit_id = DEPTH_UNIT_METERS;
 
     bGLUWarningSent = false;
+
+    m_pENCDS = NULL;
 
     m_nvaldco = 0;
     m_nvaldco_alloc = 0;
@@ -277,10 +280,15 @@ s57chart::~s57chart()
 
     FreeObjectsAndRules();
 
+    delete pDIB;
+
+    delete m_pCloneBM;
 //    delete pFullPath;
 
     delete pFloatingATONArray;
     delete pRigidATONArray;
+
+    delete m_pENCDS;
 
     free( m_pvaldco_array );
 
@@ -317,7 +325,7 @@ s57chart::~s57chart()
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
-        s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+        glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
     free (m_this_chart_context);    
 
@@ -393,7 +401,8 @@ void s57chart::SetColorScheme( ColorScheme cs, bool bApplyImmediate )
     m_global_color_scheme = cs;
 
     if( bApplyImmediate ) {
-        pDIB.reset();        // Toss any current cache
+        delete pDIB;        // Toss any current cache
+        pDIB = NULL;
     }
 
     //      Clear out any cached bitmaps in the text cache
@@ -1312,7 +1321,6 @@ void s57chart::AssembleLineGeometry( void )
     //      and recording each segment's offset in the array
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
         VE_Element *pedge = it->second;
-        int key = it->first;
         if( pedge ) {
             memcpy(lvr, pedge->pPoints, pedge->nCount * 2 * sizeof(float));
             lvr += pedge->nCount * 2;
@@ -1425,17 +1433,21 @@ void s57chart::BuildLineVBO( void )
 
         //      Create the VBO
         GLuint vboId;
-        (s_glGenBuffers)(1, &vboId);
+        glGenBuffers(1, &vboId);
 
          // bind VBO in order to use
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
         // upload data to VBO
+#ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-        (s_glBufferData)(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
+#endif
+        glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
 
+#ifndef USE_ANDROID_GLES2
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
+#endif
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         //  Loop and populate all the objects
         for( int i = 0; i < PRIO_NUM; ++i ) {
@@ -1505,14 +1517,17 @@ bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& V
     
     SetVPParms( VPoint );
     
+#ifndef USE_ANDROID_GLES2
     glPushMatrix(); //    Adjust for rotation
+#endif
     glChartCanvas::RotateToViewPort(VPoint);
            
     glChartCanvas::DisableClipRegion();
     DoRenderOnGLText( glc, VPoint );
             
+#ifndef USE_ANDROID_GLES2
     glPopMatrix();
-    
+#endif
     
 #endif
     return true;
@@ -1531,7 +1546,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
     SetVPParms( VPoint );
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -1572,15 +1587,68 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                 // for now I will revert to the faster rectangle clipping now that rendering order is resolved
 //                glChartCanvas::SetClipRegion(cvp, chart_region);
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                ps52plib->m_last_clip_rect = upd.GetRect();
             }
             else
-                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            {
+#ifdef OPT_USE_ANDROID_GLES2
+
+                // GLES2 will be faster if we setup and use a smaller viewport for each rectangle render.
+                // This is because when using shaders, clip operations (e.g. scissor, stencil) happen after the fragment shader executes.
+                // However, with a smaller viewport, the fragment shader will not be invoked if the vertices are all outside the vieport.
+                
+                wxRect r = upd.GetRect();
+                ViewPort *vp = &cvp;
+                glViewport( r.x, vp->pix_height - (r.y + r.height), r.width, r.height );
+                
+                //mat4x4 m;
+                 //mat4x4_identity(m);
+                
+                mat4x4 I, Q;
+                mat4x4_identity(I);
+
+                float yp = vp->pix_height - (r.y + r.height);
+                // Translate
+                I[3][0]  = (-r.x - (float)r.width/2) *  (  2.0 / (float)r.width);
+                I[3][1]  = (r.y + (float)r.height/2) * (  2.0 / (float)r.height);
+                
+                // Scale
+                I[0][0] *= 2.0 / (float)r.width;
+                I[1][1] *= -2.0 / (float)r.height;
+                
+                //Rotate
+                float angle = 0;
+                mat4x4_rotate_Z(Q, I, angle);
+                
+                mat4x4_dup((float (*)[4])vp->vp_transform, Q);
+
+#else
+                //glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                glChartCanvas::SetClipRegion(cvp, chart_region);
 
             ps52plib->m_last_clip_rect = upd.GetRect();
+                
+                
+#endif                
+                
+            }
+
+//            ps52plib->m_last_clip_rect = upd.GetRect();
+#ifndef USE_ANDROID_GLES2
             glPushMatrix(); //    Adjust for rotation
+#endif
             glChartCanvas::RotateToViewPort(VPoint);
+            
+            wxRect r = upd.GetRect();
+            //qDebug() << "Rect" << r.x << r.y << r.width << r.height;
+            
+            //qDebug() << "Start DoRender" << sw.GetTime();
             DoRenderOnGL( glc, cvp );
+            //qDebug() << "End DoRender" << sw.GetTime();
+            
+#ifndef USE_ANDROID_GLES2
             glPopMatrix();
+#endif
             glChartCanvas::DisableClipRegion();
         }
     }
@@ -1604,6 +1672,7 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
     ObjRazRules *crnt;
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
+#if 1    
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
@@ -1619,6 +1688,33 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
         }
     }
 
+#else    
+    //      Render the areas quickly
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( PI_GetPLIBBoundaryStyle() == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
+            else
+                top = razRules[i][3];           // Area Plain Boundaries
+                
+                while( top != NULL ) {
+                    crnt = top;
+                    top = top->next;               // next object
+                    crnt->sm_transform_parms = &vp_transform;
+                    
+                    // This may be a deferred tesselation
+                    // Don't pre-process the geometry unless the object is to be actually rendered
+                    if(!crnt->obj->pPolyTessGeo->IsOk() ){ 
+                        if(ps52plib->ObjectRenderCheckRules( crnt, &tvp, true )){
+                            if(!crnt->obj->pPolyTessGeo->m_pxgeom)
+                                crnt->obj->pPolyTessGeo->m_pxgeom = buildExtendedGeom( crnt->obj );
+                        }
+                    }
+                    ps52plib->RenderAreaToGL( glc, crnt, &tvp );
+                }
+    }
+#endif    
+//qDebug() << "Done areas" << sw.GetTime();
+    
     //    Render the lines and points
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
@@ -1631,7 +1727,10 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
+    }
+    //qDebug() << "Done Boundaries" << sw.GetTime();
 
+    for( i = 0; i < PRIO_NUM; ++i ) {
         top = razRules[i][2];           //LINES
         while( top != NULL ) {
             crnt = top;
@@ -1639,7 +1738,11 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
+    }
+ 
+ //qDebug() << "Done Lines" << sw.GetTime();
 
+    for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
             top = razRules[i][0];       //SIMPLIFIED Points
         else
@@ -1651,8 +1754,9 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
-
     }
+    //qDebug() << "Done Points" << sw.GetTime();
+
 
 #endif          //#ifdef ocpnUSE_GL
 
@@ -1815,7 +1919,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 
     if( Region != m_last_Region ) force_new_view = true;
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -1839,11 +1943,12 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         if( m_pCloneBM ) {
             if( ( m_pCloneBM->GetWidth() != VPoint.pix_width )
                     || ( m_pCloneBM->GetHeight() != VPoint.pix_height ) ) {
-                m_pCloneBM.reset();
+                delete m_pCloneBM;
+                m_pCloneBM = NULL;
             }
         }
-        if( nullptr == m_pCloneBM )
-            m_pCloneBM.reset(new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 ));
+        if( NULL == m_pCloneBM ) m_pCloneBM = new wxBitmap( VPoint.pix_width, VPoint.pix_height,
+                -1 );
 
         wxMemoryDC dc_clone;
         dc_clone.SelectObject( *m_pCloneBM );
@@ -1875,8 +1980,8 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
 #ifdef ocpnUSE_ocpnBitmap
             nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
 #endif
-            // Mask is owned by the bitmap.
-            m_pCloneBM->SetMask( new wxMask( *m_pCloneBM, nodat_sub ) );
+            m_pMask = new wxMask( *m_pCloneBM, nodat_sub );
+            m_pCloneBM->SetMask( m_pMask );
         }
 
         dc.SelectObject( *m_pCloneBM );
@@ -1895,7 +2000,7 @@ bool s57chart::RenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint )
 
     SetVPParms( VPoint );
 
-    ps52plib->PrepareForRender();
+    ps52plib->PrepareForRender((ViewPort *)&VPoint);
 
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
@@ -1928,7 +2033,6 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     double easting_ul, northing_ul;
     double easting_lr, northing_lr;
     double prev_easting_ul = 0., prev_northing_ul = 0.;
-    double prev_easting_lr, prev_northing_lr;
 
     if( ps52plib->GetPLIBColorScheme() != m_lastColorScheme ) bReallyNew = true;
     m_lastColorScheme = ps52plib->GetPLIBColorScheme();
@@ -1949,7 +2053,8 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     if( bReallyNew ) {
         bNewVP = true;
-        pDIB.reset();
+        delete pDIB;
+        pDIB = NULL;
         bnewview = true;
     }
 
@@ -1968,8 +2073,6 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
                 - ( ( m_last_vp.pix_width / 2 ) / m_view_scale_ppm );
         prev_northing_ul = last_northing_vp_center
                 + ( ( m_last_vp.pix_height / 2 ) / m_view_scale_ppm );
-        prev_easting_lr = easting_ul + ( m_last_vp.pix_width / m_view_scale_ppm );
-        prev_northing_lr = northing_ul - ( m_last_vp.pix_height / m_view_scale_ppm );
 
         double dx = ( easting_ul - prev_easting_ul ) * m_view_scale_ppm;
         double dy = ( prev_northing_ul - northing_ul ) * m_view_scale_ppm;
@@ -2010,7 +2113,7 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
     OCPNRegion rgn_new( rul.x, rul.y, rlr.x - rul.x, rlr.y - rul.y );
     rgn_last.Intersect( rgn_new );            // intersection is reusable portion
 
-    if( bNewVP && (nullptr != pDIB) && !rgn_last.IsEmpty() ) {
+    if( bNewVP && ( NULL != pDIB ) && !rgn_last.IsEmpty() ) {
         int xu, yu, wu, hu;
         rgn_last.GetBox( xu, yu, wu, hu );
 
@@ -2045,7 +2148,8 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
         dc_new.SelectObject( wxNullBitmap );
         dc_last.SelectObject( wxNullBitmap );
 
-        pDIB.reset(pDIBNew);
+        delete pDIB;
+        pDIB = pDIBNew;
 
 //              OK, now have the re-useable section in place
 //              Next, build the new sections
@@ -2103,8 +2207,9 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
 
     }
 
-    else if( bNewVP || (nullptr == pDIB )) {
-        pDIB.reset(new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP ));     // destination
+    else if( bNewVP || ( NULL == pDIB ) ) {
+        delete pDIB;
+        pDIB = new PixelCache( VPoint.pix_width, VPoint.pix_height, BPP );     // destination
 
         wxRect full_rect( 0, 0, VPoint.pix_width, VPoint.pix_height );
         pDIB->SelectIntoDC( dc );
@@ -2249,10 +2354,10 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
     for( i = 0; i < PRIO_NUM; ++i ) {
 //      Set up a Clipper for Lines
         wxDCClipper *pdcc = NULL;
-        if( rect ) {
-            wxRect nr = *rect;
+//      if( rect ) {
+//         wxRect nr = *rect;
 //         pdcc = new wxDCClipper(dcinput, nr);
-        }
+//      }
 
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
             top = razRules[i][4]; // Area Symbolized Boundaries
@@ -2347,9 +2452,9 @@ bool s57chart::DCRenderText( wxMemoryDC& dcinput, const ViewPort& vp )
 
 
 
-bool s57chart::IsCellOverlayType( char *pFullPath )
+bool s57chart::IsCellOverlayType( const wxString &FullPath )
 {
-    wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
+    wxFileName fn( FullPath );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
     if(cname.Length() >= 3)
@@ -2828,11 +2933,14 @@ void s57chart::SetSafetyContour(void)
 
 void s57chart::InvalidateCache()
 {
-    pDIB.reset();
+    delete pDIB;
+    pDIB = NULL;
 }
 
 bool s57chart::BuildThumbnail( const wxString &bmpname )
 {
+    bool ret_code;
+
     wxFileName ThumbFileName( bmpname );
 
     //      Make the target directory if needed
@@ -2869,7 +2977,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     vp.Validate();
 
     // cause a clean new render
-    pDIB.reset();
+    delete pDIB;
+    pDIB = NULL;
 
     SetVPParms( vp );
 
@@ -2962,10 +3071,12 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     free( psave_viz );
 
 //      Clone pDIB into pThumbData;
-    wxBitmap bmp( vp.pix_width, vp.pix_height/*,  BPP*/);
+    wxBitmap *pBMP;
+
+    pBMP = new wxBitmap( vp.pix_width, vp.pix_height/*,  BPP*/);
 
     wxMemoryDC dc_clone;
-    dc_clone.SelectObject( bmp );
+    dc_clone.SelectObject( *pBMP );
 
     pDIB->SelectIntoDC( dc_org );
 
@@ -2975,7 +3086,11 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     dc_org.SelectObject( wxNullBitmap );
 
     //   Save the file
-    return bmp.SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
+    ret_code = pBMP->SaveFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP );
+
+    delete pBMP;
+
+    return ret_code;
 }
 
 #include <wx/arrimpl.cpp>
@@ -3278,7 +3393,6 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
 //    Read the .S57 SENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromSENC( void )
 {
-    bool ret_val = true;
     if(CURRENT_SENC_FORMAT_VERSION >= 200)
         return CreateHeaderDataFromoSENC();
 
@@ -3850,8 +3964,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 {
     
     //  LOD calculation
-    double display_ppm = 1 / .00025;     // nominal for most LCD displays
-    double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
+    double display_pix_per_meter  = g_Platform->GetDisplayDPmm() * 1000;
+    double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_pix_per_meter;
     m_LOD_meters = meters_per_pixel_max_scale * g_SENC_LOD_pixels;
 
     //  Establish a common reference point for the chart
@@ -4522,6 +4636,10 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 //  This is too big for pick area, can be confusing....
                 //  So make a temporary box at the light's lat/lon, with select_radius size
                 if( !strncmp( obj->FeatureName, "LIGHTS", 6 ) ) {
+                    
+                    double sectrTest;
+                    bool hasSectors = GetDoubleAttr( obj, "SECTR1", sectrTest );
+                    if(hasSectors){
                     double olon, olat;
                     fromSM( ( obj->x * obj->x_rate ) + obj->x_origin,
                             ( obj->y * obj->y_rate ) + obj->y_origin, ref_lat, ref_lon, &olat,
@@ -4533,10 +4651,16 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     LLBBox sbox;
                     sbox.Set(olat, olon, olat, olon);
 
-                    if( sbox.ContainsMarge( lat, lon, select_radius ) ) return true;
+                        if( sbox.ContainsMarge( lat, lon, select_radius ) )
+                            return true;
+                    }
+                    else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                        return true;
+                    
                 }
 
-                else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return true;
+                else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                    return true;
             }
 
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
@@ -4835,7 +4959,7 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                         }
                     }
                 }
-                else {
+                else if(ppg->data_type == DATA_TYPE_FLOAT) {
                     float *p_vertex = (float *)pTP->p_vertex;
 
                     switch( pTP->type ){
@@ -4894,6 +5018,10 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                             break;
                         }
                     }
+                }
+                else{
+                    ret = true;         // Unknown data type, accept the entire TriPrim via coarse test.
+                    break;
                 }
             }
             pTP = pTP->p_next;
@@ -5635,7 +5763,7 @@ bool s57chart::InitENCMinimal( const wxString &FullPath )
         return false;
     }
 
-    m_pENCDS.reset( new OGRS57DataSource );
+    m_pENCDS = new OGRS57DataSource;
 
     m_pENCDS->SetS57Registrar( g_poRegistrar );             ///172
 
@@ -5668,7 +5796,7 @@ OGRFeature *s57chart::GetChartFirstM_COVR( int &catcov )
         pENCReader->AddFeatureDefn( poDefn );
 
 //    Also, add as a Layer to Datasource to ensure proper deletion
-        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS.get(), poDefn, 1 ) );
+        m_pENCDS->AddLayer( new OGRS57Layer( m_pENCDS, poDefn, 1 ) );
 
 //      find this feature
         OGRFeature *pobjectDef = pENCReader->ReadNextFeature( poDefn );
@@ -5711,7 +5839,7 @@ OGRFeature *s57chart::GetChartNextM_COVR( int &catcov )
 
 int s57chart::GetENCScale( void )
 {
-    if( nullptr == m_pENCDS ) return 0;
+    if( NULL == m_pENCDS ) return 0;
 
     //    Assume that chart has been initialized for minimal ENC access
     //    which implies that the ENC has been fully ingested, and some
@@ -6061,7 +6189,6 @@ bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& v
 
                     attrCounter = 0;
                     int noAttr = 0;
-                    bool inDepthRange = false;
                     s57Sector_t sector;
 
                     bleading_attribute = false;

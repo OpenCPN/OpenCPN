@@ -3,7 +3,7 @@ MACRO (TODAY RESULT)
         EXECUTE_PROCESS(COMMAND "cmd" "/C" "date /T" OUTPUT_VARIABLE ${RESULT})
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
                ${RESULT} ${${RESULT}})
-    ELSEIF(UNIX)
+    ELSEIF(UNIX OR MINGW)
         EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
                ${RESULT} ${${RESULT}})

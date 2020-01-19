@@ -29,6 +29,10 @@
 #include "Track.h"
 #include "Route.h"
 
+#ifdef __OCPN__ANDROID__
+#include <QDebug>
+#endif
+
 extern WayPointman *pWayPointMan;
 extern Routeman    *g_pRouteMan;
 extern MyConfig    *pConfig;
@@ -37,11 +41,7 @@ extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern Select *pSelect;
 //extern bool g_bIsNewLayer;
-//extern bool g_bLayerViz;
 
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
@@ -69,7 +69,6 @@ static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     bool bshared = false;
     bool b_propvizname = false;
     bool b_propviz = false;
-    bool bviz_waypointrangerings = false;
 
     wxString SymString = def_symbol_name;       // default icon
     wxString NameString;
@@ -1068,8 +1067,6 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
     
-    unsigned short int GPXTrkSegNo1 = 1;
-    
     while( node2  ) {
         prp = node2->GetData();
             
@@ -1293,6 +1290,9 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 {
     // Routes
+    if(!pRouteList)
+        return false;
+    
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
@@ -1517,6 +1517,7 @@ NavObjectChanges::NavObjectChanges()
 : NavObjectCollection1()
 {
     m_changes_file = 0;
+    m_bdirty = false;
 }
 
 
@@ -1527,8 +1528,7 @@ NavObjectChanges::NavObjectChanges(wxString file_name)
     m_filename = file_name;
     
     m_changes_file = fopen(m_filename.mb_str(), "a");
-    
-    
+    m_bdirty = false;
 }
 
 NavObjectChanges::~NavObjectChanges()
@@ -1556,6 +1556,7 @@ void NavObjectChanges::AddRoute( Route *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrack( Track *pr, const char *action )
@@ -1572,6 +1573,7 @@ void NavObjectChanges::AddTrack( Track *pr, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
@@ -1588,6 +1590,7 @@ void NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const wxString& parent_GUID )
@@ -1608,6 +1611,7 @@ void NavObjectChanges::AddTrackPoint( TrackPoint *pWP, const char *action, const
     pugi::xml_writer_file writer(m_changes_file);
     object.print(writer, " ");
     fflush(m_changes_file);
+    m_bdirty = true;
 }
 
 

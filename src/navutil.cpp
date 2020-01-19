@@ -25,6 +25,11 @@
 
 #include "wx/wxprec.h"
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
@@ -36,6 +41,7 @@
 #include <wx/graphics.h>
 #include <wx/dir.h>
 #include <wx/listbook.h>
+#include <wx/timectrl.h>
 
 #include "dychart.h"
 
@@ -83,6 +89,10 @@
 #include "glChartCanvas.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef __WXOSX__
 #include "DarkMode.h"
 #endif
@@ -99,9 +109,7 @@ extern RouteList        *pRouteList;
 extern TrackList        *pTrackList;
 extern LayerList        *pLayerList;
 extern int              g_LayerIdx;
-extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern ArrayOfCDI       g_ChartDirArray;
 extern double           vLat, vLon, gLat, gLon;
 extern double           kLat, kLon;
 extern double           initial_scale_ppm, initial_rotation;
@@ -113,20 +121,17 @@ extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
 extern int              g_nDepthUnitDisplay;
+extern wxString         g_winPluginDir;
 
-extern wxToolBarBase    *toolBar;
 
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AIS_Decoder      *g_pAIS;
 extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
 extern WayPointman      *pWayPointMan;
-extern Routeman         *g_pRouteMan;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -172,7 +177,6 @@ extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
 extern wxString         g_VisiNameinLayers;
 extern wxString         g_InVisiNameinLayers;
-extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
 
@@ -257,7 +261,6 @@ extern bool             g_bShowWptName;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
-extern wxString         g_toolbarConfigSecondary;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern int              gps_watchdog_timeout_ticks;
@@ -287,7 +290,6 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool             g_bUseGreenShip;
 
-extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -299,15 +301,11 @@ extern double           g_n_arrival_circle_radius;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
 
-extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
 
 extern wxString         g_locale;
 extern wxString         g_localeOverride;
 
-extern bool             g_bUseRaster;
-extern bool             g_bUseVector;
-extern bool             g_bUseCM93;
 
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
@@ -315,12 +313,10 @@ extern int              g_COGAvgSec;
 extern bool             g_bMagneticAPB;
 extern bool             g_bShowChartBar;
 
-extern int              g_MemFootSec;
 extern int              g_MemFootMB;
 
 extern int              g_nCOMPortCheck;
 
-extern bool             g_bbigred;
 
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
@@ -353,7 +349,6 @@ extern int              g_maintoolbar_x;
 extern int              g_maintoolbar_y;
 extern long             g_maintoolbar_orient;
 
-extern int              g_GPU_MemSize;
 
 extern int              g_lastClientRectx;
 extern int              g_lastClientRecty;
@@ -371,7 +366,6 @@ extern wxString         g_default_wp_icon;
 extern wxString         g_default_routepoint_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
-extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
 extern int              g_tcwin_scale;
@@ -382,12 +376,10 @@ extern wxString         g_uploadConnection;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
-extern Multiplexer      *g_pMUX;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
 
-extern bool             bGPSValid;              // for track recording
 extern bool             g_bGLexpert;
 
 extern int              g_SENC_LOD_pixels;
@@ -399,6 +391,8 @@ extern int              g_chart_zoom_modifier_vector;
 extern int              g_NMEAAPBPrecision;
 
 extern wxString         g_TalkerIdText;
+extern bool             g_bShowTrackPointTime;
+
 extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -413,6 +407,7 @@ extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
 extern int              g_default_font_size;
+extern wxString         g_default_font_facename;
 
 extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
@@ -425,6 +420,7 @@ extern float            g_ShipScaleFactorExp;
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
 extern int              g_iENCToolbarPosY;
+extern bool             g_bRollover;
 
 extern bool             g_bSpaceDropMark;
 
@@ -434,6 +430,7 @@ extern bool             g_bShowCurrent;
 extern bool             g_benableUDPNullHeader;
 
 extern wxString         g_uiStyle;
+extern bool             g_btrackContinuous;
 extern bool             g_useMUI;
 
 int                     g_nCPUCount;
@@ -445,9 +442,14 @@ extern wxString         g_lastAppliedTemplateGUID;
 
 extern int              g_route_prop_x, g_route_prop_y;
 extern int              g_route_prop_sx, g_route_prop_sy;
+extern int              g_AndroidVersionCode;
 
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
+bool                    g_bShowMuiZoomButtons = true;
+
+wxString                g_catalog_custom_url;
+wxString                g_catalog_channel;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -601,7 +603,7 @@ int MyConfig::LoadMyConfig()
     g_ownship_predictor_minutes = 5;
     g_cog_predictor_width = 3;
     g_ownship_HDTpredictor_miles = 1;
-    g_n_ownship_min_mm = 1;
+    g_n_ownship_min_mm = 5;
     g_own_ship_sog_cog_calc_damp_sec = 1;
     g_bFullScreenQuilt = 1;
     g_track_rotate_time_type =  TIME_TYPE_COMPUTER;
@@ -658,7 +660,7 @@ int MyConfig::LoadMyConfig()
     g_TrackDeltaDistance = 0.10;
     g_route_line_width = 2;
     g_track_line_width = 2;
-    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    g_colourTrackLineColour = wxColour( 243, 229, 47 );         //Yellow
     
     g_tcwin_scale = 100;
     g_default_wp_icon = _T("triangle");
@@ -709,7 +711,7 @@ int MyConfig::LoadMyConfig()
             g_detailslider_dialog_y =  5;
         
         g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
-        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+        g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 5);
         if( g_navobjbackups > 99 ) g_navobjbackups = 99;
         if( g_navobjbackups < 0 ) g_navobjbackups = 0;
         g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
@@ -762,6 +764,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 #endif /* SYSTEM_SOUND_CMD */
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown );
 
+    Read( _T ( "AndroidVersionCode" ), &g_AndroidVersionCode );
+    
     Read( _T ( "UIexpert" ), &g_bUIexpert );
     
     Read( _T ( "UIStyle" ), &g_uiStyle  );
@@ -794,6 +798,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size );
+    Read( _T ( "DefaultFontFacename"), &g_default_font_facename );
     
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip );
 
@@ -825,6 +830,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+
+    // Plugin catalog handler persistent variables.
+    Read( "CatalogCustomURL", &g_catalog_custom_url);
+    Read( "CatalogChannel", &g_catalog_channel);
     
     
     //  NMEA connection options.
@@ -835,6 +844,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload );
         Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL );
         Read( _T ( "UseMagAPB" ), &g_bMagneticAPB );
+        Read( _T ( "TrackContinuous" ), &g_btrackContinuous, false );
     }
 
     Read( _T ( "ShowTrue" ), &g_bShowTrue );
@@ -860,13 +870,12 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ShowFPS" ), &g_bShowFPS );
     
-    Read( _T ( "ActiveChartGroup" ), &g_GroupIndex );
-
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision );
     
     Read( _T( "TalkerIdText" ), &g_TalkerIdText );
     Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength );
 
+    Read( _T( "ShowTrackPointTime" ), &g_bShowTrackPointTime, true );
     /* opengl options */
 #ifdef ocpnUSE_GL
     if(!bAsTemplate ){
@@ -904,6 +913,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "MobileTouch" ), &g_btouch );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive );
+    Read( _T ( "EnableRolloverBlock" ), &g_bRollover );
 
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
@@ -929,7 +939,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells );
     Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar );
-    //Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon );
     Read( _T ( "ShowLayers" ), &g_bShowLayers );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits );
@@ -986,6 +995,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX );
 
+    Read( _T ( "ShowMUIZoomButtons" ), &g_bShowMuiZoomButtons );
+    
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
     
@@ -1171,6 +1182,10 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "GPXIODir" ), &g_gpx_path );           // Get the Directory name
     Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
     Read( _T ( "BasemapDir"), &gWorldMapLocation );
+    Read( _T ( "pluginInstallDir"), &g_winPluginDir );
+    wxLogMessage("winPluginDir, read from ini file: %s",
+                 g_winPluginDir.mb_str().data());
+
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     
@@ -1343,7 +1358,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         TideCurrentDataSet.Clear();
         wxString str, val;
         long dummy;
-        int iDir = 0;
         bool bCont = GetFirstEntry( str, dummy );
         while( bCont ) {
             Read( str, &val );              // Get a file name
@@ -1446,7 +1460,6 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
         g_MMSI_Props_Array.Empty();
         wxString str, val;
         long dummy;
-        int iDir = 0;
         bool bCont = pConfig->GetFirstEntry( str, dummy );
         while( bCont ) {
             pConfig->Read( str, &val );              // Get an entry
@@ -1471,7 +1484,7 @@ void MyConfig::LoadS57Config()
     double dval;
     SetPath( _T ( "/Settings/GlobalState" ) );
 
-    Read( _T ( "bShowS57Text" ), &read_int, 0 );
+    Read( _T ( "bShowS57Text" ), &read_int, 1 );
     ps52plib->SetShowS57Text( !( read_int == 0 ) );
 
     Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
@@ -1510,15 +1523,15 @@ void MyConfig::LoadS57Config()
     Read( _T ( "bShowNationalText" ), &read_int, 0 );
     ps52plib->m_bShowNationalTexts = !( read_int == 0 );
 
-    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 3.0 ) ) {
         S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
         S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
     }
 
-    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 2.0 ) ) S52_setMarinerParam(
         S52_MAR_SHALLOW_CONTOUR, dval );
 
-    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 6.0 ) ) S52_setMarinerParam(
         S52_MAR_DEEP_CONTOUR, dval );
 
     if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
@@ -1863,6 +1876,11 @@ bool MyConfig::UpdateChartDirs( ArrayOfCDI& dir_array )
 
     }
 
+    // Avoid nonsense log errors...
+    #ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+    #endif    
+    
     Flush();
     return true;
 }
@@ -1957,7 +1975,6 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 void MyConfig::LoadCanvasConfigs( bool bApplyAsTemplate )
 {
-    int n_canvas;
     wxString s;
     canvasConfig *pcc;
     
@@ -2246,6 +2263,8 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "DarkDecorations"), g_bDarkDecorations );
     
+    Write( _T ( "AndroidVersionCode" ), g_AndroidVersionCode );
+
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
 //    Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );      //Not desired for O5 MUI
@@ -2255,6 +2274,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowMenuBar" ), g_bShowMenuBar );
 #endif
     Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    Write( _T ( "DefaultFontFacename" ), g_default_font_facename );
     
     Write( _T ( "Fullscreen" ), g_bFullscreen );
     Write( _T ( "ShowCompassWindow" ), g_bShowCompassWin );
@@ -2277,10 +2297,16 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+
+    // Plugin catalog persistent values.
+    Write( _T( "CatalogCustomURL"), g_catalog_custom_url);
+    Write( _T( "CatalogChannel"), g_catalog_channel);
     
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
+    Write( _T ( "TrackContinuous" ), g_btrackContinuous );
+    
     Write( _T ( "ShowTrue" ), g_bShowTrue );
     Write( _T ( "ShowMag" ), g_bShowMag );
     Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
@@ -2301,6 +2327,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
     Write( _T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base );
+
+    Write( _T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons );
 
 #ifdef ocpnUSE_GL
     /* opengl options */
@@ -2354,17 +2382,17 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
-    Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
 
     Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
     
     Write( _T("TalkerIdText"), g_TalkerIdText );
+    Write( _T("ShowTrackPointTime"), g_bShowTrackPointTime );
 
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
 
-    //Write( _T ( "ToolbarX" ), g_maintoolbar_x );
-    //Write( _T ( "ToolbarY" ), g_maintoolbar_y );
+    Write( _T ( "ToolbarX" ), g_maintoolbar_x );
+    Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     //Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
 
     Write( _T ( "iENCToolbarX" ), g_iENCToolbarPosX );
@@ -2381,6 +2409,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+    Write( _T ( "EnableRolloverBlock" ), g_bRollover );
 
     Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
     Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
@@ -2587,6 +2616,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), g_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
     Write( _T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation) );
+    Write( _T ( "pluginInstallDir" ), g_Platform->NormalizePath(g_winPluginDir) );
     
     SetPath( _T ( "/Settings/NMEADataSource" ) );
     wxString connectionconfigs;
@@ -2703,7 +2733,7 @@ void MyConfig::UpdateSettings()
     Flush();
 }
 
-void MyConfig::UpdateNavObj( void )
+void MyConfig::UpdateNavObj( bool bRecreate )
 {
 
 //   Create the NavObjectCollection, and save to specified file
@@ -2719,8 +2749,10 @@ void MyConfig::UpdateNavObj( void )
         wxRemoveFile( m_sNavObjSetChangesFile );
     }
 
-    //delete m_pNavObjectChangesSet;
-    //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    if(bRecreate){
+        delete m_pNavObjectChangesSet;
+        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    }
 
 }
 
@@ -2758,6 +2790,16 @@ static wxFileName exportFileName(wxWindow* parent, const wxString suggestedName 
     return ret;
 }
 
+bool MyConfig::IsChangesFileDirty()
+{
+    if(m_pNavObjectChangesSet){
+        return m_pNavObjectChangesSet->m_bdirty;
+    }
+    else{
+        return true;
+    }
+}
+
 
 bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
@@ -2765,7 +2807,16 @@ bool ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+        
+#endif
+        
         delete pgpx;
 
         return true;
@@ -2779,7 +2830,13 @@ bool ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxString sugge
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
         delete pgpx;
 
         return true;
@@ -2793,7 +2850,15 @@ bool ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const w
     if (fn.IsOk()) {
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
+        
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile(fn.GetFullPath());
+#endif        
+        
         delete pgpx;
 
         return true;
@@ -2811,6 +2876,7 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 
         wxGenericProgressDialog *pprog = nullptr;
         int count = pWayPointMan->GetWaypointList()->GetCount();
+        int progStep = count / 32;
         if( count > 200) {
             pprog = new wxGenericProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
@@ -2820,17 +2886,17 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
         //WPTs
-        int ic = 0;
+        int ic = 1;
 
         wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
         RoutePoint *pr;
         while( node ) {
-            if(pprog) {
+            if( pprog && !(ic % progStep) ) {
                 wxString msg;
                 msg.Printf(_T("%d/%d"), ic, count);
                 pprog->Update( ic, msg );
-                ic++;
             }
+            ic++;
 
             pr = node->GetData();
 
@@ -2885,7 +2951,16 @@ void ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
 
+        // Android 5+ requires special handling to support native app file writes to SDCard
+        // We need to use a two step copy process using a guaranteed accessible location for the first step.
+#ifdef __OCPN__ANDROID__
+        wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() + fn.GetFullName();
+        pgpx->SaveFile(fns);
+        AndroidSecureCopyFile(fns, fn.GetFullPath());
+#else        
         pgpx->SaveFile( fn.GetFullPath() );
+#endif        
+        
         delete pgpx;
         ::wxEndBusyCursor();
 
@@ -2940,14 +3015,14 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
         wxString path;
         response = g_Platform->DoFileSelectorDialog( NULL, &path,
                                                          _( "Import GPX file" ),
-                                                         m_gpx_path,
+                                                         g_gpx_path,
                                                          _T(""),
                                                          wxT ( "*.gpx" )
                                                          );
                                                          
         file_array.Add(path);
         wxFileName fn( path );
-        m_gpx_path = fn.GetPath();
+        g_gpx_path = fn.GetPath();
                                                          
 #endif
         
@@ -3086,7 +3161,6 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
     RoutePoint *pret = NULL;
 //    if( g_bIsNewLayer ) return NULL;
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-    bool Exists = false;
     while( node ) {
         RoutePoint *pr = node->GetData();
 
@@ -3094,7 +3168,6 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 
         if( name == pr->GetName() ) {
             if( fabs( lat - pr->m_lat ) < 1.e-6 && fabs( lon - pr->m_lon ) < 1.e-6 ) {
-                Exists = true;
                 pret = pr;
                 break;
             }
@@ -4594,6 +4667,19 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         dc.CalcBoundingBox( x + size_x, y + size_y );
     } else {
 #ifdef ocpnUSE_GL
+#ifdef USE_ANDROID_GLES2
+        glEnable( GL_BLEND );
+
+        float radMod = wxMax(radius, 2.0);
+        wxColour c(color.Red(), color.Green(), color.Blue(), transparency);
+        dc.SetBrush(wxBrush(c));
+        dc.SetPen(wxPen(c, 1));
+        dc.DrawRoundedRectangle( x, y, size_x, size_y, radMod );
+        
+        glDisable( GL_BLEND );
+        
+    
+#else
         /* opengl version */
         glEnable( GL_BLEND );
 
@@ -4612,6 +4698,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
             glEnd();
         }
         glDisable( GL_BLEND );
+#endif
 #endif
     }
 }
@@ -4676,14 +4763,12 @@ void GpxDocument::SeedRandom()
 void DimeControl( wxWindow* ctrl )
 {
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            return;
-        }
+    // On macOS 10.14+, we use the native colours in both light mode and dark mode, and do not need to do anything else.
+    // Dark mode is toggled at the application level in `SetAndApplyColorScheme`, and is also respected if it is enabled system-wide.
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        return;
     }
 #endif
-
 #ifdef __WXQT__
     return; // this is seriously broken on wxqt
 #endif
@@ -4706,36 +4791,38 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            return;
-        }
+    // On macOS 10.14+, we use the native colours in both light mode and dark mode, and do not need to do anything else.
+    // Dark mode is toggled at the application level in `SetAndApplyColorScheme`, and is also respected if it is enabled system-wide.
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        return;
     }
 #endif
+
     ColorScheme cs = global_color_scheme;
+
+    // Are we in dusk or night mode? (Used below in several places.)
+    bool darkMode = ( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT );
 
     static int depth = 0; // recursion count
     if ( depth == 0 ) {   // only for the window root, not for every child
-
         // If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
-        if( cs == GLOBAL_COLOR_SCHEME_DAY || cs == GLOBAL_COLOR_SCHEME_RGB ) {
-#ifdef __WXOSX__
-            window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
-            ctrl->SetBackgroundColour( window_back_color );
-#ifdef OCPN_USE_DARKMODE
-            if( g_bDarkDecorations ) {
-                applyDarkAppearanceToWindow(ctrl->MacGetTopLevelWindowRef(), false, true, true);
-            }
-#endif            
-#else
+        if ( !darkMode ) {
             window_back_color = wxNullColour;
-            ctrl->SetBackgroundColour( window_back_color );
-#endif
-
             col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
+            uitext = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
         }
 
+        ctrl->SetBackgroundColour( window_back_color );
+
+#if defined(__WXOSX__) && defined(OCPN_USE_DARKMODE)
+        // On macOS 10.12, enable dark mode at the window level if appropriate.
+        // This will enable dark window decorations but will not darken the rest of the UI.
+        if ( wxPlatformInfo::Get().CheckOSVersion(10, 12) ) {
+            setWindowLevelDarkMode(ctrl->MacGetTopLevelWindowRef(), darkMode);
+        }
+        // Force consistent coloured UI text; dark in light mode and light in dark mode.
+        uitext = darkMode ? wxColor(228,228,228) : wxColor(0,0,0);
+#endif
     }
 
     wxWindowList kids = ctrl->GetChildren();
@@ -4743,67 +4830,52 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
         wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
 
-        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
-            ( (wxListBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
-            ( (wxListCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
-            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+        if (
+            win->IsKindOf(CLASSINFO(wxListBox)) 
+            || win->IsKindOf(CLASSINFO(wxListCtrl)) 
+            || win->IsKindOf(CLASSINFO(wxTextCtrl))
+#ifndef __OCPN__ANDROID__
+            || win->IsKindOf(CLASSINFO(wxTimePickerCtrl))
+#endif            
+        ) {
+            win->SetBackgroundColour(col);
+        }
+        else if (
+            win->IsKindOf(CLASSINFO(wxStaticText))
+            || win->IsKindOf(CLASSINFO(wxCheckBox))
+            || win->IsKindOf(CLASSINFO(wxRadioButton))
+        ) {
+            win->SetForegroundColour(uitext);
+        }
 
 #ifndef __WXOSX__
-        // on OS X most controls can't be styled, and trying to do so only creates weird coloured boxes around them
+        // On macOS most controls can't be styled, and trying to do so only creates weird coloured boxes around them.
+        // Fortunately, however, many of them inherit a colour or tint from the background of their parent.
 
-        else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) )
-            ( (wxBitmapComboBox*) win )->SetBackgroundColour( col );
+        else if (
+            win->IsKindOf(CLASSINFO(wxBitmapComboBox))
+            || win->IsKindOf(CLASSINFO(wxChoice))
+            || win->IsKindOf(CLASSINFO(wxComboBox))
+            || win->IsKindOf(CLASSINFO(wxTreeCtrl))
+        ) {
+            win->SetBackgroundColour(col);
+        }
 
-        else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
-            ( (wxChoice*) win )->SetBackgroundColour( col );
+        else if (
+            win->IsKindOf(CLASSINFO(wxScrolledWindow))
+            || win->IsKindOf(CLASSINFO(wxGenericDirCtrl))
+            || win->IsKindOf(CLASSINFO(wxListbook))
+            || win->IsKindOf(CLASSINFO(wxButton))
+            || win->IsKindOf(CLASSINFO(wxToggleButton))
+        ) {
+            win->SetBackgroundColour( window_back_color );
+        }
 
-        else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
-            ( (wxComboBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+        else if ( win->IsKindOf(CLASSINFO(wxNotebook)) ) {
+            ((wxNotebook*) win)->SetBackgroundColour(window_back_color);
+            ((wxNotebook*) win)->SetForegroundColour(text_color);
         }
 #endif
-
-        else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
-            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxListbook) ) )
-            ( (wxListbook*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) )
-            ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
-            ( (wxNotebook*) win )->SetBackgroundColour( window_back_color );
-            ( (wxNotebook*) win )->SetForegroundColour( text_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
-            ( (wxButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
-            ( (wxToggleButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-//        else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
-////                  ((wxPanel*)win)->SetBackgroundColour(col1);
-//            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-//                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
-//            else
-//                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
-//        }
 
         else if( win->IsKindOf( CLASSINFO(wxHtmlWindow) ) ) {
             if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
@@ -4821,10 +4893,6 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
             ( (wxGrid*) win )->SetDividerPen( wxPen( col ) );
 #endif            
             ( (wxGrid*) win )->SetGridLineColour( gridline );
-        }
-
-        else {
-            ;
         }
 
         if( win->GetChildren().GetCount() > 0 ) {

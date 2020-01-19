@@ -21,6 +21,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
 
@@ -79,10 +84,13 @@ void ConnectionParams::Deserialize(const wxString &configStr)
     if (prms.Count() >= 19){
         UserComment = prms[18];
     }
+    if (prms.Count() >= 20){
+        AutoSKDiscover = !!wxAtoi(prms[19]);
+    }
     
 }
 
-wxString ConnectionParams::Serialize()
+wxString ConnectionParams::Serialize() const
 {
     wxString istcs;
     for( size_t i = 0; i < InputSentenceList.Count(); i++ )
@@ -98,7 +106,7 @@ wxString ConnectionParams::Serialize()
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s"),
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d"),
                                      Type,
                                      NetProtocol,
                                      NetworkAddress.c_str(),
@@ -117,7 +125,8 @@ wxString ConnectionParams::Serialize()
                                      GarminUpload,
                                      FurunoGP3X,
                                      bEnabled,
-                                     UserComment.c_str()
+                                     UserComment.c_str(),
+                                     AutoSKDiscover
                                    );
 
     return ret;
@@ -143,6 +152,7 @@ ConnectionParams::ConnectionParams()
     bEnabled = true;
     b_IsSetup = false;
     m_optionsPanel = NULL;
+    AutoSKDiscover = false;
 }
 
 ConnectionParams::~ConnectionParams()
@@ -150,21 +160,23 @@ ConnectionParams::~ConnectionParams()
     //delete m_optionsPanel;
 }
 
-wxString ConnectionParams::GetSourceTypeStr()
+wxString ConnectionParams::GetSourceTypeStr() const
 {
-    if ( Type == SERIAL )
-        return _("Serial");
-    else if ( Type == NETWORK )
-        return _("Network");
-    else if ( Type == INTERNAL_GPS )
-        return _("GPS");
-    else if ( Type == INTERNAL_BT )
-        return _("BT");
-    else
-        return _T("");
+    switch(Type) {
+        case SERIAL:
+            return _("Serial");
+        case NETWORK:
+            return _("Network");
+        case INTERNAL_GPS:
+            return _("GPS");
+        case INTERNAL_BT:
+            return _("BT");
+        default:
+            return _T("");
+    }
 }
 
-wxString ConnectionParams::GetAddressStr()
+wxString ConnectionParams::GetAddressStr() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("%s"), Port.c_str() );
@@ -178,27 +190,40 @@ wxString ConnectionParams::GetAddressStr()
         return _T("");
 }
 
-wxString ConnectionParams::GetParametersStr()
+// TODO: Make part of NetworkProtocol interface
+static wxString NetworkProtocolToString(NetworkProtocol NetProtocol)
 {
-    if ( Type == SERIAL )
-        return wxString::Format( _T("%d"), Baudrate );
-    else if ( Type == NETWORK ){
-        if ( NetProtocol == TCP )
+    switch(NetProtocol) {
+        case TCP:
             return _("TCP");
-        else if (NetProtocol == UDP)
+        case UDP:
             return _("UDP");
-        else
+        case GPSD:
             return _("GPSD");
+        case SIGNALK:
+            return _("Signal K");
+        default:
+            return _("Undefined");
     }
-    else if ( Type == INTERNAL_GPS )
-        return _T("");
-    else if ( Type == INTERNAL_BT )
-        return Port;
-    else
-        return _T("");
 }
 
-wxString ConnectionParams::GetIOTypeValueStr()
+wxString ConnectionParams::GetParametersStr() const
+{
+    switch( Type ) {
+        case SERIAL:
+            return wxString::Format( _T("%d"), Baudrate );
+        case NETWORK:
+            return NetworkProtocolToString(NetProtocol);
+        case INTERNAL_GPS:
+            return _T("GPS");
+        case INTERNAL_BT:
+            return Port;
+        default:
+            return _T("");
+    }
+}
+
+wxString ConnectionParams::GetIOTypeValueStr() const
 {
     if ( IOSelect == DS_TYPE_INPUT )
         return _("Input");
@@ -208,7 +233,7 @@ wxString ConnectionParams::GetIOTypeValueStr()
         return _("In/Out");
 }
 
-wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
+wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir) const
 {
     if(dir == FILTER_INPUT) {
         if ( type == BLACKLIST )
@@ -224,7 +249,7 @@ wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
     }
 }
 
-wxString ConnectionParams::GetFiltersStr()
+wxString ConnectionParams::GetFiltersStr() const
 {
     wxString istcs;
     for( size_t i = 0; i < InputSentenceList.Count(); i++ )
@@ -260,24 +285,15 @@ wxString ConnectionParams::GetFiltersStr()
     return  ret;
 }
 
-wxString ConnectionParams::GetDSPort()
+wxString ConnectionParams::GetDSPort() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else if( Type == NETWORK){
-        wxString proto;
-        if ( NetProtocol == TCP )
-            proto = _T("TCP");
-        else if (NetProtocol == UDP)
-            proto = _T("UDP");
-        else
-            proto = _T("GPSD");
+        wxString proto = NetworkProtocolToString(NetProtocol);
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
     }
     else if( Type == INTERNAL_BT ){
-        //  GPSD:HOLUX GR-231:0
-        //wxString proto = _T("GPSD");
-        //return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
         return Port;   //mac
     }
     else
@@ -285,19 +301,13 @@ wxString ConnectionParams::GetDSPort()
     
 }
 
-wxString ConnectionParams::GetLastDSPort()
+wxString ConnectionParams::GetLastDSPort() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else
     {
-        wxString proto;
-        if ( LastNetProtocol == TCP )
-            proto = _T("TCP");
-        else if (LastNetProtocol == UDP)
-            proto = _T("UDP");
-        else
-            proto = _T("GPSD");
+        wxString proto = NetworkProtocolToString(LastNetProtocol);
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), LastNetworkAddress.c_str(), LastNetworkPort );
     }
 }
@@ -317,10 +327,13 @@ ConnectionParamsPanel::ConnectionParamsPanel(wxWindow *parent, wxWindowID id, co
     m_pConnectionParams = p_itemConnectionParams;
     m_bSelected = false;
 
+    wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+    SetFont( *dFont );
+
     int refHeight = GetCharHeight();
-    SetMinSize(wxSize(-1, 5 * refHeight));
-    m_unselectedHeight = 5 * refHeight;
-    //SetSize(wxSize(-1, 5 * refHeight));
+    
+    //  This controls the basic heght when later added to a vertical sizer
+    //SetMinSize(wxSize(-1, 6 * refHeight));
     
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
     CreateControls(); 
@@ -349,7 +362,6 @@ void ConnectionParamsPanel::OnSelected( wxMouseEvent &event )
 
 void ConnectionParamsPanel::SetSelected( bool selected )
 {
-    //Freeze();
     m_bSelected = selected;
     wxColour colour;
     int refHeight = GetCharHeight();
@@ -358,24 +370,20 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     {
         GetGlobalColor(_T("UIBCK"), &colour);
         m_boxColour = colour;
-        SetSize(wxSize(-1, 9 * refHeight));
     }
     else
     {
         GetGlobalColor(_T("DILG0"), &colour);
         m_boxColour = colour;
-        SetSize(wxSize(-1, 5 * refHeight));
     }
     
 #ifdef __WXOSX__
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
-        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
-            if(selected) {
-                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-            } else {
-                m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-            }
+    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
+        // On macOS 10.14+ we use the native colours, which automatically adjust in Dark Mode.
+        if (selected) {
+            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
+        } else {
+            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
         }
     }
 #endif
@@ -388,7 +396,6 @@ void ConnectionParamsPanel::SetSelected( bool selected )
     }
 
     GetSizer()->Layout();
-    //Thaw();
     Refresh( true );
     
 }
@@ -412,7 +419,9 @@ void ConnectionParamsPanel::CreateControls( void ){
     mainSizer->AddSpacer( metric);
 
     wxBoxSizer* panelSizer = new wxBoxSizer(wxHORIZONTAL);
-    mainSizer->Add(panelSizer, 1, wxLEFT, 5);
+    mainSizer->Add(panelSizer, 0, wxLEFT, 5);
+
+    mainSizer->AddSpacer( metric);
 
     // Enable cbox
     wxBoxSizer* enableSizer = new wxBoxSizer(wxVERTICAL);
@@ -526,7 +535,7 @@ void ConnectionParamsPanel::CreateControls( void ){
 
     }
  
-    else{
+    else if(m_pConnectionParams->Type == NETWORK){
         wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
         wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
@@ -584,6 +593,8 @@ void ConnectionParamsPanel::CreateControls( void ){
                 proto = _T("TCP"); break;
             case GPSD:
                 proto = _T("GPSD"); break;
+            case SIGNALK:
+                proto = _T("Signal K"); break;
             default:
                 proto = _("Undefined"); break;
         }
@@ -618,8 +629,177 @@ void ConnectionParamsPanel::CreateControls( void ){
         t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
         parmSizer->Add(t21, 0);
         t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        }
+        
+    else if(m_pConnectionParams->Type == INTERNAL_GPS){
+        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+
+        wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
+        netGrid->SetFlexibleDirection(wxHORIZONTAL);
+        parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
+
+        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
+        netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
+        t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+            
+        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
+        t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        
+        wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
+        netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
+        t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
+        t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+       
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
+        t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
+        t15->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+        netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL );
+        t17->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        //line 2
+        t2 = new wxStaticText(this, wxID_ANY, _("Built-in GPS"));
+        t2->SetFont(*bFont);
+        netGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL );
+        t2->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        t4 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL );
+        t4->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        t6 = new wxStaticText(this, wxID_ANY, ioDir);
+        t6->SetFont(*bFont);
+        netGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL );
+        t6->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString proto = _T("");
+
+        t12 = new wxStaticText(this, wxID_ANY, proto);
+        t12->SetFont(*bFont);
+        netGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL );
+        t12->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString address;
+        t14 = new wxStaticText(this, wxID_ANY, address);
+        t14->SetFont(*bFont);
+        netGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL );
+        t14->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString port;
+        t16 = new wxStaticText(this, wxID_ANY, port);
+        t16->SetFont(*bFont);
+        netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
+        t16->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
+        t18 = new wxStaticText(this, wxID_ANY, priority);
+        t18->SetFont(*bFont);
+        netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL );
+        t18->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+        parmSizer->Add(line, 0, wxEXPAND);
+        line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        
+        t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
+        parmSizer->Add(t21, 0);
+        t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
         
     }            
+    else if(m_pConnectionParams->Type == INTERNAL_BT){
+        wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+
+        wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric/2);
+        netGrid->SetFlexibleDirection(wxHORIZONTAL);
+        parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
+
+        wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
+        netGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL );
+        t1->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+            
+        wxStaticText *t3 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t3, 0, wxALIGN_CENTER_HORIZONTAL );
+        t3->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        
+        wxStaticText *t5 = new wxStaticText(this, wxID_ANY, _("Direction"));
+        netGrid->Add(t5, 0, wxALIGN_CENTER_HORIZONTAL );
+        t5->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t11 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t11, 0, wxALIGN_CENTER_HORIZONTAL );
+        t11->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+       
+        wxStaticText *t13 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t13, 0, wxALIGN_CENTER_HORIZONTAL );
+        t13->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL );
+        t15->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+        netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL );
+        t17->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        //line 2
+        t2 = new wxStaticText(this, wxID_ANY, _("Built-in Bluetooth"));
+        t2->SetFont(*bFont);
+        netGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL );
+        t2->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        t4 = new wxStaticText(this, wxID_ANY, _T(""));
+        netGrid->Add(t4, 0, wxALIGN_CENTER_HORIZONTAL );
+        t4->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        t6 = new wxStaticText(this, wxID_ANY, ioDir);
+        t6->SetFont(*bFont);
+        netGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL );
+        t6->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString proto = _T("");
+
+        t12 = new wxStaticText(this, wxID_ANY, proto);
+        t12->SetFont(*bFont);
+        netGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL );
+        t12->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString address;
+        t14 = new wxStaticText(this, wxID_ANY, address);
+        t14->SetFont(*bFont);
+        netGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL );
+        t14->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString port;
+        t16 = new wxStaticText(this, wxID_ANY, port);
+        t16->SetFont(*bFont);
+        netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL );
+        t16->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxString priority;  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
+        t18 = new wxStaticText(this, wxID_ANY, priority);
+        t18->SetFont(*bFont);
+        netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL );
+        t18->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+
+        wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+        parmSizer->Add(line, 0, wxEXPAND);
+        line->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        
+        t21 = new wxStaticText(this, wxID_ANY, _("Comment: ") + m_pConnectionParams->UserComment);
+        parmSizer->Add(t21, 0);
+        t21->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL, this);
+        
+    }            
+
 }
 
 void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
@@ -653,7 +833,7 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
 
         t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
     }
-    else{
+    else if(m_pConnectionParams->Type == NETWORK){
         wxString proto;
         switch(m_pConnectionParams->NetProtocol){
             case UDP:
@@ -662,6 +842,8 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
                 proto = _T("TCP"); break;
             case GPSD:
                 proto = _T("GPSD"); break;
+            case SIGNALK:
+                proto = _T("Signal K"); break;
             default:
                 proto = _("Undefined"); break;
         }
@@ -677,6 +859,17 @@ void ConnectionParamsPanel::Update( ConnectionParams *ConnectionParams)
 
         t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
     }
+    else if(m_pConnectionParams->Type == INTERNAL_GPS){
+
+        t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
+    }
+
+    else if(m_pConnectionParams->Type == INTERNAL_BT){
+
+        t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
+    }
+
+    GetSizer()->Layout();
 }
 
 
@@ -710,80 +903,9 @@ void ConnectionParamsPanel::OnPaint( wxPaintEvent &event )
         
         dc.DrawRoundedRectangle( 0, 0, width-1, height-1, height / 10);
         
-        int base_offset = height / 10;
-        
         // Draw the thumbnail
-        int scaledWidth = height;
         
-//        int scaledHeight = (height - (2 * base_offset)) * 95 / 100;
-//        wxBitmap &bm = m_pChart->GetChartThumbnail( scaledHeight );
-        
-//        if(bm.IsOk()){
-//            dc.DrawBitmap(bm, base_offset + 3, base_offset + 3);
-//        }
-        
-//         wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-//         double font_size = dFont->GetPointSize() * 3/2;
-//         wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
-        
-        int text_x = scaledWidth * 12 / 10;
-//        dc.SetFont( *qFont );
         dc.SetTextForeground(wxColour(0,0,0));
-//        dc.DrawText(nameString, text_x, height * 5 / 100);
-  
-        
-#if 0        
-        int hTitle = dc.GetCharHeight();
-        int y_line = (height * 5 / 100) + hTitle;
-        dc.DrawLine( text_x, y_line, width - base_offset, y_line);
-        
-        
-        dc.SetFont( *dFont );           // Restore default font
-        int offset = GetCharHeight();
-        
-        int yPitch = GetCharHeight();
-        int yPos = y_line + 4;
-        wxString tx;
-        
-        int text_x_val = scaledWidth + ((width - scaledWidth) * 4 / 10);
-        
-        // Create and populate the current chart information
-        tx = _("Chart Edition:");
-        dc.DrawText( tx, text_x, yPos);
-        tx = m_pChart->currentChartEdition;
-        dc.DrawText( tx, text_x_val, yPos);
-        yPos += yPitch;
-        
-        tx = _("Order Reference:");
-        dc.DrawText( tx, text_x, yPos);
-        tx = m_pChart->orderRef;
-        dc.DrawText( tx, text_x_val, yPos);
-        yPos += yPitch;
-        
-        tx = _("Purchase date:");
-        dc.DrawText( tx, text_x, yPos);
-        tx = m_pChart->purchaseDate;
-        dc.DrawText( tx, text_x_val, yPos);
-        yPos += yPitch;
-        
-        tx = _("Expiration date:");
-        dc.DrawText( tx, text_x, yPos);
-        tx = m_pChart->expDate;
-        dc.DrawText( tx, text_x_val, yPos);
-        yPos += yPitch;
-        
-        tx = _("Status:");
-        dc.DrawText( tx, text_x, yPos);
-        tx = m_pChart->getStatusString();
-        if(g_statusOverride.Len())
-            tx = g_statusOverride;
-        dc.DrawText( tx, text_x_val, yPos);
-        yPos += yPitch;
-#endif
-
-
-        
-        
     }
     else{
         dc.SetBrush( wxBrush( m_boxColour ) );
@@ -794,31 +916,7 @@ void ConnectionParamsPanel::OnPaint( wxPaintEvent &event )
         int offset = height / 10;
         dc.DrawRectangle( offset, offset, width - (2 * offset), height - (2 * offset));
 
-
-//        // Draw the thumbnail
-//        int scaledHeight = (height - (2 * offset)) * 95 / 100;
-//        wxBitmap &bm = m_pChart->GetChartThumbnail( scaledHeight );
-        
-//        if(bm.IsOk()){
-//            dc.DrawBitmap(bm, offset + 3, offset + 3);
-//        }
-        
-//        int scaledWidth = bm.GetWidth() * scaledHeight / bm.GetHeight();
-        int scaledWidth = height;
-        
-        
-//         wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
-//         double font_size = dFont->GetPointSize() * 3/2;
-//         wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
-// 
-//         dc.SetFont( *qFont );
         dc.SetTextForeground(wxColour(128, 128, 128));
-        
-  //      if(m_pContainer->GetSelectedChart())
-  //          dc.SetTextForeground(wxColour(220,220,220));
-        
-//        dc.DrawText(nameString, scaledWidth * 15 / 10, height * 35 / 100);
-        
     }
     
     

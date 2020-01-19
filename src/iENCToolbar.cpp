@@ -44,7 +44,6 @@
 
 extern s52plib *ps52plib;
 extern MyFrame * gFrame;
-extern PlugInManager *g_pi_manager;
 extern OCPNPlatform *g_Platform; 
 
 

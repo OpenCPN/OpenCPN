@@ -20,10 +20,12 @@ install:
   - set WXWIN=C:\wxWidgets-3.1.2
   - set wxWidgets_ROOT_DIR=%WXWIN%
   - set wxWidgets_LIB_DIR=%WXWIN%\lib\vc_dll
-  - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;
+  - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;C:\Program Files\Git\bin;c:\cygwin\bin
+  - cmd: python3.6m --version
 
   # install dependencies:
   - choco install poedit
+  - choco install git
 
   # - choco install nsi -x86
   - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/nsis-3.04-setup.exe
@@ -34,7 +36,7 @@ install:
   - cmd: 7z x wxWidgets-3.1.2.7z -o%WXWIN% > null
 
   # some debugging information
-  - set
+  # - set   Displays sensitive password!
   # - cmake --help
 
   # build wxWidgets - Disabled as we provide prebuilt WX to save time
@@ -54,25 +56,8 @@ build_script:
   # - cmake --build . --config debug
   - cmake --build . --target opencpn --config RelWithDebInfo
   - cmake --build . --target package --config RelWithDebInfo
-  # --target package doesn't work because of nsis not correctly installed
 
-artifacts:
-  - path: 'build\*.exe'
-    name: installer
-
-  - path: 'build\RelWithDebInfo\opencpn.lib'
-    name: lib
-
-  - path: 'build\RelWithDebInfo\opencpn-*.pdb'
-    name: pdb
-
-deploy:
-  description: 'release created by AppVeyor CI'
-  provider: GitHub
-  auth_token: '%GitHub_auth_token%'
-  artifact: installer,lib
-  draft: true
-  prerelease: true
-  on:
-    appveyor_repo_tag: true # deploy on tag push only
-    configuration: RelWithDebInfo  # Debug contains non-redist MS DLLs
+deploy_script: 
+  - |
+      cd %APPVEYOR_BUILD_FOLDER%\ci
+      "\Program Files\Git\bin\bash" appveyor-upload.sh

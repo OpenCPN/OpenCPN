@@ -35,3 +35,8 @@ target_include_directories(SQLITE_CPP
     PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 set_property(TARGET SQLITE_CPP PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
+# We do not need extensions, and using them in a static library causes trouble with libdl linking order.
+if (UNIX AND NOT APPLE)
+    add_definitions(" -DSQLITE_OMIT_LOAD_EXTENSION")
+endif (UNIX AND NOT APPLE)

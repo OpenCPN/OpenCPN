@@ -51,7 +51,6 @@ void clear_hash_ERI()
 
 static wxString FormatTimeAdaptive( int seconds )
 {
-    int s = seconds % 60;
     int m = seconds / 60;
     if( seconds < 100 )
         return wxString::Format( _T("%3ds"), seconds );
@@ -494,6 +493,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         now.MakeGMT();
         int target_age = now.GetTicks() - PositionReportTicks;
+        wxLogMessage(wxString::Format(_T("** PositionReportTicks %d %d %d"),
+                                      now.GetTicks(), PositionReportTicks, target_age));
 
         html << vertSpacer
              << rowStart << _("Position") << posTypeStr << _T("</font></td><td align=right><font size=-2>")

@@ -81,8 +81,6 @@ void canvasConfig::LoadFromLegacyConfig( wxFileConfig *conf )
     bShowAIS = true;
     
     //S52 stuff
-    int read_int;
-    double dval;
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     conf->Read( _T ( "bShowS57Text" ), &bShowENCText, 0 );
     conf->Read( _T ( "bShowLightDescription" ), &bShowENCLightDescriptions, 0 );

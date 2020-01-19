@@ -1,0 +1,27 @@
+From 89e159280b3a70b018c451d557b93f62e9eabcaa Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Fri, 3 Aug 2018 22:41:09 +0200
+Subject: [PATCH] flatpak: Patch locale lookup paths.
+
+---
+ src/OCPNPlatform.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/OCPNPlatform.cpp b/src/OCPNPlatform.cpp
+index ab7ba9ac..feb134ed 100644
+--- a/src/OCPNPlatform.cpp
++++ b/src/OCPNPlatform.cpp
+@@ -718,6 +718,10 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
+     delete (wxLocale*)presentLocale;
+     
+     wxLocale *locale = new wxLocale;
++#ifdef FLATPAK
++    locale->AddCatalogLookupPathPrefix("/app/share/locale");
++    locale->AddCatalogLookupPathPrefix("/app/extensions/share/locale");
++#endif
+     wxString loc_lang_canonical;
+     
+     const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocaleID );
+-- 
+2.17.1
+

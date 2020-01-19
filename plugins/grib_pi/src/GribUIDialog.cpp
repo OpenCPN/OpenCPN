@@ -69,6 +69,10 @@ int round (double x) {
 #endif
 #endif
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 #if wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
 #define SetBitmapLabelLabel SetBitmap
 #endif
@@ -320,8 +324,9 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
     SetRequestBitmap( m_ZoneSelMode );
 
-    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    // Careful here, this MinSize() sets the final width of the control bar, overriding the width of the wxChoice above it.
+    m_sTimeline->SetSize( wxSize( 20 * m_ScaledFactor , -1 ) );
+    m_sTimeline->SetMinSize( wxSize( 20 * m_ScaledFactor , -1 ) );
 
 }
 
@@ -670,6 +675,58 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 #endif
     SetSize( wxSize( sd.x, sd.y ) );
     SetMinSize( wxSize( sd.x, sd.y ) );
+    
+#ifdef __OCPN__ANDROID__
+    wxRect tbRect = GetMasterToolbarRect();
+    //qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
+
+    if( 1 ){
+        wxPoint pNew = pPlugIn->GetCtrlBarXY();
+        pNew.x = tbRect.x + tbRect.width + 4;
+        pNew.y = 0; //tbRect.y;
+        pPlugIn->SetCtrlBarXY( pNew );
+        //qDebug() << "pNew" << pNew.x;
+        
+        int widthAvail = GetCanvasByIndex(0)->GetClientSize().x - (tbRect.x +tbRect.width);
+        
+        if(sd.x > widthAvail){
+            //qDebug() << "Too big" << widthAvail << sd.x;
+            
+            int target_char_width = (float)widthAvail / 28;
+            wxScreenDC dc;
+            bool bOK = false;
+            int pointSize = 20;
+            int width, height;
+            wxFont *sFont;
+            while(!bOK){
+                //qDebug() << "PointSize" << pointSize;
+                sFont = FindOrCreateFont_PlugIn( pointSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE );
+                dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont); 
+                if(width <= target_char_width)
+                    bOK = true;
+                pointSize--;
+                if(pointSize <= 10)
+                    bOK = true;
+            }
+                
+                
+            m_cRecordForecast->SetFont(*sFont);
+            
+            Layout();
+            Fit();
+            Hide();
+            SetSize( wxSize( widthAvail, sd.y ) );
+            SetMinSize( wxSize( widthAvail, sd.y ) );
+            Show();
+
+        }
+    }
+    wxPoint pNow = pPlugIn->GetCtrlBarXY();
+    pNow.y = 0;
+    pPlugIn->SetCtrlBarXY( pNow );
+
+#endif    
+
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
@@ -1847,7 +1904,8 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     bool isOK(false);
     bool polarWind(false);
     bool polarCurrent(false);
-
+    bool sigWave(false);
+    bool sigH(false);
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1907,7 +1965,18 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         break;
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
-                    case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_HTSGW:
+                        sigH = true;
+                        idx = Idx_HTSIGW;
+                        break;
+                    case GRB_PER:
+                        sigWave = true;
+                        idx = Idx_WVPER;
+                        break;
+                    case GRB_DIR:
+                        sigWave = true;
+                        idx = Idx_WVDIR;
+                        break;
                     case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
@@ -1964,18 +2033,32 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
                         // already one
                         GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
-                        // we favor UV over DIR/SPEED
-                        if (polarWind) {
-                            if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                        if (idx == Idx_PRESSURE) {
+                            skip = (oRec->getLevelType() == LV_MSL);
+                        } 
+                        else {
+                            // we favor UV over DIR/SPEED
+                            if (polarWind) {
+                                if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                                    skip = true;
+                            }
+                            if (polarCurrent) {
+                                if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
+                                    skip = true;
+                            }
+                            // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
+                            if (!skip && (oRec->getTimeRange() == 3)) {
                                 skip = true;
-                        }
-                        else if (polarCurrent) {
-                            if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
-                                skip = true;
-                        }
-                        // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
-                        if (!skip && (oRec->getTimeRange() == 3)) {
-                            skip = true;
+                            }
+                            // we favor significant Wave other wind wave.
+                            if (sigH) {
+                                if (oRec->getDataType() == GRB_HTSGW)
+                                    skip = true;
+                            }
+                            if (sigWave) {
+                                if (oRec->getDataType() == GRB_DIR || oRec->getDataType() == GRB_PER)
+                                    skip = true;
+                            }
                         }
                     }
                     if (!skip) {

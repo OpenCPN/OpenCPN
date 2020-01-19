@@ -27,6 +27,10 @@
 #include <wx/tokenzr.h>
 #include <wx/clipbrd.h>
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include "AISTargetListDialog.h"
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -56,9 +60,7 @@ extern MyFrame *gFrame;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern bool g_bAISShowTracks;
 extern bool g_btouch;
-extern bool g_bresponsive;
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
@@ -745,7 +747,6 @@ void AISTargetListDialog::SetColorScheme()
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
-    wxAuiPaneInfo *pane = event.pane;
     if( event.pane->name == _T("AISTargetList") ) {
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
     }

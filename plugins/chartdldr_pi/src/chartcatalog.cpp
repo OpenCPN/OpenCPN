@@ -46,13 +46,14 @@ bool ChartCatalog::LoadFromFile( wxString path, bool headerOnly )
     title = _("Catalog is not valid.");      // Invalidate the title in case we read a bad file
     if( !wxFileExists(path) )
         return false;
-    TiXmlDocument * doc = new TiXmlDocument();
-    bool ret = doc->LoadFile( path.mb_str(), TIXML_ENCODING_UTF8 );
+    
+    pugi::xml_document *doc = new pugi::xml_document;
+    bool ret = doc->load_file( path.mb_str() );
     if (ret)
         ret = LoadFromXml( doc, headerOnly );
     else
         charts.Clear();
-    doc->Clear();
+
     wxDELETE(doc);
 
     return ret;
@@ -83,39 +84,40 @@ wxDateTime ChartCatalog::GetReleaseDate()
     return dt_valid;
 }
  
-bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
+bool ChartCatalog::LoadFromXml( pugi::xml_document * doc, bool headerOnly )
 {
-    TiXmlElement * root = doc->RootElement();
-    wxString rootName = wxString::FromUTF8( root->Value() );
+    pugi::xml_node root = doc->first_child();
+    
+    wxString rootName = wxString::FromUTF8( root.name() );
     charts.Clear();
-
     if( rootName.StartsWith( _T("RncProductCatalog") ) )
     {
-        if( !ParseNoaaHeader(root->FirstChildElement()) )
+        if( !ParseNoaaHeader(root.first_child()) )
         {
             return false;
         }
         if (headerOnly)
             return true;
-        TiXmlNode *child;
-        for ( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling() )
-        {
-            if( _T("chart") == wxString::FromUTF8( child->Value() ) )
-                charts.Add(new RasterChart(child));
+        
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "chart") ){
+                charts.Add(new RasterChart(element));
+            }
         }
     }
-    else if( rootName.StartsWith(_T("EncProductCatalog")) )
+    else if( rootName.StartsWith( _T("EncProductCatalog") ) )
     {
-        if( !ParseNoaaHeader(root->FirstChildElement()) )
-            return false;
-            
-        if( headerOnly )
-            return true;
-        TiXmlNode *child;
-        for( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling() )
+        if( !ParseNoaaHeader(root.first_child()) )
         {
-            if( _T("cell") == wxString::FromUTF8( child->Value() ) )
-                charts.Add( new EncCell(child) );
+            return false;
+        }
+        if (headerOnly)
+            return true;
+        
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "cell") ){
+                charts.Add(new EncCell(element));
+            }
         }
     }
     // "IENCBuoyProductCatalog" and "IENCSouthwestPassProductCatalog" added by .Paul.
@@ -123,96 +125,68 @@ bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
              rootName.StartsWith(_T("IENCBuoyProductCatalog")) ||
              rootName.StartsWith(_T("IENCSouthwestPassProductCatalog")) )
     {
-        if( !ParseNoaaHeader(root->FirstChildElement()) )
+        if( !ParseNoaaHeader(root.first_child()) )
         {
             return false;
         }
         if( headerOnly )
             return true;
-        TiXmlNode *child;
-        for( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling())
-        {
-            if( _T("Cell") == wxString::FromUTF8( child->Value() ) )
-                charts.Add(new IEncCell(child));
+        
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "Cell") ){
+                charts.Add(new IEncCell(element));
+            }
         }
     }
     else
     {
         return false;
     }
+
     return true;
 }
 
-bool ChartCatalog::ParseNoaaHeader( TiXmlElement * xmldata )
+bool ChartCatalog::ParseNoaaHeader( const pugi::xml_node &xmldata )
 {
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling())
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("title") )
-        {
-            if( !child->NoChildren() )
-                title = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "title") ){
+            title = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("date_created") )
-        {
-            if( !child->NoChildren() )
-            {
-                date_created.ParseDate( wxString::FromUTF8(child->FirstChild()->Value()) );
-                wxASSERT(date_created.IsValid());
-            }
+        else if( !strcmp(element.name(), "date_created")) {
+            date_created.ParseDate( wxString::FromUTF8(element.first_child().value()) );
+            wxASSERT(date_created.IsValid());
         }
-        else if( s == _T("time_created") )
-        {
-            if( !child->NoChildren() )
-            {
-                time_created.ParseTime( wxString::FromUTF8(child->FirstChild()->Value()) );
-                wxASSERT(time_created.IsValid());
-            }
+        else if( !strcmp(element.name(), "time_created")) {
+            time_created.ParseTime( wxString::FromUTF8(element.first_child().value()) );
+            wxASSERT(time_created.IsValid());
         }
-        else if( s == _T("date_valid") )
-        {
-            if( !child->NoChildren() )
-            {
-                date_valid.ParseDate( wxString::FromUTF8(child->FirstChild()->Value()) );
-                wxASSERT(date_valid.IsValid());
-            }
+        else if( !strcmp(element.name(), "date_valid")) {
+            date_valid.ParseDate( wxString::FromUTF8(element.first_child().value()) );
+            wxASSERT(time_created.IsValid());
         }
-        else if( s == _T("time_valid") )
-        {
-            if( !child->NoChildren() )
-            {
-                time_valid.ParseTime( wxString::FromUTF8(child->FirstChild()->Value()) );
-                wxASSERT(time_valid.IsValid());
-            }
+        else if( !strcmp(element.name(), "time_valid")) {
+            time_valid.ParseTime( wxString::FromUTF8(element.first_child().value()) );
+            wxASSERT(time_created.IsValid());
         }
-        else if( s == _T("dt_valid") )
-        {
-            if( !child->NoChildren() )
-            {
-                wxStringTokenizer tk( wxString::FromUTF8(child->FirstChild()->Value()), _T("TZ") );
-                dt_valid.ParseDate(tk.GetNextToken());
-                dt_valid.ParseTime(tk.GetNextToken());
-                dt_valid.MakeFromTimezone(wxDateTime::UTC);
-                wxASSERT(dt_valid.IsValid());
-            }
+        else if( !strcmp(element.name(), "dt_valid")) {
+            wxStringTokenizer tk( wxString::FromUTF8(element.first_child().value()), _T("TZ") );
+            dt_valid.ParseDate(tk.GetNextToken());
+            dt_valid.ParseTime(tk.GetNextToken());
+            dt_valid.MakeFromTimezone(wxDateTime::UTC);
+            wxASSERT(dt_valid.IsValid());
         }
-        else if( s == _T("ref_spec") )
-        {
-            if( !child->NoChildren() )
-                ref_spec = wxString::FromUTF8( child->FirstChild()->Value() );
+        else if( !strcmp(element.name(), "ref_spec")) {
+            ref_spec = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("ref_spec_vers") )
-        {
-            if( !child->NoChildren() )
-                ref_spec_vers = wxString::FromUTF8( child->FirstChild()->Value() );
+        else if( !strcmp(element.name(), "ref_spec_vers")) {
+            ref_spec_vers = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("s62AgencyCode") )
-        {
-            if( !child->NoChildren() )
-                s62AgencyCode = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "s62AgencyCode")) {
+            s62AgencyCode = wxString::FromUTF8(element.first_child().value());
         }
+
     }
+
     return true;
 }
 
@@ -228,12 +202,11 @@ Chart::~Chart()
     wxDELETE(lnm);
 }
 
-Chart::Chart( TiXmlNode * xmldata )
+Chart::Chart( pugi::xml_node &xmldata )
 {
     coast_guard_districts = new wxArrayString();
     states = new wxArrayString();
     regions = new wxArrayString();
-    TiXmlNode *child;
     target_filename = wxEmptyString;
     reference_file = wxEmptyString;
     manual_download_url = wxEmptyString;
@@ -244,99 +217,66 @@ Chart::Chart( TiXmlNode * xmldata )
     zipfile_datetime_iso8601 = wxInvalidDateTime;
     nm = NULL;
     lnm = NULL;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("title") || s == _T("lname") )
-        {
-            if( !child->NoChildren() )
-                title = wxString::FromUTF8(child->FirstChild()->Value());
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "title")) {
+            title = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("coast_guard_districts") )
-        {
-            TiXmlNode *mychild;
-            for( mychild = child->FirstChild(); mychild != 0; mychild = mychild->NextSibling() )
-            {
-                if( !mychild->NoChildren() )
-                    coast_guard_districts->Add( wxString::FromUTF8(mychild->FirstChild()->Value()) );
+        else if( !strcmp(element.name(), "lname")) {
+            title = wxString::FromUTF8(element.first_child().value());
+        }
+        else if( !strcmp(element.name(), "coast_guard_districts")) {
+            for (pugi::xml_node subElement = element.first_child(); subElement; subElement = subElement.next_sibling()){
+                coast_guard_districts->Add( wxString::FromUTF8(subElement.first_child().value()) );
             }
         }
-        else if( s == _T("states") )
-        {
-            TiXmlNode *mychild;
-            for ( mychild = child->FirstChild(); mychild != 0; mychild = mychild->NextSibling())
-            {
-                if( !mychild->NoChildren() )
-                    states->Add( wxString::FromUTF8(mychild->FirstChild()->Value()) );
+        else if( !strcmp(element.name(), "states")) {
+            for (pugi::xml_node subElement = element.first_child(); subElement; subElement = subElement.next_sibling()){
+                states->Add( wxString::FromUTF8(subElement.first_child().value()) );
             }
         }
-        else if( s == _T("regions") )
-        {
-            TiXmlNode *mychild;
-            for( mychild = child->FirstChild(); mychild != 0; mychild = mychild->NextSibling() )
-            {
-                if( !mychild->NoChildren() )
-                    regions->Add( wxString::FromUTF8(mychild->FirstChild()->Value()) );
+        else if( !strcmp(element.name(), "regions")) {
+            for (pugi::xml_node subElement = element.first_child(); subElement; subElement = subElement.next_sibling()){
+                regions->Add( wxString::FromUTF8(subElement.first_child().value()) );
             }
         }
-        else if( s == _T("zipfile_location") )
-        {
-            if( !child->NoChildren() )
-                zipfile_location = wxString::FromUTF8( child->FirstChild()->Value() );
+        else if( !strcmp(element.name(), "zipfile_location")) {
+            zipfile_location = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("zipfile_datetime") )
-        {
-            if( !child->NoChildren() )
-                if( zipfile_datetime.ParseFormat(wxString::FromUTF8(child->FirstChild()->Value()), _T("%Y%m%d_%H%M%S")) )
+        else if( !strcmp(element.name(), "zipfile_datetime")) {
+            if( zipfile_datetime.ParseFormat(wxString::FromUTF8(element.first_child().value()), _T("%Y%m%d_%H%M%S")) )
                     zipfile_datetime.MakeFromTimezone(wxDateTime::UTC);
         }
-        else if( s == _T("zipfile_datetime_iso8601") )
-        {
-            if( !child->NoChildren() )
-            {
-                wxStringTokenizer tk(wxString::FromUTF8(child->FirstChild()->Value()), _T("TZ"));
-                zipfile_datetime_iso8601.ParseDate(tk.GetNextToken());
-                zipfile_datetime_iso8601.ParseTime(tk.GetNextToken());
-                zipfile_datetime_iso8601.MakeFromTimezone(wxDateTime::UTC);
+        else if( !strcmp(element.name(), "zipfile_datetime_iso8601")) {
+            wxStringTokenizer tk(wxString::FromUTF8(element.first_child().value()), _T("TZ"));
+            zipfile_datetime_iso8601.ParseDate(tk.GetNextToken());
+            zipfile_datetime_iso8601.ParseTime(tk.GetNextToken());
+            zipfile_datetime_iso8601.MakeFromTimezone(wxDateTime::UTC);
+        }
+        else if( !strcmp(element.name(), "zipfile_size")) {
+            zipfile_size = wxAtoi(wxString::FromUTF8(element.first_child().value()));
+        }
+        else if( !strcmp(element.name(), "cov")) {
+            for (pugi::xml_node subElement = element.first_child(); subElement; subElement = subElement.next_sibling()){
+                coverage.Add(new Panel(subElement));
             }
         }
-        else if( s == _T("zipfile_size") )
-        {
-            if( !child->NoChildren() )
-                zipfile_size = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "target_filename")) {
+            target_filename = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("nm") )
-        {
+        else if( !strcmp(element.name(), "reference_file")) {
+            reference_file = wxString::FromUTF8(element.first_child().value());
+        }
+        else if( !strcmp(element.name(), "manual_download_url")) {
+            manual_download_url = wxString::FromUTF8(element.first_child().value());
+        }
+        else if( !strcmp(element.name(), "nm")) {
             // NOT USED
-            // nm = new NoticeToMariners(child);
+            // nm = new NoticeToMariners(element);
         }
-        else if( s == _T("lnm") )
-        {
+        else if( !strcmp(element.name(), "lnm")) {
             // NOT USED
-            // lnm = new NoticeToMariners(child);
-        }
-        else if( s == _T("cov") )
-        {
-            TiXmlNode *mychild;
-            for( mychild = child->FirstChild(); mychild != 0; mychild = mychild->NextSibling() )
-            {
-                coverage.Add(new Panel(mychild));
-            }
-        }
-        else if( s == _T("target_filename") )
-        {
-            if( !child->NoChildren() )
-                target_filename = wxString::FromUTF8(child->FirstChild()->Value());
-        }
-        else if( s == _T("reference_file") )
-        {
-            if( !child->NoChildren() )
-                reference_file = wxString::FromUTF8(child->FirstChild()->Value());
-        }
-        else if( s == _T("manual_download_url") )
-        {
-            if( !child->NoChildren() )
-                manual_download_url = wxString::FromUTF8(child->FirstChild()->Value());
+            // lnm = new NoticeToMariners(element);
         }
     }
 }
@@ -356,9 +296,8 @@ wxString Chart::GetChartFilename( bool to_check )
     return file;
 }
 
-RasterChart::RasterChart( TiXmlNode * xmldata ) : Chart( xmldata )
+RasterChart::RasterChart( pugi::xml_node &xmldata ) : Chart( xmldata )
 {
-    TiXmlNode *child;
     number = wxEmptyString;
     source_edition = -1;
     raster_edition = -1;
@@ -368,60 +307,40 @@ RasterChart::RasterChart( TiXmlNode * xmldata ) : Chart( xmldata )
     source_edition_last_correction = wxEmptyString;
     raster_edition_last_correction = wxEmptyString;
     ntm_edition_last_correction = wxEmptyString;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("number") )
-        {
-            if( !child->NoChildren() )
-                number = wxString::FromUTF8(child->FirstChild()->Value());
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "number")) {
+            number = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("source_edition") )
-        {
-            if( !child->NoChildren() )
-                source_edition = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "source_edition")) {
+            source_edition = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("raster_edition") )
-        {
-            if( !child->NoChildren() )
-                raster_edition = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "raster_edition")) {
+            raster_edition = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("ntm_edition") )
-        {
-            if( !child->NoChildren() )
-                ntm_edition = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "ntm_edition")) {
+            ntm_edition = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("source_date") )
-        {
-            if( !child->NoChildren() )
-                source_date = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "source_date")) {
+            source_date = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("ntm_date") )
-        {
-            if( !child->NoChildren() )
-                ntm_date = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "ntm_date")) {
+            ntm_date = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("source_edition_last_correction") )
-        {
-            if( !child->NoChildren() )
-                source_edition_last_correction = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "source_edition_last_correction")) {
+            source_edition_last_correction = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("raster_edition_last_correction") )
-        {
-            if( !child->NoChildren() )
-                raster_edition_last_correction = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "raster_edition_last_correction")) {
+            raster_edition_last_correction = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("ntm_edition_last_correction") )
-        {
-            if( !child->NoChildren() )
-                ntm_edition_last_correction = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "ntm_edition_last_correction")) {
+            ntm_edition_last_correction = wxString::FromUTF8(element.first_child().value());
         }
     }
 }
 
-EncCell::EncCell( TiXmlNode * xmldata ) : Chart( xmldata )
+EncCell::EncCell( pugi::xml_node &xmldata ) : Chart( xmldata )
 {
-    TiXmlNode *child;
     number = wxEmptyString;  //  Use number (not name) for zip file name and cell name  .Paul.
     src_chart = wxEmptyString;
     cscale = -1;
@@ -430,56 +349,36 @@ EncCell::EncCell( TiXmlNode * xmldata ) : Chart( xmldata )
     updn = -1;
     uadt = wxInvalidDateTime;
     isdt = wxInvalidDateTime;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") )
-        {
-            if( !child->NoChildren() )
-            {
-                number = wxString::FromUTF8(child->FirstChild()->Value());  //  .Paul.
-                //  name = number;  //  .Paul.
-            }
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name")) {
+            number = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("src_chart") )
-        {
-            if( !child->NoChildren() )
-                src_chart = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "src_chart")) {
+            src_chart = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("cscale") )
-        {
-            if( !child->NoChildren() )
-                cscale = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "cscale")) {
+            cscale = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("status") )
-        {
-            if( !child->NoChildren() )
-                status = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "status")) {
+            status = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("edtn") )
-        {
-            if( !child->NoChildren() )
-                edtn = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "edtn")) {
+            edtn = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("updn") )
-        {
-            if( !child->NoChildren() )
-                updn = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "updn")) {
+            updn = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("uadt") )
-        {
-            if( !child->NoChildren() )
-                uadt.ParseDateTime(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "uadt")) {
+            uadt.ParseDateTime(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("isdt") )
-        {
-            if( !child->NoChildren() )
-                isdt.ParseDateTime(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "isdt")) {
+            isdt.ParseDateTime(wxString::FromUTF8(element.first_child().value()));
         }
     }
 }
 
-IEncCell::IEncCell( TiXmlNode * xmldata ) : Chart( xmldata )
+IEncCell::IEncCell( pugi::xml_node &xmldata ) : Chart( xmldata )
 {
     //  Use number (not name) for zip file name and cell name  .Paul.
     number = wxEmptyString;
@@ -491,51 +390,39 @@ IEncCell::IEncCell( TiXmlNode * xmldata ) : Chart( xmldata )
     shp_file = NULL;
     s57_file = NULL;
     kml_file = NULL;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") )
-        {
-            if( !child->NoChildren() )
-            {
-                //  Use number (not name) for zip file name and cell name  .Paul.
-                number = wxString::FromUTF8(child->FirstChild()->Value());
-                zipfile_location = wxString::Format(_T("%s.zip"), number.c_str());
-            }
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name")) {
+            //  Use number (not name) for zip file name and cell name  .Paul.
+            number = wxString::FromUTF8(element.first_child().value());
+            zipfile_location = wxString::Format(_T("%s.zip"), number.c_str());
         }
-        else if( s == _T("location") )
-        {
-            location = new Location(child);
+        else if( !strcmp(element.name(), "location")) {
+            location = new Location(element);
         }
-        else if( s == _T("river_name") )
-        {
-            river_name = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "river_name")) {
+            river_name = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("river_miles") )
-        {
-            river_miles = new RiverMiles(child);
+        else if( !strcmp(element.name(), "river_miles")) {
+            river_miles = new RiverMiles(element);
         }
-        else if( s == _T("area") )
-        {
-            area = new Area(child);
+        else if( !strcmp(element.name(), "river_miles")) {
+            river_miles = new RiverMiles(element);
         }
-        else if( s == _T("edition") )
-        {
-            if( !child->NoChildren() )
-                edition = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "area")) {
+            area = new Area(element);
         }
-        else if( s == _T("shp_file") )
-        {
-            shp_file = new ChartFile(child);
+        else if( !strcmp(element.name(), "shp_file")) {
+            shp_file = new ChartFile(element);
         }
-        else if( s == _T("s57_file") )
-        {
-            s57_file = new ChartFile(child);
+        else if( !strcmp(element.name(), "s57_file")) {
+            s57_file = new ChartFile(element);
         }
-        else if( s == _T("kml_file") )
-        {
-            kml_file = new ChartFile(child);
+        else if( !strcmp(element.name(), "kml_file")) {
+            kml_file = new ChartFile(element);
+        }
+        else if( !strcmp(element.name(), "edition")) {
+            edition = wxString::FromUTF8(element.first_child().value());
         }
     }
 }
@@ -578,162 +465,120 @@ wxDateTime IEncCell::GetUpdateDatetime()
     return s57_file->date_posted;
 }
 
-ChartFile::ChartFile( TiXmlNode * xmldata )
+ChartFile::ChartFile( pugi::xml_node &xmldata )
 {
     file_size = -1;
     location = wxEmptyString;
     date_posted = wxInvalidDateTime;
     time_posted = wxInvalidDateTime;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("location") )
-        {
-            if( !child->NoChildren() )
-                location = wxString::FromUTF8(child->FirstChild()->Value());
+
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "location")) {
+            location = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("date_posted") )
-        {
-            if( !child->NoChildren() )
-                date_posted.ParseDate(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "date_posted")) {
+            date_posted.ParseDate(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("time_posted") )
-        {
-            if( !child->NoChildren() )
-                time_posted.ParseTime(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "time_posted")) {
+            if(strlen(element.first_child().value()))
+                time_posted.ParseTime(wxString::FromUTF8(element.first_child().value()));
             else
                 time_posted.ParseTime(_T("00:00:00"));
         }
-        else if( s == _T("file_size") )
-        {
-            if( !child->NoChildren() )
-                file_size = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "file_size")) {
+            if(strlen(element.first_child().value()))
+                file_size = wxAtoi(wxString::FromUTF8(element.first_child().value()));
             else
                 file_size = -1;
         }
     }
 }
 
-Area::Area( TiXmlNode * xmldata )
+Area::Area( pugi::xml_node &xmldata )
 {
     north = 0.0;
     south = 0.0;
     east = 0.0;
     west = 0.0;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("north") )
-        {
-            if( !child->NoChildren() )
-                north = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "north")) {
+                north = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("south") )
-        {
-            if( !child->NoChildren() )
-                south = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "south")) {
+                south = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("east") )
-        {
-            if( !child->NoChildren() )
-                east = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "east")) {
+                east = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("west") )
-        {
-            if( !child->NoChildren() )
-                west = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "west")) {
+                west = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
     }
 }
 
-RiverMiles::RiverMiles( TiXmlNode * xmldata )
+RiverMiles::RiverMiles( pugi::xml_node &xmldata )
 {
     begin = -1;
     end = -1;
-    TiXmlNode *child;
-    for ( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("begin") )
-        {
-            if( !child->NoChildren() )
-                begin = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "begin")) {
+                begin = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("end") )
-        {
-            if( !child->NoChildren() )
-                end = wxAtof(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "end")) {
+                end = wxAtof(wxString::FromUTF8(element.first_child().value()));
         }
     }
 }
 
-Location::Location( TiXmlNode * xmldata )
+Location::Location( pugi::xml_node &xmldata )
 {
     from = wxEmptyString;
     to = wxEmptyString;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("from") )
-        {
-            if( !child->NoChildren() )
-                from = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "from")) {
+            from = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("to") )
-        {
-            if( !child->NoChildren() )
-                to = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "to")) {
+            to = wxString::FromUTF8(element.first_child().value());
         }
     }
 }
 
 
-NoticeToMariners::NoticeToMariners( TiXmlNode * xmldata )
+NoticeToMariners::NoticeToMariners( pugi::xml_node &xmldata )
 {
     agency = wxEmptyString;
     doc = wxEmptyString;
     date = wxInvalidDateTime;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("nm_agency") || s == _T("lnm_agency") )
-        {
-            if( !child->NoChildren() )
-                agency = wxString::FromUTF8(child->FirstChild()->Value());
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "nm_agency")) {
+            agency = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("doc") )
-        {
-            if( !child->NoChildren() )
-                doc = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "lnm_agency")) {
+            agency = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("date") )
-        {
-            if( !child->NoChildren() )
-                date.ParseDate(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "doc")) {
+            doc = wxString::FromUTF8(element.first_child().value());
+        }
+        else if( !strcmp(element.name(), "date")) {
+            date.ParseDate(wxString::FromUTF8(element.first_child().value()));
         }
     }
 }
 
-Panel::Panel( TiXmlNode * xmldata )
+Panel::Panel( pugi::xml_node &xmldata )
 {
     panel_no = -1;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("panel_no") )
-        {
-            if( !child->NoChildren() )
-                panel_no = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "panel_no")) {
+                panel_no = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
-        else if( s == _T("vertex") )
-        {
+        else if( !strcmp(element.name(), "vertex")) {
             // NOT USED
-            //vertexes.Add(new Vertex(child));
+            //vertexes.Add(new Vertex(element));
         }
     }
 }
@@ -742,66 +587,46 @@ Panel::~Panel()
 {
 }
 
-RncPanel::RncPanel( TiXmlNode * xmldata ) : Panel( xmldata )
+RncPanel::RncPanel( pugi::xml_node &xmldata ) : Panel( xmldata )
 {
     panel_title = wxEmptyString;
     file_name = wxEmptyString;
     scale = 0;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("panel_title") )
-        {
-            if( !child->NoChildren() )
-                panel_title = wxString::FromUTF8(child->FirstChild()->Value());
+    
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "panel_title")) {
+            panel_title = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("file_name") )
-        {
-            if( !child->NoChildren() )
-                file_name = wxString::FromUTF8(child->FirstChild()->Value());
+        else if( !strcmp(element.name(), "file_name")) {
+            file_name = wxString::FromUTF8(element.first_child().value());
         }
-        else if( s == _T("scale") )
-        {
-            if( !child->NoChildren() )
-                scale = wxAtoi(wxString::FromUTF8(child->FirstChild()->Value()));
+        else if( !strcmp(element.name(), "scale")) {
+            scale = wxAtoi(wxString::FromUTF8(element.first_child().value()));
         }
     }
 }
 
-EncPanel::EncPanel( TiXmlNode * xmldata ) : Panel( xmldata )
+EncPanel::EncPanel( pugi::xml_node &xmldata ) : Panel( xmldata )
 {
     type = wxEmptyString;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("type") )
-        {
-            if( !child->NoChildren() )
-                type = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "type")) {
+            type = wxString::FromUTF8(element.first_child().value());
         }
     }
 }
 
-Vertex::Vertex( TiXmlNode * xmldata )
+Vertex::Vertex( pugi::xml_node &xmldata )
 {
     //Init properties
     lat = 999.0;
     lon = 999.0;
-    TiXmlNode *child;
-    for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("lat") )
-        {
-            if( !child->NoChildren() )
-                wxString::FromUTF8(child->FirstChild()->Value()).ToDouble(&lat);
+    for (pugi::xml_node element = xmldata.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "lat")) {
+            wxString::FromUTF8(element.first_child().value()).ToDouble(&lat);
         }
-        else if( s == _T("long") )
-        {
-            if( !child->NoChildren() )
-                wxString::FromUTF8(child->FirstChild()->Value()).ToDouble(&lon);
+        else if( !strcmp(element.name(), "lon")) {
+            wxString::FromUTF8(element.first_child().value()).ToDouble(&lon);
         }
     }
 }

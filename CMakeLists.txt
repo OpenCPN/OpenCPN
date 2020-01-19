@@ -30,7 +30,7 @@ Help:
         cmake -LH  | grep -B1 OCPN_
 
 Renamed options:
-    From version TBD all OpenCPN configuration options have a OCPN_ prefix
+    From version 5.0.0 all OpenCPN configuration options have a OCPN_ prefix
     Many older options are renamed, some examples:
 
         ENABLE_SYSTEM_CMD_SOUND -> OCPN_ENABLE_SYSTEM_CMD_SOUND
@@ -44,7 +44,7 @@ Renamed options:
 
 
 Installation paths:
-  - Since TBD OpenCPN supports the GNU install paths, see
+  - Since 5.0.0 OpenCPN supports the GNU install paths, see
     https://cmake.org/cmake/help/v3.0/module/GNUInstallDirs.html
   - Use CMAKE_INSTALL_LIBDIR to change the base directory for plugins;
     defaults to library location on most platforms, but is 'lib' on
@@ -113,6 +113,9 @@ Is this still problem? If so, generator expressions seem to be the solution.
 cmake_minimum_required(VERSION 3.1.1)
 cmake_policy(SET CMP0043 NEW)
 cmake_policy(SET CMP0025 NEW)
+if (POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW)
+endif ()
 if (POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
 endif ()
@@ -141,6 +144,14 @@ set(
   ${CMAKE_SOURCE_DIR}/
   ${CMAKE_SOURCE_DIR}/cmake
 )
+
+IF(DEFINED _wx_selected_config)
+  MESSAGE (STATUS "selected config ${_wx_selected_config}")
+  IF(_wx_selected_config MATCHES "androideabi-qt")
+    MESSAGE (STATUS "Building for wxQt-Android")
+    SET(QT_ANDROID "ON")
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")  
+ENDIF(DEFINED _wx_selected_config)
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
@@ -192,6 +203,7 @@ else (APPLE OR WIN32)
 endif (APPLE OR WIN32)
 
 option(OCPN_VERBOSE "Make verbose builds"  ON)
+option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
 
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
@@ -240,6 +252,19 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
   set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
 endif ()
 
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+    if (EXISTS "/usr/lib64")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
+    else ()
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+    endif ()
+    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+    )
+endif ()
+
 if (CMAKE_VERSION VERSION_GREATER 3.9)
   option(OCPN_ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
 endif ()
@@ -282,6 +307,7 @@ set(
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
 option(OCPN_USE_SVG "Use SVG graphics" ON)
+option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
 
@@ -289,6 +315,16 @@ option(
   OCPN_ENABLE_SYSTEM_CMD_SOUND
   "Use aplay(1), afplay(1) etc. to play sounds if available" ON
 )
+
+IF (QT_ANDROID)
+  SET(OCPN_NEW_SERIAL OFF)
+  SET(OCPN_USE_NEWSERIAL OFF)
+  SET(OCPN_USE_CURL ON)
+  SET(ENABLE_PORTAUDIO OFF)
+  SET(ENABLE_SYSTEM_CMD_SOUND OFF)
+  SET(ENABLE_SNDFILE OFF) 
+  SET(OCPN_USE_LZMA OFF) 
+ENDIF (QT_ANDROID)
 
 # Check if a given library should use the bundled source
 macro (USE_BUNDLED_LIB _result library)
@@ -382,18 +418,19 @@ message(
 # TODO: Should we use  -fno-stack-protector IF NOT DEBUGGING CFLAGS="-O2
 # -march=native"
 if (NOT WIN32 AND NOT APPLE)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-fexceptions"
-    "-rdynamic"
-    "-fno-strict-aliasing"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-fexceptions"
+      "-rdynamic"
+      "-fno-strict-aliasing"
+      "-Wno-deprecated-declarations"
+    )
+  endif ()
   if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_compile_options("-O0")
   endif ()
-  add_compile_options("-Wno-deprecated-declarations")
-  # TODO: Enable deprecation warnings again after the 5.0.0 cycle
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg ) SET(CMAKE_EXE_LINKER_FLAGS
@@ -402,29 +439,33 @@ if (NOT WIN32 AND NOT APPLE)
 endif (NOT WIN32 AND NOT APPLE)
 
 if (MINGW)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-Wno-cpp"
-    "-fexceptions"
-    "-fno-strict-aliasing"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-Wno-cpp"
+      "-fexceptions"
+      "-fno-strict-aliasing"
+    )
+  endif ()
   add_definitions("-DPSAPI_VERSION=1")
   add_definitions("-DUNICODE" "-D_UNICODE")
 endif (MINGW)
 
 if (APPLE)
-  add_compile_options(
-    "-Wall"
-    "-Wno-unused"
-    "-fexceptions"
-    "-Wno-overloaded-virtual"
-    "-fno-strict-aliasing"
-    "-Wno-deprecated"
-    "-Wno-deprecated-declarations"
-    "-Wno-unknown-pragmas"
-    "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
-  )
+  add_compile_options("-Wall")
+  if (NOT OCPN_PEDANTIC)
+    add_compile_options(
+      "-Wno-unused"
+      "-fexceptions"
+      "-Wno-overloaded-virtual"
+      "-fno-strict-aliasing"
+      "-Wno-deprecated"
+      "-Wno-deprecated-declarations"
+      "-Wno-unknown-pragmas"
+      "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+  endif ()
 endif (APPLE)
 
 if (APPLE)
@@ -472,10 +513,19 @@ endif (MSVC)
 if (QT_ANDROID)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
-  add_definitions(-DOCPN_USE_WRAPPER)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -s -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
+  
+  add_compile_options("-Wno-inconsistent-missing-override"
+        "-Wno-potentially-evaluated-expression"
+        "-Wno-overloaded-virtual"
+        "-Wno-unused-command-line-argument"
+        "-Wno-unknown-pragmas"
+        "-O3"
+        "-fPIC"
+  )
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
 endif (QT_ANDROID)
 
 set(
@@ -498,6 +548,7 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 # Version handling
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
+include(TargetSetup)
 
 if (OCPN_CI_BUILD)
   include(Utils)
@@ -544,12 +595,19 @@ else (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will NOT include documentation ***")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 
+if (CMAKE_VERSION VERSION_GREATER 3.11)
+  find_package(Python REQUIRED)
+else ()
+  find_package(Python-314 REQUIRED)
+endif ()
+message(STATUS "Using python executable: ${Python_EXECUTABLE}")
+
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  include(OcpnFindGtk)
-endif ()
+#if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+#  include(OcpnFindGtk)
+#endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
@@ -557,26 +615,33 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
 endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
 
-if (DEFINED _wx_selected_config)
-  message(STATUS "selected config ${_wx_selected_config}")
-  if (_wx_selected_config MATCHES "androideabi-qt")
-    message(STATUS "Building for wxQt-Android")
-    message(STATUS "Qt_Base: " ${Qt_Base})
-    message(
-      STATUS
-        "wxQt_Base/Build: "
-        ${wxQt_Base}
-        "/"
-        ${wxQt_Build}
-    )
-    set(QT_ANDROID "ON")
-  endif (_wx_selected_config MATCHES "androideabi-qt")
-endif (DEFINED _wx_selected_config)
+IF(DEFINED _wx_selected_config)
+  IF(_wx_selected_config MATCHES "androideabi-qt")
+    MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+    MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DARMHF)
+
+    SET(OPENGLES_FOUND "YES")
+    SET(OPENGL_FOUND "YES")
+  
+    ADD_DEFINITIONS(-DUSE_GLU_TESS)
+    SET(USE_GLES2 ON )
+    MESSAGE (STATUS "Using GLESv2 for Android")
+    ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
+    ADD_DEFINITIONS(-DUSE_GLSL)
+    INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
+
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
+ENDIF(DEFINED _wx_selected_config)
 
 if ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
-else ()
+elseif (OCPN_USE_WEBVIEW)
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
+else ()
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base)
 endif ()
 
 if (OPENGLES_FOUND)
@@ -639,21 +704,23 @@ if (NOT QT_ANDROID)
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
   endif (MSVC)
 
-  if (GTK2_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
-  elseif (GTK3_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
-  endif ()
+#  if (GTK2_FOUND)
+#  set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
+
+# if (GTK3_FOUND)
+#    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
+#  endif ()
+    message(STATUS "Main: ${wxWidgets_FIND_COMPONENTS}")
 
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
-  if (wxWidgets_FOUND)
+  if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")
     add_definitions(-DwxUSE_WEBVIEW=1 -DHAVE_WEBVIEW)
   else ()
     add_definitions(-DwxUSE_WEBVIEW=0)
     list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
-    find_package(wxWidgets REQUIRED COMPONENTS ${wxWidgets_FIND_COMPONENTS})
+    find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   endif ()
   if (MSYS)
     # Convert msys to windows paths, and handle the missing /usr
@@ -699,29 +766,58 @@ if (NOT QT_ANDROID)
   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 endif (NOT QT_ANDROID)
 
+IF(QT_ANDROID)
+  SET( wxWidgets_LIBRARIES
+
+        # Link order is critical to avoid circular dependencies
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
+    ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
+    
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+    ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
+ 
+    )
+ENDIF(QT_ANDROID)
+
 message(STATUS "")
 message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-if (QT_ANDROID)
-  include_directories("${Qt_Base}/android_armv7/include/QtCore")
-  include_directories("${Qt_Base}/android_armv7/include")
-  include_directories("${Qt_Base}/android_armv7/include/QtWidgets")
-  include_directories("${Qt_Base}/android_armv7/include/QtGui")
-  include_directories("${Qt_Base}/android_armv7/include/QtOpenGL")
-  include_directories("${Qt_Base}/android_armv7/include/QtTest")
+IF(QT_ANDROID)
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
 
-  include_directories(
-    "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1"
-  )
-  include_directories("${wxQt_Base}/include")
+  INCLUDE_DIRECTORIES(
+      "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+  include_directories("${CMAKE_SOURCE_DIR}/include")
+
 
   add_definitions(-DQT_WIDGETS_LIB)
 endif (QT_ANDROID)
 
 set(
   HDRS
+  include/about.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/AIS_Bitstring.h
@@ -733,6 +829,9 @@ set(
   include/AISTargetQueryDialog.h
   include/bbox.h
   include/canvasMenu.h
+  include/catalog_handler.h
+  include/catalog_mgr.h
+  include/catalog_parser.h
   include/chart1.h
   include/ChartDataInputStream.h
   include/chartdb.h
@@ -746,6 +845,8 @@ set(
   include/cutil.h
   include/datastream.h
   include/DetailSlider.h
+  include/Downloader.h
+  include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
   include/FlexHash.h
@@ -775,13 +876,17 @@ set(
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
+  include/ocpn_utils.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
+  include/semantic_vers.h
   include/OCPNRegion.h
   include/ocpn_types.h
   include/options.h
   include/piano.h
   include/pluginmanager.h
+  include/PluginHandler.h
+  include/PluginPaths.h
   include/PositionParser.h
   include/printtable.h
   include/Quilt.h
@@ -823,11 +928,18 @@ set(
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
+  include/SerialDataStream.h
+  include/NetworkDataStream.h
+  include/SignalKDataStream.h
+  include/SignalKEventHandler.h
+  include/GarminProtocolHandler.h
+  include/OCPN_SignalKEvent.h
   ${CMAKE_BINARY_DIR}/include/config.h
 )
 
 set(
   SRCS
+  src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
   src/AIS_Bitstring.cpp
@@ -838,6 +950,9 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/bbox.cpp
+  src/catalog_handler.cpp
+  src/catalog_mgr.cpp
+  src/catalog_parser.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
@@ -855,6 +970,8 @@ set(
   src/cutil.cpp
   src/datastream.cpp
   src/DetailSlider.cpp
+  src/Downloader.cpp
+  src/download_mgr.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
@@ -884,10 +1001,14 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
+  src/semantic_vers.cpp
+  src/ocpn_utils.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
   src/options.cpp
   src/piano.cpp
+  src/PluginHandler.cpp
+  src/PluginPaths.cpp
   src/pluginmanager.cpp
   src/PositionParser.cpp
   src/printtable.cpp
@@ -922,6 +1043,14 @@ set(
   src/TTYWindow.cpp
   src/undo.cpp
   src/viewport.cpp
+  
+         src/SerialDataStream.cpp
+        src/NetworkDataStream.cpp
+        src/SignalKDataStream.cpp
+        src/SignalKEventHandler.cpp
+        src/GarminProtocolHandler.cpp
+        src/OCPN_SignalKEvent.cpp
+
 )
 
 if (OCPN_USE_GARMINHOST)
@@ -946,10 +1075,30 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   list(APPEND SRCS src/crashprint.cpp)
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
+IF(QT_ANDROID)
+  SET(HDRS ${HDRS} include/androidUTIL.h)
+  SET(SRCS ${SRCS} src/androidUTIL.cpp)
+ENDIF(QT_ANDROID)
+
+IF(USE_GLES2)
+    SET(HDRS ${HDRS} include/shaders.h)
+    SET(SRCS ${SRCS} src/shaders.cpp)
+ENDIF(USE_GLES2)
+
+SET(SRC_TINYXML
+    src/tinyxml.cpp
+    src/tinyxmlerror.cpp
+    src/tinyxmlparser.cpp
+    include/tinyxml.h
+)
+
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
   add_executable(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+elseif (QT_ANDROID)
+  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+  add_library(${PACKAGE_NAME} SHARED ${HDRS} ${SRCS})
 else ()
   add_executable(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
@@ -997,8 +1146,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 # Linux: set up GTK
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  include(OcpnFindGtk)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+#  include(OcpnFindGtk)
+#  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 # Search for opengles, short of running a program to test the speed of
@@ -1081,7 +1230,7 @@ if (OCPN_USE_CRASHREPORT)
       ${PACKAGE_NAME}
       PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib
     )
-    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} /DEBUG)
+    set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
   else (MSVC)
     if (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
       if (CMAKE_BUILD_TYPE MATCHES "Rel*")
@@ -1191,8 +1340,15 @@ if (OCPN_USE_CURL)
       )
       install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
+  else (NOT QT_ANDROID)
+    target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
+
+if (QT_ANDROID)
+  target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libexpat/include)
+endif (QT_ANDROID)
 
 if (OCPN_USE_SVG)
   message(STATUS "SVG support enabled...")
@@ -1236,6 +1392,13 @@ if (OCPN_USE_SVG)
       add_subdirectory("libs/wxsvg")
     endif ()
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+
+  else(NOT QT_ANDROID)
+    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_SVG)
 
@@ -1304,6 +1467,15 @@ if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
 
+if (QT_ANDROID)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
+else (QT_ANDROID)
+  find_package(LibArchive REQUIRED)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
+endif (QT_ANDROID)
+
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
@@ -1364,13 +1536,19 @@ target_link_libraries(
   PUBLIC
     ocpn::nmea0183
     ocpn::tess2
-    ocpn::wxsvg
     ocpn::sound
     ocpn::wxjson
     ssl::sha1
     ocpn::tinyxml
+)
+
+IF(NOT QT_ANDROID)
+   target_link_libraries(S57ENC PUBLIC
+      ocpn::wxsvg
     ocpn::wxcurl
 )
+ENDIF(NOT QT_ANDROID)
+
 add_subdirectory(libs/iso8211)
 target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 
@@ -1598,6 +1776,7 @@ set(
   src/bitmaps/iENC_UserStd.svg
   src/bitmaps/iENC_RPlus.svg
   src/bitmaps/iENC_RMinus.svg
+  src/bitmaps/plus.svg
 )
 
 set(
@@ -1701,6 +1880,36 @@ if (APPLE)
     MACOSX_PACKAGE_LOCATION
     SharedSupport
   )
+
+  set_source_files_properties(
+    ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION
+    SharedSupport
+  )
+  install(
+      FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
+      DESTINATION ${PREFIX_PKGDATA}
+  )
+  target_sources(${PACKAGE_NAME}
+      PRIVATE ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
+  )
+
+  # Known, downloadable plugin icons
+  file(GLOB PLUGIN_ICONS ${CMAKE_SOURCE_DIR}/plugins/icons/*)
+  foreach (_pluginIcon ${PLUGIN_ICONS})
+    set_source_files_properties(
+      ${_pluginIcon}
+      PROPERTIES
+      MACOSX_PACKAGE_LOCATION
+      SharedSupport/uidata/plugins
+    )
+  endforeach ()
+  install(
+    DIRECTORY plugins/icons/
+    DESTINATION ${PREFIX_PKGDATA}/uidata/plugins
+  )
+  target_sources(${PACKAGE_NAME} PRIVATE ${PLUGIN_ICONS})
 
   file(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/data/sounds/*)
   foreach (_currentSoundFile ${SOUND_FILES})
@@ -1877,6 +2086,7 @@ if (APPLE)
     data/license.html
     data/authors.html
     data/opencpn.png
+    data/ocpn-plugins.xml
     data/CoC-909_2013-InlandECDIS_20170308s.pdf
     ${SOUND_FILES}
     buildosx/opencpn.icns
@@ -1900,22 +2110,16 @@ if (APPLE)
 endif (APPLE)
 
 if (QT_ANDROID)
-  add_library(
-    gorp
-    ${HDRS}
-    ${SRCS}
-    ${SRC_S57ENC}
-    ${SRC_TEXCMP}
-    ${SRC_MIPMAP}
-    ${SRC_SYMBOLS}
-  )
-  target_link_libraries(gorp PRIVATE NMEA0183 ${wxWidgets_LIBRARIES})
+  target_link_libraries( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
+  target_link_libraries( ${PACKAGE_NAME} PRIVATE GLESv2 EGL z)
+  target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENGL_LIBRARIES} )
+  target_link_libraries( ${PACKAGE_NAME} PRIVATE NMEA0183 )
 endif ()
 
 # Sanitizers, part 2/2
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(${PACKAGE_NAME} -fsanitize=${ENABLE_SANITIZER})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE -fsanitize=${ENABLE_SANITIZER})
   endif ()
 endif ()
 
@@ -1949,6 +2153,11 @@ if (NOT APPLE)
   if (WIN32)
     set(PREFIX_PKGDATA ".")
   endif ()
+
+  install(
+      FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
+      DESTINATION ${PREFIX_PKGDATA}
+  )
 
   if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
@@ -2277,18 +2486,22 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
 
-message(STATUS "")
+if (MINGW)
+  install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)
+endif ()
 
 if (NOT SKIP_PLUGINS)
   add_subdirectory(plugins)
 endif ()
 
+
 #
 # Prepare CPACK configuration (MINGW)
 #
 if (MINGW)
-  set(CMD "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//' \
-    NSIS.template.in.in >build/NSIS.template.in")
+  set(
+      CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+  )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
     NSIS_config ALL
@@ -2590,3 +2803,14 @@ if (MSVC)
     "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
+
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in"
+        "${CMAKE_BINARY_DIR}/uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake)
+endif()

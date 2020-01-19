@@ -106,8 +106,14 @@ bool DPT::Parse( const SENTENCE& sentence )
    } 
 
    DepthMeters                = sentence.Double( 1 );
-   OffsetFromTransducerMeters = sentence.Double( 2 );
-
+   std::string offset(sentence.Field(2));
+   auto minus = offset.find_first_of('-', 1);
+   while ( minus != std::string::npos )
+   {   // Remove any extra '-' characters from offset string
+       offset.erase(offset.begin() + minus);
+       minus = offset.find_first_of('-', 1);
+   }
+   OffsetFromTransducerMeters = ::atof(offset.c_str());
    return( TRUE );
 }
 

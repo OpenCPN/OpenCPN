@@ -36,6 +36,12 @@
 #include "FontMgr.h"
 #include "ocpn_plugin.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#include "chcanv.h"
+#endif
+
+
 extern bool             g_bopengl;
 #ifdef ocpnUSE_GL    
 extern GLenum       g_texture_rectangle_format;
@@ -157,6 +163,9 @@ void RolloverWin::SetBitmap( int rollover )
             glBindTexture( g_texture_rectangle_format, m_texture );
             glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+            
         } else
             glBindTexture( g_texture_rectangle_format, m_texture );
  
@@ -310,6 +319,8 @@ void RolloverWin::Draw(ocpnDC &dc)
         else
             tx = ty = 1;
 
+#ifndef USE_ANDROID_GLES2        
+            
         glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
         glTexCoord2f(0,  0);  glVertex2i(x0, y0);
@@ -317,7 +328,23 @@ void RolloverWin::Draw(ocpnDC &dc)
         glTexCoord2f(tx, ty); glVertex2i(x1, y1);
         glTexCoord2f(0,  ty); glVertex2i(x0, y1);
         glEnd();
+#else
+        float coords[8];
+        float uv[8];
+        
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = tx; uv[3] = 0;
+        uv[4] = tx; uv[5] = ty; uv[6] = 0; uv[7] = ty;
 
+        // pixels
+        coords[0] = x0; coords[1] = y0; coords[2] = x1; coords[3] = y0;
+        coords[4] = x1; coords[5] = y1; coords[6] = x0; coords[7] = y1;
+        
+        ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
+        if(pCanvas)
+            pCanvas->GetglCanvas()->RenderTextures(coords, uv, 4, pCanvas->GetpVP());
+        
+#endif        
         glDisable(g_texture_rectangle_format);
         glDisable(GL_BLEND);
     } else

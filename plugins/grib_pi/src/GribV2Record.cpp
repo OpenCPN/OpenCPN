@@ -1019,6 +1019,8 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
                 case 4: ret= GRB_WVDIR; break; // Direction of Wind Waves
                 case 5: ret= GRB_WVHGT; break; // Significant Height of Wind Waves
                 case 6: ret= GRB_WVPER; break; // Mean Period of Wind Waves
+                case 14: ret= GRB_DIR; break;  // Direction of Combined Wind Waves and Swell
+                case 15: ret= GRB_PER; break;  // Mean Period of Combined Wind Waves and Swell
             }
             break;
 
@@ -1327,11 +1329,6 @@ void  GribV2Record::translateDataType()
 	}
     else if (idCenter==84 && idModel <= 5 && idGrid==0)
     {
-        // XXX Météo France AROME-01 is 
-		if ( getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0)
-		{
-			levelType  = LV_MSL;
-		} // missing enum for dataCenterModel
     }
 	
 	//------------------------
@@ -1369,6 +1366,8 @@ void  GribV2Record::translateDataType()
             case GRB_HTSGW:
             case GRB_WVDIR:
             case GRB_WVPER:
+            case GRB_DIR:
+            case GRB_PER:
                 levelType  = LV_GND_SURF;
                 levelValue = 0;
                 break;

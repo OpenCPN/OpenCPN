@@ -2,6 +2,7 @@
    License: LGPLv3 */
 
 #include <stdlib.h>
+#include <limits.h>
 #include <stdint.h>
 #include <string.h>
 

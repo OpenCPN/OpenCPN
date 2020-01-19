@@ -71,8 +71,10 @@ void DashboardInstrument_Clock::SetData( int, double, wxString )
 
 void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 {
-    if (data.IsValid())
+    if (data.IsValid()){
         m_data = GetDisplayTime( data );
+        Refresh();
+    }
 }
 
 wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
@@ -108,6 +110,7 @@ void DashboardInstrument_CPUClock::SetData( int, double, wxString )
 void DashboardInstrument_CPUClock::SetUtcTime( wxDateTime data )
 {
     m_data = wxDateTime::Now().FormatISOTime().Append( _T( " CPU" ) );
+    Refresh();
 }
 
 DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :

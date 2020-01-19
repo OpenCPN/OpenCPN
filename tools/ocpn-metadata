@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+
+"""Re-generation of ocpn-plugins.xml support tool."""
+
+import argparse
+import os.path
+import shutil
+import sys
+import xml.etree.ElementTree as ET
+import xml.dom.minidom as minidom
+
+from sys import platform
+from pathlib import Path
+
+
+def get_paths():
+    """Return dict of platform-dependent default paths."""
+    paths = {}
+    if sys.platform == "linux" or sys.platform == "linux2":
+        if os.path.exists("/usr/local/share/opencpn"):
+            paths["systemdir"] = "/usr/local/share/opencpn"
+        else:
+            paths["systemdir"] = "/usr/share/opencpn"
+        paths["systemdir"] += "/plugins-metadata"
+        paths["destfile"] = os.path.expanduser("~/.opencpn/ocpn-plugins.xml")
+        paths["userdir"] = os.path.expanduser("~/.opencpn/plugins-metadata")
+    elif sys.platform == "darwin":
+        paths["systemdir"] = os.path.expanduser(
+            "~/Desktop/OpenCPN.app/Contents/SharedSupport/ocpn-plugins.xml")
+        paths["userdir"] = os.path.expanduser(
+                "~/Library/Preferences/opencpn/plugins-metadata")
+        paths["destfile"] = os.path.expanduser(
+                "~/Library/Preferences/opencpn/ocpn-plugins.xml")
+    elif sys.platform == "win32":
+        paths["systemdir"] = r"\Program Files (x86)\OpenCPN\plugins-metadata"
+        if "LOCALAPPDATA" in os.environ:
+            appdata = os.environ["LOCALAPPDATA"]
+        else:
+            appdata = r"\ProgramData\opencpn"
+        paths["userdir"] = os.path.join(appdata, "plugins-metadata")
+        paths["destfile"] = os.path.join(appdata, "ocpn-plugins.xml")
+    return paths
+
+
+def get_args(paths):
+    """Return parsed arg_parser instance."""
+    parser = argparse.ArgumentParser(
+            description="ocpn-plugins.xml re-generating tool.")
+    subparsers = parser.add_subparsers(help='mode', dest='mode')
+    copy_parser = subparsers.add_parser(
+            "copy",
+            help="Copy system xml files to private working area")
+    generate_parser = subparsers.add_parser(
+            "generate",
+            help="Generate new ocpn-plugins.xml from private working area")
+    copy_parser.add_argument(
+            '--systemdir', metavar='dir', default=paths["systemdir"],
+            help='source directory [%s]' % paths["systemdir"])
+    copy_parser.add_argument(
+            '--destdir', metavar='dir', default=paths["userdir"],
+            help='destination directory [%s]' % paths["userdir"])
+    copy_parser.add_argument(
+            '--force', action="store_true",
+            help='Overwrite possibly existing source files.')
+    generate_parser.add_argument(
+            '--userdir', metavar='dir', default=paths["userdir"],
+            help='source directory [%s]' % paths["userdir"])
+    generate_parser.add_argument(
+            '--destfile', metavar='path', default=paths["destfile"],
+            help='destination path [%s]' % paths["destfile"])
+    generate_parser.add_argument(
+            '--force', action="store_true",
+            help='Overwrite possibly existing ocpn-plugins.xml.')
+    args = parser.parse_args()
+    return args
+
+
+def generate(sourcedir, destfile):
+    """Generate a new ocpn-plugins.xml."""
+    tree = ET.Element('plugins')
+    for path in Path(sourcedir).glob("*.xml"):
+        subtree = ET.parse(path)
+        subtree.getroot().tag = 'plugin'
+        tree.append(subtree.getroot())
+    dom = minidom.parseString(ET.tostring(tree))
+    with open(destfile, "w") as f:
+        for line in dom.toprettyxml(indent="  ").split("\n"):
+            line = line.rstrip()
+            if line:
+                f.write(line + "\n")
+
+
+def main():
+    """Indeed: main function."""
+    paths = get_paths()
+    args = get_args(paths)
+    if not args.mode:
+        print("Error: no mode specified. Use -h for help.")
+        sys.exit(1)
+    if args.mode == "copy":
+        if not os.path.exists(args.systemdir):
+            print("Cannot find system metadata directory " + args.systemdir)
+            print("Consider using --systemdir option.")
+            sys.exit(1)
+        if os.path.exists(args.destdir) and args.force:
+            shutil.rmtree(args.destdir)
+        if os.path.exists(args.destdir):
+            print("The directory %s is in the way" % args.destdir)
+            print("Please remove or use --force")
+            sys.exit(1)
+        shutil.copytree(args.systemdir, args.destdir)
+        print("New xml sources copied to " + args.destdir)
+    else:
+        if not os.path.exists(args.userdir):
+            print("No private sources found. Did you forget to run copy first?")
+            print("Otherwise consider using --userdir.")
+            sys.exit(1)
+        if os.path.exists(args.destfile) and args.force:
+            os.remove(args.destfile)
+        if os.path.exists(args.destfile):
+            print("The file %s is in the way" % args.destfile)
+            print("Please remove or use --force")
+            sys.exit(1)
+        generate(args.userdir, args.destfile)
+        print("Generated new ocpn-plugins.xml at " + args.destfile)
+
+
+if __name__ == '__main__':
+    main()

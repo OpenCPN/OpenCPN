@@ -94,7 +94,6 @@ KmlPastebufferType Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
         dPointList coordinates;
         if( ParseCoordinates( node, coordinates ) > 2 ) {
             TrackPoint* trackpoint = NULL;
-            TrackPoint* prevPoint = NULL;
 
             for( unsigned int i=0; i<coordinates.size(); i++ ) {
                 trackpoint = new TrackPoint(coordinates[i].y, coordinates[i].x);
@@ -269,7 +268,6 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     if( element )
         parsedRoute->m_RouteNameString = wxString( element->GetText(), wxConvUTF8 );
 
-    RoutePoint* rp = NULL;
     placemark = docHandle.FirstChild( "Document" ).FirstChild( "Placemark" ).ToElement();
     for( ; placemark; placemark=placemark->NextSiblingElement() ) {
 

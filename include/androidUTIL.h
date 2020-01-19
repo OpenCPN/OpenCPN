@@ -32,6 +32,10 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include "OCPN_Sound.h"
+
+class ArrayOfCDI;
+
 #include <QString>
 
 // Enumerators for OCPN menu actions requested by Android UI
@@ -47,7 +51,8 @@
 #define OCPN_ACTION_ENCTEXT_TOGGLE      0x1009
 #define OCPN_ACTION_TRACK_ON            0x100a
 #define OCPN_ACTION_TRACK_OFF           0x100b
-
+#define OCPN_ACTION_ENCSOUNDINGS_TOGGLE 0x100c
+#define OCPN_ACTION_ENCLIGHTS_TOGGLE    0x100d
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
@@ -66,7 +71,9 @@ extern wxSize getAndroidDisplayDimensions( void );
 extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
-extern void androidForceFullRepaint();
+extern void androidForceFullRepaint( bool bskipConfirm = false);
+extern int androidGetVersionCode();
+extern wxString androidGetVersionName();
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
@@ -74,6 +81,7 @@ extern QString getQtStyleSheet( void );
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
 extern void androidEnableBackButton(bool benable);
+extern void androidEnableBackButtonCheck(bool benable);
 
 extern wxString androidGetSupplementalLicense( void );
 
@@ -89,13 +97,17 @@ extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
 extern bool androidStopBT();
 
+extern wxArrayString *androidGetSerialPortsArray( void );
+extern bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer);
+extern bool androidStopUSBSerial(wxString &portname);
+
 extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
-                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false, bool addFiles = false);
 
 extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
 extern void androidSetRouteAnnunciator(bool viz);
-extern void androidSetFollowTool(bool bactive);
+extern void androidSetFollowTool(int state, bool forceUpdate = false);
 extern void androidSetTrackTool(bool bactive);
 
 extern wxString androidGetHomeDir();
@@ -109,15 +121,60 @@ extern int queryAndroidFileDownload( long dl_ID, wxString *result );
 extern void finishAndroidFileDownload();
 extern void cancelAndroidFileDownload( long dl_ID );
 
+extern wxString doAndroidPOST( const wxString &url, wxString &parms, int timeoutMsec);
+
 extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
+bool AndroidSecureCopyFile(wxString in, wxString out);
 
-bool androidPlaySound( wxString soundfile );
+bool androidPlaySound( wxString soundfile, AudioDoneCallback callBack );
 
 bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
+void androidDisableFullScreen();
+void androidRestoreFullScreen();
 
 void androidLaunchHelpView();
+void androidTerminate();
+
+void androidTestCPP();
+int androidGetTZOffsetMins();
+
+int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
+
+bool androidShowDisclaimer( wxString title, wxString msg );
+bool androidShowSimpleOKDialog( wxString title, wxString msg );
+bool androidShowSimpleYesNoDialog( wxString title, wxString msg );
+bool androidInstallPlaystoreHelp();
+
+void androidLaunchBrowser( wxString URL );
+bool androidCheckOnline();
+
+unsigned int androidColorPicker( unsigned int initialColor);
+
+wxArrayString androidTraverseDir( wxString dir, wxString filespec);
+void androidEnableOptionsMenu( bool bEnable );
+
+void prepareAndroidStyleSheets();
+QString getAdjustedDialogStyleSheet();
+QString getListBookStyleSheet();
+QString getScrollBarsStyleSheet();
+void setChoiceStyleSheet( wxChoice *win, int refDim);
+void setMenuStyleSheet( wxMenu *win, const wxFont& font);
+QString prepareAndroidSliderStyleSheet(int sliderWidth);
+
+void androidDisplayTimedToast(wxString message, int timeMillisec);
+void androidCancelTimedToast();
+void androidDisplayToast(wxString message);
+
+void androidEnableRotation( void );
+void androidDisableRotation( void );
+int androidGetScreenOrientation();
+
+//      SVG Support
+wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );
+
+wxString androidGetAndroidSystemLocale();
 
 #endif   //guard

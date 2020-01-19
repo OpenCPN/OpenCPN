@@ -102,6 +102,9 @@
 #include "GPwpl.hpp"
 #include "apb.hpp"
 #include "xte.hpp"
+#include "mwd.hpp"
+#include "mwv.hpp"
+
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -196,6 +199,8 @@ class NMEA0183
        GPWPL GPwpl;
        APB Apb;
        XTE Xte;
+       MWD Mwd;
+       MWV Mwv;
  /*
       ROT Rot;
       RPM Rpm;

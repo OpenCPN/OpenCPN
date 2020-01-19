@@ -166,16 +166,13 @@ PortAudioSound::PortAudioSound()
     SetDeviceIndex(-1);
     for (int i = 0; i < DeviceCount(); i += 1) {
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
-	wxLogMessage("Device: %d: %s", i, info->name);
+//	wxLogDebug("Device: %d: %s", i, info->name);
     }
 }
 
 
 PortAudioSound::~PortAudioSound()
 {
-    if (m_stream) {
-        Pa_CloseStream( m_stream );
-    }
     if (m_isPaInitialized) {
         PaError pe = Pa_Terminate();
         if (pe != paNoError)  {

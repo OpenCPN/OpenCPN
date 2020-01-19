@@ -1001,7 +1001,6 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
     }
     else{
         glEnable(GL_TEXTURE_2D);
-        glColor4f(1, 1, 1, 1);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1019,9 +1018,7 @@ bool ChartMBTiles::RenderTile( mbTileDescriptor *tile, int zoomLevel, const View
     p = GetDoublePixFromLL(mvp, tile->latmax, tile->lonmax); coords[4] = p.m_x;  coords[5] = p.m_y;
     p = GetDoublePixFromLL(mvp, tile->latmin, tile->lonmax); coords[6] = p.m_x;  coords[7] = p.m_y;
       
-    glTexCoordPointer(2, GL_FLOAT, 2*sizeof(GLfloat), texcoords);
-    glVertexPointer(2, GL_FLOAT, 2*sizeof(GLfloat), coords);
-    glDrawArrays(GL_QUADS, 0, 4);
+    glChartCanvas::RenderSingleTexture(coords, texcoords, &vp, 0, 0, 0);
 
     glDisable(GL_BLEND);
 
@@ -1055,10 +1052,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
     int viewZoom = m_maxZoom;
     double zoomMod = 2.0;              // decrease to get more detail, nominal 4?, 2 works OK for NOAA.
@@ -1082,8 +1075,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     //zoomFactor = 5; //m_minZoom;
     //viewZoom = zoomFactor;
     
-    float coords[8];
-    float texcoords[] = { 0., 1., 0., 0., 1., 0., 1., 1. };
     int maxrenZoom = m_minZoom;
 
     LLBBox box = Region.GetBox();
@@ -1229,9 +1220,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
     
     glDisable(GL_TEXTURE_2D);
     
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-
     m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm;
  
     glChartCanvas::DisableClipRegion();

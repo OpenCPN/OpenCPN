@@ -32,7 +32,11 @@
 #endif
 
 #ifdef __POSIX__
+    #ifdef __OCPN__ANDROID__
+        #include <termios.h>
+    #else
 	#include <sys/termios.h>
+    #endif
 #endif
 
 #define DS_RX_BUFFER_SIZE 4096
@@ -313,7 +317,7 @@ void *OCP_DataStreamInput_Thread::Entry()
         } //while b_qdata
 
     }
-thread_exit:
+//thread_exit:
     CloseComPortPhysical();
     m_launcher->SetSecThreadInActive();             // I am dead
     m_launcher->m_Thread_run_flag = -1;
