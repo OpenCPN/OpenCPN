@@ -422,6 +422,7 @@ PlugInContainer::PlugInContainer()
     m_bitmap = NULL;
     m_pluginStatus =  PluginStatus::Unknown;
     m_api_version = 0;
+    m_plibrary = NULL;
 }
 
 SemanticVersion PlugInContainer::GetVersion() 
@@ -1321,8 +1322,10 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
     }
     if(pic->m_bInitState){
         pic->m_destroy_fn(pic->m_pplugin);
-        delete pic->m_plibrary;            // This will unload the PlugIn
     }
+    delete pic->m_plibrary;            // This will unload the PlugIn
+    pic->m_plibrary = NULL;
+    
     pic->m_bInitState = false;
     delete pic;
     plugin_array.RemoveAt(ix);
