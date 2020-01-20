@@ -1211,7 +1211,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++) {
                     xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
                     // XDR Airtemp
-                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C") &&
+                        m_NMEA0183.Xdr.TransducerInfo[i].TransducerName != _T("ENV_WATER_T")) {
                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
                     }
                     // XDR Pressure
