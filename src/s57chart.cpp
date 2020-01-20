@@ -5532,7 +5532,54 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                             else
                                 value = value + _T("&nbsp;&nbsp;<font color=\"red\">[ ") + _("this file is not available") + _T(" ]</font>");
                         }
-                    }                    
+                    }
+                AttrNamesFiles = _T("DATEND,DATSTA,PEREND,PERSTA"); //AttrNames with date info
+                if ( AttrNamesFiles.Find( curAttrName) != wxNOT_FOUND ) {
+                    bool d = true;
+                    bool m = true;
+                    wxString ts = value;
+
+                    ts.Replace(wxT("--"),wxT("0000"));//make a valid year entry if not available
+                    if( ts.Length() < 5){ //(no month set)
+                        m = false;
+                        ts.Append(wxT("01") ); // so we add a fictive month to get a valid date
+                    }
+                    if( ts.Length() < 7){ //(no day set)
+                        d=false;
+                        ts.Append(wxT("01") ); // so we add a fictive day to get a valid date
+                    }
+                    wxString::const_iterator end;
+                    wxDateTime dt;
+                    if( dt.ParseFormat( ts, "%Y%m%d", &end ) ){
+                        ts.Empty();                        
+                        if ( m ) ts =  wxDateTime::GetMonthName(dt.GetMonth());                        
+                        if ( d ) ts.Append( wxString::Format(wxT(" %d"), dt.GetDay()) );
+                        if( dt.GetYear()>0 ) ts.Append( wxString::Format(wxT(",  %i"), dt.GetYear() ) );
+                        if ( curAttrName == _T("PEREND")) ts = _("Period ends: ") + ts + wxT("  (")+ value + wxT(")");
+                        if ( curAttrName == _T("PERSTA")) ts = _("Period starts: ") + ts + wxT("  (")+ value + wxT(")");
+                        if ( curAttrName == _T("DATEND")) ts = _("Date ending: ") + ts + wxT("  (")+ value + wxT(")");
+                        if ( curAttrName == _T("DATSTA")) ts = _("Date starting: ") + ts + wxT("  (")+ value + wxT(")");
+                        value= ts;
+                    }    
+                }
+                if ( curAttrName == _T("TS_TSP")){ //Tidal current applet
+                    wxArrayString as;
+                    wxString ts, ts1;
+                    wxStringTokenizer tk(value,  wxT(","));
+                    ts = tk.GetNextToken(); //we don't show this part (the TT entry number)'
+                    ts1 = tk.GetNextToken(); //Now has the tidal reference port name'
+                    ts =  _T("Tidal Streams referred to<br><b>");
+                    ts.Append(tk.GetNextToken()).Append(_T("</b> at <b>")).Append(ts1);
+                    ts.Append(/*tk.GetNextToken()).Append(*/_T("</b><br><table >"))  ;
+                    int i = -6;
+                    while ( tk.HasMoreTokens() ){ // fill the current table
+                        ts.Append(_T("<tr><td>")).Append( wxString::Format(wxT("%i"),i)).Append(_T("</td><td>"))
+                            .Append(tk.GetNextToken()).Append(_T("&#176</td><td>")).Append(tk.GetNextToken()).Append(_T("</td></tr>")); 
+                        i++;
+                    }   
+                        ts.Append(_T("</table>"));
+                        value = ts;
+                }
                     
                 if( isLight ) {
                     assert( curLight != nullptr);
