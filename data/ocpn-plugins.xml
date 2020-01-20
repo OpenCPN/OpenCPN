@@ -99,7 +99,7 @@ Android comes with sQuiddio built in.
   </description>
     <target>ubuntu</target>
     <target-version>16.04</target-version>
-    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio-ubuntu-16.04-tarball/versions/v1.0.17.6/opencpn-plugin-squiddio-1.0.17.6_ubuntu-16.04.tar.gz </tarball-url>
+    <tarball-url> https://dl.cloudsmith.io/public/alec-leamas/opencpn-plugins-stable/raw/names/squiddio_pi/versions/1.0.18.2/opencpn-plugin-squiddio-1.0.18.2_ubuntu-16.04.tar.gz </tarball-url>
     <info-url> https://opencpn.org/OpenCPN/plugins/sQuiddio.html </info-url>
   </plugin>
 </plugins>
