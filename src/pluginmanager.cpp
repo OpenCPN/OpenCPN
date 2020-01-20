@@ -249,7 +249,10 @@ message_by_status({
     {PluginStatus::ManagedInstalledCurrentVersion,
         _("Plugin TBD") },
     {PluginStatus::ManagedInstalledDowngradeAvailable,
+        _("Plugin TBD") },
+    {PluginStatus::PendingListRemoval,
         _("Plugin TBD") }
+
 
 });
 
@@ -265,7 +268,8 @@ icon_by_status({
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "emblem-default.svg" },
-    {PluginStatus::ManagedInstalledDowngradeAvailable,   "emblem-default.svg" }
+    {PluginStatus::ManagedInstalledDowngradeAvailable,   "emblem-default.svg" },
+    {PluginStatus::PendingListRemoval,   "emblem-default.svg" }
 
 });
 
@@ -280,7 +284,8 @@ literalstatus_by_status({
     {PluginStatus::ManagedInstallAvailable,   "ManagedInstallAvailable" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "ManagedInstalledUpdateAvailable" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "ManagedInstalledCurrentVersion" },
-    {PluginStatus::ManagedInstalledDowngradeAvailable,   "ManagedInstalledDowngradeAvailable" }
+    {PluginStatus::ManagedInstalledDowngradeAvailable,   "ManagedInstalledDowngradeAvailable" },
+    {PluginStatus::PendingListRemoval,   "PendingListRemoval" }
 
 });
 
@@ -1077,8 +1082,10 @@ bool PlugInManager::UpdatePlugIns()
 
 void PlugInManager::UpdateManagedPlugins()
 {
+    PlugInContainer *pict;
     // Clear the status (to "unmanaged") on all plugins
     for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+        pict = plugin_array.Item(i);
         plugin_array.Item(i)->m_pluginStatus = PluginStatus::Unmanaged;
 
         // Pre-mark the default "system" plugins
@@ -1090,6 +1097,37 @@ void PlugInManager::UpdateManagedPlugins()
     auto pluginHandler = PluginHandler::getInstance();
     std::vector<PluginMetadata> available = pluginHandler->getAvailableUniquePlugins();
 
+    // Traverse the list again
+    // Remove any managed plugins that are no longer available in the current catalog
+    // Usually due to reverting from Alpha/Beta catalog back to master
+    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+        pict = plugin_array.Item(i);
+        if(pict->m_ManagedMetadata.name.size()){        // If metadata is good, must be a managed plugin
+            bool bfound = false;
+            for (auto plugin: available) {
+                if(pict->m_common_name.IsSameAs(wxString(plugin.name.c_str()))){
+                    bfound = true;
+                    break;
+                }
+            }
+            if(!bfound){
+                plugin_array.Item(i)->m_pluginStatus = PluginStatus::PendingListRemoval;
+            }
+        }
+    }
+
+    //  Remove any list items marked
+    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+        pict = plugin_array.Item(i);
+        if(pict->m_pluginStatus == PluginStatus::PendingListRemoval){
+            plugin_array.RemoveAt(i);
+            i=0;
+        }
+    }
+
+    
+    
+    //  Now merge and update from the catalog
     for (auto plugin: available) {
     
         PlugInContainer *pic = NULL;

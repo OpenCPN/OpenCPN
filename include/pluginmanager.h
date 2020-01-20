@@ -148,7 +148,8 @@ enum class PluginStatus {
     ManagedInstallAvailable,
     ManagedInstalledUpdateAvailable,
     ManagedInstalledCurrentVersion,
-    ManagedInstalledDowngradeAvailable
+    ManagedInstalledDowngradeAvailable,
+    PendingListRemoval
 };
 
 enum ActionVerb {
