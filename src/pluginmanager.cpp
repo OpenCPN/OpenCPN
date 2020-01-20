@@ -1042,6 +1042,10 @@ bool PlugInManager::UpdatePlugIns()
     {
         PlugInContainer *pic = plugin_array[i];
 
+        // Installed and loaded?
+        if(!pic->m_pplugin)
+            continue;
+        
         if(pic->m_bEnabled && !pic->m_bInitState)
         {
             wxString msg(_T("PlugInManager: Initializing PlugIn: "));
@@ -5345,7 +5349,8 @@ void PluginPanel::SetSelected( bool selected )
             
         m_pButtonUninstall->Show(unInstallPossible);
         
-        m_rgSizer->Show(true);
+        if(m_pPlugin->m_pplugin)                        // Only if installed...
+            m_rgSizer->Show(true);
         
         if(m_pPlugin->m_ManagedMetadata.info_url.size()){
             m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
