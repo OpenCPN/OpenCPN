@@ -5114,7 +5114,7 @@ void PluginListPanel::OnPluginPanelAction( wxCommandEvent& event )
                  cleanup(manifestPath, metaSave.name);
              }
 
-            //  Reload all plugins, which will bring in the action results.
+             //  Reload all plugins, which will bring in the action results.
             g_pi_manager->LoadAllPlugIns( false );
             ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             SelectByName(name);
@@ -5146,8 +5146,14 @@ void PluginListPanel::OnPluginPanelAction( wxCommandEvent& event )
 
         case  ActionVerb::UNINSTALL_MANAGED_VERSION:
         {
+            wxString message;
+            message.Printf("%s %s\n", g_actionPIC->m_ManagedMetadata.name.c_str(), g_actionPIC->m_ManagedMetadata.version.c_str());
+
             wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
             PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
+
+            message += _("successfully un-installed");
+            OCPNMessageBox(this, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
 
             //  Reload all plugins, which will bring in the action results.
             g_pi_manager->LoadAllPlugIns( false );

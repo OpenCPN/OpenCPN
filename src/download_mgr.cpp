@@ -553,18 +553,19 @@ void GuiDownloader::run(wxWindow* parent)
             std::string path("");
             bool ok = download(path);
             if (!ok) {
+                delete m_dialog;
                 showErrorDialog("Download error");
                 return;
             }
+            
+            // Download aborted?
             if (m_dialog == 0) {
-                ok = false;
+                showErrorDialog("Download aborted");
+                return;
             } else {
                 delete m_dialog;
             }
-            if (!ok) {
-                showErrorDialog("Download aborted");
-                return;
-            }
+
             m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
             wxMessageDialog* dlg = 0;
             ok = pluginHandler->installPlugin(m_plugin, path);

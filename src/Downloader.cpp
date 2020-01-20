@@ -77,6 +77,7 @@ bool Downloader::download(std::ostream* stream)
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,  write_cb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
     int code = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
     if(code != CURLE_OK) {
