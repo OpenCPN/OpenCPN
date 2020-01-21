@@ -198,7 +198,8 @@ class PlugInContainer
              * complete semantic version data.
              */
             SemanticVersion   GetVersion();
-            wxString          m_version_str;          // Complete version as of OcpnVersion
+            wxString          m_version_str;    // Complete version as of
+                                                // semantic_vers
             PluginStatus      m_pluginStatus;
             PluginMetadata    m_ManagedMetadata;
 };

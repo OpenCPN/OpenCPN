@@ -118,6 +118,7 @@
 #include "canvasMenu.h"
 #include "download_mgr.h"
 #include "catalog_handler.h"
+#include "semantic_vers.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1164,10 +1165,10 @@ void PlugInManager::UpdateManagedPlugins()
                     stream.open(path, std::ifstream::in);
                     stream >> installed;
                 }
-                OcpnVersion installedVersion(installed);
+                auto installedVersion = SemanticVersion::parse(installed);
                 
                 //Compare to the version reported in metadata
-                OcpnVersion metaVersion(plugin.version);
+                auto metaVersion = SemanticVersion::parse(plugin.version);
                 if(installedVersion < metaVersion)
                     pic->m_pluginStatus = PluginStatus::ManagedInstalledUpdateAvailable;
                 else if(installedVersion == metaVersion)
@@ -5414,11 +5415,12 @@ void PluginPanel::SetSelected( bool selected )
         
         // Configure the "Action" button
         wxString label;
-        OcpnVersion newVersion;
+        SemanticVersion newVersion;
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
                 label = _("Upgrade to managed Version ");
-                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                newVersion =
+                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
                 label += wxString(newVersion.to_string().c_str());
                 
                 g_actionVerb = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
@@ -5427,7 +5429,8 @@ void PluginPanel::SetSelected( bool selected )
 
             case PluginStatus::ManagedInstallAvailable:
                 label = _("Install Version ");
-                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                newVersion =
+                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
                 label += wxString(newVersion.to_string().c_str());
                 
                 g_actionVerb = ActionVerb::INSTALL_MANAGED_VERSION;
@@ -5437,7 +5440,8 @@ void PluginPanel::SetSelected( bool selected )
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
                 label = _("Upgrade to Version ");
-                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                newVersion =
+                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
                 label += wxString(newVersion.to_string().c_str());
                 
                 g_actionVerb = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
@@ -5446,7 +5450,8 @@ void PluginPanel::SetSelected( bool selected )
                 
             case PluginStatus::ManagedInstalledCurrentVersion:
                 label = _("Reinstall Version ");
-                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                newVersion =
+                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
                 label += wxString(newVersion.to_string().c_str());
                 
                 g_actionVerb = ActionVerb::REINSTALL_MANAGED_VERSION;
@@ -5455,7 +5460,8 @@ void PluginPanel::SetSelected( bool selected )
                 
             case PluginStatus::ManagedInstalledDowngradeAvailable:
                 label = _("Downgrade to Version ");
-                newVersion = OcpnVersion(m_pPlugin->m_ManagedMetadata.version);
+                newVersion =
+                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
                 label += wxString(newVersion.to_string().c_str());
                 
                 g_actionVerb = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
