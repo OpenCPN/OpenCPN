@@ -262,7 +262,7 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
 
 IF( APPLE )
     target_compile_options(${PACKAGE_NAME} PRIVATE
-        "-Wall -Wno-unused" "-fexceptions"
+        "-Wall" "-Wno-unused" "-fexceptions"
         "-Wno-overloaded-virtual"
         "-Wno-deprecated" "-Wno-deprecated-declarations"
         "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"

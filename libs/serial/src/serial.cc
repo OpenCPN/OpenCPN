@@ -6,7 +6,9 @@
 #endif
 
 #if defined (__MINGW32__) || ( defined(__NetBSD__) && defined(__GNUC__) )
+#ifndef alloca
 # define alloca __builtin_alloca
+#endif
 #endif
 
 #include "serial/serial.h"
