@@ -355,7 +355,8 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
     auto root = event.GetValue();
 
     if(root.HasMember("self")) {
-        m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
+        //m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
+        m_signalk_selfid = (root["self"].AsString());           // Verified for OpenPlotter node.js server 1.20
     }
     if(m_signalk_selfid.IsEmpty()) {
         return; // Don't handle any messages (with out self) until we know how we are
@@ -481,8 +482,8 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
                     }
                 }
-                wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: PositionReportTicks %d"),
-                        now.GetTicks()));
+//                wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: PositionReportTicks %d"),
+//                        now.GetTicks()));
                 pTargetData->PositionReportTicks = now.GetTicks();
                 pTargetData->StaticReportTicks = now.GetTicks();
                 pTargetData->Lat = lat;
