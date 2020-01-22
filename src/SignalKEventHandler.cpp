@@ -15,7 +15,7 @@
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
     auto root = event.GetValue();
-#if 1
+#if 0
     wxString dbg;
     wxJSONWriter writer;
     writer.Write(root, dbg);
@@ -27,7 +27,7 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 
     if(root.HasMember("self")) {
         if(root["self"].AsString().StartsWith(_T("vessels.")))
-            m_self = (root["self"].AsString());                                 // for java server
+            m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
         else
             m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
     }

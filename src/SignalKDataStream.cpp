@@ -273,6 +273,16 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
 
                             } else {
                                 if( GetConsumer() ) {
+
+#if 1                                    
+                                    wxString dbg;
+                                    wxJSONWriter writer;
+                                    writer.Write(root, dbg);
+
+                                    wxString msg( _T("SignalK TCP Socket Event sent to consumer:\n") );
+                                    msg.append(dbg);
+                                    wxLogMessage(msg);
+#endif
                                     OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, root);
                                     GetConsumer()->AddPendingEvent(signalKEvent);
                                 }
