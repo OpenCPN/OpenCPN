@@ -45,6 +45,7 @@
 #include "OCPNPlatform.h"
 #include "PluginHandler.h"
 #include "pluginmanager.h"
+#include "semantic_vers.h"
 #include "styles.h"
 
 extern PlugInManager*           g_pi_manager;
@@ -234,13 +235,13 @@ class InstallButton: public wxPanel
         const char* getUpdateLabel(PlugInContainer* pic,
                                    PluginMetadata metadata)
         {
-            OcpnVersion currentVersion(pic->m_version_major,
+            SemanticVersion currentVersion(pic->m_version_major,
                                        pic->m_version_minor);
             if (pic->m_version_str != "") {
                 currentVersion =
-                    OcpnVersion(pic->m_version_str.ToStdString());
+                    SemanticVersion::parse(pic->m_version_str.ToStdString());
             }
-            OcpnVersion newVersion(metadata.version);
+            auto newVersion = SemanticVersion::parse(metadata.version);
             if (newVersion > currentVersion) {
                 return _("Update");
             }
