@@ -88,6 +88,7 @@
 #include "options.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
+#include "safe_mode.h"
 #include "thumbwin.h"
 #include "tcmgr.h"
 #include "ais.h"
@@ -1109,6 +1110,7 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
                         wxCMD_LINE_VAL_STRING,
                         wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
     parser.AddLongSwitch( "unit_test_2" );
+    parser.AddSwitch("safe_mode");
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -1129,6 +1131,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
         if( g_unit_test_1 == 0 )
             g_unit_test_1 = -1;
     }
+    safe_mode::set_mode(parser.Found("safe_mode"));
 
     for (size_t paramNr=0; paramNr < parser.GetParamCount(); ++paramNr)
             g_params.push_back(parser.GetParam(paramNr));
@@ -1679,6 +1682,7 @@ bool MyApp::OnInit()
 #endif
 
     GpxDocument::SeedRandom();
+    safe_mode::set_mode(false);
     
     last_own_ship_sog_cog_calc_ts = wxInvalidDateTime;
 
@@ -1697,6 +1701,12 @@ bool MyApp::OnInit()
 
     // Instantiate the global OCPNPlatform class
     g_Platform = new OCPNPlatform;
+
+    // Check if last run failed, set up safe_mode.
+    if (!safe_mode::get_mode()) {
+        safe_mode::check_last_start();
+    }
+
 
 #ifndef __OCPN__ANDROID__
     //  On Windows
@@ -2689,6 +2699,7 @@ int MyApp::OnExit()
     delete m_checker;
 
     g_Platform->OnExit_2();
+    safe_mode::clear_check();
 
     return TRUE;
 }

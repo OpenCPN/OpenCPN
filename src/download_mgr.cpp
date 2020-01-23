@@ -620,5 +620,6 @@ void GuiDownloader::showErrorDialog(const char* msg)
             text = text + "\nPlease check system log for more info.";
             dlg->SetMessage(text);
             dlg->ShowModal();
+            dlg->Destroy();
 }
 

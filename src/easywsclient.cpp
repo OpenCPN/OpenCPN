@@ -1,4 +1,8 @@
 
+#ifdef __MINGW32__
+#include <iostream>
+#endif
+
 #ifdef _WIN32
     #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
         #define _CRT_SECURE_NO_WARNINGS // _CRT_SECURE_NO_WARNINGS for sscanf errors in MSVC2013 Express
@@ -7,8 +11,8 @@
         #define WIN32_LEAN_AND_MEAN
     #endif
     #include <fcntl.h>
-    #include <WinSock2.h>
-    #include <WS2tcpip.h>
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
     #pragma comment( lib, "ws2_32" )
     #include <stdio.h>
     #include <stdlib.h>
@@ -26,8 +30,8 @@
     #ifndef snprintf
         #define snprintf _snprintf_s
     #endif
-    #if _MSC_VER >=1600
-        // vs2010 or later
+    #if _MSC_VER >=1600 || defined(__MINGW32__)
+        // vs2010 or later, or mingw
         #include <stdint.h>
     #else
         typedef __int8 int8_t;
@@ -92,7 +96,11 @@ socket_t hostname_connect(const std::string& hostname, int port) {
     snprintf(sport, 16, "%d", port);
     if ((ret = getaddrinfo(hostname.c_str(), sport, &hints, &result)) != 0)
     {
+#ifdef __MINGW32__
+      std::cerr << "getaddrinfo" << gai_strerror(ret) << std::endl;
+#else
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(ret));
+#endif
       return 1;
     }
     for(p = result; p != NULL; p = p->ai_next)

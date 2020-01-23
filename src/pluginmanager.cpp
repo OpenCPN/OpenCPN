@@ -94,6 +94,7 @@
 #include "multiplexer.h"
 #include "ocpn_utils.h"
 #include "piano.h"
+#include "safe_mode.h"
 #include "routeman.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
@@ -845,6 +846,11 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
         {
             wxLogMessage(wxString::Format(_T("    %s: %s"), _T("Incompatible plugin detected"), file_name.c_str()));
             OCPNMessageBox( NULL, wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()), wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
+        }
+
+        // Safe mode? If so, refuse to load.
+        if (safe_mode::get_mode()) {
+            continue;
         }
             
         PlugInContainer *pic = NULL;

@@ -903,6 +903,7 @@ set(
   include/S57ObjectDesc.h
   include/S57QueryDialog.h
   include/S57Sector.h
+  include/safe_mode.h
   include/Select.h
   include/SelectItem.h
   include/SendToGpsDlg.h
@@ -1024,6 +1025,7 @@ set(
   src/RoutePropDlg.cpp
   src/RoutePropDlgImpl.cpp
   src/S57QueryDialog.cpp
+  src/safe_mode.cpp
   src/Select.cpp
   src/SelectItem.cpp
   src/SendToGpsDlg.cpp
@@ -1610,7 +1612,7 @@ else ()
 endif ()
 
 if (MINGW)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi ws2_32)
 endif ()
 
 # TODO dnl dnl Use OpenGL tesselator or Internal tesselator dnl
