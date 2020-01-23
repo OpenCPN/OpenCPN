@@ -1,4 +1,3 @@
-
 #ifdef __MINGW32__
 #include <iostream>
 #endif
@@ -97,7 +96,7 @@ socket_t hostname_connect(const std::string& hostname, int port) {
     if ((ret = getaddrinfo(hostname.c_str(), sport, &hints, &result)) != 0)
     {
 #ifdef __MINGW32__
-      std::cerr << "getaddrinfo" << gai_strerror(ret) << std::endl;
+      std::cerr << "getaddrinfo: " << gai_strerror(ret) << "\n";
 #else
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(ret));
 #endif
@@ -516,12 +515,7 @@ easywsclient::WebSocket::pointer from_url(const std::string& url, bool useMask, 
         snprintf(line, 1024, "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"); ::send(sockfd, line, strlen(line), 0);
         snprintf(line, 1024, "Sec-WebSocket-Version: 13\r\n"); ::send(sockfd, line, strlen(line), 0);
         snprintf(line, 1024, "\r\n"); ::send(sockfd, line, strlen(line), 0);
-        for (i = 0; i < 2 || (i < 1023 && line[i-2] != '\r' && line[i-1] != '\n'); ++i) {
-            if (recv(sockfd, line+i, 1, 0) == 0)
-                return NULL;
-            else
-                int kk = 0;
-        }
+        for (i = 0; i < 2 || (i < 1023 && line[i-2] != '\r' && line[i-1] != '\n'); ++i) { if (recv(sockfd, line+i, 1, 0) == 0) { return NULL; } }
         line[i] = 0;
         if (i == 1023) { fprintf(stderr, "ERROR: Got invalid status line connecting to: %s\n", url.c_str()); return NULL; }
         if (sscanf(line, "HTTP/1.1 %d", &status) != 1 || status != 101) { fprintf(stderr, "ERROR: Got bad status connecting to %s: %s", url.c_str(), line); return NULL; }
