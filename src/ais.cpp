@@ -74,6 +74,7 @@ extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bDrawAISRealtime;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bInlandEcdis;
@@ -1455,10 +1456,24 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
     } else {         // ship class A or B or a Buddy or DSC
         wxPen target_pen( UBLCK, 1 );
-
-        dc.SetBrush( target_brush );
-
         dc.SetPen( target_pen );
+
+        wxPoint Point = TargetPoint;
+        if (g_bDrawAISRealtime) {
+            wxDateTime now = wxDateTime::Now();
+            now.MakeGMT();
+            int target_age = now.GetTicks() - td->PositionReportTicks;
+            
+            float lat, lon;
+            spherical_ll_gc_ll(td->Lat, td->Lon, td->COG, td->SOG*target_age/3600.0, &lat, &lon);
+
+            GetCanvasPointPix(vp, cp, lat, lon, &Point );
+
+            wxBrush realtime_brush = wxBrush( GetGlobalColor( "GREY1" ) );
+            dc.SetBrush( realtime_brush );
+            dc.StrokePolygon( nPoints, iconPoints, Point.x, Point.y, AIS_scale_factor);
+        }
+        dc.SetBrush( target_brush );
         
         if(dc.GetDC()) {
             dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, AIS_scale_factor );
