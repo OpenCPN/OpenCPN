@@ -44,6 +44,7 @@
 #include "datastream.h"
 
 #define SIGNALK_SOCKET_ID             5011
+class WebSocketThread;
 
 class SignalKDataStream : public DataStream {
 public:
@@ -59,7 +60,10 @@ public:
         m_addr.Service(params->NetworkPort);
         m_socket_timer.SetOwner(this, TIMER_SOCKET + 2);
         m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 3);
-
+        m_useWebSocket = true;
+        m_wsThread = NULL;
+        m_threadActive = false;
+        
         Open();
 
     }
@@ -67,10 +71,17 @@ public:
     void Close();
 
     static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
+    static bool DiscoverSKServer( std::string serviceIdent, wxString &ip, int &port, int tSec);
 
     virtual ~SignalKDataStream(); 
+    void SetThreadRunning( bool active ){ m_threadActive = active; }
 
 private:
+    void OpenTCPSocket();
+    void OpenWebSocket();
+    void CloseWebSocket();
+    bool IsThreadRunning(){ return m_threadActive; }
+    
     const ConnectionParams *m_params;
     wxSocketBase        *m_sock;
     void SetSock(wxSocketBase* sock) { m_sock = sock; }
@@ -89,7 +100,10 @@ private:
 
     wxTimer             m_socketread_watchdog_timer;
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
-
+    
+    bool m_useWebSocket;
+    bool m_threadActive;
+    
     NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
     std::string         m_sock_buffer;
 
@@ -102,6 +116,7 @@ private:
 
     bool SetOutputSocketOptions(wxSocketBase* sock);
 
+    WebSocketThread     *m_wsThread;
 DECLARE_EVENT_TABLE()
 };
 

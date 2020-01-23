@@ -972,6 +972,7 @@ set(
   src/DetailSlider.cpp
   src/Downloader.cpp
   src/download_mgr.cpp
+  src/easywsclient.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp

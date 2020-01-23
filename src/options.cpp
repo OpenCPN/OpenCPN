@@ -10025,7 +10025,9 @@ void options::OnDiscoverButton(wxCommandEvent &event){
 
     wxString ip;
     int port;
-    if(SignalKDataStream::DiscoverSKServer( ip, port, 1))               // 1 second scan
+    std::string serviceIdent = std::string("_signalk-ws._tcp.local");              // Works for node.js server
+
+    if(SignalKDataStream::DiscoverSKServer( serviceIdent, ip, port, 1))               // 1 second scan
     {
         m_tNetAddress->SetValue( ip);
         m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
