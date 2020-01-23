@@ -973,7 +973,6 @@ set(
   src/DetailSlider.cpp
   src/Downloader.cpp
   src/download_mgr.cpp
-  src/easywsclient.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
@@ -1824,6 +1823,10 @@ endif (WIN32)
 
 add_subdirectory("libs/nmea0183")
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
+
+add_subdirectory("libs/easywsclient")
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::easywsclient)
+
 
 if (APPLE)
   if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
