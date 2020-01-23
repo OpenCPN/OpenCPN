@@ -1612,7 +1612,7 @@ else ()
 endif ()
 
 if (MINGW)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi ws2_32)
 endif ()
 
 # TODO dnl dnl Use OpenGL tesselator or Internal tesselator dnl
