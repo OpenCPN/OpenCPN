@@ -493,7 +493,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         now.MakeGMT();
         int target_age = now.GetTicks() - PositionReportTicks;
-        wxLogMessage(wxString::Format(_T("** PositionReportTicks %d %d %d"),
+        wxLogMessage(wxString::Format(_T("** PositionReportTicks %ld %ld %d"),
                                       now.GetTicks(), PositionReportTicks, target_age));
 
         html << vertSpacer
