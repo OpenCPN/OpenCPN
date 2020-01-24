@@ -410,7 +410,7 @@ void *WebSocketThread::Entry()
     
     // Craft the address string
     std::stringstream wsAddress;
-    wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=self" ; 
+    wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=all" ; 
 
     WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
     if(ws == NULL)
