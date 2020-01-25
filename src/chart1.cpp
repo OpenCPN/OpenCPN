@@ -204,6 +204,10 @@ bool                      g_bFirstRun;
 bool                      g_bUpgradeInProcess;
 
 bool                      g_bPauseTest;
+
+wxString                  g_compatOS;
+wxString                  g_compatOsVersion;
+
 int                       g_unit_test_1;
 int                       g_unit_test_2;
 bool                      g_start_fullscreen;
