@@ -145,6 +145,7 @@ height: 30px;\
 #include <QtWidgets/QScroller>
 #endif
 
+static const double ms_to_knot_factor = 1.9438444924406;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -1303,6 +1304,96 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
     }
 }
 
+void dashboard_pi::ParseSignalK( wxString &msg)
+{
+
+   wxJSONValue root;
+   wxJSONReader jsonReader;
+
+   int errors = jsonReader.Parse(msg, &root);
+
+//    wxString dmsg( _T("Dashboard:SignalK Event received: ") );
+//    dmsg.append(msg);
+//    wxLogMessage(dmsg);
+
+    if(root.HasMember("self")) {
+        if(root["self"].AsString().StartsWith(_T("vessels.")))
+            m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
+        else
+            m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
+    }
+    
+    if(root.HasMember("context")
+       && root["context"].IsString()) {
+        auto context = root["context"].AsString();
+        if (context != m_self) {
+            return;
+        }
+    }
+
+    if(root.HasMember("updates")
+       && root["updates"].IsArray()) {
+        wxJSONValue &updates = root["updates"];
+        for (int i = 0; i < updates.Size(); ++i) {
+            handleSKUpdate(updates[i]);
+        }
+    }
+}
+
+void dashboard_pi::handleSKUpdate(wxJSONValue &update) {
+    wxString sfixtime = "";
+
+    if(update.HasMember("timestamp")) {
+        sfixtime = update["timestamp"].AsString();
+    }
+    if(update.HasMember("values")
+       && update["values"].IsArray())
+    {
+        for (int j = 0; j < update["values"].Size(); ++j) {
+            wxJSONValue &item = update["values"][j];
+            updateSKItem(item, sfixtime);
+        }
+    }
+}
+
+void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
+    if(item.HasMember("path")
+       && item.HasMember("value")) {
+        const wxString &update_path = item["path"].AsString();
+        wxJSONValue &value = item["value"];
+        if(update_path == _T("navigation.position")) {
+            double lat = value["latitude"].AsDouble();
+            double lon = value["longitude"].AsDouble();
+            SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, lat, _T("SDMM") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_LON, lon, _T("SDMM") );
+        } 
+        else if(update_path == _T("navigation.speedOverGround")){
+            if(value.IsDouble()){
+                double sog_ms = value.AsDouble();
+                double sog_knot = sog_ms * ms_to_knot_factor;
+                SendSentenceToAllInstruments( OCPN_DBP_STC_SOG,
+                                    toUsrSpeed_Plugin( mSOGFilter.filter(sog_knot), g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
+            }
+        }
+        else if(update_path == _T("navigation.courseOverGroundTrue")){
+            if(value.IsDouble()){
+                double cog_rad = value.AsDouble();
+                double cog_deg = GEODESIC_RAD2DEG(cog_rad);
+                SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(cog_deg), _T("\u00B0") );
+            }
+        }
+
+        else if(update_path == _T("navigation.headingTrue")){
+            double hdt = GEODESIC_RAD2DEG(value.AsDouble());
+            SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, hdt, _T("\u00B0T") );
+        }
+        else if(update_path == _T("navigation.headingMagnetic")){
+            double hdm = GEODESIC_RAD2DEG(value.AsDouble());
+            SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+        }
+    }
+}
+
 void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
 {
     if( mPriPosition >= 1 ) {
@@ -1376,6 +1467,11 @@ void dashboard_pi::SetPluginMessage(wxString &message_id, wxString &message_body
             SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
         }
     }
+    else if(message_id == _T("OCPN_CORE_SIGNALK"))
+    {
+        ParseSignalK( message_body);
+    }
+
 }
 
 int dashboard_pi::GetToolbarToolCount( void )

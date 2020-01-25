@@ -184,6 +184,7 @@ wxString          g_lastPluginMessage;
 extern ChartCanvas      *g_focusCanvas;
 extern ChartCanvas      *g_overlayCanvas;
 extern bool       g_bquiting;
+extern wxString          g_ownshipMMSI_SK;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr  g_canvasArray;
@@ -942,6 +943,7 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
     // Tell all the PlugIns about the current OCPN configuration
     SendBaseConfigToAllPlugIns();
     SendS52ConfigToAllPlugIns( true );
+    SendSKConfigToAllPlugIns();
     
     // Inform Plugins of OpenGL configuration, if enabled
     if(g_bopengl){
@@ -2658,6 +2660,17 @@ void PlugInManager::PrepareAllPluginContextMenus()
     }
 }
 
+void  PlugInManager::SendSKConfigToAllPlugIns()
+{
+    // Send the current ownship MMSI, encoded as sK,  to all PlugIns
+    wxJSONValue v;
+    v[_T("self")] = g_ownshipMMSI_SK;
+
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    SendMessageToAllPlugins(wxString(_T("OCPN_CORE_SIGNALK")), out);
+}
 
 void PlugInManager::SendBaseConfigToAllPlugIns()
 {

@@ -353,7 +353,7 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
         m_aisconsumer->AddPendingEvent(event);
     if( m_gpsconsumer )
         m_gpsconsumer->AddPendingEvent(event);
-    g_pi_manager->SendJSONMessageToAllPlugins(wxT("SignalK"), event.GetValue());
+    g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), event.GetValue());
 }
 
 void Multiplexer::SaveStreamProperties( DataStream *stream )

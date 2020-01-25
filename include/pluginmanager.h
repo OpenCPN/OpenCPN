@@ -347,7 +347,8 @@ public:
 
       void SendBaseConfigToAllPlugIns();
       void SendS52ConfigToAllPlugIns( bool bReconfig = false );
-      
+      void SendSKConfigToAllPlugIns();
+
       void UpdateManagedPlugins();
 
       wxArrayString GetPlugInChartClassNameArray(void);

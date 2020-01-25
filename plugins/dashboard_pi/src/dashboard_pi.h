@@ -47,6 +47,8 @@
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
+#include <wx/jsonval.h>
+
 //wx2.9 #include <wx/wrapsizer.h>
 #include "../../../include/ocpn_plugin.h"
 
@@ -75,6 +77,8 @@ class DashboardInstrumentContainer;
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
 #define gps_watchdog_timeout_ticks  10
+
+#define GEODESIC_RAD2DEG(r) ((r)*(180.0/M_PI))
 
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
@@ -168,6 +172,11 @@ private:
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
+
+      void ParseSignalK( wxString &msg);
+      void handleSKUpdate(wxJSONValue &update);
+      void updateSKItem(wxJSONValue &item, wxString &sfixtime);
+      wxString          m_self;
 
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;

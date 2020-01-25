@@ -11,6 +11,10 @@
 #include "SignalKEventHandler.h"
 #include "OCPN_SignalKEvent.h"
 #include "chart1.h"
+#include "pluginmanager.h"
+
+extern PlugInManager    *g_pi_manager;
+wxString                g_ownshipMMSI_SK;
 
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
@@ -30,6 +34,7 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
             m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
         else
             m_self = _T("vessels.") + (root["self"].AsString());                // for Node.js server
+        g_ownshipMMSI_SK = m_self;    
     }
     
     if(root.HasMember("context")
