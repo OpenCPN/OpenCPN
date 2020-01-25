@@ -75,6 +75,8 @@ extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
 
+extern wxString       g_compatOS;
+extern wxString       g_compatOsVersion;
 
 /** split s on first occurrence of delim, or return s in first result. */
 static std::vector<std::string> split(const std::string& s, const std::string& delim)
@@ -147,6 +149,13 @@ static std::string pluginsConfigDir()
 }
 
 
+static std::string dirListPath(std::string name)
+{
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    return pluginsConfigDir() + SEP + name + ".dirs";
+}
+
+
 std::string PluginHandler::fileListPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
@@ -154,17 +163,48 @@ std::string PluginHandler::fileListPath(std::string name)
 }
 
 
-static std::string dirListPath(std::string name)
+bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                                 const char* os,
+                                 const char* os_version)
 {
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".dirs";
+    std::string compatOS(PKG_TARGET);
+    std::string compatOsVersion(PKG_TARGET_VERSION);
+    if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+        // Undocumented test hook.
+        compatOS = getenv("OPENCPN_COMPAT_TARGET");
+        if (compatOS.find(':') != std::string::npos) {
+            auto tokens = ocpn::split(compatOS.c_str(), ":");
+            compatOS = tokens[0];
+            compatOsVersion = tokens[1];
+        }
+    }
+    else if (g_compatOS != "") {
+        // CompatOS set in opencpn.conf/.ini file.
+        compatOS = g_compatOS;
+        if (g_compatOsVersion != ""){
+            compatOsVersion = g_compatOsVersion;
+        }
+    }
+    compatOS = ocpn::tolower(compatOS);
+    compatOsVersion = ocpn::tolower(compatOsVersion);
+    if (compatOS  != os) {
+        return false;
+    }
+    if (std::string(os) == "windows") {
+        return true;
+    }
+    auto meta_vers = ocpn::split(os_version, ".")[0];
+    auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+    return meta_vers == target_vers;
 }
+
 
 std::string PluginHandler::versionPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".version";
 }
+
 
 typedef std::unordered_map<std::string, std::string> pathmap_t;
 
