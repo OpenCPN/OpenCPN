@@ -66,16 +66,26 @@
 
 #include "catalog_parser.h"
 
-//  Some useful static functions
-extern bool isRegularFile(const char* path);
-extern std::string fileListPath(std::string name);
-extern std::string versionPath(std::string name);
-extern void cleanup(const std::string& filelist, const std::string& plugname);
+bool isRegularFile(const char* path);
+
+
+
+
 
 class PluginHandler {
 
     public:
         static PluginHandler* getInstance();
+
+        /** Cleanup failed installation attempt using filelist for plugin. */
+        static void
+            cleanup(const std::string& filelist, const std::string& plugname);
+
+        /** Return path to installation manifest for given plugin. */
+        static std::string fileListPath(std::string name);
+
+        /** Return path to file containing version for given plugin. */
+        static std::string versionPath(std::string name);
 
         /** Check if given plugin can be installed/updated. */
         bool isPluginWritable(std::string name);

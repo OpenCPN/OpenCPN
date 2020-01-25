@@ -147,7 +147,7 @@ static std::string pluginsConfigDir()
 }
 
 
-std::string fileListPath(std::string name)
+std::string PluginHandler::fileListPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".files";
@@ -160,7 +160,7 @@ static std::string dirListPath(std::string name)
     return pluginsConfigDir() + SEP + name + ".dirs";
 }
 
-std::string versionPath(std::string name)
+std::string PluginHandler::versionPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".version";
@@ -190,7 +190,7 @@ static pathmap_t getInstallPaths()
 static void saveFilelist(std::string filelist, std::string name)
 {
     using namespace std;
-    string listpath = fileListPath(name);
+    string listpath = PluginHandler::fileListPath(name);
     ofstream diskfiles(listpath);
     if (!diskfiles.is_open()) {
         wxLogWarning("Cannot create installed files list.");
@@ -219,7 +219,7 @@ static void saveDirlist(std::string name)
 static void saveVersion(const std::string& name, const std::string& version)
 {
     using namespace std;
-    string path = versionPath(name);
+    string path = PluginHandler::versionPath(name);
     ofstream stream(path);
     if (!stream.is_open()) {
         wxLogWarning("Cannot create version file.");
@@ -524,7 +524,7 @@ PluginHandler* PluginHandler::getInstance() {
 bool PluginHandler::isPluginWritable(std::string name)
 {
 
-    if (isRegularFile(fileListPath(name).c_str())) {
+    if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
         return true;
     }
     if (!g_pi_manager) {
@@ -572,7 +572,8 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
-void cleanup(const std::string& filelist, const std::string& plugname)
+void PluginHandler::cleanup(const std::string& filelist,
+                            const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
     std::istringstream files(filelist);
@@ -586,12 +587,12 @@ void cleanup(const std::string& filelist, const std::string& plugname)
             }
         }
     }
-    std::string path = fileListPath(plugname);
+    std::string path = PluginHandler::fileListPath(plugname);
     if (ocpn::exists(path)) {
         remove(path.c_str());
     }
     remove(dirListPath(plugname).c_str());  // Best effort try, failures
-    remove(versionPath(plugname).c_str());  // are non-critical.
+    remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
 }
 
 
@@ -641,7 +642,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled()
             ss << p->m_version_major << "." << p->m_version_minor;
             plugin.version = ss.str();
             plugin.readonly = !isPluginWritable(plugin.name);
-            string path = versionPath(plugin.name);
+            string path = PluginHandler::versionPath(plugin.name);
             if (path != "" && wxFileName::IsFileReadable(path)) {
                 std::ifstream stream;
                 stream.open(path, ifstream::in);
@@ -661,7 +662,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
         std::ostringstream os;
         os << "Cannot unpack plugin: " << plugin.name  << " at " << path;
         last_error_msg = os.str();
-        cleanup(filelist, plugin.name);
+        PluginHandler::cleanup(filelist, plugin.name);
         return false;
     }
     remove(path.c_str());
@@ -678,7 +679,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
                  before, after);
     if (before >= after) {
         last_error_msg = "Cannot load the installed plugin";
-        cleanup(filelist, plugin.name);
+        PluginHandler::cleanup(filelist, plugin.name);
     }
     //std::cout << "Installed: " << plugin.name << std::endl;
 
@@ -716,7 +717,7 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
     //g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
     g_pi_manager->UnLoadPlugIn(ix);
-    string path = fileListPath(plugin_name);
+    string path = PluginHandler::fileListPath(plugin_name);
     if (!ocpn::exists(path)) {
         wxLogWarning("Cannot find installation data for %s (%s)",
                      plugin_name.c_str(), path);
@@ -738,8 +739,8 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     if (r != 0) {
         wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
     }
-    remove(dirListPath(plugin_name).c_str());  // A best effort try, failures
-    remove(versionPath(plugin_name).c_str());  // are actually OK.
+    remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
+    remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
 
     return true;
 }
