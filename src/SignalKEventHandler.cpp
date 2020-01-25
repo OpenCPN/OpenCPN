@@ -96,7 +96,7 @@ void SignalKEventHandler::updateItem(wxJSONValue &item, wxString &sfixtime) cons
         {
             updateMagneticVariance(value, sfixtime);
         } else {
-            wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"), update_path));
+            //wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"), update_path));
 #if 0
             wxString dbg;
             wxJSONWriter writer;

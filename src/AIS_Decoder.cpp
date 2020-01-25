@@ -378,9 +378,9 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
         }
         wxString mmsi_string;
         if(context.StartsWith("vessels.urn:mrn:imo:mmsi:", &mmsi_string)) {
-            wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
+            //wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
             if(mmsi_string.ToLong(&mmsi)) {
-                wxLogMessage(_T("Got MMSI from context."));
+                //wxLogMessage(_T("Got MMSI from context."));
             } else {
                 mmsi = 0;
             }
