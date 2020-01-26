@@ -64,12 +64,12 @@ enum
     OCPN_DBP_STC_LON = 1 << 1,
     OCPN_DBP_STC_SOG = 1 << 2,
     OCPN_DBP_STC_COG = 1 << 3,
-    OCPN_DBP_STC_STW = 1 << 4,
+    OCPN_DBP_STC_STW = 1 << 4, // Speed through water
     OCPN_DBP_STC_HDM = 1 << 5,
     OCPN_DBP_STC_HDT = 1 << 6,
     OCPN_DBP_STC_HMV = 1 << 7, // Magnetic variation
     OCPN_DBP_STC_BRG = 1 << 8,
-    OCPN_DBP_STC_AWA = 1 << 9,
+    OCPN_DBP_STC_AWA = 1 << 9,  // Apparent wind angle
     OCPN_DBP_STC_AWS = 1 << 10,
     OCPN_DBP_STC_TWA = 1 << 11,
     OCPN_DBP_STC_TWS = 1 << 12,
