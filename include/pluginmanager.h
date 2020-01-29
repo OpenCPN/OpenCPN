@@ -81,6 +81,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 
 class PluginListPanel;
 class PluginPanel;
+class pluginUtilHandler;
 
 typedef struct {
     wxString name;      // name of the plugin
@@ -184,7 +185,7 @@ class PlugInContainer
             wxString          m_plugin_filename;      // The short file path
             wxDateTime        m_plugin_modification;  // used to detect upgraded plugins
             destroy_t         *m_destroy_fn;
-            wxDynamicLibrary  *m_plibrary;
+            wxDynamicLibrary  m_library;
             wxString          m_common_name;            // A common name string for the plugin
             wxString          m_short_description;
             wxString          m_long_description;
@@ -277,6 +278,7 @@ public:
 
       bool UnLoadAllPlugIns();
       bool DeactivateAllPlugIns();
+      bool DeactivatePlugIn(PlugInContainer *pic);
       bool UpdatePlugIns();
 
       bool UpdateConfig();
@@ -361,10 +363,12 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
       void DimeWindow(wxWindow *win);
+      pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
+      void SetListPanelPtr(PluginListPanel *p){ m_listPanel = p; }
+      PluginListPanel *GetListPanelPtr(){ return m_listPanel; }
       
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
-      bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
       bool UpDateChartDataTypes(void);
       bool CheckPluginCompatibility(wxString plugin_file);
@@ -393,6 +397,10 @@ private:
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
     
+      pluginUtilHandler *m_utilHandler;
+      PluginListPanel   *m_listPanel;
+
+
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
       
@@ -478,7 +486,6 @@ public:
       void MoveDown( PluginPanel *pi );
       void UpdateSelections();
       void UpdatePluginsOrder();
-      void OnPluginPanelAction( wxCommandEvent& event );
 
       /** Complete reload from plugins array. */
       void ReloadPluginPanels(ArrayOfPlugIns* plugins);

@@ -1475,6 +1475,7 @@ void options::Init(void) {
   
   // for deferred loading
   m_pPlugInCtrl = NULL;
+  m_PluginCatalogMgrPanel = NULL;
   m_pNMEAForm = NULL;
   mSelectedConnection = NULL;
   
@@ -8651,6 +8652,9 @@ void options::DoOnPageChange(size_t page) {
     if (g_pi_manager->LoadAllPlugIns(FALSE)) {
       delete m_pPlugInCtrl;
       m_pPlugInCtrl = NULL;
+      delete m_PluginCatalogMgrPanel;
+      m_PluginCatalogMgrPanel = NULL;
+      itemBoxSizerPanelPlugins->Clear();
     }
 
     if (!m_pPlugInCtrl) {
@@ -8663,6 +8667,7 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
+      g_pi_manager->SetListPanelPtr(m_pPlugInCtrl);
 
 #ifndef __OCPN__ANDROID__      
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
