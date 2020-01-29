@@ -292,6 +292,7 @@ extern int               g_nAutoHideToolbar;
 extern bool              g_bDeferredInitDone;
 
 extern wxString          g_CmdSoundString;
+extern bool              g_boptionsactive;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -12612,6 +12613,7 @@ void ChartCanvas::selectCanvasChartDisplay( int type, int family)
 
 void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
 {
+    if (g_boptionsactive) return;              // Piano might be invalid due to chartset updates.
     if( !m_pCurrentStack ) return;
     if( !ChartData) return;
     
@@ -12717,6 +12719,7 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
 
 void ChartCanvas::HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex )
 {
+    if (g_boptionsactive) return;              // Piano might be invalid due to chartset updates.
     if( !GetpCurrentStack() ) return;
     
     PianoPopupMenu( x, y, selected_index, selected_dbIndex );
@@ -12727,6 +12730,7 @@ void ChartCanvas::HandlePianoRClick( int x, int y, int selected_index, int selec
 
 void ChartCanvas::HandlePianoRollover( int selected_index, int selected_dbIndex )
 {
+    if (g_boptionsactive) return;              // Piano might be invalid due to chartset updates.
     if( !GetpCurrentStack() ) return;
     if( !ChartData ) return;
     
