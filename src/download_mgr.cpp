@@ -449,10 +449,8 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 unique_plugins.insert(plugin);
             }
             for (auto plugin: unique_plugins) {
-                if (plugin.target != PKG_TARGET) {
-                    find_compat_target(plugin.target);
-                    if (plugin.target != m_sOsLike)
-                        continue;
+                if (!PluginHandler::isCompatible(plugin)) {
+                    continue;
                 }
                 grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);

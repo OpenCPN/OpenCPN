@@ -179,7 +179,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         }
     }
     else if (g_compatOS != "") {
-        // CompatOS set in opencpn.conf/.ini file.
+        // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
         compatOS = g_compatOS;
         if (g_compatOsVersion != ""){
             compatOsVersion = g_compatOsVersion;
@@ -787,10 +787,10 @@ bool PluginHandler::uninstall(const std::string plugin_name)
 
 std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
 {
-               /** Compare two PluginMetadata objects, a named c++ requirement. */
+    /** Compare two PluginMetadata objects, a named c++ requirement. */
     struct metadata_compare{
         bool operator() (const PluginMetadata& lhs,
-                                 const PluginMetadata& rhs) const
+                         const PluginMetadata& rhs) const
         {
             return lhs.key() < rhs.key();
         }
@@ -803,13 +803,9 @@ std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
         unique_plugins.insert(plugin);
     }
     for (auto plugin: unique_plugins) {
-        if (plugin.target != PKG_TARGET) {
-            find_compat_target(plugin.target);
-            if (plugin.target != m_sOsLike)
-                continue;
+        if (PluginHandler::isCompatible(plugin)) {
+            returnArray.push_back(plugin);
         }
-        returnArray.push_back(plugin);
     }
-    
     return returnArray;
 }
