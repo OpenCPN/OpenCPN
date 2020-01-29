@@ -425,7 +425,6 @@ PlugInContainer::PlugInContainer()
     m_bitmap = NULL;
     m_pluginStatus =  PluginStatus::Unknown;
     m_api_version = 0;
-    m_plibrary = NULL;
 }
 
 SemanticVersion PlugInContainer::GetVersion() 
@@ -449,6 +448,152 @@ SemanticVersion PlugInContainer::GetVersion()
     }
 
 }
+
+
+class pluginUtilHandler : public wxEvtHandler
+{
+ public:
+     pluginUtilHandler();
+    ~pluginUtilHandler() {}
+    
+    void OnPluginUtilAction( wxCommandEvent& event );
+
+    
+    DECLARE_EVENT_TABLE()
+};
+
+
+BEGIN_EVENT_TABLE ( pluginUtilHandler, wxEvtHandler )
+EVT_BUTTON( ID_CMD_BUTTON_PERFORM_ACTION, pluginUtilHandler::OnPluginUtilAction )
+END_EVENT_TABLE()
+
+pluginUtilHandler::pluginUtilHandler()
+{
+}
+
+void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
+{
+    wxString name = g_actionPIC->m_common_name;
+    
+    // Perform the indicated action according to the verb...
+    switch( g_actionVerb ){
+        case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
+        {
+            wxLogMessage("Installing managed plugin: %s", g_actionPIC->m_ManagedMetadata.name.c_str());
+            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), g_actionPIC->m_ManagedMetadata);
+            downloader->run(g_pi_manager->GetListPanelPtr());
+
+            
+            // Provisional error check
+            std::string manifestPath = fileListPath(g_actionPIC->m_ManagedMetadata.name);
+            if(isRegularFile(manifestPath.c_str())) {
+
+                // dynamically deactivate the legacy plugin, making way for the upgrade.
+                for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
+                    if (g_actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
+                        g_pi_manager->UnLoadPlugIn(i);
+                        break;
+                    }
+                }
+            
+                //  Reload all plugins, which will bring in the new, managed version.
+                g_pi_manager->LoadAllPlugIns( false );
+            }
+            else
+                cleanup(manifestPath, g_actionPIC->m_ManagedMetadata.name);
+
+            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+
+            break;
+        }
+        
+        case  ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION:
+        case  ActionVerb::REINSTALL_MANAGED_VERSION:
+        case  ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION:
+        {
+            // Grab a copy of the managed metadata
+            auto metaSave = g_actionPIC->m_ManagedMetadata;
+            
+            g_pi_manager->DeactivatePlugIn(g_actionPIC);
+            g_actionPIC->m_bEnabled = false;
+            g_pi_manager->UpdatePlugIns();
+            
+            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
+            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
+
+            g_pi_manager->UpdatePlugIns();
+            
+            wxLogMessage("Installing %s", metaSave.name.c_str());
+            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
+            downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
+            
+            // Provisional error check
+             std::string manifestPath = fileListPath(metaSave.name);
+             if(!isRegularFile(manifestPath.c_str())) {
+                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
+                 cleanup(manifestPath, metaSave.name);
+             }
+
+             //  Reload all plugins, which will bring in the action results.
+            g_pi_manager->LoadAllPlugIns( false );
+            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            break;
+        }
+
+        case  ActionVerb::INSTALL_MANAGED_VERSION:
+        {
+            // Grab a copy of the managed metadata
+            auto metaSave = g_actionPIC->m_ManagedMetadata;
+            
+            wxLogMessage("Installing %s", metaSave.name.c_str());
+            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
+            downloader->run(g_pi_manager->GetListPanelPtr());
+            
+            // Provisional error check
+             std::string manifestPath = fileListPath(metaSave.name);
+             if(!isRegularFile(manifestPath.c_str())) {
+                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
+                 cleanup(manifestPath, metaSave.name);
+             }
+
+            //  Reload all plugins, which will bring in the action results.
+            g_pi_manager->LoadAllPlugIns( false );
+            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            break;
+        }
+
+        case  ActionVerb::UNINSTALL_MANAGED_VERSION:
+        {
+            g_pi_manager->DeactivatePlugIn(g_actionPIC);
+
+            wxString message;
+            message.Printf("%s %s\n", g_actionPIC->m_ManagedMetadata.name.c_str(), g_actionPIC->m_ManagedMetadata.version.c_str());
+
+            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
+            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
+
+            message += _("successfully un-installed");
+            OCPNMessageBox(gFrame, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
+
+            //  Reload all plugins, which will bring in the action results.
+            g_pi_manager->LoadAllPlugIns( false );
+            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            break;
+        }
+ 
+        case ActionVerb::NOP:
+        default:
+            break;
+    }
+
+}
+
+
+
+
 
 /**
  * A svg status icon, scaled to about 1/3 of available space
@@ -637,6 +782,8 @@ PlugInManager::PlugInManager(MyFrame *parent)
 #endif
     
     m_benable_blackdialog_done = false;
+    
+    m_utilHandler = new pluginUtilHandler();
 }
 
 PlugInManager::~PlugInManager()
@@ -812,7 +959,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                         DeactivatePlugIn(pic);
                         pic->m_destroy_fn(pic->m_pplugin);
                         
-                        delete pic->m_plibrary;            // This will unload the PlugIn
                         delete pic;
                         ret = true;
                     } else {
@@ -907,7 +1053,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                     
                 pic->m_destroy_fn(pic->m_pplugin);
                     
-                delete pic->m_plibrary;            // This will unload the PlugIn
                 delete pic;
             }
         }
@@ -1326,17 +1471,14 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
         return false;
     }
     PlugInContainer *pic = plugin_array[ix];
-    if (!DeactivatePlugIn(pic)) {
-        return false;
-    }
+     if (!DeactivatePlugIn(pic)) {
+         return false;
+     }
     if(pic->m_bInitState){
         pic->m_destroy_fn(pic->m_pplugin);
     }
-    delete pic->m_plibrary;            // This will unload the PlugIn
-    pic->m_plibrary = NULL;
-    
-    pic->m_bInitState = false;
-    delete pic;
+   
+    delete pic;            // This will unload the PlugIn via DTOR of pic->m_library
     plugin_array.RemoveAt(ix);
     return true;
 }
@@ -1545,7 +1687,7 @@ FailureEpilogue:
 bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
 {
     bool b_compat = true;
-
+    
 #ifdef __WXMSW__
     char strver[22]; //Enough space even for very big integers...
     sprintf(strver, "%i%i", wxMAJOR_VERSION, wxMINOR_VERSION);
@@ -1784,10 +1926,9 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     pic->m_plugin_file = plugin_file;
     pic->m_pluginStatus = PluginStatus::Unmanaged;      // Status is updated later, if necessary
 
-
     // load the library
-    wxDynamicLibrary *plugin = new wxDynamicLibrary(plugin_file);
-    pic->m_plibrary = plugin;     // Save a pointer to the wxDynamicLibrary for later deletion
+
+    pic->m_library.Load(plugin_file);
     
     if( m_benable_blackdialog && !wxIsReadable(plugin_file) )
     {
@@ -1796,7 +1937,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         msg += _T("\n\n");
         OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 10 );  // 10 second timeout
     }
-    else if(!plugin->IsLoaded())
+    else if(!pic->m_library.IsLoaded())
     {
         if( m_benable_blackdialog ){
         //  Look in the Blacklist, try to match a filename, to give some kind of message
@@ -1839,31 +1980,28 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         msg += plugin_file;
         msg += _T(" ");
         wxLogMessage(msg);
-        delete plugin;
         delete pic;
         return NULL;
     }
 
 
     // load the factory symbols
-    create_t* create_plugin = (create_t*)plugin->GetSymbol(_T("create_pi"));
+    create_t* create_plugin = (create_t*)pic->m_library.GetSymbol(_T("create_pi"));
     if (NULL == create_plugin)
     {
         wxString msg(_T("   PlugInManager: Cannot load symbol create_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete plugin;
         delete pic;
         return NULL;
     }
 
-    destroy_t* destroy_plugin = (destroy_t*) plugin->GetSymbol(_T("destroy_pi"));
+    destroy_t* destroy_plugin = (destroy_t*) pic->m_library.GetSymbol(_T("destroy_pi"));
     pic->m_destroy_fn = destroy_plugin;
     if (NULL == destroy_plugin) {
         wxString msg(_T("   PlugInManager: Cannot load symbol destroy_pi: "));
         msg += plugin_file;
         wxLogMessage(msg);
-        delete plugin;
         delete pic;
         return NULL;
     }
@@ -1882,7 +2020,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     int pi_ver = (pi_major * 100) + pi_minor;
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
-        delete plugin;
         delete pic;
         return NULL;
     }
@@ -3053,9 +3190,9 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void)
         {
             wxArrayString carray = pic->m_pplugin->GetDynamicChartClassNameArray();
 
-            for(unsigned int j = 0 ; j < carray.GetCount() ; j++)
+            for(unsigned int j = 0 ; j < carray.GetCount() ; j++){
                 array.Add(carray[j]);
-
+            }
         }
     }
 
@@ -4755,7 +4892,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_catalogText->SetLabel(GetCatalogText());
 
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer1->Add( tchannels, 0, wxALIGN_RIGHT | wxRIGHT, 2 * GetCharWidth() );
+     rowSizer1->Add( tchannels, 0,/* wxALIGN_RIGHT |*/ wxRIGHT, 2 * GetCharWidth() );
 
      wxArrayString channels;
      channels.Add(_T( "Master" ));
@@ -4763,7 +4900,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      channels.Add(_T( "Alpha" ));
      channels.Add(_T( "Custom..." ));
      m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
-     rowSizer1->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
+     rowSizer1->Add( m_choiceChannel, 0/*, wxALIGN_RIGHT*/ );
      m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
      m_choiceChannel->SetSelection(GetChannelIndex(&channels));
 
@@ -4916,7 +5053,7 @@ void CatalogMgrPanel::SetUpdateButtonLabel()
 
 
 BEGIN_EVENT_TABLE( PluginListPanel, wxScrolledWindow )
-EVT_BUTTON( ID_CMD_BUTTON_PERFORM_ACTION, PluginListPanel::OnPluginPanelAction )
+//EVT_BUTTON( ID_CMD_BUTTON_PERFORM_ACTION, PluginListPanel::OnPluginPanelAction )
 END_EVENT_TABLE()
 
 PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
@@ -5118,120 +5255,6 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
     Refresh(false);
 }
 
-void PluginListPanel::OnPluginPanelAction( wxCommandEvent& event )
-{
-    wxString name = g_actionPIC->m_common_name;
-    
-    // Perform the indicated action according to the verb...
-    switch( g_actionVerb ){
-        case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
-        {
-            wxLogMessage("Installing managed plugin: %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(this, g_actionPIC->m_ManagedMetadata);
-            downloader->run(this);
-
-            
-            // Provisional error check
-            std::string manifestPath = fileListPath(g_actionPIC->m_ManagedMetadata.name);
-            if(isRegularFile(manifestPath.c_str())) {
-
-                // dynamically deactivate the legacy plugin, making way for the upgrade.
-                for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
-                    if (g_actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
-                        g_pi_manager->UnLoadPlugIn(i);
-                        break;
-                    }
-                }
-            
-                //  Reload all plugins, which will bring in the new, managed version.
-                g_pi_manager->LoadAllPlugIns( false );
-            }
-            else
-                cleanup(manifestPath, g_actionPIC->m_ManagedMetadata.name);
-
-            ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            SelectByName(name);
-
-            break;
-        }
-        
-        case  ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION:
-        case  ActionVerb::REINSTALL_MANAGED_VERSION:
-        case  ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION:
-        {
-            // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(this, metaSave);
-            downloader->run(this);
-            
-            // Provisional error check
-             std::string manifestPath = fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 cleanup(manifestPath, metaSave.name);
-             }
-
-             //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            SelectByName(name);
-            break;
-        }
-
-        case  ActionVerb::INSTALL_MANAGED_VERSION:
-        {
-            // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(this, metaSave);
-            downloader->run(this);
-            
-            // Provisional error check
-             std::string manifestPath = fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 cleanup(manifestPath, metaSave.name);
-             }
-
-            //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            SelectByName(name);
-            break;
-        }
-
-        case  ActionVerb::UNINSTALL_MANAGED_VERSION:
-        {
-            wxString message;
-            message.Printf("%s %s\n", g_actionPIC->m_ManagedMetadata.name.c_str(), g_actionPIC->m_ManagedMetadata.version.c_str());
-
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
-
-            message += _("successfully un-installed");
-            OCPNMessageBox(this, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
-
-            //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            break;
-        }
- 
-        case ActionVerb::NOP:
-        default:
-            break;
-    }
-
-}
-
-
-
 static bool canUninstall(std::string name)
 {
     PluginHandler* pluginHandler = PluginHandler::getInstance();
@@ -5320,7 +5343,7 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     enableSizer->Add(m_info_btn, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
     
     m_rgSizer = new wxBoxSizer(wxVERTICAL);
-    enableSizer->Add(m_rgSizer, 0, wxALIGN_RIGHT|wxALL, 2);
+    enableSizer->Add(m_rgSizer, 0, /*wxALIGN_RIGHT|*/wxALL, 2);
     
     m_rbEnable = new wxRadioButton(this, wxID_ANY, _("Enabled"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     m_rgSizer->Add(m_rbEnable, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
@@ -5591,10 +5614,11 @@ void PluginPanel::OnPluginUninstall( wxCommandEvent& event )
     g_actionPIC = m_pPlugin;
     g_actionVerb = ActionVerb::UNINSTALL_MANAGED_VERSION;
 
-    //  Chain up to the parent of this panel
+    //SetEnabled(false);
+    //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
-    m_PluginListPanel->GetEventHandler()->AddPendingEvent(actionEvent);
+    g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 }
 
 
@@ -5602,10 +5626,10 @@ void PluginPanel::OnPluginAction( wxCommandEvent& event )
 {
     g_actionPIC = m_pPlugin;
     
-    //  Chain up to the parent of this panel
+    //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
-    m_PluginListPanel->GetEventHandler()->AddPendingEvent(actionEvent);
+    g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 
     return;
 }
