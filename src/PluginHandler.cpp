@@ -321,7 +321,7 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
 
     string path = archive_entry_pathname(entry);
     int slashes = count(path.begin(), path.end(), '/');
-    if (slashes < 3) {
+    if (slashes < 2) {
         archive_entry_set_pathname(entry, "");
         return;
     }
@@ -714,7 +714,7 @@ bool PluginHandler::uninstall(const std::string plugin_name)
 
     auto ix = PlugInIxByName(plugin_name, g_pi_manager->GetPlugInArray());
     auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
-    g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
+    //g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
     g_pi_manager->UnLoadPlugIn(ix);
     string path = fileListPath(plugin_name);
     if (!ocpn::exists(path)) {
