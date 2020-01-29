@@ -661,11 +661,15 @@ class StatusIconPanel: public wxPanel
             path.AppendDir("uidata");
             path.AppendDir("traditional");
             bool ok = false;
+            
+            //TODO
+/*
             if (path.IsFileReadable()) {
                 wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
                 bitmap = wxBitmap(img);
                 ok = bitmap.IsOk();
             }
+*/
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
