@@ -122,6 +122,7 @@ class PluginHandler {
 	/** Uninstall an installed plugin. */
         bool uninstall(const std::string plugin);
 
+        std::string getLastErrorMsg() { return last_error_msg; }
 
         CatalogData *GetCatalogData(){ return &catalogData; }
         
