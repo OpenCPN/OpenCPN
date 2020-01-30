@@ -122,13 +122,12 @@ class PluginHandler {
 	/** Uninstall an installed plugin. */
         bool uninstall(const std::string plugin);
 
-        std::string getLastErrorMsg() { return last_error_msg; }
 
         CatalogData *GetCatalogData(){ return &catalogData; }
         
     protected:
 	/** Initiats the handler and set up LD_LIBRARY_PATH. */
-        PluginHandler() { m_sOsLike = ""; }
+        PluginHandler() {}
 
     private:
         std::string metadataPath;
@@ -140,38 +139,6 @@ class PluginHandler {
                             std::string& filelist);
         bool extractTarball(const std::string path, std::string& filelist);
         bool archive_check(int r, const char* msg, struct archive* a);
-
-        wxString m_sOsLike;
-        void find_compat_target(const std::string& plugin_target)
-        {
-            if (m_sOsLike != "") {
-                return;
-            }
-            if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-                // Undocumented test hook.
-                m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
-                return;
-            }
-            if (plugin_target != "ubuntu") {
-                return;
-            }
-            wxFile file("/etc/os-release");
-            if(!file.IsOpened()) {
-                return;
-            }
-            wxString l_InString;
-            if(file.ReadAll(&l_InString)) {
-                // Find OS_LIKE in string
-                int l_nPos = l_InString.Find("ID_LIKE=");
-                if(l_nPos != wxNOT_FOUND) {
-                    l_nPos += 8;
-                    int l_nEnd = l_InString.find('\n', l_nPos);
-                    m_sOsLike.append(l_InString.SubString(l_nPos, l_nEnd - 1));
-                }
-            }
-            file.Close();
-        }
-
 };
 
 
