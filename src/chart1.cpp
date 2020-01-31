@@ -8777,10 +8777,12 @@ void MyFrame::setSpeedOverGround(double sog)
 
 void MyFrame::setMagneticVariation(double var)
 {
-    wxLogDebug(wxString::Format(_T("Var: %f"), var));
-    gVar = var;
-    g_bVAR_Rx = true;
-    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+    if (0.0 != var) {
+        wxLogDebug(wxString::Format(_T("Var: %f"), var));
+        gVar = var;
+        g_bVAR_Rx = true;
+        gVAR_Watchdog = gps_watchdog_timeout_ticks;
+    }
 }
 
 void MyFrame::setSatelitesInView(int no)
