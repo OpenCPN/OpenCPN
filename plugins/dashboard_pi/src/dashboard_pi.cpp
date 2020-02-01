@@ -1527,7 +1527,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 mMWVA_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
-        else if (update_path == _T("environment.wind.angleTrueWater")) { // negative to port angleTrueGround
+        else if (update_path == _T("environment.wind.angleTrueWater")) { //negative to port angleTrueGround
             if (mPriTWA >= 1) {
                 double m_twaangle = GEODESIC_RAD2DEG(value.AsDouble());
                 wxString m_twaunit = _T("\u00B0R");
@@ -1552,7 +1552,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
-        else if (update_path == _T("environment.depth.belowTransducer")) { // m  TODO not ready!!
+        else if (update_path == _T("environment.depth.belowTransducer")) {
             if (mPriDepth >= 1) {
                 mPriDepth = 1;
                 double depth = (value.AsDouble());
@@ -1566,10 +1566,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         }
         else if (update_path == _T("environment.water.temperature")) {
             if (mPriWTP >= 1) {
-                mPriWTP = 1;
                 double m_wtemp = KELVIN2C(value.AsDouble());
-                SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
-                mWTP_Watchdog = gps_watchdog_timeout_ticks;
+                if (m_wtemp > -60 && m_wtemp < 200 && !isnan(m_wtemp)) {
+                    mPriWTP = 1;
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
+                    mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+                }
             }
         }
         else if (update_path == _T("navigation.courseRhumbline.nextPoint.velocityMadeGood")) {
@@ -1610,10 +1612,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         }
         else if (update_path == _T("environment.outside.temperature")) { //TODO check path: MTA/XDR N/A in SignK. 
             if (mPriATMP >= 1) {
-                mPriATMP = 1;
                 double m_airtemp = KELVIN2C(value.AsDouble());
-                SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_airtemp, "C");
-                mATMP_Watchdog = gps_watchdog_timeout_ticks;
+                if (m_airtemp > -60 && m_airtemp < 200 && !isnan(m_airtemp)) {
+                    mPriATMP = 1;
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_airtemp, "C");
+                    mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+                }
             }
         }
         else if (update_path == _T("environment.wind.directionTrue")) { //relative true north
@@ -1638,10 +1642,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 toUsrDistance_Plugin(m_slog, g_iDashDistanceUnit),
                 getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
         }
-        else if (update_path == _T("environment.outside.pressure")) { //hPa
-            double m_bar = (value.AsDouble());
-            SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_bar, _T("hPa"));
-            mMDA_Watchdog = gps_watchdog_timeout_ticks;
+        else if (update_path == _T("environment.outside.pressure")) { //Pa
+            double m_press = PA2HPA(value.AsDouble());
+            // Mismatch from SignalK. Unit should be Pa but some sources (MDA) use hPa
+            if (m_press < 100) m_press *= 100;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+            mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
         else if (update_path == _T("navigation.attitude")) { //rad
             if (value["roll"].AsString() != wxEmptyString) {
@@ -3561,16 +3567,16 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_I_MDA: //barometric pressure
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, _T("%5.3f") );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, _T("%5.1f") );
                 break;
                case ID_DBP_D_MDA: //barometric pressure
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, 940, 1040 );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, 938, 1088 );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 10,
                         DIAL_LABEL_HORIZONTAL );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
                         DIAL_MARKER_SIMPLE, 1 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%5.3f"),
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%5.1f"),
                         DIAL_POSITION_INSIDE );
                 break;
             case ID_DBP_I_ATMP: //air temperature

@@ -77,10 +77,11 @@ class DashboardInstrumentContainer;
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
 #define gps_watchdog_timeout_ticks  10
-
+#define no_nav_watchdog_timeout_ticks 40    // SignalK motor & environ instr defaults 30 sec
 #define GEODESIC_RAD2DEG(r) ((r)*(180.0/M_PI))
 #define MS2KNOTS(r) ((r)*(1.9438444924406))
 #define KELVIN2C(r) ((r)-(273.13))
+#define PA2HPA(r) ((r)/(100))
 
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
