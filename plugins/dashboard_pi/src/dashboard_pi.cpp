@@ -1567,7 +1567,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if (update_path == _T("environment.water.temperature")) {
             if (mPriWTP >= 1) {
                 double m_wtemp = KELVIN2C(value.AsDouble());
-                if (m_wtemp > -60 && m_wtemp < 200 && !isnan(m_wtemp)) {
+                if (m_wtemp > -60 && m_wtemp < 200 && !std::isnan(m_wtemp)) {
                     mPriWTP = 1;
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_wtemp, "C");
                     mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
@@ -1613,7 +1613,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if (update_path == _T("environment.outside.temperature")) { //TODO check path: MTA/XDR N/A in SignK. 
             if (mPriATMP >= 1) {
                 double m_airtemp = KELVIN2C(value.AsDouble());
-                if (m_airtemp > -60 && m_airtemp < 200 && !isnan(m_airtemp)) {
+                if (m_airtemp > -60 && m_airtemp < 200 && !std::isnan(m_airtemp)) {
                     mPriATMP = 1;
                     SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_airtemp, "C");
                     mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
