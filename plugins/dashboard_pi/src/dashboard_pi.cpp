@@ -3572,9 +3572,9 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                case ID_DBP_D_MDA: //barometric pressure
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_MDA, 938, 1088 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 10,
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 15,
                         DIAL_LABEL_HORIZONTAL );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 7.5,
                         DIAL_MARKER_SIMPLE, 1 );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%5.1f"),
                         DIAL_POSITION_INSIDE );
