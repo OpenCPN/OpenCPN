@@ -273,8 +273,13 @@ static void win_entry_set_install_path(struct archive_entry* entry,
     if (ocpn::endswith(path, ".dll") || ocpn::endswith(path, ".exe")) {
         path = installPaths["bin"] + "\\" + basename(path);
     } else if (ocpn::startswith(path, "share")) {
-        path = installPaths["share"] + "\\" + path;
+        // The "share" directory should be a direct sibling of "plugins" directory
+        const string winPluginBaseDir = g_Platform->GetWinPluginBaseDir().ToStdString();
+        path = winPluginBaseDir + "\\" + path;
     } else if (ocpn::startswith(path, "plugins")) {
+        slashpos = path.find_first_of('/');
+       // Data path already end in plugins/, drop prefix.
+        path = path.substr(slashpos + 1);
         path = installPaths["share"] + "\\" + path;
     } else if (archive_entry_filetype(entry) == AE_IFREG) {
         path = installPaths["unknown"] + "\\" + path;
