@@ -292,6 +292,33 @@ literalstatus_by_status({
 
 });
 
+
+static SemanticVersion metadata_version(const PluginMetadata pm)
+{
+    return SemanticVersion::parse(pm.name);
+}
+
+
+// Get installed version from manifest for given plugin. For
+// older plugins this contains more detailed info then the
+// plugin API. From API level 117 the API should contain the
+// same info.
+//
+// TODO: Get version from API for api level 117+
+SemanticVersion getInstalledVersion(const std::string name)
+{
+    std::string installed;
+    std::string path = PluginHandler::versionPath(name);
+    if (path == "" || !wxFileName::IsFileReadable(path)) {
+        return SemanticVersion(-1, -1);
+    }
+    std::ifstream stream;
+    stream.open(path, std::ifstream::in);
+    stream >> installed;
+    return SemanticVersion::parse(installed);
+}
+
+
 /**
  * Return number of existing files named filename in the list of
  * dirs.

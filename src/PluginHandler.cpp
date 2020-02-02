@@ -689,6 +689,33 @@ void PluginHandler::cleanup(const std::string& filelist,
 }
 
 
+std::vector<PluginMetadata> PluginHandler::getUpdates(const std::string& name)
+{
+    auto av = getAvailable();
+    // Skip all available which doesnt refer to correct name
+    av.erase(
+        std::remove_if(
+            av.begin(), av.end(),
+            [&](const PluginMetadata& pm) {return pm.name != name; }),
+        av.end());
+    //  Get metadata for installed version (if existing).
+    auto in = getInstalled();
+    auto current = std::find_if(
+            in.begin(), in.end(),
+            [&] (const PluginMetadata& pm) { return pm.name == name; });
+    if (current == in.end()) {
+        return av;
+    }
+    // Drop item matching installed version.
+    av.erase(
+        std::remove_if(av.begin(), av.end(),
+                       [&](const PluginMetadata& pm) {
+                            return pm.version == current->version; }),
+        av.end());
+    return av;
+}
+
+
 const std::vector<PluginMetadata> PluginHandler::getAvailable()
 {
     using namespace std;
