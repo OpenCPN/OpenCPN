@@ -136,9 +136,9 @@ wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
 {
-    if( st == OCPN_DBP_STC_LAT ) {
-        m_hemisphere = (value < 0 ? _T("S") : _T("N") );
-    }
+    if( st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
+        m_hemisphere = (value < 0 ? _T("S") : _T("N"));
+    } 
 }
 
 void DashboardInstrument_Moon::Draw(wxGCDC* dc)
@@ -337,14 +337,16 @@ void DashboardInstrument_Sun::SetUtcTime( wxDateTime data )
 
 void DashboardInstrument_Sun::SetData( int st, double data, wxString unit )
 {
-      if( st == OCPN_DBP_STC_LAT )
-      {
-            m_lat = data;
-      }
-      else if( st == OCPN_DBP_STC_LON )
-      {
+    if(!std::isnan(data)){
+        if (st == OCPN_DBP_STC_LAT)
+            {
+                m_lat = data;
+            }
+        else if (st == OCPN_DBP_STC_LON)
+        {
             m_lon = data;
-      }
+        }
+    }
 }
 
 void DashboardInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){

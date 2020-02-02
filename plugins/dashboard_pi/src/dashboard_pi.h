@@ -79,6 +79,8 @@ class DashboardInstrumentContainer;
 #define gps_watchdog_timeout_ticks  10
 
 #define GEODESIC_RAD2DEG(r) ((r)*(180.0/M_PI))
+#define MS2KNOTS(r) ((r)*(1.9438444924406))
+#define KELVIN2C(r) ((r)-(273.13))
 
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
@@ -188,6 +190,7 @@ private:
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
+      short                mPriSTW, mPriWTP, mPriATMP;
       double               mVar;
       // FFU
       double               mSatsInView;
@@ -203,6 +206,15 @@ private:
       int                  mMWVT_Watchdog;
       int                  mDPT_DBT_Watchdog;
       int                  mSTW_Watchdog;
+      int                  mWTP_Watchdog;
+      int                  mRSA_Watchdog;
+      int                  mVMG_Watchdog;
+      int                  mUTC_Watchdog;
+      int                  mATMP_Watchdog;
+      int                  mWDN_Watchdog;
+      int                  mMDA_Watchdog;
+      int                  mPITCH_Watchdog;
+      int                  mHEEL_Watchdog;
 
       iirfilter            mSOGFilter;
       iirfilter            mCOGFilter;

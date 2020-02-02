@@ -83,7 +83,12 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
       }
       else if (st == OCPN_DBP_STC_TMP)
       {
-            m_Temp = wxString::Format(_T("%.1f"), data)+DEGREE_SIGN+unit;
+          if (!std::isnan(data)) {
+              m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
+          }
+          else {
+              m_Temp = "---";
+          }
       }
 }
 
