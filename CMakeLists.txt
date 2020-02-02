@@ -942,6 +942,7 @@ set(
   include/TTYScroll.h
   include/TTYWindow.h
   include/undo.h
+  include/update_mgr.h
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
@@ -1060,6 +1061,7 @@ set(
   src/TTYScroll.cpp
   src/TTYWindow.cpp
   src/undo.cpp
+  src/update_mgr.cpp
   src/viewport.cpp
 )
 
