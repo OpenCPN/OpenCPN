@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
-# Author:      Dave Register DEB 
-# config from: antonm - Anton Martchukov <anton@martchukov.com> 
-# Update:      sethdart (Jean-Eudes Onfray) 
+# Author:      Dave Register DEB
+# config from: antonm - Anton Martchukov <anton@martchukov.com>
+# Update:      sethdart (Jean-Eudes Onfray)
 #                 with parts from balp (Anders Arnholm)
 # ***************************************************************************
 # - Copyright (C) 2010 by David S. Register                               *
@@ -92,7 +92,7 @@ To build for android, use something like:
 
 Silent/Verbose builds:
     cmake's handling of these issues is underwhelming. On most platforms the
-    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make 
+    builds are by default verbose. Use 'cmake OCPN_VERBOSE=OFF' to make
     a silent build. The OCPN_VERBOSE value can be overridden using
     'make VERBOSE=1' or 'make -s'
 #]]
@@ -150,19 +150,11 @@ IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "androideabi-qt")
     MESSAGE (STATUS "Building for wxQt-Android")
     SET(QT_ANDROID "ON")
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")  
+  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
-
-# Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
-# to avoid multilib plugin paths. After all, we do not install any
-# "real" libraries.
-if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib")
-endif ()
-include(GNUInstallDirs)
 
 #
 # Options
@@ -215,6 +207,10 @@ else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
 
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  option(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+endif ()
+
 if (NOT WIN32 AND NOT APPLE)
   set(PA_DEFAULT "ON")
 endif ()
@@ -245,24 +241,14 @@ set(
 if (WIN32 AND NOT UNIX)
   option(OCPN_BUNDLE_WXDLLS "Bundle the prebuilt WX DLLs" ON)
   option(OCPN_BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
+  option(
+    BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
+  )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   option(OCPN_ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
   set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
-endif ()
-
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-    if (EXISTS "/usr/lib64")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
-    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
-    else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
-    endif ()
-    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
-        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
-    )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.9)
@@ -322,8 +308,8 @@ IF (QT_ANDROID)
   SET(OCPN_USE_CURL ON)
   SET(ENABLE_PORTAUDIO OFF)
   SET(ENABLE_SYSTEM_CMD_SOUND OFF)
-  SET(ENABLE_SNDFILE OFF) 
-  SET(OCPN_USE_LZMA OFF) 
+  SET(ENABLE_SNDFILE OFF)
+  SET(OCPN_USE_LZMA OFF)
 ENDIF (QT_ANDROID)
 
 # Check if a given library should use the bundled source
@@ -510,13 +496,14 @@ if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
 endif (MSVC)
 
+
 if (QT_ANDROID)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   set(CMAKE_CXX_FLAGS "-pthread -fPIC -O2")
-  
+
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
         "-Wno-overloaded-virtual"
@@ -528,6 +515,24 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
 endif (QT_ANDROID)
 
+
+#
+# Installation directory setup
+#
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+    if (EXISTS "/usr/lib64")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
+    else ()
+        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")	
+    endif ()
+    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+    )
+endif ()
+
+
 set(
   LINUX_LIB_PATHS
   /usr/local/lib
@@ -537,6 +542,14 @@ set(
   /usr/lib
   /usr/lib64
 )
+
+# Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
+# to avoid multilib plugin paths. After all, we do not install any
+# "real" libraries.
+if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif ()
+include(GNUInstallDirs)
 
 set(PREFIX_BIN ${CMAKE_INSTALL_BINDIR})
 set(PREFIX_INCLUDE ${CMAKE_INSTALL_INCLUDEDIR})
@@ -585,9 +598,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 # Bundled data: docs, tcdata, gshhs
 #
 
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  option(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
-endif ()
 
 if (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will include documentation ***")
@@ -625,7 +635,7 @@ IF(DEFINED _wx_selected_config)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
-  
+
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
     SET(USE_GLES2 ON )
     MESSAGE (STATUS "Using GLESv2 for Android")
@@ -783,13 +793,13 @@ IF(QT_ANDROID)
     ${wxQt_Base}/${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-    
+
     ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
- 
+
     )
 ENDIF(QT_ANDROID)
 
@@ -817,9 +827,9 @@ endif (QT_ANDROID)
 
 set(
   HDRS
-  include/about.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
+  include/about.h
   include/AIS_Bitstring.h
   include/AIS_Decoder.h
   include/ais.h
@@ -852,6 +862,7 @@ set(
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
+  include/GarminProtocolHandler.h
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
@@ -869,6 +880,7 @@ set(
   include/multiplexer.h
   include/NavObjectCollection.h
   include/navutil.h
+  include/NetworkDataStream.h
   include/NMEALogWindow.h
   include/ocpCursor.h
   include/OCP_DataStreamInput_Thread.h
@@ -876,16 +888,16 @@ set(
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
-  include/ocpn_utils.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
-  include/semantic_vers.h
   include/OCPNRegion.h
+  include/OCPN_SignalKEvent.h
   include/ocpn_types.h
+  include/ocpn_utils.h
   include/options.h
   include/piano.h
-  include/pluginmanager.h
   include/PluginHandler.h
+  include/pluginmanager.h
   include/PluginPaths.h
   include/PositionParser.h
   include/printtable.h
@@ -906,7 +918,11 @@ set(
   include/safe_mode.h
   include/Select.h
   include/SelectItem.h
+  include/semantic_vers.h
   include/SendToGpsDlg.h
+  include/SerialDataStream.h
+  include/SignalKDataStream.h
+  include/SignalKEventHandler.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -929,12 +945,6 @@ set(
   include/vector2D.h
   include/viewport.h
   include/WindowDestroyListener.h
-  include/SerialDataStream.h
-  include/NetworkDataStream.h
-  include/SignalKDataStream.h
-  include/SignalKEventHandler.h
-  include/GarminProtocolHandler.h
-  include/OCPN_SignalKEvent.h
   ${CMAKE_BINARY_DIR}/include/config.h
 )
 
@@ -951,12 +961,12 @@ set(
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
   src/bbox.cpp
-  src/catalog_handler.cpp
-  src/catalog_mgr.cpp
-  src/catalog_parser.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
+  src/catalog_handler.cpp
+  src/catalog_mgr.cpp
+  src/catalog_parser.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
@@ -976,6 +986,7 @@ set(
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
+  src/GarminProtocolHandler.cpp
   src/garmin_wrapper.h
   src/geodesic.cpp
   src/georef.cpp
@@ -994,6 +1005,7 @@ set(
   src/multiplexer.cpp
   src/NavObjectCollection.cpp
   src/navutil.cpp
+  src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
   src/OCP_DataStreamInput_Thread.cpp
@@ -1002,15 +1014,15 @@ set(
   src/ocpndc.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
-  src/semantic_vers.cpp
-  src/ocpn_utils.cpp
   src/OCPNPlatform.cpp
   src/OCPNRegion.cpp
+  src/OCPN_SignalKEvent.cpp
+  src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
   src/PluginHandler.cpp
-  src/PluginPaths.cpp
   src/pluginmanager.cpp
+  src/PluginPaths.cpp
   src/PositionParser.cpp
   src/printtable.cpp
   src/pugixml.cpp
@@ -1027,7 +1039,11 @@ set(
   src/safe_mode.cpp
   src/Select.cpp
   src/SelectItem.cpp
+  src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
+  src/SerialDataStream.cpp
+  src/SignalKDataStream.cpp
+  src/SignalKEventHandler.cpp
   src/Station_Data.cpp
   src/styles.cpp
   src/TCDataFactory.cpp
@@ -1045,14 +1061,6 @@ set(
   src/TTYWindow.cpp
   src/undo.cpp
   src/viewport.cpp
-  
-         src/SerialDataStream.cpp
-        src/NetworkDataStream.cpp
-        src/SignalKDataStream.cpp
-        src/SignalKEventHandler.cpp
-        src/GarminProtocolHandler.cpp
-        src/OCPN_SignalKEvent.cpp
-
 )
 
 if (OCPN_USE_GARMINHOST)
@@ -1833,65 +1841,56 @@ if (APPLE)
     set_source_files_properties(
       ${gshhs}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/gshhs
+        MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
     )
   endif ()
 
   set_source_files_properties(
     ${uiData}
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/uidata
+      MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
   set_source_files_properties(
     ${s57data}
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/s57data
+      MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     set_source_files_properties(
       ${tcData}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/tcdata
+        MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
   endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
 
   set_source_files_properties(
     data/license.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/authors.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/opencpn.png
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/CoC-909_2013-InlandECDIS_20170308.pdf
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport
+      MACOSX_PACKAGE_LOCATION SharedSupport
   )
   install(
       FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
@@ -1907,8 +1906,7 @@ if (APPLE)
     set_source_files_properties(
       ${_pluginIcon}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/uidata/plugins
+        MACOSX_PACKAGE_LOCATION SharedSupport/uidata/plugins
     )
   endforeach ()
   install(
@@ -1922,8 +1920,7 @@ if (APPLE)
     set_source_files_properties(
       ${_currentSoundFile}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/sounds
+        MACOSX_PACKAGE_LOCATION SharedSupport/sounds
     )
   endforeach (_currentSoundFile)
 
@@ -1932,8 +1929,7 @@ if (APPLE)
     set_source_files_properties(
       ${_currentConfigFile}
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/configs
+        MACOSX_PACKAGE_LOCATION SharedSupport/configs
     )
   endforeach (_currentConfigFile)
 
@@ -1946,8 +1942,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/traditional
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/traditional
       )
     endforeach ()
 
@@ -1957,8 +1952,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/journeyman
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman
       )
     endforeach ()
 
@@ -1972,8 +1966,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/journeyman_flat
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat
       )
     endforeach ()
 
@@ -1983,8 +1976,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/MUI_flat
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/MUI_flat
       )
     endforeach (_currentSvgFile)
 
@@ -1994,8 +1986,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentSvgFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        SharedSupport/uidata/markicons
+          MACOSX_PACKAGE_LOCATION SharedSupport/uidata/markicons
       )
     endforeach ()
 
@@ -2014,16 +2005,14 @@ if (APPLE)
   set_source_files_properties(
     data/doc/help_web.html
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    SharedSupport/doc
+      MACOSX_PACKAGE_LOCATION SharedSupport/doc
   )
 
   if (OCPN_BUNDLE_DOCS MATCHES "ON")
     set_source_files_properties(
       data/doc/help_en_US.html
       PROPERTIES
-      MACOSX_PACKAGE_LOCATION
-      SharedSupport/doc
+        MACOSX_PACKAGE_LOCATION SharedSupport/doc
     )
 
     file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -2043,8 +2032,7 @@ if (APPLE)
       set_source_files_properties(
         ${_currentWikiDocFile}
         PROPERTIES
-        MACOSX_PACKAGE_LOCATION
-        ${_location}
+          MACOSX_PACKAGE_LOCATION ${_location}
       )
     endforeach (_currentWikiDocFile)
 
@@ -2053,15 +2041,13 @@ if (APPLE)
   set_source_files_properties(
     buildosx/opencpn.icns
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    Resources
+      MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
     buildosx/MainMenu.xib
     PROPERTIES
-    MACOSX_PACKAGE_LOCATION
-    Resources/English.lproj
+      MACOSX_PACKAGE_LOCATION Resources/English.lproj
   )
 
   # These variables get substituted into the Info.plist template file at build
@@ -2419,13 +2405,8 @@ if (WIN32 OR APPLE)
       install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
-        RENAME
-          wxstd.mo
-          PERMISSIONS
-          OWNER_READ
-          OWNER_WRITE
-          GROUP_READ
-          WORLD_READ
+        RENAME wxstd.mo
+          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
     endif (APPLE)
 
@@ -2452,9 +2433,6 @@ if (WIN32 AND NOT UNIX)
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
   endif (OCPN_BUNDLE_VCDLLS)
-  option(
-    BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
-  )
   if (BUNDLE_LIBARCHIVEDLLS)
     file(
       GLOB

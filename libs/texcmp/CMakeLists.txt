@@ -9,6 +9,7 @@ if (NOT CMAKE_MODULE_PATH)
 endif ()
 
 include(FindPkgConfig)
+include(CompilerSupport)
 
 set(SRC
     squish/alpha.cpp
@@ -79,9 +80,8 @@ endif ()
 # always use optimizations for the texture compression which is much faster
 
 IF ( NOT MSVC )
-  # try to use sse on x86 based systems
-  IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
-    # using sse which makes the compression run about 50% faster
+  IF (HAVE_MSSE2)
+    # Using sse which makes the compression run about 50% faster
     message (STATUS "Compiling texture compression library with sse support")
     set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
   ELSE ()
