@@ -82,6 +82,7 @@ class DashboardInstrumentContainer;
 #define MS2KNOTS(r) ((r)*(1.9438444924406))
 #define KELVIN2C(r) ((r)-(273.13))
 #define PA2HPA(r) ((r)/(100))
+#define METERS2NM(r) ((r)/(1852))
 
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
