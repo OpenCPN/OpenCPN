@@ -413,8 +413,10 @@ void *WebSocketThread::Entry()
     wsAddress << "ws://" << host.mb_str()  << ":" << port << "/signalk/v1/stream?subscribe=all" ; 
 
     WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
-    if(ws == NULL)
+    if(ws == NULL){
+        m_parentStream->SetThreadRunning(false);
         return 0;
+    }
     while (true) {
         ws->poll(10);
         ws->dispatch(HandleMessage);
@@ -498,14 +500,15 @@ void SignalKDataStream::OpenWebSocket()
 void SignalKDataStream::CloseWebSocket()
 {
     if(m_wsThread){
-        m_wsThread->Delete();
-        
-        //TODO These timing loops could be tightened up
-        // and add a deadman of say 2 secs.
-        wxMilliSleep(1000);
-        while(IsThreadRunning()){
-            wxMilliSleep(10);
+        if(IsThreadRunning()){
+            m_wsThread->Delete();
+            wxMilliSleep(100);
+            
+            int nDeadman = 0;
+            while(IsThreadRunning() && (++nDeadman < 200)){   // spin for max 2 secs.
+                wxMilliSleep(10);
+            }
+            wxMilliSleep(100);
         }
-        wxMilliSleep(1000);
     }
 }
