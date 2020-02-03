@@ -79,8 +79,8 @@ endif ()
 
 # always use optimizations for the texture compression which is much faster
 
-IF ( NOT MSVC )
-  IF (HAVE_MSSE2)
+IF ( NOT MSVC)
+  IF (HAVE_MSSE2 AND NOT QT_ANDROID)
     # Using sse which makes the compression run about 50% faster
     message (STATUS "Compiling texture compression library with sse support")
     set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
