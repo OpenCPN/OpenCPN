@@ -75,6 +75,8 @@ extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
 
+extern wxString       g_compatOS;
+extern wxString       g_compatOsVersion;
 
 /** split s on first occurrence of delim, or return s in first result. */
 static std::vector<std::string> split(const std::string& s, const std::string& delim)
@@ -147,24 +149,62 @@ static std::string pluginsConfigDir()
 }
 
 
-std::string fileListPath(std::string name)
-{
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    return pluginsConfigDir() + SEP + name + ".files";
-}
-
-
 static std::string dirListPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".dirs";
 }
 
-std::string versionPath(std::string name)
+
+std::string PluginHandler::fileListPath(std::string name)
+{
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    return pluginsConfigDir() + SEP + name + ".files";
+}
+
+
+bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                                 const char* os,
+                                 const char* os_version)
+{
+    std::string compatOS(PKG_TARGET);
+    std::string compatOsVersion(PKG_TARGET_VERSION);
+    if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+        // Undocumented test hook.
+        compatOS = getenv("OPENCPN_COMPAT_TARGET");
+        if (compatOS.find(':') != std::string::npos) {
+            auto tokens = ocpn::split(compatOS.c_str(), ":");
+            compatOS = tokens[0];
+            compatOsVersion = tokens[1];
+        }
+    }
+    else if (g_compatOS != "") {
+        // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
+        compatOS = g_compatOS;
+        if (g_compatOsVersion != ""){
+            compatOsVersion = g_compatOsVersion;
+        }
+    }
+    compatOS = ocpn::tolower(compatOS);
+    compatOsVersion = ocpn::tolower(compatOsVersion);
+    if (compatOS  != os) {
+        return false;
+    }
+    if (std::string(os) == "windows") {
+        return true;
+    }
+    auto meta_vers = ocpn::split(os_version, ".")[0];
+    auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+    return meta_vers == target_vers;
+}
+
+
+std::string PluginHandler::versionPath(std::string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::tolower);
     return pluginsConfigDir() + SEP + name + ".version";
 }
+
 
 typedef std::unordered_map<std::string, std::string> pathmap_t;
 
@@ -190,7 +230,7 @@ static pathmap_t getInstallPaths()
 static void saveFilelist(std::string filelist, std::string name)
 {
     using namespace std;
-    string listpath = fileListPath(name);
+    string listpath = PluginHandler::fileListPath(name);
     ofstream diskfiles(listpath);
     if (!diskfiles.is_open()) {
         wxLogWarning("Cannot create installed files list.");
@@ -219,7 +259,7 @@ static void saveDirlist(std::string name)
 static void saveVersion(const std::string& name, const std::string& version)
 {
     using namespace std;
-    string path = versionPath(name);
+    string path = PluginHandler::versionPath(name);
     ofstream stream(path);
     if (!stream.is_open()) {
         wxLogWarning("Cannot create version file.");
@@ -529,7 +569,7 @@ PluginHandler* PluginHandler::getInstance() {
 bool PluginHandler::isPluginWritable(std::string name)
 {
 
-    if (isRegularFile(fileListPath(name).c_str())) {
+    if (isRegularFile(PluginHandler::fileListPath(name).c_str())) {
         return true;
     }
     if (!g_pi_manager) {
@@ -577,7 +617,8 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
-void cleanup(const std::string& filelist, const std::string& plugname)
+void PluginHandler::cleanup(const std::string& filelist,
+                            const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
     std::istringstream files(filelist);
@@ -591,12 +632,12 @@ void cleanup(const std::string& filelist, const std::string& plugname)
             }
         }
     }
-    std::string path = fileListPath(plugname);
+    std::string path = PluginHandler::fileListPath(plugname);
     if (ocpn::exists(path)) {
         remove(path.c_str());
     }
     remove(dirListPath(plugname).c_str());  // Best effort try, failures
-    remove(versionPath(plugname).c_str());  // are non-critical.
+    remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
 }
 
 
@@ -646,7 +687,7 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled()
             ss << p->m_version_major << "." << p->m_version_minor;
             plugin.version = ss.str();
             plugin.readonly = !isPluginWritable(plugin.name);
-            string path = versionPath(plugin.name);
+            string path = PluginHandler::versionPath(plugin.name);
             if (path != "" && wxFileName::IsFileReadable(path)) {
                 std::ifstream stream;
                 stream.open(path, ifstream::in);
@@ -666,7 +707,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
         std::ostringstream os;
         os << "Cannot unpack plugin: " << plugin.name  << " at " << path;
         last_error_msg = os.str();
-        cleanup(filelist, plugin.name);
+        PluginHandler::cleanup(filelist, plugin.name);
         return false;
     }
     remove(path.c_str());
@@ -683,7 +724,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
                  before, after);
     if (before >= after) {
         last_error_msg = "Cannot load the installed plugin";
-        cleanup(filelist, plugin.name);
+        PluginHandler::cleanup(filelist, plugin.name);
     }
     //std::cout << "Installed: " << plugin.name << std::endl;
 
@@ -721,7 +762,7 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     auto pic = g_pi_manager->GetPlugInArray()->Item(ix);
     //g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
     g_pi_manager->UnLoadPlugIn(ix);
-    string path = fileListPath(plugin_name);
+    string path = PluginHandler::fileListPath(plugin_name);
     if (!ocpn::exists(path)) {
         wxLogWarning("Cannot find installation data for %s (%s)",
                      plugin_name.c_str(), path);
@@ -743,18 +784,18 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     if (r != 0) {
         wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
     }
-    remove(dirListPath(plugin_name).c_str());  // A best effort try, failures
-    remove(versionPath(plugin_name).c_str());  // are actually OK.
+    remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
+    remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
 
     return true;
 }
 
 std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
 {
-               /** Compare two PluginMetadata objects, a named c++ requirement. */
+    /** Compare two PluginMetadata objects, a named c++ requirement. */
     struct metadata_compare{
         bool operator() (const PluginMetadata& lhs,
-                                 const PluginMetadata& rhs) const
+                         const PluginMetadata& rhs) const
         {
             return lhs.key() < rhs.key();
         }
@@ -767,13 +808,9 @@ std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
         unique_plugins.insert(plugin);
     }
     for (auto plugin: unique_plugins) {
-        if (plugin.target != PKG_TARGET) {
-            find_compat_target(plugin.target);
-            if (plugin.target != m_sOsLike)
-                continue;
+        if (PluginHandler::isCompatible(plugin)) {
+            returnArray.push_back(plugin);
         }
-        returnArray.push_back(plugin);
     }
-    
     return returnArray;
 }

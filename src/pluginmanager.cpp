@@ -485,7 +485,8 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 
             
             // Provisional error check
-            std::string manifestPath = fileListPath(g_actionPIC->m_ManagedMetadata.name);
+            std::string manifestPath =
+                PluginHandler::fileListPath(g_actionPIC->m_ManagedMetadata.name);
             if(isRegularFile(manifestPath.c_str())) {
 
                 // dynamically deactivate the legacy plugin, making way for the upgrade.
@@ -499,9 +500,10 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 //  Reload all plugins, which will bring in the new, managed version.
                 g_pi_manager->LoadAllPlugIns( false );
             }
-            else
-                cleanup(manifestPath, g_actionPIC->m_ManagedMetadata.name);
-
+            else {
+                PluginHandler::cleanup(manifestPath,
+                                       g_actionPIC->m_ManagedMetadata.name);
+            }
             g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             g_pi_manager->GetListPanelPtr()->SelectByName(name);
 
@@ -529,10 +531,11 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
             
             // Provisional error check
-             std::string manifestPath = fileListPath(metaSave.name);
+             std::string manifestPath =
+                 PluginHandler::fileListPath(metaSave.name);
              if(!isRegularFile(manifestPath.c_str())) {
                  wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 cleanup(manifestPath, metaSave.name);
+                 PluginHandler::cleanup(manifestPath, metaSave.name);
              }
 
              //  Reload all plugins, which will bring in the action results.
@@ -552,10 +555,11 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             downloader->run(g_pi_manager->GetListPanelPtr());
             
             // Provisional error check
-             std::string manifestPath = fileListPath(metaSave.name);
+             std::string manifestPath =
+                 PluginHandler::fileListPath(metaSave.name);
              if(!isRegularFile(manifestPath.c_str())) {
                  wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 cleanup(manifestPath, metaSave.name);
+                 PluginHandler::cleanup(manifestPath, metaSave.name);
              }
 
             //  Reload all plugins, which will bring in the action results.
@@ -1312,11 +1316,11 @@ void PlugInManager::UpdateManagedPlugins()
         // Match found, so merge the info and determine the plugin status        
         else{
             // If the managed plugin is installed, the fileList (manifest) will be present
-            if(isRegularFile(fileListPath(plugin.name).c_str())) {
+            if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
                 
                 // Get the installed version from the manifest
                 std::string installed;
-                std::string path = versionPath(plugin.name);
+                std::string path = PluginHandler::versionPath(plugin.name);
                 if (path != "" && wxFileName::IsFileReadable(path)) {
                     std::ifstream stream;
                     stream.open(path, std::ifstream::in);
@@ -1861,7 +1865,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     fclose(f);
 #endif
 #endif // __WXGTK__
-    wxLogMessage("PLugin is compatible: %s", b_compat ? "true" : "false");
+    wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }
 
@@ -5258,6 +5262,7 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
     m_parent->Layout();
     Refresh(false);
 }
+
 
 static bool canUninstall(std::string name)
 {

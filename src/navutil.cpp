@@ -444,6 +444,9 @@ extern int              g_route_prop_x, g_route_prop_y;
 extern int              g_route_prop_sx, g_route_prop_sy;
 extern int              g_AndroidVersionCode;
 
+extern wxString         g_compatOS;
+extern wxString         g_compatOsVersion;
+
 wxString                g_gpx_path;
 bool                    g_bLayersLoaded;
 bool                    g_bShowMuiZoomButtons = true;
@@ -754,6 +757,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     SetPath( _T ( "/Settings" ) );    
     
     Read( _T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID );
+    Read( _T ( "CompatOS" ), &g_compatOS );
+    Read( _T ( "CompatOsVersion" ), &g_compatOsVersion );
     
     // Some undocumented values
     Read( _T ( "ConfigVersionString" ), &g_config_version_string );
@@ -2251,7 +2256,8 @@ void MyConfig::UpdateSettings()
     SetPath( _T ( "/Settings" ) );
 
     Write( _T ( "LastAppliedTemplate" ), g_lastAppliedTemplateGUID );
-    
+    Write( _T ( "CompatOS" ), g_compatOS);
+    Write( _T ( "CompatOsVersion" ), g_compatOsVersion);
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
 #ifdef SYSTEM_SOUND_CMD
     if ( wxIsEmpty( g_CmdSoundString ) )

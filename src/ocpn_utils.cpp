@@ -53,18 +53,20 @@ bool startswith(const std::string& str, const std::string& prefix)
 }
 
 
-/** split s on first occurrence of delim, or return s in first result. */
-static std::vector<std::string> split(const std::string& s, const std::string& delim)
+std::vector<std::string> split(const char* token_string,
+                               const std::string& delimiter)
 {
-    std::vector<std::string> result;
-    size_t pos = s.find(delim);
-    if (pos == std::string::npos) {
-        result.push_back(s);
-        return result;
+    std::vector<std::string> tokens;
+    std::string s = std::string(token_string);
+    size_t pos = 0;
+    std::string token;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        token = s.substr(0, pos);
+        tokens.push_back(token);
+        s.erase(0, pos + delimiter.length());
     }
-    result.push_back(s.substr(0, pos));
-    result.push_back(s.substr(pos + delim.length()));
-    return result;
+    tokens.push_back(s);
+    return tokens;
 }
 
 
@@ -126,6 +128,13 @@ std::string join(std::vector<std::string> v, char c)
             s += c;
         }
     }
+    return s;
+}
+
+std::string tolower(const std::string& input)
+{
+    std::string s(input);
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
 

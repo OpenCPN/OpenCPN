@@ -40,6 +40,10 @@ std::string trim(std::string s);
 
 std::string join(std::vector<std::string> v, char c);
 
+std::string tolower(const std::string& s);
+
+std::vector<std::string> split(const char* s, const std::string& delimiter);
+
 bool exists(const std::string& path);
 
 void mkdir(const std::string path);

@@ -413,8 +413,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
     public:
         OcpnScrolledWindow(wxWindow* parent)
             :wxScrolledWindow(parent),
-            m_grid(new wxFlexGridSizer(3, 0, 0)),
-            m_sOsLike("")
+            m_grid(new wxFlexGridSizer(3, 0, 0))
         {
             auto box = new wxBoxSizer(wxVERTICAL);
             populateGrid(m_grid);
@@ -449,10 +448,8 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 unique_plugins.insert(plugin);
             }
             for (auto plugin: unique_plugins) {
-                if (plugin.target != PKG_TARGET) {
-                    find_compat_target(plugin.target);
-                    if (plugin.target != m_sOsLike)
-                        continue;
+                if (!PluginHandler::isCompatible(plugin)) {
+                    continue;
                 }
                 grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
@@ -478,36 +475,6 @@ class OcpnScrolledWindow : public wxScrolledWindow
 
     private:
         wxFlexGridSizer* m_grid;
-        wxString m_sOsLike;
-        void find_compat_target(const std::string& plugin_target)
-        {
-            if (m_sOsLike != "") {
-                return;
-            }
-            if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-                // Undocumented test hook.
-                m_sOsLike = getenv("OPENCPN_COMPAT_TARGET");
-                return;
-            }
-            if (plugin_target != "ubuntu") {
-                return;
-            }
-            wxFile file("/etc/os-release");
-            if(!file.IsOpened()) {
-                return;
-            }
-            wxString l_InString;
-            if(file.ReadAll(&l_InString)) {
-                // Find OS_LIKE in string
-                int l_nPos = l_InString.Find("ID_LIKE=");
-                if(l_nPos != wxNOT_FOUND) {
-                    l_nPos += 8;
-                    int l_nEnd = l_InString.find('\n', l_nPos);
-                    m_sOsLike.append(l_InString.SubString(l_nPos, l_nEnd - 1));
-                }
-            }
-            file.Close();
-        }
 };
 
 }  // namespace download_mgr
