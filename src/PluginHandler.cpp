@@ -163,9 +163,7 @@ std::string PluginHandler::fileListPath(std::string name)
 }
 
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata,
-                                 const char* os,
-                                 const char* os_version)
+bool PluginHandler::isCompatible(const PluginMetadata& metadata)
 {
     std::string compatOS(PKG_TARGET);
     std::string compatOsVersion(PKG_TARGET_VERSION);
@@ -187,14 +185,19 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     }
     compatOS = ocpn::tolower(compatOS);
     compatOsVersion = ocpn::tolower(compatOsVersion);
-    if (compatOS  != os) {
+    std::string plugin_os = ocpn::tolower(metadata.target);
+    if (compatOS  != plugin_os) {
         return false;
     }
-    if (std::string(os) == "windows") {
+    if (std::string(plugin_os) == "windows") {
         return true;
     }
-    auto meta_vers = ocpn::split(os_version, ".")[0];
+
+    std::string plugin_os_version = ocpn::tolower(metadata.target_version);
+
+    auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
     auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+    printf("%d \n", meta_vers == target_vers);
     return meta_vers == target_vers;
 }
 
