@@ -90,7 +90,9 @@ class PluginHandler {
         static std::string versionPath(std::string name);
 
         /** Return true if given plugin is loadable on given os/version. */
-        static bool isCompatible(const PluginMetadata& metadata);
+        static bool isCompatible(const PluginMetadata& metadata,
+                                 const char* os = PKG_TARGET,
+                                 const char* os_version = PKG_TARGET_VERSION);
 
         /** Check if given plugin can be installed/updated. */
         bool isPluginWritable(std::string name);

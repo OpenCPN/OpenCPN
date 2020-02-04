@@ -163,10 +163,17 @@ std::string PluginHandler::fileListPath(std::string name)
 }
 
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata)
+bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                                 const char* os, const char* os_version)
+
 {
-    std::string compatOS(PKG_TARGET);
-    std::string compatOsVersion(PKG_TARGET_VERSION);
+    // Get the specified system definition,
+    //   or the baked in (build system) values,
+    //   or the environment override,
+    //   or the config file override
+    
+    std::string compatOS(os);
+    std::string compatOsVersion(os_version);
     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
         // Undocumented test hook.
         compatOS = getenv("OPENCPN_COMPAT_TARGET");
@@ -185,19 +192,26 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata)
     }
     compatOS = ocpn::tolower(compatOS);
     compatOsVersion = ocpn::tolower(compatOsVersion);
+    
+    //  Compare to the required values in the metadata
+    
     std::string plugin_os = ocpn::tolower(metadata.target);
     if (compatOS  != plugin_os) {
         return false;
     }
-    if (std::string(plugin_os) == "windows") {
+    if (plugin_os == "windows") {
         return true;
     }
 
+    //  OS matches so far, so must compare versions
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
+
+    if (plugin_os == "ubuntu") {
+        return plugin_os_version == compatOsVersion;            // Full version comparison required
+    }
 
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
     auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-    printf("%d \n", meta_vers == target_vers);
     return meta_vers == target_vers;
 }
 
