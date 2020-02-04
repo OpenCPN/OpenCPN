@@ -80,7 +80,6 @@ public:
     bool AIS_AlertPlaying(void) { return m_bAIS_AlertPlaying; };
 
 private:
-    wxString GetShipNameFromFile(int nmmsi);
     
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
@@ -103,7 +102,7 @@ private:
 
     void handleUpdate(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &update);
     void updateItem(AIS_Target_Data *pTargetData, bool bnewtarget, wxJSONValue &item, wxString &sfixtime) const;
-
+    
     wxString m_signalk_selfid;
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
