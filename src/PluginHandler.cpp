@@ -328,7 +328,9 @@ static void win_entry_set_install_path(struct archive_entry* entry,
 
     // Map remaining path to installation directory
     if (ocpn::endswith(path, ".dll") || ocpn::endswith(path, ".exe")) {
-        path = installPaths["bin"] + "\\" + basename(path);
+        slashpos = path.find_first_of('/');
+        path = path.substr(slashpos + 1);
+        path = installPaths["bin"] + "\\" + path;
     } else if (ocpn::startswith(path, "share")) {
         // The "share" directory should be a direct sibling of "plugins" directory
         const string winPluginBaseDir = g_Platform->GetWinPluginBaseDir().ToStdString();
