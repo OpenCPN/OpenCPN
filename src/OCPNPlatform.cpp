@@ -1520,7 +1520,7 @@ wxString OCPNPlatform::GetWinPluginBaseDir()
     }
     wxFileName path(winPluginDir);
     path.Normalize();
-    winPluginDir = path.GetFullPath()  + "\\opencpn";
+    winPluginDir = path.GetFullPath()  + "\\opencpn\\plugins";
     wxLogMessage("Using private plugin dir: %s", winPluginDir);
     return winPluginDir;
 }

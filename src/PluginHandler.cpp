@@ -333,13 +333,15 @@ static void win_entry_set_install_path(struct archive_entry* entry,
         path = installPaths["bin"] + "\\" + path;
     } else if (ocpn::startswith(path, "share")) {
         // The "share" directory should be a direct sibling of "plugins" directory
-        const string winPluginBaseDir = g_Platform->GetWinPluginBaseDir().ToStdString();
-        path = winPluginBaseDir + "\\" + path;
+        wxFileName fn(installPaths["share"].c_str(), "");       // should point to .../opencpn/plugins
+        fn.RemoveLastDir();     // should point to ".../opencpn
+        path = fn.GetFullPath().ToStdString() + path;
     } else if (ocpn::startswith(path, "plugins")) {
         slashpos = path.find_first_of('/');
-       // Data path already end in plugins/, drop prefix.
+       // share path already ends in plugins/, drop prefix from archive entry.
         path = path.substr(slashpos + 1);
         path = installPaths["share"] + "\\" + path;
+
     } else if (archive_entry_filetype(entry) == AE_IFREG) {
         path = installPaths["unknown"] + "\\" + path;
     }
