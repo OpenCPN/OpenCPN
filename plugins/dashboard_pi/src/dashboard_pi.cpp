@@ -1648,13 +1648,13 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
             mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
         else if (update_path == _T("navigation.attitude")) { //rad
-            if (value["roll"].AsString() != wxEmptyString) {
+            if (value["roll"].AsString() != "0") {
                 double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
                 wxString h_unit = m_heel > 0 ? _T("\u00B0 Stbd") : _T("\u00B0 Port");
                 SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
                 mHEEL_Watchdog = gps_watchdog_timeout_ticks;
             }
-            if (value["pitch"].AsString() != wxEmptyString) {
+            if (value["pitch"].AsString() != "0") {
                 double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
                 wxString p_unit = m_pitch > 0 ? _T("\u00B0 Up") : _T("\u00B0 Down");
                 SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
