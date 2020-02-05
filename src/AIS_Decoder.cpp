@@ -580,12 +580,13 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         name.c_str(),
                         20 );
                 pTargetData->b_nameValid = true;
+                pTargetData->MID = 123; // Indicate a name from Sign
             }
             if(value.HasMember("mmsi")) {
                 long mmsi;
                 if(value["mmsi"].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-
+                    
                     AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
                     (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
                 }
@@ -3017,7 +3018,7 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
         }
         // else there IS a valid name, lets check if it is in one of the hash lists.
         else if ((pTargetData->MID ==  5) || (pTargetData->MID == 24) || 
-                 (pTargetData->MID == 19) || (pTargetData->MID == 555) ) { //555: Deafult MID for SignalK
+                 (pTargetData->MID == 19) || (pTargetData->MID == 123) ) { //123: Has got a name from SignalK
             //  This message contains ship static data, so has a name field
             pTargetData->b_nameFromCache = false;
             ship_name = trimAISField(pTargetData->ShipName);
