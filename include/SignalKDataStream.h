@@ -44,39 +44,27 @@
 #include "datastream.h"
 
 #define SIGNALK_SOCKET_ID             5011
+#define N_DOG_TIMEOUT   5                       // seconds
+#define N_DOG_TIMEOUT_RECONNECT   10            // seconds
+
 class WebSocketThread;
+class OCPN_WebSocketMessageHandler;
 
 class SignalKDataStream : public DataStream {
 public:
     SignalKDataStream(wxEvtHandler *input_consumer,
-                      const ConnectionParams *params)
-            : DataStream(input_consumer, params),
-              m_params(params),
-              m_sock(0),
-              m_brx_connect_event(false)
-
-    {
-        m_addr.Hostname(params->NetworkAddress);
-        m_addr.Service(params->NetworkPort);
-        m_socket_timer.SetOwner(this, TIMER_SOCKET + 2);
-        m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 3);
-        m_useWebSocket = true;
-        m_wsThread = NULL;
-        m_threadActive = false;
-        
-        Open();
-
-    }
+                      const ConnectionParams *params);
+    virtual ~SignalKDataStream(); 
 
     void Close();
-
     static bool DiscoverSKServer( wxString &ip, int &port, int tSec);
     static bool DiscoverSKServer( std::string serviceIdent, wxString &ip, int &port, int tSec);
 
-    virtual ~SignalKDataStream(); 
     void SetThreadRunning( bool active ){ m_threadActive = active; }
-
+    void ResetWatchdog() {m_dog_value = N_DOG_TIMEOUT;}
+    void SetWatchdog( int n ) {m_dog_value = n;}
 private:
+    void Open();
     void OpenTCPSocket();
     void OpenWebSocket();
     void CloseWebSocket();
@@ -101,13 +89,13 @@ private:
     wxTimer             m_socketread_watchdog_timer;
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
     
+    OCPN_WebSocketMessageHandler        *m_eventHandler;
     bool m_useWebSocket;
     bool m_threadActive;
     
     NetworkProtocol GetProtocol() { return m_params->NetProtocol; }
     std::string         m_sock_buffer;
 
-    void Open();
 
 
     void OnTimerSocket(wxTimerEvent& event);

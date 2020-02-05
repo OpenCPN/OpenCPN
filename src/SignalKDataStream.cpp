@@ -57,20 +57,52 @@ static const long long lNaN = 0xfff8000000000000;
 
 extern bool g_benableUDPNullHeader;
 
-#define N_DOG_TIMEOUT   5
-
-#ifdef __WXMSW__
-// {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
-DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7, 0x22, 0xc0);
-#endif
+static wxEvtHandler *s_wsConsumer;
 
 #include <wx/sckstrm.h>
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
 
-// extern const wxEventType wxEVT_OCPN_SIGNALKSTREAM;
+// Handle nessages from WebSocket thread, forward to stipulated consumer, and manage watchdog
+class OCPN_WebSocketMessageHandler : public wxEvtHandler
+{
+ public:
+     OCPN_WebSocketMessageHandler( SignalKDataStream *parent, wxEvtHandler *upstream_consumer );
+    ~OCPN_WebSocketMessageHandler();
+    
+    void OnWebSocketMessage( OCPN_SignalKEvent& event );
 
-// const wxEventType wxEVT_OCPN_SIGNALKSTREAM = wxNewEventType();
+    SignalKDataStream   *m_parent;
+    wxEvtHandler        *m_upstream_consumer;
+};
+
+
+
+OCPN_WebSocketMessageHandler::OCPN_WebSocketMessageHandler( SignalKDataStream *parent, wxEvtHandler *upstream_consumer )
+{
+    m_upstream_consumer = upstream_consumer;
+    m_parent = parent;
+    Bind(EVT_OCPN_SIGNALKSTREAM, &OCPN_WebSocketMessageHandler::OnWebSocketMessage, this);
+}
+
+void OCPN_WebSocketMessageHandler::OnWebSocketMessage( OCPN_SignalKEvent &event )
+{
+    if(m_upstream_consumer){
+            OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, event.GetValue());
+            m_upstream_consumer->AddPendingEvent(signalKEvent);
+    }
+    
+    m_parent->ResetWatchdog();      // feed the dog
+
+}
+
+OCPN_WebSocketMessageHandler::~OCPN_WebSocketMessageHandler()
+{
+    Unbind(EVT_OCPN_SIGNALKSTREAM, &OCPN_WebSocketMessageHandler::OnWebSocketMessage, this);
+}    
+
+
+
 
 BEGIN_EVENT_TABLE(SignalKDataStream, wxEvtHandler)
                 EVT_TIMER(TIMER_SOCKET + 2, SignalKDataStream::OnTimerSocket)
@@ -78,9 +110,34 @@ BEGIN_EVENT_TABLE(SignalKDataStream, wxEvtHandler)
                 EVT_TIMER(TIMER_SOCKET + 3, SignalKDataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
+SignalKDataStream::SignalKDataStream(wxEvtHandler *input_consumer,
+                      const ConnectionParams *params)
+            : DataStream(input_consumer, params),
+              m_params(params),
+              m_sock(0),
+              m_brx_connect_event(false)
+
+{
+        m_addr.Hostname(params->NetworkAddress);
+        m_addr.Service(params->NetworkPort);
+        m_socket_timer.SetOwner(this, TIMER_SOCKET + 2);
+        m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 3);
+        m_useWebSocket = true;
+        m_wsThread = NULL;
+        m_threadActive = false;
+        m_eventHandler = new OCPN_WebSocketMessageHandler( this, GetConsumer());
+
+        
+        Open();
+
+}
+
 SignalKDataStream::~SignalKDataStream(){
 
     if(m_useWebSocket){
+        delete m_eventHandler;
+        m_eventHandler = NULL;
+        s_wsConsumer = NULL;
     }
     else{
         if (GetSock()->IsOk()){
@@ -177,22 +234,36 @@ void SignalKDataStream::OpenTCPSocket()
 
 }
 
-
+int sdogval;
 void SignalKDataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
 {
     m_dog_value--;
+    sdogval++;
+    
     if( m_dog_value <= 0 ) {            // No receive in n seconds, assume connection lost
-        wxLogMessage( wxString::Format(_T("    TCP SignalKDataStream watchdog timeout: %s"), GetPort().c_str()) );
+        if(m_useWebSocket){
+            wxLogMessage( wxString::Format(_T("    WebSocket SignalKDataStream watchdog timeout: %s"), GetPort().c_str()) );
+        
+            printf("DOGTIME  %d\n", sdogval);
+            CloseWebSocket();
+            OpenWebSocket();
+            SetWatchdog( N_DOG_TIMEOUT_RECONNECT );
+        }
+        else{
+            wxLogMessage( wxString::Format(_T("    TCP SignalKDataStream watchdog timeout: %s"), GetPort().c_str()) );
 
-        if(GetProtocol() == TCP ) {
-            wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
-            if(tcp_socket) {
-                tcp_socket->Close();
+            if(GetProtocol() == TCP ) {
+                wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+                if(tcp_socket) {
+                    tcp_socket->Close();
+                }
+                GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+                GetSocketThreadWatchdogTimer()->Stop();
             }
-            GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
-            GetSocketThreadWatchdogTimer()->Stop();
         }
     }
+
+    GetSocketThreadWatchdogTimer()->Start(1000, wxTIMER_ONE_SHOT);    // re-Start the dog
 }
 
 void SignalKDataStream::OnTimerSocket(wxTimerEvent& event)
@@ -219,7 +290,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
         {
             wxLogMessage( wxString::Format(_T("SignalKDataStream connection established: %s"),
                                            GetPort().c_str()) );
-            m_dog_value = N_DOG_TIMEOUT;                // feed the dog
+            ResetWatchdog();                // feed the dog
             if (GetSock()->IsOk())
                 (void) SetOutputSocketOptions(GetSock());
             GetSocketTimer()->Stop();
@@ -332,7 +403,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
             if(m_sock_buffer.size()>RD_BUF_SIZE)
                 m_sock_buffer = m_sock_buffer.substr(m_sock_buffer.size()-RD_BUF_SIZE);
 
-            m_dog_value = N_DOG_TIMEOUT;                // feed the dog
+            ResetWatchdog();                // feed the dog
 
             break;
         }
@@ -388,7 +459,6 @@ class WebSocketThread : public wxThread
                 SignalKDataStream *m_parentStream;
 };
 
-static wxEvtHandler *s_wsConsumer;
 
 WebSocketThread::WebSocketThread( SignalKDataStream *parent, wxIPV4address address, wxEvtHandler *consumer)
 {
@@ -414,16 +484,29 @@ void *WebSocketThread::Entry()
 
     WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
     if(ws == NULL){
+        printf("No Connect\n");
         m_parentStream->SetThreadRunning(false);
         return 0;
     }
     while (true) {
-        ws->poll(10);
-        ws->dispatch(HandleMessage);
-        if(TestDestroy())
+        if(TestDestroy()){
+            printf("receiving delete\n");
             break;
+        }
+        
+        if(ws->getReadyState() == WebSocket::OPEN){
+            ws->poll(10);
+            if(ws->getReadyState() == WebSocket::CLOSED){
+                printf("closed\n");
+                break;
+            }
+            ws->dispatch(HandleMessage);
+        }
+        else
+            wxThread::Sleep(1);
     }
     
+    printf("ws close\n");
     ws->close();
     delete ws; 
 
@@ -465,35 +548,26 @@ void WebSocketThread::HandleMessage(const std::string & message)
 }
 
 
+
+
 void SignalKDataStream::OpenWebSocket()
 {
+    printf("OpenWebSocket\n");
     wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
             m_params->GetDSPort().c_str()));
     
-/*    
-    // TODO test
-    using easywsclient::WebSocket;
-
-    wxString host = GetAddr().IPAddress();
-    int port = GetAddr().Service();
-    
-    // Craft the address string
-    std::stringstream wsAddress;
-    wsAddress << "ws://";
-    wsAddress << host.mb_str();
-    wsAddress << ":";
-    wsAddress << port; 
-
-    WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
-*/
     // Start a thread to run the client without blocking
     
-    m_wsThread = new WebSocketThread(this, GetAddr(), GetConsumer());
+    m_wsThread = new WebSocketThread(this, GetAddr(), m_eventHandler);
     if ( m_wsThread->Create() != wxTHREAD_NO_ERROR ) {
         wxLogError(wxT("Can't create WebSocketThread!"));
         
         return;
     }
+
+    ResetWatchdog();
+    GetSocketThreadWatchdogTimer()->Start(1000, wxTIMER_ONE_SHOT);    // Start the dog
+
     m_wsThread->Run();
 }
 
@@ -501,6 +575,7 @@ void SignalKDataStream::CloseWebSocket()
 {
     if(m_wsThread){
         if(IsThreadRunning()){
+            printf("sending delete\n");
             m_wsThread->Delete();
             wxMilliSleep(100);
             
@@ -508,6 +583,7 @@ void SignalKDataStream::CloseWebSocket()
             while(IsThreadRunning() && (++nDeadman < 200)){   // spin for max 2 secs.
                 wxMilliSleep(10);
             }
+            printf("Closed in %d\n", nDeadman);
             wxMilliSleep(100);
         }
     }
