@@ -513,6 +513,10 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             if (value.HasMember("id")) {
                 pTargetData->ShipType = value["id"].AsUInt();
                 pTargetData->Class = AIS_CLASS_A;
+                // No AIS Class parsed by SignalK, so ugly hacks follows.
+                // Type 36 is not a pleasure type but though by mistake? often used by sailors.
+                if (pTargetData->ShipType == 36 || pTargetData->ShipType == 37)
+                    pTargetData->Class = AIS_CLASS_B;
             }
         } else if (update_path == _T("design.draft")) {
             if (value.HasMember("maximum")) {
@@ -580,14 +584,28 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         name.c_str(),
                         20 );
                 pTargetData->b_nameValid = true;
-                pTargetData->MID = 123; // Indicate a name from Sign
+                pTargetData->MID = 123; // Indicates a name from SignalK
             }
             if(value.HasMember("mmsi")) {
+                wxString s_mmsi = value["mmsi"].AsString();
                 long mmsi;
-                if(value["mmsi"].AsString().ToLong(&mmsi)) {
+                if (s_mmsi.ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-                    
-                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+                    if (s_mmsi.StartsWith("00")) { //No name
+                        pTargetData->Class = AIS_BASE;
+                    }
+                    else if (s_mmsi.StartsWith("97")){ //No name
+                        pTargetData->Class = AIS_SART;
+                    }
+                    else { //has name
+                        if (s_mmsi.StartsWith("99"))
+                            pTargetData->Class = AIS_ATON;
+                        if (s_mmsi.StartsWith("111")) {
+                            pTargetData->b_SarAircraftPosnReport = true;
+                        }
+
+                        AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                        
+                    }
                     (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
                 }
 
