@@ -257,6 +257,7 @@ public:
       wxSpinCtrlDouble             *m_pSpinDBTOffset;
       wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
+      wxCheckBox                   *m_pUseTrueWinddata;
 
 private:
       void UpdateDashboardButtonsState(void);
