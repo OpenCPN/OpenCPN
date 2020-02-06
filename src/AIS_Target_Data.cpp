@@ -881,7 +881,7 @@ wxString AIS_Target_Data::Get_vessel_type_string( bool b_short )
         return ais_get_short_type(i);
 }
 
-wxString AIS_Target_Data::Get_class_string( bool b_short )
+    wxString AIS_Target_Data::Get_class_string( bool b_short )
 {
     switch( Class ){
         case AIS_CLASS_A:
