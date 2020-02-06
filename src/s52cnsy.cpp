@@ -3923,6 +3923,19 @@ static wxString _LITDSN01(S57Obj *obj)
 }
 
 
+static void *SYMINS01(void *param)
+{
+    ObjRazRules *rzRules = (ObjRazRules *)param;
+    S57Obj *obj = rzRules->obj;
+    char symins[80] = {'\0'};
+    GetStringAttr(obj, "SYMINS", symins, 79);
+
+    char *r = (char *)malloc(strlen(symins + 1));
+    strcpy(r, symins);
+
+   return r;
+}
+
 //--------------------------------
 //
 // JUMP TABLE SECTION
@@ -3958,6 +3971,7 @@ Cond condTable[] = {
    {"VRMEBL01",VRMEBL01},
    {"WRECKS02",WRECKS02},
    {"SOUNDG03",SOUNDG03},                   // special case for MPS
+   {"SYMINS01",SYMINS01},                   //  Container for Virtual AIS ATONS, special case
    {"########",NULL}
 };
 
