@@ -4349,11 +4349,33 @@ int s57chart::_insertRules( S57Obj *obj, LUPrec *LUP, s57chart *pOwner )
     rzRules->obj = obj;
     obj->nRef++;                         // Increment reference counter for delete check;
     rzRules->LUP = LUP;
-//    rzRules->chart = pOwner;
-    rzRules->next = razRules[disPrioIdx][LUPtypeIdx];
     rzRules->child = NULL;
     rzRules->mps = NULL;
+
+#if 0    
+    rzRules->next = razRules[disPrioIdx][LUPtypeIdx];
     razRules[disPrioIdx][LUPtypeIdx] = rzRules;
+#else
+    // Find the end of the list, and append the object
+    // This is required to honor the "natural order" priority rules for objects of same Display Priority
+    ObjRazRules *rNext = NULL;
+    ObjRazRules *rPrevious = NULL;
+    if(razRules[disPrioIdx][LUPtypeIdx]){
+        rPrevious = razRules[disPrioIdx][LUPtypeIdx];
+        rNext = rPrevious->next;
+    }
+    while(rNext){
+        rPrevious = rNext;
+        rNext = rPrevious->next;
+    }
+    
+    rzRules->next = NULL;
+    if(rPrevious)
+        rPrevious->next = rzRules;
+    else
+        razRules[disPrioIdx][LUPtypeIdx] = rzRules;
+        
+#endif        
 
     return 1;
 }
