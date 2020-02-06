@@ -135,6 +135,10 @@ static void onSoundFinished(void* ptr)
     }
 }
 
+void AISshipNameCache(AIS_Target_Data *pTargetData,
+             AIS_Target_Name_Hash *AISTargetNamesC,
+             AIS_Target_Name_Hash *AISTargetNamesNC,
+             long mmsi );
 
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
         : m_signalk_selfid(""),
@@ -576,12 +580,17 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         name.c_str(),
                         20 );
                 pTargetData->b_nameValid = true;
+                pTargetData->MID = 123; // Indicate a name from Sign
             }
             if(value.HasMember("mmsi")) {
                 long mmsi;
                 if(value["mmsi"].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
+                    
+                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+                    (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
                 }
+
             }
         } else {
             wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: unhandled path %s"), update_path));
@@ -1295,89 +1304,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
-            if( bdecode_result ) {               
-                if(g_benableAISNameCache){
-                    wxString ship_name = wxEmptyString; 
-                        
-                    // Check for valid name data
-                    if( !pTargetData->b_nameValid ){  
-                        AIS_Target_Name_Hash::iterator it = AISTargetNamesC->find( mmsi );
-                        if(  it != AISTargetNamesC->end()  ){ 
-                            ship_name = ( *AISTargetNamesC )[mmsi].Left(20);
-                            strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
-                            pTargetData->b_nameValid = true;
-                            pTargetData->b_nameFromCache = true;
-                        }
-                        else 
-                            if ( !g_bUseOnlyConfirmedAISName ){
-                            it = AISTargetNamesNC->find( mmsi );
-                            if( it != AISTargetNamesNC->end() ){ 
-                                ship_name = ( *AISTargetNamesNC )[mmsi].Left(20);
-                                strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
-                                pTargetData->b_nameValid = true;
-                                pTargetData->b_nameFromCache = true;
-                            }
-                        } 
-                    }
-                    // else there IS a valid name, lets check if it is in one of the hash lists.
-                    else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) || (pTargetData->MID == 19)) {
-                        //  This message contains ship static data, so has a name field
-                        pTargetData->b_nameFromCache = false;
-                        ship_name = trimAISField( pTargetData->ShipName );
-                        AIS_Target_Name_Hash::iterator itC = AISTargetNamesC->find( mmsi );
-                        AIS_Target_Name_Hash::iterator itNC = AISTargetNamesNC->find( mmsi );
-                        if( itC != AISTargetNamesC->end() )
-                        {   //There is a confirmed entry for this mmsi
-                            if ( ( *AISTargetNamesC )[mmsi] == ship_name )
-                            {  //Received name is same as confirmed name
-                                if( itNC != AISTargetNamesNC->end() )
-                                {  //there is also an entry in the NC list, delete it
-                                    AISTargetNamesNC->erase(itNC);
-                                }
-                            }
-                            else
-                            { //There is a confirmed name but that one is different
-                                if( itNC != AISTargetNamesNC->end() )
-                                {  //there is an entry in the NC list check if name is same
-                                    if ( ( *AISTargetNamesNC )[mmsi] == ship_name )
-                                    {  //Same name is already in NC list so promote till confirmed list
-                                        ( *AISTargetNamesC )[mmsi] = ship_name;
-                                        // And delete from NC list
-                                        AISTargetNamesNC->erase(itNC);
-                                    }
-                                    else{ //A different name is in the NC list, update with received one
-                                        ( *AISTargetNamesNC )[mmsi] = ship_name;
-                                    }
-                                    if ( g_bUseOnlyConfirmedAISName )
-                                        strncpy( pTargetData->ShipName, ( *AISTargetNamesC )[mmsi].mb_str(),  ( *AISTargetNamesC )[mmsi].Left(20).Length() +1 );
-                                }                                
-                            }
-                        }
-                        else{ //No confirmed entry available
-                            if( itNC != AISTargetNamesNC->end() )
-                            {  //there is  an entry in the NC list, 
-                                if ( ( *AISTargetNamesNC )[mmsi] == ship_name )
-                                {  //Received name same as already in NC list, promote to confirmen
-                                    ( *AISTargetNamesC )[mmsi] = ship_name;
-                                    // And delete from NC list
-                                    AISTargetNamesNC->erase(itNC);
-                                }
-                                else{ //entry in NC list is not same as received one
-                                    ( *AISTargetNamesNC )[mmsi] = ship_name;
-                                }
-                            }
-                            else{ //No entry in NC list so add it
-                                ( *AISTargetNamesNC )[mmsi] = ship_name;
-                            }
-                            if ( g_bUseOnlyConfirmedAISName ){ //copy back previous name
-                                strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN);
-                            }
-                        }
-                    }
-                }
-                
-                
-                ( *AISTargetList )[pTargetData->MMSI] = pTargetData;            // update the hash table entry
+            if( bdecode_result ) { 
+                AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
+                ( *AISTargetList )[pTargetData->MMSI] = pTargetData;  // update the hash table entry
 
                 if( !pTargetData->area_notices.empty() ) {
                     AIS_Target_Hash::iterator it = AIS_AreaNotice_Sources->find( pTargetData->MMSI );
@@ -3057,6 +2986,93 @@ wxString MMSIProperties::Serialize( void )
     }
     sMMSI << m_ShipName;
     return sMMSI;
+}
+
+void AISshipNameCache(AIS_Target_Data *pTargetData,
+                      AIS_Target_Name_Hash *AISTargetNamesC,
+                      AIS_Target_Name_Hash *AISTargetNamesNC,
+                      long mmsi) 
+{
+    if (g_benableAISNameCache) {
+        wxString ship_name = wxEmptyString;
+
+        // Check for valid name data
+        if (!pTargetData->b_nameValid) {
+            AIS_Target_Name_Hash::iterator it = AISTargetNamesC->find(mmsi);
+            if (it != AISTargetNamesC->end()) {
+                ship_name = (*AISTargetNamesC)[mmsi].Left(20);
+                strncpy(pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1);
+                pTargetData->b_nameValid = true;
+                pTargetData->b_nameFromCache = true;
+            }
+            else
+                if (!g_bUseOnlyConfirmedAISName) {
+                    it = AISTargetNamesNC->find(mmsi);
+                    if (it != AISTargetNamesNC->end()) {
+                        ship_name = (*AISTargetNamesNC)[mmsi].Left(20);
+                        strncpy(pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1);
+                        pTargetData->b_nameValid = true;
+                        pTargetData->b_nameFromCache = true;
+                    }
+                }
+        }
+        // else there IS a valid name, lets check if it is in one of the hash lists.
+        else if ((pTargetData->MID ==  5) || (pTargetData->MID == 24) || 
+                 (pTargetData->MID == 19) || (pTargetData->MID == 123) ) { //123: Has got a name from SignalK
+            //  This message contains ship static data, so has a name field
+            pTargetData->b_nameFromCache = false;
+            ship_name = trimAISField(pTargetData->ShipName);
+            AIS_Target_Name_Hash::iterator itC = AISTargetNamesC->find(mmsi);
+            AIS_Target_Name_Hash::iterator itNC = AISTargetNamesNC->find(mmsi);
+            if (itC != AISTargetNamesC->end())
+            {   //There is a confirmed entry for this mmsi
+                if ((*AISTargetNamesC)[mmsi] == ship_name)
+                {  //Received name is same as confirmed name
+                    if (itNC != AISTargetNamesNC->end())
+                    {  //there is also an entry in the NC list, delete it
+                        AISTargetNamesNC->erase(itNC);
+                    }
+                }
+                else
+                { //There is a confirmed name but that one is different
+                    if (itNC != AISTargetNamesNC->end())
+                    {  //there is an entry in the NC list check if name is same
+                        if ((*AISTargetNamesNC)[mmsi] == ship_name)
+                        {  //Same name is already in NC list so promote till confirmed list
+                            (*AISTargetNamesC)[mmsi] = ship_name;
+                            // And delete from NC list
+                            AISTargetNamesNC->erase(itNC);
+                        }
+                        else { //A different name is in the NC list, update with received one
+                            (*AISTargetNamesNC)[mmsi] = ship_name;
+                        }
+                        if (g_bUseOnlyConfirmedAISName)
+                            strncpy(pTargetData->ShipName, (*AISTargetNamesC)[mmsi].mb_str(), (*AISTargetNamesC)[mmsi].Left(20).Length() + 1);
+                    }
+                }
+            }
+            else { //No confirmed entry available
+                if (itNC != AISTargetNamesNC->end())
+                {  //there is  an entry in the NC list, 
+                    if ((*AISTargetNamesNC)[mmsi] == ship_name)
+                    {  //Received name same as already in NC list, promote to confirmen
+                        (*AISTargetNamesC)[mmsi] = ship_name;
+                        // And delete from NC list
+                        AISTargetNamesNC->erase(itNC);
+                    }
+                    else { //entry in NC list is not same as received one
+                        (*AISTargetNamesNC)[mmsi] = ship_name;
+                    }
+                }
+                else { //No entry in NC list so add it
+                    (*AISTargetNamesNC)[mmsi] = ship_name;
+                }
+                if (g_bUseOnlyConfirmedAISName) { //copy back previous name
+                    strncpy(pTargetData->ShipName, "Unknown             ", SHIP_NAME_LEN);
+                }
+            }
+        }
+    }
 }
 
 wxString GetShipNameFromFile(int nmmsi)
