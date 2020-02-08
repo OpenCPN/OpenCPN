@@ -1835,6 +1835,8 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
 add_subdirectory("libs/easywsclient")
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::easywsclient)
 
+add_subdirectory("libs/wxservdisc")
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
 
 if (APPLE)
   if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")

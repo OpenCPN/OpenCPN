@@ -36,6 +36,8 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 #include "easywsclient.hpp"
+#include "chart1.h"
+#include "wxServDisc.h"
 
 #if defined(__WXMSW__) && !defined(__MINGW32__)
 #include <Ws2tcpip.h>           // for ip_mreq
@@ -58,6 +60,7 @@ static const long long lNaN = 0xfff8000000000000;
 extern bool g_benableUDPNullHeader;
 
 static wxEvtHandler *s_wsConsumer;
+extern MyFrame         *gFrame;
 
 #include <wx/sckstrm.h>
 #include "wx/jsonreader.h"
@@ -155,15 +158,15 @@ void SignalKDataStream::Open(void) {
     int discoveredPort;
     
     if(m_useWebSocket){
-        std::string serviceIdent = std::string("_signalk-ws._tcp.local");              // Works for node.js server
+        std::string serviceIdent = std::string("_signalk-ws._tcp.local.");              // Works for node.js server
         if(m_params->AutoSKDiscover){
             if( DiscoverSKServer( serviceIdent, discoveredIP, discoveredPort, 1) ) {       // 1 second scan
-                wxLogMessage(wxString::Format(_T("SK server autodiscovery finds WebSocket service: %s:%d"), discoveredIP.c_str(), discoveredPort));
+                wxLogDebug(wxString::Format(_T("SK server autodiscovery finds WebSocket service: %s:%d"), discoveredIP.c_str(), discoveredPort));
                 m_addr.Hostname(discoveredIP);
                 m_addr.Service(discoveredPort);
             }
             else
-                wxLogMessage(_T("SK server autodiscovery finds no WebSocket server."));
+                wxLogDebug(_T("SK server autodiscovery finds no WebSocket server."));
         }
 
         OpenWebSocket();
@@ -185,6 +188,7 @@ void SignalKDataStream::Open(void) {
 }
 
 bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip, int &port, int tSec){
+#if 0    
     std::vector<Zeroconf::mdns_responce> result;
     bool st = Zeroconf::Resolve(serviceIdent.c_str(), tSec, &result); 
 
@@ -213,6 +217,62 @@ bool SignalKDataStream::DiscoverSKServer( std::string serviceIdent, wxString &ip
       }
     }
     return false;
+#else
+    wxServDisc *servscan = new wxServDisc(gFrame, wxString(serviceIdent.c_str()), QTYPE_PTR);
+    
+    for(int i = 0 ; i < 10 ; i++){
+        if(servscan->getResultCount()){
+            auto result = servscan->getResults().at(0);
+            delete servscan;
+            //wxSleep(5);
+
+            //return false;
+            wxServDisc *namescan = new wxServDisc(0, result.name, QTYPE_SRV);
+            for(int j=0 ; j < 10 ; j++){
+                if(namescan->getResultCount()){
+                    auto namescanResult = namescan->getResults().at(0);
+                    port = namescanResult.port;
+                    delete namescan;
+
+                    wxServDisc *addrscan = new wxServDisc(0, namescanResult.name, QTYPE_A);
+                    for(int k=0 ; k < 10 ; k++){
+                        if(addrscan->getResultCount()){
+                            auto addrscanResult = addrscan->getResults().at(0);
+                            ip = addrscanResult.ip;
+                            delete addrscan;
+                            return true;
+                            break;
+                        }
+                        else{
+                            wxYield();
+                            wxMilliSleep(1000);
+                        }
+                    }
+                    delete addrscan;
+                    return false;
+                }
+                else{
+                    wxYield();
+                    wxMilliSleep(1000);
+                }
+            }
+            delete namescan;
+            return false;
+        }
+        else{
+            wxYield();
+            wxMilliSleep(1000);
+        }
+    }
+    
+    delete servscan;
+    return false;
+
+    //wxString a = servscan.getResults().at(0).ip;
+    //wxServDisc namescan(0, servscan->getResults().at(0).name, QTYPE_SRV);
+    //wxServDisc addrscan(0, namescan.getResults().at(0).name, QTYPE_A);
+    //wxString addr = addrscan.getResults().at(0).ip;
+#endif    
 }    
 
 void SignalKDataStream::OpenTCPSocket()
@@ -520,7 +580,7 @@ void WebSocketThread::HandleMessage(const std::string & message)
     wxJSONReader jsonReader;
     wxJSONValue root;
 
-//    fprintf(stderr, "%s\n", message.c_str());
+    fprintf(stderr, "%s\n", message.c_str());
 
     std::string msgTerminated = message;
     msgTerminated.append("\r\n");
