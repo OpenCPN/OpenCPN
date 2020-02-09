@@ -10040,7 +10040,9 @@ void options::OnDiscoverButton(wxCommandEvent &event){
 
     wxString ip;
     int port;
-    std::string serviceIdent = std::string("_signalk-ws._tcp.local");              // Works for node.js server
+    std::string serviceIdent = std::string("_signalk-ws._tcp.local.");              // Works for node.js server
+
+    g_Platform->ShowBusySpinner();
 
     if(SignalKDataStream::DiscoverSKServer( serviceIdent, ip, port, 1))               // 1 second scan
     {
@@ -10051,6 +10053,8 @@ void options::OnDiscoverButton(wxCommandEvent &event){
     else{
         UpdateDiscoverStatus(_("Signal K server not found."));
     }
+    g_Platform->HideBusySpinner();
+
     
     event.Skip();
 }
