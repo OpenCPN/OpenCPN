@@ -109,9 +109,51 @@ socket_t hostname_connect(const std::string& hostname, int port) {
     {
         sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if (sockfd == INVALID_SOCKET) { continue; }
+
+#ifdef _WIN32
+///
+        int error = -1;
+        int len = sizeof(int);
+        timeval tm;
+        fd_set set;
+        unsigned long ul = 1;
+        ioctlsocket(sockfd, FIONBIO, &ul); //set as non-blocking
+        bool ret = false;
+        
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen /*(struct sockaddr *)&ServerAddress, sizeof(ServerAddress)*/) == -1)
+        {
+                tm.tv_sec = 10; // set the timeout. 10s
+                tm.tv_usec = 0;
+                FD_ZERO(&set);
+                FD_SET(sockfd, &set);
+
+                if (select(sockfd + 1, NULL, &set, NULL, &tm) > 0)
+                {
+                        getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char *)&error, /*(socklen_t *)*/&len);
+                        if (error == 0)
+                                ret = true;
+                        else
+                                ret = false;
+                }
+                else
+                        ret = false;
+        }
+        else
+                ret = true;
+        
+        ul = 0;
+        ioctlsocket(sockfd, FIONBIO, &ul); //set as blocking
+        if (ret) {
+                break;
+        }
+///        
+#else        
+        
+        
         if (connect(sockfd, p->ai_addr, p->ai_addrlen) != SOCKET_ERROR) {
             break;
         }
+#endif
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;
     }
