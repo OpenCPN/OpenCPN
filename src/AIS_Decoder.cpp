@@ -381,8 +381,10 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
             return;
         }
         wxString mmsi_string;
-        if(context.StartsWith(_T("vessels.urn:mrn:imo:mmsi:"), &mmsi_string)) {
-            //wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
+        if(context.StartsWith(_T("vessels.urn:mrn:imo:mmsi:"), &mmsi_string) ||
+            context.StartsWith(_T("atons.urn:mrn:imo:mmsi:"), &mmsi_string) || 
+            context.StartsWith(_T("aircraft.urn:mrn:imo:mmsi:"), &mmsi_string) ) {
+        //    wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
             if(mmsi_string.ToLong(&mmsi)) {
                 //wxLogMessage(_T("Got MMSI from context."));
             } else {
@@ -518,6 +520,11 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 if (pTargetData->ShipType == 36 || pTargetData->ShipType == 37)
                     pTargetData->Class = AIS_CLASS_B;
             }
+        }
+        else if (update_path == _T("atonType")) {
+            if (value.HasMember(_T("id"))) {
+                pTargetData->ShipType = value[_T("id")].AsUInt();
+            }
         } else if (update_path == _T("design.draft")) {
             if (value.HasMember(_T("maximum"))) {
                 pTargetData->Draft = value[_T("maximum")].AsDouble();
@@ -531,6 +538,18 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                     pTargetData->DimB = 0;
                 }
             }
+        }
+        else if (update_path == _T("sensors.ais.class")) {
+            auto aisclass = value.AsString();
+            if (aisclass == _T("A") ) { pTargetData->Class = AIS_CLASS_A; }
+            else if (aisclass == _T("B")) {
+                pTargetData->Class = AIS_CLASS_B;
+                pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
+            }
+            else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
+            else if (aisclass == _T("SARAIR")) { pTargetData->b_SarAircraftPosnReport = true;}
+            else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
+            wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
         } else if (update_path == _T("sensors.ais.fromBow")) {
             if(pTargetData->DimB == 0 && pTargetData->DimA != 0) {
                 int length = pTargetData->DimA;
@@ -553,20 +572,21 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("navigation.state")) {
             auto state = value.AsString();
             if (state == _T("motoring")) { pTargetData->NavStatus = UNDERWAY_USING_ENGINE; }
-            if (state == _T("anchored")) { pTargetData->NavStatus = AT_ANCHOR; }
-            if (state == _T("not under command")) { pTargetData->NavStatus = NOT_UNDER_COMMAND; }
-            if (state == _T("restricted manouverability")) { pTargetData->NavStatus = RESTRICTED_MANOEUVRABILITY; }
-            if (state == _T("constrained by draft")) { pTargetData->NavStatus = CONSTRAINED_BY_DRAFT; }
-            if (state == _T("moored")) { pTargetData->NavStatus = MOORED; }
-            if (state == _T("aground")) { pTargetData->NavStatus = AGROUND; }
-            if (state == _T("fishing")) { pTargetData->NavStatus = FISHING; }
-            if (state == _T("sailing")) { pTargetData->NavStatus = UNDERWAY_SAILING; }
-            if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
-            if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
-            if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+            else if (state == _T("anchored")) { pTargetData->NavStatus = AT_ANCHOR; }
+            else if (state == _T("not under command")) { pTargetData->NavStatus = NOT_UNDER_COMMAND; }
+            else if (state == _T("restricted manouverability")) { pTargetData->NavStatus = RESTRICTED_MANOEUVRABILITY; }
+            else if (state == _T("constrained by draft")) { pTargetData->NavStatus = CONSTRAINED_BY_DRAFT; }
+            else if (state == _T("moored")) { pTargetData->NavStatus = MOORED; }
+            else if (state == _T("aground")) { pTargetData->NavStatus = AGROUND; }
+            else if (state == _T("fishing")) { pTargetData->NavStatus = FISHING; }
+            else if (state == _T("sailing")) { pTargetData->NavStatus = UNDERWAY_SAILING; }
+            else if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
+            else if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
+            else if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+            else { pTargetData->NavStatus = UNDEFINED; }
 
-            wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
-                    state, pTargetData->NavStatus));
+           /* wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
+                    state, pTargetData->NavStatus));*/
         } else if (update_path == _T("communication.callsignVhf")) {
             const wxString &callsign = value.AsString();
             strncpy(pTargetData->CallSign,
@@ -580,9 +600,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("")) {
             if(value.HasMember(_T("name"))) {
                 const wxString &name = value[_T("name")].AsString();
-                strncpy(pTargetData->ShipName,
-                        name.c_str(),
-                        20 );
+                strncpy(pTargetData->ShipName, name.c_str(), 20 );
                 pTargetData->b_nameValid = true;
                 pTargetData->MID = 123; // Indicates a name from SignalK
             }
@@ -596,6 +614,9 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                     }
                     else if (s_mmsi.StartsWith(_T("97"))){ //No name
                         pTargetData->Class = AIS_SART;
+                        if (pTargetData->NavStatus != RESERVED_14) { 
+                            pTargetData->NavStatus = UNDEFINED; //Secure "test" if not explicit active
+                        }
                     }
                     else { //has name
                         if (s_mmsi.StartsWith(_T("99")))
