@@ -131,8 +131,8 @@ public:
     void ShowPlotSettings();
 
 //    WMM Declarations
-    MAGtype_MagneticModel *MagneticModels[1];
-    MAGtype_MagneticModel *MagneticModel, *TimedMagneticModel;
+    MAGtype_MagneticModel* MagneticModels[1];
+    MAGtype_MagneticModel* MagneticModel, * TimedMagneticModel;
     MAGtype_Ellipsoid Ellip;
     MAGtype_CoordSpherical CoordSpherical;
     MAGtype_CoordGeodetic CoordGeodetic;

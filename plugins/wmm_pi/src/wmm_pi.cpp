@@ -177,7 +177,7 @@ int wmm_pi::Init(void)
     int NumTerms, epochs = 1, nMax = 0;
     wxString cof_filename = m_shareLocn + "WMM.COF";
     
-    if(!MAG_robustReadMagModels((const_cast<char*>((const char*)cof_filename.mb_str())), &MagneticModels)) {
+    if(!MAG_robustReadMagModels(const_cast<char*>((const char*)cof_filename.mb_str()), &MagneticModels)) {
         WMMLogMessage1(_T("initialization error"));
         m_buseable = false;
     } else {
@@ -323,8 +323,9 @@ wxString wmm_pi::GetLongDescription()
 {
     return _("World Magnetic Model PlugIn for OpenCPN\n\
 Implements the NOAA World Magnetic Model\n\
-More information: http://www.ngdc.noaa.gov/geomag/WMM/\n\
-The bundled WMM2015 model expires on December 31, 2019.\n\
+More information:\n\
+https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n\
+The bundled WMM2020 model expires on December 31, 2025.\n\
 After then, if new version of the plugin will not be released\n\
 in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
