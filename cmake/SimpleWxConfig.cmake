@@ -1,6 +1,6 @@
 macro(SimpleWxConfig)
  if(NOT QT_ANDROID)
-    dset( wxWidgets_USE_DEBUG OFF)
+    set( wxWidgets_USE_DEBUG OFF)
     set( wxWidgets_USE_UNICODE ON)
     set( wxWidgets_USE_UNIVERSAL OFF)
     set( wxWidgets_USE_STATIC OFF)
