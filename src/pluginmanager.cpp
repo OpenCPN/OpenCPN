@@ -1394,6 +1394,11 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         msg += pic->m_plugin_file;
         wxLogMessage(msg);
         if(pic->m_bInitState){
+            
+            // Unload chart cache if this plugin is responsible for any charts
+            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
+                ChartData->PurgeCache();
+
             pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
         }
@@ -1425,6 +1430,7 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
             }
         }
 
+ 
         bret = true;
     }
 
