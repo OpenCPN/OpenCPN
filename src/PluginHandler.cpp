@@ -475,7 +475,10 @@ static void entry_set_install_path(struct archive_entry* entry,
                      wxPlatformInfo::Get().GetOperatingSystemDescription());
     }
     const std::string dest = archive_entry_pathname(entry);
-    std::cout << "Installing " << src << " into " << dest << std::endl;
+    if(dest.size()){
+        std::cout << "Installing " << src << " into " << dest << std::endl;
+        wxLogMessage( _T("Installing ") + wxString(src.c_str()) + _T(" into ") + wxString(dest.c_str()));
+    }
 }
 
 
