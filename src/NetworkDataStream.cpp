@@ -169,6 +169,10 @@ void NetworkDataStream::OpenNetworkUDP(unsigned int addr)
                                              &broadcastEnable, sizeof(broadcastEnable));
         }
     }
+
+    // In case the connection is lost before acquired....
+    SetConnectTime(wxDateTime::Now());
+
 }
 
 void NetworkDataStream::OpenNetworkTCP(unsigned int addr)
@@ -202,6 +206,10 @@ void NetworkDataStream::OpenNetworkTCP(unsigned int addr)
         SetBrxConnectEvent(false);
         GetSocketTimer()->Start(100, wxTIMER_ONE_SHOT);    // schedule a connection
     }
+
+    // In case the connection is lost before acquired....
+    SetConnectTime(wxDateTime::Now());
+
 }
 
 void NetworkDataStream::OpenNetworkGPSD()
