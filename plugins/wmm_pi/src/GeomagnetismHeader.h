@@ -294,7 +294,7 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip,
 
 int MAG_robustReadMagneticModel_Large(char *filename, char* filenameSV, MAGtype_MagneticModel **MagneticModel);
 
-int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[], int array_size);
+int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[1]);
 
 int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid);
 
@@ -513,6 +513,6 @@ int MAG_GetAltitude(char* Query_String, MAGtype_Geoid *Geoid, MAGtype_CoordGeode
 
 #ifdef __cplusplus
 }
-#endif
+#endif  /* __cplusplus */
 
 #endif /*GEOMAGHEADER_H*/
