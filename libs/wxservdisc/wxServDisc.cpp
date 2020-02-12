@@ -316,6 +316,7 @@ SOCKET wxServDisc::msock()
   struct addrinfo* multicastAddr;  // Multicast address
   struct addrinfo* localAddr;      // Local address to bind to
 
+  unsigned long block=1;
 
  
 #ifdef __WIN32__
@@ -466,7 +467,6 @@ SOCKET wxServDisc::msock()
      Set to nonblock
   */
 #ifdef _WIN32
-  unsigned long block=1;
   ioctlsocket(sock, FIONBIO, &block);
 #else
   flag =  fcntl(sock, F_GETFL, 0);
