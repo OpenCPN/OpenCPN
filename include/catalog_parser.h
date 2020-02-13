@@ -71,7 +71,7 @@ struct PluginMetadata {
     }
 
 
-    PluginMetadata() :  readonly(true), ix(-1) {}
+    PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
 };
 
 
