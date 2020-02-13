@@ -517,8 +517,10 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->Class = AIS_CLASS_A;
                 // No AIS Class parsed by SignalK, so ugly hacks follows.
                 // Type 36 is not a pleasure type but though by mistake? often used by sailors.
-                if (pTargetData->ShipType == 36 || pTargetData->ShipType == 37)
+                if (pTargetData->ShipType == 36 || pTargetData->ShipType == 37){
                     pTargetData->Class = AIS_CLASS_B;
+                    pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
+                }
             }
         }
         else if (update_path == _T("atonType")) {
