@@ -1786,6 +1786,7 @@ set(
   src/bitmaps/iENC_UserStd.svg
   src/bitmaps/iENC_RPlus.svg
   src/bitmaps/iENC_RMinus.svg
+  src/bitmaps/package-x-generic.png
   src/bitmaps/plus.svg
 )
 
