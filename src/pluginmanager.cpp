@@ -136,7 +136,6 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
 extern OCPN_AUIManager  *g_pauimgr;
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
@@ -190,8 +189,6 @@ extern wxString          g_ownshipMMSI_SK;
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr  g_canvasArray;
 
-extern MyFrame    *gFrame;
-
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
@@ -210,17 +207,6 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"
 };
-
-/*
-enum class PluginStatus { 
-    System,    // One of the four system plugins, unmanaged.
-    Managed,   // Managed by installer.
-    Unmanaged, // Unmanaged, probably a package.
-    Ghost,      // Managed, shadowing another (packaged?) plugin.
-    Unknown,
-    ManagedUpdateAvailable
-};
-*/
 
 struct EnumClassHash
 {
@@ -337,24 +323,6 @@ static int count_files_in_dirs(const char* filename,
     }
     return count;
 }
-
-static PluginStatus get_plugin_status(const std::string& plugin,
-                                      const std::string& library) 
-{
-    std::string name(plugin);
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    auto r = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(), name);
-    if (r != SYSTEM_PLUGINS.end()) {
-        return PluginStatus::System;
-    }
-    if (!PluginHandler::getInstance()->isPluginWritable(plugin)) {
-        return PluginStatus::Unmanaged;
-    }
-    auto libs = count_files_in_dirs(library.c_str(),
-                                    PluginPaths::getInstance()->Libdirs());
-    return libs > 1 ? PluginStatus::Ghost: PluginStatus::Managed;
-}
-
 
 static PluginMetadata getLatestUpdate()
 {
@@ -668,9 +636,6 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
-            //auto plug_sts =
-            //    get_plugin_status(pic->m_common_name.ToStdString(),
-            //                      pic->m_plugin_filename.ToStdString());
             m_stat = PluginStatus::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -4889,50 +4854,6 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
     if (img.IsOk()) {
         bitmap = wxBitmap(img);
     }
-}
-
-
-/*
- * Panel with a single + sign which opens the "Add/download plugin" dialog.
- */
-AddPluginPanel::AddPluginPanel(wxWindow* parent)
-    :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
-    m_parent(parent)
-{
-    wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
-    path.AppendDir("uidata");
-    auto size = GetTextExtent("+");
-    SetMinSize(wxSize( 2 * size.GetHeight(),  2 * size.GetHeight()));
-    LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
-    if (!m_bitmap.IsOk()) {
-        wxLogMessage("AddPluginPanel: bitmap is not OK!");
-    }
-    auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
-    m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
-    hbox->Add(m_staticBitmap, wxSizerFlags(0));
-    SetSizer(hbox);
-    SetToolTip(new wxToolTip(_("Download and install/update plugins")));
-    Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-    m_staticBitmap->Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-}
-
-void AddPluginPanel::OnClick(wxMouseEvent& event)
-{
-    // Locate the options wxWindow parent. If not hidden, it steals focus.
-    auto opts = dynamic_cast<options*>(m_parent->GetParent()->GetParent());
-    wxASSERT(opts != 0);
-    auto dialog = new PluginDownloadDialog(this);
-    dialog->ShowModal();
-    dialog->Destroy();
-}
-
-AddPluginPanel::~AddPluginPanel()
-{
-    Unbind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-    m_staticBitmap->Unbind(wxEVT_LEFT_DOWN,
-                           &AddPluginPanel::OnClick,
-                           this);
 }
 
 
