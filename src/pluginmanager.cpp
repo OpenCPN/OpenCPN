@@ -120,6 +120,7 @@
 #include "download_mgr.h"
 #include "catalog_handler.h"
 #include "semantic_vers.h"
+#include "update_mgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -354,6 +355,74 @@ static PluginStatus get_plugin_status(const std::string& plugin,
     return libs > 1 ? PluginStatus::Ghost: PluginStatus::Managed;
 }
 
+
+static PluginMetadata getLatestUpdate()
+{
+    auto updates = PluginHandler::getInstance()->getAvailableUniquePlugins();
+    if (updates.size() == 0) {
+        PluginMetadata metadata;
+        return metadata;
+    }
+    std::sort(updates.begin(), updates.end(),
+              [](PluginMetadata m1, PluginMetadata m2) {
+                    return !(m1.version < m2.version);
+              }
+    );
+    return updates[0];
+}
+
+
+/** Return all updates with plugin name == name. */
+static std::vector<PluginMetadata> getUpdates(const char* name)
+{
+    auto updates = PluginHandler::getInstance()->getAvailableUniquePlugins();
+    updates.erase(
+        std::remove_if(updates.begin(), updates.end(),
+                       [&](const PluginMetadata m) { return m.name != name; }),
+        updates.end());
+    return updates;
+}
+
+static void run_update_dialog(const char* plugin, bool uninstall) {
+    auto updates = getUpdates(plugin);
+    UpdateDialog dialog(gFrame, updates);
+    auto status = dialog.ShowModal();
+    if (status != wxID_OK) {
+        return;
+    }
+    auto update = dialog.GetUpdate();
+    if (uninstall) {
+        g_pi_manager->DeactivatePlugIn(g_actionPIC);
+        g_actionPIC->m_bEnabled = false;
+        g_pi_manager->UpdatePlugIns();
+        
+        wxLogMessage("Uninstalling %s", plugin);
+        PluginHandler::getInstance()->uninstall(plugin);
+        g_pi_manager->UpdatePlugIns();
+    }
+
+    wxLogMessage("Installing %s", update.name.c_str());
+    auto downloader =
+        new GuiDownloader(g_pi_manager->GetListPanelPtr(), update);
+    downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
+
+    // Provisional error check
+    std::string manifestPath =
+        PluginHandler::fileListPath(update.name);
+    if(!isRegularFile(manifestPath.c_str())) {
+        wxLogMessage("Installation of %s failed",  update.name.c_str());
+        PluginHandler::cleanup(manifestPath, update.name);
+    }
+
+    //  Reload all plugins, which will bring in the action results.
+    g_pi_manager->LoadAllPlugIns( false );
+    g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(
+        g_pi_manager->GetPlugInArray());
+    wxString name(plugin);
+    //g_pi_manager->GetListPanelPtr()->SelectByName(name);
+}
+
+
 wxString GetPluginDataDir(const char* plugin_name)
 {
     static const wxString sep = wxFileName::GetPathSeparator();
@@ -543,56 +612,15 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         {
             // Grab a copy of the managed metadata
             auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            g_pi_manager->DeactivatePlugIn(g_actionPIC);
-            g_actionPIC->m_bEnabled = false;
-            g_pi_manager->UpdatePlugIns();
-            
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
-
-            g_pi_manager->UpdatePlugIns();
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
-            downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
-            
-            // Provisional error check
-             std::string manifestPath =
-                 PluginHandler::fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 PluginHandler::cleanup(manifestPath, metaSave.name);
-             }
-
-             //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            run_update_dialog(metaSave.name.c_str(), true);
             break;
         }
 
         case  ActionVerb::INSTALL_MANAGED_VERSION:
         {
-            // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
-            downloader->run(g_pi_manager->GetListPanelPtr());
-            
-            // Provisional error check
-             std::string manifestPath =
-                 PluginHandler::fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 PluginHandler::cleanup(manifestPath, metaSave.name);
-             }
-
-            //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            wxLogMessage("Installing new managed plugin.");
+            run_update_dialog(g_actionPIC->m_ManagedMetadata.name.c_str(),
+                              false);
             break;
         }
 
@@ -5239,7 +5267,7 @@ void PluginListPanel::UpdateSelections()
     
 void PluginListPanel::SelectPlugin( PluginPanel *pi )
 {
-    if (m_PluginSelected == pi)
+    if (pi == 0 || m_PluginSelected == pi)
         return;
 
     if (m_PluginSelected){
@@ -5452,15 +5480,21 @@ void PluginPanel::SetActionLabel( wxString &label)
 
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
-    if(m_bSelected){
+    g_actionPIC = m_pPlugin;
+    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+    {
+        run_update_dialog(wxString(m_pPlugin->m_common_name), true);
+    }
+    else if (m_bSelected){
         SetSelected(false);
         m_PluginListPanel->SelectPlugin( NULL );
     }
-    else{
+    else {
         SetSelected( true );
         m_PluginListPanel->SelectPlugin( this );
     }
 }
+
 
 void PluginPanel::SetSelected( bool selected )
 {
@@ -5468,7 +5502,7 @@ void PluginPanel::SetSelected( bool selected )
     
     if(m_pPlugin->m_ManagedMetadata.version.size())
         m_pVersion->SetLabel(wxString( m_pPlugin->m_ManagedMetadata.version.c_str()));
-        
+
     if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pButtons->Show(true);
@@ -5500,54 +5534,35 @@ void PluginPanel::SetSelected( bool selected )
         // Configure the "Action" button
         wxString label;
         SemanticVersion newVersion;
+        auto update = getLatestUpdate();
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
                 label = _("Upgrade to managed Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
+                label += wxString(update.version.c_str());
                 g_actionVerb = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
 
             case PluginStatus::ManagedInstallAvailable:
-                label = _("Install Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
+                label = _("Install...");
                 g_actionVerb = ActionVerb::INSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
-                
             case PluginStatus::ManagedInstalledUpdateAvailable:
-                label = _("Upgrade to Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
+                label = _("Update...");
                 g_actionVerb = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledCurrentVersion:
-                label = _("Reinstall Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
+                label = _("Reinstall");
                 g_actionVerb = ActionVerb::REINSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledDowngradeAvailable:
-                label = _("Downgrade to Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
+                label = _("Downgrade");
                 g_actionVerb = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
@@ -5624,7 +5639,7 @@ void PluginPanel::SetSelected( bool selected )
     Fit();
     m_PluginListPanel->m_pitemBoxSizer01->Layout();
 #endif
-    
+
 
 }
 
