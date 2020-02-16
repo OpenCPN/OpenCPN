@@ -5276,18 +5276,24 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     wxImage plugin_icon;
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-    if(m_pPlugin->m_bitmap){
+    if (m_pPlugin->m_bitmap) {
         plugin_icon = m_pPlugin->m_bitmap->ConvertToImage();
     }
-    else
-        plugin_icon = wxBitmap(style->GetIcon( _T("default_pi"))).ConvertToImage();
-    
-    if(plugin_icon.IsOk()){
-        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap(plugin_icon.Copy()));
+    wxBitmap bitmap;
+    if (plugin_icon.IsOk()) {
+        bitmap = wxBitmap(plugin_icon.Copy());
     }
-    else{
-        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,  wxBitmap(style->GetIcon( _T("default_pi"))));
+    else if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+    {
+        wxFileName path(g_Platform->GetSharedDataDir(), "package-x-generic");
+        path.AppendDir("uidata");
+        path.SetExt("png");
+        bitmap.LoadFile(path.GetFullPath(), wxBITMAP_TYPE_PNG);
     }
+    else {
+        bitmap =  wxBitmap(style->GetIcon( _T("default_pi")));
+    }
+    m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
     itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
