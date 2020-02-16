@@ -29,6 +29,12 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
     wxLogMessage(msg);
 #endif
 
+    if (root.HasMember(_T("version"))) {
+        wxString msg = _T("Connected to Signal K server version: ");
+        msg << (root[_T("version")].AsString());
+        wxLogMessage(msg);
+    }
+
     if(root.HasMember("self")) {
         if(root["self"].AsString().StartsWith(_T("vessels.")))
             m_self = (root["self"].AsString());                                 // for java server, and OpenPlotter node.js server 1.20
