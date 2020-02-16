@@ -535,6 +535,8 @@ public:
       bool GetSelected(){ return m_bSelected; }
       PlugInContainer* GetPluginPtr() { return m_pPlugin; };
       void SetActionLabel( wxString &label);
+      ActionVerb GetAction() { return m_action; }
+      PlugInContainer* GetPlugin() { return m_pPlugin; }
 
 private:
       PluginListPanel *m_PluginListPanel;
@@ -555,6 +557,7 @@ private:
       wxButton        *m_pButtonDown;
       wxRadioButton   *m_rbEnable, *m_rbDisable;
       WebsiteButton   *m_info_btn;
+      ActionVerb      m_action;
 };
 
 

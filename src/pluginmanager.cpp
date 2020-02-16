@@ -192,8 +192,6 @@ extern arrayofCanvasPtr  g_canvasArray;
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
-int                     g_actionVerb;
-
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -540,12 +538,12 @@ pluginUtilHandler::pluginUtilHandler()
 
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
-    auto actionPIC = static_cast<PlugInContainer*>(event.GetClientData());
-    wxASSERT(actionPIC != 0);
+    auto panel = static_cast<PluginPanel*>(event.GetClientData());
+    auto actionPIC = panel->GetPlugin();
     wxString name = actionPIC->m_common_name;
     
     // Perform the indicated action according to the verb...
-    switch( g_actionVerb ){
+    switch (panel->GetAction()){
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
             wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
@@ -5471,47 +5469,47 @@ void PluginPanel::SetSelected( bool selected )
             case PluginStatus::LegacyUpdateAvailable:
                 label = _("Upgrade to managed Version ");
                 label += wxString(update.version.c_str());
-                g_actionVerb = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
+                m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
 
             case PluginStatus::ManagedInstallAvailable:
                 label = _("Install...");
-                g_actionVerb = ActionVerb::INSTALL_MANAGED_VERSION;
+                m_action = ActionVerb::INSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
                 label = _("Update...");
-                g_actionVerb = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
+                m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledCurrentVersion:
                 label = _("Reinstall");
-                g_actionVerb = ActionVerb::REINSTALL_MANAGED_VERSION;
+                m_action = ActionVerb::REINSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledDowngradeAvailable:
                 label = _("Downgrade");
-                g_actionVerb = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
+                m_action = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::Unmanaged:
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 m_pButtonAction->Hide();
                 break;
                 
             case PluginStatus::System:
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 m_pButtonAction->Hide();
                 break;
                 
             default:
                 label = "TBD";
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 break;
         }
         SetActionLabel( label );
@@ -5600,13 +5598,12 @@ void PluginPanel::OnPluginEnable( wxCommandEvent& event )
 
 void PluginPanel::OnPluginUninstall( wxCommandEvent& event )
 {
-    g_actionVerb = ActionVerb::UNINSTALL_MANAGED_VERSION;
+    m_action = ActionVerb::UNINSTALL_MANAGED_VERSION;
 
-    //SetEnabled(false);
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
-    actionEvent.SetClientData(static_cast<void*>(m_pPlugin));
+    actionEvent.SetClientData(this);
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 }
 
@@ -5616,7 +5613,7 @@ void PluginPanel::OnPluginAction( wxCommandEvent& event )
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
-    actionEvent.SetClientData(m_pPlugin);
+    actionEvent.SetClientData(this);
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 
     return;
