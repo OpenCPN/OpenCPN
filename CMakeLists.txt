@@ -145,6 +145,37 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
+# This is for Linux only. This may need to be adjusted for the new 64bit ARM Distros.
+# List of directories specifying installation prefixes to be searched by the
+# find_package(), find_program(), find_library(), find_file(), and find_path()
+# commands..
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+    if (EXISTS "/usr/lib64")
+        set(CMAKE_PREFIX_PATH
+            /lib
+            /usr/local/lib64
+            /usr/lib64
+            )
+    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf") 
+        set(CMAKE_PREFIX_PATH
+            /lib
+            /lib/arm-linux-gnueabihf
+            /usr/include
+            /usr/include/arm-linux-gnueabihf
+            /usr/local/lib
+            /usr/lib
+            /usr/lib/arm-linux-gnueabihf
+            )
+    else ()
+        set(CMAKE_PREFIX_PATH
+            /lib
+            /usr/include
+            /usr/local/lib
+            /usr/lib
+            )	
+    endif ()
+endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
 IF(DEFINED _wx_selected_config)
   MESSAGE (STATUS "selected config ${_wx_selected_config}")
   IF(_wx_selected_config MATCHES "androideabi-qt")
