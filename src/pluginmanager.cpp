@@ -193,7 +193,6 @@ const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
 int                     g_actionVerb;
-PlugInContainer         *g_actionPIC;
 
 enum
 {
@@ -351,7 +350,11 @@ static std::vector<PluginMetadata> getUpdates(const char* name)
     return updates;
 }
 
-static void run_update_dialog(const char* plugin, bool uninstall) {
+static void run_update_dialog(PlugInContainer* pic,
+                              bool uninstall,
+                              const char* name = 0)
+{
+    const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
     UpdateDialog dialog(gFrame, updates);
     auto status = dialog.ShowModal();
@@ -360,8 +363,8 @@ static void run_update_dialog(const char* plugin, bool uninstall) {
     }
     auto update = dialog.GetUpdate();
     if (uninstall) {
-        g_pi_manager->DeactivatePlugIn(g_actionPIC);
-        g_actionPIC->m_bEnabled = false;
+        g_pi_manager->DeactivatePlugIn(pic);
+        pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
         
         wxLogMessage("Uninstalling %s", plugin);
@@ -386,7 +389,7 @@ static void run_update_dialog(const char* plugin, bool uninstall) {
     g_pi_manager->LoadAllPlugIns( false );
     g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(
         g_pi_manager->GetPlugInArray());
-    wxString name(plugin);
+    //wxString name(plugin);
     //g_pi_manager->GetListPanelPtr()->SelectByName(name);
 }
 
@@ -537,25 +540,28 @@ pluginUtilHandler::pluginUtilHandler()
 
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
-    wxString name = g_actionPIC->m_common_name;
+    auto actionPIC = static_cast<PlugInContainer*>(event.GetClientData());
+    wxASSERT(actionPIC != 0);
+    wxString name = actionPIC->m_common_name;
     
     // Perform the indicated action according to the verb...
     switch( g_actionVerb ){
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
-            wxLogMessage("Installing managed plugin: %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), g_actionPIC->m_ManagedMetadata);
+            wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
+            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(),
+                                                actionPIC->m_ManagedMetadata);
             downloader->run(g_pi_manager->GetListPanelPtr());
 
             
             // Provisional error check
             std::string manifestPath =
-                PluginHandler::fileListPath(g_actionPIC->m_ManagedMetadata.name);
+                PluginHandler::fileListPath(actionPIC->m_ManagedMetadata.name);
             if(isRegularFile(manifestPath.c_str())) {
 
                 // dynamically deactivate the legacy plugin, making way for the upgrade.
                 for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
-                    if (g_actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
+                    if (actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
                         g_pi_manager->UnLoadPlugIn(i);
                         break;
                     }
@@ -566,7 +572,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             }
             else {
                 PluginHandler::cleanup(manifestPath,
-                                       g_actionPIC->m_ManagedMetadata.name);
+                                       actionPIC->m_ManagedMetadata.name);
             }
             g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             g_pi_manager->GetListPanelPtr()->SelectByName(name);
@@ -579,28 +585,28 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         case  ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION:
         {
             // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            run_update_dialog(metaSave.name.c_str(), true);
+            auto metaSave = actionPIC->m_ManagedMetadata;
+            run_update_dialog(actionPIC, true, metaSave.name.c_str());
             break;
         }
 
         case  ActionVerb::INSTALL_MANAGED_VERSION:
         {
             wxLogMessage("Installing new managed plugin.");
-            run_update_dialog(g_actionPIC->m_ManagedMetadata.name.c_str(),
-                              false);
+            run_update_dialog(actionPIC, false);
             break;
         }
 
         case  ActionVerb::UNINSTALL_MANAGED_VERSION:
         {
-            g_pi_manager->DeactivatePlugIn(g_actionPIC);
+            g_pi_manager->DeactivatePlugIn(actionPIC);
 
             wxString message;
-            message.Printf("%s %s\n", g_actionPIC->m_ManagedMetadata.name.c_str(), g_actionPIC->m_ManagedMetadata.version.c_str());
+            message.Printf("%s %s\n", actionPIC->m_ManagedMetadata.name.c_str(),
+                           actionPIC->m_ManagedMetadata.version.c_str());
 
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
+            wxLogMessage("Uninstalling %s", actionPIC->m_ManagedMetadata.name.c_str());
+            PluginHandler::getInstance()->uninstall(actionPIC->m_ManagedMetadata.name);
 
             message += _("successfully un-installed");
             OCPNMessageBox(gFrame, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
@@ -5407,10 +5413,9 @@ void PluginPanel::SetActionLabel( wxString &label)
 
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
-    g_actionPIC = m_pPlugin;
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        run_update_dialog(wxString(m_pPlugin->m_common_name), true);
+        run_update_dialog(m_pPlugin, true);
     }
     else if (m_bSelected){
         SetSelected(false);
@@ -5595,24 +5600,23 @@ void PluginPanel::OnPluginEnable( wxCommandEvent& event )
 
 void PluginPanel::OnPluginUninstall( wxCommandEvent& event )
 {
-    g_actionPIC = m_pPlugin;
     g_actionVerb = ActionVerb::UNINSTALL_MANAGED_VERSION;
 
     //SetEnabled(false);
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
+    actionEvent.SetClientData(static_cast<void*>(m_pPlugin));
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 }
 
 
 void PluginPanel::OnPluginAction( wxCommandEvent& event )
 {
-    g_actionPIC = m_pPlugin;
-    
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
+    actionEvent.SetClientData(m_pPlugin);
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 
     return;
