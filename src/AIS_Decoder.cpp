@@ -514,13 +514,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("design.aisShipType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
-                pTargetData->Class = AIS_CLASS_A;
-                // No AIS Class parsed by SignalK, so ugly hacks follows.
-                // Type 36 is not a pleasure type but though by mistake? often used by sailors.
-                if (pTargetData->ShipType == 36 || pTargetData->ShipType == 37){
-                    pTargetData->Class = AIS_CLASS_B;
-                    pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
-                }
+                pTargetData->Class = AIS_CLASS_A; // Default so far
             }
         }
         else if (update_path == _T("atonType")) {
@@ -549,9 +543,11 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
             }
             else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
-            else if (aisclass == _T("SARAIR")) { pTargetData->b_SarAircraftPosnReport = true;}
+            else if (aisclass == _T("SARAIR")) { 
+                pTargetData->b_SarAircraftPosnReport = true;
+                wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
+            }
             else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
-            wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
         } else if (update_path == _T("sensors.ais.fromBow")) {
             if(pTargetData->DimB == 0 && pTargetData->DimA != 0) {
                 int length = pTargetData->DimA;
@@ -611,18 +607,13 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 long mmsi;
                 if (s_mmsi.ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-                    if (s_mmsi.StartsWith(_T("00"))) { //No name
-                        pTargetData->Class = AIS_BASE;
-                    }
-                    else if (s_mmsi.StartsWith(_T("97"))){ //No name
+                    if (s_mmsi.StartsWith(_T("97"))){ //No name
                         pTargetData->Class = AIS_SART;
                         if (pTargetData->NavStatus != RESERVED_14) { 
                             pTargetData->NavStatus = UNDEFINED; //Secure "test" if not explicit active
                         }
                     }
                     else { //has name
-                        if (s_mmsi.StartsWith(_T("99")))
-                            pTargetData->Class = AIS_ATON;
                         if (s_mmsi.StartsWith(_T("111"))) {
                             pTargetData->b_SarAircraftPosnReport = true;
                         }
