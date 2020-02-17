@@ -29,8 +29,7 @@
 #ifdef __cplusplus
 extern "C"
 {
-#endif
-
+#endif /* __cplusplus */
 #define READONLYMODE "r"
 #define MAXLINELENGTH (1024)
 #define NOOFPARAMS (15)
@@ -294,7 +293,7 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip,
 
 int MAG_robustReadMagneticModel_Large(char *filename, char* filenameSV, MAGtype_MagneticModel **MagneticModel);
 
-int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[1]);
+int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[], int array_size);
 
 int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid);
 
@@ -511,8 +510,9 @@ void MAG_PrintUserDataWithUncertainty(MAGtype_GeoMagneticElements GeomagElements
 void MAG_GetDeg(char* Query_String, double* latitude, double bounds[2]);
 int MAG_GetAltitude(char* Query_String, MAGtype_Geoid *Geoid, MAGtype_CoordGeodetic* coords, int bounds[2], int AltitudeSetting);
 
+
 #ifdef __cplusplus
 }
-#endif  /* __cplusplus */
+#endif /* __cplusplus */
 
 #endif /*GEOMAGHEADER_H*/

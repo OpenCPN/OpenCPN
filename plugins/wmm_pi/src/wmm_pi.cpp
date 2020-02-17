@@ -177,7 +177,7 @@ int wmm_pi::Init(void)
     int NumTerms, epochs = 1, nMax = 0;
     wxString cof_filename = m_shareLocn + "WMM.COF";
     
-    if(!MAG_robustReadMagModels(const_cast<char*>((const char*)cof_filename.mb_str()), &MagneticModels)) {
+    if(!MAG_robustReadMagModels(const_cast<char*>((const char*)cof_filename.mb_str()), reinterpret_cast<MAGtype_MagneticModel* (*)[]>(&MagneticModels), epochs)) {
         WMMLogMessage1(_T("initialization error"));
         m_buseable = false;
     } else {
@@ -580,7 +580,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
     MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
     MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
     MAG_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
-    //WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate, TimedMagneticModel, &Geoid);     /* Print the results */
+    //WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate, TimedqMagneticModel, &Geoid);     /* Print the results */
     
     m_boatVariation = GeoMagneticElements;
     SendBoatVariation();

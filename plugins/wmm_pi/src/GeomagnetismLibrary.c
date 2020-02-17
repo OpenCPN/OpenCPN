@@ -7,11 +7,6 @@
 #include <assert.h>
 #include "GeomagnetismHeader.h"
 
-#ifndef OPENCPN
-#define OPENCPN 1
-#endif
-
-
 /* $Id: GeomagnetismLibrary.c 1521 2017-01-24 17:52:41Z awoods $
  *
  * ABSTRACT
@@ -308,7 +303,7 @@ int MAG_robustReadMagneticModel_Large(char *filename, char *filenameSV, MAGtype_
     return 1;
 } /*MAG_robustReadMagneticModel_Large*/
 
-int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[1], int array_size)
+int MAG_robustReadMagModels(char *filename, MAGtype_MagneticModel *(*magneticmodels)[], int array_size)
 {
     char line[MAXLINELENGTH];
     int n, nMax = 0, num_terms, a;
@@ -540,7 +535,7 @@ CALLS : none
         if (NULL == fgets(buffer, 20, stdin))
         {
             minimum->HeightAboveGeoid = 0;
-//            printf("Unrecognized input default %lf used\n", minimum->HeightAboveGeoid);
+            printf("Unrecognized input default %lf used\n", minimum->HeightAboveGeoid);
         } else {
             sscanf(buffer, "%lf", &minimum->HeightAboveGeoid);
         }
@@ -549,7 +544,7 @@ CALLS : none
         printf("Please Enter Maximum Height above the WGS-84 Ellipsoid (in km):\n");
         if (NULL == fgets(buffer, 20, stdin)) {
             maximum->HeightAboveGeoid = 0;
- //           printf("Unrecognized input default %lf used\n", maximum->HeightAboveGeoid);
+            printf("Unrecognized input default %lf used\n", maximum->HeightAboveGeoid);
         } else {
             sscanf(buffer, "%lf", &maximum->HeightAboveGeoid);
         }
@@ -646,7 +641,6 @@ CALLS : none
     return TRUE;
 }
 
-#ifndef OPENCPN
 int MAG_GetUserInput(MAGtype_MagneticModel *MagneticModel, MAGtype_Geoid *Geoid, MAGtype_CoordGeodetic *CoordGeodetic, MAGtype_Date *MagneticDate)
 
 /*
@@ -786,8 +780,6 @@ CALLS: 	MAG_DMSstringToDegree(buffer, &CoordGeodetic->lambda); (The program uses
     free(Qstring);
     return TRUE;
 } /*MAG_GetUserInput*/
-
-#endif /* OPENCPN */
 
 void MAG_PrintGradient(MAGtype_Gradient Gradient)
 {
@@ -1523,7 +1515,6 @@ INPUT : LegendreFunction Pointer to data structure with the following elements
     return TRUE;
 } /*MAG_FreeSphVarMemory*/
 
-#ifndef OPENCPN
 void MAG_PrintWMMFormat(char *filename, MAGtype_MagneticModel *MagneticModel)
 {
     int index, n, m;
@@ -1550,9 +1541,6 @@ void MAG_PrintWMMFormat(char *filename, MAGtype_MagneticModel *MagneticModel)
     fclose(OUT);
 } /*MAG_PrintWMMFormat*/
 
-#endif /* OPENCPN */
-
-#ifndef OPENCPN
 void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel *MagneticModel)
 {
     int index, n, m;
@@ -1593,9 +1581,6 @@ void MAG_PrintEMMFormat(char *filename, char *filenameSV, MAGtype_MagneticModel 
     return;
 } /*MAG_PrintEMMFormat*/
 
-#endif /* OPENCPN */
-
-#ifndef OPENCPN
 void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)[], int epochs)
 {
     	int i, n, m, index, epochRange;
@@ -1648,8 +1633,6 @@ void MAG_PrintSHDFFormat(char *filename, MAGtype_MagneticModel *(*MagneticModel)
 		}
 	}
 } /*MAG_PrintSHDFFormat*/
-
-#endif /* OPENCPN */
 
 int MAG_readMagneticModel(char *filename, MAGtype_MagneticModel * MagneticModel)
 {
@@ -2908,7 +2891,6 @@ void MAG_TMfwd4(double Eps, double Epssq, double K0R4, double K0R4oa,
     }
 } /*MAG_TMfwd4*/
 
-#ifndef OPENCPN
 int MAG_YearToDate(MAGtype_Date *CalendarDate)
 
 /* Converts a given Decimal year into a Year, Month and Date
@@ -2983,7 +2965,6 @@ CALLS : none
 
 } /*MAG_YearToDate*/
 
-#endif /* OPENCPN */
 
 
 /******************************************************************************
@@ -4042,7 +4023,6 @@ void MAG_PrintUserDataWithUncertainty(MAGtype_GeoMagneticElements GeomagElements
 
 }/*MAG_PrintUserDataWithUncertainty*/
 
-#ifndef OPENCPN
 void MAG_GetDeg(char* Query_String, double* latitude, double bounds[2]) {
 	/*Gets a degree value from the user using the standard input*/
 	char buffer[64], Error_Message[255];
@@ -4101,8 +4081,6 @@ void MAG_GetDeg(char* Query_String, double* latitude, double bounds[2]) {
         }
     }
 }
-
-#endif /* OPENCPN */
 
 int MAG_GetAltitude(char* Query_String, MAGtype_Geoid *Geoid, MAGtype_CoordGeodetic* coords, int bounds[2], int AltitudeSetting){
 	int done, j, UpBoundOn;
