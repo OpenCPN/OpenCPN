@@ -50,17 +50,17 @@ extern "C"
 #define WMM_ERROR_MULTIPLIER 1.21
 #define IGRF_ERROR_MULTIPLIER 1.21
 
-/*These error values are the NGDC error model
+/*These error values are the NCEI error model
  * 
  */
-#define WMM_UNCERTAINTY_F 152
-#define WMM_UNCERTAINTY_H 133
-#define WMM_UNCERTAINTY_X 138
-#define WMM_UNCERTAINTY_Y 89
-#define WMM_UNCERTAINTY_Z 165
-#define WMM_UNCERTAINTY_I 0.22
-#define WMM_UNCERTAINTY_D_OFFSET 0.24
-#define WMM_UNCERTAINTY_D_COEF 5432
+#define WMM_UNCERTAINTY_F 145
+#define WMM_UNCERTAINTY_H 128
+#define WMM_UNCERTAINTY_X 131
+#define WMM_UNCERTAINTY_Y 94
+#define WMM_UNCERTAINTY_Z 157
+#define WMM_UNCERTAINTY_I 0.21
+#define WMM_UNCERTAINTY_D_OFFSET 0.26
+#define WMM_UNCERTAINTY_D_COEF 5625
 
 
 #ifndef M_PI
@@ -111,8 +111,8 @@ manoj.c.nair@noaa.gov*/
 
 
 
-#define MODEL_RELEASE_DATE "04 Feb 2019"
-#define VERSIONDATE_LARGE "$Date: 2019-02-04 10:40:43 -0700 (Mon, 04 Feb 2019) $"
+#define MODEL_RELEASE_DATE "10 Dec 2019"
+#define VERSIONDATE_LARGE "$Date: 2019-12-10 10:40:43 -0700 (Tue, 10 Dec 2019) $"
 
 
 typedef enum { 
@@ -292,21 +292,6 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip,
         MAGtype_MagneticModel *TimedMagneticModel,  
         MAGtype_Gradient *Gradient);
 
-int MAG_Grid(MAGtype_CoordGeodetic minimum,
-        MAGtype_CoordGeodetic maximum, 
-        double cord_step_size, 
-        double altitude_step_size, 
-        double time_step, 
-        MAGtype_MagneticModel *MagneticModel, 
-        MAGtype_Geoid *Geoid, 
-        MAGtype_Ellipsoid Ellip, 
-        MAGtype_Date StartDate, 
-        MAGtype_Date EndDate, 
-        int ElementOption, 
-        int UncertaintyOption, 
-        int PrintOption, 
-        char *OutputFile);
-
 
 int MAG_robustReadMagneticModel_Large(char *filename, char* filenameSV, MAGtype_MagneticModel **MagneticModel);
 
@@ -317,10 +302,6 @@ int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid);
 /*User Interface*/
 
 void MAG_Error(int control);
-
-char MAG_GeomagIntroduction_WMM(MAGtype_MagneticModel *MagneticModel, char *VersionDate, char *ModelDate);
-
-char MAG_GeomagIntroduction_EMM(MAGtype_MagneticModel *MagneticModel, char *VersionDate);
 
 int MAG_GetUserGrid(MAGtype_CoordGeodetic *minimum,
         MAGtype_CoordGeodetic *maximum,
@@ -533,7 +514,6 @@ int MAG_GetAltitude(char* Query_String, MAGtype_Geoid *Geoid, MAGtype_CoordGeode
 
 #ifdef __cplusplus
 }
-#endif
+#endif  /* __cplusplus */
 
 #endif /*GEOMAGHEADER_H*/
-
