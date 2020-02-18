@@ -166,6 +166,16 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
             /usr/lib
             /usr/lib/arm-linux-gnueabihf
             )
+    elseif (EXISTS "/usr/lib/aarch64-linux-gnu") 
+        set(CMAKE_PREFIX_PATH
+            /lib
+            /lib/aarch64-linux-gnu
+            /usr/include
+            /usr/include/aarch64-linux-gnu
+            /usr/local/lib
+            /usr/lib
+            /usr/lib/aarch64-linux-gnu
+            )
     else ()
         set(CMAKE_PREFIX_PATH
             /lib
