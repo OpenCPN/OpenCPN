@@ -145,7 +145,7 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-# This is for Linux only. This may need to be adjusted for the new 64bit ARM Distros.
+# This is for Linux only.
 # List of directories specifying installation prefixes to be searched by the
 # find_package(), find_program(), find_library(), find_file(), and find_path()
 # commands..
