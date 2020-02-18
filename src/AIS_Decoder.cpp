@@ -419,6 +419,8 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
             }
         }
         pTargetData->MMSI = mmsi;
+        // A SART can send wo any values first transmits. Detect class already here.
+        if ( 97 == mmsi / 10000000 ) { pTargetData->Class = AIS_SART; }
         pTargetData->b_OwnShip = false;
         ( *AISTargetList )[pTargetData->MMSI] = pTargetData;
     }
@@ -514,7 +516,6 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("design.aisShipType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
-                pTargetData->Class = AIS_CLASS_A; // Default so far
             }
         }
         else if (update_path == _T("atonType")) {
@@ -545,7 +546,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
             else if (aisclass == _T("SARAIR")) { 
                 pTargetData->b_SarAircraftPosnReport = true;
-                wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
+                //wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
             }
             else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
         } else if (update_path == _T("sensors.ais.fromBow")) {
@@ -603,26 +604,21 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->MID = 123; // Indicates a name from SignalK
             }
             if(value.HasMember("mmsi")) {
-                wxString s_mmsi = value[_T("mmsi")].AsString();
                 long mmsi;
-                if (s_mmsi.ToLong(&mmsi)) {
+                if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-                    if (s_mmsi.StartsWith(_T("97"))){ //No name
-                        pTargetData->Class = AIS_SART;
-                        if (pTargetData->NavStatus != RESERVED_14) { 
-                            pTargetData->NavStatus = UNDEFINED; //Secure "test" if not explicit active
-                        }
-                    }
-                    else { //has name
-                        if (s_mmsi.StartsWith(_T("111"))) {
-                            pTargetData->b_SarAircraftPosnReport = true;
-                        }
 
-                        AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                        
+                    if (97 == mmsi / 10000000) {
+                        pTargetData->Class = AIS_SART;                        
                     }
+                    if (111 == mmsi / 1000000) {
+                        pTargetData->b_SarAircraftPosnReport = true;
+                    }
+
+                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                                            
+                    
                     (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
                 }
-
             }
         } else {
             wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: unhandled path %s"), update_path));
