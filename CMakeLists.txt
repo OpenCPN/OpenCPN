@@ -704,8 +704,8 @@ if (NOT QT_ANDROID)
   set(wxWidgets_USE_UNIVERSAL OFF)
   set(wxWidgets_USE_STATIC OFF)
 
-  if (WXWIDGETS_FORCE_VERSION)
-    set(wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
+  if (OCPN_WXWIDGETS_FORCE_VERSION)
+      set (wxWidgets_CONFIG_OPTIONS --version=${OCPN_WXWIDGETS_FORCE_VERSION})
   endif ()
 
   if (MSVC)
