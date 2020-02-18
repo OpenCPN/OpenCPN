@@ -4875,7 +4875,6 @@ int s52plib::RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *v
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-    return 0;
     //     if(rzRules->obj->Index != 7574)
     //         return 0;
     
@@ -6665,8 +6664,8 @@ int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-//      if(rzRules->obj->Index != 1103)
-//          return 0; //int yyp = 0;
+//      if(rzRules->obj->Index != 6118)
+//        return 0; //int yyp = 0;
 
 //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
 //            int yyp = 0;
