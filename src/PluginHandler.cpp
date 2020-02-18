@@ -167,6 +167,15 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
                                  const char* os, const char* os_version)
 
 {
+    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+
+    //  First special case
+    //  TODO
+    //  We support no managed plugins for ARM64 platform.
+    //  So, if detected, we can bail immediately
+    if(os_detail->osd_arch.compare("ARM64") == 0)
+        return false;
+    
     // Get the specified system definition,
     //   or the baked in (build system) values,
     //   or the environment override,
@@ -196,23 +205,38 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     //  Compare to the required values in the metadata
     
     std::string plugin_os = ocpn::tolower(metadata.target);
-    if (compatOS  != plugin_os) {
-        return false;
-    }
-    if (plugin_os == "msvc") {
-        return true;
+
+    // msvc is simple...
+    if (compatOS == "msvc") {
+        return (plugin_os == "msvc");
     }
 
-    //  OS matches so far, so must compare versions
+
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
-
-    if (plugin_os == "ubuntu") {
-        return plugin_os_version == compatOsVersion;            // Full version comparison required
-    }
-
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
-    auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-    return meta_vers == target_vers;
+
+    if (compatOS  == plugin_os) {
+        //  OS matches so far, so must compare versions
+
+        if (plugin_os == "ubuntu") {
+            return plugin_os_version == compatOsVersion;            // Full version comparison required
+        }
+
+        auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+        return meta_vers == target_vers;
+    }
+    else{
+        // running OS may be "like" some known OS
+        if( os_detail->osd_name_like  == plugin_os){
+            if (plugin_os == "ubuntu") {
+                return plugin_os_version == os_detail->osd_version;            // Full version comparison required
+            }
+            auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
+            return meta_vers == target_vers;
+        }
+    }
+    
+    return false;
 }
 
 
