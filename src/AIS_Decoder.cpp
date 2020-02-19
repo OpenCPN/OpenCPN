@@ -363,7 +363,7 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
 {
     auto root = event.GetValue();
 
-    if(root.HasMember("self")) {
+    if(root.HasMember(_T("self"))) {
         //m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
         m_signalk_selfid = (root["self"].AsString());           // Verified for OpenPlotter node.js server 1.20
     }
@@ -371,9 +371,9 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
         return; // Don't handle any messages (with out self) until we know how we are
     }
     long mmsi = 0;
-    if(root.HasMember("context")
-       && root["context"].IsString()) {
-        auto context = root["context"].AsString();
+    if(root.HasMember(_T("context"))
+       && root[_T("context")].IsString()) {
+        auto context = root[_T("context")].AsString();
         if (context == m_signalk_selfid) {
 #if 0
             wxLogMessage(_T("** Ignore context own ship.."));
@@ -381,8 +381,10 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
             return;
         }
         wxString mmsi_string;
-        if(context.StartsWith("vessels.urn:mrn:imo:mmsi:", &mmsi_string)) {
-            //wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
+        if(context.StartsWith(_T("vessels.urn:mrn:imo:mmsi:"), &mmsi_string) ||
+            context.StartsWith(_T("atons.urn:mrn:imo:mmsi:"), &mmsi_string) || 
+            context.StartsWith(_T("aircraft.urn:mrn:imo:mmsi:"), &mmsi_string) ) {
+        //    wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
             if(mmsi_string.ToLong(&mmsi)) {
                 //wxLogMessage(_T("Got MMSI from context."));
             } else {
@@ -409,14 +411,16 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
     wxDateTime now;
     getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks, now);
     if(pTargetData) {
-        if (root.HasMember("updates")
-            && root["updates"].IsArray()) {
-            wxJSONValue &updates = root["updates"];
+        if (root.HasMember(_T("updates"))
+            && root[_T("updates")].IsArray()) {
+            wxJSONValue &updates = root[_T("updates")];
             for (int i = 0; i < updates.Size(); ++i) {
                 handleUpdate(pTargetData, bnewtarget, updates[i]);
             }
         }
         pTargetData->MMSI = mmsi;
+        // A SART can send wo any values first transmits. Detect class already here.
+        if ( 97 == mmsi / 10000000 ) { pTargetData->Class = AIS_SART; }
         pTargetData->b_OwnShip = false;
         ( *AISTargetList )[pTargetData->MMSI] = pTargetData;
     }
@@ -429,14 +433,14 @@ void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData,
 {
     wxString sfixtime = "";
 
-    if(update.HasMember("timestamp")) {
-        sfixtime = update["timestamp"].AsString();
+    if(update.HasMember(_T("timestamp"))) {
+        sfixtime = update[_T("timestamp")].AsString();
     }
-    if(update.HasMember("values")
-       && update["values"].IsArray())
+    if(update.HasMember(_T("values"))
+       && update[_T("values")].IsArray())
     {
-        for (int j = 0; j < update["values"].Size(); ++j) {
-            wxJSONValue &item = update["values"][j];
+        for (int j = 0; j < update[_T("values")].Size(); ++j) {
+            wxJSONValue &item = update[_T("values")][j];
             updateItem(pTargetData, bnewtarget, item, sfixtime);
         }
     }
@@ -467,18 +471,18 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                              wxJSONValue &item,
                              wxString &sfixtime) const
 {
-    if (item.HasMember("path")
-        && item.HasMember("value")) {
+    if (item.HasMember(_T("path"))
+        && item.HasMember(_T("value"))) {
 
-        const wxString &update_path = item["path"].AsString();
-        wxJSONValue &value = item["value"];
+        const wxString &update_path = item[_T("path")].AsString();
+        wxJSONValue &value = item[_T("value")];
         if (update_path == _T("navigation.position")) {
-            if (value.HasMember("latitude")
-                && value.HasMember("longitude")) {
+            if (value.HasMember(_T("latitude"))
+                && value.HasMember(_T("longitude"))) {
                 wxDateTime now = wxDateTime::Now();
                 now.MakeUTC();
-                double lat = value["latitude"].AsDouble();
-                double lon = value["longitude"].AsDouble();
+                double lat = value[_T("latitude")].AsDouble();
+                double lon = value[_T("longitude")].AsDouble();
                 if( !bnewtarget ) {
                     int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
                     if ( age_of_last > 0 ) {
@@ -510,23 +514,41 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("navigation.rateOfTurn")) {
             pTargetData->ROTAIS = 4.733*sqrt(value.AsDouble());
         } else if (update_path == _T("design.aisShipType")) {
-            if (value.HasMember("id")) {
-                pTargetData->ShipType = value["id"].AsUInt();
-                pTargetData->Class = AIS_CLASS_A;
+            if (value.HasMember(_T("id"))) {
+                pTargetData->ShipType = value[_T("id")].AsUInt();
+            }
+        }
+        else if (update_path == _T("atonType")) {
+            if (value.HasMember(_T("id"))) {
+                pTargetData->ShipType = value[_T("id")].AsUInt();
             }
         } else if (update_path == _T("design.draft")) {
-            if (value.HasMember("maximum")) {
-                pTargetData->Draft = value["maximum"].AsDouble();
-                pTargetData->Euro_Draft = value["maximum"].AsDouble();
+            if (value.HasMember(_T("maximum"))) {
+                pTargetData->Draft = value[_T("maximum")].AsDouble();
+                pTargetData->Euro_Draft = value[_T("maximum")].AsDouble();
             }
         } else if (update_path == _T("design.length")) {
             if (pTargetData->DimB == 0) {
-                if (value.HasMember("overall")) {
-                    pTargetData->Euro_Length = value["overall"].AsDouble();
-                    pTargetData->DimA = value["overall"].AsInt();
+                if (value.HasMember(_T("overall"))) {
+                    pTargetData->Euro_Length = value[_T("overall")].AsDouble();
+                    pTargetData->DimA = value[_T("overall")].AsInt();
                     pTargetData->DimB = 0;
                 }
             }
+        }
+        else if (update_path == _T("sensors.ais.class")) {
+            auto aisclass = value.AsString();
+            if (aisclass == _T("A") ) { pTargetData->Class = AIS_CLASS_A; }
+            else if (aisclass == _T("B")) {
+                pTargetData->Class = AIS_CLASS_B;
+                pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
+            }
+            else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
+            else if (aisclass == _T("SARAIR")) { 
+                pTargetData->b_SarAircraftPosnReport = true;
+                //wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
+            }
+            else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
         } else if (update_path == _T("sensors.ais.fromBow")) {
             if(pTargetData->DimB == 0 && pTargetData->DimA != 0) {
                 int length = pTargetData->DimA;
@@ -549,20 +571,21 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         } else if (update_path == _T("navigation.state")) {
             auto state = value.AsString();
             if (state == _T("motoring")) { pTargetData->NavStatus = UNDERWAY_USING_ENGINE; }
-            if (state == _T("anchored")) { pTargetData->NavStatus = AT_ANCHOR; }
-            if (state == _T("not under command")) { pTargetData->NavStatus = NOT_UNDER_COMMAND; }
-            if (state == _T("restricted manouverability")) { pTargetData->NavStatus = RESTRICTED_MANOEUVRABILITY; }
-            if (state == _T("constrained by draft")) { pTargetData->NavStatus = CONSTRAINED_BY_DRAFT; }
-            if (state == _T("moored")) { pTargetData->NavStatus = MOORED; }
-            if (state == _T("aground")) { pTargetData->NavStatus = AGROUND; }
-            if (state == _T("fishing")) { pTargetData->NavStatus = FISHING; }
-            if (state == _T("sailing")) { pTargetData->NavStatus = UNDERWAY_SAILING; }
-            if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
-            if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
-            if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+            else if (state == _T("anchored")) { pTargetData->NavStatus = AT_ANCHOR; }
+            else if (state == _T("not under command")) { pTargetData->NavStatus = NOT_UNDER_COMMAND; }
+            else if (state == _T("restricted manouverability")) { pTargetData->NavStatus = RESTRICTED_MANOEUVRABILITY; }
+            else if (state == _T("constrained by draft")) { pTargetData->NavStatus = CONSTRAINED_BY_DRAFT; }
+            else if (state == _T("moored")) { pTargetData->NavStatus = MOORED; }
+            else if (state == _T("aground")) { pTargetData->NavStatus = AGROUND; }
+            else if (state == _T("fishing")) { pTargetData->NavStatus = FISHING; }
+            else if (state == _T("sailing")) { pTargetData->NavStatus = UNDERWAY_SAILING; }
+            else if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
+            else if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
+            else if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+            else { pTargetData->NavStatus = UNDEFINED; }
 
-            wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
-                    state, pTargetData->NavStatus));
+           /* wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
+                    state, pTargetData->NavStatus));*/
         } else if (update_path == _T("communication.callsignVhf")) {
             const wxString &callsign = value.AsString();
             strncpy(pTargetData->CallSign,
@@ -574,23 +597,28 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                     destination.c_str(),
                     20 );
         } else if (update_path == _T("")) {
-            if(value.HasMember("name")) {
-                const wxString &name = value["name"].AsString();
-                strncpy(pTargetData->ShipName,
-                        name.c_str(),
-                        20 );
+            if(value.HasMember(_T("name"))) {
+                const wxString &name = value[_T("name")].AsString();
+                strncpy(pTargetData->ShipName, name.c_str(), 20 );
                 pTargetData->b_nameValid = true;
-                pTargetData->MID = 123; // Indicate a name from Sign
+                pTargetData->MID = 123; // Indicates a name from SignalK
             }
             if(value.HasMember("mmsi")) {
                 long mmsi;
-                if(value["mmsi"].AsString().ToLong(&mmsi)) {
+                if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
+
+                    if (97 == mmsi / 10000000) {
+                        pTargetData->Class = AIS_SART;                        
+                    }
+                    if (111 == mmsi / 1000000) {
+                        pTargetData->b_SarAircraftPosnReport = true;
+                    }
+
+                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                                            
                     
-                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
                     (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
                 }
-
             }
         } else {
             wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: unhandled path %s"), update_path));

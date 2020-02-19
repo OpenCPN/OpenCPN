@@ -1459,7 +1459,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         dc.SetPen( target_pen );
 
         wxPoint Point = TargetPoint;
-        if (g_bDrawAISRealtime) {
+        if (g_bDrawAISRealtime && (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B )) {
             wxDateTime now = wxDateTime::Now();
             now.MakeGMT();
             int target_age = now.GetTicks() - td->PositionReportTicks;

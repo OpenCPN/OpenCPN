@@ -493,8 +493,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         now.MakeGMT();
         int target_age = now.GetTicks() - PositionReportTicks;
-        wxLogMessage(wxString::Format(_T("** PositionReportTicks %ld %ld %d"),
-                                      now.GetTicks(), PositionReportTicks, target_age));
+     //   wxLogMessage(wxString::Format(_T("** PositionReportTicks %ld %ld %d"),
+     //                                 now.GetTicks(), PositionReportTicks, target_age));
 
         html << vertSpacer
              << rowStart << _("Position") << posTypeStr << _T("</font></td><td align=right><font size=-2>")
@@ -881,7 +881,7 @@ wxString AIS_Target_Data::Get_vessel_type_string( bool b_short )
         return ais_get_short_type(i);
 }
 
-wxString AIS_Target_Data::Get_class_string( bool b_short )
+    wxString AIS_Target_Data::Get_class_string( bool b_short )
 {
     switch( Class ){
         case AIS_CLASS_A:
