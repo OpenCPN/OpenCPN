@@ -8667,8 +8667,6 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
 
-      g_pi_manager->SetListPanelPtr(m_pPlugInCtrl);
-
 #ifndef __OCPN__ANDROID__      
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);

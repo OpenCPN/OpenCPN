@@ -348,14 +348,16 @@ static std::vector<PluginMetadata> getUpdates(const char* name)
     return updates;
 }
 
-static void run_update_dialog(wxWindow* parent,
+static void run_update_dialog(PluginListPanel* parent,
                               PlugInContainer* pic,
                               bool uninstall,
                               const char* name = 0)
 {
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
-    UpdateDialog dialog(parent, updates);
+    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
+    wxASSERT(parent_dlg != 0);
+    UpdateDialog dialog(parent_dlg, updates);
     auto status = dialog.ShowModal();
     if (status != wxID_OK) {
         return;
@@ -372,9 +374,8 @@ static void run_update_dialog(wxWindow* parent,
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    auto downloader =
-        new GuiDownloader(g_pi_manager->GetListPanelPtr(), update);
-    downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
+    auto downloader = new GuiDownloader(parent_dialog, update);
+    downloader->run(parent_dialog);
 
     // Provisional error check
     std::string manifestPath =
@@ -386,8 +387,7 @@ static void run_update_dialog(wxWindow* parent,
 
     //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
-    g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(
-        g_pi_manager->GetPlugInArray());
+    parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
     //wxString name(plugin);
     //g_pi_manager->GetListPanelPtr()->SelectByName(name);
 }
@@ -540,8 +540,8 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
-    auto dialog = dynamic_cast<wxScrolledWindow*>(panel->GetGrandParent());
-    wxASSERT(dialog != 0);
+    auto plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetParent());
+    wxASSERT(plugin_list_panel != 0);
     auto actionPIC = panel->GetPlugin();
     wxString name = actionPIC->m_common_name;
     
@@ -550,9 +550,9 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
             wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(),
+            auto downloader = new GuiDownloader(plugin_list_panel,
                                                 actionPIC->m_ManagedMetadata);
-            downloader->run(g_pi_manager->GetListPanelPtr());
+            downloader->run(plugin_list_panel);
 
             
             // Provisional error check
@@ -575,8 +575,8 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 PluginHandler::cleanup(manifestPath,
                                        actionPIC->m_ManagedMetadata.name);
             }
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            plugin_list_panel->SelectByName(name);
 
             break;
         }
@@ -587,14 +587,15 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         {
             // Grab a copy of the managed metadata
             auto metaSave = actionPIC->m_ManagedMetadata;
-            run_update_dialog(dialog, actionPIC, true, metaSave.name.c_str());
+            run_update_dialog(
+                plugin_list_panel, actionPIC, true, metaSave.name.c_str());
             break;
         }
 
         case  ActionVerb::INSTALL_MANAGED_VERSION:
         {
             wxLogMessage("Installing new managed plugin.");
-            run_update_dialog(dialog, actionPIC, false);
+            run_update_dialog(plugin_list_panel, actionPIC, false);
             break;
         }
 
@@ -614,7 +615,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 
             //  Reload all plugins, which will bring in the action results.
             g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             break;
         }
  
@@ -5415,9 +5416,9 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        auto plugin_page = dynamic_cast<wxScrolledWindow*>(GetGrandParent());
-        wxASSERT(plugin_page != 0);
-        run_update_dialog(plugin_page, m_pPlugin, false);
+        auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
+        wxASSERT(dialog != 0);
+        run_update_dialog(dialog, m_pPlugin, false);
     }
     else if (m_bSelected){
         SetSelected(false);

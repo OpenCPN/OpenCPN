@@ -364,8 +364,6 @@ public:
 
       void DimeWindow(wxWindow *win);
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
-      void SetListPanelPtr(PluginListPanel *p){ m_listPanel = p; }
-      PluginListPanel *GetListPanelPtr(){ return m_listPanel; }
       
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
