@@ -4923,20 +4923,20 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 lsa = lsa->next;
             }
         }
-        
-        
+ 
+        float *ppt;
+        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
+
         //  Allocate some storage for converted points
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
         double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
         
-        unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer; //chart->GetLineVertexBuffer();
         line_segment_element *ls = rzRules->obj->m_ls_list;
         
         unsigned int index = 0;
         unsigned int idouble = 0;
         int nls = 0;
         wxPoint lp;
-        float *ppt;
         
         int ndraw = 0;
         while(ls){
@@ -4946,6 +4946,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 //transcribe the segment in the proper order into the output buffer
                 int nPoints;
                 int idir = 1;
+                bool bcon = false;
                 // fetch the first point
                 if( (ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV) ){
                     ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
@@ -4957,19 +4958,20 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 else{
                     ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
                     nPoints = 2;
+                    bcon = true;
                 }
                 
                 
                 int vbo_index = 0;
                 int vbo_inc = 2;
-                if(idir == -1){
+                if( (idir == -1) && !bcon){
                     vbo_index = (nPoints-1) * 2;
                     vbo_inc = -2;
                 }
                 for(int ip=0 ; ip < nPoints ; ip++){
                     wxPoint r;
                     GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
-                    if( (r.x != lp.x) || (r.y != lp.y) ){
+                    if( 1/*(r.x != lp.x) || (r.y != lp.y)*/ ){
                         ptp[index++] = r;
                         pdp[idouble++] = ppt[vbo_index];
                         pdp[idouble++] = ppt[vbo_index + 1];
@@ -4987,6 +4989,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             
             // inspect the next segment to see if it can be connected, or if the chain breaks
             int idir = 1;
+            bool bcon = false;
             if(ls->next){
                 
                 int nPoints_next;
@@ -5002,23 +5005,28 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 else{
                     ppt = (float *)(vbo_point + lsn->pcs->vbo_offset);
                     nPoints_next = 2;
+                    bcon = true;
                 }
                 
                 wxPoint ptest;
-                if(idir == 1)
+                if(bcon)
                     GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptest, vp );
 
                 else{
-                // fetch the last point
-                    int index_last_next = (nPoints_next-1) * 2;
-                    GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &ptest, vp );
+                    if(idir == 1) 
+                        GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptest, vp );
+
+                    else{
+                    // fetch the last point
+                        int index_last_next = (nPoints_next-1) * 2;
+                        GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &ptest, vp );
+                    }
                 }
                 
                 // try to match the correct point in this segment with the last point in the previous segment
 
                 if(lp != ptest)         // not connectable?
                 {
-                    
                     if(nls){
                         wxPoint2DDouble *pReduced = 0;
                         int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
@@ -5297,7 +5305,9 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     S52color *c = getColor( tcolptr + 1 ); // +1 skips "n" in HPGL SPn format
     int w = 1; // arbitrary width
     wxColour color( c->R, c->G, c->B );
-    
+    double LOD = 2.0 / vp->view_scale_ppm;              // empirical value, by experiment
+    LOD = 0; //wxMin(LOD, 10.0);
+
     //  Get the current display priority
     //  Default comes from the LUP, unless overridden
     int priority_current = rzRules->LUP->DPRI - '0';
@@ -5306,14 +5316,13 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
  
     //  Calculate max malloc size required
-    unsigned int nls_max = 0;
         
+    int max_points = 0;    
     if( rzRules->obj->m_ls_list_legacy )
     {
         VE_Element *pedge;
         PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
         
-            
         while(ls){
             int nPoints;
                     // fetch the first point
@@ -5325,15 +5334,12 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 nPoints = 2;
              }
                 
-             nls_max = wxMax(nls_max, nPoints);
+             max_points +=nPoints;
                 
             ls = ls->next;
         }
     }
 
-
-    //  Allocate some storage for converted points
-//    wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
 
 
     if( rzRules->obj->m_ls_list_legacy )
@@ -5345,44 +5351,158 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 
         //  Allocate some storage for converted points
-        wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
-    
+        wxPoint *ptp = (wxPoint *) malloc( ( max_points + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
+        double *pdp = (double *)malloc( 2 * ( max_points+ 2 ) * sizeof(double) ); 
+
         PI_connector_segment *pcs;
         
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
         PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
         
+        unsigned int index = 0;
+        unsigned int idouble = 0;
+        int nls = 0;
+        wxPoint lp;
+        
+        ls = rzRules->obj->m_ls_list_legacy;
         while(ls){
-                if( ls->priority == priority_current  ) {  
+            if( ls->priority == priority_current  ) {  
+ 
+                
+                //transcribe the segment in the proper order into the output buffer
+                int nPoints;
+                int idir = 1;
+                bool bcon = false;
+                // fetch the first point
+                if( (ls->type == TYPE_EE) || (ls->type == TYPE_EE_REV) ){
+                    pedge = (VE_Element *)ls->private0;
+                    ppt = (float *)(vbo_point + pedge->vbo_offset);
+                    nPoints = pedge->nCount;
+                    if(ls->type == TYPE_EE_REV)
+                        idir = -1;
                     
-                    int nPoints;
-                    // fetch the first point
-                    if(ls->type == TYPE_EE){
-                        pedge = (VE_Element *)ls->private0;
-                        ppt = (float *)(vbo_point + pedge->vbo_offset);
-                        nPoints = pedge->nCount;
-                    }
-                    else{
-                        pcs = (PI_connector_segment *)ls->private0;
-                        ppt = (float *)(vbo_point + pcs->vbo_offset);
-                        nPoints = 2;
-                    }
-                    
-                    for(int ip=0 ; ip < nPoints ; ip++){
-                        wxPoint r;
-                        GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptp[ip], vp );
-                        
-                        ppt += 2;
-                    }
-                    
-                    if(nPoints)
-                        draw_lc_poly( m_pdc, color, w, &ptp[0], nPoints, sym_len, sym_factor, rules->razRule, vp );
+                }
+                else{
+                    pcs = (PI_connector_segment *)ls->private0;
+                    ppt = (float *)(vbo_point + pcs->vbo_offset);
+                    nPoints = 2;
+                    bcon = true;
                 }
                 
-                ls = ls->next;
+                
+                int vbo_index = 0;
+                int vbo_inc = 2;
+                if( (idir == -1) && !bcon){
+                    vbo_index = (nPoints-1) * 2;
+                    vbo_inc = -2;
+                }
+                for(int ip=0 ; ip < nPoints ; ip++){
+                    wxPoint r;
+                    GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
+
+                    if( 1/*(r.x != lp.x) || (r.y != lp.y)*/ ){
+                        ptp[index++] = r;
+                        pdp[idouble++] = ppt[vbo_index];
+                        pdp[idouble++] = ppt[vbo_index + 1];
+                        
+                        nls++;
+                    }
+                    else{               // sKipping point
+                    }
+                    
+                    lp = r;
+                    vbo_index += vbo_inc;
+                }            
+                
+            }  // priority
+            
+            // inspect the next segment to see if it can be connected, or if the chain breaks
+            int idir = 1;
+            bool bcon = false;
+            if(ls->next){
+                
+                int nPoints_next;
+                PI_line_segment_element *lsn = ls->next;
+                // fetch the first point
+                if( (lsn->type == TYPE_EE) || (lsn->type == TYPE_EE_REV) ){
+                    pedge = (VE_Element *)lsn->private0;
+                    ppt = (float *)(vbo_point + pedge->vbo_offset);
+                    nPoints_next = pedge->nCount;
+                    if(lsn->type == TYPE_EE_REV)
+                        idir = -1;
+                    
+                }
+                else{
+                    pcs = (PI_connector_segment *)lsn->private0;
+                    ppt = (float *)(vbo_point + pcs->vbo_offset);
+                    nPoints_next = 2;
+                    bcon = true;
+                }
+                
+                wxPoint ptest;
+                if(bcon)
+                    GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptest, vp );
+
+                else{
+                    if(idir == 1) 
+                        GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptest, vp );
+
+                    else{
+                    // fetch the last point
+                        int index_last_next = (nPoints_next-1) * 2;
+                        GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &ptest, vp );
+                    }
+                }
+                
+                // try to match the correct point in this segment with the last point in the previous segment
+
+                if(lp != ptest)         // not connectable?
+                {
+                    if(nls){
+                        wxPoint2DDouble *pReduced = 0;
+                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                    
+                        wxPoint *ptestp = (wxPoint *) malloc( ( 2 * ( nPointReduced + 2 )) * sizeof(wxPoint) ); 
+                        GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
+                        free(pReduced);
+                    
+                        draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                        free(ptestp);
+                    }
+                    
+                    nls = 0;
+                    index = 0;
+                    idouble = 0;
+                    lp = wxPoint(0,0);
+                }
+                
+                
+            }
+            else{
+                // no more segments, so render what is available
+                if(nls){
+                    wxPoint2DDouble *pReduced = 0;
+                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                    
+                    wxPoint *ptestp = (wxPoint *) malloc( ( 2 * ( max_points+ 2 ) ) * sizeof(wxPoint) ); 
+                    GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
+                    free(pReduced);
+                    
+                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                    free( ptestp );
+
+                }
+            }
+            
+            ls = ls->next;
         }
         
+
+
+
+
         free(ptp);
+        free(pdp);
     }
     
     return 1;
@@ -5395,6 +5515,9 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
 {
     if(npt < 2)
         return;
+
+//   if(npt < 50)
+//        return;
     
     wxPoint r;
 
@@ -5454,7 +5577,9 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
             dx = ptp[iseg + inc].x - ptp[iseg].x;
             dy = ptp[iseg + inc].y - ptp[iseg].y;
             seg_len = sqrt( dx * dx + dy * dy );
-            
+            theta = atan2f( dy, dx );
+            //printf(" %6d %6d %6d %6d %6g %6g %g\n", npt, iseg, x0, y0, dx, dy, theta * 180.);
+
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
                     int xst1 = ptp[iseg].x;
@@ -5485,7 +5610,6 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                                 draw_rule->pos.line.pivot_y.LIRW );
 
                         HPGL->SetTargetDC( pdc );
-                        theta = atan2f( dy, dx );
                         HPGL->SetVP(vp);
                         HPGL->Render( str, col, r, pivot, pivot, 1.0, theta * 180. / PI, false );
 
@@ -5503,6 +5627,7 @@ next_seg_dc:
                 done = true;
             
         } // while
+        //printf("\n");
     } // if pdc
     
 #ifdef ocpnUSE_GL
@@ -6664,8 +6789,8 @@ int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-//      if(rzRules->obj->Index != 6118)
-//        return 0; //int yyp = 0;
+    //  if(rzRules->obj->Index != 4947)
+     //   return 0; //int yyp = 0;
 
 //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
 //            int yyp = 0;
