@@ -5040,11 +5040,16 @@ void MyFrame::ToggleChartBar( ChartCanvas *cc)
 
 void MyFrame::ToggleColorScheme()
 {
+    static bool lastIsNight;
     ColorScheme s = GetColorScheme();
     int is = (int) s;
     is++;
+    if (lastIsNight && is == 3)         // Back from step 3
+        { is = 1; lastIsNight = false; }//      Goto to Day
+    if (lastIsNight) is = 2;            // Back to Dusk on step 3
+    if ( is == 3 ) lastIsNight = true;  // Step 2 Night
     s = (ColorScheme) is;
-    if( s == N_COLOR_SCHEMES ) s = GLOBAL_COLOR_SCHEME_RGB;
+    if (s == N_COLOR_SCHEMES) s = GLOBAL_COLOR_SCHEME_RGB;
 
     SetAndApplyColorScheme( s );
 }
