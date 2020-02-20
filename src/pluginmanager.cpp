@@ -348,13 +348,14 @@ static std::vector<PluginMetadata> getUpdates(const char* name)
     return updates;
 }
 
-static void run_update_dialog(PlugInContainer* pic,
+static void run_update_dialog(wxWindow* parent,
+                              PlugInContainer* pic,
                               bool uninstall,
                               const char* name = 0)
 {
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
-    UpdateDialog dialog(gFrame, updates);
+    UpdateDialog dialog(parent, updates);
     auto status = dialog.ShowModal();
     if (status != wxID_OK) {
         return;
@@ -539,6 +540,8 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
+    auto dialog = dynamic_cast<wxScrolledWindow*>(panel->GetGrandParent());
+    wxASSERT(dialog != 0);
     auto actionPIC = panel->GetPlugin();
     wxString name = actionPIC->m_common_name;
     
@@ -584,14 +587,14 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         {
             // Grab a copy of the managed metadata
             auto metaSave = actionPIC->m_ManagedMetadata;
-            run_update_dialog(actionPIC, true, metaSave.name.c_str());
+            run_update_dialog(dialog, actionPIC, true, metaSave.name.c_str());
             break;
         }
 
         case  ActionVerb::INSTALL_MANAGED_VERSION:
         {
             wxLogMessage("Installing new managed plugin.");
-            run_update_dialog(actionPIC, false);
+            run_update_dialog(dialog, actionPIC, false);
             break;
         }
 
@@ -1045,7 +1048,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                     
                 //    The common name is available without initialization and startup of the PlugIn
                 pic->m_common_name = pic->m_pplugin->GetCommonName();
-                    
                 pic->m_plugin_filename = plugin_file;
                 pic->m_plugin_modification = plugin_modification;
                 pic->m_bEnabled = enabled;
@@ -5413,7 +5415,9 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        run_update_dialog(m_pPlugin, true);
+        auto plugin_page = dynamic_cast<wxScrolledWindow*>(GetGrandParent());
+        wxASSERT(plugin_page != 0);
+        run_update_dialog(plugin_page, m_pPlugin, false);
     }
     else if (m_bSelected){
         SetSelected(false);
