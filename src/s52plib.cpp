@@ -4930,6 +4930,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //  Allocate some storage for converted points
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
         double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
+        int *mask = (int *)malloc(  ( max_points ) * sizeof(int) ); 
         
         line_segment_element *ls = rzRules->obj->m_ls_list;
         
@@ -4940,7 +4941,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         int ndraw = 0;
         while(ls){
-            if( ls->priority == priority_current  ) {  
+            if( 1/*ls->priority == priority_current*/  ) {  
  
                 
                 //transcribe the segment in the proper order into the output buffer
@@ -4968,10 +4969,13 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     vbo_index = (nPoints-1) * 2;
                     vbo_inc = -2;
                 }
+                
+                double offset = 0;
                 for(int ip=0 ; ip < nPoints ; ip++){
                     wxPoint r;
                     GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
                     if( 1/*(r.x != lp.x) || (r.y != lp.y)*/ ){
+                        mask[index] = (ls->priority == priority_current)?1:0;
                         ptp[index++] = r;
                         pdp[idouble++] = ppt[vbo_index];
                         pdp[idouble++] = ppt[vbo_index + 1];
@@ -5029,14 +5033,16 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 {
                     if(nls){
                         wxPoint2DDouble *pReduced = 0;
-                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                        int *pMaskOut = 0;
+                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced, mask, &pMaskOut);
                     
                         wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
                         GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
                         free(pReduced);
                     
-                        draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly( m_pdc, color, w, ptestp, pMaskOut, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
                         free(ptestp);
+                        free(pMaskOut);
                     
                         ndraw++;
                     }
@@ -5053,14 +5059,17 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 // no more segments, so render what is available
                 if(nls){
                     wxPoint2DDouble *pReduced = 0;
-                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                    int *pMaskOut = 0;
+                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced, mask, &pMaskOut);
                     
                     wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
                     GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
                     free(pReduced);
                     
-                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                    draw_lc_poly( m_pdc, color, w, ptestp, pMaskOut, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
                     free( ptestp );
+                    free(pMaskOut);
+
                 }
             }
             
@@ -5070,13 +5079,14 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         free( ptp );
         free(pdp);
+        free(mask);
     }
     
     return 1;
 }
 
 
-int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest)
+int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest, int *maskIn, int **maskOut)
 {
     //      Reduce the LOD of this linestring
     std::vector<int> index_keep;
@@ -5098,15 +5108,26 @@ int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2
     wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.size() ) * sizeof(wxPoint2DDouble) ); 
     *dest = pReduced;
     
+    int *pmaskOut = NULL;
+    if(maskIn){
+        *maskOut = (int *)malloc( ( index_keep.size() ) * sizeof(int) ); 
+        pmaskOut = *maskOut;
+    }
+    
     double *ppr = source;  
     int ir = 0;
     for(int ip = 0 ; ip < nPoints ; ip++)
     {
         double x = *ppr++;
         double y = *ppr++;
+        int maskval = 1;
+        if(maskIn)
+            maskval = maskIn[ip];
+        //printf("LOD:  %10g  %10g\n", x, y);
         
         for(unsigned int j=0 ; j < index_keep.size() ; j++){
             if(index_keep[j] == ip){
+                if(pmaskOut) pmaskOut[ir] = maskval;
                 pReduced[ir++] = wxPoint2DDouble(x, y);
                 break;
             }
@@ -5243,10 +5264,10 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             if( ( inode ) && ( jnode ) ){
-                draw_lc_poly( m_pdc, color, w, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
+                draw_lc_poly( m_pdc, color, w, ptp, NULL, nls + 2, sym_len, sym_factor, rules->razRule, vp );
             }
             else if(nls){
-                draw_lc_poly( m_pdc, color, w, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
+                draw_lc_poly( m_pdc, color, w, &ptp[1], NULL, nls, sym_len, sym_factor, rules->razRule, vp );
             }
 
         }
@@ -5279,7 +5300,7 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     float plat = ppolygeo[ctr_offset + 1];
                     GetPointPixSingle( rzRules, plat, plon, pr, vp );
 
-                    draw_lc_poly( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule,
+                    draw_lc_poly( m_pdc, color, w, ptp, NULL, npt + 1, sym_len, sym_factor, rules->razRule,
                             vp );
 
                     free( ptp );
@@ -5288,7 +5309,6 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
             }
         }
-
     return 1;
 }
 
@@ -5460,13 +5480,13 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 {
                     if(nls){
                         wxPoint2DDouble *pReduced = 0;
-                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced, NULL, NULL);
                     
                         wxPoint *ptestp = (wxPoint *) malloc( ( 2 * ( nPointReduced + 2 )) * sizeof(wxPoint) ); 
                         GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
                         free(pReduced);
                     
-                        draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                        draw_lc_poly( m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
                         free(ptestp);
                     }
                     
@@ -5482,13 +5502,13 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 // no more segments, so render what is available
                 if(nls){
                     wxPoint2DDouble *pReduced = 0;
-                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced, NULL, NULL);
                     
                     wxPoint *ptestp = (wxPoint *) malloc( ( 2 * ( max_points+ 2 ) ) * sizeof(wxPoint) ); 
                     GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
                     free(pReduced);
                     
-                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                    draw_lc_poly( m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
                     free( ptestp );
 
                 }
@@ -5504,21 +5524,17 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         free(ptp);
         free(pdp);
     }
-    
     return 1;
 }
 
 //      Render Line Complex Polyline
 
-void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int npt,
+void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int *mask, int npt,
         float sym_len, float sym_factor, Rule *draw_rule, ViewPort *vp )
 {
     if(npt < 2)
         return;
 
-//   if(npt < 50)
-//        return;
-    
     wxPoint r;
 
     //  We calculate the winding direction of the poly
@@ -5558,6 +5574,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
         float dx, dy, seg_len, theta;
         
         bool done = false;
+        ClipResult res;
         int iseg = start_seg;
         while( !done ){
             
@@ -5567,9 +5584,12 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
             y0 = ptp[iseg].y;
             x1 = ptp[iseg + inc].x;
             y1 = ptp[iseg + inc].y;
+            
+            //  Also, segments marked (by mask) as invisible
+            if( mask && !mask[iseg])
+                goto next_seg_dc;
 
-            ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_,
-                    ymax_ );
+            res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_, ymax_ );
 
             if( res == Invisible )
                 goto next_seg_dc;
@@ -5578,7 +5598,6 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
             dy = ptp[iseg + inc].y - ptp[iseg].y;
             seg_len = sqrt( dx * dx + dy * dy );
             theta = atan2f( dy, dx );
-            //printf(" %6d %6d %6d %6d %6g %6g %g\n", npt, iseg, x0, y0, dx, dy, theta * 180.);
 
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
@@ -5627,7 +5646,6 @@ next_seg_dc:
                 done = true;
             
         } // while
-        //printf("\n");
     } // if pdc
     
 #ifdef ocpnUSE_GL
@@ -5654,6 +5672,7 @@ next_seg_dc:
         }
         
         float dx, dy, seg_len, theta;
+        ClipResult res;
         
         bool done = false;
         int iseg = start_seg;
@@ -5665,8 +5684,11 @@ next_seg_dc:
             x1 = ptp[iseg + inc].x;
             y1 = ptp[iseg + inc].y;
 
-            ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_,
-                    ymax_ );
+            //  Also, segments marked (by mask) as invisible
+            if( mask && !mask[iseg])
+                goto next_seg;
+
+            res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_, ymax_ );
 
             if( res == Invisible )
                 goto next_seg;
@@ -6789,8 +6811,8 @@ int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-    //  if(rzRules->obj->Index != 4947)
-     //   return 0; //int yyp = 0;
+//      if(rzRules->obj->Index != 6118)
+//        return 0; //int yyp = 0;
 
 //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
 //            int yyp = 0;
