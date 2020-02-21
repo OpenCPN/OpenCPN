@@ -103,15 +103,6 @@ class PluginHandler {
         /** Return list of available, not installed plugins. */
         const std::vector<PluginMetadata> getAvailable();
 
-        /** Return list of available, unique plugins from configured XML catalog */
-        std::vector<PluginMetadata> getAvailableUniquePlugins();
-
-        /**
-         * Return list of all versions of given plugin name besides installed
-         * one.
-         */
-        std::vector<PluginMetadata> getUpdates(const std::string& plugin);
-
         /** Return path to metadata XML file. */
         std::string getMetadataPath();
 

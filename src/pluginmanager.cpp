@@ -62,6 +62,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <set>
 #include <iostream>
 
 #ifdef ocpnUSE_SVG
@@ -277,6 +278,37 @@ literalstatus_by_status({
 });
 
 
+
+/**
+ * Return list of available, unique and compatible plugins from
+ * configured XML catalog.
+ */
+static std::vector<PluginMetadata> getCompatiblePlugins()
+{
+    /** Compare two PluginMetadata objects, a named c++ requirement. */
+    struct metadata_compare{
+        bool operator() (const PluginMetadata& lhs,
+                         const PluginMetadata& rhs) const
+        {
+            return lhs.key() < rhs.key();
+        }
+    };
+
+    std::vector<PluginMetadata> returnArray;
+
+    std::set<PluginMetadata, metadata_compare> unique_plugins;
+    for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
+        unique_plugins.insert(plugin);
+    }
+    for (auto plugin: unique_plugins) {
+        if (PluginHandler::isCompatible(plugin)) {
+            returnArray.push_back(plugin);
+        }
+    }
+    return returnArray;
+}
+
+
 static SemanticVersion metadata_version(const PluginMetadata pm)
 {
     return SemanticVersion::parse(pm.name);
@@ -304,6 +336,34 @@ SemanticVersion getInstalledVersion(const std::string name)
 
 
 /**
+ * Return list of all versions of given plugin name besides installed
+ * one.
+ */
+static std::vector<PluginMetadata> getUpdates(const char* name)
+{
+    auto updates = getCompatiblePlugins();
+    updates.erase(
+       std::remove_if(updates.begin(), updates.end(),
+                      [&](const PluginMetadata m) { return m.name != name; }),
+       updates.end());
+
+    auto inst_vers = getInstalledVersion(name);
+    if (inst_vers.major == -1) {
+        return updates;
+    }
+
+    // Drop already installed plugin, it has its own update options.
+    updates.erase(
+        std::remove_if(
+            updates.begin(), updates.end(),
+            [&](const PluginMetadata m) {
+                    return metadata_version(m) == inst_vers; }),
+        updates.end());
+    return updates;
+}
+
+
+/**
  * Return number of existing files named filename in the list of
  * dirs.
  */
@@ -321,9 +381,10 @@ static int count_files_in_dirs(const char* filename,
     return count;
 }
 
+
 static PluginMetadata getLatestUpdate()
 {
-    auto updates = PluginHandler::getInstance()->getAvailableUniquePlugins();
+    auto updates = getCompatiblePlugins();
     if (updates.size() == 0) {
         PluginMetadata metadata;
         return metadata;
@@ -336,17 +397,6 @@ static PluginMetadata getLatestUpdate()
     return updates[0];
 }
 
-
-/** Return all updates with plugin name == name. */
-static std::vector<PluginMetadata> getUpdates(const char* name)
-{
-    auto updates = PluginHandler::getInstance()->getAvailableUniquePlugins();
-    updates.erase(
-        std::remove_if(updates.begin(), updates.end(),
-                       [&](const PluginMetadata m) { return m.name != name; }),
-        updates.end());
-    return updates;
-}
 
 static void run_update_dialog(PluginListPanel* parent,
                               PlugInContainer* pic,
@@ -367,15 +417,15 @@ static void run_update_dialog(PluginListPanel* parent,
         g_pi_manager->DeactivatePlugIn(pic);
         pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
-        
+
         wxLogMessage("Uninstalling %s", plugin);
         PluginHandler::getInstance()->uninstall(plugin);
         g_pi_manager->UpdatePlugIns();
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    auto downloader = new GuiDownloader(parent_dialog, update);
-    downloader->run(parent_dialog);
+    auto downloader = new GuiDownloader(parent_dlg, update);
+    downloader->run(parent_dlg);
 
     // Provisional error check
     std::string manifestPath =
@@ -1284,8 +1334,7 @@ void PlugInManager::UpdateManagedPlugins()
                 plugin_array.Item(i)->m_pluginStatus = PluginStatus::System;
     }
  
-    auto pluginHandler = PluginHandler::getInstance();
-    std::vector<PluginMetadata> available = pluginHandler->getAvailableUniquePlugins();
+    std::vector<PluginMetadata> available = getCompatiblePlugins();
 
     // Traverse the list again
     // Remove any managed plugins that are no longer available in the current catalog
