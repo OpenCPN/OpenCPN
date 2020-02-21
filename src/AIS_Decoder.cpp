@@ -505,6 +505,8 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->b_positionDoubtful = false;
 
             }
+            if ( value.HasMember(_T("altitude")) ) { 
+                pTargetData->altitude = value[_T("altitude ")].AsInt(); }
         } else if (update_path == _T("navigation.speedOverGround")) {
             pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
         } else if (update_path == _T("navigation.courseOverGroundTrue")) {
@@ -607,7 +609,14 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 long mmsi;
                 if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-
+                    
+                    //Split AtoNs here until SK's own detection
+                    if (pTargetData->Class == AIS_ATON) {
+                        pTargetData->NavStatus = ATON_REAL;
+                        if ( (6 == mmsi % 10000) / 1000 ) { //xxyyy6zzz
+                            pTargetData->NavStatus = ATON_VIRTUAL; 
+                        }
+                    }
                     if (97 == mmsi / 10000000) {
                         pTargetData->Class = AIS_SART;                        
                     }
