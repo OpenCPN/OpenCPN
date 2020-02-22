@@ -523,6 +523,12 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         else if (update_path == _T("atonType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
+
+                //Split AtoNs here until SK's own detection
+                pTargetData->NavStatus = ATON_REAL;
+                if ( 6 == (pTargetData->MMSI) % 10000 / 1000 ) { //xxyyy6zzz
+                    pTargetData->NavStatus = ATON_VIRTUAL;
+                }
             }
         } else if (update_path == _T("design.draft")) {
             if (value.HasMember(_T("maximum"))) {
@@ -610,13 +616,6 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
                     
-                    //Split AtoNs here until SK's own detection
-                    if (pTargetData->Class == AIS_ATON) {
-                        pTargetData->NavStatus = ATON_REAL;
-                        if ( (6 == mmsi % 10000) / 1000 ) { //xxyyy6zzz
-                            pTargetData->NavStatus = ATON_VIRTUAL; 
-                        }
-                    }
                     if (97 == mmsi / 10000000) {
                         pTargetData->Class = AIS_SART;                        
                     }
