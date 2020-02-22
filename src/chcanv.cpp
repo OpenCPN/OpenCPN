@@ -1667,9 +1667,14 @@ bool ChartCanvas::DoCanvasUpdate( void )
                             
                             // Check proposed scale, see how much underzoom results
                             // Adjust as necessary to prevent slow loading on initial startup
+                            // For MBTILES we skip this test because they are always shown in reasonable range of scale
                             if(pc){
-                                double chart_scale = pc->GetNativeScale();
-                                proposed_scale_onscreen = wxMin(proposed_scale_onscreen, chart_scale * 4);
+                                if (pc->GetChartType() != CHART_TYPE_MBTILES)
+                                    proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                                    4.0 * pc->GetNativeScale());
+                                else
+                                    proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                                    32.0 * pc->GetNativeScale());
                             }
                         }
                         
