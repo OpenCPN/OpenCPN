@@ -153,7 +153,7 @@ extern bool             g_bsmoothpanzoom;
 extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
-
+extern double           g_plus_minus_zoom_factor;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
 extern bool             g_bShowRouteTotal;
@@ -615,7 +615,8 @@ int MyConfig::LoadMyConfig()
     g_navobjbackups = 5;
     g_benableAISNameCache = true;
     g_n_arrival_circle_radius = 0.05;
-    
+    g_plus_minus_zoom_factor = 2.0;
+
     g_AISShowTracks_Mins = 20;
     g_AISShowTracks_Limit = 300.0;
     g_ShowScaled_Num = 10;
@@ -922,7 +923,8 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
 
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
-    
+    Read( _T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
+
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor );
 
     Read( _T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x );
@@ -2333,7 +2335,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
     Write( _T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base );
-
+    Write( _T ( "PlusMinusZoomFactor" ), g_plus_minus_zoom_factor );
     Write( _T ( "ShowMUIZoomButtons" ), g_bShowMuiZoomButtons );
 
 #ifdef ocpnUSE_GL

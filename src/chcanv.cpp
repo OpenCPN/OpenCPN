@@ -228,7 +228,7 @@ extern PopUpDSlide       *pPopupDetailSlider;
 extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-
+extern double           g_plus_minus_zoom_factor;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -2850,12 +2850,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
     case WXK_PAGEUP:{
-        ZoomCanvas( 2.0, false );
+        ZoomCanvas( g_plus_minus_zoom_factor, false );
         break;
     }
     case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
     case WXK_PAGEDOWN:{
-        ZoomCanvas( .5, false );
+        ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
         break;
     }
 	case WXK_DELETE:
@@ -2886,11 +2886,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         if( !g_b_assume_azerty ) {
             switch( key_char ) {
             case '+': case '=':
-                ZoomCanvas( 2.0, false );
+                ZoomCanvas( g_plus_minus_zoom_factor, false );
                 break;
 
             case '-': case '_':
-                ZoomCanvas( 0.5, false );
+                ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
                 break;
 
             }
@@ -2919,12 +2919,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         } else {   //AZERTY
             switch( key_char ) {
             case 43:
-                ZoomCanvas( 2.0, false );
+                ZoomCanvas( g_plus_minus_zoom_factor, false );
                 break;
 
             case 54:                     // '-'  alpha/num pad
 //            case 56:                     // '_'  alpha/num pad
-                ZoomCanvas( 0.5, false );
+                ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
                 break;
             }
         }
@@ -12001,12 +12001,12 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
     switch( event.GetId() ){
         
         case ID_ZOOMIN: {
-            ZoomCanvas( 2.0, false );
+            ZoomCanvas( g_plus_minus_zoom_factor, false );
             break;
         }
         
         case ID_ZOOMOUT: {
-            ZoomCanvas( 0.5, false );
+            ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
             break;
         }
         
