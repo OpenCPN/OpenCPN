@@ -505,6 +505,8 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->b_positionDoubtful = false;
 
             }
+            if ( value.HasMember(_T("altitude")) ) { 
+                pTargetData->altitude = value[_T("altitude ")].AsInt(); }
         } else if (update_path == _T("navigation.speedOverGround")) {
             pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
         } else if (update_path == _T("navigation.courseOverGroundTrue")) {
@@ -521,6 +523,12 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         else if (update_path == _T("atonType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
+
+                //Split AtoNs here until SK's own detection
+                pTargetData->NavStatus = ATON_REAL;
+                if ( 6 == (pTargetData->MMSI) % 10000 / 1000 ) { //xxyyy6zzz
+                    pTargetData->NavStatus = ATON_VIRTUAL;
+                }
             }
         } else if (update_path == _T("design.draft")) {
             if (value.HasMember(_T("maximum"))) {
@@ -607,7 +615,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 long mmsi;
                 if (value[_T("mmsi")].AsString().ToLong(&mmsi)) {
                     pTargetData->MMSI = mmsi;
-
+                    
                     if (97 == mmsi / 10000000) {
                         pTargetData->Class = AIS_SART;                        
                     }
