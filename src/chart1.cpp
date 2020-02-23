@@ -503,6 +503,7 @@ bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
 double                    g_overzoom_emphasis_base;
 bool                      g_oz_vector_scale;
+double                    g_plus_minus_zoom_factor;
 
 int                       g_nCOMPortCheck = 32;
 
@@ -4499,12 +4500,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
 
         case ID_MENU_ZOOM_IN:{
-            GetPrimaryCanvas()->ZoomCanvas( 2.0, false );
+            GetPrimaryCanvas()->ZoomCanvas( g_plus_minus_zoom_factor, false );
             break;
         }
 
         case ID_MENU_ZOOM_OUT:{
-            GetPrimaryCanvas()->ZoomCanvas( 0.5, false );
+            GetPrimaryCanvas()->ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
             break;
         }
 
