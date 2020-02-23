@@ -1129,7 +1129,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 516: return b_CntryLongStr ? _("Christmas Island") : _T("CX") ;
     case 518: return b_CntryLongStr ? _("Cook Islands") : _T("CK") ;
     case 520: return b_CntryLongStr ? _("Fiji") : _T("FJ") ;
-    case 523: return b_CntryLongStr ? _("Cocos") : _T("CC") ;
+    case 523: return b_CntryLongStr ? _("Cocos (Keeling) Islands") : _T("CC") ;
     case 525: return b_CntryLongStr ? _("Indonesia") : _T("ID") ;
     case 529: return b_CntryLongStr ? _("Kiribati") : _T("KI") ;
     case 531: return b_CntryLongStr ? _("Lao People's Dem. Rep.") : _T("LA") ;
@@ -1169,7 +1169,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 613: return b_CntryLongStr ? _("Cameroon") : _T("CM") ;
     case 615: return b_CntryLongStr ? _("Congo") : _T("CD") ;
     case 616: return b_CntryLongStr ? _("Comoros") : _T("KM") ;
-    case 617: return b_CntryLongStr ? _("Cape Verde") : _T("CV") ;
+    case 617: return b_CntryLongStr ? _("Capo Verde") : _T("CV") ;
     case 618: return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF") ;
     case 619: return b_CntryLongStr ? _("Ivory Coast") : _T("CI") ;
     case 620: return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM") ;
@@ -1186,7 +1186,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 633: return b_CntryLongStr ? _("Burkina Faso") : _T("BF") ;
     case 634: return b_CntryLongStr ? _("Kenya") : _T("KE") ;
     case 635: return b_CntryLongStr ? _("Kerguelen Islands") : _T("TF") ;
-    case 636: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
+    case 636:
     case 637: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 638: return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS") ;
     case 642: return b_CntryLongStr ? _("Libya") : _T("LY") ;
@@ -1226,7 +1226,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 730: return b_CntryLongStr ? _("Colombia") : _T("CO") ;
     case 735: return b_CntryLongStr ? _("Ecuador") : _T("EC") ;
     case 740: return b_CntryLongStr ? _("Falkland Islands") : _T("FK") ;
-    case 745: return b_CntryLongStr ? _("Guiana") : _T("GY") ;
+    case 745: return b_CntryLongStr ? _("France - Guiana") : _T("GY") ;
     case 750: return b_CntryLongStr ? _("Guyana") : _T("GY") ;
     case 755: return b_CntryLongStr ? _("Paraguay") : _T("PY") ;
     case 760: return b_CntryLongStr ? _("Peru") : _T("PE") ;
