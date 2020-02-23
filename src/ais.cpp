@@ -1395,27 +1395,47 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                          TargetPoint.x, TargetPoint.y, 8 );
 
     } else if(td->b_SarAircraftPosnReport) {
-        wxPoint SarIcon[10];
-        wxPoint SarRot[10];
-
-        SarIcon[0] = wxPoint(0, 12);
-        SarIcon[1] = wxPoint(4, 2);
-        SarIcon[2] = wxPoint(16, -2);
-        SarIcon[3] = wxPoint(16, -8);
-        SarIcon[4] = wxPoint(4, -8);
-        SarIcon[5] = wxPoint(3, -16);
-        SarIcon[6] = wxPoint(10, -18);
-        SarIcon[7] = wxPoint(10, -22);
-        SarIcon[8] = wxPoint(0, -22);
-
+        int airtype = (td->MMSI % 1000)/100; // xxxyyy5zz >> helicopter
+        int ar = airtype == 5 ? 15 : 9;      // array size
+        wxPoint SarIcon[15];
+        wxPoint SarRot[15];
+        
+        if (airtype == 5) {
+            SarIcon[0] = wxPoint(0, 9);
+            SarIcon[1] = wxPoint(1, 1);
+            SarIcon[2] = wxPoint(2, 1);
+            SarIcon[3] = wxPoint(9, 8);
+            SarIcon[4] = wxPoint(9, 7);
+            SarIcon[5] = wxPoint(3, 0);
+            SarIcon[6] = wxPoint(3, -5);
+            SarIcon[7] = wxPoint(9, -12);
+            SarIcon[8] = wxPoint(9, -13);
+            SarIcon[9] = wxPoint(2, -5);
+            SarIcon[10] = wxPoint(1, -15);
+            SarIcon[11] = wxPoint(3, -16);
+            SarIcon[12] = wxPoint(4, -18);
+            SarIcon[13] = wxPoint(1, -18);
+            SarIcon[14] = wxPoint(0, -19);
+        }
+        else {
+            SarIcon[0] = wxPoint(0, 12);
+            SarIcon[1] = wxPoint(4, 2);
+            SarIcon[2] = wxPoint(16, -2);
+            SarIcon[3] = wxPoint(16, -8);
+            SarIcon[4] = wxPoint(4, -8);
+            SarIcon[5] = wxPoint(3, -16);
+            SarIcon[6] = wxPoint(10, -18);
+            SarIcon[7] = wxPoint(10, -22);
+            SarIcon[8] = wxPoint(0, -22);        
+        }
 
         // Draw icon as two halves
 
         //  First half
 
-        for( int i = 0; i < 9; i++ )
+        for( int i = 0; i < ar; i++ )
             SarRot[i] = SarIcon[i];
-        transrot_pts(9, SarRot, sin_theta, cos_theta);
+        transrot_pts(ar, SarRot, sin_theta, cos_theta);
 
         wxPen tri_pen( target_brush.GetColour(), 1 );
         dc.SetPen( tri_pen );
@@ -1431,14 +1451,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
         dc.SetPen( target_outline_pen );
         dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-        dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+        dc.StrokePolygon( ar, SarRot, TargetPoint.x, TargetPoint.y );
 
         // second half
 
-        for( int i = 0; i < 9; i++ )
+        for( int i = 0; i < ar; i++ )
             SarRot[i] = wxPoint(-SarIcon[i].x, SarIcon[i].y); // mirror the icon (x -> -x)
 
-        transrot_pts(9, SarRot, sin_theta, cos_theta);
+        transrot_pts(ar, SarRot, sin_theta, cos_theta);
 
         dc.SetPen( tri_pen );
         dc.SetBrush( target_brush );
@@ -1452,7 +1472,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
         dc.SetPen( target_outline_pen );
         dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-        dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+        dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y );
 
     } else {         // ship class A or B or a Buddy or DSC
         wxPen target_pen( UBLCK, 1 );

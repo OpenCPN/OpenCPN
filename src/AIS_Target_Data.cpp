@@ -336,8 +336,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         ClassStr = wxGetTranslation( cls );
     }
     
-    if(b_SarAircraftPosnReport)
-        ClassStr = _("SAR Aircraft");
+    if (b_SarAircraftPosnReport) {
+        int airtype = (MMSI % 1000) / 100;
+        ClassStr = airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft");
+    }
 
     if( IMOstr.Length() )
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
@@ -714,8 +716,10 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T(": "));
             result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
         }
-        else if(b_SarAircraftPosnReport)
-            result.Append(_("SAR Aircraft"));
+        else if (b_SarAircraftPosnReport) {
+            int airtype = (MMSI % 1000) / 100;
+            result.Append(airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft"));
+        }
         else
             result.Append( wxGetTranslation( Get_class_string( false ) ) );
         
