@@ -63,7 +63,7 @@ extern OCPNPlatform               *g_Platform;
 extern bool                       g_bmasterToolbarFull;
 extern bool                       g_useMUI;
 extern wxString                   g_toolbarConfig;
-
+extern double                     g_plus_minus_zoom_factor;
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
@@ -2393,7 +2393,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
         if( event.LeftDown() && tool && (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
             if(pcc){
-                pcc->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5, false, false );
+                pcc->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? g_plus_minus_zoom_factor : 1.0 / g_plus_minus_zoom_factor, false, false );
                 m_btoolbar_is_zooming = true;
             }
             return;
