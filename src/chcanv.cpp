@@ -3994,8 +3994,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
         showTrackRollover = false;
 
     //TODO  We onlt show tracks on primary canvas....
-    if(!IsPrimaryCanvas())
-        showTrackRollover = false;
+    //if(!IsPrimaryCanvas())
+    //    showTrackRollover = false;
     
     if( m_pTrackRolloverWin /*&& m_pTrackRolloverWin->IsActive()*/ && !showTrackRollover ) {
         m_pTrackRolloverWin->IsActive( false );
