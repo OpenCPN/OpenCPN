@@ -130,12 +130,12 @@ wxString ais_get_status(int index)
         _("Reserved 13"),
         _("Reserved 14"),
         _("Undefined"),
-        _("Virtual"),
-        _("Virtual (On Position)"),
-        _("Virtual (Off Position)"),
-        _("Real"),
-        _("Real (On Position)"),
-        _("Real(Off Position)")
+        _("AtoN Virtual"),
+        _("AtoN Virtual (On Position)"),
+        _("AtoN Virtual (Off Position)"),
+        _("AtoN Real"),
+        _("AtoN Real (On Position)"),
+        _("AtoN Real(Off Position)")
     };
 
     return ais_status[index];
