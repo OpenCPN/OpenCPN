@@ -2727,12 +2727,20 @@ int S57Reader::FindAndApplyUpdates( const char * pszPath )
 /************************************************************************/
 
 // Android uses clang compiler.
+// Problem also appears on GCC, on __ARM_ARCH.
 //  At optimization -O3, this function has trouble with alignment of values,
 //  Specifically, conversion of an int32 from a buffer into double.
 //  Workaround: We disable optimization for this little used function.
 #ifdef __ARM_ARCH
+#if defined(__clang__)
 [[clang::optnone]]
+#elif defined(__GNUC__) || defined(__GNUG__)
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+
 #endif
+#endif
+
 
 OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
 
@@ -2846,3 +2854,8 @@ OGRErr S57Reader::GetExtent( OGREnvelope *psExtent, int bForce )
     }
 }
 
+#ifdef __ARM_ARCH
+#if defined(__GNUC__) || defined(__GNUG__)
+#pragma GCC pop_options
+#endif
+#endif
