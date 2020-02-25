@@ -959,6 +959,12 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
     delete (wxLocale*)presentLocale;
     
     wxLocale *locale = new wxLocale;
+    if (isFlatpacked()) {
+        std::string path(getenv("HOME"));
+        path += "/.var/app/org.opencpn.OpenCPN/data/locale";
+        locale->AddCatalogLookupPathPrefix(path);
+        wxLogMessage("Using flatpak locales at %s", path.c_str());
+    }
     wxString loc_lang_canonical;
     
     const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocaleID );
