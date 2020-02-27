@@ -6,6 +6,7 @@
 
 #include "wx/jsonval.h"
 #include "wx/jsonwriter.h"
+#include "wx/jsonreader.h"
 
 #include "geodesic.h"
 #include "SignalKEventHandler.h"
@@ -18,16 +19,20 @@ wxString                g_ownshipMMSI_SK;
 
 void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
-    auto root = event.GetValue();
-#if 0
-    wxString dbg;
-    wxJSONWriter writer;
-    writer.Write(root, dbg);
+    wxJSONReader jsonReader;
+    wxJSONValue root;
 
-    wxString msg( _T("SignalK Event received: ") );
-    msg.append(dbg);
-    wxLogMessage(msg);
-#endif
+    fprintf(stderr, "%s\n", event.GetString().c_str());
+
+    std::string msgTerminated = event.GetString();
+    msgTerminated.append("\r\n");
+
+    int errors = jsonReader.Parse(msgTerminated, &root);
+    if (errors > 0) {
+        wxLogMessage( wxString::Format(_T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
+                      errors));
+        return;
+    }
 
     if (root.HasMember(_T("version"))) {
         wxString msg = _T("Connected to Signal K server version: ");

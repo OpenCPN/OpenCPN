@@ -361,8 +361,16 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 //----------------------------------------------------------------------------------
 void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
 {
-    auto root = event.GetValue();
+    wxJSONReader jsonReader;
+    wxJSONValue root;
 
+    std::string msgTerminated = event.GetString();
+    msgTerminated.append("\r\n");
+
+    int errors = jsonReader.Parse(msgTerminated, &root);
+    if(errors > 0)
+        return;
+    
     if(root.HasMember(_T("self"))) {
         //m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
         m_signalk_selfid = (root["self"].AsString());           // Verified for OpenPlotter node.js server 1.20
@@ -424,7 +432,6 @@ void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
         pTargetData->b_OwnShip = false;
         ( *AISTargetList )[pTargetData->MMSI] = pTargetData;
     }
-
 }
 
 void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData,

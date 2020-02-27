@@ -8,24 +8,26 @@
 
 #include <wx/event.h>
 #include "wx/jsonval.h"
+#include "wx/jsonreader.h"
+#include "wx/jsonwriter.h"
 
 class OCPN_SignalKEvent : public wxEvent {
 public:
     OCPN_SignalKEvent(int id,
                       wxEventType commandType,
-                      wxJSONValue value)
+                      std::string rawString)
             : wxEvent(id, commandType),
-            m_value(value) {}
+            m_string(rawString) {}
     virtual ~OCPN_SignalKEvent() {};
 
-    const wxJSONValue& GetValue() { return m_value; };
+    const std::string& GetString() { return m_string; }
 
     wxEvent *Clone() const {
-        return new OCPN_SignalKEvent(GetId(), GetEventType(), m_value);
+        return new OCPN_SignalKEvent(GetId(), GetEventType(), m_string);
     };
 
 private:
-    wxJSONValue m_value;
+    std::string m_string;
 };
 
 

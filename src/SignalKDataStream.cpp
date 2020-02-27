@@ -91,7 +91,7 @@ OCPN_WebSocketMessageHandler::OCPN_WebSocketMessageHandler( SignalKDataStream *p
 void OCPN_WebSocketMessageHandler::OnWebSocketMessage( OCPN_SignalKEvent &event )
 {
     if(m_upstream_consumer){
-            OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, event.GetValue());
+            OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, event.GetString());
             m_upstream_consumer->AddPendingEvent(signalKEvent);
     }
     
@@ -439,7 +439,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                             } else {
                                 if( GetConsumer() ) {
 
-#if 1                                    
+#if 0                                    
                                     wxString dbg;
                                     wxJSONWriter writer;
                                     writer.Write(root, dbg);
@@ -448,7 +448,7 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                                     msg.append(dbg);
                                     wxLogMessage(msg);
 #endif
-                                    OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, root);
+                                    OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, sk_line);
                                     GetConsumer()->AddPendingEvent(signalKEvent);
                                 }
                             }
@@ -577,34 +577,11 @@ void *WebSocketThread::Entry()
 
 void WebSocketThread::HandleMessage(const std::string & message)
 {
-    wxJSONReader jsonReader;
-    wxJSONValue root;
-
-    fprintf(stderr, "%s\n", message.c_str());
-
-    std::string msgTerminated = message;
-    msgTerminated.append("\r\n");
-
-    int errors = jsonReader.Parse(msgTerminated, &root);
-    if (errors > 0) {
-        wxLogMessage( wxString::Format(_T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
-                      errors));
-    } else {
- 
-#if 0                                    
-        wxString dbg;
-        wxJSONWriter writer;
-        writer.Write(root, dbg);
-
-        wxString msg( _T("SignalK TCP Socket Event sent to consumer:\n") );
-        msg.append(dbg);
-        wxLogMessage(msg);
-#endif
-        if(s_wsConsumer){
-            OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, root);
-            s_wsConsumer->AddPendingEvent(signalKEvent);
-        }
+    if(s_wsConsumer){
+        OCPN_SignalKEvent signalKEvent(0, EVT_OCPN_SIGNALKSTREAM, message);
+        s_wsConsumer->AddPendingEvent(signalKEvent);
     }
+   
 }
 
 

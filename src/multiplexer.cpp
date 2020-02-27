@@ -38,6 +38,10 @@
 #include "OCPN_SignalKEvent.h"
 #include "datastream.h"
 #include "SerialDataStream.h"
+#include "wx/jsonval.h"
+#include "wx/jsonwriter.h"
+#include "wx/jsonreader.h"
+
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -353,7 +357,16 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
         m_aisconsumer->AddPendingEvent(event);
     if( m_gpsconsumer )
         m_gpsconsumer->AddPendingEvent(event);
-    g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), event.GetValue());
+    
+    wxJSONReader jsonReader;
+    wxJSONValue root;
+
+    std::string msgTerminated = event.GetString();
+    msgTerminated.append("\r\n");
+
+    int errors = jsonReader.Parse(msgTerminated, &root);
+    if( errors == 0)
+        g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
 }
 
 void Multiplexer::SaveStreamProperties( DataStream *stream )
