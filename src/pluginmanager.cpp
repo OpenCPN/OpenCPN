@@ -2137,7 +2137,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     int pi_major = plug_in->GetPlugInVersionMajor();
     int pi_minor = plug_in->GetPlugInVersionMinor();
-    int pi_ver = (pi_major * 100) + pi_minor;
+    SemanticVersion version(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
         delete pic;
@@ -2190,8 +2190,19 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         break;
         
     case 116:
-    case 117:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
+        break;
+
+    case 117:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_117*>(plug_in);
+        do /* force a local scope */ {
+            auto p = dynamic_cast<opencpn_plugin_117*>(plug_in);
+            version = SemanticVersion(pi_major, pi_minor,
+                                      p->GetPlugInVersionPatch(),
+                                      p->GetPlugInVersionPost(),
+                                      p->GetPlugInVersionPre(),
+                                      p->GetPlugInVersionBuild());
+        } while (false);
         break;
         
     default:
@@ -2200,18 +2211,16 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(pic->m_pplugin)
     {
-        msg = _T("PlugInManager:  ");
-        msg += plugin_file;
-        wxString msg1;
-        msg1.Printf(_T("\n              API Version detected: %d"), api_ver);
-        msg += msg1;
-        msg1.Printf(_T("\n              PlugIn Version detected: %d"), pi_ver);
-        msg += msg1;
-        wxLogMessage(msg);
+        std::stringstream msg;
+        msg << "PlugInManager:  " << plugin_file
+            << "\n        Plugin common name: " << pic->m_pplugin->GetCommonName()
+            << "\n        API Version detected: " << api_ver
+            << "\n        PlugIn Version detected: " << version;
+        wxLogMessage(msg.str().c_str());
     }
     else
     {
-        msg = _T("    ");
+        wxString msg = _T("    ");
         msg += plugin_file;
         wxString msg1 = _T(" cannot be loaded");
         msg += msg1;
