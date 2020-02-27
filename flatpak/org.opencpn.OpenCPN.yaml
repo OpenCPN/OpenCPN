@@ -89,5 +89,3 @@ modules:
             branch: master 
           - type: patch
             path: src/0008-flatpak-Add-a-shell-wrapper.patch
-          - type: patch
-            path: src/0009-flatpak-Patch-locale-lookup-paths.patch
