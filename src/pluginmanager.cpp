@@ -5368,6 +5368,9 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
+    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+        m_pVersion->Hide();
+    }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
