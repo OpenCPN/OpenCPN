@@ -86,6 +86,6 @@ modules:
       sources:
           - type: git
             url: ..
-            branch: master 
+            branch: master
           - type: patch
             path: src/0008-flatpak-Add-a-shell-wrapper.patch
