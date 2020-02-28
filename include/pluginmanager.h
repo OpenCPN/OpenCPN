@@ -364,8 +364,6 @@ public:
 
       void DimeWindow(wxWindow *win);
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
-      void SetListPanelPtr(PluginListPanel *p){ m_listPanel = p; }
-      PluginListPanel *GetListPanelPtr(){ return m_listPanel; }
       
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
@@ -535,6 +533,8 @@ public:
       bool GetSelected(){ return m_bSelected; }
       PlugInContainer* GetPluginPtr() { return m_pPlugin; };
       void SetActionLabel( wxString &label);
+      ActionVerb GetAction() { return m_action; }
+      PlugInContainer* GetPlugin() { return m_pPlugin; }
 
 private:
       PluginListPanel *m_PluginListPanel;
@@ -555,6 +555,7 @@ private:
       wxButton        *m_pButtonDown;
       wxRadioButton   *m_rbEnable, *m_rbDisable;
       WebsiteButton   *m_info_btn;
+      ActionVerb      m_action;
 };
 
 

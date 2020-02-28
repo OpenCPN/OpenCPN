@@ -837,28 +837,3 @@ bool PluginHandler::uninstall(const std::string plugin_name)
 
     return true;
 }
-
-std::vector<PluginMetadata> PluginHandler::getAvailableUniquePlugins()
-{
-    /** Compare two PluginMetadata objects, a named c++ requirement. */
-    struct metadata_compare{
-        bool operator() (const PluginMetadata& lhs,
-                         const PluginMetadata& rhs) const
-        {
-            return lhs.key() < rhs.key();
-        }
-    };
-
-    std::vector<PluginMetadata> returnArray;
-    
-    std::set<PluginMetadata, metadata_compare> unique_plugins;
-    for (auto plugin: getAvailable()) {
-        unique_plugins.insert(plugin);
-    }
-    for (auto plugin: unique_plugins) {
-        if (PluginHandler::isCompatible(plugin)) {
-            returnArray.push_back(plugin);
-        }
-    }
-    return returnArray;
-}
