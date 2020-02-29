@@ -870,6 +870,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
     m_benable_blackdialog_done = false;
     
     m_utilHandler = new pluginUtilHandler();
+    m_listPanel = NULL;
 }
 
 PlugInManager::~PlugInManager()
@@ -1435,6 +1436,35 @@ void PlugInManager::UpdateManagedPlugins()
 
         }
     }
+    
+    // Sort the list
+
+    // Detach and hold the uninstalled, managed plugins
+    std::map <std::string, PlugInContainer*> sortmap;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++){
+        PlugInContainer *pic = plugin_array[i];
+        if(pic->m_pluginStatus == PluginStatus::ManagedInstallAvailable){
+            plugin_array.Remove(pic);
+            
+            // Sort by name, lower cased.
+            std::string name = pic->m_ManagedMetadata.name;
+            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+            sortmap[name] =  pic;
+            i = 0;      // Restart the list
+        }
+    }
+    
+    // Add the detached plugins back at the top of the list.
+    //  Later, the list will be populated in reverse order...Why??
+    for (std::map<std::string, PlugInContainer*>::iterator i = sortmap.begin(); i != sortmap.end(); i++){
+        PlugInContainer *pic = i->second;
+        plugin_array.Insert(pic, 0);
+    }
+
+    if(m_listPanel)
+        m_listPanel->ReloadPluginPanels( &plugin_array );
+
+
 }
 
 bool PlugInManager::UpDateChartDataTypes(void)

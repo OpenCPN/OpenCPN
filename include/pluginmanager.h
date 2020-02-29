@@ -364,7 +364,8 @@ public:
 
       void DimeWindow(wxWindow *win);
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
-      
+      void SetListPanelPtr( PluginListPanel *ptr ) { m_listPanel = ptr; }
+
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
