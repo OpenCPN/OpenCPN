@@ -37,7 +37,6 @@ Renamed options:
         USE_BUNDLED_LIBS -> OCPN_USE_BUNDLED_LIBS
         BUNDLE_DOCS ->  OCPN_BUNDLE_DOCS
         BUNDLE_TCDATA -> OCPN_BUNDLE_TCDATA
-        BUNDLE_GSHHS ->OCPN_BUNDLE_GSHHS
         ENABLE_PORTAUDIO -> OCPN_ENABLE_PORTAUDIO
         USE_GARMINHOST -> OCPN_USE_GARMINHOST
         ENABLE_CPPCHECK -> OCPN_ENABLE_CPPCHECK
@@ -75,11 +74,9 @@ Documentation:
     opencpn website.
 
 
-Tidal/current and GSHHS wallpaper
+Tidal/current wallpaper
   - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in
     package.
-  - BUNDLE_GSHHS (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL) governs the
-    wallpaper map used as last resort and world overview.
 
 To build for android, use something like:
     $cmake -DUSE_GARMINHOST=OFF
@@ -171,27 +168,17 @@ macro (BUNDLE_TCDATA_OPT onoff)
   )
 endmacro (BUNDLE_TCDATA_OPT)
 
-macro (BUNDLE_GSHHS_OPT value)
-  set(
-    OCPN_BUNDLE_GSHHS "${value}"
-    CACHE
-      STRING
-      "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)"
-  )
-endmacro (BUNDLE_GSHHS_OPT)
 
 # If on Windows or Apple, build the monolithic package, to override use a non-
 # sense values from the commandline (due to cmake inability to distinguish
 # between not set and set to FALSE): cmake -DOCPN_BUNDLE_DOCS=BLAH
-# -DOCPN_BUNDLE_TCDATA=BLAH -DOCPN_BUNDLE_GSHHS=BLAH ..
+# -DOCPN_BUNDLE_TCDATA=BLAH 
 if (APPLE OR WIN32)
   bundle_docs_opt("ON")
   bundle_tcdata_opt("ON")
-  bundle_gshhs_opt("CRUDE")
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
   bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("NONE")
 endif (APPLE OR WIN32)
 
 option(OCPN_VERBOSE "Make verbose builds"  ON)
@@ -595,7 +582,7 @@ endif (APPLE)
 message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 #
-# Bundled data: docs, tcdata, gshhs
+# Bundled data: docs, tcdata
 #
 
 
@@ -1701,71 +1688,14 @@ if (MSVC)
   target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
 endif ()
 
-set(gshhs_MIN data/gshhs/poly-c-1.dat)
-
 set(
-  gshhs_CRUDE
-  ${gshhs_MIN}
-  data/gshhs/wdb_borders_c.b
-  data/gshhs/wdb_rivers_c.b
-)
-
-set(
-  gshhs_LOW
-  ${gshhs_CRUDE}
-  data/gshhs/poly-l-1.dat
-  data/gshhs/wdb_borders_l.b
-  data/gshhs/wdb_rivers_l.b
-)
-
-set(
-  gshhs_INTERMEDIATE
-  ${gshhs_LOW}
-  data/gshhs/poly-i-1.dat
-  data/gshhs/wdb_borders_i.b
-  data/gshhs/wdb_rivers_i.b
-)
-
-set(
-  gshhs_HIGH
-  ${gshhs_INTERMEDIATE}
-  data/gshhs/poly-h-1.dat
-  data/gshhs/wdb_borders_h.b
-  data/gshhs/wdb_rivers_h.b
-)
-
-set(
-  gshhs_FULL
-  ${gshhs_HIGH}
-  data/gshhs/poly-f-1.dat
-  data/gshhs/wdb_borders_f.b
-  data/gshhs/wdb_rivers_f.b
+  gshhs
+    data/gshhs/poly-c-1.dat
+    data/gshhs/wdb_borders_c.b
+    data/gshhs/wdb_rivers_c.b
 )
 
 # Various data files
-if (OCPN_BUNDLE_GSHHS MATCHES "MIN")
-  set(gshhs ${gshhs_MIN})
-endif (OCPN_BUNDLE_GSHHS MATCHES "MIN")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
-  set(gshhs ${gshhs_CRUDE})
-endif (OCPN_BUNDLE_GSHHS MATCHES "CRUDE")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "LOW")
-  set(gshhs ${gshhs_LOW})
-endif (OCPN_BUNDLE_GSHHS MATCHES "LOW")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-  set(gshhs ${gshhs_INTERMEDIATE})
-endif (OCPN_BUNDLE_GSHHS MATCHES "INTERMEDIATE")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "HIGH")
-  set(gshhs ${gshhs_HIGH})
-endif (OCPN_BUNDLE_GSHHS MATCHES "HIGH")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "FULL")
-  set(gshhs ${gshhs_FULL})
-endif (OCPN_BUNDLE_GSHHS MATCHES "FULL")
 
 set(
   uiData
@@ -1842,13 +1772,10 @@ add_subdirectory("libs/wxservdisc")
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
 
 if (APPLE)
-  if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
-    set_source_files_properties(
-      ${gshhs}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
-    )
-  endif ()
+  set_source_files_properties(
+    ${gshhs}
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
+  )
 
   set_source_files_properties(
     ${uiData}
@@ -2156,10 +2083,7 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_PKGDATA}
   )
 
-  if (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
-    install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
-  endif (NOT OCPN_BUNDLE_GSHHS MATCHES "NONE")
-
+  install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
   install(
     DIRECTORY data/svg/markicons/
@@ -2665,18 +2589,6 @@ else (WIN32 AND NOT UNIX)
     CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/data/license.html"
   )
 endif (WIN32 AND NOT UNIX)
-
-if (OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  # Possible values: NONE (default), MIN (=Only crude polygons, no
-  # borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
-  message(
-    STATUS
-      "*** Package will include GSHHS basechart level: ${OCPN_BUNDLE_GSHHS} ***"
-  )
-else (OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
-  set(BUNDLE_GSHHS "NONE")
-  message(STATUS "*** Package will NOT include GSHHS data ***")
-endif (OCPN_BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
 
 if (OCPN_BUNDLE_TCDATA MATCHES "ON")
   message(STATUS "*** Package will include tide and current data ***")
