@@ -2137,7 +2137,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     int pi_major = plug_in->GetPlugInVersionMajor();
     int pi_minor = plug_in->GetPlugInVersionMinor();
-    SemanticVersion version(pi_major, pi_minor, -1);
+    SemanticVersion pi_ver(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
         delete pic;
@@ -2197,11 +2197,11 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_117*>(plug_in);
         do /* force a local scope */ {
             auto p = dynamic_cast<opencpn_plugin_117*>(plug_in);
-            version = SemanticVersion(pi_major, pi_minor,
-                                      p->GetPlugInVersionPatch(),
-                                      p->GetPlugInVersionPost(),
-                                      p->GetPlugInVersionPre(),
-                                      p->GetPlugInVersionBuild());
+            pi_ver = SemanticVersion(pi_major, pi_minor,
+                                     p->GetPlugInVersionPatch(),
+                                     p->GetPlugInVersionPost(),
+                                     p->GetPlugInVersionPre(),
+                                     p->GetPlugInVersionBuild());
         } while (false);
         break;
         
@@ -2215,7 +2215,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         msg << "PlugInManager:  " << plugin_file
             << "\n        Plugin common name: " << pic->m_pplugin->GetCommonName()
             << "\n        API Version detected: " << api_ver
-            << "\n        PlugIn Version detected: " << version;
+            << "\n        PlugIn Version detected: " << pi_ver;
         wxLogMessage(msg.str().c_str());
     }
     else
