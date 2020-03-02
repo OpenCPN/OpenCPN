@@ -56,6 +56,7 @@ int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
 int g_iUTCOffset;
 double g_dDashDBTOffset;
+bool g_iDashUsetruewinddata;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -1509,38 +1510,45 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if (update_path == _T("environment.wind.angleApparent")) { 
             if (mPriAWA >= 1) {
                 double m_awaangle = GEODESIC_RAD2DEG(value.AsDouble()); // negative to port
+                mPriAWA = 1; // Set prio only here. No need to catch speed if no angle.
                 wxString m_awaunit = _T("\u00B0R");
                 if (m_awaangle < 0) {
                     m_awaunit = _T("\u00B0L");
                     m_awaangle *= -1;
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
+                mMWVA_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
         else if (update_path == _T("environment.wind.speedApparent")) {
             if (mPriAWA >= 1) {
-                mPriAWA = 1;
                 double m_awaspeed_kn = MS2KNOTS(value.AsDouble());
                 SendSentenceToAllInstruments(OCPN_DBP_STC_AWS,
                     toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-                mMWVA_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
-        else if (update_path == _T("environment.wind.angleTrueWater")) { //neg to port TODO: .angleTrueGround
+        else if ((update_path == _T("environment.wind.angleTrueWater")
+                                           && !g_iDashUsetruewinddata) ||
+                (update_path == _T("environment.wind.angleTrueGround")
+                                           && g_iDashUsetruewinddata)) {
             if (mPriTWA >= 1) {
                 double m_twaangle = GEODESIC_RAD2DEG(value.AsDouble());
+                mPriTWA = 1; // Set prio only here. No need to catch speed if no angle.
                 wxString m_twaunit = _T("\u00B0R");
                 if (m_twaangle < 0) {
                     m_twaunit = _T("\u00B0L");
                     m_twaangle *= -1;
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
+                mMWVT_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
-        else if (update_path == _T("environment.wind.speedTrue")) { // TODO .speedOverGround
+        else if ((update_path == _T("environment.wind.speedTrue")
+                                      && !g_iDashUsetruewinddata) ||
+           (update_path == _T("environment.wind.speedOverGround")
+                                      && g_iDashUsetruewinddata)) {
             if (mPriTWA >= 1) {
-                mPriTWA = 1; // Set prio only here. No need to catch angle if no speed.
                 double m_twaspeed_kn = MS2KNOTS(value.AsDouble());
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, 
                     toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
@@ -1548,8 +1556,6 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2,
                     toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-
-                mMWVT_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
         else if (update_path == _T("environment.depth.belowTransducer")) {
@@ -2006,6 +2012,7 @@ bool dashboard_pi::LoadConfig( void )
 
         pConf->Read( _T("DistanceUnit"), &g_iDashDistanceUnit, 0 );
         pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
+        pConf->Read(_T("UseSignKtruewind"), &g_iDashUsetruewinddata, 0);
 
         pConf->Read( _T("UTCOffset"), &g_iUTCOffset, 0 );
 
@@ -2126,6 +2133,7 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("DistanceUnit"), g_iDashDistanceUnit );
         pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
         pConf->Write( _T("UTCOffset"), g_iUTCOffset );
+        pConf->Write(_T("UseSignKtruewind"), g_iDashUsetruewinddata);
 
         pConf->Write( _T("DashboardCount" ), (int) m_ArrayOfDashboardWindow.GetCount() );
         for( unsigned int i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
@@ -2587,7 +2595,11 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxSize(220, -1), m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
     m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
     itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
-
+    
+    m_pUseTrueWinddata = new wxCheckBox(itemPanelNotebook02, wxID_ANY,
+        _("Use SignalK true wind data over ground. (Instead of through water)"));
+    m_pUseTrueWinddata->SetValue(g_iDashUsetruewinddata);
+    itemFlexGridSizer04->Add(m_pUseTrueWinddata, 1, wxALIGN_LEFT, border_size);
 
     wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
     itemBoxSizerMainPanel->Add( DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5 );
@@ -2661,6 +2673,7 @@ void DashboardPreferencesDialog::SaveDashboardConfig()
     g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
     g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
+    g_iDashUsetruewinddata = m_pUseTrueWinddata->GetValue();
     if( curSel != -1 ) {
         DashboardWindowContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
