@@ -5417,6 +5417,10 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 //    m_pButtons = new wxFlexGridSizer(4);
 //    m_pButtons->AddGrowableCol(2);
 
+    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+    m_info_btn->Hide();
+    itemBoxSizer02->Add(m_info_btn, 0);
+
     m_pButtons = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
     m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -5428,20 +5432,9 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
 
-    wxBoxSizer *enableSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add( enableSizer, 0, wxALIGN_RIGHT );
-
-    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
-    m_info_btn->Hide();
-    enableSizer->Add(m_info_btn, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
-    
-    m_rgSizer = new wxBoxSizer(wxVERTICAL);
-    enableSizer->Add(m_rgSizer, 0, /*wxALIGN_RIGHT|*/wxALL, 2);
-    
-    m_rbEnable = new wxRadioButton(this, wxID_ANY, _("Enabled"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-    m_rgSizer->Add(m_rbEnable, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
-    m_rbDisable = new wxRadioButton(this, wxID_ANY, _("Disabled"));
-    m_rgSizer->Add(m_rbDisable, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
+    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+    itemBoxSizer02->Add(m_cbEnable, 0, wxALIGN_RIGHT|wxRIGHT, 2 * GetCharWidth());
+    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
 
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
@@ -5449,30 +5442,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
     m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
-    m_rbEnable->Bind(wxEVT_RADIOBUTTON, &PluginPanel::OnRBEnable, this);
-    m_rbDisable->Bind(wxEVT_RADIOBUTTON, &PluginPanel::OnRBDisable, this);
     m_pButtonAction->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
 
-    // Make an estimate of a good size for up/down icons
-    int sizeRef;
-    if(plugin_icon.IsOk())
-        sizeRef = plugin_icon.GetSize().y + 1;
-    else
-        sizeRef = 8 * GetCharHeight();
-        
-    
-    wxBitmap bmp = style->GetIcon( _T("up"), sizeRef, sizeRef, true  );
-//    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
-    
-    m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
-    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-    m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down"), sizeRef, sizeRef, true ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-    m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonUp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
-    m_pButtonDown->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
-    itemBoxSizer01->Add(m_pButtonsUpDown, 0, wxALL, 0);
-    
     SetSelected( m_bSelected );
     SetAutoLayout(true);
     //FitInside();
@@ -5490,9 +5461,7 @@ PluginPanel::~PluginPanel()
         m_pButtonAction->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
     }
     m_pButtonPreferences->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
-    //m_pButtonEnable->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnable, this);
-    m_pButtonUp->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
-    m_pButtonDown->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
+    m_cbEnable->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnableToggle, this);
 }
 
 void PluginPanel::SetActionLabel( wxString &label)
@@ -5528,6 +5497,7 @@ void PluginPanel::SetSelected( bool selected )
         m_pVersion->SetLabel( m_pPlugin->GetVersion().to_string() );
 
     if (selected) {
+        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pButtons->Show(true);
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
@@ -5540,21 +5510,14 @@ void PluginPanel::SetSelected( bool selected )
             
         m_pButtonUninstall->Show(unInstallPossible);
         
-        if(m_pPlugin->m_pplugin)                        // Only if installed...
-            m_rgSizer->Show(true);
-        
         if(m_pPlugin->m_ManagedMetadata.info_url.size()){
             m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
             m_info_btn->Show();
         }
 
-#ifndef __WXQT__
-        m_pButtonsUpDown->Show(true);
-#else        
-        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
-        m_pButtonsUpDown->Show(false);
-#endif        
-        
+        m_cbEnable->Show(true);
+
+       
         // Configure the "Action" button
         wxString label;
         SemanticVersion newVersion;
@@ -5611,6 +5574,7 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
     }
     else {
+        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
@@ -5621,17 +5585,21 @@ void PluginPanel::SetSelected( bool selected )
         //();
         
         m_pButtons->Show(false);
-        m_rgSizer->Show(false);
         m_info_btn->Hide();
+
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+            m_cbEnable->Show(false);
 
         Layout();
     }
-    m_status_icon->Show(!selected);    
+    
+
+    //m_status_icon->Show(!selected);    
     //m_pButtons->Show(selected);   // For most platforms, show buttons if selected
-    m_pButtonsUpDown->Show(selected);
+    //m_pButtonsUpDown->Show(selected);
 #ifdef __OCPN__ANDROID__
     // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
-    m_pButtonsUpDown->Show(false);
+    //m_pButtonsUpDown->Show(false);
     //m_pButtons->Show(true);     // Always enable buttons for Android
 #endif
     
@@ -5675,17 +5643,7 @@ void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
     }
 }
 
-void PluginPanel::OnRBEnable( wxCommandEvent& event )
-{
-    SetEnabled(true);
-}
-
-void PluginPanel::OnRBDisable( wxCommandEvent& event )
-{
-    SetEnabled(false);
-}
-
-void PluginPanel::OnPluginEnable( wxCommandEvent& event )
+void PluginPanel::OnPluginEnableToggle( wxCommandEvent& event )
 {
     SetEnabled(!m_pPlugin->m_bEnabled);
 }
@@ -5755,10 +5713,7 @@ void PluginPanel::SetEnabled( bool enabled )
     }        
         
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
-    if(enabled)
-        m_rbEnable->SetValue(true);
-    else
-        m_rbDisable->SetValue(true);
+    m_cbEnable->SetValue(enabled);
     
 }
 

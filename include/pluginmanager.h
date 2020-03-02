@@ -523,13 +523,11 @@ public:
       void OnPluginSelected( wxMouseEvent &event );
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
-      void OnPluginEnable( wxCommandEvent& event );
+      void OnPluginEnableToggle( wxCommandEvent& event );
       void OnPluginAction( wxCommandEvent& event );
       void OnPluginUninstall( wxCommandEvent& event );
       void OnPluginUp( wxCommandEvent& event );
       void OnPluginDown( wxCommandEvent& event );
-      void OnRBEnable( wxCommandEvent& event );
-      void OnRBDisable( wxCommandEvent& event );
       void SetEnabled( bool enabled );
       bool GetSelected(){ return m_bSelected; }
       PlugInContainer* GetPluginPtr() { return m_pPlugin; };
@@ -547,14 +545,10 @@ private:
       wxStaticText    *m_pDescription;
       wxBoxSizer      *m_pButtons;
       wxStaticBitmap  *m_itemStaticBitmap;
-      wxButton        *m_pButtonEnable;
       wxButton        *m_pButtonPreferences;
       wxButton        *m_pButtonAction, *m_pButtonUninstall;
       
-      wxBoxSizer      *m_pButtonsUpDown, *m_rgSizer;
-      wxButton        *m_pButtonUp;
-      wxButton        *m_pButtonDown;
-      wxRadioButton   *m_rbEnable, *m_rbDisable;
+      wxCheckBox      *m_cbEnable;
       WebsiteButton   *m_info_btn;
       ActionVerb      m_action;
 };
