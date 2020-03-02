@@ -592,13 +592,6 @@ else (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will NOT include documentation ***")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 
-if (CMAKE_VERSION VERSION_GREATER 3.11)
-  find_package(Python REQUIRED)
-else ()
-  find_package(Python-314 REQUIRED)
-endif ()
-message(STATUS "Using python executable: ${Python_EXECUTABLE}")
-
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
