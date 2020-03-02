@@ -12471,7 +12471,7 @@ void OCPN_TimedHTMLMessageDialog::OnClose( wxCloseEvent& event )
 void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent &evt)
 {
     if(IsModal())
-        EndModal( wxID_YES );
+        EndModal( m_style & wxNO_DEFAULT ? wxID_NO :  wxID_YES );
     else
         Hide();
 }
