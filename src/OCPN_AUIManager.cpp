@@ -522,7 +522,12 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
                 wxAuiManagerEvent e(wxEVT_AUI_PANE_BUTTON);
                 e.SetManager(this);
                 e.SetPane(m_actionPart->pane);
+
+#if wxCHECK_VERSION(3, 1, 4)
+                e.SetButton(m_actionPart->button);
+#else
                 e.SetButton(m_actionPart->button->button_id);
+#endif
                 ProcessMgrEvent(e);
             }
         }
