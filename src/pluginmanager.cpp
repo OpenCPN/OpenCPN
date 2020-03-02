@@ -5525,7 +5525,7 @@ void PluginPanel::SetSelected( bool selected )
     m_bSelected = selected;
     
     if(m_pPlugin->m_ManagedMetadata.version.size())
-        m_pVersion->SetLabel(wxString( m_pPlugin->m_ManagedMetadata.version.c_str()));
+        m_pVersion->SetLabel( m_pPlugin->GetVersion().to_string() );
 
     if (selected) {
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
