@@ -1528,6 +1528,11 @@ wxString OCPNPlatform::GetPluginDataPath()
     else if (osSystemId & wxOS_WINDOWS) {
         dirs = GetWinPluginBaseDir();
     }
+    else if (osSystemId & wxOS_MAC) {
+        dirs = "/Applications/OpenCPN.app/Contents/SharedSupport/plugins;";
+        dirs +=
+            "~/Library/Application Support/OpenCPN/Contents/SharedSupport/plugins";
+    }
     m_pluginDataPath = ExpandPaths(dirs, this);
     if (m_pluginDataPath != "") {
         m_pluginDataPath += PATH_SEP;
