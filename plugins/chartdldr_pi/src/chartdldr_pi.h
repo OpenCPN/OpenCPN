@@ -61,9 +61,12 @@
 class ChartSource;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
+class ChartDldrPrefsDlgImpl;
 
 WX_DEFINE_ARRAY_PTR(ChartSource *, wxArrayOfChartSources);
 WX_DECLARE_OBJARRAY(wxDateTime, wxArrayOfDateTime);
+
+#define NEW_LIST
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -104,8 +107,10 @@ public:
     bool            ExtractUnarrFiles(const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveRar = false);
 #endif
 
+    void            UpdatePrefs(ChartDldrPrefsDlgImpl *dialog);
+    
 //    Public properties
-    wxArrayOfChartSources *m_chartSources;
+    wxArrayOfChartSources *m_pChartSources;
     wxWindow       *m_parent_window;
     ChartCatalog   *m_pChartCatalog;
     ChartSource    *m_pChartSource;
@@ -219,10 +224,16 @@ protected:
     void            OnContextMenu( wxMouseEvent& event );
     void            SetBulkUpdate( bool bulk_update );
 
+    int             GetChartCount();
+    int             GetCheckedChartCount();
+    bool            isChartChecked( int i );
+    void            CheckAllCharts( bool value );
+    void            InvertCheckAllCharts( );
+    
 public:
     //ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();
-    ChartDldrPanelImpl( chartdldr_pi* plugin = NULL, wxWindow* parent = NULL, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+    ChartDldrPanelImpl( chartdldr_pi* plugin = NULL, wxWindow* parent = NULL, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
     void            SelectCatalog( int item );
     void            onDLEvent(OCPN_downloadEvent &ev);
     void            CancelDownload() { Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent); cancelled = true; m_bconnected = false;}
@@ -241,10 +252,10 @@ protected:
     void            OnCancelClick( wxCommandEvent& event );
         
     bool            LoadSources();
-    bool            LoadSections( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadSection( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadCatalogs( const wxTreeItemId &root, TiXmlNode *node );
-    bool            LoadCatalog( const wxTreeItemId &root, TiXmlNode *node );
+    bool            LoadSections( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadSection( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadCatalogs( const wxTreeItemId &root, pugi::xml_node &node );
+    bool            LoadCatalog( const wxTreeItemId &root, pugi::xml_node &node );
 
 public:
     ChartDldrGuiAddSourceDlg( wxWindow* parent );
@@ -258,6 +269,9 @@ private:
     wxString        m_base_path;
     wxString        m_last_path;
     wxImageList    *p_iconList;
+#ifdef __OCPN__ANDROID__    
+    wxImageList    *p_buttonIconList;
+#endif /* __OCPN__ANDROID__ */
 };
 
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg

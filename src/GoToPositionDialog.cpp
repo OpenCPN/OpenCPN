@@ -65,19 +65,11 @@ GoToPositionDialog::GoToPositionDialog()
 {
 }
 
-GoToPositionDialog::GoToPositionDialog( wxWindow* parent, wxWindowID id, const wxString& caption,
-                                        const wxPoint& pos, const wxSize& size, long style )
+GoToPositionDialog::GoToPositionDialog( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
 {
-#ifdef __WXOSX__
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxSTAY_ON_TOP;
-#else
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-#endif
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
+    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
-    CreateControls();
-    GetSizer()->SetSizeHints( this );
-    Centre();
+    Create( parent, id, caption, pos, size, wstyle );
 
 }
 
@@ -129,7 +121,7 @@ void GoToPositionDialog::CreateControls()
     itemStaticBoxSizer4->Add( itemStaticText5, 0,
                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
-    m_MarkLatCtl = new LatLonTextCtrl( itemDialog1, ID_LATCTRL, _T(""), wxDefaultPosition,
+    m_MarkLatCtl = new wxTextCtrl( itemDialog1, ID_LATCTRL, _T(""), wxDefaultPosition,
                                        wxSize( 180, -1 ), 0 );
     itemStaticBoxSizer4->Add( m_MarkLatCtl, 0,
                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
@@ -139,7 +131,7 @@ void GoToPositionDialog::CreateControls()
     itemStaticBoxSizer4->Add( itemStaticText6, 0,
                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
-    m_MarkLonCtl = new LatLonTextCtrl( itemDialog1, ID_LONCTRL, _T(""), wxDefaultPosition,
+    m_MarkLonCtl = new wxTextCtrl( itemDialog1, ID_LONCTRL, _T(""), wxDefaultPosition,
                                        wxSize( 180, -1 ), 0 );
     itemStaticBoxSizer4->Add( m_MarkLonCtl, 0,
                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );

@@ -76,17 +76,6 @@ extern "C" char *mygetenv(char *pvar)
 
 }
 */
-/*
-#include <stdlib.h>
-extern char **environ;
-{
-    wxLogMessage(_T("In my getenv"));
-
-    void *t = (void *)environ;
-    return NULL;
-}
-*/
-
 
 //----------------------------------------------------------------------------------
 //      s57mgr Implementation
@@ -300,28 +289,22 @@ bool s57mgr::GetChartExtent(char *pFullPath, Extent *pext)
 int s57mgr::GetChartScale(char *pFullPath)
 {
 
-    DDFModule   *poModule;
-    DDFRecord   *poRecord;
-    int scale;
+    DDFModule poModule;
 
-    poModule = new DDFModule();
-
-    if( !poModule->Open(pFullPath) )
+    if( !poModule.Open(pFullPath) )
     {
-        delete poModule;
         return 0;
     }
 
-    poRecord = poModule->ReadRecord();
+    DDFRecord *poRecord = poModule.ReadRecord();
     if( poRecord == NULL )
     {
-         poModule->Close();
-         delete poModule;
+         poModule.Close();
          return 0;
     }
 
-    scale = 1;
-    for( ; poRecord != NULL; poRecord = poModule->ReadRecord() )
+    int scale = 1;
+    for( ; poRecord != NULL; poRecord = poModule.ReadRecord() )
     {
         if( poRecord->FindField( "DSPM" ) != NULL )
         {
@@ -330,8 +313,7 @@ int s57mgr::GetChartScale(char *pFullPath)
         }
     }
 
-    poModule->Close();
-    delete poModule;
+    poModule.Close();
 
     return scale;
 

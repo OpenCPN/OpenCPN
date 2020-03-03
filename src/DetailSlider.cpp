@@ -22,6 +22,11 @@
  ***************************************************************************
  */
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include "wx/wxprec.h"
 
 #include <wx/slider.h>
@@ -41,9 +46,8 @@ extern int         g_chart_zoom_modifier_vector;
 extern int         g_detailslider_dialog_x;
 extern int         g_detailslider_dialog_y;
 extern MyFrame     *gFrame;
-extern bool        g_bQuiltEnable;
 
-BEGIN_EVENT_TABLE(PopUpDSlide, wxDialog)
+BEGIN_EVENT_TABLE(PopUpDSlide, wxFrame)
     EVT_KEY_DOWN(PopUpDSlide::OnKeyDown )
     EVT_MOVE( PopUpDSlide::OnMove )
     EVT_COMMAND_SCROLL_THUMBRELEASE(-1, PopUpDSlide::OnChangeValue)
@@ -99,12 +103,9 @@ bool PopUpDSlide::Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartT,
                 return false;                
             }
     
-    long wstyle = wxDEFAULT_DIALOG_STYLE;
-#ifdef __WXOSX__
-    wstyle |= wxSTAY_ON_TOP;
-#endif
+    long wstyle = wxDEFAULT_DIALOG_STYLE|wxFRAME_FLOAT_ON_PARENT;
     
-    if( !wxDialog::Create( parent, id, WindowText, pos, size, wstyle ) ) return false;
+    if( !wxFrame::Create( parent, id, WindowText, pos, size, wstyle ) ) return false;
 
     m_pparent = parent;
     
@@ -168,7 +169,6 @@ void PopUpDSlide::OnChangeValue( wxScrollEvent& event )
 
 {
     ::wxBeginBusyCursor();
-    int delta=0;
 
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         g_cm93_zoom_factor = m_p_DetailSlider->GetValue();

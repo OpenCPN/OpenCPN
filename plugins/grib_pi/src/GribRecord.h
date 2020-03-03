@@ -66,6 +66,7 @@ Elément de base d'un fichier GRIB
 #define GRB_CLOUD_TOT      71   /* %      */
 #define GRB_HTSGW         100   /* m      */
 #define GRB_WTMP           80   /* "Water Temperature", "K" */
+#define GRB_COMP_REFL     212   /* dBZ */
 
 #define GRB_WVDIR         101
 #define GRB_WVHGT         102
@@ -77,6 +78,8 @@ Elément de base d'un fichier GRIB
 #define GRB_PERPW         108
 #define GRB_DIRSW         109
 #define GRB_PERSW         110
+#define GRB_PER           209
+#define GRB_DIR           210
 
 #define GRB_CRAIN         140   /* "Categorical rain", "yes=1;no=0" */
 #define GRB_FRZRAIN_CATEG 141   /* 1=yes 0=no */

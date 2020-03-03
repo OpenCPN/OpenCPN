@@ -35,8 +35,8 @@
 
 #include <wx/filename.h>
 
-#include "mygdal/ogr_s57.h"
-#include "mygdal/cpl_csv.h"
+#include "gdal/cpl_csv.h"
+#include "ogr_s57.h"
 #include "chartbase.h"
 
 #include <string.h>
@@ -545,7 +545,6 @@ private:
     int                 m_read_last_applied_update;
     
     S57Reader           *poReader;
-    OGRS57DataSource    *poS57DS;
     
     wxDateTime          m_date000;
     wxString            m_sdate000;

@@ -25,7 +25,7 @@
 #ifndef __TTYWINDOW_H__
 #define __TTYWINDOW_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/bitmap.h>
 
 class wxButton;
@@ -33,7 +33,7 @@ class wxTextCtrl;
 class TTYScroll;
 class WindowDestroyListener;
 
-class TTYWindow : public wxDialog
+class TTYWindow : public wxFrame
 {
     DECLARE_DYNAMIC_CLASS( TTYWindow )
     DECLARE_EVENT_TABLE()

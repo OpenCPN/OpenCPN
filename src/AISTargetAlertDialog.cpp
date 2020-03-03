@@ -35,6 +35,10 @@
 #include "RoutePoint.h"
 #include "chcanv.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -255,8 +259,9 @@ void AISTargetAlertDialog::UpdateText()
 
         wxString html;
         wxColor bg = GetBackgroundColour();
-        
-        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+        wxColor fg = GetForegroundColour();
+
+        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
         
         html << m_alert_text;
         html << _T("</center></font></body></html>");

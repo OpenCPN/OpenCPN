@@ -140,28 +140,27 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
             else
                 pos.x = wxMax(0, event.m_x - m_actionOffset.x);
             
-
-                wxSize client_size = m_frame->GetClientSize();
-                int used_width = 0, used_height = 0;
-                
-                size_t dock_i, dock_count = m_docks.GetCount();
-                for (dock_i = 0; dock_i < dock_count; ++dock_i)
+            wxSize client_size = m_frame->GetClientSize();
+            int used_width = 0, used_height = 0;
+            
+            size_t dock_i, dock_count = m_docks.GetCount();
+            for (dock_i = 0; dock_i < dock_count; ++dock_i)
+            {
+                wxAuiDockInfo& dock = m_docks.Item(dock_i);
+                if (dock.dock_direction == wxAUI_DOCK_TOP ||
+                    dock.dock_direction == wxAUI_DOCK_BOTTOM)
                 {
-                    wxAuiDockInfo& dock = m_docks.Item(dock_i);
-                    if (dock.dock_direction == wxAUI_DOCK_TOP ||
-                        dock.dock_direction == wxAUI_DOCK_BOTTOM)
-                    {
-                        used_height += dock.size;
-                    }
-                    if (dock.dock_direction == wxAUI_DOCK_LEFT ||
-                        dock.dock_direction == wxAUI_DOCK_RIGHT)
-                    {
-                        used_width += dock.size;
-                    }
-                    //                     if (dock.resizable)
-                    //                         used_width += sashSize;
+                    used_height += dock.size;
                 }
-                
+                if (dock.dock_direction == wxAUI_DOCK_LEFT ||
+                    dock.dock_direction == wxAUI_DOCK_RIGHT)
+                {
+                    used_width += dock.size;
+                }
+                //                     if (dock.resizable)
+                //                         used_width += sashSize;
+            }
+
             if (OAuiManager_HasLiveResize(*this))
             {
  
@@ -523,7 +522,12 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
                 wxAuiManagerEvent e(wxEVT_AUI_PANE_BUTTON);
                 e.SetManager(this);
                 e.SetPane(m_actionPart->pane);
+
+#if wxCHECK_VERSION(3, 1, 4)
+                e.SetButton(m_actionPart->button);
+#else
                 e.SetButton(m_actionPart->button->button_id);
+#endif
                 ProcessMgrEvent(e);
             }
         }

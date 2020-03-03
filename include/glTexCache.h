@@ -111,7 +111,7 @@ public:
 
     glTextureDescriptor *GetOrCreateTD(const wxRect &rect);
     bool BuildTexture(glTextureDescriptor *ptd, int base_level, const wxRect &rect);
-    bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme );
+    bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, int mem_used );
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
     bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme, unsigned char **compcomp_array, int *compcomp_size);
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );

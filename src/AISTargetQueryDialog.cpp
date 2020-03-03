@@ -49,7 +49,6 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
 extern MyFrame *gFrame;
@@ -59,7 +58,7 @@ extern MyFrame *gFrame;
 #define xID_TRK_CREATE 10011
 IMPLEMENT_CLASS ( AISTargetQueryDialog, wxDialog )
 // AISTargetQueryDialog event table definition
-BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxDialog )
+BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxFrame )
     EVT_BUTTON( xID_OK, AISTargetQueryDialog::OnIdOKClick )
     EVT_BUTTON( xID_WPT_CREATE, AISTargetQueryDialog::OnIdWptCreateClick )
     EVT_BUTTON( xID_TRK_CREATE, AISTargetQueryDialog::OnIdTrkCreateClick )
@@ -196,7 +195,8 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
-    if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
+    if( !wxFrame::Create( parent, id, caption, pos, size, wstyle ) )
+        return false;
 
     m_parent = parent;
     
@@ -308,9 +308,7 @@ void AISTargetQueryDialog::CreateControls()
     opt->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
     topSizer->Add( opt, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
-
-    wxSizer* ok = CreateButtonSizer( wxOK );
-    topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
+    topSizer->Add(new wxButton(this, xID_OK, _("OK")), 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
     Fit();
     
@@ -501,8 +499,9 @@ void AISTargetQueryDialog::RenderHTMLQuery(AIS_Target_Data *td)
     
     wxString html;
     wxColor bg = GetBackgroundColour();
+    wxColor fg = GetForegroundColour();
     
-    html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+    html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue(), fg.Red(), fg.Green(), fg.Blue() );
     
     html << td->BuildQueryResult();
     

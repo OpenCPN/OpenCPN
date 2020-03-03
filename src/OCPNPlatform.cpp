@@ -23,8 +23,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
 #include "wx/wxprec.h"
+
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
 
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
@@ -34,19 +38,25 @@
 #include <wx/apptrait.h>
 #include "wx/stdpaths.h"
 #include <wx/filename.h>
+#include <wx/tokenzr.h>
+#include <wx/textfile.h>
+
+#include "config.h"
 
 #include "dychart.h"
 #include "OCPNPlatform.h"
-
-#include "config.h"
 #include "chart1.h"
 #include "cutil.h"
 #include "styles.h"
 #include "navutil.h"
+#include "ocpn_utils.h"
 #include "ConnectionParams.h"
 #include "FontMgr.h"
 #include "s52s57.h"
+#include "options.h"
 #include "Select.h"
+#include "AboutFrameImpl.h"
+#include "about.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -85,8 +95,10 @@
 #endif
 
 #ifdef __WXGTK__
-#include <gdk/gdk.h>
+//#include <gdk/gdk.h>
 #endif
+
+#include <cstdlib>
 
 DECLARE_APP(MyApp)
 
@@ -101,6 +113,7 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 
 extern OCPNPlatform              *g_Platform;
+extern wxString                  g_winPluginDir;
 extern bool                      g_bFirstRun;
 extern bool                      g_bUpgradeInProcess;
 
@@ -113,6 +126,7 @@ extern MyConfig                  *pConfig;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool                      g_bshowToolbar;
+extern bool                      g_bexpert;
 extern bool                      g_bBasicMenus;
 extern bool                      g_bUIexpert;
 
@@ -120,41 +134,18 @@ extern bool                      g_bshowToolbar;
 extern bool                      g_bBasicMenus;
 
 extern bool                      g_bShowOutlines;
-extern bool                      g_bShowDepthUnits;
-extern bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
-extern bool                      g_bShowChartBar;
-extern bool                      g_bShowActiveRouteHighway;
-extern int                       g_nNMEADebug;
 extern int                       g_nAWDefault;
 extern int                       g_nAWMax;
-extern bool                      g_bPlayShipsBells;
-extern bool                      g_bFullscreenToolbar;
-extern bool                      g_bShowLayers;
-extern bool                      g_bTransparentToolbar;
 extern bool                      g_bPermanentMOBIcon;
-extern bool                      g_bTempShowMenuBar;
 extern float                     g_toolbar_scalefactor;
 
-extern int                       g_iSDMMFormat;
-extern int                       g_iDistanceFormat;
-extern int                       g_iSpeedFormat;
 
-extern int                       g_iNavAidRadarRingsNumberVisible;
-extern float                     g_fNavAidRadarRingsStep;
-extern int                       g_pNavAidRadarRingsStepUnits;
-extern int                       g_iWaypointRangeRingsNumber;
-extern float                     g_fWaypointRangeRingsStep;
-extern int                       g_iWaypointRangeRingsStepUnits;
-extern wxColour                  g_colourWaypointRangeRingsColour;
-extern bool                      g_bWayPointPreventDragging;
-extern bool                      g_bConfirmObjectDelete;
+extern options                   *g_options;
+extern bool                      g_boptionsactive;
 
 // AIS Global configuration
-extern bool                      g_bCPAMax;
 extern double                    g_CPAMax_NM;
-extern bool                      g_bCPAWarn;
 extern double                    g_CPAWarn_NM;
-extern bool                      g_bTCPA_Max;
 extern double                    g_TCPA_Max;
 extern bool                      g_bMarkLost;
 extern double                    g_MarkLost_Mins;
@@ -162,51 +153,21 @@ extern bool                      g_bRemoveLost;
 extern double                    g_RemoveLost_Mins;
 extern bool                      g_bShowCOG;
 extern double                    g_ShowCOG_Mins;
-extern bool                      g_bAISShowTracks;
-extern double                    g_AISShowTracks_Mins;
 extern bool                      g_bHideMoored;
 extern double                    g_ShowMoored_Kts;
-extern wxString                  g_sAIS_Alert_Sound_File;
-extern bool                      g_bAIS_CPA_Alert_Suppress_Moored;
-extern bool                      g_bAIS_ACK_Timeout;
-extern double                    g_AckTimeout_Mins;
 extern bool                      g_bShowAreaNotices;
 extern bool                      g_bDrawAISSize;
+extern bool                      g_bDrawAISRealtime;
 extern bool                      g_bShowAISName;
-extern int                       g_Show_Target_Name_Scale;
-extern bool                      g_bWplIsAprsPosition;
 
 extern int                       gps_watchdog_timeout_ticks;
-extern int                       sat_watchdog_timeout_ticks;
 
-extern int                       gGPS_Watchdog;
-extern bool                      bGPSValid;
 
-extern int                       gHDx_Watchdog;
-extern int                       gHDT_Watchdog;
-extern int                       gVAR_Watchdog;
-extern bool                      g_bHDT_Rx;
-extern bool                      g_bVAR_Rx;
 
-extern int                       gSAT_Watchdog;
-extern int                       g_SatsInView;
-extern bool                      g_bSatValid;
 
-extern bool                      g_bDebugCM93;
-extern bool                      g_bDebugS57;
 
-extern bool                      g_bfilter_cogsog;
-extern int                       g_COGFilterSec;
-extern int                       g_SOGFilterSec;
 
-extern int                       g_ChartUpdatePeriod;
-extern int                       g_SkewCompUpdatePeriod;
 
-extern int                       g_lastClientRectx;
-extern int                       g_lastClientRecty;
-extern int                       g_lastClientRectw;
-extern int                       g_lastClientRecth;
-extern double                    g_display_size_mm;
 extern double                    g_config_display_size_mm;
 extern bool                      g_config_display_size_manual;
 
@@ -227,11 +188,19 @@ extern int                      g_cm93_zoom_factor;
 extern int                      g_GUIScaleFactor;
 extern wxArrayOfConnPrm         *g_pConnectionParams;
 extern bool                     g_fog_overzoom;
-extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
 extern bool                     g_bPreserveScaleOnX;
+extern bool                     g_running;
+
+extern Select                    *pSelect;
+extern Select                    *pSelectTC;
+extern Select                    *pSelectAIS;
+
+extern Select                    *pSelect;
+extern Select                    *pSelectTC;
+extern Select                    *pSelectAIS;
 
 extern Select                    *pSelect;
 extern Select                    *pSelectTC;
@@ -241,11 +210,15 @@ extern Select                    *pSelectAIS;
 extern ocpnGLOptions            g_GLOptions;
 #endif
 extern int                      g_default_font_size;
+extern wxString                 g_default_font_facename;
 
 wxLog       *g_logger;
 bool         g_bEmailCrashReport;
 extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
+
+extern double                    g_ChartNotRenderScaleFactor;
+extern bool                      g_bRollover;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale                  *plocale_def_lang;
@@ -255,8 +228,32 @@ extern wxString                  g_localeOverride;
 extern wxArrayString             g_locale_catalog_array;
 
 #endif
+extern int                       options_lastPage;
+extern AboutFrameImpl            *g_pAboutDlg;
+extern about                     *g_pAboutDlgLegacy;
+extern wxColour                   g_colourTrackLineColour;
+extern int                        g_n_ownship_min_mm;
 
+extern int                        g_AndroidVersionCode;
+extern bool                       g_bShowMuiZoomButtons;
 
+static const char* const DEFAULT_XDG_DATA_DIRS =
+    "~/.local/share:/usr/local/share:/usr/share";
+
+#ifdef __WXMSW__
+static const char PATH_SEP = ';';
+#else
+static const char PATH_SEP = ':';
+#endif
+
+static bool checkIfFlatpacked()
+{
+    wxString id;
+    if (!wxGetEnv("FLATPAK_ID", &id)) {
+        return false;
+    }
+    return id == "org.opencpn.OpenCPN";
+}
 
 
 
@@ -270,6 +267,12 @@ OCPNPlatform::OCPNPlatform()
     m_displaySizeMM = wxSize(0,0);
     m_monitorWidth = m_monitorHeight = 0;
     m_displaySizeMMOverride = 0;
+    m_isFlatpacked = checkIfFlatpacked();
+    m_pluginDataPath = "";
+ 
+    // Detect the OS detail parameters
+    m_osDetail = new OCPN_OSDetail;
+    DetectOSDetail( m_osDetail );
 }
 
 OCPNPlatform::~OCPNPlatform()
@@ -351,12 +354,72 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 }
 #endif
 
+bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
+{
+    if(!detail)
+        return false;
+    
+    // We take some defaults from build-time definitions
+    detail->osd_name = std::string(PKG_TARGET);
+    detail->osd_version = std::string(PKG_TARGET_VERSION);
+ 
+    // Now parse by basic platform
+#ifdef __linux__
+    if(wxFileExists(_T("/etc/os-release"))){
+        wxTextFile release_file( _T("/etc/os-release") );
+        if ( release_file.Open() ) {
+            wxString val;
+            for ( wxString str = release_file.GetFirstLine(); !release_file.Eof() ; str = release_file.GetNextLine() ){
+                if(str.StartsWith(_T("NAME"))){
+                    val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+                    if(val.Length())  detail->osd_name = std::string(val.mb_str());
+                }
+                else if(str.StartsWith(_T("VERSION_ID"))){
+                    val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+                    if(val.Length())  detail->osd_version = std::string(val.mb_str());
+                }
+                else if(str.StartsWith(_T("ID_LIKE"))){
+                    val = str.AfterFirst('=');
+                    if(val.Length())  detail->osd_name_like = std::string(val.mb_str());
+                }
 
+            }
+                
+            release_file.Close();
+        }
+    }
+#endif
+
+    //  Set the default processor architecture
+    detail->osd_arch = std::string("X86_64");
+    
+    // then see what is actually running.
+    wxPlatformInfo platformInfo = wxPlatformInfo::Get();
+    wxArchitecture arch = platformInfo.GetArchitecture();
+    if(arch == wxARCH_32)
+        detail->osd_arch = std::string("X86_32");
+    
+#ifdef ocpnARM
+    detail->osd_arch = std::string("ARM64");
+    if(arch == wxARCH_32)
+        detail->osd_arch = std::string("ARMHF");
+#endif    
+    
+    
+     
+    return true;
+}    
+
+OCPN_OSDetail *OCPNPlatform::GetOSDetail()
+{
+    return m_osDetail;
+}
+    
 
 //  Called from MyApp() immediately upon entry to MyApp::OnInit()
 void OCPNPlatform::Initialize_1( void )
 {
-    
+   
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
     // Install Windows crash reporting
@@ -443,31 +506,32 @@ void OCPNPlatform::Initialize_1( void )
     if(nResult!=0) {
         TCHAR buff[256];
         crGetLastErrorMsg(buff, 256);
-        MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
+        //MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
     }
     
-    // Establish the crash callback function
-    crSetCrashCallback( CrashCallback, NULL );
-    
-    // Take screenshot of the app window at the moment of crash
-    crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
-    
-    //  Mark some files to add to the crash report
-    wxString home_data_crash = crash_std_path.GetConfigDir();
-    if( g_bportable ) {
-        wxFileName f( crash_std_path.GetExecutablePath() );
-        home_data_crash = f.GetPath();
+    if(nResult == 0){           // Complete the installation
+        // Establish the crash callback function
+        crSetCrashCallback( CrashCallback, NULL );
+        
+        // Take screenshot of the app window at the moment of crash
+        crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
+        
+        //  Mark some files to add to the crash report
+        wxString home_data_crash = crash_std_path.GetConfigDir();
+        if( g_bportable ) {
+            wxFileName f( crash_std_path.GetExecutablePath() );
+            home_data_crash = f.GetPath();
+        }
+        appendOSDirSlash( &home_data_crash );
+        
+        wxString config_crash = _T("opencpn.ini");
+        config_crash.Prepend( home_data_crash );
+        crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
+        
+        wxString log_crash = _T("opencpn.log");
+        log_crash.Prepend( home_data_crash );
+        crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
     }
-    appendOSDirSlash( &home_data_crash );
-    
-    wxString config_crash = _T("opencpn.ini");
-    config_crash.Prepend( home_data_crash );
-    crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
-    wxString log_crash = _T("opencpn.log");
-    log_crash.Prepend( home_data_crash );
-    crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
 #endif
 #endif
 
@@ -560,10 +624,12 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 
 #ifdef __OCPN__ANDROID__
+    qDebug() << "Initialize_1()";        
     androidUtilInit( );
 #endif            
             
 }
+
 
 //  Called from MyApp() immediately before creation of MyFrame()
 //  Config is known to be loaded and stable
@@ -582,11 +648,21 @@ void OCPNPlatform::Initialize_2( void )
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
 void OCPNPlatform::Initialize_3( void )
 {
+    
     bool bcapable = IsGLCapable();
+
+#ifdef ocpnARM         // Boot arm* platforms (meaning rPI) without OpenGL on first run
+    bcapable = false;
+#endif    
+    
+    bool bAndroid =false;
+#ifdef __OCPN__ANDROID__
+    bAndroid = true;
+#endif
     
     // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade or fresh install
-    
-    if( (g_bFirstRun || g_bUpgradeInProcess) && bcapable){
+
+    if( (g_bFirstRun || g_bUpgradeInProcess || bAndroid) && bcapable){
         g_bopengl = true;
         
         // Set up visually nice options
@@ -601,7 +677,18 @@ void OCPNPlatform::Initialize_3( void )
         g_GLOptions.m_GLLineSmoothing = true;
 
     }
+
+    gFrame->SetGPSCompassScale();
     
+    // Force a few items for Android, to ensure that UI is useable if config got scrambled
+    if(bAndroid){
+        g_btouch = true;
+    }
+
+    if (g_bFirstRun || g_bUpgradeInProcess) {
+        if (!g_bRollover)  //Not explicit set before
+            g_bRollover = g_btouch ? false : true;
+    }
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -611,7 +698,15 @@ void OCPNPlatform::Initialize_4( void )
     if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
     if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
-#endif    
+#endif
+
+#ifdef __WXMAC__
+    // A bit of a hack for Mojave MacOS 10.14.
+    // Force the user to actively select "Display" tab to ensure initial rendering of
+    // canvas layout select button.
+    options_lastPage = 1;
+#endif
+    
 }
 
 void OCPNPlatform::OnExit_1( void ){
@@ -636,6 +731,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     gFrame->Show();
     glTestCanvas *tcanvas = new glTestCanvas(gFrame);
     tcanvas->Show();
+    wxYield();
     wxGLContext *pctx = new wxGLContext(tcanvas);
     tcanvas->SetCurrent(*pctx);
     
@@ -644,6 +740,7 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
     char *str = (char *) glGetString( GL_RENDERER );
     if (str == NULL){
         delete tcanvas;
+        delete pctx;
         return false;
     }
     
@@ -711,13 +808,15 @@ bool OCPNPlatform::BuildGLCaps( void *pbuf )
 
 
     delete tcanvas;
+    delete pctx;
     
     return true;
 }
 
 bool OCPNPlatform::IsGLCapable()
 {
-    OCPN_GLCaps *pcaps = (OCPN_GLCaps * )calloc( 1, sizeof(OCPN_GLCaps));
+#ifndef __OCPN__ANDROID__  
+    OCPN_GLCaps *pcaps = new OCPN_GLCaps;
     
     BuildGLCaps(pcaps);
 
@@ -726,7 +825,7 @@ bool OCPNPlatform::IsGLCapable()
     // We insist on FBO support, since otherwise DC mode is always faster on canvas panning..
     if(!pcaps->bCanDoFBO)
         return false;    
-    
+#endif    
     return true;
 }
 
@@ -813,6 +912,7 @@ wxString OCPNPlatform::GetDefaultSystemLocale()
 }
 
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxString OCPNPlatform::GetAdjustedAppLocale()
 {
     wxString adjLocale = g_locale;
@@ -824,7 +924,7 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
     if ( g_bFirstRun || wxIsEmpty(adjLocale) ) {
         wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
         if( RegKey.Exists() ) {
-            wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
+            wxLogMessage( _T("Retrieving initial language selection from Windows Registry") );
             RegKey.QueryValue( wxString( _T("InstallerLanguage") ), adjLocale );
         }
     }
@@ -846,17 +946,25 @@ wxString OCPNPlatform::GetAdjustedAppLocale()
 }
 
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 
 wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale)
 {
     wxString return_val;
     
+    wxString imsg = _T("ChangeLocale: Language load for:  ");
+    imsg += newLocaleID;
+    wxLogMessage( imsg );
     
     //  Old locale is done.
     delete (wxLocale*)presentLocale;
     
     wxLocale *locale = new wxLocale;
+    if (isFlatpacked()) {
+        std::string path(getenv("HOME"));
+        path += "/.var/app/org.opencpn.OpenCPN/data/locale";
+        locale->AddCatalogLookupPathPrefix(path);
+        wxLogMessage("Using flatpak locales at %s", path.c_str());
+    }
     wxString loc_lang_canonical;
     
     const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocaleID );
@@ -868,6 +976,10 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
         if( !locale->IsOk() ){
+            wxString imsg = _T("ChangeLocale:  could not initialize:  ");
+            imsg += newLocaleID;
+            wxLogMessage( imsg );
+            
             delete locale;
             locale = new wxLocale;
             locale->Init( pli->Language, 0 );
@@ -881,6 +993,9 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
     }
     
     if( !b_initok ) {
+        wxString imsg = _T("ChangeLocale: Fall back to en_US");
+        wxLogMessage( imsg );
+        
         delete locale;
         locale = new wxLocale;
         locale->Init( wxLANGUAGE_ENGLISH_US, 0 );
@@ -888,7 +1003,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
     }
     
     if(b_initok){
-        wxString imsg = _T("Opencpn language load for:  ");
+        wxString imsg = _T("ChangeLocale: Locale Init OK for:  ");
         imsg += loc_lang_canonical;
         wxLogMessage( imsg );
         
@@ -898,7 +1013,6 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
         
-        //        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
         
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
@@ -964,13 +1078,15 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bskew_comp = false;
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
+    g_bDrawAISRealtime = false;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
     g_nAWDefault = 50;
     g_nAWMax = 1852;
     gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
-    
+    g_n_ownship_min_mm = 8;
+    g_bShowMuiZoomButtons = true;
     
     // Initial S52/S57 options
     if(pConfig){
@@ -981,7 +1097,7 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
         pConfig->Write( _T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES );
         
-        pConfig->Write( _T ( "bShowSoundg" ), false );
+        pConfig->Write( _T ( "bShowSoundg" ), true );
         pConfig->Write( _T ( "bShowMeta" ), false );
         pConfig->Write( _T ( "bUseSCAMIN" ), true );
         pConfig->Write( _T ( "bShowAtonText" ), false );
@@ -998,6 +1114,7 @@ void OCPNPlatform::SetDefaultOptions( void )
 
         pConfig->Write( _T ( "ZoomDetailFactorVector" ), 3 );
         
+        pConfig->Write( _T ( "nColorScheme" ), 1 );     // higher contrast on NOAA RNCs
      }
     
     
@@ -1033,7 +1150,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     }
 #endif
 
-#ifdef __LINUX__
+#ifdef __linux__
 //  Enable some default PlugIns, and their default options
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
@@ -1058,24 +1175,27 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
     
+    qDebug() << "SetDefaultOptions";
+    
     g_btouch = true;
     g_bresponsive = true;
     g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
     g_bUIexpert = true;         
     
     g_bShowStatusBar = true;
-    g_cm93_zoom_factor = -5;
+    g_cm93_zoom_factor = 0;
     g_oz_vector_scale = false;
     g_fog_overzoom = false;
     
+    g_bRollover = true;
+    g_bShowMuiZoomButtons = false;
+
     g_GUIScaleFactor = 0;               // nominal
-    g_uiStyle = wxT("Traditional"
-    g_useMUI = true;
-    g_b_overzoom_x = true;
+    g_ChartNotRenderScaleFactor = 2.0;
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
-    g_toolbarConfig = _T("......X........X..XXXXXXXXXXX");
+    g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
     g_bPermanentMOBIcon = false;
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
@@ -1083,6 +1203,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     new_params->bEnabled = true;
     g_pConnectionParams->Add(new_params);
+    
+    g_default_font_facename = _T("Roboto");
     
     //  Enable some default PlugIns, and their default options
     
@@ -1099,37 +1221,111 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->SetPath( _T ( "/PlugIns/libgrib_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
         
+        pConfig->SetPath( _T ( "/PlugIns/libdashboard_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
         pConfig->SetPath( _T ( "/PlugIns/GRIB" ) );
-        pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 0 );
-        pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 90 );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 100 );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 0 );
         
         pConfig->SetPath ( _T ( "/Settings/GRIB" ) );
         pConfig->Write ( _T ( "CursorDataShown" ), 0 );
         
+        // This is ugly hack
+        // TODO
+        pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
 
         //Status Bar
         wxString str = _T("en_US-b25a3899");
         wxString pval = _T("StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)");
-        
         pConfig->Write (str, pval );
         FontMgr::Get().LoadFontNative( &str, &pval );
+        
+        //Dialog
+        str = _T("en_US-9c3b3a0d");
+        pval = _T("DialogStatusBar:Roboto,18,-1,5,50,0,0,0,0,0:rgb(0, 0, 0)");
+        pConfig->Write (str, pval );
+        FontMgr::Get().LoadFontNative( &str, &pval );
+        
+        // Set track default color to magenta
+        pConfig->SetPath ( _T ( "/Settings/Others" ) );
+        pConfig->Write (_T("TrackLineColour"), _T("#C545C3"));
+        g_colourTrackLineColour.Set(197,69,195);
+
+        
+        qDebug() << "SetDefaultOptions.Config";
     }
         
         
     
 #endif
+}
     
+//      Setup global options on upgrade detected
+//      The global config object (pConfig) has already been loaded, so updates here override values set by config
+//      Direct updates to config for next boot are also allowed
     
+void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
+{
+#ifdef __OCPN__ANDROID__
     
+        qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
+
+        if( androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
+            qDebug() << "Upgrade detected" << "from VC: " << g_AndroidVersionCode << " to VC: " << androidGetVersionCode();
+            
+            // Set some S52/S57 options
+            if(pConfig){
+                pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
+                pConfig->Write( _T ( "bShowS57Text" ), true );
+            }
+                
+            g_ChartNotRenderScaleFactor = 2.0;
+            g_n_ownship_min_mm = 8;
+            g_toolbarConfig = _T("X.....XX.......XX.XXXXXXXXXXX");
+
+        //  Experience indicates a slightly larger default font size is better
+            pConfig->DeleteGroup( _T ( "/Settings/QTFonts" ));
+            g_default_font_size = 20;            
+            g_default_font_facename = _T("Roboto");
+        
+            FontMgr::Get().Shutdown();      // Restart the font manager
+        }
+        
+        // Set track default color to magenta
+        g_colourTrackLineColour.Set(197,69,195);
+        
+ 
+        // This is ugly hack
+        // TODO
+        pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        
+#endif    
+}
+
+
+
+
+int OCPNPlatform::platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray){
+    
+    int ret_val = 0;
+#ifdef __OCPN__ANDROID__    
+    ret_val = androidApplySettingsString( settings, pDirArray);
+#endif
+    
+    return ret_val;
 }
 
 
 void OCPNPlatform::applyExpertMode(bool mode)
 {
 #ifdef __OCPN__ANDROID__
-    g_bshowToolbar = mode;               // no toolbar unless in exprt mode
+    g_bexpert = mode;                   // toolbar only shows plugin icons if expert mode is false
     g_bBasicMenus = !mode;              //  simplified context menus in basic mode
 #endif
 
@@ -1276,14 +1472,128 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
         if( g_bportable ){
             m_PrivateDataDir = GetHomeDir();
+            if(m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
+                m_PrivateDataDir.RemoveLast();
         }
         
 #ifdef __OCPN__ANDROID__
         m_PrivateDataDir = androidGetPrivateDir();
 #endif
     }
-    
     return m_PrivateDataDir;
+}
+
+
+static wxString ExpandPaths(wxString paths, OCPNPlatform* platform);
+
+
+static  wxString GetLinuxDataPath()
+{
+    wxString dirs;
+    if (wxGetEnv("XDG_DATA_DIRS", &dirs)) {
+        dirs = wxString("~/.local/share:") + dirs;
+    }
+    else {
+        dirs = DEFAULT_XDG_DATA_DIRS;
+    }
+    wxString s;
+    wxStringTokenizer tokens(dirs, ':');
+    while (tokens.HasMoreTokens()) {
+        wxString dir = tokens.GetNextToken();
+        if (dir.EndsWith("/")) {
+            dir = dir.SubString(0, dir.length() - 1);
+        }
+        if (!dir.EndsWith("/opencpn/plugins")) {
+            dir += "/opencpn/plugins";
+        }
+        s += dir + (tokens.HasMoreTokens() ? ";" : "");
+    }
+    return s;
+}
+
+
+wxString OCPNPlatform::GetPluginDataPath()
+{
+    if (m_pluginDataPath != "" ) {
+        return m_pluginDataPath;
+    }
+    wxString dirs("");
+    auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
+    if (g_Platform->isFlatpacked()) {
+        dirs="~/.var/app/org.opencpn.OpenCPN/data";
+    }
+    else if (osSystemId & wxOS_UNIX_LINUX) {
+        dirs = GetLinuxDataPath();
+    }
+    else if (osSystemId & wxOS_WINDOWS) {
+        dirs = GetWinPluginBaseDir();
+    }
+    m_pluginDataPath = ExpandPaths(dirs, this);
+    if (m_pluginDataPath != "") {
+        m_pluginDataPath += PATH_SEP;
+    }
+    m_pluginDataPath += GetPluginDir();
+    if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
+	m_pluginDataPath.RemoveLast();
+    }
+    wxLogMessage("Using plugin data path: %s",
+                 m_pluginDataPath.mb_str().data());
+    return m_pluginDataPath;
+}
+
+
+wxString OCPNPlatform::GetWinPluginBaseDir()
+{
+    if (g_winPluginDir != "") {
+        wxLogMessage("winPluginDir: Using value from ini file.");
+	wxFileName fn(g_winPluginDir);
+	if (!fn.DirExists()) {
+	    wxLogWarning("Plugin dir %s does not exist",
+                         fn.GetFullPath().mb_str().data());
+	}
+        fn.Normalize();
+        return fn.GetFullPath();
+    }
+    wxString winPluginDir;
+    // Standard case: c:\Users\%USERPROFILE%\AppData\Local
+    bool ok = wxGetEnv( _T("LOCALAPPDATA"), &winPluginDir);
+    if (!ok) {
+        wxLogMessage("winPluginDir: Cannot lookup LOCALAPPDATA");
+        // Without %LOCALAPPDATA%: Use default location if it exists.
+        std::string path(wxGetHomeDir().ToStdString());
+        path += "\\AppData\\Local";
+        if (ocpn::exists(path)) {
+            winPluginDir = wxString(path.c_str());
+            wxLogMessage("winPluginDir: using %s",
+                         winPluginDir.mb_str().data());
+            ok = true;
+        }
+    }
+    if (!ok) {
+        // Usually: c:\Users\%USERPROFILE%\AppData\Roaming
+        ok = wxGetEnv( _T("APPDATA"), &winPluginDir);
+    }
+    if (!ok) {
+        // Without %APPDATA%: Use default location if it exists.
+        wxLogMessage("winPluginDir: Cannot lookup APPDATA");
+        std::string path(wxGetHomeDir().ToStdString());
+        path += "\\AppData\\Roaming";
+        if (ocpn::exists(path)) {
+            winPluginDir = wxString(path.c_str());
+            ok = true;
+            wxLogMessage("winPluginDir: using %s",
+                         winPluginDir.mb_str().data());
+        }
+    }
+    if (!ok) {
+       // {Documents and Settings}\.. on W7, else \ProgramData
+       winPluginDir = GetHomeDir();
+    }
+    wxFileName path(winPluginDir);
+    path.Normalize();
+    winPluginDir = path.GetFullPath()  + "\\opencpn\\plugins";
+    wxLogMessage("Using private plugin dir: %s", winPluginDir);
+    return winPluginDir;
 }
 
 
@@ -1311,9 +1621,7 @@ wxString &OCPNPlatform::GetPluginDir()
         m_PluginsDir = fdir.GetPath();
 #endif        
         
-        
     }
-    
     return m_PluginsDir;
 }
 
@@ -1329,6 +1637,21 @@ wxString OCPNPlatform::NormalizePath(const wxString &full_path) {
     }
     return path;
   }
+}
+
+static wxString ExpandPaths(wxString paths, OCPNPlatform* platform)
+{
+    wxStringTokenizer tokens(paths, ';');
+    wxString s = "";
+    while (tokens.HasMoreTokens()) {
+        wxFileName filename(tokens.GetNextToken());
+        filename.Normalize();
+        s += platform->NormalizePath(filename.GetFullPath());
+        if (tokens.HasMoreTokens()) {
+            s += ';';
+        }
+    }
+    return s;
 }
 
 wxString &OCPNPlatform::GetConfigFileName()
@@ -1441,7 +1764,7 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     return result;
 }
 
-int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir)
+int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir, bool b_addFiles)
 {
     wxString dir;
     int result = wxID_CANCEL;
@@ -1452,7 +1775,7 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
         idir = GetWritableDocumentsDir();
     
-    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true);    // Directories only
+    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true, b_addFiles);    // Directories only, maybe add dirs
     if(file_spec)
         *file_spec = dir;
 #else
@@ -1542,7 +1865,7 @@ bool OCPNPlatform::InitializeLogFile( void )
                 wxString oldlog = mlog_file;
                 oldlog.Append( _T(".log") );
                 //  Defer the showing of this messagebox until the system locale is established.
-                large_log_message = ( _("Old log will be moved to opencpn.log.log") );
+                large_log_message = ( _T("Old log will be moved to opencpn.log.log") );
                 ::wxRenameFile( mlog_file, oldlog );
             }
     }
@@ -1658,6 +1981,14 @@ double OCPNPlatform::GetDisplayDensityFactor()
 #endif
 }
     
+long OCPNPlatform::GetDefaultToolbarOrientation()
+{
+#ifndef __OCPN__ANDROID__
+    return wxTB_VERTICAL;
+#else
+    return wxTB_VERTICAL;
+#endif    
+}
 
 int OCPNPlatform::GetStatusBarFieldCount()
 {
@@ -1669,8 +2000,9 @@ int OCPNPlatform::GetStatusBarFieldCount()
     wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
     dc.SetFont(*templateFont);
     
-    wxSize sz = dc.GetTextExtent(_T("WWWWWW"));
-    double font_size_pix = (double)sz.x / 6.0;
+    int width;
+    dc.GetTextExtent(_T("WWWWWW"), &width, NULL, NULL, NULL, templateFont);
+    double font_size_pix = (double)width / 6.0;
     
     wxSize dispSize = getDisplaySize();
     
@@ -1694,13 +2026,13 @@ double OCPNPlatform::getFontPointsperPixel( void )
 {
     double pt_per_pixel = 1.0;
     
-#ifdef __OCPN__ANDROID__
+//#ifdef __OCPN__ANDROID__
     // On Android, this calculation depends on the density bucket in use.
     //  Also uses some magic numbers...
     //  For reference, see http://pixplicity.com/dp-px-converter/
-    pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
+    //pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
     
-#else 
+//#else 
     
     if(m_pt_per_pixel == 0){
     //  Make a measurement...
@@ -1710,13 +2042,15 @@ double OCPNPlatform::getFontPointsperPixel( void )
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
         dc.SetFont(*f);
     
-        wxSize sz = dc.GetTextExtent(_T("H"));
-        if(sz.y > 0)
-            m_pt_per_pixel = 12.0 / (double)sz.y;
+        int width, height;
+        dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, f);
+
+        if(height > 0)
+            m_pt_per_pixel = 12.0 / (double)height;
     }
     if(m_pt_per_pixel > 0)
         pt_per_pixel = m_pt_per_pixel;
-#endif
+//#endif
     
     return pt_per_pixel;
     
@@ -1743,14 +2077,23 @@ double  OCPNPlatform::GetDisplaySizeMM()
         m_displaySizeMM = wxGetDisplaySizeMM();
 
     double ret = m_displaySizeMM.GetWidth();
-    
+  
+#if 0    
 #ifdef __WXGTK__
     GdkScreen *screen = gdk_screen_get_default();
-    double gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+    wxSize resolution = getDisplaySize();
+    double gdk_monitor_mm;
+    double ratio = (double)resolution.GetWidth() / (double)resolution.GetHeight();
+    if( std::abs(ratio - 32.0/10.0) < std::abs(ratio - 16.0/10.0) ) {
+        // We suspect that when the resolution aspect ratio is closer to 32:10 than 16:10, there are likely 2 monitors side by side. This works nicely when they are landscape, but what if both are rotated 90 degrees...
+        gdk_monitor_mm = gdk_screen_get_width_mm(screen);
+    } else {
+        gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+    }
     if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
         ret = gdk_monitor_mm;
 #endif    
-    
+#endif    
     
 #ifdef __WXMSW__    
     int w,h;
@@ -1774,12 +2117,29 @@ double  OCPNPlatform::GetDisplaySizeMM()
     ret = GetAndroidDisplaySize();
 #endif    
     
-//     wxString msg;
-//     msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
+    wxString msg;
+    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
 //     wxLogMessage(msg);
     
     return ret;
 }
+
+double OCPNPlatform::GetDisplayAreaCM2()
+{
+    double size1 = GetDisplaySizeMM();
+    wxSize sz = getDisplaySize();
+    double ratio = 1.;
+    if(sz.x < sz.y)
+        ratio = (double)sz.x / (double)sz.y;   // <1
+    else
+        ratio = (double)sz.y / (double)sz.x;   // <1
+        
+    double area = size1 * (size1*ratio) / 100.;    
+    //qDebug() << "cm2" << size1 << ratio << sz.x << sz.y;    
+    return area;
+}
+
+    
 
 void OCPNPlatform::SetDisplaySizeMM( double sizeMM)
 {
@@ -1800,14 +2160,6 @@ double OCPNPlatform::GetDisplayDPmm()
 unsigned int OCPNPlatform::GetSelectRadiusPix()
 {
     return GetDisplayDPmm() * (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);
-}
-
-void OCPNPlatform::onStagedResizeFinal()
-{
-#ifdef __OCPN__ANDROID__
-    androidConfirmSizeCorrection();
-#endif
-    
 }
 
 bool OCPNPlatform::GetFullscreen()
@@ -1938,14 +2290,19 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     // and that the value may range from 0.5 -> 2.0
     
     //  Get the basic size of a tool icon
+    wxSize style_tool_size(32,32);
+    
+    if(g_StyleManager){
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    wxSize style_tool_size = style->GetToolSize();
+        if(style)
+            style_tool_size = style->GetToolSize();
+    }
     double tool_size = style_tool_size.x;
     
     // unless overridden by user, we declare the "best" tool size
     // to be roughly the same as the ActionBar height.
     //  This may be approximated in a device orientation-independent way as:
-    //   40pixels * DENSITY
+    //   45pixels * DENSITY
     double premult = 1.0;
     if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
         double target_size = 9.0;                // mm
@@ -1955,16 +2312,16 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         
     }
     else{
-        premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
+        premult = wxMax(45 * getAndroidDisplayDensity(), 45) / tool_size;       // make sure not too small
     }            
     
-    //Adjust the scale factor using the global GUI scale parameter
-    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+    //Adjust the scale factor using the global GUI scale parameter, ranging from 0.5 -> 2.0
+    double postmult =  exp( GUIScaleFactor * (log(2.0) / 5.0) );       
     
 //        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
     
     rv = premult * postmult;
-    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMin(rv, getAndroidDisplayDensity() * 3);      //  Clamp at density * arbitrary limit factor
     
 #else
     double premult = 1.0;
@@ -2010,18 +2367,16 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         wxSize style_tool_size = style->GetToolSize();
         double compass_size = style_tool_size.x;
         
-        // We declare the "nominal best" icon size
-        // to be roughly the same as the ActionBar height.
-        //  This may be approximated in a device orientation-independent way as:
-        //   28pixels * DENSITY
+        // We declare the "nominal best" icon size to be a bit smaller than the ActionBar height.
+        //  This may be approximated in a device orientation-independent way as: 28pixels * DENSITY
         double premult = wxMax(28 * getAndroidDisplayDensity(), 50) / compass_size;
         
         //Adjust the scale factor using the global GUI scale parameter
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        rv = wxMin(rv, 1.5);      //  Clamp at 1.5
+        double postmult =  exp( GUIScaleFactor * (log(2.0) / 5.0) );       
+        //rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
         rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMin(rv, getAndroidDisplayDensity() * 3);      //  Clamp at density * arbitrary limit factor
     }
     
     
@@ -2057,16 +2412,16 @@ float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
 {
     double factor = 1.0;
 #ifndef __OCPN__ANDROID__
-    factor =  exp( scale_linear * (0.693 / 5.0) );       //  exp(2)
+    factor =  exp( scale_linear * (log(3.0) / 5.0) );       
 
 #else
     // the idea here is to amplify the scale factor for higher density displays, in a measured way....
-    factor =  exp( scale_linear * (0.693 / 5.0) * getAndroidDisplayDensity());
+    factor =  exp( scale_linear * (0.693 / 5.0) );
+//    factor *= getAndroidDisplayDensity();
 #endif
     
     factor = wxMax(factor, .5);
-    factor = wxMin(factor, 4.);
-    
+    factor = wxMin(factor, 6.);
 
     return factor;
 }
@@ -2273,6 +2628,30 @@ wxArrayString OCPNPlatform::getBluetoothScanResults()
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
 
+bool OCPNPlatform::AllowAlertDialog(const wxString& class_name)
+{
+#ifdef __OCPN__ANDROID__
+    //  allow if TopLevelWindow count is <=4, implying normal runtime screen layout
+    int nTLW = 0;
+    wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
+    while (node)
+    {
+        wxWindow* win = node->GetData();
+        if(win->IsShown())
+            nTLW++;
+        
+        node = node->GetNext();
+    }
+    
+    //qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW; 
+    return (g_running && !g_boptionsactive && (nTLW <= 4));
+    
+#else
+    return true;
+#endif
+}
+
+
 void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
 {
 #ifdef __OCPN__ANDROID__
@@ -2281,7 +2660,7 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
     
 }
 
-#ifdef __OCPN_ANDROID__
+#ifdef __OCPN__ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)
@@ -2340,6 +2719,26 @@ bool OCPNPlatform::isPlatformCapable( int flag){
 #endif    
 }    
     
+void OCPNPlatform::DoHelpDialog( void ) {
+#ifndef __OCPN__ANDROID__
+    if( !g_pAboutDlg ) {
+        g_pAboutDlg = new AboutFrameImpl( gFrame );
+        } else {
+            g_pAboutDlg->SetFocus();
+        }
+    g_pAboutDlg->Show();
+    
+#else
+    if( !g_pAboutDlgLegacy )
+        g_pAboutDlgLegacy = new about( gFrame, GetSharedDataDir() );
+    else
+        g_pAboutDlg->SetFocus();
+    g_pAboutDlgLegacy->Show();
+
+
+#endif    
+    
+}
     
 void OCPNPlatform::LaunchLocalHelp( void ) {
  
@@ -2370,5 +2769,151 @@ void OCPNPlatform::LaunchLocalHelp( void ) {
         wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
 #endif        
 }
+
+void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
+{
+#ifdef __OCPN__ANDROID__
+    androidLaunchBrowser( URL );
+#else
+    ::wxLaunchDefaultBrowser( URL );
+#endif
+}
+
+// ============================================================================
+// OCPNColourPickerCtrl implementation
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// OCPNColourPickerCtrl
+// ----------------------------------------------------------------------------
+
+OCPNColourPickerCtrl::OCPNColourPickerCtrl(wxWindow *parent,
+                   wxWindowID id,
+                   const wxColour& initial,
+                   const wxPoint& pos,
+                   const wxSize& size,
+                   long style,
+                   const wxValidator& validator,
+                   const wxString& name)
+{
+    Create(parent, id, initial, pos, size, style, validator, name);
+}
+
+bool OCPNColourPickerCtrl::Create( wxWindow *parent, wxWindowID id,
+                        const wxColour &col, const wxPoint &pos,
+                        const wxSize &size, long style,
+                        const wxValidator& validator, const wxString &name)
+{
+    m_bitmap = wxBitmap( 60, 13 );
+
+    // create this button
+    if (!wxBitmapButton::Create( parent, id, m_bitmap, pos,
+                           size, style | wxBU_AUTODRAW, validator, name ))
+    {
+        wxFAIL_MSG( wxT("OCPNColourPickerCtrl creation failed") );
+        return false;
+    }
+
+    // and handle user clicks on it
+    Connect(GetId(), wxEVT_BUTTON,
+            wxCommandEventHandler(OCPNColourPickerCtrl::OnButtonClick),
+            NULL, this);
+
+    m_colour = col;
+    UpdateColour();
+    InitColourData();
+
+    return true;
+}
+
+void OCPNColourPickerCtrl::InitColourData()
+{
+#if 0    
+    ms_data.SetChooseFull(true);
+    unsigned char grey = 0;
+    for (int i = 0; i < 16; i++, grey += 16)
+    {
+        // fill with grey tones the custom colors palette
+        wxColour colour(grey, grey, grey);
+        ms_data.SetCustomColour(i, colour);
+    }
+#endif    
+}
+
+void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
+{
+#ifdef __OCPN__ANDROID__
+  unsigned int cco = 0;
+  cco |= 0xff;  cco  = cco << 8;
+  cco |= m_colour.Red(); cco = cco << 8; 
+  cco |= m_colour.Green(); cco = cco << 8; 
+  cco |= m_colour.Blue();  
+  unsigned int cc = androidColorPicker( cco);
+
+  wxColour cnew;
+  unsigned char blue = (unsigned char) cc % 256;
+  unsigned char green = (unsigned char) (cc >> 8) % 256;;
+  unsigned char red = (unsigned char) (cc >> 16) % 256;
+  cnew.Set(red, green, blue);
+  
+  SetColour(cnew);
+
+#else    
+    // update the wxColouData to be shown in the dialog
+    ms_data.SetColour(m_colour);
+
+    // create the colour dialog and display it
+    wxColourDialog dlg(this, &ms_data);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+         ms_data = dlg.GetColourData();
+         SetColour(ms_data.GetColour());
+    }
+#endif    
+}
+
+void OCPNColourPickerCtrl::UpdateColour()
+{
+    wxMemoryDC dc(m_bitmap);
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush(m_colour) );
+    dc.DrawRectangle( 0,0,m_bitmap.GetWidth(),m_bitmap.GetHeight() );
+
+
+    dc.SelectObject( wxNullBitmap );
+    SetBitmapLabel( m_bitmap );
+}
+
+void OCPNColourPickerCtrl::SetColour( wxColour& c)
+{
+    m_colour = c;
+    m_bitmap = wxBitmap(GetSize().x - 20, GetSize().y - 20);
+    UpdateColour();
+}
+
+
+wxColour OCPNColourPickerCtrl::GetColour( void )
+{
+    return m_colour;
+}
+
+wxSize OCPNColourPickerCtrl::DoGetBestSize() const
+{
+    wxSize sz(wxBitmapButton::DoGetBestSize());
+#ifdef __WXMAC__
+    sz.y += 6;
+#else
+    sz.y += 2;
+#endif
+    sz.x += 30;
+    if ( HasFlag(wxCLRP_SHOW_LABEL) )
+        return sz;
+
+    // if we have no label, then make this button a square
+    // (like e.g. native GTK version of this control) ???
+    // sz.SetWidth(sz.GetHeight());
+    return sz;
+}
+
 
 

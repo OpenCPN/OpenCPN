@@ -72,18 +72,23 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
 {
       if (st == OCPN_DBP_STC_DPT)
       {
-            m_Depth = data;
+            m_Depth = std::isnan(data) ? 0.0 : data; 
 
             for (int idx = 1; idx < DEPTH_RECORD_COUNT; idx++)
             {
-                  m_ArrayDepth[idx-1] = m_ArrayDepth[idx];
+                m_ArrayDepth[idx - 1] = m_ArrayDepth[idx];
             }
-            m_ArrayDepth[DEPTH_RECORD_COUNT-1] = data;
+            m_ArrayDepth[DEPTH_RECORD_COUNT - 1] = m_Depth;
             m_DepthUnit = unit;
       }
       else if (st == OCPN_DBP_STC_TMP)
       {
-            m_Temp = wxString::Format(_T("%.1f"), data)+DEGREE_SIGN+unit;
+          if (!std::isnan(data)) {
+              m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
+          }
+          else {
+              m_Temp = "---";
+          }
       }
 }
 
@@ -177,7 +182,10 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
-      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
+      if (m_DepthUnit != _T("-")) { //Watchdog 
+          dc->DrawText(wxString::Format(_T("%.1f "), m_Depth) + m_DepthUnit, 10, m_TitleHeight); 
+      } else
+          dc->DrawText(_T("---"), 10, m_TitleHeight);
 
       dc->SetFont(*g_pFontLabel);
       int width, height;

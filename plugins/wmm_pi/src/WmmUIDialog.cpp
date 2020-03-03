@@ -301,7 +301,7 @@ WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString&
 	m_sdbSizer1 = new wxStdDialogButtonSizer();
 	m_sdbSizer1OK = new wxButton( this, wxID_OK );
 	m_sdbSizer1->AddButton( m_sdbSizer1OK );
-	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL, _("Cancel") );
 	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
 	m_sdbSizer1->Realize();
 	

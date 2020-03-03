@@ -28,12 +28,14 @@
 //----------------------------------------------------------------------------------
 //          Global Build options for opencpn
 //----------------------------------------------------------------------------------
-
 #ifndef _DYCHART_H_
 #define _DYCHART_H_
 
+#include "config.h"
+
 #include <cmath>
 #include <algorithm>
+
 
 //    Profiling support
 
@@ -75,8 +77,6 @@
 #ifdef __MSVC__
 #pragma warning(disable:4114)
 #pragma warning(disable:4284)             // This one is to do with "reverse iterator UDT..." Huh?
-
-
 #endif
 
 //    Following definition required by GDAL
@@ -85,6 +85,7 @@
 #ifdef __MSVC__
 //    __MSVC__ randomly does not link snprintf, or _snprintf
 //    Replace it with a local version, code is in cutil.c
+#undef snprintf
 #define snprintf mysnprintf
 #endif
 
@@ -139,18 +140,11 @@
 #endif
 
 //----------------------------------------------------------------------------
-//              Use and compile for S57 ENCs?
-//----------------------------------------------------------------------------
-//      Linux ./configure utility defines USE_S57 by default
-
-//----------------------------------------------------------------------------
 //              Use the CPL Portability library only if S57 is enabled
 //----------------------------------------------------------------------------
 
-#ifdef USE_S57
 #define USE_CPL
-#include "mygdal/cpl_port.h"
-#endif
+#include "gdal/cpl_port.h"
 
 #ifndef NULL
 #define NULL 0

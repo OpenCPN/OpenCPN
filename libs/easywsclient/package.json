@@ -1,0 +1,21 @@
+{
+  "name": "easywsclient",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dhbaird/easywsclient.git"
+  },
+  "author": "David Baird <dhbaird@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dhbaird/easywsclient/issues"
+  },
+  "dependencies": {
+    "ws": "^7.0.0"
+  }
+}

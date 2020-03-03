@@ -36,6 +36,7 @@
 #include "georef.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "glChartCanvas.h"
 #include "Select.h"
 #include "chart1.h"
 
@@ -47,7 +48,6 @@ extern wxRect       g_blink_rect;
 extern Multiplexer  *g_pMUX;
 extern MyFrame      *gFrame;
 extern bool         g_btouch;
-extern bool         g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double       g_n_arrival_circle_radius;
 extern int          g_iWaypointRangeRingsNumber;
@@ -55,7 +55,6 @@ extern float        g_fWaypointRangeRingsStep;
 extern int          g_iWaypointRangeRingsStepUnits;
 extern wxColour     g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-extern Select       *pSelect;
 extern float        g_ChartScaleFactorExp;
 extern int          g_iWpt_ScaMin;
 extern bool         g_bUseWptScaMin;
@@ -73,11 +72,14 @@ RoutePoint::RoutePoint()
     //  Nice defaults
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
+
     m_seg_etd = wxInvalidDateTime;
+    m_manual_etd =  false;
+
     m_seg_eta = wxInvalidDateTime;
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -129,6 +131,7 @@ RoutePoint::RoutePoint()
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
 // Copy Constructor
@@ -139,10 +142,13 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_lon = orig->m_lon;
     m_seg_len = orig->m_seg_len;
     m_seg_vmg = orig->m_seg_vmg;
+
     m_seg_etd = orig->m_seg_etd;
+    m_manual_etd = false;
+
     m_bDynamicName = orig->m_bDynamicName;
     m_bPtIsSelected = orig->m_bPtIsSelected;
-    m_bIsBeingEdited = orig->m_bIsBeingEdited;
+    m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
     m_bIsActive = orig->m_bIsActive;
     m_bBlink = orig->m_bBlink;
     m_bIsInRoute = orig->m_bIsInRoute;
@@ -204,10 +210,13 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     //  Nice defaults
     m_seg_len = 0.0;
     m_seg_vmg = 0.0;
+
     m_seg_etd = wxInvalidDateTime;
+    m_manual_etd =  false;
+
     m_bDynamicName = false;
     m_bPtIsSelected = false;
-    m_bIsBeingEdited = false;
+    m_bRPIsBeingEdited = false;
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
@@ -271,9 +280,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_dragIconTexture = 0;
     m_draggingOffsetx = m_draggingOffsety = 0;
 
+    m_PlannedSpeed = 0.;
 }
 
-RoutePoint::~RoutePoint( void )
+RoutePoint::~RoutePoint( )
 {
 //  Remove this point from the global waypoint list
     if( NULL != pWayPointMan )
@@ -508,6 +518,22 @@ void RoutePoint::ReLoadIcon( void )
     m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
+bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas)
+{    
+    if( m_bIsActive)  //  An active route point must always be visible
+        return true;
+    if( !m_bIsVisible ) // if not visible nevermind the rest.
+        return false;         
+    if( b_UseScamin ){
+        if (g_bOverruleScaMin)
+            return true;
+        else
+            if (canvas->GetScaleValue() > m_ScaMin) 
+                return false;
+    }
+    return true;
+}
+
 void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 {
     wxPoint r;
@@ -518,11 +544,12 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
     //  return the home point in this dc to allow "connect the dots"
     if( NULL != rpn ) *rpn = r;
 
-    if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
+    /*if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
     if( !m_bIsActive)  //  An active route point must always be visible
         if( !IsScaVisible( canvas) )          
-            return;           
+            return;   */ 
+    if ( !IsVisibleSelectable(canvas) ) return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -589,14 +616,14 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 
     wxColour hi_colour = pen->GetColour();
     unsigned char transparency = 100;
-    if( m_bIsBeingEdited ){
+    if( m_bRPIsBeingEdited ){
         hi_colour = GetGlobalColor( _T ( "YELO1" ) );
         transparency = 150;
     }
     
         
     //  Highlite any selected point
-    if( m_bPtIsSelected || m_bIsBeingEdited) {
+    if( m_bPtIsSelected || m_bRPIsBeingEdited) {
         AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, radius,
                 hi_colour, transparency );
     }
@@ -666,11 +693,12 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 #ifdef ocpnUSE_GL
 void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
-    if( !m_bIsVisible ) 
-        return;
-    if( !m_bIsActive)  //  An active route point must always be visible
-        if( !IsScaVisible( canvas) )          
-            return;  ;
+//     if( !m_bIsVisible ) 
+//         return;
+//     if( !m_bIsActive)  //  An active route point must always be visible
+//         if( !IsScaVisible( canvas) )          
+//             return;  ;
+    if ( !IsVisibleSelectable(canvas) ) return;
     
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -814,14 +842,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
-        glColor3f(1, 1, 1);
         
-        int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
+        int w = r1.width, h = r1.height;
         
         float scale = 1.0;
         if(!m_bPreScaled){
@@ -834,6 +860,24 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         float ys = r.y - hs/2.;
         float u = (float)w/glw, v = (float)h/glh;
         
+#ifdef USE_ANDROID_GLES2        
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#else        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+        glColor3f(1, 1, 1);
+        
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
         glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
@@ -841,12 +885,7 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
-//         glBegin(GL_QUADS);
-//         glTexCoord2f(0, 0); glVertex2f(x, y);
-//         glTexCoord2f(u, 0); glVertex2f(x+w, y);
-//         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
-//         glTexCoord2f(0, v); glVertex2f(x, y+h);
-//         glEnd();
+#endif
 
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
@@ -897,10 +936,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
         
-            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
             
             int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
             float u = (float)w/m_iTextTextureWidth, v = (float)h/m_iTextTextureHeight;
+#ifndef USE_ANDROID_GLES2            
+            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
+            
             glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(x, y);
             glTexCoord2f(u, 0); glVertex2f(x+w, y);
@@ -908,6 +949,20 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
 
+#else
+            float coords[8];
+            float uv[8];
+            //normal uv
+            uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+            uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+            
+            // pixels
+            coords[0] = x; coords[1] = y; coords[2] = x+w; coords[3] = y;
+            coords[4] = x+w; coords[5] = y+h; coords[6] = x, coords[7] = y+h;
+            
+            glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+            
+#endif            
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
         }
@@ -952,12 +1007,12 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         //  A line, southeast, scaled to the size of the icon
         double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
         
-        wxColor dh_color = wxColor(0,0,0);
+        wxColor dh_color = GetGlobalColor( _T ( "YELO1" ) );
         wxPen ppPen1( dh_color, 3 * platform_pen_width );
         dc.SetPen( ppPen1 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
  
-        dh_color = GetGlobalColor( _T ( "YELO1" ) );
+        dh_color = wxColor(0,0,0);
         wxPen ppPen2( dh_color, platform_pen_width );
         dc.SetPen( ppPen2 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
@@ -967,12 +1022,6 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        glColor3f(1, 1, 1);
         
         int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
         
@@ -984,6 +1033,14 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         float ys = y - hs/2.;
         float u = (float)w/m_dragIconTextureWidth, v = (float)h/m_dragIconTextureWidth;
         
+#ifndef USE_ANDROID_GLES2        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
+        glColor3f(1, 1, 1);
+        
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
         glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
@@ -991,6 +1048,20 @@ void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_scre
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
+#else
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#endif
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
 
@@ -1121,21 +1192,6 @@ void RoutePoint::SetScaMax(wxString str) {
     SetScaMax(val);
 }
 
-bool RoutePoint::IsScaVisible( ChartCanvas *cc){
-    if (g_bOverruleScaMin) return true;
-    if( b_UseScamin ){
-        if (cc->GetScaleValue() < m_ScaMin) 
-            return true;
-        else 
-            return false;
-    }
-    return true;
-//     if (g_bOverruleScaMin)
-//         return true;
-//     else
-//         return false;
-   // return ( ( ((cc->GetScaleValue() > m_ScaMin) || (cc->GetScaleValue() < m_ScaMax)) && (b_UseScamin) ) || (g_bOverruleScaMin) );
-}
 
 void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
 {
@@ -1148,11 +1204,11 @@ void RoutePoint::ShowScaleWarningMessage(ChartCanvas *canvas)
 
 void RoutePoint::SetPlannedSpeed(double spd)
 {
-    if( spd >= 0.0f && spd <= 1000.0f ) m_PlannedSpeed = spd;
+    if( spd >= 0.0 && spd <= 1000.0 ) m_PlannedSpeed = spd;
 }
 
 double RoutePoint::GetPlannedSpeed() {
-    if( m_PlannedSpeed < 0.0001f && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+    if( m_PlannedSpeed < 0.0001 && m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
         // In case there was speed encoded in the name of the waypoint, do the conversion here.
         wxString s_vmg = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
         double vmg;
@@ -1167,9 +1223,13 @@ double RoutePoint::GetPlannedSpeed() {
 wxDateTime RoutePoint::GetETD()
 {
     if( m_seg_etd.IsValid() ) {
-        return m_seg_etd;
+        if(!GetETA().IsValid() || m_seg_etd > GetETA()) {
+            return m_seg_etd;
+        } else {
+            return GetETA();
+        }
     } else {
-        if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
+    if( m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
             wxDateTime etd = wxInvalidDateTime;
             wxString s_etd = ( m_MarkDescription.Mid(m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
             const wxChar *parse_return = etd.ParseDateTime( s_etd );
@@ -1189,13 +1249,15 @@ wxDateTime RoutePoint::GetETD()
                         m_seg_etd = etd.ToUTC();
                     }
                 }
-                if( etd.IsValid() ) {
+                if( etd.IsValid() && (!GetETA().IsValid() || etd > GetETA()) ) {
                     m_MarkDescription.Replace( s_etd, wxEmptyString);
                     m_seg_etd = etd;
                     return m_seg_etd;
+                } else {
+                    return GetETA();
+                }
                 }
             }
-        }
     }
     return wxInvalidDateTime;
 }
@@ -1239,7 +1301,7 @@ bool RoutePoint::SetETD(const wxString &ts)
     if( ts.IsEmpty() ) {
         m_seg_etd = wxInvalidDateTime;
         m_manual_etd = false;
-        return TRUE;
+        return true;
     }
     wxDateTime tmp;
     wxString::const_iterator end;

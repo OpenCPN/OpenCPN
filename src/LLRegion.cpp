@@ -607,7 +607,6 @@ void LLRegion::Optimize()
 #endif
 
         // eliminiate parallel segments
-        bool end = false;
         poly_contour::iterator j = i->begin();
         int s = i->size();
         for(int c=0; c<s; c++) {

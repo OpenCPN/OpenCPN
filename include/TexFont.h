@@ -54,6 +54,7 @@ public:
     void RenderString( const char *string, int x=0, int y=0 );
     void RenderString( const wxString &string, int x=0, int y=0 );
     bool IsBuilt(){ return m_built; }
+    void SetColor(wxColor &color){ m_color = color;}
 
 private:
     void GetTextExtent( const char *string, int *width, int *height);
@@ -70,5 +71,11 @@ private:
     int m_maxglyphh;
     bool m_built;
     
+    float m_dx;
+    float m_dy;
+    wxColor m_color;
 };
+
+TexFont *GetTexFont(wxFont *key);
+
 #endif  //guard

@@ -35,15 +35,17 @@
 #include <wx/glcanvas.h>
 #endif
 
+#include "config.h"
+
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 //#include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
+#include "catalog_parser.h"
 
-#ifdef USE_S57
 #include "s57chart.h"               // for Object list
-#endif
+#include "semantic_vers.h"
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -52,7 +54,7 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
 #include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
 #endif
@@ -70,8 +72,8 @@
 #undef MAX
 #endif
 
-#include "wx/json_defs.h"
-#include "wx/jsonwriter.h"
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
 
 //    Assorted static helper routines
 
@@ -79,6 +81,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget);
 
 class PluginListPanel;
 class PluginPanel;
+class pluginUtilHandler;
 
 typedef struct {
     wxString name;      // name of the plugin
@@ -136,6 +139,32 @@ private:
 
 extern  const wxEventType wxEVT_OCPN_MSG;
 
+enum class PluginStatus { 
+    System,    // One of the four system plugins, unmanaged.
+    Managed,   // Managed by installer.
+    Unmanaged, // Unmanaged, probably a package.
+    Ghost,      // Managed, shadowing another (packaged?) plugin.
+    Unknown,
+    LegacyUpdateAvailable,
+    ManagedInstallAvailable,
+    ManagedInstalledUpdateAvailable,
+    ManagedInstalledCurrentVersion,
+    ManagedInstalledDowngradeAvailable,
+    PendingListRemoval
+};
+
+enum ActionVerb {
+    NOP = 0,
+    UPGRADE_TO_MANAGED_VERSION,
+    UPGRADE_INSTALLED_MANAGED_VERSION,
+    REINSTALL_MANAGED_VERSION,
+    DOWNGRADE_INSTALLED_MANAGED_VERSION,
+    UNINSTALL_MANAGED_VERSION,
+    INSTALL_MANAGED_VERSION
+};
+
+// Fwd definitions
+class StatusIconPanel;
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -145,11 +174,7 @@ extern  const wxEventType wxEVT_OCPN_MSG;
 class PlugInContainer
 {
       public:
-            PlugInContainer(){ m_pplugin = NULL;
-                               m_bEnabled = false;
-                               m_bInitState = false;
-                               m_bToolboxPanel = false;
-                               m_bitmap = NULL; }
+            PlugInContainer();
 
             opencpn_plugin    *m_pplugin;
             bool              m_bEnabled;
@@ -160,7 +185,7 @@ class PlugInContainer
             wxString          m_plugin_filename;      // The short file path
             wxDateTime        m_plugin_modification;  // used to detect upgraded plugins
             destroy_t         *m_destroy_fn;
-            wxDynamicLibrary  *m_plibrary;
+            wxDynamicLibrary  m_library;
             wxString          m_common_name;            // A common name string for the plugin
             wxString          m_short_description;
             wxString          m_long_description;
@@ -168,7 +193,16 @@ class PlugInContainer
             int               m_version_major;
             int               m_version_minor;
             wxBitmap         *m_bitmap;
-
+            /** 
+             * Return version from plugin API. Older pre-117 plugins just
+             * support major and minor version, newer plugins have
+             * complete semantic version data.
+             */
+            SemanticVersion   GetVersion();
+            wxString          m_version_str;    // Complete version as of
+                                                // semantic_vers
+            PluginStatus      m_pluginStatus;
+            PluginMetadata    m_ManagedMetadata;
 };
 
 //    Declare an array of PlugIn Containers
@@ -237,9 +271,14 @@ public:
       PlugInManager(MyFrame *parent);
       virtual ~PlugInManager();
 
-      bool LoadAllPlugIns(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog = true);
+      bool LoadAllPlugIns(bool enabled_plugins, bool b_enable_blackdialog = true);
+
+      /** Unload, delete and remove item ix in GetPlugInArray(). */
+      bool UnLoadPlugIn(size_t ix);
+
       bool UnLoadAllPlugIns();
       bool DeactivateAllPlugIns();
+      bool DeactivatePlugIn(PlugInContainer *pic);
       bool UpdatePlugIns();
 
       bool UpdateConfig();
@@ -254,6 +293,7 @@ public:
       void PrepareAllPluginContextMenus();
 
       void NotifySetupOptions();
+      void ClosePlugInPanel(PlugInContainer* pic, int ix);
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
@@ -288,6 +328,7 @@ public:
 
       void SendNMEASentenceToAllPlugIns(const wxString &sentence);
       void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
+      void SendActiveLegInfoToAllPlugIns(ActiveLegDat *infos);
       void SendAISSentenceToAllPlugIns(const wxString &sentence);
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
@@ -308,7 +349,10 @@ public:
 
       void SendBaseConfigToAllPlugIns();
       void SendS52ConfigToAllPlugIns( bool bReconfig = false );
-      
+      void SendSKConfigToAllPlugIns();
+
+      void UpdateManagedPlugins();
+
       wxArrayString GetPlugInChartClassNameArray(void);
 
       ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
@@ -319,14 +363,16 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
       void DimeWindow(wxWindow *win);
-      
+      pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
+      void SetListPanelPtr( PluginListPanel *ptr ) { m_listPanel = ptr; }
+
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
-      bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
       bool UpDateChartDataTypes(void);
       bool CheckPluginCompatibility(wxString plugin_file);
       bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog);
+      void ProcessLateInit(PlugInContainer *pic);
 
       MyFrame                 *pParent;
 
@@ -350,8 +396,12 @@ private:
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
     
+      pluginUtilHandler *m_utilHandler;
+      PluginListPanel   *m_listPanel;
+
+
 #ifndef __OCPN__ANDROID__
-#ifdef __OCPN_USE_CURL__
+#ifdef OCPN_USE_CURL
       
 public:
       wxCurlDownloadThread *m_pCurlThread;
@@ -376,8 +426,56 @@ DECLARE_EVENT_TABLE()
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
 
+class PluginDownloadDialog;
+
+/*
+ * Panel with a single + sign which opens the "Add/download plugins" dialog.
+ */
+class AddPluginPanel: public wxPanel
+{
+    public:
+        AddPluginPanel(wxWindow* parent);
+        void OnClick(wxMouseEvent& event);
+        ~AddPluginPanel();
+
+    protected:
+        wxBitmap m_bitmap;
+        wxStaticBitmap* m_staticBitmap;
+        wxWindow* m_parent;
+};
+
+
+/*
+ * Panel with buttons to control plugin catalog management.
+ */
+class CatalogMgrPanel: public wxPanel
+{
+    public:
+        CatalogMgrPanel(wxWindow* parent);
+        ~CatalogMgrPanel();
+        void OnUpdateButton(wxCommandEvent &event);
+        void OnChannelSelected(wxCommandEvent &event);
+        void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
+    protected:
+        wxString GetCatalogText();
+        unsigned int GetChannelIndex(const wxArrayString* channels);
+        void SetUpdateButtonLabel();
+
+        wxButton *m_updateButton, *m_advancedButton;
+        wxStaticText *m_catalogText, *m_customText;
+        wxChoice *m_choiceChannel;
+        wxTextCtrl *m_tcCustomURL;
+        wxWindow* m_parent;
+        PluginListPanel *m_PluginListPanel;
+};
+
+
+#define ID_CMD_BUTTON_PERFORM_ACTION 27663
+
 class PluginListPanel: public wxScrolledWindow
 {
+      DECLARE_EVENT_TABLE()
+
 public:
       PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray );
       ~PluginListPanel();
@@ -388,12 +486,32 @@ public:
       void UpdateSelections();
       void UpdatePluginsOrder();
 
+      /** Complete reload from plugins array. */
+      void ReloadPluginPanels(ArrayOfPlugIns* plugins);
+      void SelectByName(wxString &name);
+
+      wxBoxSizer         *m_pitemBoxSizer01;
+
 private:
+      void AddPlugin(PlugInContainer* pic);
+      int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
+      void Clear();
+
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
       
-      wxBoxSizer         *m_pitemBoxSizer01;
+};
+
+/** Invokes client browser on plugin info_url when clicked. */
+class WebsiteButton: public wxPanel
+{
+    public:
+        WebsiteButton(wxWindow* parent, const char* url);
+        ~WebsiteButton(){};
+        void SetURL( std::string url){ m_url = url; }
+    protected:
+        std::string m_url;
 };
 
 class PluginPanel: public wxPanel
@@ -405,34 +523,39 @@ public:
       void OnPluginSelected( wxMouseEvent &event );
       void SetSelected( bool selected );
       void OnPluginPreferences( wxCommandEvent& event );
-      void OnPluginEnable( wxCommandEvent& event );
+      void OnPluginEnableToggle( wxCommandEvent& event );
+      void OnPluginAction( wxCommandEvent& event );
+      void OnPluginUninstall( wxCommandEvent& event );
       void OnPluginUp( wxCommandEvent& event );
       void OnPluginDown( wxCommandEvent& event );
       void SetEnabled( bool enabled );
       bool GetSelected(){ return m_bSelected; }
       PlugInContainer* GetPluginPtr() { return m_pPlugin; };
+      void SetActionLabel( wxString &label);
+      ActionVerb GetAction() { return m_action; }
+      PlugInContainer* GetPlugin() { return m_pPlugin; }
 
 private:
       PluginListPanel *m_PluginListPanel;
       bool             m_bSelected;
       PlugInContainer *m_pPlugin;
+      StatusIconPanel *m_status_icon;
       wxStaticText    *m_pName;
       wxStaticText    *m_pVersion;
       wxStaticText    *m_pDescription;
-      wxFlexGridSizer      *m_pButtons;
-      wxButton        *m_pButtonEnable;
+      wxBoxSizer      *m_pButtons;
+      wxStaticBitmap  *m_itemStaticBitmap;
       wxButton        *m_pButtonPreferences;
+      wxButton        *m_pButtonAction, *m_pButtonUninstall;
       
-      wxBoxSizer      *m_pButtonsUpDown;
-      wxButton        *m_pButtonUp;
-      wxButton        *m_pButtonDown;    
+      wxCheckBox      *m_cbEnable;
+      WebsiteButton   *m_info_btn;
+      ActionVerb      m_action;
 };
 
 
 //  API 1.11 adds access to S52 Presentation library
 //  These are some wrapper conversion utilities
-
-#ifdef USE_S57
 
 class S52PLIB_Context
 {
@@ -466,10 +589,8 @@ public:
 };
 
 
-
 void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pctx );
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
-#endif
 
 #endif            // _PLUGINMGR_H_
 

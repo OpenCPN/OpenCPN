@@ -41,10 +41,10 @@
 #include "s57chart.h"           // for one static method
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
-#include "cpl_csv.h"
+#include "gdal/cpl_csv.h"
 #include "chart1.h"             // for fonts
-#include "mygdal/ogr_s57.h"
-#include "mygdal/cpl_string.h"
+#include "ogr_s57.h"
+#include "gdal/cpl_string.h"
 
 #include "mygeom.h"
 #include "georef.h"
@@ -260,7 +260,7 @@ Osenc::~Osenc()
     free( m_pCOVRTable );
     free( m_pNoCOVRTablePoints );
     free( m_pNoCOVRTable );
-    
+    delete m_UpFiles;
     CPLPopErrorHandler();
     
     
@@ -291,7 +291,8 @@ void Osenc::init( void )
     m_pauxInstream = NULL;
     m_pOutstream = NULL;
     m_pInstream = NULL;
-    
+    m_UpFiles = nullptr;
+
     m_bVerbose = true;
     g_OsencVerbose = true;
     m_NoErrDialog = false;
@@ -1168,14 +1169,14 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             if( !m_NoErrDialog ){
                 OCPNMessageBox(NULL, 
                     _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                    _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                    _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 5 );
             }
         }
         else{            // no updates applied.
                 if( !m_NoErrDialog )
                     OCPNMessageBox(NULL, 
                                _("S57 Cell Update failed.\nNo updates could be applied.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                               _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                               _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 5 );
         }
     }
     
@@ -1209,6 +1210,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
     //       wxDir dir(DirName000);
     m_UpFiles = new wxArrayString;
     retval = s57chart::GetUpdateFileArray( file000, m_UpFiles, m_date000, m_edtn000);
+    int upmax = retval;
     
     if( m_UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
@@ -1322,7 +1324,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
         
         wxFileName lastfile( last_up_added );
         wxString last_sext;
-        last_sext.Printf( _T("%03d"), retval );
+        last_sext.Printf( _T("%03d"), upmax );
         lastfile.SetExt( last_sext );
         
         bool bSuccess;
@@ -1515,8 +1517,8 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
         return ERROR_BASEFILE_ATTRIBUTES;
     }
     
-    
-    OGRS57DataSource *poS57DS = new OGRS57DataSource;
+    OGRS57DataSource S57DS;
+    OGRS57DataSource *poS57DS = &S57DS;
     poS57DS->SetS57Registrar( m_poRegistrar );
     
 
@@ -1761,8 +1763,6 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     delete m_ProgDialog;
 #endif    
     
-    delete poS57DS;
-
     lockCR.unlock();
    
     return ret_code;
@@ -1991,12 +1991,16 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
         
         #ifdef __ARM_ARCH
-        float east = easting;
-        float north = northing;
-        float deep = depth;
-        memcpy(pdf++, &east, sizeof(float));
-        memcpy(pdf++, &north, sizeof(float));
-        memcpy(pdf++, &deep, sizeof(float));
+        float __attribute__((aligned(16))) east = easting;
+        float __attribute__((aligned(16))) north = northing;
+        float __attribute__((aligned(16))) deep = depth;
+        unsigned char *puceast = (unsigned char *)&east;
+        unsigned char *pucnorth = (unsigned char *)&north;
+        unsigned char *pucdeep = (unsigned char *)&deep;
+
+        memcpy(pdf++, puceast, sizeof(float));
+        memcpy(pdf++, pucnorth, sizeof(float));
+        memcpy(pdf++, pucdeep, sizeof(float));
         
         #else                    
         *pdf++ = easting;
@@ -2085,16 +2089,24 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
         float lon, lat;
         double easting, northing;
     #ifdef __ARM_ARCH
-        double east_d, north_d;
-        memcpy(&east_d, psd++, sizeof(double));
-        memcpy(&north_d, psd++, sizeof(double));
+        double __attribute__((aligned(16))) east_d, north_d;
+        unsigned char *pucd = (unsigned char *)psd;
+
+        memcpy(&east_d, pucd, sizeof(double));
+        psd+= 1;
+        pucd += sizeof(double);
+        memcpy(&north_d, pucd, sizeof(double));
+        psd += 1;
         lon = east_d;
         lat = north_d;
     
     //  Calculate SM from chart common reference point
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
-        memcpy(pdf++, &easting, sizeof(float));
-        memcpy(pdf++, &northing, sizeof(float));
+        unsigned char *puceasting = (unsigned char *)&easting;
+        unsigned char *pucnorthing = (unsigned char *)&northing;
+
+        memcpy(pdf++, puceasting, sizeof(float));
+        memcpy(pdf++, pucnorthing, sizeof(float));
     
     #else                    
         lon = (float) *psd++;
@@ -3181,9 +3193,12 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                 double lat, lon;
                 #ifdef __ARM_ARCH
-                double lata, lona;
-                memcpy(&lona, psd, sizeof(double));
-                memcpy(&lata, &psd[1], sizeof(double));
+                __attribute__((aligned(16))) double lata, lona;
+                unsigned char *pucsd = (unsigned char *)psd;
+
+                memcpy(&lona, pucsd, sizeof(double));
+                pucsd += sizeof(double);
+                memcpy(&lata, pucsd, sizeof(double));
                 lon = lona;
                 lat = lata;
                 #else                
@@ -3310,8 +3325,9 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
         double      minxt, minyt, maxxt, maxyt;
         
         #ifdef __ARM_ARCH
-        double abox[4];
-        memcpy(&abox[0], pbb, 4 * sizeof(double));
+        double __attribute__((aligned(16))) abox[4];
+        unsigned char *pucbb = (unsigned char *)pPayloadRun;
+        memcpy(&abox[0], pucbb, 4 * sizeof(double));
         
         minxt = abox[0];
         maxxt = abox[1];
@@ -3647,8 +3663,8 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
         return ERROR_BASEFILE_ATTRIBUTES;
     }
     
-    OGRS57DataSource *poS57DS = new OGRS57DataSource;
-    poS57DS->SetS57Registrar( m_poRegistrar );
+    OGRS57DataSource oS57DS;
+    oS57DS.SetS57Registrar( m_poRegistrar );
 
     bool b_current_debug = g_bGDAL_Debug;
     g_bGDAL_Debug = false;
@@ -3656,13 +3672,13 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
     
     //  Ingest the .000 cell, with updates applied
     
-    if(ingestCell( poS57DS, FullPath000, SENCfile.GetPath())){
+    if(ingestCell( &oS57DS, FullPath000, SENCfile.GetPath())){
         errorMessage = _T("Error ingesting: ") + FullPath000;
         return ERROR_INGESTING000;
     }
 
     
-    S57Reader *poReader = poS57DS->GetModule( 0 );
+    S57Reader *poReader = oS57DS.GetModule( 0 );
     
     CalculateExtent( poReader, m_poRegistrar );
     
@@ -3670,7 +3686,6 @@ int Osenc::GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFile
     g_bGDAL_Debug = b_current_debug;
     
     //    delete poReader;
-    delete poS57DS;
     
     return SENC_NO_ERROR;
     

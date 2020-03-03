@@ -25,7 +25,7 @@
 #ifndef __TCWIN_H__
 #define __TCWIN_H__
 
-#include <wx/dialog.h>
+#include <wx/frame.h>
 #include <wx/datetime.h>
 #include <wx/timer.h>
 #include <wx/list.h>
@@ -42,7 +42,7 @@ class wxListBox;
 
 WX_DECLARE_LIST(wxPoint, SplineList);           // for spline curve points
 
-class TCWin: public wxDialog
+class TCWin: public wxFrame
 {
 public:
       TCWin(ChartCanvas *parent, int x, int y, void *pvIDX);
@@ -73,6 +73,8 @@ private:
     int           m_x;        // x coord of mouse click that launched window
     int           m_y;        // y coord of mouse click that launched window
     bool          m_created;
+    int           m_refDIM;
+    bool          m_bcompactText;
     int           m_tsx;      // test button width
     int           m_tsy;      // test button height
     float         m_tcwin_scaler; // factor to scale TCWin and contents by
@@ -112,6 +114,7 @@ private:
       wxPen *pblack_1;
       wxPen *pblack_2;
       wxPen *pblack_3;
+      wxPen *pblack_4;
       wxPen *pred_2;
       wxBrush *pltgray;
       wxBrush *pltgray2;

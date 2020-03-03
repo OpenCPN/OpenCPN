@@ -21,6 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include "config.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_DataStreamEvent.h"
 #include "datastream.h"
@@ -31,7 +32,11 @@
 #endif
 
 #ifdef __POSIX__
+    #ifdef __OCPN__ANDROID__
+        #include <termios.h>
+    #else
 	#include <sys/termios.h>
+    #endif
 #endif
 
 #define DS_RX_BUFFER_SIZE 4096
@@ -102,7 +107,7 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 {
 }
 
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
 
 size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
 {
@@ -258,7 +263,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun1");
                     
                 }
                 if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -267,7 +272,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
                     
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)L"temp_buf overrun2");
                     
                     *ptmpbuf = 0;
                     
@@ -312,14 +317,14 @@ void *OCP_DataStreamInput_Thread::Entry()
         } //while b_qdata
 
     }
-thread_exit:
+//thread_exit:
     CloseComPortPhysical();
     m_launcher->SetSecThreadInActive();             // I am dead
     m_launcher->m_Thread_run_flag = -1;
     
     return 0;
 }
-#else //ocpnUSE_NEWSERIAL
+#else //OCPN_USE_NEWSERIAL
 
 //      Sadly, the thread itself must implement the underlying OS serial port
 //      in a very machine specific way....
@@ -1320,5 +1325,5 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 }
 
 #endif            // __WXMSW__
-#endif //ocpnUSE_NEWSERIAL
+#endif //OCPN_USE_NEWSERIAL
 

@@ -26,6 +26,15 @@
 #include "AboutFrameImpl.h"
 #include "config.h"
 #include "OCPNPlatform.h"
+#include "chart1.h"
+
+#ifdef __WXMSW__
+#define EXTEND_WIDTH 70
+#define EXTEND_HEIGHT 70
+#else
+#define EXTEND_WIDTH 50
+#define EXTEND_HEIGHT 50
+#endif
 
 extern OCPNPlatform  *g_Platform;
 
@@ -41,32 +50,55 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     m_htmlWinLicense->Hide();
     m_htmlWinHelp->Hide();
     m_btnBack->Hide();
-    m_htmlWinLicense->LoadFile(wxString::Format("%s/license.txt", g_Platform->GetSharedDataDir().c_str()));
-    m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.txt", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinLicense->LoadFile(wxString::Format("%s/license.html", g_Platform->GetSharedDataDir().c_str()));
+    m_htmlWinAuthors->LoadFile(wxString::Format("%s/authors.html", g_Platform->GetSharedDataDir().c_str()));
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
-    m_hyperlinkHelp->SetURL(wxString::Format("file://%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+
+    m_hyperlinkHelp->SetURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
+    m_htmlWinHelp->LoadURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+#else
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
+#endif
     m_bitmapLogo->SetBitmap(logo);
     
-    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + 50;
-    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + 50;
+    int width = m_scrolledWindowAbout->GetSizer()->GetSize().GetWidth() + m_bitmapLogo->GetSize().GetWidth() + EXTEND_WIDTH;
+    int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + EXTEND_HEIGHT;
 
     SetMinSize(wxSize(width, height));
-    Layout();
-    Fit();
+    RecalculateSize();
 }
 
 
 void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
 {
-    m_htmlWinAuthors->Hide();
-    m_htmlWinLicense->Hide();
-    m_htmlWinHelp->Show();
-    m_scrolledWindowAbout->Hide();
-    m_btnBack->Show();
-    m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
-    SetSize(m_parent->GetSize());
-    Centre();
+#ifdef __WXGTK__   
+    wxString testFile = wxString::Format("/%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str());
+    if( !::wxFileExists(testFile)){
+        wxString msg = _("OpenCPN Help documentation is not available locally.");  msg += _T("\n");
+        msg += _("Would you like to visit the opencpn.org website for more information?");
+        
+        if( wxID_YES == OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
+        {
+            wxLaunchDefaultBrowser(_T("https://opencpn.org"));
+        }
+    }
+    else
+#endif        
+    {
+        m_htmlWinAuthors->Hide();
+        m_htmlWinLicense->Hide();
+        m_htmlWinHelp->Show();
+        m_scrolledWindowAbout->Hide();
+        m_btnBack->Show();
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
+        m_btnBack->Enable(m_htmlWinHelp->CanGoBack());
+#else
+        m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
+#endif
+        SetSize(m_parent->GetSize());
+        Centre();
+    }
 }
 
 void AboutFrameImpl::OnLinkLicense( wxHyperlinkEvent& event )
@@ -99,4 +131,32 @@ void AboutFrameImpl::AboutFrameOnActivate( wxActivateEvent& event )
     Layout();
     m_scrolledWindowAbout->Refresh();
     m_panelMainLinks->Refresh();
+}
+
+void AboutFrameImpl::RecalculateSize( void )
+{
+#ifdef __OCPN__ANDROID__    
+    //  Make an estimate of the dialog size, without scrollbars showing
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 20;
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    
+    SetSize(fsize);
+    Centre();
+
+#else 
+    Fit();
+    Centre();
+#endif
+    
 }

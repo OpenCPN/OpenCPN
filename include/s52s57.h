@@ -36,6 +36,8 @@
 
 #define CURRENT_SENC_FORMAT_VERSION  200
 
+#define OBJL_NAME_LEN  6
+
 //    Fwd Defns
 class wxArrayOfS57attVal;
 class OGREnvelope;
@@ -264,7 +266,7 @@ typedef struct _S57attVal {
 WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
 
 typedef struct _OBJLElement {
-    char OBJLName[6];
+    char OBJLName[OBJL_NAME_LEN];
     int nViz;
 } OBJLElement;
 

@@ -6,7 +6,7 @@
  * Author:   Pavel Kalian
  *
  ***************************************************************************
- *   Copyright (C) 2011 by Pavel Kalian   *
+ *   Copyright (C) 2011-2019 by Pavel Kalian   *
  *   $EMAIL$   *
  *                                                 *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -39,8 +39,10 @@
 #else
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h
 #include "GL/gl_private.h"
+#include "qdebug.h"
 #endif
 
+float g_piGLMinSymbolLineWidth;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) { WMMLogMessage1(wxString::FromAscii(s)); }
@@ -58,6 +60,10 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
+
+wmm_pi *g_pi;
+
+bool g_compact;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -113,13 +119,15 @@ and extended by Sean D'Epagnier to support plotting."));
 wmm_pi::wmm_pi(void *ppimgr)
     : opencpn_plugin_18(ppimgr),
     m_bShowPlot(false), 
-    m_DeclinationMap(DECLINATION, MagneticModel, TimedMagneticModel, &Ellip),
-    m_InclinationMap(INCLINATION, MagneticModel, TimedMagneticModel, &Ellip),
-    m_FieldStrengthMap(FIELD_STRENGTH, MagneticModel, TimedMagneticModel, &Ellip),
+    m_DeclinationMap(DECLINATION_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
+    m_InclinationMap(INCLINATION_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
+    m_FieldStrengthMap(FIELD_STRENGTH_PLOT, MagneticModel, TimedMagneticModel, &Ellip),
     m_bComputingPlot(false)
 {
     // Create the PlugIn icons
     initialize_images();
+    
+    g_pi = this;
 }
 
 int wmm_pi::Init(void)
@@ -130,6 +138,9 @@ int wmm_pi::Init(void)
     m_wmm_dialog_x = 0;
     m_wmm_dialog_y = 0;
 
+    MagneticModel = NULL;
+    TimedMagneticModel = NULL;
+    
     ::wxDisplaySize(&m_display_width, &m_display_height);
 
     //    Get a pointer to the opencpn display canvas, to use as a parent for the POI Manager dialog
@@ -141,58 +152,63 @@ int wmm_pi::Init(void)
     //    And load the configuration items
     LoadConfig();
 
+#ifdef __OCPN__ANDROID__
+    g_compact = true;
+    m_bShowPlotOptions = false;
+    m_iViewType = 1;
+#endif
+    
+    
     m_buseable = true;
 
     m_LastVal = wxEmptyString;
 
-    pFontSmall = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    //pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    pFontSmall = OCPNGetFont( _("WMM_Live_Overlay"), 10);
+    
     m_shareLocn =*GetpSharedDataLocation() +
     _T("plugins") + wxFileName::GetPathSeparator() +
     _T("wmm_pi") + wxFileName::GetPathSeparator() +
     _T("data") + wxFileName::GetPathSeparator();
     
     //    WMM initialization
+    
     /* Memory allocation */
-    int NumTerms = ( ( WMM_MAX_MODEL_DEGREES + 1 ) * ( WMM_MAX_MODEL_DEGREES + 2 ) / 2 );    /* WMM_MAX_MODEL_DEGREES is defined in WMM_Header.h */
-
-    MagneticModel       = WMM_AllocateModelMemory(NumTerms);  /* For storing the WMM Model parameters */
-    TimedMagneticModel  = WMM_AllocateModelMemory(NumTerms);  /* For storing the time modified WMM Model parameters */
-    if(MagneticModel == NULL || TimedMagneticModel == NULL)
-    {
-        //WMM_Error(2); Nohal - We don't want the printf's
+    int NumTerms, epochs = 1, nMax = 0;
+    wxString cof_filename = m_shareLocn + "WMM.COF";
+    
+    if(!MAG_robustReadMagModels(const_cast<char*>((const char*)cof_filename.mb_str()), &MagneticModels)) {
         WMMLogMessage1(_T("initialization error"));
         m_buseable = false;
-    }
-
-    if( m_buseable )
-    {
-        WMM_SetDefaults(&Ellip, MagneticModel, &Geoid); /* Set default values and constants */
+    } else {
+        WMMLogMessage1(wxString::Format(_T("WMM model data loaded from file %s."), cof_filename.c_str()));
+        for(int i = 0; i < epochs; i++) {
+            if(MagneticModels[i]->nMax > nMax) {
+                nMax = MagneticModels[i]->nMax;
+            }
+        }
+        NumTerms = ((nMax + 1) * (nMax + 2) / 2);
+        
+        TimedMagneticModel = MAG_AllocateModelMemory(NumTerms); /* For storing the time modified WMM Model parameters */
+        
+        for(int i = 0; i < epochs; i++) {
+            if(MagneticModels[i] == NULL || TimedMagneticModel == NULL) {
+                WMMLogMessage1(_T("initialization error MAG_Error(2)"));
+                m_buseable = false;
+            }
+        }
+        
+        MagneticModel = MagneticModels[0];
+        
+        MAG_SetDefaults(&Ellip, &Geoid); /* Set default values and constants */
         /* Check for Geographic Poles */
-        //WMM_readMagneticModel_Large(filename, MagneticModel); //Uncomment this line when using the 740 model, and comment out the  WMM_readMagneticModel line.
-
-        filename = m_wmm_dir + _T("/WMM.COF");
-        wxCharBuffer buf = filename.ToUTF8();
-
-        if (0 == WMM_readMagneticModel(buf.data(), MagneticModel))
-        {
-            WMMLogMessage1(wxString::Format(_T("Warning: WMM model data file %s can't be loaded, using the bundled data."), filename.c_str()));
-            WMM_setupMagneticModel(wmm_cof_data, MagneticModel);
-        }
-        else
-        {
-            WMMLogMessage1(wxString::Format(_T("WMM model data loaded from file %s."), filename.c_str()));
-        }
+        
+        /* Set EGM96 Geoid parameters */
+        Geoid.GeoidHeightBuffer = GeoidHeightBuffer;
+        Geoid.Geoid_Initialized = 1;
+        /* Set EGM96 Geoid parameters END */
     }
-
- //     filename = m_wmm_dir + _T("/EGM9615.BIN");
- //     strncpy(geoiddatapath, (const char*)filename.mb_str(wxConvUTF8), 1023);
- //     if (FALSE == WMM_InitializeGeoid(&Geoid))    /* Read the Geoid file */
- //     {
- //         wxLogMessage(wxString::Format(_T("Warning: WMM model data file %s can't be loaded. Switching off the geoid calculations. The accuracy will be reduced"), filename.c_str()));
- //         m_busegeoid = false;
- //     }
-    //WMM_GeomagIntroduction(MagneticModel);  /* Print out the WMM introduction */
-
+    
     int ret_flag =  (WANTS_OVERLAY_CALLBACK |
     WANTS_OPENGL_OVERLAY_CALLBACK |
     WANTS_CURSOR_LATLON     |
@@ -214,7 +230,19 @@ int wmm_pi::Init(void)
     }
 
     m_pWmmDialog = NULL;
+    m_oDC = NULL;
 
+#ifdef ocpnUSE_GL
+        //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
+#else
+    glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
+    
     return ret_flag;
 }
 
@@ -232,8 +260,12 @@ bool wmm_pi::DeInit(void)
          m_pWmmDialog = NULL;
      }
     SaveConfig();
-    WMM_FreeMagneticModelMemory(MagneticModel);
-    WMM_FreeMagneticModelMemory(TimedMagneticModel);
+    if(MagneticModel) {
+        MAG_FreeMagneticModelMemory(MagneticModel);
+    }
+    if(TimedMagneticModel) {
+        MAG_FreeMagneticModelMemory(TimedMagneticModel);
+    }
 
     RemovePlugInTool(m_leftclick_tool_id);
 
@@ -243,7 +275,11 @@ bool wmm_pi::DeInit(void)
         Geoid.GeoidHeightBuffer = NULL;
     }*/
     
-    delete pFontSmall;
+    //delete pFontSmall;
+    
+    if(m_oDC)
+        delete m_oDC;
+    
     return true;
 }
 
@@ -287,8 +323,9 @@ wxString wmm_pi::GetLongDescription()
 {
     return _("World Magnetic Model PlugIn for OpenCPN\n\
 Implements the NOAA World Magnetic Model\n\
-More information: http://www.ngdc.noaa.gov/geomag/WMM/\n\
-The bundled WMM2015 model expires on December 31, 2019.\n\
+More information:\n\
+https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n\
+The bundled WMM2020 model expires on December 31, 2025.\n\
 After then, if new version of the plugin will not be released\n\
 in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
@@ -408,7 +445,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     
 }
 
-void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
+void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp)
 {
     if(!m_bShowPlot)
       return;
@@ -420,22 +457,45 @@ void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
 
 bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
-    RenderOverlayBoth(&dc, vp);
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(&dc);
+    
+    RenderOverlayBoth(m_oDC, vp);
+    
     return true;
 }
 
 bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(NULL);
+    
+#ifndef USE_ANDROID_GLES2    
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT );
     
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+#endif
 
-    RenderOverlayBoth(0, vp);
+    RenderOverlayBoth(m_oDC, vp);
 
+#ifndef USE_ANDROID_GLES2
     glPopAttrib();
+#endif
 
     return true;
 }
@@ -463,6 +523,9 @@ void wmm_pi::RecomputePlot()
 
 void wmm_pi::SetCursorLatLon(double lat, double lon)
 {
+    if(!m_pWmmDialog)
+        return;
+    
     if (!m_bShowAtCursor)
         return; //We don't want to waste CPU cycles that much...
     if (lat < -90 || lat > 90 || lon < -180 || lon > 180 || NULL == m_pWmmDialog || !m_pWmmDialog->IsShown())
@@ -481,11 +544,11 @@ void wmm_pi::SetCursorLatLon(double lat, double lon)
     UserDate.Month = wxDateTime::GetCurrentMonth() + 1; //WHY is it 0 based????????
     UserDate.Day = wxDateTime::Now().GetDay();
     char err[255];
-    WMM_DateToYear(&UserDate, err);
-    WMM_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
-    WMM_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
-    WMM_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
-    WMM_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
+    MAG_DateToYear(&UserDate, err);
+    MAG_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
+    MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
+    MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
+    MAG_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
     //WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate, TimedMagneticModel, &Geoid);     /* Print the results */
     m_pWmmDialog->m_tcF->SetValue(wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.F));
     m_pWmmDialog->m_tcH->SetValue(wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.H));
@@ -501,6 +564,9 @@ void wmm_pi::SetCursorLatLon(double lat, double lon)
 
 void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 {
+    if(!m_buseable) {
+        return;
+    }
     CoordGeodetic.lambda = pfix.Lon;
     CoordGeodetic.phi = pfix.Lat;
     CoordGeodetic.HeightAboveEllipsoid = 0;
@@ -509,11 +575,11 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
     UserDate.Month = wxDateTime::GetCurrentMonth() + 1; //WHY is it 0 based????????
     UserDate.Day = wxDateTime::Now().GetDay();
     char err[255];
-    WMM_DateToYear(&UserDate, err);
-    WMM_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
-    WMM_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
-    WMM_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
-    WMM_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
+    MAG_DateToYear(&UserDate, err);
+    MAG_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
+    MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
+    MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
+    MAG_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
     //WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate, TimedMagneticModel, &Geoid);     /* Print the results */
     
     m_boatVariation = GeoMagneticElements;
@@ -551,7 +617,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         }
 
         wxColour cf;
-        GetGlobalColor(_T("CHBLK"), &cf);
+        GetGlobalColor(_T("CHWHT"), &cf);
         dc.SetTextForeground(cf);
         if(pFontSmall->IsOk()){
             if(live.IsOk()){
@@ -562,13 +628,12 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
                 //   No smaller than 8 pt.
                 int w;
                 wxScreenDC sdc;
-                sdc.SetFont(*pFontSmall);
-                sdc.GetTextExtent(NewVal, &w, NULL);
+                sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
+
                 while( (w > (icon.GetWidth() * 8 / 10) ) && (point_size >= 8) ){
                     point_size--;
                     pFontSmall->SetPointSize(point_size);
-                    sdc.SetFont(*pFontSmall);
-                    sdc.GetTextExtent(NewVal, &w, NULL);
+                    sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
                 }
             }
             dc.SetFont(*pFontSmall);
@@ -660,11 +725,11 @@ void wmm_pi::SendVariationAt(double lat, double lon, int year, int month, int da
     UserDate.Month = month;
     UserDate.Day = day;
     char err[255];
-    WMM_DateToYear(&UserDate, err);
-    WMM_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
-    WMM_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
-    WMM_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
-    WMM_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
+    MAG_DateToYear(&UserDate, err);
+    MAG_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);    /*Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report*/
+    MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
+    MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);   /* Computes the geoMagnetic field elements and their time change*/
+    MAG_CalculateGridVariation(CoordGeodetic,&GeoMagneticElements);
     v[_T("Decl")] = GeoMagneticElements.Decl;
     v[_T("Decldot")] = GeoMagneticElements.Decldot;
     v[_T("F")] = GeoMagneticElements.F;
@@ -835,6 +900,59 @@ bool wmm_pi::SaveConfig(void)
         return false;
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
+}
+
 void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     WmmPrefsDialog *dialog = new WmmPrefsDialog( parent, wxID_ANY, _("WMM Preferences"), wxPoint( m_wmm_dialog_x, m_wmm_dialog_y), wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
@@ -914,71 +1032,3 @@ void wmm_pi::ShowPlotSettings()
     }
     delete dialog;
 }
-
-/*!
- * \brief
- * sets up the magnetic model with our bundled data.
- * 
- * \param data
- * string containing the coefitient data
- * 
- * \param MagneticModel
- * Magnetic model
- * 
- * \returns
- * true on success
- * 
- * 
- * This is a modification of WMM_readMagneticModel() to set up the model in case the data files are missing.
- */
-int WMM_setupMagneticModel(char *data, WMMtype_MagneticModel * MagneticModel)
-{
-    char c_str[81], c_new[5];   /*these strings are used to read a line from coefficient file*/
-    int i, icomp, m, n, EOF_Flag = 0, index;
-    double epoch, gnm, hnm, dgnm, dhnm;
-    char *c_tmp;
-    char *tmp_data;
-
-    tmp_data = strdup(data);
-
-    MagneticModel->Main_Field_Coeff_H[0] = 0.0;
-    MagneticModel->Main_Field_Coeff_G[0] = 0.0;
-    MagneticModel->Secular_Var_Coeff_H[0] = 0.0;
-    MagneticModel->Secular_Var_Coeff_G[0] = 0.0;
-
-    c_tmp = strtok(tmp_data, "\n");
-    strncpy(c_str, c_tmp, 80);
-    c_str[80] = '\0';
-    sscanf(c_str,"%lf%s",&epoch, MagneticModel->ModelName);
-    MagneticModel->epoch = epoch;
-    while (EOF_Flag == 0)
-    {
-        c_tmp = strtok(NULL, "\n");
-        strncpy(c_str, c_tmp, 80);
-        /* CHECK FOR LAST LINE IN FILE */
-        for (i=0; i<4 && (c_str[i] != '\0'); i++)
-        {
-            c_new[i] = c_str[i];
-            c_new[i+1] = '\0';
-        }
-        icomp = strcmp("9999", c_new);
-        if (icomp == 0)
-        {
-            EOF_Flag = 1;
-            break;
-        }
-        /* END OF FILE NOT ENCOUNTERED, GET VALUES */
-        sscanf(c_str,"%d%d%lf%lf%lf%lf",&n,&m,&gnm,&hnm,&dgnm,&dhnm);
-        if (m <= n)
-        {
-            index = (n * (n + 1) / 2 + m);
-            MagneticModel->Main_Field_Coeff_G[index] = gnm;
-            MagneticModel->Secular_Var_Coeff_G[index] = dgnm;
-            MagneticModel->Main_Field_Coeff_H[index] = hnm;
-            MagneticModel->Secular_Var_Coeff_H[index] = dhnm;
-        }
-    }
-    
-    free(tmp_data);
-    return TRUE;
-} /*WMM_setupMagneticModel */

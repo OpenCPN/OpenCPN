@@ -94,7 +94,7 @@ public:
       void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix, const bool duplicate_first_point = false);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp, bool bdraw_arrow, int hilite_width = 0);
-      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp);
+      void RenderSegmentArrowsGL( ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp);
 
       void SetVisible(bool visible = true, bool includeWpts = true);
       void SetListed(bool visible = true);
@@ -110,6 +110,7 @@ public:
       void SetDepartureDate(const wxDateTime &dt) { if( dt.IsValid() ) m_PlannedDeparture = dt; }
     
       wxString GetName() const { return m_RouteNameString; }
+      wxString GetTo() const { return m_RouteEndString; }
 
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;

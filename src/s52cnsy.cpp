@@ -46,6 +46,14 @@ bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
 #define UNKNOWN 1e6 //HUGE_VAL   // INFINITY/NAN
 
+#ifndef chk_snprintf
+#define chk_snprintf(buf, len, fmt, ...) \
+{ \
+    int r = snprintf(buf, len, fmt, ##__VA_ARGS__); \
+    if (r == -1 || r >= len) wxLogWarning("snprint overrun"); \
+}
+#endif
+
 WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfSortedDoubles);
 
 
@@ -699,7 +707,6 @@ static void *DEPARE01(void *param)
 
    //   Create a string of the proper color reference
 
-    bool shallow  = TRUE;
     wxString rule_str =_T("AC(DEPIT)");
 
 
@@ -712,7 +719,6 @@ static void *DEPARE01(void *param)
             drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
     }
     else
@@ -725,14 +731,12 @@ static void *DEPARE01(void *param)
                 drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
 
         if (drval1 >= S52_getMarinerParam(S52_MAR_DEEP_CONTOUR)  &&
                 drval2 >  S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
 
     }
@@ -745,7 +749,6 @@ static void *DEPARE01(void *param)
         if (!drval1_found) //If DRVAL1 was not defined...
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
         rule_str.Append(_T(";AP(DRGARE01)"));
         rule_str.Append(_T(";LS(DASH,1,CHGRF)"));
@@ -814,7 +817,6 @@ static void *DEPCNT02 (void *param)
 //      int      objl      = 0;
 //      GString *quaposstr = NULL;
 //      int      quapos    = 0;
-      double   depth_value;
       double drval1, drval2;
       bool safe = FALSE;
       wxString rule_str;
@@ -890,8 +892,6 @@ static void *DEPCNT02 (void *param)
                               */
             }
 
-            depth_value = drval1;
-
       }
       else
       {
@@ -900,8 +900,6 @@ static void *DEPCNT02 (void *param)
             GetDoubleAttr(obj, "VALDCO", valdco);
 //            GString *valdcostr = S57_getAttVal(geo, "VALDCO");
 //            double   valdco    = (NULL == valdcostr) ? 0.0 : atof(valdcostr->str);
-
-            depth_value = valdco;
 
             if (valdco == safety_contour)
                   safe = TRUE;   // this is useless !?!?
@@ -1434,7 +1432,7 @@ static void *LIGHTS05 (void *param)
                   _parseList(litvisstr, litvis, sizeof(litvis));
 
                 if (strpbrk(litvis, "\003\007\010"))
-                     strcpy(sym, ";CA(CHBLK, 1,CHBLK, 0");
+                     strcpy(sym, ";CA(CHBLK, 4,CHBRN, 1");
             }
 
             if(sectr2 <= sectr1)
@@ -1770,7 +1768,7 @@ static void *LIGHTS06 (void *param)
                 _parseList(litvisstr, litvis, sizeof(litvis));
                 
                 if (strpbrk(litvis, "\003\007\010"))
-                    strcpy(sym, ";CA(CHBLK, 1,CHBLK, 0");
+                    strcpy(sym, ";CA(CHBLK, 4,CHBRN, 1");
             }
             
             if(sectr2 <= sectr1)
@@ -2138,30 +2136,29 @@ static void *OBSTRN04 (void *param)
 //                        GString *watlevstr = S57_getAttVal(geo, "WATLEV");
 
                         if (watlev == -9)   // default
-                              obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
+                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                         else {
-                              if (3 == watlev) {
-                                    int catobs = -9;
-                                    GetIntAttr(obj, "CATOBS", catobs);
-//                                    GString *catobsstr = S57_getAttVal(geo, "CATOBS");
-                                    if (6 == catobs)
-                                          obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
-                              } else {
-                                    switch (watlev) {
-                                          case 1:
-                                          case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
-                                          case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
-                                          case 5:
-                                          case 3:
-                                                default : obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            switch (watlev) {
+                                case 1:
+                                case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
+                                case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
+                                case 5:
+                                case 3:
+                                    {
+                                        int catobs = -9;
+                                        GetIntAttr(obj, "CATOBS", catobs);
+                                        if (6 == catobs)
+                                            obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
+                                        else
+                                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                                     }
-                              }
+                                    break;
+                                default: obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            }
                         }
                   }
-
                   obstrn04str.Append(*quapnt01str);
                   goto end;
-
 
 /*
             // Continuation C (AREAS_T)
@@ -2943,7 +2940,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         _parseList(tecsoustr->mb_str(), tecsou, sizeof(tecsou));
         if (strpbrk(tecsou, "\006"))
         {
-            snprintf(temp_str, LISTSIZE, ";SY(%sB1)", symbol_prefix_a);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%sB1)", symbol_prefix_a);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         }
     }
@@ -2953,9 +2950,8 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     
     if (strpbrk(quasou, "\003\004\005\010\011") || strpbrk(status, "\022"))
     {
-        snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        
     }
     else
     {
@@ -2965,7 +2961,8 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         {
             if (2 <= quapos && quapos < 10)
             {
-                snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
+                chk_snprintf(temp_str, LISTSIZE,
+                             ";SY(%sC2)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
         }
@@ -2986,17 +2983,20 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             int fraction = (int)ABS((fabs(depth_value) - leading_digit)*10);
             
             
-            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                         symbol_prefix_a, (int)ABS(leading_digit));
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             if(fraction > 0) {
-                snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, fraction);
+                chk_snprintf(temp_str, LISTSIZE,
+                             ";SY(%s5%1i)", symbol_prefix_a, fraction);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
             
             // above sea level (negative)
             if (depth_value < 0.0)
             {
-                snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
+                chk_snprintf(temp_str, LISTSIZE,
+                             ";SY(%sA1)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
             goto return_point;
@@ -3022,25 +3022,28 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             fraction = fraction * 10;
             if (leading_digit >= 10.0)
             {
-                snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)leading_digit/10);
+                chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)",
+                             symbol_prefix_a, (int)leading_digit/10);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
             
             double first_digit = floor(leading_digit / 10);
             int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
-            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                         symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             
             if(!b_2digit){
                 if((int)fraction > 0) {
-                    snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
+                    chk_snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)",
+                                 symbol_prefix_a, (int)fraction);
                     sndfrm02.Append(wxString(temp_str, wxConvUTF8));
                 }
             }
             
             if (depth_value < 0.0)
             {
-                snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
+                chk_snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
             
@@ -3058,17 +3061,21 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
         if (depth_value < 0.0)
         {
-            snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)",
+                         symbol_prefix_a, (int)first_digit);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                         symbol_prefix_a, (int)secnd_digit);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-            snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         }
         else{
-            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                         symbol_prefix_a, (int)first_digit);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-            snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
+            chk_snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)",
+                         symbol_prefix_a, (int)secnd_digit);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         }
         goto return_point;
@@ -3080,11 +3087,14 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double secnd_digit = floor((leading_digit - (first_digit * 100)) / 10);
         double third_digit = floor(leading_digit - (first_digit * 100) - (secnd_digit * 10));
         
-        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)",
+                     symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                     symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)",
+                     symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         
         goto return_point;
@@ -3097,13 +3107,17 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double third_digit = floor((leading_digit - (first_digit * 1000) - (secnd_digit * 100)) / 10);
         double last_digit  = floor(leading_digit - (first_digit * 1000) - (secnd_digit * 100) - (third_digit * 10)) ;
         
-        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)",
+                     symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                     symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)",
+                     symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)",
+                     symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         
         goto return_point;
@@ -3117,15 +3131,20 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double fourth_digit = floor((leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100)) / 10 ) ;
         double last_digit   = floor(leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100) - (fourth_digit * 10)) ;
         
-        snprintf(temp_str, LISTSIZE, ";SY(%s3%1i)", symbol_prefix_a, (int)first_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s3%1i)",
+                     symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)secnd_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)",
+                     symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)third_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)",
+                     symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)fourth_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)",
+                     symbol_prefix_a, (int)fourth_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
+        chk_snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)",
+                     symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         
         goto return_point;
@@ -3904,6 +3923,19 @@ static wxString _LITDSN01(S57Obj *obj)
 }
 
 
+static void *SYMINS01(void *param)
+{
+    ObjRazRules *rzRules = (ObjRazRules *)param;
+    S57Obj *obj = rzRules->obj;
+    char symins[80] = {'\0'};
+    GetStringAttr(obj, "SYMINS", symins, 79);
+
+    char *r = (char *)malloc(strlen(symins) + 1);
+    strcpy(r, symins);
+
+   return r;
+}
+
 //--------------------------------
 //
 // JUMP TABLE SECTION
@@ -3939,6 +3971,7 @@ Cond condTable[] = {
    {"VRMEBL01",VRMEBL01},
    {"WRECKS02",WRECKS02},
    {"SOUNDG03",SOUNDG03},                   // special case for MPS
+   {"SYMINS01",SYMINS01},                   //  Container for Virtual AIS ATONS, special case
    {"########",NULL}
 };
 

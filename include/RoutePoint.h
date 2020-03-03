@@ -61,6 +61,7 @@ public:
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
       bool IsNameShown() { return m_bShowName; }
+      bool IsVisibleSelectable(ChartCanvas *canvas);
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
@@ -109,7 +110,6 @@ public:
       long GetScaMax(){return m_ScaMax; };
       bool GetUseSca(){return b_UseScamin; };
       void SetUseSca( bool value ){ b_UseScamin = value; };
-      bool IsScaVisible(ChartCanvas *cc);
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
       void EnableDragHandle(bool bEnable);
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
@@ -135,10 +135,10 @@ public:
       wxDateTime        m_seg_etd;
       wxDateTime        m_seg_eta;
       wxLongLong        m_seg_ete = 0;
-      bool              m_manual_etd = FALSE;
+      bool              m_manual_etd{false};
 
       bool              m_bPtIsSelected;
-      bool              m_bIsBeingEdited;
+      bool              m_bRPIsBeingEdited;
 
       bool              m_bIsInRoute;
       bool              m_bIsolatedMark;        // This is an isolated mark
@@ -162,7 +162,7 @@ public:
 
       bool              m_bBlink;
       bool              m_bDynamicName;
-      bool              m_bShowName;
+      bool              m_bShowName, m_bShowNameData;
       wxRect            CurrentRect_in_DC;
       int               m_NameLocationOffsetX;
       int               m_NameLocationOffsetY;

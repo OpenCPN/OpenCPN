@@ -34,7 +34,7 @@ Layer::Layer( void )
 {
     m_bIsVisibleOnChart = g_bShowLayers;
     m_bIsVisibleOnListing = false;
-    m_bHasVisibleNames = true;
+    m_bHasVisibleNames = wxCHK_UNDETERMINED;
     m_NoOfItems = 0;
     m_LayerType = _T("");
     m_LayerName = _T("");

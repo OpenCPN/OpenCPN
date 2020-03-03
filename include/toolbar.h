@@ -82,7 +82,6 @@ public:
     wxString m_ToggledIconSVG;
 };
 
-//WX_DECLARE_OBJARRAY(ToolbarItemContainer, ArrayOfToolbarItemContainer);
 typedef std::vector<ToolbarItemContainer *> ArrayOfToolbarItemContainer;
 
 //----------------------------------------------------------------------------
@@ -390,12 +389,14 @@ DECLARE_EVENT_TABLE()
 #define FADE_TIMER 2
 #define DESTROY_TIMER 3
 
-class ocpnFloatingToolbarDialog: public wxDialog {
+class ocpnFloatingToolbarDialog: public wxFrame {
 DECLARE_EVENT_TABLE()
 
 public:
       ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient, float size_factor );
       ~ocpnFloatingToolbarDialog();
+
+      //void Hide();
 
       void OnClose( wxCloseEvent& event );
       void OnWindowCreate( wxWindowCreateEvent& event );
@@ -450,8 +451,10 @@ public:
       
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
       void SetMinX( int offset ){ m_dock_min_x = offset; }
+      void SetMinY( int offset ){ m_dock_min_y = offset; }
       long GetOrient() { return m_orient; }
-      
+      wxSize GetToolSize();
+
       void RefreshFadeTimer();
       void SetAutoHideTimer(int time);
       void SetAutoHide( bool hide ){ m_bAutoHideToolbar = hide; }
@@ -469,6 +472,10 @@ public:
       
       int GetDockX() { return m_dock_x; }
       int GetDockY() { return m_dock_y; }
+      void SetDockX( int x) { m_dock_x = x; }
+      void SetDockY( int y) { m_dock_y = y; }
+      
+      void SetYAuxOffset( int offset ){ m_auxOffsetY = offset; }
       
       void SetCanToggleOrientation(bool enable){ b_canToggleOrientation = enable; }
       bool GetCanToggleOrientation(){ return b_canToggleOrientation; }
@@ -538,6 +545,7 @@ private:
       bool b_canToggleOrientation;
       wxString m_configString;
       bool m_enableRolloverBitmaps;
+      int m_auxOffsetY;
 };
 
 //---------------------------------------------------------------------------

@@ -34,6 +34,7 @@
 #include <wx/progdlg.h>
 
 #include "ocpn_plugin.h"
+#include "pi_ocpndc.h"
 
 #ifndef __OCPN__ANDROID__
 #include <GL/gl.h>
@@ -43,7 +44,7 @@
 #include "GL/gl_private.h"
 #endif
 
-#include "WMMHeader.h"
+#include "GeomagnetismHeader.h"
 #include "MagneticPlotMap.h"
 
 static const long long lNaN = 0xfff8000000000000;
@@ -109,9 +110,9 @@ void MagneticPlotMap::ConfigureAccuracy(int step, int poleaccuracy)
 /* compute the graphed parameter for one lat/lon location */
 double MagneticPlotMap::CalcParameter(double lat, double lon)
 {
-      WMMtype_CoordSpherical CoordSpherical;
-      WMMtype_CoordGeodetic CoordGeodetic;
-      WMMtype_GeoMagneticElements GeoMagneticElements;
+      MAGtype_CoordSpherical CoordSpherical;
+      MAGtype_CoordGeodetic CoordGeodetic;
+      MAGtype_GeoMagneticElements GeoMagneticElements;
 
       CoordGeodetic.lambda = lon;
       CoordGeodetic.phi = lat;
@@ -120,20 +121,20 @@ double MagneticPlotMap::CalcParameter(double lat, double lon)
       CoordGeodetic.UseGeoid = 0;
 
       /* Convert from geodeitic to Spherical Equations: 17-18, WMM Technical report */
-      WMM_GeodeticToSpherical(*Ellip, CoordGeodetic, &CoordSpherical);
+      MAG_GeodeticToSpherical(*Ellip, CoordGeodetic, &CoordSpherical);
 
       /* Computes the geoMagnetic field elements and their time change */
-      WMM_Geomag(*Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);
-      WMM_CalculateGridVariation(CoordGeodetic, &GeoMagneticElements);
+      MAG_Geomag(*Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &GeoMagneticElements);
+      MAG_CalculateGridVariation(CoordGeodetic, &GeoMagneticElements);
 
       double ret = 0;
       switch(m_type) {
-      case DECLINATION: ret = GeoMagneticElements.Decl >= 180 ?
+      case DECLINATION_PLOT: ret = GeoMagneticElements.Decl >= 180 ?
               GeoMagneticElements.Decl - 360 : GeoMagneticElements.Decl;
           break;
-      case INCLINATION: ret = GeoMagneticElements.Incl;
+      case INCLINATION_PLOT: ret = GeoMagneticElements.Incl;
           break;
-      case FIELD_STRENGTH: ret = GeoMagneticElements.F;
+      case FIELD_STRENGTH_PLOT: ret = GeoMagneticElements.F;
           break;
       }
 
@@ -177,7 +178,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
     }
 
     /* this really only happens between geographic and magnetic pole, but to correct it... */
-    if(m_type == DECLINATION) {
+    if(m_type == DECLINATION_PLOT) {
         if(y1-y2 > 180)
             y2+=360;
         if(y2-y1 > 180)
@@ -229,7 +230,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
         if(std::isnan(p)) /* is this actually correct? */
             return true;
 
-        if(m_type == DECLINATION && p-ry*m_Spacing < -180) /* way off, try other way around */
+        if(m_type == DECLINATION_PLOT && p-ry*m_Spacing < -180) /* way off, try other way around */
             p += 360;
 
         p/=m_Spacing;
@@ -345,18 +346,18 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
     UserDate.Day = date.GetDay();
 
     char err[255];
-    WMM_DateToYear(&UserDate, err);
+    MAG_DateToYear(&UserDate, err);
 
     /* Time adjust the coefficients, Equation 19, WMM Technical report */
-    WMM_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel);
+    MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, TimedMagneticModel);
 
     /* clear out old data */
   ClearMap();
 
-  wxGenericProgressDialog *progressdialog = new wxGenericProgressDialog(
+  wxGenericProgressDialog progressdialog(
       _("Building Magnetic Map"),
-      m_type==DECLINATION?_("Variation"):
-      m_type==INCLINATION?_("Inclination"):_("Field Strength"), 180, NULL,
+      m_type==DECLINATION_PLOT?_("Variation"):
+      m_type==INCLINATION_PLOT?_("Inclination"):_("Field Strength"), 180, NULL,
       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT);
 
   int cachepage = 0;
@@ -366,8 +367,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
   BuildParamCache(m_Cache[cachepage], -MAX_LAT);
 
   for(double lat = -MAX_LAT; lat + m_Step <= MAX_LAT; lat += m_Step) {
-      if(!progressdialog->Update(lat + 90)) {
-          delete progressdialog;
+      if(!progressdialog.Update(lat + 90)) {
           return false;
       }
 
@@ -383,12 +383,11 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
       }
   }
 
-  delete progressdialog;
   return true;
 }
 
 /* draw a line segment in opengl from lat/lon and viewport */
-void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double lat2, double lon2)
+void DrawLineSeg(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double lat2, double lon2)
 {
     /* avoid lines which cross over the view port the long way */
     if(lon1+180 < VP.clon && lon2+180 > VP.clon)
@@ -404,6 +403,8 @@ void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double
     GetCanvasPixLL(&VP, &r1, lat1, lon1);
     GetCanvasPixLL(&VP, &r2, lat2, lon2);
 
+    dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
+#if 0    
     if(dc)
         dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
     else {
@@ -412,6 +413,7 @@ void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double
         glVertex2i(r2.x, r2.y);
         glEnd();
     }
+#endif    
 }
 
 /* reset the map and clear all the data so it can be reused */
@@ -423,7 +425,7 @@ void MagneticPlotMap::ClearMap()
 }
 
 /* draw text of the value of a contour at a given location */
-void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon)
+void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon)
 {
     wxPoint r;
 
@@ -440,6 +442,10 @@ void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour,
     wxString msg;
     msg.Printf(_T("%.0f"), contour);
 
+    int w, h;
+    dc->GetTextExtent( msg, &w, &h);
+    dc->DrawText(msg, r.x - w/2, r.y - h/2);
+#if 0    
     if(dc) {
         int w, h;
         dc->GetTextExtent( msg, &w, &h);
@@ -457,16 +463,21 @@ void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour,
 
         glDisable(GL_BLEND);
     }
+#endif    
 }
 
 /* plot to dc, or opengl is dc is NULL */
-void MagneticPlotMap::Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color)
+void MagneticPlotMap::Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color)
 {
     if(!m_bEnabled)
         return;
 
     wxFont font( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
 
+    dc->SetPen(wxPen(color, 3));
+    dc->SetTextForeground(color);
+    dc->SetFont( font );
+#if 0    
     if(dc) {
         dc->SetPen(wxPen(color, 3));
         dc->SetTextForeground(color);
@@ -476,7 +487,7 @@ void MagneticPlotMap::Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color)
         glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
         m_TexFont.Build( font );
     }
-
+#endif
     int startlatind = floor((vp->lat_min+MAX_LAT)/ZONE_SIZE);
     if(startlatind < 0) startlatind = 0;
 

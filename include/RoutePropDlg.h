@@ -37,6 +37,11 @@
 #include <wx/notebook.h>
 #include <wx/frame.h>
 
+#ifdef __WXGTK__
+//wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
+#include "time_textbox.h"
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 
@@ -63,8 +68,14 @@ class RoutePropDlg : public wxFrame
 		wxStaticText* m_stEnroute;
 		wxTextCtrl* m_tcEnroute;
 		wxStaticText* m_stDeparture;
-		wxDatePickerCtrl* m_dpDepartureDate;
+#ifndef __OCPN__ANDROID__
+                wxDatePickerCtrl* m_dpDepartureDate;
+#ifdef __WXGTK__
+                TimeCtrl* m_tpDepartureTime;
+#else
 		wxTimePickerCtrl* m_tpDepartureTime;
+#endif
+#endif                
 		wxStaticText* m_stTimeZone;
 		wxChoice* m_choiceTimezone;
 		wxStaticText* m_staticTextColor;

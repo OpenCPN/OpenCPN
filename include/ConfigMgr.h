@@ -47,7 +47,7 @@ class ConfigMgr
         static ConfigMgr & Get();
         static void Shutdown();
         
-        wxString CreateNamedConfig( wxString title, wxString description, wxString UUID );
+        wxString CreateNamedConfig( const wxString &title, const wxString &description, wxString UUID );
         bool DeleteConfig(wxString GUID);
         wxArrayString GetConfigGUIDArray();
         

@@ -4,8 +4,10 @@
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
+#include <sstream>
 
 #include "AboutFrame.h"
+#include "ocpn_plugin.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -50,7 +52,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 
 	bSizerAbout->Add( m_staticTextOCPN, 0, wxALL, 5 );
 
-	m_staticTextVersion = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, _("5.0.0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticTextVersion = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, _T("5.0.0"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextVersion->Wrap( -1 );
 	m_staticTextVersion->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 
@@ -63,7 +65,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextCopyYears->Wrap( -1 );
 	bSizerAuthors1->Add( m_staticTextCopyYears, 0, wxALL, 5 );
 
-	m_hyperlinkAuthors = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("The OpenCPN Authors"), wxT("https://opencpn.org"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_hyperlinkAuthors = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("The OpenCPN Authors"), wxT("https://opencpn.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
 	m_hyperlinkAuthors->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerAuthors1->Add( m_hyperlinkAuthors, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -82,7 +84,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextHelp->Wrap( -1 );
 	bSizerParticipate->Add( m_staticTextHelp, 0, wxALL|wxTOP, 5 );
 
-	m_hyperlinkDonate = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("Donate"), wxT("https://sourceforge.net/donate/index.php?group_id=180842"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_hyperlinkDonate = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("Donate"), wxT("https://sourceforge.net/donate/index.php?group_id=180842"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
 	m_hyperlinkDonate->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerParticipate->Add( m_hyperlinkDonate, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -91,7 +93,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextOr->Wrap( -1 );
 	bSizerParticipate->Add( m_staticTextOr, 0, wxALL, 5 );
 
-	m_hyperlinkGetInvolved = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("get involved!"), wxT("https://github.com/OpenCPN/OpenCPN"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_hyperlinkGetInvolved = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("get involved!"), wxT("https://github.com/OpenCPN/OpenCPN"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
 	m_hyperlinkGetInvolved->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerParticipate->Add( m_hyperlinkGetInvolved, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -106,7 +108,7 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextLogfile->Wrap( -1 );
 	bSizerLogFile->Add( m_staticTextLogfile, 0, wxALL, 5 );
 
-	m_hyperlinkLogFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Logs/opencpn.log"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU );
+	m_hyperlinkLogFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _T("/Users/nohal/Library/Logs/opencpn.log"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
 	m_hyperlinkLogFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	bSizerLogFile->Add( m_hyperlinkLogFile, 0, wxALL, 5 );
@@ -121,15 +123,20 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_staticTextIniFile->Wrap( -1 );
 	bSizerIniFile->Add( m_staticTextIniFile, 0, wxALL, 5 );
 
-	m_hyperlinkIniFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU );
+	m_hyperlinkIniFile = new wxHyperlinkCtrl( m_scrolledWindowAbout, wxID_ANY, _T("/Users/nohal/Library/Preferences/opencpn/opencpn.ini"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_LEFT );
 	m_hyperlinkIniFile->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_hyperlinkIniFile->SetToolTip( _("Copy to clipboard") );
 
 	bSizerIniFile->Add( m_hyperlinkIniFile, 0, wxALL, 5 );
 
-
 	bSizerAbout->Add( bSizerIniFile, 1, wxEXPAND, 5 );
 
+	auto bApiInfo = new wxBoxSizer( wxHORIZONTAL );
+	std::ostringstream api_os;
+	api_os << _("Plugin API: ") << API_VERSION_MAJOR * 100 + API_VERSION_MINOR;
+	auto API_info = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, api_os.str() );
+	bApiInfo->Add(API_info, 0, wxALL, 5 );
+	bSizerAbout->Add( bApiInfo, 1, wxEXPAND, 5 );
 
 	m_scrolledWindowAbout->SetSizer( bSizerAbout );
 	m_scrolledWindowAbout->Layout();
@@ -142,7 +149,11 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_htmlWinLicense = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 	bSizerContent->Add( m_htmlWinLicense, 1, wxALL|wxEXPAND, 5 );
 
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
+	m_htmlWinHelp = wxWebView::New( this, wxID_ANY );
+#else
 	m_htmlWinHelp = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+#endif
 	bSizerContent->Add( m_htmlWinHelp, 1, wxALL|wxEXPAND, 5 );
 
 

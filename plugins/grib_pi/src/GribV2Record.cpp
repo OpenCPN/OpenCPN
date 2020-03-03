@@ -718,13 +718,14 @@ static bool unpackDS(GRIBMessage *grib_msg)
   struct {
     int *ref_vals,*widths;
     int *lengths;
-    int *first_vals,sign,omin;
+    int *first_vals = 0,sign,omin;
     long long miss_val,group_miss_val;
     int max_length;
   } groups;
   float lastgp,D=pow(10.,grib_msg->md.D),E=pow(2.,grib_msg->md.E);
 
   groups.omin = 0;
+  groups.first_vals = nullptr;
 
   off= grib_msg->offset+40;
   switch (grib_msg->md.drs_templ_num) {
@@ -742,10 +743,12 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	break;
     case 3:
 	if (grib_msg->md.complex_pack.num_groups > 0) {
-	  groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
-	  for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
-	    getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
-	    off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+          if (grib_msg->md.complex_pack.spatial_diff.order) {
+	      groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
+	      for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
+	          getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
+	          off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
+              }
 	  }
 	  getBits(grib_msg->buffer,&groups.sign,off,1);
 	  getBits(grib_msg->buffer,&groups.omin,off+1,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8-1);
@@ -855,7 +858,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	}
 
 	if (grib_msg->md.drs_templ_num == 3) {
-      	   if (grib_msg->md.complex_pack.spatial_diff.order) {
+      	   if (groups.first_vals != nullptr) {
       	      for (n=grib_msg->md.complex_pack.spatial_diff.order-1; n > 0; --n) {
   	         lastgp=groups.first_vals[n]-groups.first_vals[n-1];
   	         for (l=0,m=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
@@ -882,9 +885,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
   	   	++m;
   	     }
   	   }
-  	   if (grib_msg->md.complex_pack.spatial_diff.order > 0) {
-  	      delete [] groups.first_vals;
-           }
+  	   delete [] groups.first_vals;
 	}
 	else for (l=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
   	   if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
@@ -987,6 +988,11 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 6: ret = GRB_CAPE; break; // DATA_TO_GRBV2[DATA_CAPE] = grb2DataType(0,7,6);
             }
             break;
+        case 16: // Meteorological products, Forecast Radar Imagery category
+            switch (dataNum) {
+            case 196: ret =  GRB_COMP_REFL; break; // = grb2DataType(0,16, 196);
+            }
+            break;
         }
         break;
     case 10: // productDiscipline Oceanographic products 
@@ -1013,15 +1019,15 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
                 case 4: ret= GRB_WVDIR; break; // Direction of Wind Waves
                 case 5: ret= GRB_WVHGT; break; // Significant Height of Wind Waves
                 case 6: ret= GRB_WVPER; break; // Mean Period of Wind Waves
+                case 14: ret= GRB_DIR; break;  // Direction of Combined Wind Waves and Swell
+                case 15: ret= GRB_PER; break;  // Mean Period of Combined Wind Waves and Swell
             }
             break;
 
         case 1: // Currents 
             switch (dataNum) {
-            #if 0
                 case 0: ret = GRB_CUR_DIR; break;
                 case 1: ret = GRB_CUR_SPEED; break;
-            #endif
                 case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
                 case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
             }
@@ -1037,7 +1043,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        erreur("unknown %d %d %d", productDiscipline,  dataCat,dataNum);
+        erreur("unknown Discipline %d dataCat %d dataNum %d", productDiscipline,  dataCat, dataNum);
     }
 #endif    
     return ret;    
@@ -1046,7 +1052,9 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 /** Return UINT_MAX on errors. */
 static int mapStatisticalEndTime(GRIBMessage *grid)
 {
-  switch (grid->md.time_unit) { // table 4.4
+   // lovely md.fcst_time is in grid->md.time_unit but md.stat_proc.t[0].time_length is in grid->md.stat_proc.t[0].time_unit
+   // not always the same.
+  if (grid->md.time_unit == grid->md.stat_proc.t[0].time_unit) switch (grid->md.time_unit) { // table 4.4
     case 0:  // minute
 	// return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:  // hour
@@ -1062,8 +1070,23 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
 	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
 	return UINT_MAX;
   }
+
+  if (grid->md.time_unit == 0 && grid->md.stat_proc.t[0].time_unit == 1) {
+         // in minute + hourly increment
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length *60;
+  }
+
+  if (grid->md.time_unit == 1 && grid->md.stat_proc.t[0].time_unit == 0 && (grid->md.stat_proc.t[0].time_unit  % 60) != 0 ) {
+          // convert in hour
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length /60;
+  }
+
+  fprintf(stderr, "Unable to map end time %d %d %d %d \n", grid->md.time_unit, grid->md.stat_proc.t[0].time_unit, grid->md.fcst_time, 
+            grid->md.stat_proc.t[0].time_length);
+  return UINT_MAX;
 }
 
+// map GRIB2 msg time to GRIB1 P1 and P2 in sec
 static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_range,int *n_avg,int *n_missing, int center)
 {
   switch (grid->md.pds_templ_num) {
@@ -1245,6 +1268,9 @@ void  GribV2Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
+        if (dataType == GRB_TEMP          //gfs Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
     }
     //------------------------
 	//DNMI-NEurope.grb
@@ -1303,11 +1329,6 @@ void  GribV2Record::translateDataType()
 	}
     else if (idCenter==84 && idModel <= 5 && idGrid==0)
     {
-        // XXX Météo France AROME-01 is 
-		if ( getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0)
-		{
-			levelType  = LV_MSL;
-		} // missing enum for dataCenterModel
     }
 	
 	//------------------------
@@ -1345,6 +1366,8 @@ void  GribV2Record::translateDataType()
             case GRB_HTSGW:
             case GRB_WVDIR:
             case GRB_WVPER:
+            case GRB_DIR:
+            case GRB_PER:
                 levelType  = LV_GND_SURF;
                 levelValue = 0;
                 break;
@@ -1617,9 +1640,11 @@ GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 //-------------------------------------------------------------------------------
 // Constructeur de recopie
 //-------------------------------------------------------------------------------
+#pragma warning(disable: 4717)
 GribV2Record::GribV2Record(const GribRecord &rec) : GribRecord(rec)
 {
     *this = rec;
+    #pragma warning(default: 4717)
 }
 
 GribV2Record::~GribV2Record()
@@ -1637,7 +1662,7 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
 {
   unsigned char temp[16];
   int status;
-  size_t n,num;
+  size_t num;
 
   if (grib_msg->buffer != NULL) {
     delete [] grib_msg->buffer;

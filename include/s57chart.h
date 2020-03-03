@@ -35,11 +35,11 @@
 #include "wx/file.h"
 #include "wx/stream.h"
 #include "wx/wfstream.h"
-#include "mygdal/ogrsf_frmts.h"
+#include "gdal/ogrsf_frmts.h"
 
 #include "iso8211.h"
 
-#include "mygdal/gdal.h"
+#include "gdal/gdal.h"
 #include "s57RegistrarMgr.h"
 #include "S57ClassRegistrar.h"
 #include "S57Light.h"
@@ -49,6 +49,7 @@
 #include "ocpndc.h"
 #include "viewport.h"
 #include "SencManager.h"
+#include <memory>
 
 class ChartCanvas;
 // ----------------------------------------------------------------------------
@@ -214,7 +215,7 @@ public:
       ViewPort    m_last_vp;
       OCPNRegion    m_last_Region;
 
-      virtual bool IsCacheValid(){ return (pDIB != NULL); }
+      virtual bool IsCacheValid(){ return (pDIB != nullptr); }
       virtual void InvalidateCache();
       virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
@@ -228,7 +229,7 @@ public:
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
 
       char GetUsageChar(void){ return m_usage_char; }
-      static bool IsCellOverlayType(char *pFullPath);
+      static bool IsCellOverlayType(const wxString &pFullPath);
 
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
@@ -318,7 +319,7 @@ private:
 
 
 //  Raw ENC DataSet members
-      OGRS57DataSource  *m_pENCDS;
+      OGRS57DataSource *m_pENCDS;
 
 //  DEPCNT VALDCO array members
       int         m_nvaldco;

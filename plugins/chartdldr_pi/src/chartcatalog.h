@@ -35,7 +35,7 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include "tinyxml.h"
+#include "pugixml.hpp"
 
 //Forward declarations
 class NoticeToMariners;
@@ -59,7 +59,7 @@ public:
     ~ChartCatalog();
     // public methods
     bool LoadFromFile( wxString path, bool headerOnly = false );
-    bool LoadFromXml( TiXmlDocument * doc, bool headerOnly );
+    bool LoadFromXml( pugi::xml_document *doc, bool headerOnly );
     wxDateTime GetReleaseDate( void );
     // public properties
     wxString title;
@@ -73,13 +73,13 @@ public:
     wxString s62AgencyCode;
     wxArrayOfCharts charts;
 private:
-    bool ParseNoaaHeader( TiXmlElement * xmldata );
+    bool ParseNoaaHeader( const pugi::xml_node &xmldata );
 };
 
 class Chart
 {
 public:
-    Chart( TiXmlNode * xmldata );
+    Chart( pugi::xml_node &xmldata );
     virtual ~Chart();
     // public methods
     virtual wxString GetChartTitle() { return title; }
@@ -111,7 +111,7 @@ public:
 class RasterChart : public Chart //<chart>
 {
 public:
-    RasterChart( TiXmlNode * xmldata );
+    RasterChart( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -128,7 +128,7 @@ public:
 class EncCell : public Chart //<cell>
 {
 public:
-    EncCell( TiXmlNode * xmldata );
+    EncCell( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -145,7 +145,7 @@ public:
 class IEncCell : public Chart //<Cell>
 {
 public:
-    IEncCell( TiXmlNode * xmldata );
+    IEncCell( pugi::xml_node &xmldata );
     ~IEncCell();
     // public methods
     wxString GetChartTitle();
@@ -167,7 +167,7 @@ public:
 class ChartFile
 {
 public:
-    ChartFile( TiXmlNode * xmldata );
+    ChartFile( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -180,7 +180,7 @@ public:
 class Location
 {
 public:
-    Location( TiXmlNode * xmldata );
+    Location( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -191,7 +191,7 @@ public:
 class RiverMiles
 {
 public:
-    RiverMiles( TiXmlNode * xmldata );
+    RiverMiles( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -202,7 +202,7 @@ public:
 class Area
 {
 public:
-    Area( TiXmlNode * xmldata );
+    Area( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -215,7 +215,7 @@ public:
 class NoticeToMariners //for <nm> and <lnm>
 {
 public:
-    NoticeToMariners( TiXmlNode * xmldata );
+    NoticeToMariners( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -227,7 +227,7 @@ public:
 class Vertex
 {
 public:
-    Vertex( TiXmlNode * xmldata );
+    Vertex( pugi::xml_node &xmldata );
     virtual ~Vertex() {};
     // public methods
 
@@ -239,7 +239,7 @@ public:
 class Panel
 {
 public:
-    Panel( TiXmlNode * xmldata );
+    Panel( pugi::xml_node &xmldata );
     virtual ~Panel();
     // public methods
 
@@ -251,7 +251,7 @@ public:
 class RncPanel : public Panel
 {
 public:
-    RncPanel( TiXmlNode * xmldata );
+    RncPanel( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
@@ -263,7 +263,7 @@ public:
 class EncPanel : public Panel
 {
 public:
-    EncPanel( TiXmlNode * xmldata );
+    EncPanel( pugi::xml_node &xmldata );
     // public methods
 
     //public properties
