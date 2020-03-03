@@ -1771,6 +1771,14 @@ void MarkInfoDlg::ShowTidesBtnClicked( wxCommandEvent& event )
         return;
     }
     IDX_entry* pIDX = (IDX_entry*)ptcmgr->GetIDX_entry(ptcmgr->GetStationIDXbyName(m_comboBoxTideStation->GetStringSelection(), fromDMM(m_textLatitude->GetValue()), fromDMM(m_textLongitude->GetValue())));
-    TCWin* pCwin = new TCWin( gFrame->GetPrimaryCanvas(), 0, 0, pIDX );
-    pCwin->Show();
+    if( pIDX){
+        TCWin* pCwin = new TCWin( gFrame->GetPrimaryCanvas(), 0, 0, pIDX );
+        pCwin->Show();
+    }
+    else{
+        wxString msg(_("Tide Station not found"));
+        msg += _T(":\n");
+        msg += m_comboBoxTideStation->GetStringSelection();
+        OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxCENTER, 10 );
+    }
 }
