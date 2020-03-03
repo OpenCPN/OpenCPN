@@ -168,6 +168,10 @@ macro (BUNDLE_TCDATA_OPT onoff)
   )
 endmacro (BUNDLE_TCDATA_OPT)
 
+macro (BUNDLE_GSHHS_OPT onoff)
+  option(OCPN_BUNDLE_GSHHS "Include GSHHS charts in package" ${onoff})
+endmacro (BUNDLE_GSHHS_OPT)
+
 
 # If on Windows or Apple, build the monolithic package, to override use a non-
 # sense values from the commandline (due to cmake inability to distinguish
@@ -176,9 +180,11 @@ endmacro (BUNDLE_TCDATA_OPT)
 if (APPLE OR WIN32)
   bundle_docs_opt("ON")
   bundle_tcdata_opt("ON")
+  bundle_gshhs_opt("ON")
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
   bundle_tcdata_opt("OFF")
+  bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
 option(OCPN_VERBOSE "Make verbose builds"  ON)
@@ -591,6 +597,13 @@ if (OCPN_BUNDLE_DOCS MATCHES "ON")
 else (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will NOT include documentation ***")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+
+if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+  message(STATUS "*** Package will include gshhs charts ***")
+else (OCPN_BUNDLE_GSHHS MATCHES "ON")
+  message(STATUS "*** Package will NOT include gshhs charts ***")
+endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
+
 
 #
 # Linux: set up GTK (wxWidgets prerequisite).
@@ -1681,12 +1694,14 @@ if (MSVC)
   target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
 endif ()
 
-set(
-  gshhs
-    data/gshhs/poly-c-1.dat
-    data/gshhs/wdb_borders_c.b
-    data/gshhs/wdb_rivers_c.b
-)
+if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+  set(
+    gshhs
+      data/gshhs/poly-c-1.dat
+      data/gshhs/wdb_borders_c.b
+      data/gshhs/wdb_rivers_c.b
+  )
+endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
 
 # Various data files
 
@@ -2076,7 +2091,10 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_PKGDATA}
   )
 
-  install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
+  if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+      install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
+  endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
+
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
   install(
     DIRECTORY data/svg/markicons/
