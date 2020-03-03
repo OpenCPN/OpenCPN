@@ -79,7 +79,7 @@ Tidal/current wallpaper
     package.
 
 GSHHS charts
-  - OCPN_BUNDLE_GSHHS (boolean" includes gshhs charts in package
+  - OCPN_BUNDLE_GSHHS (boolean) includes gshhs charts in package
 
 To build for android, use something like:
     $cmake -DUSE_GARMINHOST=OFF
