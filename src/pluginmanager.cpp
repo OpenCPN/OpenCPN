@@ -62,6 +62,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <set>
 #include <iostream>
 
 #ifdef ocpnUSE_SVG
@@ -120,6 +121,7 @@
 #include "download_mgr.h"
 #include "catalog_handler.h"
 #include "semantic_vers.h"
+#include "update_mgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -135,7 +137,6 @@ extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
 extern OCPN_AUIManager  *g_pauimgr;
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
@@ -189,13 +190,8 @@ extern wxString          g_ownshipMMSI_SK;
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr  g_canvasArray;
 
-extern MyFrame    *gFrame;
-
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
-
-int                     g_actionVerb;
-PlugInContainer         *g_actionPIC;
 
 enum
 {
@@ -209,17 +205,6 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"
 };
-
-/*
-enum class PluginStatus { 
-    System,    // One of the four system plugins, unmanaged.
-    Managed,   // Managed by installer.
-    Unmanaged, // Unmanaged, probably a package.
-    Ghost,      // Managed, shadowing another (packaged?) plugin.
-    Unknown,
-    ManagedUpdateAvailable
-};
-*/
 
 struct EnumClassHash
 {
@@ -292,6 +277,92 @@ literalstatus_by_status({
 
 });
 
+
+
+/**
+ * Return list of available, unique and compatible plugins from
+ * configured XML catalog.
+ */
+static std::vector<PluginMetadata> getCompatiblePlugins()
+{
+    /** Compare two PluginMetadata objects, a named c++ requirement. */
+    struct metadata_compare{
+        bool operator() (const PluginMetadata& lhs,
+                         const PluginMetadata& rhs) const
+        {
+            return lhs.key() < rhs.key();
+        }
+    };
+
+    std::vector<PluginMetadata> returnArray;
+
+    std::set<PluginMetadata, metadata_compare> unique_plugins;
+    for (auto plugin: PluginHandler::getInstance()->getAvailable()) {
+        unique_plugins.insert(plugin);
+    }
+    for (auto plugin: unique_plugins) {
+        if (PluginHandler::isCompatible(plugin)) {
+            returnArray.push_back(plugin);
+        }
+    }
+    return returnArray;
+}
+
+
+static SemanticVersion metadata_version(const PluginMetadata pm)
+{
+    return SemanticVersion::parse(pm.name);
+}
+
+
+// Get installed version from manifest for given plugin. For
+// older plugins this contains more detailed info then the
+// plugin API. From API level 117 the API should contain the
+// same info.
+//
+// TODO: Get version from API for api level 117+
+SemanticVersion getInstalledVersion(const std::string name)
+{
+    std::string installed;
+    std::string path = PluginHandler::versionPath(name);
+    if (path == "" || !wxFileName::IsFileReadable(path)) {
+        return SemanticVersion(-1, -1);
+    }
+    std::ifstream stream;
+    stream.open(path, std::ifstream::in);
+    stream >> installed;
+    return SemanticVersion::parse(installed);
+}
+
+
+/**
+ * Return list of all versions of given plugin name besides installed
+ * one.
+ */
+static std::vector<PluginMetadata> getUpdates(const char* name)
+{
+    auto updates = getCompatiblePlugins();
+    updates.erase(
+       std::remove_if(updates.begin(), updates.end(),
+                      [&](const PluginMetadata m) { return m.name != name; }),
+       updates.end());
+
+    auto inst_vers = getInstalledVersion(name);
+    if (inst_vers.major == -1) {
+        return updates;
+    }
+
+    // Drop already installed plugin, it has its own update options.
+    updates.erase(
+        std::remove_if(
+            updates.begin(), updates.end(),
+            [&](const PluginMetadata m) {
+                    return metadata_version(m) == inst_vers; }),
+        updates.end());
+    return updates;
+}
+
+
 /**
  * Return number of existing files named filename in the list of
  * dirs.
@@ -310,22 +381,67 @@ static int count_files_in_dirs(const char* filename,
     return count;
 }
 
-static PluginStatus get_plugin_status(const std::string& plugin,
-                                      const std::string& library) 
+
+static PluginMetadata getLatestUpdate()
 {
-    std::string name(plugin);
-    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-    auto r = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(), name);
-    if (r != SYSTEM_PLUGINS.end()) {
-        return PluginStatus::System;
+    auto updates = getCompatiblePlugins();
+    if (updates.size() == 0) {
+        PluginMetadata metadata;
+        return metadata;
     }
-    if (!PluginHandler::getInstance()->isPluginWritable(plugin)) {
-        return PluginStatus::Unmanaged;
-    }
-    auto libs = count_files_in_dirs(library.c_str(),
-                                    PluginPaths::getInstance()->Libdirs());
-    return libs > 1 ? PluginStatus::Ghost: PluginStatus::Managed;
+    std::sort(updates.begin(), updates.end(),
+              [](PluginMetadata m1, PluginMetadata m2) {
+                    return !(m1.version < m2.version);
+              }
+    );
+    return updates[0];
 }
+
+
+static void run_update_dialog(PluginListPanel* parent,
+                              PlugInContainer* pic,
+                              bool uninstall,
+                              const char* name = 0)
+{
+    const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
+    auto updates = getUpdates(plugin);
+    auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
+    wxASSERT(parent_dlg != 0);
+    UpdateDialog dialog(parent_dlg, updates);
+    auto status = dialog.ShowModal();
+    if (status != wxID_OK) {
+        return;
+    }
+    auto update = dialog.GetUpdate();
+    if (uninstall) {
+        g_pi_manager->DeactivatePlugIn(pic);
+        pic->m_bEnabled = false;
+        g_pi_manager->UpdatePlugIns();
+
+        wxLogMessage("Uninstalling %s", plugin);
+        PluginHandler::getInstance()->uninstall(plugin);
+        g_pi_manager->UpdatePlugIns();
+    }
+
+    wxLogMessage("Installing %s", update.name.c_str());
+    auto downloader = new GuiDownloader(parent_dlg, update);
+    downloader->run(parent_dlg);
+
+    // Provisional error check
+    std::string manifestPath =
+        PluginHandler::fileListPath(update.name);
+    if(!isRegularFile(manifestPath.c_str())) {
+        wxLogMessage("Installation of %s failed",  update.name.c_str());
+        PluginHandler::cleanup(manifestPath, update.name);
+    }
+
+    //  Reload all plugins, which will bring in the action results.
+    g_pi_manager->LoadAllPlugIns( false );
+    parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+    //wxString name(plugin);
+    //g_pi_manager->GetListPanelPtr()->SelectByName(name);
+}
+
 
 wxString GetPluginDataDir(const char* plugin_name)
 {
@@ -473,25 +589,30 @@ pluginUtilHandler::pluginUtilHandler()
 
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
-    wxString name = g_actionPIC->m_common_name;
+    auto panel = static_cast<PluginPanel*>(event.GetClientData());
+    auto plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetParent());
+    wxASSERT(plugin_list_panel != 0);
+    auto actionPIC = panel->GetPlugin();
+    wxString name = actionPIC->m_common_name;
     
     // Perform the indicated action according to the verb...
-    switch( g_actionVerb ){
+    switch (panel->GetAction()){
         case  ActionVerb::UPGRADE_TO_MANAGED_VERSION:
         {
-            wxLogMessage("Installing managed plugin: %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), g_actionPIC->m_ManagedMetadata);
-            downloader->run(g_pi_manager->GetListPanelPtr());
+            wxLogMessage("Installing managed plugin: %s", actionPIC->m_ManagedMetadata.name.c_str());
+            auto downloader = new GuiDownloader(plugin_list_panel,
+                                                actionPIC->m_ManagedMetadata);
+            downloader->run(plugin_list_panel);
 
             
             // Provisional error check
             std::string manifestPath =
-                PluginHandler::fileListPath(g_actionPIC->m_ManagedMetadata.name);
+                PluginHandler::fileListPath(actionPIC->m_ManagedMetadata.name);
             if(isRegularFile(manifestPath.c_str())) {
 
                 // dynamically deactivate the legacy plugin, making way for the upgrade.
                 for (unsigned i = 0; i < g_pi_manager->GetPlugInArray()->GetCount(); i += 1) {
-                    if (g_actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
+                    if (actionPIC->m_ManagedMetadata.name == g_pi_manager->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
                         g_pi_manager->UnLoadPlugIn(i);
                         break;
                     }
@@ -502,10 +623,10 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
             }
             else {
                 PluginHandler::cleanup(manifestPath,
-                                       g_actionPIC->m_ManagedMetadata.name);
+                                       actionPIC->m_ManagedMetadata.name);
             }
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            plugin_list_panel->SelectByName(name);
 
             break;
         }
@@ -515,76 +636,36 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         case  ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION:
         {
             // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            g_pi_manager->DeactivatePlugIn(g_actionPIC);
-            g_actionPIC->m_bEnabled = false;
-            g_pi_manager->UpdatePlugIns();
-            
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
-
-            g_pi_manager->UpdatePlugIns();
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
-            downloader->run(gFrame/*g_pi_manager->GetListPanelPtr()*/);
-            
-            // Provisional error check
-             std::string manifestPath =
-                 PluginHandler::fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 PluginHandler::cleanup(manifestPath, metaSave.name);
-             }
-
-             //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            auto metaSave = actionPIC->m_ManagedMetadata;
+            run_update_dialog(
+                plugin_list_panel, actionPIC, true, metaSave.name.c_str());
             break;
         }
 
         case  ActionVerb::INSTALL_MANAGED_VERSION:
         {
-            // Grab a copy of the managed metadata
-            auto metaSave = g_actionPIC->m_ManagedMetadata;
-            
-            wxLogMessage("Installing %s", metaSave.name.c_str());
-            auto downloader = new GuiDownloader(g_pi_manager->GetListPanelPtr(), metaSave);
-            downloader->run(g_pi_manager->GetListPanelPtr());
-            
-            // Provisional error check
-             std::string manifestPath =
-                 PluginHandler::fileListPath(metaSave.name);
-             if(!isRegularFile(manifestPath.c_str())) {
-                 wxLogMessage("Installation of %s failed",  metaSave.name.c_str());
-                 PluginHandler::cleanup(manifestPath, metaSave.name);
-             }
-
-            //  Reload all plugins, which will bring in the action results.
-            g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            g_pi_manager->GetListPanelPtr()->SelectByName(name);
+            wxLogMessage("Installing new managed plugin.");
+            run_update_dialog(plugin_list_panel, actionPIC, false);
             break;
         }
 
         case  ActionVerb::UNINSTALL_MANAGED_VERSION:
         {
-            g_pi_manager->DeactivatePlugIn(g_actionPIC);
+            g_pi_manager->DeactivatePlugIn(actionPIC);
 
             wxString message;
-            message.Printf("%s %s\n", g_actionPIC->m_ManagedMetadata.name.c_str(), g_actionPIC->m_ManagedMetadata.version.c_str());
+            message.Printf("%s %s\n", actionPIC->m_ManagedMetadata.name.c_str(),
+                           actionPIC->m_ManagedMetadata.version.c_str());
 
-            wxLogMessage("Uninstalling %s", g_actionPIC->m_ManagedMetadata.name.c_str());
-            PluginHandler::getInstance()->uninstall(g_actionPIC->m_ManagedMetadata.name);
+            wxLogMessage("Uninstalling %s", actionPIC->m_ManagedMetadata.name.c_str());
+            PluginHandler::getInstance()->uninstall(actionPIC->m_ManagedMetadata.name);
 
             message += _("successfully un-installed");
             OCPNMessageBox(gFrame, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
 
             //  Reload all plugins, which will bring in the action results.
             g_pi_manager->LoadAllPlugIns( false );
-            g_pi_manager->GetListPanelPtr()->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+            plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
             break;
         }
  
@@ -613,9 +694,6 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
-            //auto plug_sts =
-            //    get_plugin_status(pic->m_common_name.ToStdString(),
-            //                      pic->m_plugin_filename.ToStdString());
             m_stat = PluginStatus::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -792,6 +870,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
     m_benable_blackdialog_done = false;
     
     m_utilHandler = new pluginUtilHandler();
+    m_listPanel = NULL;
 }
 
 PlugInManager::~PlugInManager()
@@ -1021,7 +1100,6 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
                     
                 //    The common name is available without initialization and startup of the PlugIn
                 pic->m_common_name = pic->m_pplugin->GetCommonName();
-                    
                 pic->m_plugin_filename = plugin_file;
                 pic->m_plugin_modification = plugin_modification;
                 pic->m_bEnabled = enabled;
@@ -1257,8 +1335,7 @@ void PlugInManager::UpdateManagedPlugins()
                 plugin_array.Item(i)->m_pluginStatus = PluginStatus::System;
     }
  
-    auto pluginHandler = PluginHandler::getInstance();
-    std::vector<PluginMetadata> available = pluginHandler->getAvailableUniquePlugins();
+    std::vector<PluginMetadata> available = getCompatiblePlugins();
 
     // Traverse the list again
     // Remove any managed plugins that are no longer available in the current catalog
@@ -1359,6 +1436,35 @@ void PlugInManager::UpdateManagedPlugins()
 
         }
     }
+    
+    // Sort the list
+
+    // Detach and hold the uninstalled, managed plugins
+    std::map <std::string, PlugInContainer*> sortmap;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++){
+        PlugInContainer *pic = plugin_array[i];
+        if(pic->m_pluginStatus == PluginStatus::ManagedInstallAvailable){
+            plugin_array.Remove(pic);
+            
+            // Sort by name, lower cased.
+            std::string name = pic->m_ManagedMetadata.name;
+            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+            sortmap[name] =  pic;
+            i = 0;      // Restart the list
+        }
+    }
+    
+    // Add the detached plugins back at the top of the list.
+    //  Later, the list will be populated in reverse order...Why??
+    for (std::map<std::string, PlugInContainer*>::iterator i = sortmap.begin(); i != sortmap.end(); i++){
+        PlugInContainer *pic = i->second;
+        plugin_array.Insert(pic, 0);
+    }
+
+    if(m_listPanel)
+        m_listPanel->ReloadPluginPanels( &plugin_array );
+
+
 }
 
 bool PlugInManager::UpDateChartDataTypes(void)
@@ -2031,7 +2137,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     int pi_major = plug_in->GetPlugInVersionMajor();
     int pi_minor = plug_in->GetPlugInVersionMinor();
-    int pi_ver = (pi_major * 100) + pi_minor;
+    SemanticVersion pi_ver(pi_major, pi_minor, -1);
     
     if ( CheckBlacklistedPlugin(plug_in) ) {
         delete pic;
@@ -2084,8 +2190,19 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         break;
         
     case 116:
-    case 117:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_116*>(plug_in);
+        break;
+
+    case 117:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_117*>(plug_in);
+        do /* force a local scope */ {
+            auto p = dynamic_cast<opencpn_plugin_117*>(plug_in);
+            pi_ver = SemanticVersion(pi_major, pi_minor,
+                                     p->GetPlugInVersionPatch(),
+                                     p->GetPlugInVersionPost(),
+                                     p->GetPlugInVersionPre(),
+                                     p->GetPlugInVersionBuild());
+        } while (false);
         break;
         
     default:
@@ -2094,18 +2211,16 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(pic->m_pplugin)
     {
-        msg = _T("PlugInManager:  ");
-        msg += plugin_file;
-        wxString msg1;
-        msg1.Printf(_T("\n              API Version detected: %d"), api_ver);
-        msg += msg1;
-        msg1.Printf(_T("\n              PlugIn Version detected: %d"), pi_ver);
-        msg += msg1;
-        wxLogMessage(msg);
+        std::stringstream msg;
+        msg << "PlugInManager:  " << plugin_file
+            << "\n        Plugin common name: " << pic->m_pplugin->GetCommonName()
+            << "\n        API Version detected: " << api_ver
+            << "\n        PlugIn Version detected: " << pi_ver;
+        wxLogMessage(msg.str().c_str());
     }
     else
     {
-        msg = _T("    ");
+        wxString msg = _T("    ");
         msg += plugin_file;
         wxString msg1 = _T(" cannot be loaded");
         msg += msg1;
@@ -4838,50 +4953,6 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 
 
 /*
- * Panel with a single + sign which opens the "Add/download plugin" dialog.
- */
-AddPluginPanel::AddPluginPanel(wxWindow* parent)
-    :wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(200, 32)),
-    m_parent(parent)
-{
-    wxFileName path(g_Platform->GetSharedDataDir(), "plus.svg");
-    path.AppendDir("uidata");
-    auto size = GetTextExtent("+");
-    SetMinSize(wxSize( 2 * size.GetHeight(),  2 * size.GetHeight()));
-    LoadSVGIcon(path, 2 * size.GetHeight(), m_bitmap);
-    if (!m_bitmap.IsOk()) {
-        wxLogMessage("AddPluginPanel: bitmap is not OK!");
-    }
-    auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(1, 1, 1, wxEXPAND);   // Expanding, stretchable spacer
-    m_staticBitmap = new wxStaticBitmap(this, wxID_ANY, m_bitmap);
-    hbox->Add(m_staticBitmap, wxSizerFlags(0));
-    SetSizer(hbox);
-    SetToolTip(new wxToolTip(_("Download and install/update plugins")));
-    Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-    m_staticBitmap->Bind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-}
-
-void AddPluginPanel::OnClick(wxMouseEvent& event)
-{
-    // Locate the options wxWindow parent. If not hidden, it steals focus.
-    auto opts = dynamic_cast<options*>(m_parent->GetParent()->GetParent());
-    wxASSERT(opts != 0);
-    auto dialog = new PluginDownloadDialog(this);
-    dialog->ShowModal();
-    dialog->Destroy();
-}
-
-AddPluginPanel::~AddPluginPanel()
-{
-    Unbind(wxEVT_LEFT_DOWN, &AddPluginPanel::OnClick, this);
-    m_staticBitmap->Unbind(wxEVT_LEFT_DOWN,
-                           &AddPluginPanel::OnClick,
-                           this);
-}
-
-
-/*
  * Panel with buttons to control plugin catalog management.
  */
 CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
@@ -5212,8 +5283,6 @@ void PluginListPanel::UpdateSelections()
     
 void PluginListPanel::SelectPlugin( PluginPanel *pi )
 {
-    if (m_PluginSelected == pi)
-        return;
 
     if (m_PluginSelected){
         m_PluginSelected->SetSelected(false);
@@ -5300,18 +5369,24 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     wxImage plugin_icon;
     ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-    if(m_pPlugin->m_bitmap){
+    if (m_pPlugin->m_bitmap) {
         plugin_icon = m_pPlugin->m_bitmap->ConvertToImage();
     }
-    else
-        plugin_icon = wxBitmap(style->GetIcon( _T("default_pi"))).ConvertToImage();
-    
-    if(plugin_icon.IsOk()){
-        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap(plugin_icon.Copy()));
+    wxBitmap bitmap;
+    if (plugin_icon.IsOk()) {
+        bitmap = wxBitmap(plugin_icon.Copy());
     }
-    else{
-        m_itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,  wxBitmap(style->GetIcon( _T("default_pi"))));
+    else if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+    {
+        wxFileName path(g_Platform->GetSharedDataDir(), "package-x-generic");
+        path.AppendDir("uidata");
+        path.SetExt("png");
+        bitmap.LoadFile(path.GetFullPath(), wxBITMAP_TYPE_PNG);
     }
+    else {
+        bitmap =  wxBitmap(style->GetIcon( _T("default_pi")));
+    }
+    m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
         
     itemBoxSizer01->Add(m_itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
     m_itemStaticBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -5330,6 +5405,9 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
+    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+        m_pVersion->Hide();
+    }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description );
@@ -5338,6 +5416,10 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
 //    m_pButtons = new wxFlexGridSizer(4);
 //    m_pButtons->AddGrowableCol(2);
+
+    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+    m_info_btn->Hide();
+    itemBoxSizer02->Add(m_info_btn, 0);
 
     m_pButtons = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer02->Add( m_pButtons, 0, /*wxEXPAND|*/wxALL, 0 );
@@ -5350,20 +5432,9 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
 
-    wxBoxSizer *enableSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add( enableSizer, 0, wxALIGN_RIGHT );
-
-    m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
-    m_info_btn->Hide();
-    enableSizer->Add(m_info_btn, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
-    
-    m_rgSizer = new wxBoxSizer(wxVERTICAL);
-    enableSizer->Add(m_rgSizer, 0, /*wxALIGN_RIGHT|*/wxALL, 2);
-    
-    m_rbEnable = new wxRadioButton(this, wxID_ANY, _("Enabled"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-    m_rgSizer->Add(m_rbEnable, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
-    m_rbDisable = new wxRadioButton(this, wxID_ANY, _("Disabled"));
-    m_rgSizer->Add(m_rbDisable, 0, wxALIGN_LEFT|wxRIGHT, 2 * GetCharWidth());
+    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+    itemBoxSizer02->Add(m_cbEnable, 0, wxALIGN_RIGHT|wxRIGHT, 2 * GetCharWidth());
+    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
 
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
@@ -5371,30 +5442,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
 
     m_pButtonPreferences->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
     m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUninstall, this);
-    m_rbEnable->Bind(wxEVT_RADIOBUTTON, &PluginPanel::OnRBEnable, this);
-    m_rbDisable->Bind(wxEVT_RADIOBUTTON, &PluginPanel::OnRBDisable, this);
     m_pButtonAction->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
 
-    // Make an estimate of a good size for up/down icons
-    int sizeRef;
-    if(plugin_icon.IsOk())
-        sizeRef = plugin_icon.GetSize().y + 1;
-    else
-        sizeRef = 8 * GetCharHeight();
-        
-    
-    wxBitmap bmp = style->GetIcon( _T("up"), sizeRef, sizeRef, true  );
-//    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
-    
-    m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
-    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-    m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down"), sizeRef, sizeRef, true ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-    m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonUp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
-    m_pButtonDown->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
-    itemBoxSizer01->Add(m_pButtonsUpDown, 0, wxALL, 0);
-    
     SetSelected( m_bSelected );
     SetAutoLayout(true);
     //FitInside();
@@ -5412,9 +5461,7 @@ PluginPanel::~PluginPanel()
         m_pButtonAction->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginAction, this);
     }
     m_pButtonPreferences->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginPreferences, this);
-    //m_pButtonEnable->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnable, this);
-    m_pButtonUp->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginUp, this);
-    m_pButtonDown->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginDown, this);
+    m_cbEnable->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &PluginPanel::OnPluginEnableToggle, this);
 }
 
 void PluginPanel::SetActionLabel( wxString &label)
@@ -5425,24 +5472,32 @@ void PluginPanel::SetActionLabel( wxString &label)
 
 void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
-    if(m_bSelected){
+    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+    {
+        auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
+        wxASSERT(dialog != 0);
+        run_update_dialog(dialog, m_pPlugin, false);
+    }
+    else if (m_bSelected){
         SetSelected(false);
         m_PluginListPanel->SelectPlugin( NULL );
     }
-    else{
+    else {
         SetSelected( true );
         m_PluginListPanel->SelectPlugin( this );
     }
 }
+
 
 void PluginPanel::SetSelected( bool selected )
 {
     m_bSelected = selected;
     
     if(m_pPlugin->m_ManagedMetadata.version.size())
-        m_pVersion->SetLabel(wxString( m_pPlugin->m_ManagedMetadata.version.c_str()));
-        
+        m_pVersion->SetLabel( m_pPlugin->GetVersion().to_string() );
+
     if (selected) {
+        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pButtons->Show(true);
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
@@ -5455,89 +5510,63 @@ void PluginPanel::SetSelected( bool selected )
             
         m_pButtonUninstall->Show(unInstallPossible);
         
-        if(m_pPlugin->m_pplugin)                        // Only if installed...
-            m_rgSizer->Show(true);
-        
         if(m_pPlugin->m_ManagedMetadata.info_url.size()){
             m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
             m_info_btn->Show();
         }
 
-#ifndef __WXQT__
-        m_pButtonsUpDown->Show(true);
-#else        
-        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
-        m_pButtonsUpDown->Show(false);
-#endif        
-        
+        m_cbEnable->Show(true);
+
+       
         // Configure the "Action" button
         wxString label;
         SemanticVersion newVersion;
+        auto update = getLatestUpdate();
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
                 label = _("Upgrade to managed Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
-                g_actionVerb = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
+                label += wxString(update.version.c_str());
+                m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
 
             case PluginStatus::ManagedInstallAvailable:
-                label = _("Install Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
-                g_actionVerb = ActionVerb::INSTALL_MANAGED_VERSION;
+                label = _("Install...");
+                m_action = ActionVerb::INSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
-                
             case PluginStatus::ManagedInstalledUpdateAvailable:
-                label = _("Upgrade to Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
-                g_actionVerb = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
+                label = _("Update...");
+                m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledCurrentVersion:
-                label = _("Reinstall Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
-                g_actionVerb = ActionVerb::REINSTALL_MANAGED_VERSION;
+                label = _("Reinstall");
+                m_action = ActionVerb::REINSTALL_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::ManagedInstalledDowngradeAvailable:
-                label = _("Downgrade to Version ");
-                newVersion =
-                    SemanticVersion::parse(m_pPlugin->m_ManagedMetadata.version);
-                label += wxString(newVersion.to_string().c_str());
-                
-                g_actionVerb = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
+                label = _("Downgrade");
+                m_action = ActionVerb::DOWNGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
                 
             case PluginStatus::Unmanaged:
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 m_pButtonAction->Hide();
                 break;
                 
             case PluginStatus::System:
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 m_pButtonAction->Hide();
                 break;
                 
             default:
                 label = "TBD";
-                g_actionVerb = ActionVerb::NOP;
+                m_action = ActionVerb::NOP;
                 break;
         }
         SetActionLabel( label );
@@ -5545,6 +5574,7 @@ void PluginPanel::SetSelected( bool selected )
         Layout();
     }
     else {
+        m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         //m_pDescription->SetLabel( m_pPlugin->m_short_description );
 #ifndef __WXQT__
@@ -5555,17 +5585,21 @@ void PluginPanel::SetSelected( bool selected )
         //();
         
         m_pButtons->Show(false);
-        m_rgSizer->Show(false);
         m_info_btn->Hide();
+
+        if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+            m_cbEnable->Show(false);
 
         Layout();
     }
-    m_status_icon->Show(!selected);    
+    
+
+    //m_status_icon->Show(!selected);    
     //m_pButtons->Show(selected);   // For most platforms, show buttons if selected
-    m_pButtonsUpDown->Show(selected);
+    //m_pButtonsUpDown->Show(selected);
 #ifdef __OCPN__ANDROID__
     // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
-    m_pButtonsUpDown->Show(false);
+    //m_pButtonsUpDown->Show(false);
     //m_pButtons->Show(true);     // Always enable buttons for Android
 #endif
     
@@ -5597,7 +5631,7 @@ void PluginPanel::SetSelected( bool selected )
     Fit();
     m_PluginListPanel->m_pitemBoxSizer01->Layout();
 #endif
-    
+
 
 }
 
@@ -5609,41 +5643,29 @@ void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
     }
 }
 
-void PluginPanel::OnRBEnable( wxCommandEvent& event )
-{
-    SetEnabled(true);
-}
-
-void PluginPanel::OnRBDisable( wxCommandEvent& event )
-{
-    SetEnabled(false);
-}
-
-void PluginPanel::OnPluginEnable( wxCommandEvent& event )
+void PluginPanel::OnPluginEnableToggle( wxCommandEvent& event )
 {
     SetEnabled(!m_pPlugin->m_bEnabled);
 }
 
 void PluginPanel::OnPluginUninstall( wxCommandEvent& event )
 {
-    g_actionPIC = m_pPlugin;
-    g_actionVerb = ActionVerb::UNINSTALL_MANAGED_VERSION;
+    m_action = ActionVerb::UNINSTALL_MANAGED_VERSION;
 
-    //SetEnabled(false);
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
+    actionEvent.SetClientData(this);
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 }
 
 
 void PluginPanel::OnPluginAction( wxCommandEvent& event )
 {
-    g_actionPIC = m_pPlugin;
-    
     //  Chain up to the utility event handler
     wxCommandEvent actionEvent(wxEVT_COMMAND_BUTTON_CLICKED);
     actionEvent.SetId( ID_CMD_BUTTON_PERFORM_ACTION );
+    actionEvent.SetClientData(this);
     g_pi_manager->GetUtilHandler()->AddPendingEvent(actionEvent);
 
     return;
@@ -5691,10 +5713,7 @@ void PluginPanel::SetEnabled( bool enabled )
     }        
         
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
-    if(enabled)
-        m_rbEnable->SetValue(true);
-    else
-        m_rbDisable->SetValue(true);
+    m_cbEnable->SetValue(enabled);
     
 }
 
