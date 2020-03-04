@@ -1720,7 +1720,7 @@ bool MyApp::OnInit()
         wxChar separator = wxFileName::GetPathSeparator();
         wxString service_name = g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
 
-        m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
+        m_checker = new wxSingleInstanceChecker(_T("_OpenCPN_SILock"), g_Platform->GetPrivateDataDir());
         if ( !m_checker->IsAnotherRunning() )
         {
             stServer *m_server = new stServer;
