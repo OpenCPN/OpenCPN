@@ -60,6 +60,69 @@ typedef enum DS_ENUM_BUFFER_STATE
       DS_RX_BUFFER_FULL
 }_DS_ENUM_BUFFER_STATE;
 
+template <class T>
+class circular_buffer {
+public:
+        explicit circular_buffer(size_t size) :
+                buf_(std::unique_ptr<T[]>(new T[size])),
+                max_size_(size)
+        { }
+
+        void reset();
+        size_t capacity() const;
+        size_t size() const;
+
+        bool empty() const
+        {
+            //if head and tail are equal, we are empty
+            return (!full_ && (head_ == tail_));
+        }
+
+        bool full() const
+        {
+            //If tail is ahead the head by 1, we are full
+            return full_;
+        }
+        
+        void put(T item)
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            buf_[head_] = item;
+            if(full_)
+                tail_ = (tail_ + 1) % max_size_;
+
+            head_ = (head_ + 1) % max_size_;
+
+            full_ = head_ == tail_;
+        }
+
+        T get()
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+
+            if(empty())
+                return T();
+
+            //Read data and advance the tail (we now have a free space)
+            auto val = buf_[tail_];
+            full_ = false;
+            tail_ = (tail_ + 1) % max_size_;
+
+            return val;
+        }
+
+
+private:
+        std::mutex mutex_;
+        std::unique_ptr<T[]> buf_;
+        size_t head_ = 0;
+        size_t tail_ = 0;
+        const size_t max_size_;
+        bool full_ = 0;
+};
+
+
+
 /**
  * This thread manages reading the data stream from the declared serial port.
  *
@@ -184,6 +247,146 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString &msg)
     return false;
 }
 
+#ifdef __WXMSW__
+void *OCP_DataStreamInput_Thread::Entry()
+{
+    
+    bool not_done = true;
+    int nl_found = 0;
+    wxString msg;
+    circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+    circular_buffer<uint8_t> circle_temp(DS_RX_BUFFER_SIZE);
+
+    
+    //    Request the com port from the comm manager
+    if (!OpenComPortPhysical(m_PortName, m_baud))
+    {
+        wxString msg(_T("NMEA input device open failed: "));
+        msg.Append(m_PortName);
+        ThreadMessage(msg);
+        //goto thread_exit; // This means we will not be trying to connect = The device must be connected when the thread is created. Does not seem to be needed/what we want as the reconnection logic is able to pick it up whenever it actually appears (Of course given it appears with the expected device name).
+    }
+    
+    m_launcher->SetSecThreadActive();               // I am alive
+    
+    //    The main loop
+    static size_t retries = 0;
+
+    while((not_done) && (m_launcher->m_Thread_run_flag > 0))
+    {
+        if(TestDestroy())
+            not_done = false;                               // smooth exit
+        
+        uint8_t next_byte = 0;
+        size_t newdata = 0;
+        uint8_t rdata[2000];
+        char * ptmpbuf = temp_buf;
+
+        if( m_serial.isOpen() ) {
+            try {
+                newdata = m_serial.read(rdata, 200 );
+            } catch (std::exception &e) {
+                //std::cerr << "Serial read exception: " << e.what() << std::endl;
+                if(10 < retries++) {
+                    // We timed out waiting for the next character 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
+                    CloseComPortPhysical();
+                    retries = 0;
+                }
+            }
+        } else {
+            // Reconnection logic. Let's try to reopen the port while waiting longer every time (until we simply keep trying every 2.5 seconds)
+            //std::cerr << "Serial port seems closed." << std::endl;
+            wxMilliSleep(250 * retries);
+            CloseComPortPhysical();
+            if(OpenComPortPhysical(m_PortName, m_baud))
+                retries = 0;
+            else if(retries < 10)
+                retries++;
+        }
+
+        if( newdata > 0 ){
+            nl_found = 0;
+            for (int i = 0; i < newdata; i++) {
+                circle.put(rdata[i]);
+                if (0x0a == rdata[i])
+                    nl_found++;
+            }
+            
+            //    Found a NL char, thus end of message?
+            if (nl_found){
+                bool done = false;
+                while ((newdata > 0) && !done) {
+                    //    Copy the message into a temporary circular buffer
+
+                    uint8_t take_byte = circle.get();
+                    newdata--;
+                    while ( (take_byte != 0x0a) && (newdata > 0)) {
+                        circle_temp.put(take_byte);
+                        take_byte = circle.get();
+                        newdata--;
+                    }
+                    
+                    circle_temp.put(take_byte);
+                    if (take_byte == 0x0a) {
+                        circle_temp.put(0);     // terminate the message
+                        
+
+                        //  Extract the message from temp circular buffer
+                        while (*ptmpbuf = circle_temp.get()) {
+                            ptmpbuf++;
+                        }
+                        //    Message is ready to parse and send out
+                        //    Messages may be coming in as <blah blah><lf><cr>.
+                        //    One example device is KVH1000 heading sensor.
+                        //    If that happens, the first character of a new captured message will the <cr>,
+                        //    and we need to discard it.
+                        //    This is out of spec, but we should handle it anyway
+                        if (temp_buf[0] == '\r')
+                            Parse_And_Send_Posn(&temp_buf[1]);
+                        else
+                            Parse_And_Send_Posn(temp_buf);
+
+                        ptmpbuf = temp_buf;     // reset for next message
+                    }
+                    else {
+                        done = true;
+                    }
+                }
+            }                   //if nl
+        }                       // if newdata > 0
+        
+        //      Check for any pending output message
+
+        bool b_qdata = !out_que.empty();
+        
+        while(b_qdata){
+            //  Take a copy of message
+            char *qmsg = out_que.front();
+            out_que.pop();
+            //m_outCritical.Leave();
+            char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+            strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+            free(qmsg);
+            
+            if( static_cast<size_t>(-1) == WriteComPortPhysical(msg) && 10 < retries++ ) {
+                // We failed to write the port 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
+                retries = 0;
+                CloseComPortPhysical();
+            }
+            
+            b_qdata = !out_que.empty();
+        } //while b_qdata
+
+    }
+//thread_exit:
+    CloseComPortPhysical();
+    m_launcher->SetSecThreadInActive();             // I am dead
+    m_launcher->m_Thread_run_flag = -1;
+    
+    return 0;
+}
+
+#else   //MSW
 void *OCP_DataStreamInput_Thread::Entry()
 {
     
@@ -324,6 +527,8 @@ void *OCP_DataStreamInput_Thread::Entry()
     
     return 0;
 }
+#endif    //MSW
+
 #else //OCPN_USE_NEWSERIAL
 
 //      Sadly, the thread itself must implement the underlying OS serial port
