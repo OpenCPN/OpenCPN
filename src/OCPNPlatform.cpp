@@ -1535,7 +1535,7 @@ wxString OCPNPlatform::GetPluginDataPath()
     }
     m_pluginDataPath = ExpandPaths(dirs, this);
     if (m_pluginDataPath != "") {
-        m_pluginDataPath += PATH_SEP;
+        m_pluginDataPath += ";";
     }
     m_pluginDataPath += GetPluginDir();
     if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
