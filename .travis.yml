@@ -34,6 +34,13 @@ matrix:
     - docker
     script:
     - "./ci/travis-build-mingw.sh"
+  - env:
+    - OCPN_TARGET=flatpak
+    services:
+    - docker
+    script:
+    - "./ci/circleci-build-flatpak.sh"
+
 
 before_install:
 - 'echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne ''/-BEGIN
