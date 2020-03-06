@@ -48,6 +48,10 @@ Serial::SerialImpl::SerialImpl (const string &port, unsigned long baudrate,
   osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   fWaitingOnRead = false;
 
+  // Create the writer overlapped event.
+  osWriter.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  fWaitingOnWrite = false;
+
 }
 
 Serial::SerialImpl::~SerialImpl ()
@@ -399,11 +403,35 @@ Serial::SerialImpl::write (const uint8_t *data, size_t length)
     throw PortNotOpenedException ("Serial::write");
   }
   DWORD bytes_written;
-  if (!WriteFile(fd_, data, static_cast<DWORD>(length), &bytes_written, NULL)) {
-    stringstream ss;
-    ss << "Error while writing to the serial port: " << GetLastError();
-    THROW (IOException, ss.str().c_str());
+  DWORD dwRes;
+  if (!WriteFile(fd_, data, static_cast<DWORD>(length), &bytes_written, &osWriter)) {
+    if (GetLastError() == ERROR_IO_PENDING) { 
+        // write is delayed
+        fWaitingOnWrite = true;
+    }
   }
+  
+  if(fWaitingOnWrite){
+    dwRes = WaitForSingleObject(osWriter.hEvent, INFINITE);
+                            
+    switch(dwRes)
+    {
+        case WAIT_OBJECT_0:
+            if (!GetOverlappedResult(fd_, &osWriter, &bytes_written, FALSE)) {
+            }
+            break;
+        default:
+            break;
+    }
+    fWaitingOnWrite = false;
+  }
+                
+  
+//  if (!WriteFile(fd_, data, static_cast<DWORD>(length), &bytes_written, NULL)) {
+//    stringstream ss;
+//    ss << "Error while writing to the serial port: " << GetLastError();
+//    THROW (IOException, ss.str().c_str());
+//  }
   return (size_t) (bytes_written);
 }
 

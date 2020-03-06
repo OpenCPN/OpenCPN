@@ -200,6 +200,8 @@ private:
   HANDLE write_mutex;
   bool fWaitingOnRead;
   OVERLAPPED osReader = {0};
+  bool fWaitingOnWrite;
+  OVERLAPPED osWriter = {0};
 
 };
 
