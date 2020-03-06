@@ -1543,8 +1543,19 @@ bool ChartCanvas::DoCanvasUpdate( void )
         double d_east = dx / GetVP().view_scale_ppm;
         double d_north = dy / GetVP().view_scale_ppm;
 
-        fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
-
+        if(!m_bCourseUp){
+            fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
+        }
+        else{
+            double offset_angle = atan2(d_north, d_east);
+            double offset_distance = sqrt((d_north * d_north) + (d_east * d_east));
+            double chart_angle =  GetVPRotation();
+            double target_angle = chart_angle - offset_angle;
+            double d_east_mod = offset_distance * cos( target_angle );
+            double d_north_mod = offset_distance * sin( target_angle );
+            fromSM( d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon );
+        }
+            
         // on lookahead mode, adjust the vp center point
         if( m_bLookAhead && bGPSValid && !m_MouseDragging ) {
             double angle = g_COGAvg + ( GetVPRotation() * 180. / PI );
@@ -4500,17 +4511,31 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 double offx, offy;
                 toSM(GetVP().clat, GetVP().clon, gLat, gLon, &offx, &offy);
 
-                m_OSoffsetx = offx * old_ppm;
-                m_OSoffsety = offy * old_ppm;
+                double offset_angle = atan2(offy, offx);
+                double offset_distance = sqrt((offy * offy) + (offx * offx));
+                double chart_angle =  GetVPRotation() ;
+                double target_angle = chart_angle - offset_angle;
+                double d_east_mod = offset_distance * cos( target_angle );
+                double d_north_mod = offset_distance * sin( target_angle );
+
+                m_OSoffsetx = d_east_mod * old_ppm;
+                m_OSoffsety = d_north_mod * old_ppm;
+
+                //m_OSoffsetx = offx * old_ppm;
+                //m_OSoffsety = offy * old_ppm;
+
+                //double dx = m_OSoffsetx;
+                //double dy = m_OSoffsety;
+                //double d_east = dx / new_scale;
+                //double d_north = dy / new_scale;
+
+                double d_east_mods = d_east_mod / new_scale;
+                double d_north_mods = d_north_mod / new_scale;
 
                 double nlat, nlon;
-                double dx = m_OSoffsetx;
-                double dy = m_OSoffsety;
-                double d_east = dx / new_scale;
-                double d_north = dy / new_scale;
-
-                fromSM( d_east, d_north, gLat, gLon, &nlat, &nlon );
-                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation); 
+                fromSM( d_east_mods, d_north_mods, gLat, gLon, &nlat, &nlon );
+                SetViewPoint( nlat, nlon, new_scale, GetVP().skew, GetVP().rotation);
+                DoCanvasUpdate();
             }
             else
                 SetVPScale( new_scale );
@@ -4739,8 +4764,19 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     //  Turn off bFollow only if the ownship has left the screen
     double offx, offy;
     toSM(dlat, dlon, gLat, gLon, &offx, &offy);
-    m_OSoffsetx = offx * VPoint.view_scale_ppm;
-    m_OSoffsety = offy * VPoint.view_scale_ppm;
+   
+    double offset_angle = atan2(offy, offx);
+    double offset_distance = sqrt((offy * offy) + (offx * offx));
+    double chart_angle =  GetVPRotation() ;
+    double target_angle = chart_angle - offset_angle;
+    double d_east_mod = offset_distance * cos( target_angle );
+    double d_north_mod = offset_distance * sin( target_angle );
+
+    m_OSoffsetx = d_east_mod * VPoint.view_scale_ppm;
+    m_OSoffsety = d_north_mod * VPoint.view_scale_ppm;
+ 
+ //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
+ //   m_OSoffsety = offy * VPoint.view_scale_ppm;
     
     if( m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) || (fabs(m_OSoffsety) > VPoint.pix_height / 2)) ){
         m_bFollow = false;      // update the follow flag
