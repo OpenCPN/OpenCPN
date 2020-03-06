@@ -5521,11 +5521,10 @@ void PluginPanel::SetSelected( bool selected )
         // Configure the "Action" button
         wxString label;
         SemanticVersion newVersion;
-        auto update = getLatestUpdate();
         switch(m_pPlugin->m_pluginStatus){
             case PluginStatus::LegacyUpdateAvailable:
                 label = _("Upgrade to managed Version ");
-                label += wxString(update.version.c_str());
+                label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;
