@@ -1,40 +1,46 @@
 language: cpp
 
 matrix:
+  # https://github.com/travis-ci/travis-conditions
   include:
-
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=bionic
     dist: bionic
     compiler: gcc
     script:
     - "./ci/generic-build-debian.sh"
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=xenial
     dist: xenial
     compiler: gcc
     script:
     - "./ci/generic-build-debian.sh"
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=trusty
     dist: trusty
     compiler: gcc
     script:
     - "./ci/generic-build-debian.sh"
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=osx
     os: osx
     osx_image: xcode10.2
     compiler: clang
     script:
     - "./ci/generic-build-macos.sh"
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=mingw
     services:
     - docker
     script:
     - "./ci/travis-build-mingw.sh"
-  - env:
+  - if: branch = flatpak
+    env:
     - OCPN_TARGET=flatpak
     services:
     - docker
@@ -64,11 +70,3 @@ addons:
     build_command_prepend: mkdir -p build; cd build; cmake ..; make clean
     build_command: make
     branch_pattern: coverity_scan
-
-branches:
-  only:
-    - master
-    - plugins
-    - plugins-build
-    - plug-mgr
-
