@@ -35,7 +35,7 @@ jobs:
        - run: ci/generic-upload.sh
    build-mingw:
      docker:
-         - image: fedora:29
+         - image: fedora:31
      environment:
        - OCPN_TARGET:  mingw
      steps:
