@@ -2206,6 +2206,8 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_btnOutputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(options::OnBtnOStcs), NULL,
                               this);
+  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                      wxCommandEventHandler(options::OnConnValChange), NULL, this);
   pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
@@ -2899,6 +2901,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_btnOutputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(options::OnBtnOStcs), NULL,
                               this);
+  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                      wxCommandEventHandler(options::OnConnValChange), NULL, this);
+
   pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
