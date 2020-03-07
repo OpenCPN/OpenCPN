@@ -1105,12 +1105,9 @@ add_library(ocpn::opencpn ALIAS _opencpn)
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES
-    ENABLE_EXPORTS
-    1
-    OUTPUT_NAME
-    ${PACKAGE_NAME}
-    ARCHIVE_OUTPUT_DIRECTORY
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ENABLE_EXPORTS 1
+    OUTPUT_NAME ${PACKAGE_NAME}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_include_directories(
@@ -1148,13 +1145,7 @@ if (DEFINED _wx_selected_config)
   if (_wx_selected_config MATCHES "androideabi-qt")
     message(STATUS "Building for wxQt-Android")
     message(STATUS "Qt_Base: " ${Qt_Base})
-    message(
-      STATUS
-        "wxQt_Base/Build: "
-        ${wxQt_Base}
-        "/"
-        ${wxQt_Build}
-    )
+    message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
     set(QT_ANDROID "ON")
   endif (_wx_selected_config MATCHES "androideabi-qt")
 endif (DEFINED _wx_selected_config)
