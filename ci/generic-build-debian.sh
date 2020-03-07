@@ -26,8 +26,13 @@ if [ "$OCPN_TARGET" = "trusty"  -o "$OCPN_TARGET" = "xenial" ]; then \
     WEBVIEW_OPT="-DOCPN_USE_WEBVIEW:BOOL=OFF"
 fi
 
+if [[ "$EXTRA_BUILD_OPTS" == *OCPN_FORCE_GTK3=ON* ]]; then
+    sudo update-alternatives --set wx-config \
+        /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
+fi
+
 rm -rf build && mkdir build && cd build
-cmake $WEBVIEW_OPT \
+cmake $WEBVIEW_OPT  $EXTRA_BUILD_OPTS\
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DOCPN_CI_BUILD:BOOL=ON \
