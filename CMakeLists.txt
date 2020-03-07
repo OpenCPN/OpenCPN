@@ -548,7 +548,6 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 # Version handling
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
-include(TargetSetup)
 
 if (OCPN_CI_BUILD)
   include(Utils)
@@ -1635,6 +1634,11 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif (UNIX AND NOT APPLE)
 
+# Finalize config.h setup and deploy it.
+include(TargetSetup)
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
+  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+endif ()
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
