@@ -233,7 +233,16 @@ BEGIN_EVENT_TABLE(RouteManagerDialog, wxFrame)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
 EVT_CLOSE(RouteManagerDialog::OnClose)
 EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
+EVT_CHAR_HOOK(RouteManagerDialog::OnKey)
 END_EVENT_TABLE()
+
+void RouteManagerDialog::OnKey( wxKeyEvent& ke )
+{
+    if ( ke.GetKeyCode() == WXK_ESCAPE )
+        Close( true );
+    else
+        ke.Skip(); 
+}
 
 void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
 {
