@@ -66,6 +66,7 @@ class S57QueryDialog: public wxFrame
             void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
     
             void OnOKClick(wxCommandEvent& event) { Close(); }
+            void OnKey( wxKeyEvent& ke );
 
       //    Overrides
             void OnPaint ( wxPaintEvent& event );
