@@ -526,15 +526,21 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
             }
-        }
-        else if (update_path == _T("atonType")) {
+        } else if (update_path == _T("atonType")) {
             if (value.HasMember(_T("id"))) {
                 pTargetData->ShipType = value[_T("id")].AsUInt();
-
-                //Split AtoNs here until SK's own detection
-                pTargetData->NavStatus = ATON_REAL;
-                if ( 6 == (pTargetData->MMSI) % 10000 / 1000 ) { //xxyyy6zzz
-                    pTargetData->NavStatus = ATON_VIRTUAL;
+            }        
+        } else if (update_path == _T("virtual")) {
+            if (_T("true") == value.AsString()) { 
+                pTargetData->NavStatus = ATON_VIRTUAL; }
+            else { pTargetData->NavStatus = ATON_REAL; }
+        } else if (update_path == _T("offPosition")) {
+            if (_T("true") == value.AsString()) {
+                if (ATON_REAL == pTargetData->NavStatus) {
+                    pTargetData->NavStatus = ATON_REAL_OFFPOSITION;
+                }
+                else if (ATON_VIRTUAL == pTargetData->NavStatus) {
+                    pTargetData->NavStatus = ATON_VIRTUAL_OFFPOSITION;
                 }
             }
         } else if (update_path == _T("design.draft")) {
@@ -550,19 +556,14 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                     pTargetData->DimB = 0;
                 }
             }
-        }
-        else if (update_path == _T("sensors.ais.class")) {
+        } else if (update_path == _T("sensors.ais.class")) {
             auto aisclass = value.AsString();
             if (aisclass == _T("A") ) { pTargetData->Class = AIS_CLASS_A; }
             else if (aisclass == _T("B")) {
                 pTargetData->Class = AIS_CLASS_B;
                 pTargetData->NavStatus = UNDEFINED; // Class B targets have no status.  Enforce this... 
-            }
+            } 
             else if (aisclass == _T("BASE")) { pTargetData->Class = AIS_BASE; }
-            else if (aisclass == _T("SARAIR")) { 
-                pTargetData->b_SarAircraftPosnReport = true;
-                //wxLogMessage(wxString::Format(_T("** AIS class from SK: %s -> %d"), aisclass, pTargetData->Class));
-            }
             else if (aisclass == _T("ATON")) { pTargetData->Class = AIS_ATON; }
         } else if (update_path == _T("sensors.ais.fromBow")) {
             if(pTargetData->DimB == 0 && pTargetData->DimA != 0) {
@@ -598,25 +599,33 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             else if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
             else if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
             else { pTargetData->NavStatus = UNDEFINED; }
-
-           /* wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
-                    state, pTargetData->NavStatus));*/
-        } else if (update_path == _T("communication.callsignVhf")) {
-            const wxString &callsign = value.AsString();
-            strncpy(pTargetData->CallSign,
-                    callsign.c_str(),
-                    7 );
         } else if (update_path == _T("navigation.destination.commonName")) {
             const wxString &destination = value.AsString();
             strncpy(pTargetData->Destination,
-                    destination.c_str(),
-                    20 );
+                destination.c_str(), 20);
+        } else if (update_path == _T("navigation.specialManeuver")) {
+            if (_T("not available") != value.AsString() && pTargetData->IMO < 1) {
+                const wxString &bluesign = value.AsString();
+                if ( _T("not engaged")== bluesign){
+                    pTargetData->blue_paddle = 1;
+                }
+                if (_T("engaged") == bluesign) {
+                    pTargetData->blue_paddle = 2;
+                }
+                pTargetData->b_blue_paddle = pTargetData->blue_paddle == 2 ? true: false;                
+            }        
         } else if (update_path == _T("")) {
             if(value.HasMember(_T("name"))) {
                 const wxString &name = value[_T("name")].AsString();
                 strncpy(pTargetData->ShipName, name.c_str(), 20 );
                 pTargetData->b_nameValid = true;
                 pTargetData->MID = 123; // Indicates a name from SignalK
+            } else if (value.HasMember(_T("registrations"))) {
+                const wxString &imo = value[_T("registrations")][_T("imo")].AsString();
+                pTargetData->IMO = wxAtoi(imo.Right(7));
+            } else if (value.HasMember(_T("communication"))) {
+                const wxString &callsign = value[_T("communication")][_T("callsignVhf")].AsString();
+                strncpy(pTargetData->CallSign, callsign.c_str(), 7);
             }
             if(value.HasMember("mmsi")) {
                 long mmsi;
@@ -632,7 +641,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
 
                     AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                                            
                     
-                    (*AISTargetList)[pTargetData->MMSI] = pTargetData;   // update the hash table entry
+                    (*AISTargetList)[pTargetData->MMSI] = pTargetData; // update the hash table entry
                 }
             }
         } else {
