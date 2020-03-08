@@ -65,6 +65,7 @@ BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxFrame )
     EVT_CLOSE(AISTargetQueryDialog::OnClose)
     EVT_MOVE( AISTargetQueryDialog::OnMove )
     EVT_SIZE( AISTargetQueryDialog::OnSize )
+    EVT_CHAR_HOOK(AISTargetQueryDialog::OnKey)
 END_EVENT_TABLE()
 
 AISTargetQueryDialog::AISTargetQueryDialog()
@@ -106,6 +107,15 @@ void AISTargetQueryDialog::OnIdOKClick( wxCommandEvent& event )
 {
     Close();
 }
+
+void AISTargetQueryDialog::OnKey( wxKeyEvent& ke )
+{
+    if ( ke.GetKeyCode() == WXK_ESCAPE )
+        Close( true );
+    else
+        ke.Skip(); 
+}
+
 
 void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
 {
