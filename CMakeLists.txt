@@ -548,7 +548,6 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 # Version handling
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
-include(TargetSetup)
 
 if (OCPN_CI_BUILD)
   include(Utils)
@@ -1106,12 +1105,9 @@ add_library(ocpn::opencpn ALIAS _opencpn)
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES
-    ENABLE_EXPORTS
-    1
-    OUTPUT_NAME
-    ${PACKAGE_NAME}
-    ARCHIVE_OUTPUT_DIRECTORY
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ENABLE_EXPORTS 1
+    OUTPUT_NAME ${PACKAGE_NAME}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_include_directories(
@@ -1149,13 +1145,7 @@ if (DEFINED _wx_selected_config)
   if (_wx_selected_config MATCHES "androideabi-qt")
     message(STATUS "Building for wxQt-Android")
     message(STATUS "Qt_Base: " ${Qt_Base})
-    message(
-      STATUS
-        "wxQt_Base/Build: "
-        ${wxQt_Base}
-        "/"
-        ${wxQt_Build}
-    )
+    message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
     set(QT_ANDROID "ON")
   endif (_wx_selected_config MATCHES "androideabi-qt")
 endif (DEFINED _wx_selected_config)
@@ -1635,6 +1625,11 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif (UNIX AND NOT APPLE)
 
+# Finalize config.h setup and deploy it.
+include(TargetSetup)
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
+  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+endif ()
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 

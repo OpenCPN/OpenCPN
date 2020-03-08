@@ -6,6 +6,14 @@ matrix:
   - if: branch IN (master, plugins, plugins-build)
     env:
     - OCPN_TARGET=bionic
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=OFF"
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - env:
+    - OCPN_TARGET=bionic-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
     dist: bionic
     compiler: gcc
     script:
