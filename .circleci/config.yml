@@ -52,6 +52,15 @@ jobs:
        - checkout
        - run: ci/generic-build-macos.sh
        - run: ci/generic-upload.sh
+   build-flatpak:
+     machine:
+       image: ubuntu-1604:201903-01
+     environment:
+       - OCPN_TARGET:  mingw
+     steps:
+       - checkout
+       - run: ci/circleci-build-flatpak.sh
+
 
 workflows:
   version: 2
@@ -77,3 +86,8 @@ workflows:
             branches:
               only:
                 - master
+      - build-flatpak:
+          filters:
+            branches:
+              only:
+                - flatpak
