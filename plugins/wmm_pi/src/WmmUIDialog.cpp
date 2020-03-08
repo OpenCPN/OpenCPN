@@ -9,6 +9,10 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
+BEGIN_EVENT_TABLE ( WmmUIDialogBase, wxDialog )
+    EVT_CHAR_HOOK(WmmUIDialogBase::OnKey)
+END_EVENT_TABLE()
+
 WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxSize( -1,-1 ), wxSize( -1,-1 ) );
@@ -263,6 +267,14 @@ WmmUIDialogBase::~WmmUIDialogBase()
 	m_bPlotSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WmmUIDialogBase::PlotSettings ), NULL, this );
 	
 }
+void WmmUIDialogBase::OnKey( wxKeyEvent& ke )
+{
+    if ( ke.GetKeyCode() == WXK_ESCAPE )
+        Close( true );
+    else
+        ke.Skip(); 
+}
+
 
 WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {

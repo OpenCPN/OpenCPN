@@ -86,7 +86,10 @@ class WmmUIDialogBase : public wxDialog
 		
 		WmmUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("WMM"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 250,485 ), long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
 		~WmmUIDialogBase();
-	
+                void OnKey( wxKeyEvent& ke );
+
+                DECLARE_EVENT_TABLE()
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -151,6 +154,7 @@ class WmmPlotSettingsDialogBase : public wxDialog
 		
 		WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Magnetic Plot Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 375,270 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~WmmPlotSettingsDialogBase();
+                
 	
 };
 
