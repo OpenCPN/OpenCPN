@@ -11,7 +11,8 @@ matrix:
     compiler: gcc
     script:
     - "./ci/generic-build-debian.sh"
-  - env:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=bionic-gtk3
     - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
     dist: bionic
