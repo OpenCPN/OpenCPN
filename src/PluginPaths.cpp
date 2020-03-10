@@ -139,7 +139,7 @@ void PluginPaths::initApplePaths()
     using namespace std;
 
     const string mac_home = m_home + "/Library/Application Support/OpenCPN";
-    m_userLibdir = mac_home + "/Contents/Plugins";
+    m_userLibdir = mac_home + "/Contents/PlugIns";
     m_userBindir = m_userLibdir;
     m_userDatadir = mac_home + "/Contents";
     m_unknownPathDir = mac_home + "/Contents/unknown-paths";
@@ -149,7 +149,7 @@ void PluginPaths::initApplePaths()
     m_bindirs = m_libdirs;
 
     m_datadirs.push_back(m_userDatadir);
-    m_datadirs.push_back( "/Applications/OpenCPN.app/Contents/plugins");
+    m_datadirs.push_back( "/Applications/OpenCPN.app/Contents/PlugIns");
 }
 
 void PluginPaths::initAndroidPaths()

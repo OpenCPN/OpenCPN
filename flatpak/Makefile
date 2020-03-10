@@ -6,6 +6,8 @@ BRANCH          ?= master
 GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
+RSYNC_RSH       ?= ssh
+RSYNC_HOST      ?= amazon-ec2
 REPO_URL        ?= http://leamas.fedorapeople.org/opencpn/repo
 
 all: build sign
@@ -44,7 +46,9 @@ repourl:
 	sed -i '/^Url/s|=.*|=$(REPO_URL)|' repo/opencpn.flatpakref
 
 publish:
-	rsync -av $(DESTDIR)/ amazon-ec2:/var/www/ocpn-flatpak/website
+	rsync -av --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \
+	    $(RSYNC_HOST):/var/www/ocpn-flatpak/website
 
 publish-beta:
-	rsync -av $(DESTDIR)/ amazon-ec2:/var/www/ocpn-website-beta/website
+	rsync -av --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \
+	    $(RSYNC_HOST):/var/www/ocpn-website-beta/website
