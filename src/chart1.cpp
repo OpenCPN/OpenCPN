@@ -80,6 +80,7 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
+#include "logger.h"
 #include "navutil.h"
 #include "styles.h"
 #include "routeman.h"
@@ -1109,6 +1110,7 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("no_opengl"), wxEmptyString, _("Disable OpenGL video acceleration. This setting will be remembered.") );
     parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
     parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
+    parser.AddOption( _T("l"), _T("loglevel"), _("Amount of logging: error, warning, message, info, debug or trace"));
     parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
     parser.AddSwitch( _T("unit_test_2") );
     parser.AddParam("import GPX files",
@@ -1116,6 +1118,24 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
                         wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
     parser.AddLongSwitch( "unit_test_2" );
     parser.AddSwitch("safe_mode");
+}
+
+/** Parse --loglevel and set up logging, falling back to defaults. */
+static void ParseLoglevel(wxCmdLineParser& parser)
+{
+    const char* strLevel = std::getenv("OPENCPN_LOGLEVEL");
+    strLevel = strLevel ? strLevel : "info";
+    wxString wxLevel;
+    if (parser.Found("l", &wxLevel)) {
+        strLevel = wxLevel.c_str();
+    }
+    wxLogLevel level = OcpnLog::str2level(strLevel);
+    if (level == OcpnLog::LOG_BADLEVEL) {
+        fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
+        strLevel = "info";
+        level = wxLOG_Info;
+    }
+    wxLog::SetLogLevel(level);
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -1137,6 +1157,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
             g_unit_test_1 = -1;
     }
     safe_mode::set_mode(parser.Found("safe_mode"));
+    ParseLoglevel(parser);
 
     for (size_t paramNr=0; paramNr < parser.GetParamCount(); ++paramNr)
             g_params.push_back(parser.GetParam(paramNr));
@@ -1821,19 +1842,13 @@ bool MyApp::OnInit()
 //      Send init message
     wxLogMessage( _T("\n\n________\n") );
 
-    wxDateTime date_now = wxDateTime::Now();
 
-    wxString imsg = date_now.FormatISODate();
-    wxLogMessage( imsg );
-
-    imsg = _T(" ------- Starting OpenCPN -------");
-    wxLogMessage( imsg );
-
-    wxString version = VERSION_FULL;
-    wxString vs = version.Trim( true );
-    vs = vs.Trim( false );
-    wxLogMessage( vs );
-    g_vs = vs;
+    g_vs = wxString(VERSION_FULL).Trim(true).Trim(false);
+    wxDateTime now = wxDateTime::Now();
+    LOG_INFO("------- OpenCPN version %s restarted at %s -------\n",
+             VERSION_FULL, now.FormatISODate().mb_str().data());
+    wxLogLevel level = wxLog::GetLogLevel();
+    LOG_INFO("Using loglevel %s", OcpnLog::level2str(level).c_str());
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
@@ -1865,7 +1880,7 @@ bool MyApp::OnInit()
     ::wxInitAllImageHandlers();
 
 
-    imsg = _T("SData_Locn is ");
+    wxString imsg = _T("SData_Locn is ");
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
@@ -2064,6 +2079,8 @@ bool MyApp::OnInit()
     ConfigMgr::Get();
 
     // Is this an upgrade? 
+    wxString vs =
+        wxString("Version ") +  VERSION_FULL + " Build " + VERSION_DATE;
     g_bUpgradeInProcess = (vs != g_config_version_string);
     
 #ifndef __OCPN__ANDROID__    

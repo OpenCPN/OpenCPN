@@ -12,9 +12,9 @@
     #pragma implementation "jsonwriter.cpp"
 #endif
 
-#ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including wx/debug.h (also included by wx/wxprec.h)
+#if defined(NDEBUG) && !defined(wxDEBUG_LEVEL)
 #define wxDEBUG_LEVEL 0
 #endif
 
