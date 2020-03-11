@@ -93,6 +93,7 @@
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
+#include "logger.h"
 #include "ocpn_utils.h"
 #include "piano.h"
 #include "safe_mode.h"
@@ -2211,10 +2212,11 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     if(pic->m_pplugin)
     {
         std::stringstream msg;
-        msg << "PlugInManager:  " << plugin_file
-            << "\n        Plugin common name: " << pic->m_pplugin->GetCommonName()
-            << "\n        API Version detected: " << api_ver
-            << "\n        PlugIn Version detected: " << pi_ver;
+        INFO_LOG  << "PlugInManager:  " << plugin_file;
+        INFO_LOG  << "        Plugin common name: "
+            << pic->m_pplugin->GetCommonName();
+        INFO_LOG  << "        API Version detected: " << api_ver;
+        INFO_LOG  << "        PlugIn Version detected: " << pi_ver;
         wxLogMessage(msg.str().c_str());
     }
     else
