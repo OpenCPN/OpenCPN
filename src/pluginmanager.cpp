@@ -219,27 +219,27 @@ struct EnumClassHash
 static std::unordered_map<PluginStatus, const char*, EnumClassHash>
 message_by_status({
     {PluginStatus::System,
-        _("Plugin is a system plugin which cannot be changed") },
+        _("Plugin is a standard system plugin") },
     {PluginStatus::Managed,
         _("Plugin is managed by OpenCPN") },
     {PluginStatus::Unmanaged,
-        _("Plugin cannot be managed by OpenCPN") },
+        _("Plugin is not managed by OpenCPN") },
     {PluginStatus::Ghost,
-        _("Plugin shadows a packaged plugin which should be uninstalled") },
+        _("") },
     {PluginStatus::Unknown,
         _("Plugin status unknown") },
     {PluginStatus::LegacyUpdateAvailable,
-        _("Plugin TBD") },
+        _("Update to managed Plugin is available") },
     {PluginStatus::ManagedInstallAvailable,
-        _("Plugin TBD") },
+        _("New managed Plugin installation available") },
     {PluginStatus::ManagedInstalledUpdateAvailable,
-        _("Plugin TBD") },
+        _("Update to installed Plugin is available") },
     {PluginStatus::ManagedInstalledCurrentVersion,
-        _("Plugin TBD") },
+        _("Plugin is latest available") },
     {PluginStatus::ManagedInstalledDowngradeAvailable,
-        _("Plugin TBD") },
+        _("") },
     {PluginStatus::PendingListRemoval,
-        _("Plugin TBD") }
+        _("") }
 
 
 });
@@ -249,10 +249,10 @@ static std::unordered_map<PluginStatus, const char*, EnumClassHash>
 icon_by_status({
     {PluginStatus::System,    "emblem-system.svg" },
     {PluginStatus::Managed,   "emblem-default.svg" },
-    {PluginStatus::Unmanaged, "emblem-readonly.svg" },
+    {PluginStatus::Unmanaged, "emblem-unmanaged.svg" },
     {PluginStatus::Ghost,     "ghost.svg" },
     {PluginStatus::Unknown,   "emblem-default.svg" },
-    {PluginStatus::LegacyUpdateAvailable,   "emblem-default.svg" },
+    {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "emblem-default.svg" },
@@ -694,7 +694,7 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
-            m_stat = PluginStatus::Unknown;    
+            m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
 
@@ -718,9 +718,9 @@ class StatusIconPanel: public wxPanel
                 wxLogMessage("StatusPluginPanel: bitmap is not OK!");
                 return;
             }
-            //dc.DrawBitmap(m_bitmap, offset, offset, true);
-            dc.DrawText(_T("PluginStatus"), 0, 0);
-            dc.DrawText(literalstatus_by_status[m_stat], 4 * GetCharWidth(), GetCharHeight());
+            dc.DrawBitmap(m_bitmap, offset, offset, true);
+            //dc.DrawText(_T("PluginStatus"), 0, 0);
+            //dc.DrawText(literalstatus_by_status[m_stat], 4 * GetCharWidth(), GetCharHeight());
          }
          
          void SetStatus(PluginStatus stat)
@@ -744,14 +744,13 @@ class StatusIconPanel: public wxPanel
             path.AppendDir("traditional");
             bool ok = false;
             
-            //TODO
-/*
+
             if (path.IsFileReadable()) {
                 wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
                 bitmap = wxBitmap(img);
                 ok = bitmap.IsOk();
             }
-*/
+
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
@@ -5622,7 +5621,7 @@ void PluginPanel::SetSelected( bool selected )
 #ifdef __OCPN__ANDROID__
     // Android (wxQT) sizers have troubles...
     // So we set some layout factors to avoid re-sizing on select/deselect.
-    m_rgSizer->Show(true);
+//    m_rgSizer->Show(true);
     m_pButtons->Show(true);
     m_pButtonAction->Hide();
     m_pButtonUninstall->Hide();
