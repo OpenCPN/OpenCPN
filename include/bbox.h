@@ -98,13 +98,19 @@ public:
     void Invalidate() { m_valid = false; }
 
     bool IntersectIn( const LLBBox &other ) const;
+    
+    //  Add some epsilon to the equality measurement
+    //  This class is concerned with lat/lon, in degrees
+    //  So here we can arbitrarily establish epsilon as 1e-6 degrees,
+    //  which is about 300 mm at the equator.
+    //  This is judged close enough for geometric region calculations
     inline bool IntersectOut( const LLBBox &other ) const
     {
         // allow -180 to 180 or 0 to 360
         if( !GetValid() || !other.GetValid() )
             return true;
 
-        if((m_maxlat < other.m_minlat) || (m_minlat > other.m_maxlat))
+        if((m_maxlat + 1e-6 < other.m_minlat) || (m_minlat - 1e-6 > other.m_maxlat))
             return true;
 
         double minlon = m_minlon, maxlon = m_maxlon;
@@ -113,7 +119,7 @@ public:
         else if(m_minlon > other.m_maxlon)
             minlon -= 360, maxlon -= 360;
 
-        return (minlon > other.m_maxlon) || (maxlon < other.m_minlon);
+        return (minlon - 1e-6 > other.m_maxlon) || (maxlon + 1e-6 < other.m_minlon);
     }
     bool IntersectOutGetBias( const LLBBox &other, double bias ) const;
     
