@@ -594,7 +594,7 @@ function(check_debug_support)
     set(COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS} -I${dir}")
   endforeach (dir)
   try_compile(HAVE_WX_DEBUG_SUPPORT
-    "${CMAKE_SOURCE_DIR}/cmake/tmp"
+    "${CMAKE_BINARY_DIR}/check-debug-support"
     "${CMAKE_SOURCE_DIR}/cmake/wx-on-assert.cpp"
     LINK_LIBRARIES ${wxWidgets_LIBRARIES}
     COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS}
