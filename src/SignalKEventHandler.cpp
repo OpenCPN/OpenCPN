@@ -13,6 +13,7 @@
 #include "OCPN_SignalKEvent.h"
 #include "chart1.h"
 #include "pluginmanager.h"
+#include "logger.h"
 
 extern PlugInManager    *g_pi_manager;
 wxString                g_ownshipMMSI_SK;
@@ -22,7 +23,7 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
     wxJSONReader jsonReader;
     wxJSONValue root;
 
-    fprintf(stderr, "%s\n", event.GetString().c_str());
+    LOG_DEBUG("%s\n", event.GetString().c_str());
 
     std::string msgTerminated = event.GetString();
     msgTerminated.append("\r\n");
