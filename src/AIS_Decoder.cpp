@@ -909,7 +909,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         token = tkz.GetNextToken(); //11) Target name
         if ( token == wxEmptyString )
             token = wxString::Format( _T("ARPA %d"), arpa_tgt_num );
-        int len = token.Length();
+        int len = wxMin(token.Length(),20);
         strncpy( arpa_name_str, token.mb_str(), len );
         arpa_name_str[len] = 0;
         arpa_status = tkz.GetNextToken(); //12) Target Status
@@ -971,7 +971,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         token = tkz.GetNextToken(); //4) Target name
         if ( token == wxEmptyString )
             token = wxString::Format( _T("ARPA %d"), arpa_tgt_num );
-        int len = token.Length();
+        int len = wxMin(token.Length(),20);
         strncpy( arpa_name_str, token.mb_str(), len );
         arpa_name_str[len] = 0;
         token = tkz.GetNextToken(); //5) UTC of data
@@ -1027,7 +1027,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true )
             aprs_lon = 0. - aprs_lon;
         token = tkz.GetNextToken(); //5) Target name
-        int len = token.Length();
+        int len = wxMin(token.Length(),20);
         int i, hash = 0;
         strncpy( aprs_name_str, token.mb_str(), len );
         aprs_name_str[len] = 0;
