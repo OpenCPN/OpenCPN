@@ -37,6 +37,7 @@
 #include "dychart.h"
 #include "tcmgr.h"
 #include "georef.h"
+#include "logger.h"
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
