@@ -8035,7 +8035,7 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
                                    infile);
 
             if (ferror(infile)) {
-                fprintf(stderr, "Read error: %s\n",
+                LOG_ERROR("Read error: %s\n",
                         strerror(errno));
                 return false;
             }
@@ -8077,7 +8077,7 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
 
             if (fwrite(outbuf, 1, write_size, outfile)
                 != write_size) {
-                fprintf(stderr, "Write error: %s\n",
+                LOG_ERROR("Write error: %s\n",
                         strerror(errno));
                 return false;
             }

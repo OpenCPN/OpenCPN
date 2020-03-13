@@ -307,7 +307,7 @@ static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
 {
     const GLubyte *estring;
     estring = gluErrorString(errorCode);
-    fprintf (stderr, "Tessellation Error: %s\n", estring);
+    LOG_ERROR("Tessellation Error: %s\n", estring);
     wxLogMessage( _T("Tessellation Error: %s"), (char *)estring );
     //exit (0);
 }
