@@ -388,6 +388,24 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                 
             release_file.Close();
         }
+        if(detail->osd_name == _T("Linux Mint")){
+            if(wxFileExists(_T("/etc/upstream-release/lsb-release"))) {
+                wxTextFile upstream_release_file(_T("/etc/upstream-release/lsb-release"));
+                if(upstream_release_file.Open()) {
+                    wxString val;
+                    for(wxString str = upstream_release_file.GetFirstLine(); !upstream_release_file.Eof(); str = upstream_release_file.GetNextLine()) {
+                        if(str.StartsWith(_T("DISTRIB_RELEASE"))) {
+                            val = str.AfterFirst('=').Mid(0);
+                            val = val.Mid(0, val.Length());
+                            if(val.Length())
+                                detail->osd_version = std::string(val.mb_str());
+                        }
+                    }
+                    upstream_release_file.Close();
+                }
+            }
+        }
+
     }
 #endif
 
