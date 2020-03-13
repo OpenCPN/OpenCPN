@@ -4965,15 +4965,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 
      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
-     topSizer->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
+     topSizer->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 2 );
 
      // First line
      wxBoxSizer* rowSizer1 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer1, 0, wxEXPAND | wxALL, 4 );
+     itemStaticBoxSizer4->Add( rowSizer1, 0, wxEXPAND | wxALL, 0 );
      
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
      rowSizer1->Add( m_catalogText, 1, wxALIGN_LEFT );
-     m_catalogText->SetLabel(GetCatalogText());
+     m_catalogText->SetLabel(GetCatalogText(false));
 
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
      rowSizer1->Add( tchannels, 0,/* wxALIGN_RIGHT |*/ wxRIGHT, 2 * GetCharWidth() );
@@ -4990,7 +4990,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 
      // Next line
      wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer2, 0, wxEXPAND | wxALL, 4 );
+     itemStaticBoxSizer4->Add( rowSizer2, 0, wxEXPAND | wxALL, 0 );
 
      m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_updateButton, 0, wxEXPAND | wxALIGN_LEFT );
@@ -5070,7 +5070,7 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     g_pi_manager->LoadAllPlugIns( false );
 
     // Update this Panel, and the entire list.
-    m_catalogText->SetLabel(GetCatalogText());
+    m_catalogText->SetLabel(GetCatalogText(true));
     if(m_PluginListPanel)
         m_PluginListPanel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
 
@@ -5078,9 +5078,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 
 }
 
-wxString CatalogMgrPanel::GetCatalogText()
+wxString CatalogMgrPanel::GetCatalogText(bool updated)
 {
-    wxString catalog = _("Active Catalog") + _T(": ");
+    wxString catalog;
+    catalog = updated ? _("Active Catalog") : _("Last Catalog");
+    catalog += _T(": ");
 
     // Check the config file to learn what was the last catalog downloaded.
     pConfig->SetPath( _T("/PlugIns/") );
@@ -5096,6 +5098,7 @@ wxString CatalogMgrPanel::GetCatalogText()
     catalog += _("Version");
     catalog += _T(" ");
     catalog += wxString(version.c_str());
+    if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
     
     return catalog;
 }
