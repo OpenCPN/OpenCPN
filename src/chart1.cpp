@@ -1773,7 +1773,15 @@ bool MyApp::OnInit()
     	        delete connection;
             }
             else {
-                wxMessageBox(wxT("Sorry, the existing instance may be too busy too respond.\nPlease close any open dialogs and retry."),
+                //  If we get here, it means that the wxWidgets single-instance-detect logic found the lock file,
+                //  And so thinks another instance is running. But that instance is not reachable, for some reason.
+                //  So, the safe thing to do is delete the lockfile, and exit.  Next start will proceed normally.
+                //  This may leave a zombie OpenCPN, but at least O starts.
+                wxString lockFile = wxString(g_Platform->GetPrivateDataDir() + separator + _T("_OpenCPN_SILock"));
+                if(wxFileExists(lockFile))
+                    wxRemoveFile(lockFile);
+                
+                wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy too respond.\nPlease retry."),
                     wxT("OpenCPN"), wxICON_INFORMATION|wxOK);
             }
             delete client;
