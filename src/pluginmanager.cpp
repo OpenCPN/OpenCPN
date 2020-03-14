@@ -48,6 +48,8 @@
 #include <wx/app.h>
 #include <wx/hashset.h>
 #include <wx/hashmap.h>
+#include <wx/uri.h>
+
 #ifndef __WXMSW__
 #include <cxxabi.h>
 #endif // __WXMSW__
@@ -425,18 +427,50 @@ static void run_update_dialog(PluginListPanel* parent,
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
-    auto downloader = new GuiDownloader(parent_dlg, update);
-    downloader->run(parent_dlg);
+    
+    auto pluginHandler = PluginHandler::getInstance();
+    bool cacheResult = pluginHandler->installPluginFromCache( update );
+            
+    if(!cacheResult){
+        auto downloader = new GuiDownloader(parent_dlg, update);
+        std::string tempTarballPath = downloader->run(parent_dlg);
+        
+        // Provisional error check
+        bool bOK = true;
+        std::string manifestPath =
+            PluginHandler::fileListPath(update.name);
+        if(!isRegularFile(manifestPath.c_str())) {
+            wxLogMessage("Installation of %s failed",  update.name.c_str());
+            PluginHandler::cleanup(manifestPath, update.name);
+            bOK = false;
+        }
 
-    // Provisional error check
-    std::string manifestPath =
-        PluginHandler::fileListPath(update.name);
-    if(!isRegularFile(manifestPath.c_str())) {
-        wxLogMessage("Installation of %s failed",  update.name.c_str());
-        PluginHandler::cleanup(manifestPath, update.name);
+        //  On successful installation, copy the temp tarball to the local cache
+        if(bOK){
+            wxURI uri( wxString(update.tarball_url.c_str()));
+            wxFileName fn(uri.GetPath());
+            wxString tarballFile = fn.GetFullName();
+            wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
+            wxString sep = _T("/");
+            if( !wxDirExists(cacheDir) )
+                wxMkdir( cacheDir);
+            cacheDir += sep + wxString(_T("cache"));
+            if( !wxDirExists(cacheDir) )
+                wxMkdir( cacheDir);
+            cacheDir += sep + wxString(_T("tarballs"));
+            if( !wxDirExists(cacheDir) )
+                wxMkdir( cacheDir);
+    
+            wxString destination = cacheDir + _T("/") + tarballFile;
+            if(wxFileExists(wxString( tempTarballPath.c_str()))){
+                wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
+                wxCopyFile( wxString( tempTarballPath.c_str()), destination);
+                remove(tempTarballPath.c_str());
+            }
+        }
     }
-
-    //  Reload all plugins, which will bring in the action results.
+            
+        //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
     parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
     //wxString name(plugin);

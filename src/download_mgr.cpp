@@ -206,26 +206,32 @@ class InstallButton: public wxPanel
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
             wxLogMessage("Installing %s", m_metadata.name.c_str());
-            auto downloader = new GuiDownloader(this, m_metadata);
-            downloader->run(this);
-            auto pic = PlugInByName(m_metadata.name,
-                                    g_pi_manager->GetPlugInArray());
-            if (!pic) {
-                wxLogMessage("Installation of %s failed",
-                             m_metadata.name.c_str());
-                return;
+            
+            auto pluginHandler = PluginHandler::getInstance();
+            bool cacheResult = pluginHandler->installPluginFromCache( m_metadata );
+            
+            if(!cacheResult){
+                auto downloader = new GuiDownloader(this, m_metadata);
+                downloader->run(this);
+                auto pic = PlugInByName(m_metadata.name,
+                                        g_pi_manager->GetPlugInArray());
+                if (!pic) {
+                    wxLogMessage("Installation of %s failed",
+                                m_metadata.name.c_str());
+                    return;
+                }
+                auto upwards = GetParent()->GetParent()->GetParent();
+                auto main_window = dynamic_cast<PluginDownloadDialog*>(upwards);
+                wxASSERT(main_window != 0);
+                auto listPanels =
+                    dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
+                wxASSERT(listPanels != 0);
+                listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+                auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();
+                auto btn = dynamic_cast<wxButton*>(window);
+                wxASSERT(btn != 0);
+                btn->SetLabel(_("Reinstall"));
             }
-            auto upwards = GetParent()->GetParent()->GetParent();
-            auto main_window = dynamic_cast<PluginDownloadDialog*>(upwards);
-            wxASSERT(main_window != 0);
-            auto listPanels =
-                dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
-            wxASSERT(listPanels != 0);
-            listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();
-            auto btn = dynamic_cast<wxButton*>(window);
-            wxASSERT(btn != 0);
-            btn->SetLabel(_("Reinstall"));
         }
 
     private:
@@ -509,7 +515,7 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
         {}
 
-void GuiDownloader::run(wxWindow* parent)
+std::string GuiDownloader::run(wxWindow* parent)
 {
             auto pluginHandler = PluginHandler::getInstance();
             long size = get_filesize();
@@ -523,13 +529,13 @@ void GuiDownloader::run(wxWindow* parent)
             if (!ok) {
                 delete m_dialog;
                 showErrorDialog("Download error");
-                return;
+                return "";
             }
             
             // Download aborted?
             if (m_dialog == 0) {
                 showErrorDialog("Download aborted");
-                return;
+                return "";
             } else {
                 delete m_dialog;
             }
@@ -539,7 +545,7 @@ void GuiDownloader::run(wxWindow* parent)
             ok = pluginHandler->installPlugin(m_plugin, path);
             if (!ok) {
                 showErrorDialog("Installation error");
-                return;
+                return "";
             }
 #if 0            
             auto pic = PlugInByName(m_plugin.name,
@@ -548,7 +554,7 @@ void GuiDownloader::run(wxWindow* parent)
   bool pic = true;
             if (!pic) {
                 showErrorDialog("Installation verification error");
-                return;
+                return "";
             }
             else {
                 dlg = new wxMessageDialog(
@@ -558,6 +564,7 @@ void GuiDownloader::run(wxWindow* parent)
                         _("Installation complete"),
                         wxOK | wxCENTRE | wxICON_INFORMATION);
                 dlg->ShowModal();
+                return path;
             }
 }
 

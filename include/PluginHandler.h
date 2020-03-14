@@ -118,6 +118,9 @@ class PluginHandler {
 	/** Uninstall an installed plugin. */
         bool uninstall(const std::string plugin);
 
+         /** Install plugin tarball from local cache. */
+        bool installPluginFromCache( PluginMetadata plugin );
+
         std::string getLastErrorMsg() { return last_error_msg; }
 
         CatalogData *GetCatalogData(){ return &catalogData; }

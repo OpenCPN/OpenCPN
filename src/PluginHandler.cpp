@@ -37,6 +37,7 @@
 #include <wx/jsonreader.h>
 #include <wx/string.h>
 #include <wx/file.h>
+#include <wx/uri.h>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -758,7 +759,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
         PluginHandler::cleanup(filelist, plugin.name);
         return false;
     }
-    remove(path.c_str());
+    //remove(path.c_str());
     saveFilelist(filelist, plugin.name);
     saveDirlist(plugin.name);
     saveVersion(plugin.name, plugin.version);
@@ -836,4 +837,47 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
 
     return true;
+}
+
+bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
+{
+    // Look for the desired file
+    wxURI uri( wxString(plugin.tarball_url.c_str()));
+    wxFileName fn(uri.GetPath());
+    wxString tarballFile = fn.GetFullName();
+    wxString sep = _T("/");
+    wxString cacheFile = g_Platform->GetPrivateDataDir() + sep + _T("plugins")
+                            + sep + _T("cache") + sep + _T("tarballs")
+                            +sep + tarballFile;
+ 
+   if(wxFileExists( cacheFile)){
+        wxLogMessage("Installing %s from local cache",  tarballFile.c_str());
+        bool bOK = installPlugin( plugin, cacheFile.ToStdString());
+        if(!bOK){
+            wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
+            auto dlg = new wxMessageDialog(
+                    NULL,
+                    "",
+                    _("Installation error"),
+                    wxOK | wxCENTRE | wxICON_ERROR);
+            std::string text = "Please check system log for more info.";
+            dlg->SetMessage(text);
+            dlg->ShowModal();
+            dlg->Destroy();
+
+            return false;
+        }
+        
+        wxMessageDialog *dlg = new wxMessageDialog(
+            NULL,
+            plugin.name + " " + plugin.version
+            + _(" successfully installed from cache"),
+             _("Installation complete"),
+             wxOK | wxCENTRE | wxICON_INFORMATION);
+        dlg->ShowModal();
+        dlg->Destroy();
+        return true;
+   }
+ 
+   return false;
 }
