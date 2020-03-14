@@ -5093,8 +5093,10 @@ void MyFrame::ActivateMOB( void )
     //    The MOB point
     wxDateTime mob_time = wxDateTime::Now();
     wxString mob_label( _( "MAN OVERBOARD" ) );
-    mob_label += _T(" at ");
+    mob_label += _(" at ");
     mob_label += mob_time.FormatTime();
+    mob_label += _(" on ");
+    mob_label += mob_time.FormatISODate();
 
     RoutePoint *pWP_MOB = new RoutePoint( gLat, gLon, _T ( "mob" ), mob_label, wxEmptyString );
     pWP_MOB->m_bKeepXRoute = true;
@@ -5151,9 +5153,9 @@ void MyFrame::ActivateMOB( void )
     RefreshAllCanvas( false );
 
     wxString mob_message( _( "MAN OVERBOARD" ) );
-    mob_message += _T(" Time: ");
+    mob_message += _(" Time: ");
     mob_message += mob_time.Format();
-    mob_message += _T("  Position: ");
+    mob_message += _("  Position: ");
     mob_message += toSDMM( 1, gLat );
     mob_message += _T("   ");
     mob_message += toSDMM( 2, gLon );
@@ -9530,8 +9532,10 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     //    The MOB point
     wxDateTime mob_time = wxDateTime::Now();
     wxString mob_label( _( "AIS MAN OVERBOARD" ) );
-    mob_label += _T(" at ");
+    mob_label += _(" at ");
     mob_label += mob_time.FormatTime();
+    mob_label += _(" on ");
+    mob_label += mob_time.FormatISODate();
 
     RoutePoint *pWP_MOB = new RoutePoint( ptarget->Lat, ptarget->Lon, _T ( "mob" ), mob_label, wxEmptyString );
     pWP_MOB->m_bKeepXRoute = true;
@@ -9582,13 +9586,13 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     RefreshAllCanvas( false );
 
     wxString mob_message( _( "AIS MAN OVERBOARD" ) );
-    mob_message += _T(" Time: ");
+    mob_message += _(" Time: ");
     mob_message += mob_time.Format();
-    mob_message += _T("  Ownship Position: ");
+    mob_message += _("  Ownship Position: ");
     mob_message += toSDMM( 1, gLat );
     mob_message += _T("   ");
     mob_message += toSDMM( 2, gLon );
-    mob_message += _T("  MOB Position: ");
+    mob_message += _("  MOB Position: ");
     mob_message += toSDMM( 1, ptarget->Lat );
     mob_message += _T("   ");
     mob_message += toSDMM( 2, ptarget->Lon );
@@ -9626,13 +9630,13 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
         wxDateTime mob_time = wxDateTime::Now();
 
         wxString mob_message( _( "AIS MAN OVERBOARD UPDATE" ) );
-        mob_message += _T(" Time: ");
+        mob_message += _(" Time: ");
         mob_message += mob_time.Format();
-        mob_message += _T("  Ownship Position: ");
+        mob_message += _("  Ownship Position: ");
         mob_message += toSDMM( 1, gLat );
         mob_message += _T("   ");
         mob_message += toSDMM( 2, gLon );
-        mob_message += _T("  MOB Position: ");
+        mob_message += _("  MOB Position: ");
         mob_message += toSDMM( 1, ptarget->Lat );
         mob_message += _T("   ");
         mob_message += toSDMM( 2, ptarget->Lon );
