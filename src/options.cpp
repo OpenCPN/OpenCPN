@@ -4336,17 +4336,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     depShalRow->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depShalRow->Add(m_depthUnitsShal, inputFlags);
-
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")),
-                       labelFlags);
-    wxBoxSizer* depSafeRow = new wxBoxSizer(wxHORIZONTAL);
-    optionsColumn->Add(depSafeRow);
-    m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                                 wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
-    depSafeRow->Add(m_SafetyCtl, inputFlags);
-    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
-    depSafeRow->Add(m_depthUnitsSafe, inputFlags);
-
+        
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")),
                        labelFlags);
     wxBoxSizer* depDeepRow = new wxBoxSizer(wxHORIZONTAL);
@@ -4356,6 +4346,19 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     depDeepRow->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
+    
+    // One row spacer
+    optionsColumn->Add(0, border_size * 4); optionsColumn->Add(0, border_size * 4);
+    
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")),
+        labelFlags);
+    wxBoxSizer* depSafeRow = new wxBoxSizer(wxHORIZONTAL);
+    optionsColumn->Add(depSafeRow);
+    m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
+        wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
+    depSafeRow->Add(m_SafetyCtl, inputFlags);
+    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters. "));
+    depSafeRow->Add(m_depthUnitsSafe, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
@@ -4546,20 +4549,22 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     DepthColumn->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsShal, inputFlags);
-
-    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")), inputFlags);
-    m_SafetyCtl =  new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(m_fontHeight * 2, m_fontHeight), wxTE_RIGHT);
-    DepthColumn->Add(m_SafetyCtl, inputFlags);
-    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
-    DepthColumn->Add(m_depthUnitsSafe, inputFlags);
-
+        
     DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")), inputFlags);
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                         wxSize(m_fontHeight * 2, m_fontHeight), wxTE_CENTER);
     DepthColumn->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsDeep, inputFlags);
+    // one row spacer
+    optionsColumn->Add(0, border_size * 4); optionsColumn->Add(0, border_size * 4);
+
+    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")), inputFlags);
+    m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
+        wxSize(m_fontHeight * 2, m_fontHeight), wxTE_RIGHT);
+    DepthColumn->Add(m_SafetyCtl, inputFlags);
+    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
+    DepthColumn->Add(m_depthUnitsSafe, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
