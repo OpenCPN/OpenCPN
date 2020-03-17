@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <memory>
-#include "logger.h" /**/
+#include "logger.h" 
 
 #ifdef __linux__
 #include <unistd.h>
@@ -8036,8 +8036,8 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
                                    infile);
 
             if (ferror(infile)) {
-                LOG_INFO ("Read error: %s\n",
-                        strerror(errno));
+                LOG_INFO ("Read error: %s\i", errno);
+                      //  strerror(errno));
                 return false;
             }
 
@@ -8078,8 +8078,8 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
 
             if (fwrite(outbuf, 1, write_size, outfile)
                 != write_size) {
-                LOG_INFO ("Write error: %s\n",
-                        strerror(errno));
+                LOG_INFO ("Read error: %s\i", errno);
+                      //  strerror(errno));
                 return false;
             }
 
