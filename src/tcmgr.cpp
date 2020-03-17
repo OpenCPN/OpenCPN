@@ -37,6 +37,7 @@
 #include "dychart.h"
 #include "tcmgr.h"
 #include "georef.h"
+#include "logger.h"
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
@@ -1871,8 +1872,8 @@ static void chk_fread (void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t ret;
     ret = fread (ptr, size, nmemb, stream);
     if (ret != nmemb) {
-//        fprintf (stderr, "libtcd unexpected error: fread failed\n");
-//        fprintf (stderr, "nmemb = %lu, got %lu\n", nmemb, ret);
+//        LOG_ERROR ("libtcd unexpected error: fread failed\n");
+//        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
         abort();
     }
 }
@@ -1882,9 +1883,9 @@ static void chk_fwrite (const void *ptr, size_t size, size_t nmemb,
     size_t ret;
     ret = fwrite (ptr, size, nmemb, stream);
     if (ret != nmemb) {
-//        fprintf (stderr, "libtcd unexpected error: fwrite failed\n");
-//        fprintf (stderr, "nmemb = %lu, got %lu\n", nmemb, ret);
-//        fprintf (stderr, "The database is probably corrupt now.\n");
+//        LOG_ERROR ("libtcd unexpected error: fwrite failed\n");
+//        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
+//        LOG_ERROR ("The database is probably corrupt now.\n");
         abort();
     }
 }
@@ -1914,64 +1915,64 @@ void dump_tide_record (const TIDE_RECORD *rec)
 
     assert (rec);
 
-    fprintf (stderr, "\n\nRecord number = %d\n", rec->header.record_number);
-    fprintf (stderr, "Record size = %u\n", rec->header.record_size);
-    fprintf (stderr, "Record type = %u\n", rec->header.record_type);
-    fprintf (stderr, "Latitude = %f\n", rec->header.latitude);
-    fprintf (stderr, "Longitude = %f\n", rec->header.longitude);
-    fprintf (stderr, "Reference station = %d\n",
+    LOG_ERROR ("\n\nRecord number = %d\n", rec->header.record_number);
+    LOG_ERROR ("Record size = %u\n", rec->header.record_size);
+    LOG_ERROR ("Record type = %u\n", rec->header.record_type);
+    LOG_ERROR ("Latitude = %f\n", rec->header.latitude);
+    LOG_ERROR ("Longitude = %f\n", rec->header.longitude);
+    LOG_ERROR ("Reference station = %d\n",
              rec->header.reference_station);
-    fprintf (stderr, "Tzfile = %s\n", get_tzfile (rec->header.tzfile));
-    fprintf (stderr, "Name = %s\n", rec->header.name);
+    LOG_ERROR ("Tzfile = %s\n", get_tzfile (rec->header.tzfile));
+    LOG_ERROR ("Name = %s\n", rec->header.name);
 
-    fprintf (stderr, "Country = %s\n", get_country (rec->country));
-    fprintf (stderr, "Source = %s\n", rec->source);
-    fprintf (stderr, "Restriction = %s\n", get_restriction (rec->restriction));
-    fprintf (stderr, "Comments = %s\n", rec->comments);
-    fprintf (stderr, "Notes = %s\n", rec->notes);
-    fprintf (stderr, "Legalese = %s\n",
+    LOG_ERROR ("Country = %s\n", get_country (rec->country));
+    LOG_ERROR ("Source = %s\n", rec->source);
+    LOG_ERROR ("Restriction = %s\n", get_restriction (rec->restriction));
+    LOG_ERROR ("Comments = %s\n", rec->comments);
+    LOG_ERROR ("Notes = %s\n", rec->notes);
+    LOG_ERROR ("Legalese = %s\n",
              get_legalese (rec->legalese));
-    fprintf (stderr, "Station ID context = %s\n", rec->station_id_context);
-    fprintf (stderr, "Station ID = %s\n", rec->station_id);
-    fprintf (stderr, "Date imported = %d\n", rec->date_imported);
-    fprintf (stderr, "Xfields = %s\n", rec->xfields);
+    LOG_ERROR ("Station ID context = %s\n", rec->station_id_context);
+    LOG_ERROR ("Station ID = %s\n", rec->station_id);
+    LOG_ERROR ("Date imported = %d\n", rec->date_imported);
+    LOG_ERROR ("Xfields = %s\n", rec->xfields);
 
-    fprintf (stderr, "Direction units = %s\n",
+    LOG_ERROR ("Direction units = %s\n",
              get_dir_units (rec->direction_units));
-    fprintf (stderr, "Min direction = %d\n", rec->min_direction);
-    fprintf (stderr, "Max direction = %d\n", rec->max_direction);
-    fprintf (stderr, "Level units = %s\n", get_level_units (rec->level_units));
+    LOG_ERROR ("Min direction = %d\n", rec->min_direction);
+    LOG_ERROR ("Max direction = %d\n", rec->max_direction);
+    LOG_ERROR ("Level units = %s\n", get_level_units (rec->level_units));
 
     if (rec->header.record_type == REFERENCE_STATION)
     {
-        fprintf (stderr, "Datum offset = %f\n", rec->datum_offset);
-        fprintf (stderr, "Datum = %s\n", get_datum (rec->datum));
-        fprintf (stderr, "Zone offset = %d\n", rec->zone_offset);
-        fprintf (stderr, "Expiration date = %d\n", rec->expiration_date);
-        fprintf (stderr, "Months on station = %d\n", rec->months_on_station);
-        fprintf (stderr, "Last date on station = %d\n",
+        LOG_ERROR ("Datum offset = %f\n", rec->datum_offset);
+        LOG_ERROR ("Datum = %s\n", get_datum (rec->datum));
+        LOG_ERROR ("Zone offset = %d\n", rec->zone_offset);
+        LOG_ERROR ("Expiration date = %d\n", rec->expiration_date);
+        LOG_ERROR ("Months on station = %d\n", rec->months_on_station);
+        LOG_ERROR ("Last date on station = %d\n",
                  rec->last_date_on_station);
-        fprintf (stderr, "Confidence = %d\n", rec->confidence);
+        LOG_ERROR ("Confidence = %d\n", rec->confidence);
         for (i = 0 ; i < hd.pub.constituents ; ++i)
         {
             if (rec->amplitude[i] != 0.0 || rec->epoch[i] != 0.0)
             {
-                fprintf (stderr, "Amplitude[%d] = %f\n", i, rec->amplitude[i]);
-                fprintf (stderr, "Epoch[%d] = %f\n", i, rec->epoch[i]);
+                LOG_ERROR ("Amplitude[%d] = %f\n", i, rec->amplitude[i]);
+                LOG_ERROR ("Epoch[%d] = %f\n", i, rec->epoch[i]);
             }
         }
     }
 
     else if (rec->header.record_type == SUBORDINATE_STATION)
     {
-        fprintf (stderr, "Min time add = %d\n", rec->min_time_add);
-        fprintf (stderr, "Min level add = %f\n", rec->min_level_add);
-        fprintf (stderr, "Min level multiply = %f\n", rec->min_level_multiply);
-        fprintf (stderr, "Max time add = %d\n", rec->max_time_add);
-        fprintf (stderr, "Max level add = %f\n", rec->max_level_add);
-        fprintf (stderr, "Max level multiply = %f\n", rec->max_level_multiply);
-        fprintf (stderr, "Flood begins = %d\n", rec->flood_begins);
-        fprintf (stderr, "Ebb begins = %d\n", rec->ebb_begins);
+        LOG_ERROR ("Min time add = %d\n", rec->min_time_add);
+        LOG_ERROR ("Min level add = %f\n", rec->min_level_add);
+        LOG_ERROR ("Min level multiply = %f\n", rec->min_level_multiply);
+        LOG_ERROR ("Max time add = %d\n", rec->max_time_add);
+        LOG_ERROR ("Max level add = %f\n", rec->max_level_add);
+        LOG_ERROR ("Max level multiply = %f\n", rec->max_level_multiply);
+        LOG_ERROR ("Flood begins = %d\n", rec->flood_begins);
+        LOG_ERROR ("Ebb begins = %d\n", rec->ebb_begins);
     }
 }
 
@@ -1987,7 +1988,7 @@ void dump_tide_record (const TIDE_RECORD *rec)
 
 static void write_protect () {
     if (hd.pub.major_rev < LIBTCD_MAJOR_REV) {
-        fprintf (stderr, "libtcd error: can't modify TCD files created by earlier version.  Use\nrewrite_tide_db to upgrade the TCD file.\n");
+        LOG_ERROR ("libtcd error: can't modify TCD files created by earlier version.  Use\nrewrite_tide_db to upgrade the TCD file.\n");
         exit (-1);
     }
 }
@@ -2015,7 +2016,7 @@ static void write_protect () {
 const NV_CHAR *get_country (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.countries) return (hd.country[num]);
@@ -2043,7 +2044,7 @@ const NV_CHAR *get_country (NV_INT32 num)
 const NV_CHAR *get_tzfile (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.tzfiles) return (hd.tzfile[num]);
@@ -2071,7 +2072,7 @@ const NV_CHAR *get_tzfile (NV_INT32 num)
 const NV_CHAR *get_station (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.number_of_records) return (tindex[num].name);
@@ -2100,7 +2101,7 @@ const NV_CHAR *get_station (NV_INT32 num)
 const NV_CHAR *get_constituent (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.constituents) return (hd.constituent[num]);
@@ -2129,7 +2130,7 @@ const NV_CHAR *get_constituent (NV_INT32 num)
 const NV_CHAR *get_level_units (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.level_unit_types) return (hd.level_unit[num]);
@@ -2158,7 +2159,7 @@ const NV_CHAR *get_level_units (NV_INT32 num)
 const NV_CHAR *get_dir_units (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.dir_unit_types) return (hd.dir_unit[num]);
@@ -2187,7 +2188,7 @@ const NV_CHAR *get_dir_units (NV_INT32 num)
 const NV_CHAR *get_restriction (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.restriction_types)
@@ -2241,7 +2242,7 @@ NV_CHAR *get_pedigree (NV_INT32 num) {
 const NV_CHAR *get_datum (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.datum_types) return (hd.datum[num]);
@@ -2255,7 +2256,7 @@ DWF 2004-10-14
 const NV_CHAR *get_legalese (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     if (num >= 0 && num < (NV_INT32)hd.pub.legaleses) return (hd.legalese[num]);
@@ -2284,7 +2285,7 @@ const NV_CHAR *get_legalese (NV_INT32 num)
 NV_FLOAT64 get_speed (NV_INT32 num)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents);
@@ -2314,7 +2315,7 @@ NV_FLOAT64 get_speed (NV_INT32 num)
 NV_FLOAT32 get_equilibrium (NV_INT32 num, NV_INT32 year)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents && year >= 0 && year < (NV_INT32)hd.pub.number_of_years);
@@ -2327,7 +2328,7 @@ NV_FLOAT32 get_equilibrium (NV_INT32 num, NV_INT32 year)
 \*****************************************************************************/
 NV_FLOAT32 *get_equilibriums (NV_INT32 num) {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents);
@@ -2357,7 +2358,7 @@ NV_FLOAT32 *get_equilibriums (NV_INT32 num) {
 NV_FLOAT32 get_node_factor (NV_INT32 num, NV_INT32 year)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents && year >= 0 && year < (NV_INT32)hd.pub.number_of_years);
@@ -2370,7 +2371,7 @@ NV_FLOAT32 get_node_factor (NV_INT32 num, NV_INT32 year)
 \*****************************************************************************/
 NV_FLOAT32 *get_node_factors (NV_INT32 num) {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents);
@@ -2404,7 +2405,7 @@ NV_FLOAT32 *get_node_factors (NV_INT32 num) {
 NV_BOOL get_partial_tide_record (NV_INT32 num, TIDE_STATION_HEADER *rec)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return NVFalse;
     }
 
@@ -2643,7 +2644,7 @@ NV_CHAR *ret_date (NV_U_INT32 date) {
 DB_HEADER_PUBLIC get_tide_db_header ()
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit(-1);
     }
     return (hd.pub);
@@ -2657,11 +2658,11 @@ DB_HEADER_PUBLIC get_tide_db_header ()
 static void boundscheck_monologue (const NV_CHAR *string) {
     assert (string);
     if (strlen(string) >= MONOLOGUE_LENGTH) {
-//        fprintf (stderr, "libtcd fatal error:  static buffer size exceeded\n");
-//        fprintf (stderr, "Buffer is size MONOLOGUE_LENGTH (%u)\n",
+//        LOG_ERROR ("libtcd fatal error:  static buffer size exceeded\n");
+//        LOG_ERROR ("Buffer is size MONOLOGUE_LENGTH (%u)\n",
 //                 MONOLOGUE_LENGTH);
-//        fprintf (stderr, "String is length %lu\n", strlen(string));
-//        fprintf (stderr, "The offending string is:\n%s\n", string);
+//        LOG_ERROR ("String is length %lu\n", strlen(string));
+//        LOG_ERROR ("The offending string is:\n%s\n", string);
         exit (-1);
     }
 }
@@ -2674,11 +2675,11 @@ static void boundscheck_monologue (const NV_CHAR *string) {
 static void boundscheck_oneliner (const NV_CHAR *string) {
     assert (string);
     if (strlen(string) >= ONELINER_LENGTH) {
-//        fprintf (stderr, "libtcd fatal error:  static buffer size exceeded\n");
-//        fprintf (stderr, "Buffer is size ONELINER_LENGTH (%u)\n",
+//        LOG_ERROR ("libtcd fatal error:  static buffer size exceeded\n");
+//        LOG_ERROR ("Buffer is size ONELINER_LENGTH (%u)\n",
 //                 ONELINER_LENGTH);
-//        fprintf (stderr, "String is length %lu\n", strlen(string));
-//        fprintf (stderr, "The offending string is:\n%s\n", string);
+//        LOG_ERROR ("String is length %lu\n", strlen(string));
+//        LOG_ERROR ("The offending string is:\n%s\n", string);
         exit (-1);
     }
 }
@@ -2762,7 +2763,7 @@ NV_INT32 search_station (const NV_CHAR *string)
     NV_CHAR               name[ONELINER_LENGTH], search[ONELINER_LENGTH];
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -2813,7 +2814,7 @@ NV_INT32 find_station (const NV_CHAR *name)
     NV_U_INT32              i;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -2852,7 +2853,7 @@ NV_INT32 find_tzfile (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -2897,7 +2898,7 @@ NV_INT32 find_country (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -2942,7 +2943,7 @@ NV_INT32 find_level_units (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -2987,7 +2988,7 @@ NV_INT32 find_dir_units (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -3057,7 +3058,7 @@ NV_INT32 find_datum (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -3087,7 +3088,7 @@ NV_INT32 find_legalese (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -3132,7 +3133,7 @@ NV_INT32 find_constituent (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -3172,7 +3173,7 @@ NV_INT32 find_restriction (const NV_CHAR *name)
     NV_CHAR     *temp;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -3212,13 +3213,13 @@ NV_INT32 find_restriction (const NV_CHAR *name)
 void set_speed (NV_INT32 num, NV_FLOAT64 value)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents);
     if (value < 0.0) {
-        fprintf (stderr, "libtcd set_speed: somebody tried to set a negative speed (%f)\n", value);
+        LOG_ERROR ("libtcd set_speed: somebody tried to set a negative speed (%f)\n", value);
         exit (-1);
     }
     hd.speed[num] = value;
@@ -3249,7 +3250,7 @@ void set_speed (NV_INT32 num, NV_FLOAT64 value)
 void set_equilibrium (NV_INT32 num, NV_INT32 year, NV_FLOAT32 value)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
@@ -3282,13 +3283,13 @@ void set_equilibrium (NV_INT32 num, NV_INT32 year, NV_FLOAT32 value)
 void set_node_factor (NV_INT32 num, NV_INT32 year, NV_FLOAT32 value)
 {
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
     assert (num >= 0 && num < (NV_INT32)hd.pub.constituents && year >= 0 && year < (NV_INT32)hd.pub.number_of_years);
     if (value <= 0.0) {
-        fprintf (stderr, "libtcd set_node_factor: somebody tried to set a negative or zero node factor (%f)\n", value);
+        LOG_ERROR ("libtcd set_node_factor: somebody tried to set a negative or zero node factor (%f)\n", value);
         exit (-1);
     }
     hd.node_factor[num][year] = value;
@@ -3344,27 +3345,24 @@ NV_INT32 add_tzfile (const NV_CHAR *name, DB_HEADER_PUBLIC *db)
     NV_CHAR *c_name;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
 
     assert (name);
     if (strlen(name) + 1 > hd.tzfile_size) {
-        fprintf (stderr, "libtcd error: tzfile exceeds size limit (%u).\n",
+        LOG_ERROR ("libtcd error: tzfile exceeds size limit (%u).\n",
                  hd.tzfile_size);
-        fprintf (stderr, "The offending input is: %s\n", name);
+        LOG_ERROR ("The offending input is: %s\n", name);
         exit (-1);
     }
 
     if (hd.pub.tzfiles == hd.max_tzfiles)
     {
-        fprintf (stderr,
-                 "You have exceeded the maximum number of tzfile types!\n");
-        fprintf (stderr,
-                 "You cannot add any new tzfile types.\n");
-        fprintf (stderr,
-                 "Modify the DEFAULT_TZFILE_BITS and rebuild the database.\n");
+        LOG_ERROR ("You have exceeded the maximum number of tzfile types!\n");
+        LOG_ERROR ("You cannot add any new tzfile types.\n");
+        LOG_ERROR ("Modify the DEFAULT_TZFILE_BITS and rebuild the database.\n");
         exit (-1);
     }
 
@@ -3410,27 +3408,24 @@ NV_INT32 add_country (const NV_CHAR *name, DB_HEADER_PUBLIC *db)
     NV_CHAR *c_name;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
 
     assert (name);
     if (strlen(name) + 1 > hd.country_size) {
-        fprintf (stderr, "libtcd error: country exceeds size limit (%u).\n",
+        LOG_ERROR ("libtcd error: country exceeds size limit (%u).\n",
                  hd.country_size);
-        fprintf (stderr, "The offending input is: %s\n", name);
+        LOG_ERROR ("The offending input is: %s\n", name);
         exit (-1);
     }
 
     if (hd.pub.countries == hd.max_countries)
     {
-        fprintf (stderr,
-                 "You have exceeded the maximum number of country names!\n");
-        fprintf (stderr,
-                 "You cannot add any new country names.\n");
-        fprintf (stderr,
-                 "Modify the DEFAULT_COUNTRY_BITS and rebuild the database.\n");
+        LOG_ERROR ("You have exceeded the maximum number of country names!\n");
+        LOG_ERROR ("You cannot add any new country names.\n");
+        LOG_ERROR ("Modify the DEFAULT_COUNTRY_BITS and rebuild the database.\n");
         exit (-1);
     }
 
@@ -3476,27 +3471,24 @@ NV_INT32 add_datum (const NV_CHAR *name, DB_HEADER_PUBLIC *db)
     NV_CHAR *c_name;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
 
     assert (name);
     if (strlen(name) + 1 > hd.datum_size) {
-        fprintf (stderr, "libtcd error: datum exceeds size limit (%u).\n",
+        LOG_ERROR ("libtcd error: datum exceeds size limit (%u).\n",
                  hd.datum_size);
-        fprintf (stderr, "The offending input is: %s\n", name);
+        LOG_ERROR ("The offending input is: %s\n", name);
         exit (-1);
     }
 
     if (hd.pub.datum_types == hd.max_datum_types)
     {
-        fprintf (stderr,
-                 "You have exceeded the maximum number of datum types!\n");
-        fprintf (stderr,
-                 "You cannot add any new datum types.\n");
-        fprintf (stderr,
-                 "Modify the DEFAULT_DATUM_BITS and rebuild the database.\n");
+        LOG_ERROR ("You have exceeded the maximum number of datum types!\n");
+        LOG_ERROR ("You cannot add any new datum types.\n");
+        LOG_ERROR ("Modify the DEFAULT_DATUM_BITS and rebuild the database.\n");
         exit (-1);
     }
 
@@ -3527,27 +3519,24 @@ NV_INT32 add_legalese (const NV_CHAR *name, DB_HEADER_PUBLIC *db)
     NV_CHAR *c_name;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
 
     assert (name);
     if (strlen(name) + 1 > hd.legalese_size) {
-        fprintf (stderr, "libtcd error: legalese exceeds size limit (%u).\n",
+        LOG_ERROR ("libtcd error: legalese exceeds size limit (%u).\n",
                  hd.legalese_size);
-        fprintf (stderr, "The offending input is: %s\n", name);
+        LOG_ERROR ("The offending input is: %s\n", name);
         exit (-1);
     }
 
     if (hd.pub.legaleses == hd.max_legaleses)
     {
-        fprintf (stderr,
-                 "You have exceeded the maximum number of legaleses!\n");
-        fprintf (stderr,
-                 "You cannot add any new legaleses.\n");
-        fprintf (stderr,
-                 "Modify the DEFAULT_LEGALESE_BITS and rebuild the database.\n");
+        LOG_ERROR ("You have exceeded the maximum number of legaleses!\n");
+        LOG_ERROR ("You cannot add any new legaleses.\n");
+        LOG_ERROR ("Modify the DEFAULT_LEGALESE_BITS and rebuild the database.\n");
         exit (-1);
     }
 
@@ -3593,27 +3582,24 @@ NV_INT32 add_restriction (const NV_CHAR *name, DB_HEADER_PUBLIC *db)
     NV_CHAR *c_name;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
 
     assert (name);
     if (strlen(name) + 1 > hd.restriction_size) {
-        fprintf (stderr, "libtcd error: restriction exceeds size limit (%u).\n",
+        LOG_ERROR ("libtcd error: restriction exceeds size limit (%u).\n",
                  hd.restriction_size);
-        fprintf (stderr, "The offending input is: %s\n", name);
+        LOG_ERROR ("The offending input is: %s\n", name);
         exit (-1);
     }
 
     if (hd.pub.restriction_types == hd.max_restriction_types)
     {
-        fprintf (stderr,
-                 "You have exceeded the maximum number of restriction types!\n");
-        fprintf (stderr,
-                 "You cannot add any new restriction types.\n");
-        fprintf (stderr,
-                 "Modify the DEFAULT_RESTRICTION_BITS and rebuild the database.\n");
+        LOG_ERROR ("You have exceeded the maximum number of restriction types!\n");
+        LOG_ERROR ("You cannot add any new restriction types.\n");
+        LOG_ERROR ("Modify the DEFAULT_RESTRICTION_BITS and rebuild the database.\n");
         exit (-1);
     }
 
@@ -3811,7 +3797,7 @@ static NV_U_INT32 header_checksum ()
     };
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
 
@@ -3866,7 +3852,7 @@ static NV_U_INT32 old_header_checksum ()
     NV_U_BYTE           *buf;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
 
@@ -3943,7 +3929,7 @@ static void write_tide_db_header ()
     NV_U_BYTE           *buf, checksum_c[4];
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
     write_protect();
@@ -4379,8 +4365,8 @@ static void unpack_string (NV_U_BYTE *buf, NV_U_INT32 bufsize, NV_U_INT32 *pos,
         } else if (i == outbuflen) {
             outbuf[i] = '\0';
             if (c) {
-                fprintf (stderr, "libtcd warning: truncating overlong %s\n", desc);
-                fprintf (stderr, "The offending string starts with:\n%s\n", outbuf);
+                LOG_ERROR ("libtcd warning: truncating overlong %s\n", desc);
+                LOG_ERROR ("The offending string starts with:\n%s\n", outbuf);
             }
         }
     }
@@ -4476,7 +4462,7 @@ static NV_INT32 read_partial_tide_record (NV_INT32 num, TIDE_RECORD *rec)
     NV_U_INT32              maximum_possible_size, pos;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
 
@@ -4533,7 +4519,7 @@ static NV_BOOL read_tide_db_header ()
     TIDE_RECORD         rec;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         exit (-1);
     }
 
@@ -4550,10 +4536,10 @@ static NV_BOOL read_tide_db_header ()
     {
         if (strlen (varin) == ONELINER_LENGTH-1) {
             if (varin[ONELINER_LENGTH-2] != '\n') {
-                fprintf (stderr, "libtcd error:  header line too long, begins with:\n");
-                fprintf (stderr, "%s\n", varin);
-                fprintf (stderr, "in file %s\n", filename);
-                fprintf (stderr, "Configured limit is %u\n", ONELINER_LENGTH-1);
+                LOG_ERROR ("libtcd error:  header line too long, begins with:\n");
+                LOG_ERROR ("%s\n", varin);
+                LOG_ERROR ("in file %s\n", filename);
+                LOG_ERROR ("Configured limit is %u\n", ONELINER_LENGTH-1);
                 fclose (fp);
                 return NVFalse;
             }
@@ -4564,9 +4550,9 @@ static NV_BOOL read_tide_db_header ()
         /* All other lines must be field = value */
         info = strchr (varin, '=');
         if (!info) {
-            fprintf (stderr, "libtcd error:  invalid tide db header line:\n");
-            fprintf (stderr, "%s", varin);
-            fprintf (stderr, "in file %s\n", filename);
+            LOG_ERROR ("libtcd error:  invalid tide db header line:\n");
+            LOG_ERROR ("%s", varin);
+            LOG_ERROR ("in file %s\n", filename);
             fclose (fp);
             return NVFalse;
         }
@@ -4579,17 +4565,17 @@ static NV_BOOL read_tide_db_header ()
                     strcpy ((char *)keys[i].address.cstr, clip_string(info));
                 else if (!strcmp (keys[i].datatype, "i32")) {
                     if (sscanf (info, "%d", keys[i].address.i32) != 1) {
-                        fprintf (stderr, "libtcd error:  invalid tide db header line:\n");
-                        fprintf (stderr, "%s", varin);
-                        fprintf (stderr, "in file %s\n", filename);
+                        LOG_ERROR ("libtcd error:  invalid tide db header line:\n");
+                        LOG_ERROR ("%s", varin);
+                        LOG_ERROR ("in file %s\n", filename);
                         fclose (fp);
                         return NVFalse;
                     }
                 } else if (!strcmp (keys[i].datatype, "ui32")) {
                     if (sscanf (info, "%u", keys[i].address.ui32) != 1) {
-                        fprintf (stderr, "libtcd error:  invalid tide db header line:\n");
-                        fprintf (stderr, "%s", varin);
-                        fprintf (stderr, "in file %s\n", filename);
+                        LOG_ERROR ("libtcd error:  invalid tide db header line:\n");
+                        LOG_ERROR ("%s", varin);
+                        LOG_ERROR ("in file %s\n", filename);
                         fclose (fp);
                         return NVFalse;
                     }
@@ -4603,16 +4589,16 @@ static NV_BOOL read_tide_db_header ()
 
     if (!strcmp (hd.pub.version, "NO VERSION"))
     {
-        fprintf (stderr, "libtcd error:  no version found in tide db header\n");
-        fprintf (stderr, "in file %s\n", filename);
+        LOG_ERROR ("libtcd error:  no version found in tide db header\n");
+        LOG_ERROR ("in file %s\n", filename);
         fclose (fp);
         return NVFalse;
     }
 
     /* If no major or minor rev, they're 0 (pre-1.99) */
     if (hd.pub.major_rev > LIBTCD_MAJOR_REV) {
-        fprintf (stderr, "libtcd error:  major revision in TCD file (%u) exceeds major revision of\n", hd.pub.major_rev);
-        fprintf (stderr, "libtcd (%u).  You must upgrade libtcd to read this file.\n", LIBTCD_MAJOR_REV);
+        LOG_ERROR ("libtcd error:  major revision in TCD file (%u) exceeds major revision of\n", hd.pub.major_rev);
+        LOG_ERROR ("libtcd (%u).  You must upgrade libtcd to read this file.\n", LIBTCD_MAJOR_REV);
         fclose (fp);
         return NVFalse;
     }
@@ -4629,17 +4615,15 @@ static NV_BOOL read_tide_db_header ()
     if (utemp != header_checksum ()) {
 #ifdef COMPAT114
         if (utemp != old_header_checksum ()) {
-            fprintf (stderr,
-                     "libtcd error:  header checksum error in file %s\n", filename);
-            fprintf (stderr, "Someone may have modified the ASCII portion of the header (don't do that),\n\
+            LOG_ERROR ("libtcd error:  header checksum error in file %s\n", filename);
+            LOG_ERROR ("Someone may have modified the ASCII portion of the header (don't do that),\n\
 or it may just be corrupt.\n");
             fclose (fp);
             return NVFalse;
         }
 #else
-        fprintf (stderr,
-                 "libtcd error:  header checksum error in file %s\n", filename);
-        fprintf (stderr, "Someone may have modified the ASCII portion of the header (don't do that),\n\
+        LOG_ERROR ("libtcd error:  header checksum error in file %s\n", filename);
+        LOG_ERROR ("Someone may have modified the ASCII portion of the header (don't do that),\n\
 or it may be an ancient pre-version-1.02 TCD file, or it may just be corrupt.\n\
 Pre-version-1.02 TCD files can be read by building libtcd with COMPAT114\n\
 defined.\n");
@@ -4917,8 +4901,8 @@ defined.\n");
 
     if (hd.speed_offset < 0 || hd.equilibrium_offset < 0 ||
             hd.node_offset < 0) {
-        fprintf (stderr, "libtcd WARNING:  File: %s\n", filename);
-        fprintf (stderr, "WARNING:  This TCD file was created by a pre-version-1.11 libtcd.\n\
+        LOG_ERROR ("libtcd WARNING:  File: %s\n", filename);
+        LOG_ERROR ("WARNING:  This TCD file was created by a pre-version-1.11 libtcd.\n\
 Versions of libtcd prior to 1.11 contained a serious bug that can result\n\
 in overflows in the speeds, equilibrium arguments, or node factors.  This\n\
 database should be rebuilt from the original data if possible.\n");
@@ -5161,7 +5145,7 @@ void close_tide_db ()
     NV_U_INT32 i;
 
     if (!fp) {
-        fprintf (stderr, "libtcd warning: close_tide_db called when no database open\n");
+        LOG_ERROR ("libtcd warning: close_tide_db called when no database open\n");
         return;
     }
 
@@ -5318,12 +5302,12 @@ NV_BOOL create_tide_db (const NV_CHAR *file, NV_U_INT32 constituents, NV_CHAR
     assert (node_factor);
     for (i = 0 ; i < constituents ; ++i) {
         if (speed[i] < 0.0) {
-            fprintf (stderr, "libtcd create_tide_db: somebody tried to set a negative speed (%f)\n", speed[i]);
+            LOG_ERROR ("libtcd create_tide_db: somebody tried to set a negative speed (%f)\n", speed[i]);
             return NVFalse;
         }
         for (j = 0 ; j < num_years ; ++j) {
             if (node_factor[i][j] <= 0.0) {
-                fprintf (stderr, "libtcd create_tide_db: somebody tried to set a negative or zero node factor (%f)\n", node_factor[i][j]);
+                LOG_ERROR ("libtcd create_tide_db: somebody tried to set a negative or zero node factor (%f)\n", node_factor[i][j]);
                 return NVFalse;
             }
         }
@@ -5660,7 +5644,7 @@ static NV_BOOL check_date (NV_U_INT32 date) {
 /*****************************************************************************\
   DWF 2004-10-13
   Returns true iff a record is valid enough to write.  Reports all problems
-  to stderr.  The checks are not designed to be airtight (e.g., if you
+  to LOG_ERROR.  The checks are not designed to be airtight (e.g., if you
   use 360 degrees instead of 0 we'll let it slide).
 
   Mild side effects may occur:
@@ -5671,7 +5655,7 @@ static NV_BOOL check_tide_record (TIDE_RECORD *rec) {
     NV_BOOL ret = NVTrue;
 
     if (!rec) {
-        fprintf (stderr, "libtcd error: null pointer passed to check_tide_record\n");
+        LOG_ERROR ("libtcd error: null pointer passed to check_tide_record\n");
         return NVFalse;
     }
 
@@ -5692,114 +5676,114 @@ static NV_BOOL check_tide_record (TIDE_RECORD *rec) {
 
     if (rec->header.latitude < -90.0 || rec->header.latitude > 90.0 ||
             rec->header.longitude < -180.0 || rec->header.longitude > 180.0) {
-        fprintf (stderr, "libtcd error: bad coordinates in tide record\n");
+        LOG_ERROR ("libtcd error: bad coordinates in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->header.tzfile < 0 || rec->header.tzfile >= (NV_INT32)hd.pub.tzfiles) {
-        fprintf (stderr, "libtcd error: bad tzfile in tide record\n");
+        LOG_ERROR ("libtcd error: bad tzfile in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->header.name[0] == '\0') {
-        fprintf (stderr, "libtcd error: null name in tide record\n");
+        LOG_ERROR ("libtcd error: null name in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->country < 0 || rec->country >= (NV_INT32)hd.pub.countries) {
-        fprintf (stderr, "libtcd error: bad country in tide record\n");
+        LOG_ERROR ("libtcd error: bad country in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->restriction >= hd.pub.restriction_types) {
-        fprintf (stderr, "libtcd error: bad restriction in tide record\n");
+        LOG_ERROR ("libtcd error: bad restriction in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->legalese >= hd.pub.legaleses) {
-        fprintf (stderr, "libtcd error: bad legalese in tide record\n");
+        LOG_ERROR ("libtcd error: bad legalese in tide record\n");
         ret = NVFalse;
     }
 
     if (!check_date (rec->date_imported)) {
-        fprintf (stderr, "libtcd error: bad date_imported in tide record\n");
+        LOG_ERROR ("libtcd error: bad date_imported in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->direction_units >= hd.pub.dir_unit_types) {
-        fprintf (stderr, "libtcd error: bad direction_units in tide record\n");
+        LOG_ERROR ("libtcd error: bad direction_units in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->min_direction < 0 || rec->min_direction > 361) {
-        fprintf (stderr, "libtcd error: min_direction out of range in tide record\n");
+        LOG_ERROR ("libtcd error: min_direction out of range in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->max_direction < 0 || rec->max_direction > 361) {
-        fprintf (stderr, "libtcd error: max_direction out of range in tide record\n");
+        LOG_ERROR ("libtcd error: max_direction out of range in tide record\n");
         ret = NVFalse;
     }
 
     if (rec->level_units >= hd.pub.level_unit_types) {
-        fprintf (stderr, "libtcd error: bad units in tide record\n");
+        LOG_ERROR ("libtcd error: bad units in tide record\n");
         ret = NVFalse;
     }
 
     switch (rec->header.record_type) {
     case REFERENCE_STATION:
         if (rec->header.reference_station != -1) {
-            fprintf (stderr, "libtcd error: type 1 record, reference_station != -1\n");
+            LOG_ERROR ("libtcd error: type 1 record, reference_station != -1\n");
             ret = NVFalse;
         }
 
         if (rec->datum_offset < -13421.7728 || rec->datum_offset > 13421.7727) {
-            fprintf (stderr, "libtcd error: datum_offset out of range in tide record\n");
+            LOG_ERROR ("libtcd error: datum_offset out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->datum < 0 || rec->datum >= (NV_INT32)hd.pub.datum_types) {
-            fprintf (stderr, "libtcd error: bad datum in tide record\n");
+            LOG_ERROR ("libtcd error: bad datum in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->zone_offset < -4096 || rec->zone_offset > 4095 ||
                 rec->zone_offset % 100 >= 60) {
-            fprintf (stderr, "libtcd error: bad zone_offset in tide record\n");
+            LOG_ERROR ("libtcd error: bad zone_offset in tide record\n");
             ret = NVFalse;
         }
 
         if (!check_date (rec->expiration_date)) {
-            fprintf (stderr, "libtcd error: bad expiration_date in tide record\n");
+            LOG_ERROR ("libtcd error: bad expiration_date in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->months_on_station > 1023) {
-            fprintf (stderr, "libtcd error: months_on_station out of range in tide record\n");
+            LOG_ERROR ("libtcd error: months_on_station out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (!check_date (rec->last_date_on_station)) {
-            fprintf (stderr, "libtcd error: bad last_date_on_station in tide record\n");
+            LOG_ERROR ("libtcd error: bad last_date_on_station in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->confidence > 15) {
-            fprintf (stderr, "libtcd error: confidence out of range in tide record\n");
+            LOG_ERROR ("libtcd error: confidence out of range in tide record\n");
             ret = NVFalse;
         }
 
         /* Only issue each error once. */
         for (i=0; i < hd.pub.constituents; ++i) {
             if (rec->amplitude[i] < 0.0 || rec->amplitude[i] > 52.4287) {
-                fprintf (stderr, "libtcd error: constituent amplitude out of range in tide record\n");
+                LOG_ERROR ("libtcd error: constituent amplitude out of range in tide record\n");
                 ret = NVFalse;
                 break;
             }
         }
         for (i=0; i < hd.pub.constituents; ++i) {
             if (rec->epoch[i] < 0.0 || rec->epoch[i] > 360.0) {
-                fprintf (stderr, "libtcd error: constituent epoch out of range in tide record\n");
+                LOG_ERROR ("libtcd error: constituent epoch out of range in tide record\n");
                 ret = NVFalse;
                 break;
             }
@@ -5810,58 +5794,58 @@ static NV_BOOL check_tide_record (TIDE_RECORD *rec) {
     case SUBORDINATE_STATION:
         if (rec->header.reference_station < 0 || rec->header.reference_station
                 >= (NV_INT32)hd.pub.number_of_records) {
-            fprintf (stderr, "libtcd error: bad reference_station in tide record\n");
+            LOG_ERROR ("libtcd error: bad reference_station in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->min_time_add < -4096 || rec->min_time_add > 4095 ||
                 rec->min_time_add % 100 >= 60) {
-            fprintf (stderr, "libtcd error: bad min_time_add in tide record\n");
+            LOG_ERROR ("libtcd error: bad min_time_add in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->min_level_add < -65.536 || rec->min_level_add > 65.535) {
-            fprintf (stderr, "libtcd error: min_level_add out of range in tide record\n");
+            LOG_ERROR ("libtcd error: min_level_add out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->min_level_multiply < 0.0 || rec->min_level_multiply > 65.535) {
-            fprintf (stderr, "libtcd error: min_level_multiply out of range in tide record\n");
+            LOG_ERROR ("libtcd error: min_level_multiply out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->max_time_add < -4096 || rec->max_time_add > 4095 ||
                 rec->max_time_add % 100 >= 60) {
-            fprintf (stderr, "libtcd error: bad max_time_add in tide record\n");
+            LOG_ERROR ("libtcd error: bad max_time_add in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->max_level_add < -65.536 || rec->max_level_add > 65.535) {
-            fprintf (stderr, "libtcd error: max_level_add out of range in tide record\n");
+            LOG_ERROR ("libtcd error: max_level_add out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->max_level_multiply < 0.0 || rec->max_level_multiply > 65.535) {
-            fprintf (stderr, "libtcd error: max_level_multiply out of range in tide record\n");
+            LOG_ERROR ("libtcd error: max_level_multiply out of range in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->flood_begins != NULLSLACKOFFSET && (rec->flood_begins < -4096 ||
                 rec->flood_begins > 4095 || rec->flood_begins % 100 >= 60)) {
-            fprintf (stderr, "libtcd error: bad flood_begins in tide record\n");
+            LOG_ERROR ("libtcd error: bad flood_begins in tide record\n");
             ret = NVFalse;
         }
 
         if (rec->ebb_begins != NULLSLACKOFFSET && (rec->ebb_begins < -4096 ||
                 rec->ebb_begins > 4095 || rec->ebb_begins % 100 >= 60)) {
-            fprintf (stderr, "libtcd error: bad ebb_begins in tide record\n");
+            LOG_ERROR ("libtcd error: bad ebb_begins in tide record\n");
             ret = NVFalse;
         }
 
         break;
 
     default:
-        fprintf (stderr, "libtcd error: invalid record_type in tide record\n");
+        LOG_ERROR ("libtcd error: invalid record_type in tide record\n");
         ret = NVFalse;
     }
 
@@ -6175,7 +6159,7 @@ static void pack_tide_record (TIDE_RECORD *rec, NV_U_BYTE **bufptr,
     }
 
     else {
-        fprintf (stderr, "libtcd error:  Record type %d is undefined\n",
+        LOG_ERROR ("libtcd error:  Record type %d is undefined\n",
                  rec->header.record_type);
         exit (-1);
     }
@@ -6213,7 +6197,7 @@ static NV_BOOL write_tide_record (NV_INT32 num, TIDE_RECORD *rec)
     NV_U_INT32              bufsize = 0;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return NVFalse;
     }
     write_protect();
@@ -6304,8 +6288,8 @@ static void unpack_tide_record (NV_U_BYTE *buf, NV_U_INT32 bufsize,
     case SUBORDINATE_STATION:
         break;
     default:
-        fprintf (stderr, "libtcd fatal error: tried to read type %d tide record.\n", rec->header.record_type);
-        fprintf (stderr, "This version of libtcd only supports types 1 and 2.  Perhaps you should\nupgrade.\n");
+        LOG_ERROR ("libtcd fatal error: tried to read type %d tide record.\n", rec->header.record_type);
+        LOG_ERROR ("This version of libtcd only supports types 1 and 2.  Perhaps you should\nupgrade.\n");
         exit (-1);
     }
 
@@ -6593,7 +6577,7 @@ NV_INT32 read_tide_record (NV_INT32 num, TIDE_RECORD *rec)
     NV_U_INT32              bufsize;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return -1;
     }
 
@@ -6639,7 +6623,7 @@ NV_BOOL add_tide_record (TIDE_RECORD *rec, DB_HEADER_PUBLIC *db)
     NV_INT32                pos;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return NVFalse;
     }
     write_protect();
@@ -6725,7 +6709,7 @@ NV_BOOL delete_tide_record (NV_INT32 num, DB_HEADER_PUBLIC *db)
     NV_U_BYTE         **allrecs_packed;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return NVFalse;
     }
     write_protect();
@@ -6842,7 +6826,7 @@ NV_BOOL update_tide_record (NV_INT32 num, TIDE_RECORD *rec, DB_HEADER_PUBLIC *db
     NV_U_BYTE               *block = NULL;
 
     if (!fp) {
-        fprintf (stderr, "libtcd error: attempt to access database when database not open\n");
+        LOG_ERROR ("libtcd error: attempt to access database when database not open\n");
         return NVFalse;
     }
     write_protect();
