@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <memory>
-#include "logger.h"
+#include "logger.h" /**/
 
 #ifdef __linux__
 #include <unistd.h>
