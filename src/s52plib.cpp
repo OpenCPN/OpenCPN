@@ -47,6 +47,7 @@
 #include "TexFont.h"
 #include "ocpn_plugin.h"
 #include "gdal/cpl_csv.h"
+#include "DepthFont.h"
 
 #include "s57chart.h"
 #include <wx/image.h>
@@ -3504,6 +3505,343 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 }
 
+bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
+                                  float rot_angle )
+{
+    double scale_factor = 1.0;
+ 
+    scale_factor *=  g_ChartScaleFactorExp;
+    scale_factor *= g_scaminScale;
+    
+    if(m_display_size_mm < 200){                //about 8 inches, implying some sort of smaller mobile device
+        //  Set the onscreen size of the symbol
+        //  Compensate for various display resolutions
+        //  Develop empirically, making a buoy about 4 mm tall
+        double boyHeight = 21. / GetPPMM();           // from raster symbol definitions, boylat is xx pix high
+        
+        double targetHeight0 = 4.0;  
+        
+        // But we want to scale the size for smaller displays
+        double displaySize = m_display_size_mm;
+        displaySize = wxMax(displaySize, 100);
+        
+        float targetHeight = wxMin(targetHeight0, displaySize / 30);
+        
+        double pix_factor = targetHeight / boyHeight;
+        
+        //qDebug() << "scaleing" << m_display_size_mm  << targetHeight0 << targetHeight << GetPPMM() << boyHeight << pix_factor;
+        
+        // for Hubert, and my moto 
+        //scaleing 93.98 93 4 3.33333 12.7312 1.64949 2.02082
+        // My nvidia tab
+        //scaleing 144.78 144 4 4 12.6667 1.65789 2.4127
+        // judgement: all OK
+        
+        
+        scale_factor *= pix_factor;
+    }
+ 
+        // calculate the required point size to give 2.5 mm height
+    int point_size = 6;
+    bool not_done = true;
+    wxScreenDC sdc;
+    int charWidth, charHeight, charDescent;
+    while((point_size < 20) && not_done){
+        wxFont *tentativeFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        sdc.GetTextExtent( _T("0"), &charWidth, &charHeight, &charDescent, NULL, tentativeFont ); // measure the text
+        double font_size_mm = (double)(charHeight- charDescent) / GetPPMM();
+
+        if(font_size_mm >= (3.0 * scale_factor)){
+            not_done = false;
+            break;
+        }
+        point_size++;
+    }
+
+    // Build the texDepth object, if required
+    if(!m_pdc){                         // OpenGL
+        if(!m_texSoundings.IsBuilt() || (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)){
+            m_texSoundings.Delete();
+        
+            m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+            m_texSoundings.Build(m_soundFont, scale_factor);        //texSounding owns the font
+        }
+    }
+    else{
+        m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        m_pdc->SetFont(*m_soundFont);
+    }
+
+    int pivot_x;
+    int pivot_y;
+    
+    // Parse the symbol name
+    
+    //  The digit
+    char symDigit = prule->name.SYNM[7];
+    int symIndex = symDigit - 0x30;
+
+    //  The pivot point offset group
+    char symCPivot = prule->name.SYNM[6];
+    int symPivot = symCPivot - 0x30;
+    
+    bool bGray = false;
+    //  The color emphasis
+    char symColor = prule->name.SYNM[5];
+    if(symColor == 'G')
+        bGray = true;
+    
+    // For opengl, the symbols are loaded in a texture
+    unsigned int texture = 0;
+    wxRect texrect;
+    if(!m_pdc) {                // GL
+      texture = m_texSoundings.GetTexture();
+      m_texSoundings.GetGLTextureRect(texrect, symIndex);
+      if(texture) {
+          prule->parm2 = texrect.width; 
+          prule->parm3 = texrect.height; 
+      }
+      if(symPivot < 4){
+          pivot_x = texrect.width * symPivot;
+          pivot_y = texrect.height / 2;
+      }
+      else if(symPivot == 4){
+          pivot_x = -texrect.width;
+          pivot_y = texrect.height / 2;
+      }
+      else{
+          pivot_x = 0;
+          pivot_y = 0;
+      }
+    }
+    else{                       // DC
+      if(symPivot < 4){
+        pivot_x = charWidth * symPivot;
+        pivot_y = charHeight / 2;
+      }
+      else if(symPivot == 4){
+        pivot_x = -charWidth;
+        pivot_y = charHeight / 2;
+      }
+      else{
+        pivot_x = 0;
+        pivot_y = 0;
+      }
+    }
+
+
+    //        Get the bounding box for the to-be-drawn symbol
+    int b_width, b_height;
+    b_width = prule->parm2;
+    b_height = prule->parm3;
+
+    LLBBox symbox;
+    double latmin, lonmin, latmax, lonmax;
+
+    if( !m_pdc && fabs( vp->rotation ) > .01)          // opengl
+    {
+        float cx = vp->pix_width/2.;
+        float cy = vp->pix_height/2.;
+        float c = cosf(vp->rotation );
+        float s = sinf(vp->rotation );
+        float x = r.x - pivot_x -cx;
+        float y = r.y - pivot_y + b_height -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &latmin, &lonmin, vp );
+
+        x = r.x - pivot_x + b_width -cx;
+        y = r.y - pivot_y -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &latmax, &lonmax, vp );
+    } else {
+        GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &latmin, &lonmin, vp );
+        GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &latmax, &lonmax, vp );
+    }
+    symbox.Set( latmin, lonmin, latmax, lonmax );
+
+    //      Now render the symbol
+
+    if( !m_pdc )          // opengl
+    {
+#ifdef ocpnUSE_GL
+        glEnable( GL_BLEND );
+        
+        if(texture) {
+            extern GLenum       g_texture_rectangle_format;
+
+            glEnable(GL_TEXTURE_2D);
+            glEnable( GL_BLEND );
+            glBindTexture(GL_TEXTURE_2D, texture);
+
+            int w = texrect.width, h = texrect.height;
+            
+            float tx1 = texrect.x, ty1 = texrect.y;
+            float tx2 = tx1 + w, ty2 = ty1 + h;
+
+#ifndef USE_ANDROID_GLES2
+//            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+            if(g_texture_rectangle_format == GL_TEXTURE_2D) {
+                wxSize size = m_texSoundings.GLTextureSize();
+                tx1 /= size.x, tx2 /= size.x;
+                ty1 /= size.y, ty2 /= size.y;
+            }
+            
+            if(!bGray)
+                glColor3ub( 0,0,0 );
+            else
+                glColor3ub( 128, 128, 128 );
+                
+ 
+            
+            {
+                glPushMatrix();
+
+                glTranslatef(r.x, r.y, 0);
+                glRotatef(vp->rotation * 180/PI, 0, 0, -1);
+                glTranslatef(-pivot_x, -pivot_y, 0);
+                //glScalef(scale_factor, scale_factor, 1);
+                
+                glBegin(GL_QUADS);
+                    glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
+                    glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
+                    glTexCoord2f(tx2, ty2);    glVertex2i( w, h);
+                    glTexCoord2f(tx1, ty2);    glVertex2i( 0, h);
+                glEnd();
+                
+                glPopMatrix();
+            }
+#else
+
+                
+            if(g_texture_rectangle_format == GL_TEXTURE_2D) {
+                    
+                // Normalize the sybmol texture coordinates against the next higher POT size
+                wxSize size = ChartSymbols::GLTextureSize();
+                int rb_x = size.x;
+                int rb_y = size.y;
+
+                tx1 /= rb_x , tx2 /= rb_x ;
+                ty1 /= rb_y , ty2 /= rb_y ;
+                }
+                
+            float uv[8];
+            float coords[8];
+
+            // Note swizzle of points to allow TRIANGLE_STRIP drawing
+            //normal uv
+            uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
+            uv[6] = tx2; uv[7] = ty2; uv[4] = tx1; uv[5] = ty2;
+
+            w *= scale_factor;
+            h *= scale_factor;
+
+            // pixels
+            coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
+            coords[6] = w; coords[7] = h; coords[4] = 0; coords[5] = h;
+
+            glUseProgram( S52texture_2D_shader_program );
+
+            // Get pointers to the attributes in the program.
+            GLint mPosAttrib = glGetAttribLocation( S52texture_2D_shader_program, "position" );
+            GLint mUvAttrib  = glGetAttribLocation( S52texture_2D_shader_program, "aUV" );
+
+            // Select the active texture unit.
+            glActiveTexture( GL_TEXTURE0 );
+
+            // Bind our texture to the texturing target.
+            glBindTexture( GL_TEXTURE_2D, texture );
+
+            // Set up the texture sampler to texture unit 0
+            GLint texUni = glGetUniformLocation( S52texture_2D_shader_program, "uTex" );
+            glUniform1i( texUni, 0 );
+
+            // Disable VBO's (vertex buffer objects) for attributes.
+            glBindBuffer( GL_ARRAY_BUFFER, 0 );
+            glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+            // Set the attribute mPosAttrib with the vertices in the screen coordinates...
+            glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
+            // ... and enable it.
+            glEnableVertexAttribArray( mPosAttrib );
+
+            // Set the attribute mUvAttrib with the vertices in the GL coordinates...
+            glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
+            // ... and enable it.
+            glEnableVertexAttribArray( mUvAttrib );
+
+            // Rotate
+            mat4x4 I, Q;
+            mat4x4_identity(I);
+
+            mat4x4_translate_in_place(I, r.x, r.y, 0);
+            mat4x4_rotate_Z(Q, I, -vp->rotation);
+            mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
+
+
+            GLint matloc = glGetUniformLocation(S52texture_2D_shader_program,"TransformMatrix");
+            glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
+
+            // Perform the actual drawing.
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Restore the per-object transform to Identity Matrix
+            mat4x4 IM;
+            mat4x4_identity(IM);
+            GLint matlocf = glGetUniformLocation(S52texture_2D_shader_program,"TransformMatrix");
+            glUniformMatrix4fv( matlocf, 1, GL_FALSE, (const GLfloat*)IM);
+
+
+#endif          // GLES2
+            glDisable(g_texture_rectangle_format);
+        } else { /* this is only for legacy mode, or systems without NPOT textures */
+            float cr = cosf( vp->rotation );
+            float sr = sinf( vp->rotation );
+            float ddx = pivot_x * cr + pivot_y * sr;
+            float ddy = pivot_y * cr - pivot_x * sr;
+#ifndef USE_ANDROID_GLES2
+            glColor4f( 1, 1, 1, 1 );
+
+            //  Since draw pixels is so slow, lets not draw anything we don't have to
+            wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
+            if(vp->rv_rect.Intersects(sym_rect) ) {
+                
+                glPushAttrib( GL_SCISSOR_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                
+                glDisable( GL_SCISSOR_TEST );
+                glDisable( GL_STENCIL_TEST );
+                glDisable( GL_DEPTH_TEST );
+                
+                glRasterPos2f( r.x - ddx, r.y - ddy );
+                glPixelZoom( 1, -1 );
+                glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
+                glPixelZoom( 1, 1 );
+
+                glPopAttrib();
+            }
+#endif
+        }
+
+        glDisable( GL_BLEND );
+#endif
+    }
+    else {
+            wxString text;
+            text.Printf(_T("%d"), symIndex);
+            if(bGray)
+                m_pdc->SetTextForeground( wxColour( 128, 128, 128 ) );
+            else
+                m_pdc->SetTextForeground( wxColour( 0,0,0 ) );
+
+            m_pdc->DrawText(text, r.x - pivot_x, r.y - pivot_y);
+
+    }
+
+    return true;
+}
+
+
+
+
 // Line Simple Style, OpenGL
 int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
@@ -5917,6 +6255,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 
     double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
+    double *pd = rzRules->obj->geoPtz; // the SM points
 
     //  We need a private unrotated copy of the Viewport
     ViewPort vp_local = *vp;
@@ -5940,7 +6279,12 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         double lon = *pdl++;
         double lat = *pdl++;
-
+ 
+        double east = *pd++;
+            double nort = *pd++;
+            double depth = *pd++;
+ 
+            
         wxPoint r = vp_local.GetPixFromLL( lat, lon );
         //      Use estimated symbol size
         wxRect rr(r.x-(box_dim/2), r.y-(box_dim/2), box_dim, box_dim);
@@ -5950,6 +6294,8 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             continue;
         
         double angle = 0;
+            if(depth > 3154)
+                int yyp = 4;
         
         Rules *rules =  rzRules->mps->cs_rules->Item(ip);
         while( rules ){
@@ -5962,8 +6308,10 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     dryAngle = -vp->rotation * 180./PI;
                 RenderHPGL( rzRules, rules->razRule, r, vp, dryAngle );
             }
-            else if( rules->razRule->definition.SYDF == 'R' )
-                RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+            else if( rules->razRule->definition.SYDF == 'R' ){
+                RenderSoundingSymbol( rzRules, rules->razRule, r, vp, angle );
+                //RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+            }
             
             rules = rules->next;
         }

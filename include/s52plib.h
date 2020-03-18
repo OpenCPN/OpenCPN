@@ -34,6 +34,7 @@ class wxGLContext;
 
 #include "LLRegion.h"
 #include "ocpn_types.h"
+#include "DepthFont.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
@@ -338,6 +339,8 @@ private:
         ViewPort *vp, float rot_angle = 0. );
     bool RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         ViewPort *vp, float rot_angle = 0. );
+    bool RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+        ViewPort *vp, float rot_angle = 0. );
     wxImage RuleXBMToImage( Rule *prule );
 
     bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
@@ -421,7 +424,7 @@ private:
     RenderFromHPGL* HPGL;
 
     TexFont *m_txf;
-    
+    DepthFont m_texSoundings;
     bool m_benableGLLS;
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
@@ -440,6 +443,7 @@ private:
     int  m_TextureFormat;
     bool m_GLLineSmoothing;
     bool m_GLPolygonSmoothing;
+    wxFont *m_soundFont;
 };
 
 

@@ -877,6 +877,7 @@ set(
   include/ConnectionParams.h
   include/cutil.h
   include/datastream.h
+  include/DepthFont.h
   include/DetailSlider.h
   include/Downloader.h
   include/download_mgr.h
@@ -1005,6 +1006,7 @@ set(
   src/ConnectionParams.cpp
   src/cutil.cpp
   src/datastream.cpp
+  src/DepthFont.cpp
   src/DetailSlider.cpp
   src/Downloader.cpp
   src/download_mgr.cpp
