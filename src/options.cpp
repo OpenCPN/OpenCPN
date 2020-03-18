@@ -8036,8 +8036,8 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
                                    infile);
 
             if (ferror(infile)) {
-                LOG_INFO ("Read error: %s\i", errno);
-                      //  strerror(errno));
+                LOG_INFO ("Read error: %i\n", errno);
+                      //  strerror(errno)); /* fro testing not for merging */
                 return false;
             }
 
@@ -8078,8 +8078,8 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
 
             if (fwrite(outbuf, 1, write_size, outfile)
                 != write_size) {
-                LOG_INFO ("Read error: %s\i", errno);
-                      //  strerror(errno));
+                LOG_INFO ("Read error: %i\n", errno);
+                      //  strerror(errno)); /* fro testing not for merging */
                 return false;
             }
 
