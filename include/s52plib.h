@@ -340,7 +340,7 @@ private:
     bool RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         ViewPort *vp, float rot_angle = 0. );
     bool RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-        ViewPort *vp, float rot_angle = 0. );
+        ViewPort *vp, wxColor symColor, float rot_angle = 0. );
     wxImage RuleXBMToImage( Rule *prule );
 
     bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,

@@ -3506,7 +3506,7 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 }
 
 bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
-                                  float rot_angle )
+                                   wxColor symColor, float rot_angle )
 {
     double scale_factor = 1.0;
  
@@ -3584,12 +3584,6 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     //  The pivot point offset group
     char symCPivot = prule->name.SYNM[6];
     int symPivot = symCPivot - 0x30;
-    
-    bool bGray = false;
-    //  The color emphasis
-    char symColor = prule->name.SYNM[5];
-    if(symColor == 'G')
-        bGray = true;
     
     // For opengl, the symbols are loaded in a texture
     unsigned int texture = 0;
@@ -3686,11 +3680,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
                 ty1 /= size.y, ty2 /= size.y;
             }
             
-            if(!bGray)
-                glColor3ub( 0,0,0 );
-            else
-                glColor3ub( 128, 128, 128 );
-                
+            glColor3ub( symColor.Red(), symColor.Green(), symColor.Blue() );
  
             
             {
@@ -3827,10 +3817,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     else {
             wxString text;
             text.Printf(_T("%d"), symIndex);
-            if(bGray)
-                m_pdc->SetTextForeground( wxColour( 128, 128, 128 ) );
-            else
-                m_pdc->SetTextForeground( wxColour( 0,0,0 ) );
+            m_pdc->SetTextForeground( symColor );
 
             m_pdc->DrawText(text, r.x - pivot_x, r.y - pivot_y);
 
@@ -6298,6 +6285,10 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 int yyp = 4;
         
         Rules *rules =  rzRules->mps->cs_rules->Item(ip);
+        bool bColorSet = false;
+        wxColor symColor;
+        GetGlobalColor(_T("SNDG2"), &symColor);
+        
         while( rules ){
             
             //  Render a raster or vector symbol, as specified by LUP rules
@@ -6309,7 +6300,16 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 RenderHPGL( rzRules, rules->razRule, r, vp, dryAngle );
             }
             else if( rules->razRule->definition.SYDF == 'R' ){
-                RenderSoundingSymbol( rzRules, rules->razRule, r, vp, angle );
+                
+                // Parse the first rule to determine the color
+                if(!bColorSet){
+                    char symColorT = rules->razRule->name.SYNM[5];
+                    if(symColorT== 'G')
+                        GetGlobalColor(_T("SNDG1"), &symColor);
+                    bColorSet = true;
+                }
+                    
+                RenderSoundingSymbol( rzRules, rules->razRule, r, vp, symColor, angle );
                 //RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
             }
             
