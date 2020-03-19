@@ -5204,7 +5204,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
  */
 void PluginListPanel::Clear()
 {
-    for (auto it = GetChildren().GetFirst(); it; it = it->GetNext()) {
+    while (auto it = GetChildren().GetFirst()) {
         if (dynamic_cast<PluginPanel*>(it->GetData())) {
             it->GetData()->Destroy();
         }
