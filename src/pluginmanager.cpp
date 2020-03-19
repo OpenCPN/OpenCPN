@@ -789,6 +789,7 @@ class StatusIconPanel: public wxPanel
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+                wxLogMessage("Icon: %s not found.", path.GetFullPath());
             }
         }
 };
