@@ -8678,8 +8678,7 @@ void options::DoOnPageChange(size_t page) {
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
       
-      itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel,
-                                    wxSizerFlags(0).Expand().TripleBorder());
+      itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel, 0, wxEXPAND | wxALL, 4);
 #endif      
       itemBoxSizerPanelPlugins->Layout();
 
