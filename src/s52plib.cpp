@@ -3605,7 +3605,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
       }
       else{
           pivot_x = 0;
-          pivot_y = 0;
+          pivot_y = texrect.height / 8;
       }
     }
     else{                       // DC
@@ -3619,7 +3619,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
       }
       else{
         pivot_x = 0;
-        pivot_y = 0;
+        pivot_y = charHeight / 8;
       }
     }
 
