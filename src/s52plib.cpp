@@ -3570,6 +3570,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     else{
         m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
         m_pdc->SetFont(*m_soundFont);
+        charHeight -= charDescent;
     }
 
     int pivot_x;
@@ -3585,28 +3586,43 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     char symCPivot = prule->name.SYNM[6];
     int symPivot = symCPivot - 0x30;
     
+    int pivotWidth, pivotHeight;
     // For opengl, the symbols are loaded in a texture
     unsigned int texture = 0;
     wxRect texrect;
     if(!m_pdc) {                // GL
       texture = m_texSoundings.GetTexture();
       m_texSoundings.GetGLTextureRect(texrect, symIndex);
+      
       if(texture) {
           prule->parm2 = texrect.width; 
           prule->parm3 = texrect.height; 
       }
-      if(symPivot < 4){
-          pivot_x = texrect.width * symPivot;
-          pivot_y = texrect.height / 2;
+      
+      pivotWidth = texrect.width;
+      pivotHeight = texrect.height;
+      
+    }
+    else{
+      pivotWidth = charWidth;
+      pivotHeight = charHeight;
+    }
+        
+    if(symPivot < 4){
+          pivot_x = (pivotWidth * symPivot) - (pivotWidth / 4);
+          pivot_y = pivotHeight * 3 / 4;
       }
-      else if(symPivot == 4){
-          pivot_x = -texrect.width;
-          pivot_y = texrect.height / 2;
-      }
-      else{
-          pivot_x = 0;
-          pivot_y = texrect.height / 8;
-      }
+    else if(symPivot == 4){
+          pivot_x = -pivotWidth - (pivotWidth / 4);
+          pivot_y = pivotHeight * 3 / 4;
+    }
+    else{
+          pivot_x = - (pivotWidth / 4);
+          pivot_y = pivotHeight / 8;
+    }
+    
+    
+/*      
     }
     else{                       // DC
       if(symPivot < 4){
@@ -3622,7 +3638,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         pivot_y = charHeight / 8;
       }
     }
-
+*/
 
     //        Get the bounding box for the to-be-drawn symbol
     int b_width, b_height;
@@ -6281,7 +6297,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             continue;
         
         double angle = 0;
-            if(depth > 3154)
+            if(depth < 0)
                 int yyp = 4;
         
         Rules *rules =  rzRules->mps->cs_rules->Item(ip);
