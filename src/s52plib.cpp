@@ -3563,7 +3563,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         if(!m_texSoundings.IsBuilt() || (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)){
             m_texSoundings.Delete();
         
-            m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+            m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
             m_texSoundings.Build(m_soundFont, scale_factor);        //texSounding owns the font
         }
     }
