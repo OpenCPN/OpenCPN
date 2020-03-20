@@ -4997,22 +4997,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 
      topSizer->Add( new wxStaticLine(this), 0, wxGROW|wxLEFT|wxRIGHT, 4);
 
-      wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
-      wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
-      topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
-
-//     wxBoxSizer* itemStaticBoxSizer4 = new wxBoxSizer( wxVERTICAL );
-//     topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
+     wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( this, wxID_ANY, _("Plugin Catalog") );
+     wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static, wxVERTICAL );
+     topSizer->Add( itemStaticBoxSizer4, 1, wxEXPAND | wxALL, 2 );
 
      // First line
-     //wxBoxSizer* rowSizer1 = new wxBoxSizer( wxHORIZONTAL );
-     //itemStaticBoxSizer4->Add( rowSizer1, 0, wxEXPAND | wxALL, 0 );
-     
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
      itemStaticBoxSizer4->Add( m_catalogText, 1, wxALIGN_LEFT );
      m_catalogText->SetLabel(GetCatalogText(false));
 
- 
      // Next line
      wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
      itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
