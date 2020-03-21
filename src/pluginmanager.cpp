@@ -5437,7 +5437,7 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pName->SetFont(font);
     itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
 
-    m_pVersion = new wxStaticText( this, wxID_ANY, p_plugin->GetVersion().to_string() );
+    m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
     itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
         m_pVersion->Hide();
@@ -5524,9 +5524,18 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 void PluginPanel::SetSelected( bool selected )
 {
     m_bSelected = selected;
+ 
+    m_pVersion->SetLabel( m_pPlugin->GetVersion().to_string() );
+ 
+    if(m_pPlugin->m_ManagedMetadata.version.size()){
+       // Is this a fully managed and current plugin?
+       // If so, as a special case...
+       //  We show the version from the metadata, thus handling managed plugins with API < 117 
+        
+       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
+            m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
+    }
     
-    if(m_pPlugin->m_ManagedMetadata.version.size())
-        m_pVersion->SetLabel( m_pPlugin->GetVersion().to_string() );
 
     if (selected) {
         m_status_icon->SetBackgroundColour(GetGlobalColor(_T("DILG1")));
