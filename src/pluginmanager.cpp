@@ -789,6 +789,7 @@ class StatusIconPanel: public wxPanel
             if (!ok) {
                 auto style = g_StyleManager->GetCurrentStyle();
                 bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
+                wxLogMessage("Icon: %s not found.", path.GetFullPath());
             }
         }
 };
@@ -5197,7 +5198,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
  */
 void PluginListPanel::Clear()
 {
-    for (auto it = GetChildren().GetFirst(); it; it = it->GetNext()) {
+    while (auto it = GetChildren().GetFirst()) {
         if (dynamic_cast<PluginPanel*>(it->GetData())) {
             it->GetData()->Destroy();
         }
