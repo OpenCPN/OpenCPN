@@ -5208,6 +5208,7 @@ void PluginListPanel::Clear()
         if (count > numChildren)
             break;
     }
+    wxASSERT(count == numChildren);
     m_pitemBoxSizer01->Clear();
     m_PluginItems.Clear();
 
