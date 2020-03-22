@@ -3551,7 +3551,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         sdc.GetTextExtent( _T("0"), &charWidth, &charHeight, &charDescent, NULL, tentativeFont ); // measure the text
         double font_size_mm = (double)(charHeight- charDescent) / GetPPMM();
 
-        if(font_size_mm >= (3.0 * scale_factor)){
+        if(font_size_mm >= (3.2 * scale_factor)){
             not_done = false;
             break;
         }
