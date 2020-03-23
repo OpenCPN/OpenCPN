@@ -14,9 +14,7 @@
 
 // make wxLogTrace a noop, it's really slow
 // must be defined before including debug.h
-#if defined(NDEBUG) && !defined(wxDEBUG_LEVEL)
 #define wxDEBUG_LEVEL 0
-#endif
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"

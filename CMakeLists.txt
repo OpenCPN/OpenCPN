@@ -581,49 +581,6 @@ endif (APPLE)
 message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 
-function(check_debug_support)
-  # A preliminary hunt for wxWidgets, setting up enough to be
-  # able to make the compilation needed to find out if debug support
-  # is compiled into the wxWidgets libraries
-  message(STATUS "Checking if wxWidgets has compiled-in debug support.")
-  find_package(wxWidgets REQUIRED)
-  foreach (var ${wxWidgets_DEFINITIONS})
-    set(COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS} -D${var}")
-  endforeach (var)
-  foreach (dir ${wxWidgets_INCLUDE_DIRS})
-    set(COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS} -I${dir}")
-  endforeach (dir)
-  try_compile(HAVE_WX_DEBUG_SUPPORT
-    "${CMAKE_BINARY_DIR}/check-debug-support"
-    "${CMAKE_SOURCE_DIR}/cmake/wx-on-assert.cpp"
-    LINK_LIBRARIES ${wxWidgets_LIBRARIES}
-    COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS}
-  )
-  set(HAVE_WX_DEBUG_SUPPORT ${HAVE_WX_DEBUG_SUPPORT} PARENT_SCOPE)
-endfunction(check_debug_support)
-
-if (DEFINED OCPN_FORCE_DEBUG_LOGGING)
-  set(ENABLE_DEBUG_LOGGING ${OCPN_FORCE_DEBUG_LOGGING})
-  message(STATUS "Using forced debug logging: ${OCPN_FORCE_DEBUG_LOGGING}")
-else ()
-  check_debug_support()
-  message(STATUS "wxWidgets debug support: ${HAVE_WX_DEBUG_SUPPORT}" )
-  if (HAVE_WX_DEBUG_SUPPORT)
-    set(ENABLE_DEBUG_LOGGING "ON")
-    message(STATUS "Enabling debug logging")
-  else ()
-    set(ENABLE_DEBUG_LOGGING "OFF")
-    message(STATUS "Disabling debug logging (missing library support)")
-  endif ()
-endif ()
-if (ENABLE_DEBUG_LOGGING)
-  # Compile in debug logging, disabling as required in runtime
-  add_definitions("-DwxUSE_LOG_TRACE")
-  add_definitions("-DwxUSE_LOG_DEBUG")
-  add_definitions("-DwxDEBUG_LEVEL=1")
-endif()
-
-
 #
 # Bundled data: docs, tcdata
 #
