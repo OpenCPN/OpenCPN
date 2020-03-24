@@ -3,6 +3,7 @@
 #include   "config.h"
 #include   "OCPNPlatform.h"
 #include   "PluginPaths.h"
+#include   "ocpn_plugin.h"
 
 /*
  * The user-writable paths for libraries, binaries and plugin data, 
@@ -145,7 +146,11 @@ void PluginPaths::initApplePaths()
     m_unknownPathDir = mac_home + "/Contents/unknown-paths";
 
     m_libdirs.push_back(m_userLibdir);
-    m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
+    wxFileName fn_exe(GetOCPN_ExePath());
+    fn_exe.RemoveLastDir();
+    string exeLibDir = fn_exe.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() + "Plugins"; 
+    m_libdirs.push_back(exeLibDir);
+    //m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
     m_bindirs = m_libdirs;
 
     m_datadirs.push_back(m_userDatadir);
