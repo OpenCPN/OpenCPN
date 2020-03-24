@@ -1520,7 +1520,9 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
 #ifdef __WXMAC__
     // Mojave does not paint the controls correctly without this.
     m_lbChartSources->Refresh(true);
+#ifndef NEW_LIST
     m_clCharts->Refresh(true);
+#endif    
 #endif
     event.Skip();
 }
