@@ -2652,6 +2652,29 @@ if (APPLE)
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
     " COMPONENT Runtime)
+    
+  #Build standard MacOS installer package
+  #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
+  #  This avoids absolute paths in the XXX.pkgproj file
+
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/OpenCPN.pkgproj.in
+    ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+    )
+  configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)
+
+  ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+   COMMAND /usr/local/bin/packagesbuild -F ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+   COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
+   )
+
+ ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
+ DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
+
+  #Build standard MacOS .dmg 
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
