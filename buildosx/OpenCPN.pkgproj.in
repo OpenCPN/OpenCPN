@@ -5058,22 +5058,6 @@
 															<array>
 																<dict>
 																	<key>CHILDREN</key>
-																	<array/>
-																	<key>GID</key>
-																	<integer>0</integer>
-																	<key>PATH</key>
-																	<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/doc/.directory</string>
-																	<key>PATH_TYPE</key>
-																	<integer>0</integer>
-																	<key>PERMISSIONS</key>
-																	<integer>493</integer>
-																	<key>TYPE</key>
-																	<integer>3</integer>
-																	<key>UID</key>
-																	<integer>0</integer>
-																</dict>
-																<dict>
-																	<key>CHILDREN</key>
 																	<array>
 																		<dict>
 																			<key>CHILDREN</key>
@@ -28700,22 +28684,6 @@
 																			<key>GID</key>
 																			<integer>0</integer>
 																			<key>PATH</key>
-																			<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/uidata/MUI_flat/.directory</string>
-																			<key>PATH_TYPE</key>
-																			<integer>0</integer>
-																			<key>PERMISSIONS</key>
-																			<integer>493</integer>
-																			<key>TYPE</key>
-																			<integer>3</integer>
-																			<key>UID</key>
-																			<integer>0</integer>
-																		</dict>
-																		<dict>
-																			<key>CHILDREN</key>
-																			<array/>
-																			<key>GID</key>
-																			<integer>0</integer>
-																			<key>PATH</key>
 																			<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/uidata/MUI_flat/CompassRose.svg</string>
 																			<key>PATH_TYPE</key>
 																			<integer>0</integer>
@@ -29532,22 +29500,6 @@
 																<dict>
 																	<key>CHILDREN</key>
 																	<array>
-																		<dict>
-																			<key>CHILDREN</key>
-																			<array/>
-																			<key>GID</key>
-																			<integer>0</integer>
-																			<key>PATH</key>
-																			<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/uidata/traditional/.directory</string>
-																			<key>PATH_TYPE</key>
-																			<integer>0</integer>
-																			<key>PERMISSIONS</key>
-																			<integer>453</integer>
-																			<key>TYPE</key>
-																			<integer>3</integer>
-																			<key>UID</key>
-																			<integer>0</integer>
-																		</dict>
 																		<dict>
 																			<key>CHILDREN</key>
 																			<array/>
