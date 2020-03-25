@@ -2304,9 +2304,9 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
 endif (GETTEXT_MSGFMT_EXECUTABLE)
 
 #
-# Install wxstd.mo in Windows and Mac
+# Install wxstd.mo in Windows
 #
-if (WIN32 OR APPLE)
+if (WIN32)
 
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
@@ -2316,25 +2316,40 @@ if (WIN32 OR APPLE)
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
 
-    if (APPLE)
-      install(
-        FILES ${_current_wx_mofile}
-        DESTINATION
-          ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
-        RENAME wxstd.mo
-      )
-    else (APPLE)
-      install(
+    install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
         RENAME wxstd.mo
           PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
-    endif (APPLE)
 
   endforeach (_current_wx_mofile)
 
-endif (WIN32 OR APPLE)
+endif (WIN32)
+
+#
+# Install wxstd.mo in Mac
+#
+if (APPLE)
+
+  file(
+    GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildosx/wxWidgets/locale/*.mo
+  )
+
+  foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
+    get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
+    get_filename_component(_mlang ${_absFile} NAME_WE)
+
+    install(
+        FILES ${_current_wx_mofile}
+        DESTINATION
+          ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
+        RENAME wxstd.mo
+      )
+
+  endforeach (_current_wx_mofile)
+
+endif (APPLE)
 
 #
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable
