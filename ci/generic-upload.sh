@@ -49,7 +49,7 @@ else
         # Assuming builders have installed python3 + pip
         sudo -H python3 -m pip install -q cloudsmith-cli
     fi
-    for src in $(expand *.dmg *setup.exe *.deb); do
+    for src in $(expand *.dmg *setup.exe *.deb *.pkg); do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
         if [ "$old" != "$new" ]; then sudo mv "$old" "$new"; fi
