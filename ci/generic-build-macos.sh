@@ -34,6 +34,8 @@ for pkg in cairo cmake libexif python3 wget xz; do
     brew list $pkg 2>/dev/null | head -10 || brew install $pkg
 done
 
+brew install packages
+
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
 # We need to build own libarchive
