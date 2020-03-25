@@ -548,6 +548,13 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->Draft = value[_T("maximum")].AsDouble();
                 pTargetData->Euro_Draft = value[_T("maximum")].AsDouble();
             }
+            if (value.HasMember(_T("current"))) {
+                double draft = value[_T("current")].AsDouble();
+                if (draft > 0) {
+                    pTargetData->Draft = draft;
+                    pTargetData->Euro_Draft = draft;
+                }
+            }
         } else if (update_path == _T("design.length")) {
             if (pTargetData->DimB == 0) {
                 if (value.HasMember(_T("overall"))) {
