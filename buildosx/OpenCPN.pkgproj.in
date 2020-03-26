@@ -45,7 +45,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libarchive.13.dylib</string>
 															<key>PATH_TYPE</key>
@@ -61,7 +61,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libcairo.2.dylib</string>
 															<key>PATH_TYPE</key>
@@ -77,7 +77,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libexif.12.dylib</string>
 															<key>PATH_TYPE</key>
@@ -93,7 +93,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libfontconfig.1.dylib</string>
 															<key>PATH_TYPE</key>
@@ -109,7 +109,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libfreetype.6.dylib</string>
 															<key>PATH_TYPE</key>
@@ -125,7 +125,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/liblzma.5.dylib</string>
 															<key>PATH_TYPE</key>
@@ -141,7 +141,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -157,7 +157,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpng16.16.dylib</string>
 															<key>PATH_TYPE</key>
@@ -173,7 +173,7 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
-															<integer>0</integer>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -189,7 +189,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_net-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -205,7 +221,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_net-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_xml-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -221,7 +253,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_xml-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_aui-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -237,7 +285,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_aui-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_core-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -253,7 +317,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_core-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_gl-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -269,7 +349,23 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_gl-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_html-3.1.2.0.0.dylib</string>
 															<key>PATH_TYPE</key>
@@ -285,9 +381,41 @@
 															<key>CHILDREN</key>
 															<array/>
 															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_html-3.1.dylib</string>
+															<key>PATH_TYPE</key>
 															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
 															<key>PATH</key>
 															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_webview-3.1.2.0.0.dylib</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>493</integer>
+															<key>TYPE</key>
+															<integer>3</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+														<dict>
+															<key>CHILDREN</key>
+															<array/>
+															<key>GID</key>
+															<integer>20</integer>
+															<key>PATH</key>
+															<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_webview-3.1.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -301,7 +429,7 @@
 													<key>EXPANDED</key>
 													<true/>
 													<key>GID</key>
-													<integer>0</integer>
+													<integer>20</integer>
 													<key>PATH</key>
 													<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks</string>
 													<key>PATH_TYPE</key>
