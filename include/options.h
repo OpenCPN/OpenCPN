@@ -209,7 +209,8 @@ enum {
   ID_SCREENCONFIG2,
   ID_CONFIGEDIT_OK,
   ID_CONFIGEDIT_CANCEL,
-  ID_ZOOMBUTTONS
+  ID_ZOOMBUTTONS,
+  ID_RASTERZOOM
 };
 
 /* Define an int bit field for dialog return value
@@ -400,6 +401,7 @@ class options : private Uncopyable,
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
+  wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
   wxCheckBox *pSLiveETA;
   wxTextCtrl *pSDefaultBoatSpeed;
@@ -500,7 +502,6 @@ class options : private Uncopyable,
   wxCheckBox *pSEnableCM93Offset;
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
   wxStaticText *m_depthUnitsShal, *m_depthUnitsSafe, *m_depthUnitsDeep;
-  wxSlider *m_pSlider_CM93_Zoom;
   int k_vectorcharts;
 
   // For "Units" page
