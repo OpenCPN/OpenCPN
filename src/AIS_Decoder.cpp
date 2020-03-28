@@ -548,6 +548,13 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->Draft = value[_T("maximum")].AsDouble();
                 pTargetData->Euro_Draft = value[_T("maximum")].AsDouble();
             }
+            if (value.HasMember(_T("current"))) {
+                double draft = value[_T("current")].AsDouble();
+                if (draft > 0) {
+                    pTargetData->Draft = draft;
+                    pTargetData->Euro_Draft = draft;
+                }
+            }
         } else if (update_path == _T("design.length")) {
             if (pTargetData->DimB == 0) {
                 if (value.HasMember(_T("overall"))) {
@@ -613,7 +620,14 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                     pTargetData->blue_paddle = 2;
                 }
                 pTargetData->b_blue_paddle = pTargetData->blue_paddle == 2 ? true: false;                
-            }        
+            } 
+        } else if (update_path == _T("sensors.ais.designatedAreaCode")) {
+            if (value.AsInt() == 200) { pTargetData->b_hasInlandDac = true; } // European inland
+        } else if (update_path == _T("sensors.ais.functionalId")) {
+            if (value.AsInt() == 10 &&  // "Inland ship static and voyage related data"
+                pTargetData->b_hasInlandDac) {
+                pTargetData->b_isEuroInland = true;
+            }
         } else if (update_path == _T("")) {
             if(value.HasMember(_T("name"))) {
                 const wxString &name = value[_T("name")].AsString();
