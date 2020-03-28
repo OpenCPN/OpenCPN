@@ -747,7 +747,7 @@ class StatusIconPanel: public wxPanel
             int minsize = wxMin(size.GetHeight(), size.GetWidth());
             auto offset = minsize / 4;
 
-            LoadIcon(m_icon_name.c_str(), m_bitmap,   minsize / 3);
+            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize / 3));
             wxPaintDC dc(this);
             if (!m_bitmap.IsOk()) {
                 wxLogMessage("StatusPluginPanel: bitmap is not OK!");
@@ -5183,11 +5183,15 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     m_PluginSelected(0)
 {
     SetSizer(new wxBoxSizer(wxVERTICAL));
+
+    m_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     m_pitemBoxSizer01 = new wxBoxSizer(wxVERTICAL);
-    GetSizer()->Add(m_pitemBoxSizer01, wxSizerFlags().Expand());
+    m_panel->SetSizer(m_pitemBoxSizer01);
+    
+    GetSizer()->Add(m_panel, wxSizerFlags().Expand());
     
     ReloadPluginPanels(pPluginArray);
-    SetScrollRate(0, 1);
+    //SetScrollRate(0, 1);
 }
 
 
@@ -5198,6 +5202,7 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
  */
 void PluginListPanel::Clear()
 {
+/*    
     int count = 0;
     int numChildren = GetChildren().GetCount();
     while (auto it = GetChildren().GetFirst()) {
@@ -5209,18 +5214,15 @@ void PluginListPanel::Clear()
             break;
     }
     wxASSERT(count == numChildren);
-    m_pitemBoxSizer01->Clear();
-    m_PluginItems.Clear();
-
-    if (GetSizer()->GetItemCount() > 2) {
-        // Remove old spacer
-        GetSizer()->Remove(2);
+*/    
+    for(unsigned int i=0 ; i < m_PluginItems.GetCount(); i++){
+        m_PluginItems[i]->Destroy();
     }
-//    wxASSERT(m_pitemBoxSizer01->IsEmpty());
-//    wxASSERT(m_PluginItems.IsEmpty());
-//    auto items = GetSizer()->GetItemCount();
-//    wxASSERT(items == 2 || items == 1);
-//    wxASSERT(GetChildren().GetCount() == 0);
+    m_PluginItems.Clear();
+    
+    m_pitemBoxSizer01->Clear();
+    
+    Scroll(0,0);
 }
 
 void PluginListPanel::SelectByName(wxString &name)
@@ -5247,8 +5249,8 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
     for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
         AddPlugin(m_pPluginArray->Item(i - 1));
     }
-    int dy = ComputePluginSpace(m_PluginItems, m_pitemBoxSizer01);
-    GetSizer()->AddSpacer(dy);
+    //int dy = ComputePluginSpace(m_PluginItems, m_pitemBoxSizer01);
+    //m_pitemBoxSizer01->AddSpacer(dy);
     Layout();
     Show();
     Refresh(true);
@@ -5321,6 +5323,9 @@ void PluginListPanel::UpdateSelections()
     
 void PluginListPanel::SelectPlugin( PluginPanel *pi )
 {
+    int xs, ys;
+    GetViewStart(&xs, &ys);
+    Scroll(0,0);
 
     if (m_PluginSelected){
         m_PluginSelected->SetSelected(false);
@@ -5331,9 +5336,14 @@ void PluginListPanel::SelectPlugin( PluginPanel *pi )
         m_PluginSelected->SetSelected(false);
     
     m_PluginSelected = pi;
-        
-    m_parent->Layout();
+    
+    m_pitemBoxSizer01->Layout();
     Refresh(false);
+    wxSize size = GetBestVirtualSize();
+    SetVirtualSize( size );
+
+    
+    Scroll(xs, ys);
 }
 
 void PluginListPanel::MoveUp( PluginPanel *pi )

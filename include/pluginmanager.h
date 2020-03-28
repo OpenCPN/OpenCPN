@@ -491,7 +491,7 @@ public:
       void SelectByName(wxString &name);
 
       wxBoxSizer         *m_pitemBoxSizer01;
-
+      wxPanel            *m_panel;
 private:
       void AddPlugin(PlugInContainer* pic);
       int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
@@ -500,7 +500,7 @@ private:
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
-      
+      wxString            m_selectedName;
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
