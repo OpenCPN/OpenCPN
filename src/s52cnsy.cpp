@@ -1901,6 +1901,7 @@ static void *OBSTRN04 (void *param)
       wxString *quapnt01str = NULL;
 
       GetDoubleAttr(obj, "VALSOU", valsou);
+      wxString *objName = GetStringAttrWXS(obj, "OBJNAM");
 
       if (valsou != UNKNOWN)
       {
@@ -2216,6 +2217,12 @@ static void *OBSTRN04 (void *param)
       }
 
 end:
+
+    // This is a specialization, to print OBJNAM for obstructions, if available
+    // Seen in NZ ENCs, e.g. "Horn Rock"
+    if(objName)
+        obstrn04str.Append(_T(";TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)"));
+    
     obstrn04str.Append('\037');
 
     char *r = (char *)malloc(obstrn04str.Len() + 1);
