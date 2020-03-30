@@ -1783,7 +1783,7 @@ bool MyApp::OnInit()
             return false;               // exit quietly
         }
     }
-#endif
+#endif  // __OCPN__ANDROID__
 
     // Check if last run failed, set up safe_mode.
     if (!safe_mode::get_mode()) {
