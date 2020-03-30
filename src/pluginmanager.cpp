@@ -5194,7 +5194,6 @@ PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
     //SetScrollRate(0, 1);
 }
 
-
 /**
  * Clear m_PluginsItems and remove everything in this instance besides:
  *   - The empty m_pitemBoxSizer01.
@@ -5259,7 +5258,7 @@ void PluginListPanel::ReloadPluginPanels(ArrayOfPlugIns* plugins)
 
 void PluginListPanel::AddPlugin(PlugInContainer* pic)
 {
-    auto  pPluginPanel = new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
+    auto  pPluginPanel = new PluginPanel(m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
     pPluginPanel->SetSelected(false);
     m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
     m_PluginItems.Add( pPluginPanel );
@@ -5294,8 +5293,6 @@ int PluginListPanel::ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* 
     }
     return max_dy;
 }
-
-
 
 void PluginListPanel::UpdatePluginsOrder()
 {
@@ -5401,10 +5398,10 @@ static bool canUninstall(std::string name)
 }
 
 
-PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
+PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin)
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
-    m_PluginListPanel = parent;
+    m_PluginListPanel = (PluginListPanel *)parent->GetParent();
     m_pPlugin = p_plugin;
     m_bSelected = false;
 
@@ -5520,7 +5517,7 @@ void PluginPanel::OnPluginSelected( wxMouseEvent &event )
 {
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
     {
-        auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
+        auto dialog = dynamic_cast<PluginListPanel*>(GetGrandParent());
         wxASSERT(dialog != 0);
         run_update_dialog(dialog, m_pPlugin, false);
     }

@@ -517,7 +517,7 @@ class WebsiteButton: public wxPanel
 class PluginPanel: public wxPanel
 {
 public:
-      PluginPanel( PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
+      PluginPanel( wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
       ~PluginPanel();
 
       void OnPluginSelected( wxMouseEvent &event );
