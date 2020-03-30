@@ -1728,11 +1728,6 @@ bool MyApp::OnInit()
     // Instantiate the global OCPNPlatform class
     g_Platform = new OCPNPlatform;
 
-    // Check if last run failed, set up safe_mode.
-    if (!safe_mode::get_mode()) {
-        safe_mode::check_last_start();
-    }
-
 
 #ifndef __OCPN__ANDROID__
     //  On Windows
@@ -1789,6 +1784,11 @@ bool MyApp::OnInit()
         }
     }
 #endif
+
+    // Check if last run failed, set up safe_mode.
+    if (!safe_mode::get_mode()) {
+        safe_mode::check_last_start();
+    }
 
     //  Perform first stage initialization
     OCPNPlatform::Initialize_1( );
