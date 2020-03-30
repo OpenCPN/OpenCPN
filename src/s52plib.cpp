@@ -3618,7 +3618,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     }
     else{
           pivot_x = - (pivotWidth / 4);
-          pivot_y = pivotHeight / 8;
+          pivot_y = pivotHeight / 3;
     }
     
     
