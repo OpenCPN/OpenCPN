@@ -625,7 +625,7 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
-    auto plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetParent());
+    auto plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetGrandParent());
     wxASSERT(plugin_list_panel != 0);
     auto actionPIC = panel->GetPlugin();
     wxString name = actionPIC->m_common_name;
