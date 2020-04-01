@@ -75,6 +75,7 @@ extern PlugInManager* g_pi_manager;
 extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
+extern bool           g_bportable;
 
 extern wxString       g_compatOS;
 extern wxString       g_compatOsVersion;
@@ -433,7 +434,24 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
     ){
         location = "unknown";
     }
+    
     string dest = installPaths[location] + "/" + suffix;
+
+    if(g_bportable){
+        // A data dir?
+        if(ocpn::startswith(location, "share") && ocpn::startswith(suffix, "opencpn/plugins/") ){
+            slashpos = suffix.find_first_of("opencpn/plugins/");
+            suffix = suffix.substr(16);
+
+            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
+        }
+        if(ocpn::startswith(location, "lib") && ocpn::startswith(suffix, "opencpn/") ){
+            suffix = suffix.substr(8);
+
+            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" + suffix;
+        }
+    }
+    
     archive_entry_set_pathname(entry, dest.c_str());
 }
 

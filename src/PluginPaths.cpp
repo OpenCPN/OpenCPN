@@ -17,6 +17,7 @@ const char* const LINUX_DATA_PATH =
     "~/.local/share:/usr/local/share:/usr/share";
 
 extern OCPNPlatform*  g_Platform;
+extern bool           g_bportable;
 
 
 static std::vector<std::string> split(const std::string& s, char delimiter)
@@ -97,6 +98,18 @@ void PluginPaths::initLinuxPaths()
 {
     using namespace std;
 
+    if(g_bportable){
+        m_userLibdir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib";                  //m_home + "/.local/lib";
+        m_libdirs.push_back(m_userLibdir);
+        m_userBindir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/bin";                          //m_home + "/.local/bin";
+        m_bindirs = m_libdirs;
+        m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/share";                       //m_home + "/.local/share";
+        m_datadirs.push_back(m_userDatadir);
+        m_unknownPathDir = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/share/unknown-prefix";     //m_home + "/.local/share/opencpn/unknown-prefix";
+        return;
+    }
+        
+        
     m_userLibdir = m_home + "/.local/lib";
     m_userBindir = m_home + "/.local/bin";
     m_userDatadir = m_home + "/.local/share";
