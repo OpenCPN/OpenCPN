@@ -1534,7 +1534,8 @@ static  wxString GetLinuxDataPath()
 wxString OCPNPlatform::GetPluginDataPath()
 {
     if(g_bportable){
-        wxString ret = GetPrivateDataDir() + _T("plugins");
+        wxString sep = wxFileName::GetPathSeparator();
+        wxString ret = GetPrivateDataDir() + sep + _T("plugins");
         return ret;
     }
     
