@@ -625,8 +625,9 @@ pluginUtilHandler::pluginUtilHandler()
 void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
 {
     auto panel = static_cast<PluginPanel*>(event.GetClientData());
-    auto plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetGrandParent());
+    PluginListPanel *plugin_list_panel = dynamic_cast<PluginListPanel*>(panel->GetGrandParent());
     wxASSERT(plugin_list_panel != 0);
+    
     auto actionPIC = panel->GetPlugin();
     wxString name = actionPIC->m_common_name;
     
@@ -5402,6 +5403,9 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     :wxPanel(parent, id, pos, size, wxBORDER_NONE)
 {
     m_PluginListPanel = (PluginListPanel *)parent->GetParent();
+    m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent->GetParent());
+    wxASSERT(m_PluginListPanel != 0);
+    
     m_pPlugin = p_plugin;
     m_bSelected = false;
 
