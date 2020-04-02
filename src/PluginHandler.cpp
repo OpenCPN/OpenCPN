@@ -699,6 +699,33 @@ void PluginHandler::cleanup(const std::string& filelist,
             }
         }
     }
+    
+        // Make another limited recursive pass, and remove any empty directories
+    bool done = false;
+    int iloop = 0;
+    while(!done && (iloop < 6) ){
+        done = true;
+        std::ifstream dirs(filelist.c_str());
+        while (!dirs.eof()) {
+            char line[256];
+            dirs.getline(line, sizeof(line));
+            
+            wxFileName wxFile(line);
+            if(wxFile.IsDir() && wxFile.DirExists()){
+                wxDir dir(wxFile.GetFullPath());
+                if(!dir.HasFiles() && !dir.HasSubDirs()){
+                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                    done = false;
+                }
+            }
+        }
+        dirs.close();
+        
+        iloop++;
+    }
+
+    
+    
     std::string path = PluginHandler::fileListPath(plugname);
     if (ocpn::exists(path)) {
         remove(path.c_str());
@@ -847,6 +874,32 @@ bool PluginHandler::uninstall(const std::string plugin_name)
         }
     }
     files.close();
+    
+    // Make another limited recursive pass, and remove any empty directories
+    bool done = false;
+    int iloop = 0;
+    while(!done && (iloop < 6) ){
+        done = true;
+        ifstream dirs(path);
+        while (!dirs.eof()) {
+            char line[256];
+            dirs.getline(line, sizeof(line));
+            string dirc(line);
+            
+            wxFileName wxFile(line);
+            if(wxFile.IsDir() && wxFile.DirExists()){
+                wxDir dir(wxFile.GetFullPath());
+                if(!dir.HasFiles() && !dir.HasSubDirs()){
+                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                    done = false;
+                }
+            }
+        }
+        dirs.close();
+        
+        iloop++;
+    }
+    
     int r = remove(path.c_str());
     if (r != 0) {
         wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
