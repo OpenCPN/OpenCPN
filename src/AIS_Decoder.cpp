@@ -639,9 +639,7 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                         pTargetData->b_SarAircraftPosnReport = true;
                     }
 
-                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);                                            
-                    
-                    (*AISTargetList)[pTargetData->MMSI] = pTargetData; // update the hash table entry
+                    AISshipNameCache(pTargetData, AISTargetNamesC, AISTargetNamesNC, mmsi);
                 }
             }
         } else {
