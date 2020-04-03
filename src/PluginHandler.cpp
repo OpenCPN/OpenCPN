@@ -76,6 +76,7 @@ extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
 extern bool           g_bportable;
+extern MyFrame        *gFrame;
 
 extern wxString       g_compatOS;
 extern wxString       g_compatOsVersion;
@@ -926,27 +927,17 @@ bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
         bool bOK = installPlugin( plugin, cacheFile.ToStdString());
         if(!bOK){
             wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
-            auto dlg = new wxMessageDialog(
-                    NULL,
-                    "",
-                    _("Installation error"),
-                    wxOK | wxCENTRE | wxICON_ERROR);
-            std::string text = "Please check system log for more info.";
-            dlg->SetMessage(text);
-            dlg->ShowModal();
-            dlg->Destroy();
+             wxString message = _("Please check system log for more info.");
+            OCPNMessageBox(gFrame, message, _("Installation error"), wxICON_ERROR | wxOK | wxCENTRE);
 
             return false;
         }
         
-        wxMessageDialog *dlg = new wxMessageDialog(
-            NULL,
-            plugin.name + " " + plugin.version
-            + _(" successfully installed from cache"),
-             _("Installation complete"),
-             wxOK | wxCENTRE | wxICON_INFORMATION);
-        dlg->ShowModal();
-        dlg->Destroy();
+        wxString message;
+        message.Printf("%s %s\n", plugin.name.c_str(),  plugin.version.c_str());
+        message += _(" successfully installed from cache");
+        OCPNMessageBox(gFrame, message, _("Installation complete"), wxICON_INFORMATION | wxOK | wxCENTRE);
+
         return true;
    }
  

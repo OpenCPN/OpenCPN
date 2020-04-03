@@ -447,6 +447,8 @@ static void run_update_dialog(PluginListPanel* parent,
 
         //  On successful installation, copy the temp tarball to the local cache
         if(bOK){
+            wxLogMessage("Installation of %s successful",  update.name.c_str());
+            
             wxURI uri( wxString(update.tarball_url.c_str()));
             wxFileName fn(uri.GetPath());
             wxString tarballFile = fn.GetFullName();
@@ -462,6 +464,8 @@ static void run_update_dialog(PluginListPanel* parent,
                 wxMkdir( cacheDir);
     
             wxString destination = cacheDir + _T("/") + tarballFile;
+            wxLogMessage(" Trying to copy %s ",  tempTarballPath.c_str());
+            
             if(wxFileExists(wxString( tempTarballPath.c_str()))){
                 wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
                 wxCopyFile( wxString( tempTarballPath.c_str()), destination);
@@ -689,19 +693,22 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
         {
             g_pi_manager->DeactivatePlugIn(actionPIC);
 
+            // Capture the confirmation dialog contents before the plugin goes away
             wxString message;
             message.Printf("%s %s\n", actionPIC->m_ManagedMetadata.name.c_str(),
                            actionPIC->m_ManagedMetadata.version.c_str());
+            message += _("successfully un-installed");
 
             wxLogMessage("Uninstalling %s", actionPIC->m_ManagedMetadata.name.c_str());
+            
             PluginHandler::getInstance()->uninstall(actionPIC->m_ManagedMetadata.name);
-
-            message += _("successfully un-installed");
-            OCPNMessageBox(gFrame, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
 
             //  Reload all plugins, which will bring in the action results.
             g_pi_manager->LoadAllPlugIns( false );
             plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+
+            OCPNMessageBox(gFrame, message, _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
+
             break;
         }
  
@@ -5216,7 +5223,7 @@ void PluginListPanel::Clear()
     wxASSERT(count == numChildren);
 */    
     for(unsigned int i=0 ; i < m_PluginItems.GetCount(); i++){
-        m_PluginItems[i]->Destroy();
+        delete m_PluginItems[i];    //->Destroy();
     }
     m_PluginItems.Clear();
     
