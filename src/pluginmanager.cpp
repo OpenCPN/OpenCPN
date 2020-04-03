@@ -5226,6 +5226,16 @@ void PluginListPanel::Clear()
         delete m_PluginItems[i];    //->Destroy();
     }
     m_PluginItems.Clear();
+
+    // Remove the wxStaticLines, also
+    wxWindowList kids = m_panel->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item(i);
+        wxWindow *win = node->GetData();
+
+        if (win->IsKindOf(CLASSINFO(wxStaticLine)) )
+            delete win;
+    } 
     
     m_pitemBoxSizer01->Clear();
     
@@ -5271,7 +5281,7 @@ void PluginListPanel::AddPlugin(PlugInContainer* pic)
     m_pitemBoxSizer01->Add( pPluginPanel, wxSizerFlags().Expand());
     m_PluginItems.Add( pPluginPanel );
 
-    wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    wxStaticLine* itemStaticLine = new wxStaticLine( m_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
     m_pitemBoxSizer01->Add( itemStaticLine, wxSizerFlags().Expand());
 }
 
