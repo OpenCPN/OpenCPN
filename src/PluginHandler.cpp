@@ -689,6 +689,9 @@ void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
+    if(!wxFileExists( wxString(filelist.c_str())))
+        return;
+    
     std::istringstream files(filelist);
     while (!files.eof()) {
         char line[256];
