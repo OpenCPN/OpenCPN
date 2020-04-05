@@ -1550,7 +1550,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
             double offset_angle = atan2(d_north, d_east);
             double offset_distance = sqrt((d_north * d_north) + (d_east * d_east));
             double chart_angle =  GetVPRotation();
-            double target_angle = chart_angle - offset_angle;
+            double target_angle = chart_angle + offset_angle;
             double d_east_mod = offset_distance * cos( target_angle );
             double d_north_mod = offset_distance * sin( target_angle );
             fromSM( d_east_mod, d_north_mod, gLat, gLon, &vpLat, &vpLon );
@@ -4773,7 +4773,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     double d_north_mod = offset_distance * sin( target_angle );
 
     m_OSoffsetx = d_east_mod * VPoint.view_scale_ppm;
-    m_OSoffsety = d_north_mod * VPoint.view_scale_ppm;
+    m_OSoffsety = -d_north_mod * VPoint.view_scale_ppm;
  
  //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
  //   m_OSoffsety = offy * VPoint.view_scale_ppm;
