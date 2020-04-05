@@ -1637,7 +1637,7 @@ bool PlugInManager::UnLoadPlugIn(size_t ix)
      if (!DeactivatePlugIn(pic)) {
          return false;
      }
-    if(pic->m_bInitState){
+    if(pic->m_pplugin){
         pic->m_destroy_fn(pic->m_pplugin);
     }
    
