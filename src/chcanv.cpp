@@ -4519,15 +4519,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 double d_north_mod = offset_distance * sin( target_angle );
 
                 m_OSoffsetx = d_east_mod * old_ppm;
-                m_OSoffsety = d_north_mod * old_ppm;
-
-                //m_OSoffsetx = offx * old_ppm;
-                //m_OSoffsety = offy * old_ppm;
-
-                //double dx = m_OSoffsetx;
-                //double dy = m_OSoffsety;
-                //double d_east = dx / new_scale;
-                //double d_north = dy / new_scale;
+                m_OSoffsety = -d_north_mod * old_ppm;
 
                 double d_east_mods = d_east_mod / new_scale;
                 double d_north_mods = d_north_mod / new_scale;
