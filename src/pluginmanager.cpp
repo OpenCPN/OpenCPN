@@ -5158,6 +5158,8 @@ void CatalogMgrPanel::OnChannelSelected(wxCommandEvent &event)
 
     Layout();
     Fit();
+    g_options->itemBoxSizerPanelPlugins->Layout();
+
 
 }
 
