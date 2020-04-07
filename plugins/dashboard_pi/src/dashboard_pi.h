@@ -192,7 +192,7 @@ private:
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
-      short                mPriSTW, mPriWTP, mPriATMP;
+      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN;
       double               mVar;
       // FFU
       double               mSatsInView;
