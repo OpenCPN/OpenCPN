@@ -5042,12 +5042,20 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxArrayString channels;
      channels.Add(_T( "Master" ));
      channels.Add(_T( "Beta" ));
-     channels.Add(_T( "Alpha" ));
-     channels.Add(_T( "Custom..." ));
+     wxString expert = pConfig->Read( "CatalogExpert", "0");
+     if(expert.IsSameAs(_T("1"))){
+        channels.Add(_T( "Alpha" ));
+        channels.Add(_T( "Custom..." ));
+     }
+     
      m_choiceChannel = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, channels);
      rowSizer2->Add( m_choiceChannel, 0, wxALIGN_RIGHT );
      m_choiceChannel->Bind(wxEVT_CHOICE, &CatalogMgrPanel::OnChannelSelected, this);
-     m_choiceChannel->SetSelection(GetChannelIndex(&channels));
+     int selection = GetChannelIndex(&channels);
+     if(!expert){
+         if(selection > 1) selection = 0;
+     }
+     m_choiceChannel->SetSelection( selection );
 
      SetUpdateButtonLabel();
 
