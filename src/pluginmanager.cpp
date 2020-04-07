@@ -1064,6 +1064,9 @@ bool PlugInManager::LoadPlugInDirectory(const wxString& plugin_dir, bool load_en
     wxLogMessage("Found %d candidates", (int)file_list.GetCount());
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
+        if(file_name.Contains(_T("draw")))
+            int yyp = 3;
+        
         wxString plugin_file = wxFileName(file_name).GetFullName();
         wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
         wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
@@ -1381,7 +1384,7 @@ void PlugInManager::UpdateManagedPlugins()
     std::vector<PluginMetadata> available = getCompatiblePlugins();
 
     // Traverse the list again
-    // Remove any managed plugins that are no longer available in the current catalog
+    // Remove any inactive/uninstalled managed plugins that are no longer available in the current catalog
     // Usually due to reverting from Alpha/Beta catalog back to master
     for (size_t i = 0; i < plugin_array.GetCount(); i++) {
         pict = plugin_array.Item(i);
@@ -1394,21 +1397,29 @@ void PlugInManager::UpdateManagedPlugins()
                 }
             }
             if(!bfound){
-                plugin_array.Item(i)->m_pluginStatus = PluginStatus::PendingListRemoval;
+                if(!pict->m_pplugin){           // Only remove inactive plugins
+                    plugin_array.Item(i)->m_pluginStatus = PluginStatus::PendingListRemoval;
+                }
             }
         }
     }
 
     //  Remove any list items marked
-    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+    size_t i=0;
+    while( (i >= 0) && (i <  plugin_array.GetCount())){
         pict = plugin_array.Item(i);
         if(pict->m_pluginStatus == PluginStatus::PendingListRemoval){
             plugin_array.RemoveAt(i);
             i=0;
         }
+        else
+            i++;
     }
 
-    
+    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+        pict = plugin_array.Item(i);
+        int yyp = 4;
+    }
     
     //  Now merge and update from the catalog
     for (auto plugin: available) {
@@ -1506,6 +1517,8 @@ void PlugInManager::UpdateManagedPlugins()
 
     if(m_listPanel)
         m_listPanel->ReloadPluginPanels( &plugin_array );
+
+    g_options->itemBoxSizerPanelPlugins->Layout();
 
 
 }
@@ -5063,6 +5076,11 @@ static const char* const DOWNLOAD_REPO_PROTO = "https://raw.githubusercontent.co
 
 void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 {
+        for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++){
+            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
+            int yyp = 4;
+    }
+
     std::string url;
     
     // Craft the url
@@ -5107,6 +5125,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     auto pluginHandler = PluginHandler::getInstance();
     pluginHandler->setMetadata("");
 
+    for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++){
+            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
+            int yyp = 4;
+    }
+            
     //  Reload all plugins, which will also update the status fields
     g_pi_manager->LoadAllPlugIns( false );
 
