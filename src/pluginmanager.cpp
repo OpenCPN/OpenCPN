@@ -5059,8 +5059,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer3->Add( m_customText, 0, wxALIGN_LEFT | wxRIGHT, 2 * GetCharWidth() );
      m_tcCustomURL = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer3->Add( m_tcCustomURL, 1, wxEXPAND  );
-     m_tcCustomURL->Hide();
-     m_customText->Hide();
+
+     if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Custom"))){
+         m_tcCustomURL->Show();
+         m_customText->Show();
+     }
+     else{
+         m_tcCustomURL->Hide();
+         m_customText->Hide();
+     }
      
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
