@@ -659,6 +659,18 @@ std::string PluginHandler::getMetadataPath()
         metadataPath = path;
         return path;
     }
+    
+    // If default location for composit plugin metadata is not found, 
+    //  we look in the plugin cache directory, which will normally contain the last "master" catalog downloaded
+    path = g_Platform->GetPrivateDataDir().ToStdString();
+    path += SEP;
+    path += "plugins" + SEP + "cache" + SEP + "metadata" + SEP + "ocpn-plugins.xml";
+    if (ocpn::exists(path)) {
+        metadataPath = path;
+        return path;
+    }
+    
+    // And if that does not work, use the empty metadata file found in the distribution "data" directory
     metadataPath = g_Platform->GetSharedDataDir().ToStdString();
     metadataPath += SEP ;
     metadataPath += "ocpn-plugins.xml";

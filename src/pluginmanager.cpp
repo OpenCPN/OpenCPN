@@ -5042,6 +5042,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      wxArrayString channels;
      channels.Add(_T( "Master" ));
      channels.Add(_T( "Beta" ));
+     pConfig->SetPath( _T("/PlugIns/") );
      wxString expert = pConfig->Read( "CatalogExpert", "0");
      if(expert.IsSameAs(_T("1"))){
         channels.Add(_T( "Alpha" ));
@@ -5123,6 +5124,26 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
         OCPNMessageBox(this, _("Unable to copy catalog file"), _("OpenCPN Catalog update"), wxICON_ERROR);
         return;
     }
+    
+    // If this is the "master" catalog, also copy to plugin cache
+    if(m_choiceChannel->GetString(m_choiceChannel->GetSelection()).StartsWith(_T("Master"))){
+        wxString metaCache = g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("plugins");
+        if(!wxDirExists( metaCache ))
+            wxMkdir( metaCache );
+        metaCache += wxFileName::GetPathSeparator();
+        metaCache += _T("cache");
+        if(!wxDirExists( metaCache ))
+            wxMkdir( metaCache );
+        metaCache += wxFileName::GetPathSeparator();
+        metaCache += _T("metadata");
+        if(!wxDirExists( metaCache ))
+            wxMkdir( metaCache );
+            
+        if(!wxCopyFile (wxString(filePath.c_str()), metaCache + wxFileName::GetPathSeparator() + _T("ocpn-plugins.xml"))){
+            OCPNMessageBox(this, _("Unable to copy catalog file to cache"), _("OpenCPN Catalog update"), wxICON_ERROR);
+            return;
+        }
+    }       
 
     // Record in the config file the name of the catalog downloaded
     pConfig->SetPath( _T("/PlugIns/") );
