@@ -5091,11 +5091,6 @@ static const char* const DOWNLOAD_REPO_PROTO = "https://raw.githubusercontent.co
 
 void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
 {
-        for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++){
-            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
-            int yyp = 4;
-    }
-
     std::string url;
     
     // Craft the url
@@ -5140,11 +5135,6 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     auto pluginHandler = PluginHandler::getInstance();
     pluginHandler->setMetadata("");
 
-    for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++){
-            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
-            int yyp = 4;
-    }
-            
     //  Reload all plugins, which will also update the status fields
     g_pi_manager->LoadAllPlugIns( false );
 
