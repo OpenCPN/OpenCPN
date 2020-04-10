@@ -552,6 +552,12 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if (!archive_check(r, "archive read header error", src)) {
             return false;
         }
+        
+        //  Ignore any occurrence of file "metadata.xml"
+        std::string path = archive_entry_pathname(entry);
+        if(std::string::npos != path.find("metadata.xml"))
+            continue;
+        
         entry_set_install_path(entry, pathmap);
         if (strlen(archive_entry_pathname(entry)) == 0) {
             continue;
