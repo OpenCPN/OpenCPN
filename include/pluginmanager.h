@@ -456,12 +456,13 @@ class CatalogMgrPanel: public wxPanel
         void OnUpdateButton(wxCommandEvent &event);
         void OnChannelSelected(wxCommandEvent &event);
         void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
+        void OnTarballButton(wxCommandEvent &event);
     protected:
         wxString GetCatalogText(bool);
         unsigned int GetChannelIndex(const wxArrayString* channels);
         void SetUpdateButtonLabel();
 
-        wxButton *m_updateButton, *m_advancedButton;
+        wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
         wxStaticText *m_catalogText, *m_customText;
         wxChoice *m_choiceChannel;
         wxTextCtrl *m_tcCustomURL;
