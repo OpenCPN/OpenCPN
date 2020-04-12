@@ -210,7 +210,8 @@ enum {
   ID_CONFIGEDIT_OK,
   ID_CONFIGEDIT_CANCEL,
   ID_ZOOMBUTTONS,
-  ID_RASTERZOOM
+  ID_RASTERZOOM,
+  ID_TEMPUNITSCHOICE
 };
 
 /* Define an int bit field for dialog return value
@@ -505,7 +506,7 @@ class options : private Uncopyable,
   int k_vectorcharts;
 
   // For "Units" page
-  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect;
+  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect, *pTempFormat;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 

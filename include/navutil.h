@@ -65,13 +65,23 @@ enum
     SPEED_MS
 };
 
+enum
+{
+	TEMPERATURE_C = 0,
+	TEMPERATURE_F = 1,
+	TEMPERATURE_K = 2
+};
+
 extern bool LogMessageOnce(const wxString &msg);
 extern double toUsrDistance( double nm_distance, int unit = -1 );
 extern double fromUsrDistance( double usr_distance, int unit = -1 );
 extern double toUsrSpeed( double kts_speed, int unit = -1 );
 extern double fromUsrSpeed( double usr_speed, int unit = -1 );
+extern double toUsrTemp(double cel_temp, int unit = -1);
+extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
+extern wxString getUsrTempUnit(int unit = -1);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern wxString FormatDistanceAdaptive( double distance );
 extern wxString formatTimeDelta(wxTimeSpan span);
