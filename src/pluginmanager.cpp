@@ -5394,6 +5394,10 @@ void CatalogMgrPanel::OnTarballButton( wxCommandEvent &event)
         }
         
         //  TODO Validate the metadata, in some simplistic way...
+        if (!PluginHandler::isCompatible(importPlugin)) {
+            OCPNMessageBox(this,_("Incompatible import plugin detected."), _("OpenCPN Plugin Import Error"));
+            return;
+        }
         
         // Load and parse a working copy of the currently active catalog...
         std::vector<PluginMetadata> pluginArray;
