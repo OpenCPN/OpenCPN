@@ -215,23 +215,23 @@ enum {
 
 /* Define an int bit field for dialog return value
  * to indicate which types of settings have changed */
-#define GENERIC_CHANGED 1
-#define S52_CHANGED 2
-#define FONT_CHANGED 4
-#define FORCE_UPDATE 8
-#define VISIT_CHARTS 16
-#define LOCALE_CHANGED 32
-#define TOOLBAR_CHANGED 64
-#define CHANGE_CHARTS 128
-#define SCAN_UPDATE 256
-#define GROUPS_CHANGED 512
-#define STYLE_CHANGED 1024
-#define TIDES_CHANGED 2048
-#define GL_CHANGED 4096
-#define REBUILD_RASTER_CACHE 8192
-#define NEED_NEW_OPTIONS 16384
-#define PARSE_ENC 32768
-#define CONFIG_CHANGED 8192 * 2
+#define GENERIC_CHANGED                 1
+#define S52_CHANGED                     1 << 1
+#define FONT_CHANGED                    1 << 2
+#define FORCE_UPDATE                    1 << 3
+#define VISIT_CHARTS                    1 << 4
+#define LOCALE_CHANGED                  1 << 5
+#define TOOLBAR_CHANGED                 1 << 6
+#define CHANGE_CHARTS                   1 << 7
+#define SCAN_UPDATE                     1 << 8
+#define GROUPS_CHANGED                  1 << 9
+#define STYLE_CHANGED                   1 << 10
+#define TIDES_CHANGED                   1 << 11
+#define GL_CHANGED                      1 << 12
+#define REBUILD_RASTER_CACHE            1 << 13
+#define NEED_NEW_OPTIONS                1 << 14
+#define PARSE_ENC                       1 << 15
+#define CONFIG_CHANGED                  1 << 16
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -359,6 +359,9 @@ class options : private Uncopyable,
   void OnConfigMouseSelected( wxMouseEvent &event);
 
   void SetSelectedConnectionPanel( ConnectionParamsPanel *panel );
+  
+  bool GetNeedNew(){ return m_bneedNew; }
+  void SetNeedNew( bool bnew ){ m_bneedNew =bnew; }
   
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -696,6 +699,7 @@ class options : private Uncopyable,
   wxSize  m_colourPickerDefaultSize;
 
   wxSize m_sliderSize;
+  bool m_bneedNew;
   
   DECLARE_EVENT_TABLE()
 };

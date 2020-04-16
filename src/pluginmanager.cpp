@@ -413,6 +413,7 @@ static void run_update_dialog(PluginListPanel* parent,
                               bool uninstall,
                               const char* name = 0)
 {
+    wxString pluginName = pic->m_common_name;
     const char* plugin = name == 0 ? pic->m_common_name.mb_str().data() : name;
     auto updates = getUpdates(plugin);
     auto parent_dlg = dynamic_cast<wxScrolledWindow*>(parent->GetParent());
@@ -483,6 +484,21 @@ static void run_update_dialog(PluginListPanel* parent,
             
         //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
+    
+    // Check to see if this plugin needs an options instance reload
+    if(g_options){
+        bool b_newOptions = false;
+        for(unsigned int i = 0 ; i < g_pi_manager->GetPlugInArray()->GetCount() ; i++)
+        {
+            PlugInContainer *pic = g_pi_manager->GetPlugInArray()->Item(i);
+            wxString cname = pic->m_common_name;
+            if(pic->m_bInitState && (pluginName == cname)) {
+                if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE))
+                    g_options->SetNeedNew( true );
+            }
+        }
+    }
+
     parent->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
     //wxString name(plugin);
     //g_pi_manager->GetListPanelPtr()->SelectByName(name);
