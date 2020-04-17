@@ -661,7 +661,13 @@ void OCPNPlatform::Initialize_2( void )
     
     //  Set a global toolbar scale factor
     g_toolbar_scalefactor = GetToolbarScaleFactor( g_GUIScaleFactor );
-    
+    auto configdir = wxFileName(GetPrivateDataDir());
+    if (!configdir.DirExists()) {
+        if (!configdir.Mkdir()) {
+	     auto msg = std::string("Cannot create config directory: ");
+             wxLogWarning(msg + configdir.GetFullPath());
+        }
+    }
 }
 
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
