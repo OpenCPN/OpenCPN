@@ -2767,6 +2767,9 @@ if (MSVC)
   )
 endif (MSVC)
 
+# Repack tarball using tar if available
+include(dist_target)
+
 # uninstall target
 if(NOT TARGET uninstall)
     configure_file(
