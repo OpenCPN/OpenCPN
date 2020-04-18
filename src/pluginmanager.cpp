@@ -6094,19 +6094,28 @@ void PluginPanel::SetSelected( bool selected )
     
     Layout();
 
+    bool bUseSysColors;
 #ifdef __WXOSX__
-    // StaticText color change upon selection
-    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) ) {
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
+        bUseSysColors = true;
+#endif
+#ifdef __WXGTK__
+    bUseSysColors= true;
+#endif    
+
+    if(bUseSysColors){
         wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
-        if( bg.Red() < 128 ) {
+        if( bg.Red() < 128 ) {          // is Dark...
             if(selected) {
                 SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
             } else {
                 SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+                m_status_icon->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
             }
         }
     }
-#endif
+
     SetEnabled( m_pPlugin->m_bEnabled );
 
 #ifdef __OCPN__ANDROID__
