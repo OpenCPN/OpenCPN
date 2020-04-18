@@ -151,9 +151,9 @@ double SENTENCE::Double( int field_number ) const
  //  ASSERT_VALID( this );
     wxCharBuffer abuf = Field( field_number).ToUTF8();
     if( !abuf.data() || strlen(abuf.data()) == 0 )                            // badly formed sentence?
-        return (999.);
- 
-    return( ::atof( abuf.data() ));
+        return (NAN);
+    else
+        return( ::atof( abuf.data() ));
 }
 
 

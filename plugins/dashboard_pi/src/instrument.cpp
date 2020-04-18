@@ -238,7 +238,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
       if (m_cap_flag & st){
-            if(!std::isnan(data) && (data < 9999)){
+            if( !std::isnan(data) ){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
                 else if (unit == _T("\u00B0"))
@@ -337,6 +337,8 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
 
 void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
 {
+      if (std::isnan(data))
+          return;
       if (st == m_cap_flag1)
       {
             m_data1 = toSDMM(1, data);
