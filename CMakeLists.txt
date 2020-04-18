@@ -2486,12 +2486,12 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 
 # The following components are regex's to match anywhere (unless anchored) in
 # absolute path + filename to find files or directories to be excluded from
-# source tarball.
+# source tarball created by 'make package_source'.
 set(
   CPACK_SOURCE_IGNORE_FILES
+  "\\\\.flatpak-builder*"
   "\\\\.git*"
-  "^${CMAKE_CURRENT_SOURCE_DIR}/build*"
-  "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
+  "${CMAKE_BINARY_DIR}*"
 )
 
 #
