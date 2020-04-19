@@ -38,6 +38,77 @@
 
 #define XMIN(a,b) (a < b? a : b)
 
+static UC Is_Trackpoint_Invalid(GPS_PTrack trk);
+
+time_t gps_save_time = {0};
+double gps_save_lat = 0;
+double gps_save_lon = 0;
+#define GUSB_MAX_UNITS 20
+struct garmin_unit_info garmin_unit_info[GUSB_MAX_UNITS];
+
+int32 gps_category_type;
+int32 gps_category_transfer;
+
+#if 0
+gps_date_time_transfer      = pA600;
+gps_date_time_type          = pD600;  /* All models so far */
+gps_position_transfer       = pA700;
+gps_position_type           = pD700;  /* All models so far */
+#else
+int32 gps_date_time_transfer      = -1;
+int32 gps_date_time_type          = -1;
+int32 gps_position_transfer       = -1;
+int32 gps_position_type           = -1;
+#endif
+int32 gps_pvt_transfer            = -1;
+int32 gps_pvt_type                = -1;
+int32 gps_trk_transfer            = -1;
+int32 gps_trk_type                = -1;
+int32 gps_trk_hdr_type            = -1;
+int32 gps_rte_link_type           = -1;
+
+int32 gps_waypt_transfer          = -1;
+int32 gps_waypt_type              = -1;
+int32 gps_route_transfer          = -1;
+int32 gps_rte_hdr_type            = -1;
+int32 gps_rte_type                = -1;
+
+int32 gps_prx_waypt_transfer      = -1;
+int32 gps_prx_waypt_type          = -1;
+int32 gps_almanac_transfer        = -1;
+int32 gps_almanac_type            = -1;
+
+int32 gps_lap_transfer            = -1;
+int32 gps_lap_type                = -1;
+int32 gps_run_transfer            = -1;
+int32 gps_run_type                = -1;
+int32 gps_run_crs_trk_type        = -1;
+int32 gps_run_crs_trk_hdr_type    = -1;
+int32 gps_workout_transfer        = -1;
+int32 gps_workout_type            = -1;
+int32 gps_workout_occurrence_type = -1;
+int32 gps_user_profile_transfer   = -1;
+int32 gps_user_profile_type       = -1;
+int32 gps_workout_limits_transfer = -1;
+int32 gps_workout_limits_type     = -1;
+int32 gps_course_transfer         = -1;
+int32 gps_course_type             = -1;
+int32 gps_course_lap_transfer     = -1;
+int32 gps_course_lap_type         = -1;
+int32 gps_course_point_transfer   = -1;
+int32 gps_course_point_type       = -1;
+int32 gps_course_limits_transfer  = -1;
+int32 gps_course_limits_type      = -1;
+int32 gps_course_trk_transfer     = -1;
+int32 gps_device_command          = -1;
+int32 gps_link_type               = -1;
+
+int32	gps_save_id;
+int	gps_is_usb;
+double	gps_save_version;
+char	gps_save_string[GPS_ARB_LEN];
+
+
 static int32    GPS_A000(const char *port);
 static void   GPS_A001(GPS_PPacket packet);
 
@@ -102,14 +173,6 @@ static void   GPS_D500_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D501_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D550_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D551_Send(UC *data, GPS_PAlmanac alm);
-
-static UC Is_Trackpoint_Invalid(GPS_PTrack trk);
-
-
-int32	gps_save_id;
-int	gps_is_usb;
-double	gps_save_version;
-char	gps_save_string[GPS_ARB_LEN];
 
 void  VerifySerialPortClosed(void);  /*  In gpsserial.c  */
 
@@ -255,62 +318,7 @@ static int32 GPS_A000(const char *port)
     GPS_User("Unit:\t%s\nID:\t%d\nVersion:\t%.2f",
 	gps_save_string, gps_save_id, gps_save_version);
 
-#if 0
-    gps_date_time_transfer      = pA600;
-    gps_date_time_type          = pD600;  /* All models so far */
-    gps_position_transfer       = pA700;
-    gps_position_type           = pD700;  /* All models so far */
-#else
-    gps_date_time_transfer      = -1;
-    gps_date_time_type          = -1;
-    gps_position_transfer       = -1;
-    gps_position_type           = -1;
-#endif
-    gps_pvt_transfer            = -1;
-    gps_pvt_type                = -1;
-    gps_trk_transfer            = -1;
-    gps_trk_type                = -1;
-    gps_trk_hdr_type            = -1;
-    gps_rte_link_type           = -1;
-
-    gps_waypt_transfer          = -1;
-    gps_waypt_type              = -1;
-    gps_route_transfer          = -1;
-    gps_rte_hdr_type            = -1;
-    gps_rte_type                = -1;
-
-    gps_prx_waypt_transfer      = -1;
-    gps_prx_waypt_type          = -1;
-    gps_almanac_transfer        = -1;
-    gps_almanac_type            = -1;
-
-    gps_lap_transfer            = -1;
-    gps_lap_type                = -1;
-    gps_run_transfer            = -1;
-    gps_run_type                = -1;
-    gps_run_crs_trk_type        = -1;
-    gps_run_crs_trk_hdr_type    = -1;
-    gps_workout_transfer        = -1;
-    gps_workout_type            = -1;
-    gps_workout_occurrence_type = -1;
-    gps_user_profile_transfer   = -1;
-    gps_user_profile_type       = -1;
-    gps_workout_limits_transfer = -1;
-    gps_workout_limits_type     = -1;
-    gps_course_transfer         = -1;
-    gps_course_type             = -1;
-    gps_course_lap_transfer     = -1;
-    gps_course_lap_type         = -1;
-    gps_course_point_transfer   = -1;
-    gps_course_point_type       = -1;
-    gps_course_limits_transfer  = -1;
-    gps_course_limits_type      = -1;
-    gps_course_trk_transfer     = -1;
-
-    gps_device_command          = -1;
-    gps_link_type               = -1;
-
-    if(!GPS_Device_Wait(fd))
+   if(!GPS_Device_Wait(fd))
     {
 	GPS_Warning("A001 protocol not supported");
 	id = GPS_Protocol_Version_Change(id,version);

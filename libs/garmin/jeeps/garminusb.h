@@ -46,7 +46,7 @@ union {
  * OS implementation.
  */
 #define GUSB_MAX_UNITS 20
-struct garmin_unit_info {
+extern struct garmin_unit_info {
 	unsigned long serial_number;
 	unsigned long unit_id;
 	unsigned long unit_version;
