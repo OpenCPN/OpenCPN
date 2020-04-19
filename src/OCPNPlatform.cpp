@@ -1487,6 +1487,15 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
 #ifdef __WXMSW__
         m_PrivateDataDir = GetHomeDir();                     // should be {Documents and Settings}\......
+#elif defined FLATPAK
+        // ~/.var/app/org.opencpn.OpenCPN/config
+        const char* config_home = getenv("XDG_CONFIG_HOME");
+        if (!config_home {
+            config_home = std::string(getenv("HOME"))
+                + "/.var/app/org.opencpn.OpenCPN/config";
+        }
+        m_PrivateDataDir = std::string(config_home) + "/opencpn";
+
 #elif defined __WXOSX__
         m_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
         appendOSDirSlash(&m_PrivateDataDir);
