@@ -418,7 +418,11 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    
     int slashpos = path.find_first_of('/', 1);
+    if(ocpn::startswith(path, "./"))
+        slashpos = path.find_first_of('/', 2);  // skip the './'
+        
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
     if (ocpn::startswith(path, "usr/")) {
