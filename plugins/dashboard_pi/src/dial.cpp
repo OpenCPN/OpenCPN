@@ -99,6 +99,8 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
+      if (std::isnan(data))
+          return;
       if (st == m_MainValueCap)
       {
             m_MainValue = data;
