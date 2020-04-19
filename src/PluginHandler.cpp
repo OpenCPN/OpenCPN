@@ -49,15 +49,16 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #undef Yield                 // from win.h, conflicts with mingw headers
 #endif
 
-#include "Downloader.h"
-#include "OCPNPlatform.h"
-#include "PluginHandler.h"
-#include "PluginPaths.h"
-#include "pluginmanager.h"
-#include "navutil.h"
-#include "ocpn_utils.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
+#include "Downloader.h"
+#include "logger.h"
+#include "navutil.h"
+#include "OCPNPlatform.h"
+#include "ocpn_utils.h"
+#include "PluginHandler.h"
+#include "pluginmanager.h"
+#include "PluginPaths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -527,8 +528,7 @@ static void entry_set_install_path(struct archive_entry* entry,
     }
     const std::string dest = archive_entry_pathname(entry);
     if(dest.size()){
-        std::cout << "Installing " << src << " into " << dest << std::endl;
-        wxLogMessage( _T("Installing ") + wxString(src.c_str()) + _T(" into ") + wxString(dest.c_str()));
+        DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
     }
 }
 
@@ -869,7 +869,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin)
     path = std::string(fname);
     std::ofstream stream;
     stream.open(path.c_str(), std::ios::out|std::ios::binary|std::ios::trunc);
-    std::cout << "Downloading: " << plugin.name << std::endl;
+    DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
     auto downloader = Downloader(plugin.tarball_url);
     downloader.download(&stream);
 
