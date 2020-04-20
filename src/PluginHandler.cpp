@@ -481,7 +481,10 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
     const string base = PluginPaths::getInstance()->Homedir()
         + "/Library/Application Support/OpenCPN";
 
-    const string path = archive_entry_pathname(entry);
+    string path = archive_entry_pathname(entry);
+    if(ocpn::startswith(path, "./"))
+        path = path.substr(2);
+
     string dest("");
     size_t slashes = count(path.begin(), path.end(), '/');
     if (slashes < 3) {
