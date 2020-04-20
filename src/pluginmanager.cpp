@@ -6094,7 +6094,7 @@ void PluginPanel::SetSelected( bool selected )
     
     Layout();
 
-    bool bUseSysColors;
+    bool bUseSysColors = false;
 #ifdef __WXOSX__
     if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
         bUseSysColors = true;
