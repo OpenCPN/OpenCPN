@@ -348,9 +348,17 @@ static void win_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    if (ocpn::startswith(path, "./")) {
+        path = path.substr(1);
+    }
 
     // Remove top-level directory part
     int slashpos = path.find_first_of('/', 1);
+    if(slashpos < 0){
+        archive_entry_set_pathname(entry, "");
+        return;
+    }
+        
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
 
