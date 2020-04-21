@@ -70,12 +70,13 @@ modules:
           - -DOCPN_BUNDLE_DOCS=ON
           - -DOCPN_BUNDLE_TCDATA=ON
           - -DOCPN_BUNDLE_GSHHS=CRUDE
+          - -DOCPN_CI_BUILD=ON
+          - -DOCPN_FLATPAK=ON
           - -DBUILD_SHARED_LIBS=OFF
           - -DCMAKE_FIND_ROOT_PATH=/app
           - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
           - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
-          - -DOCPN_FLATPAK=ON
       build-options:
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK
