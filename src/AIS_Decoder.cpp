@@ -490,28 +490,14 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 now.MakeUTC();
                 double lat = value[_T("latitude")].AsDouble();
                 double lon = value[_T("longitude")].AsDouble();
-                if( !bnewtarget ) {
-                    int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
-                    if ( age_of_last > 0 ) {
-                        ll_gc_ll_reverse( pTargetData->Lat,
-                                          pTargetData->Lon,
-                                          lat,
-                                          lon,
-                                          &pTargetData->COG,
-                                          &pTargetData->SOG );
-                        pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
-                    }
-                }
-//                wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: PositionReportTicks %d"),
-//                        now.GetTicks()));
                 pTargetData->PositionReportTicks = now.GetTicks();
                 pTargetData->StaticReportTicks = now.GetTicks();
                 pTargetData->Lat = lat;
                 pTargetData->Lon = lon;
                 pTargetData->b_positionOnceValid = true;
                 pTargetData->b_positionDoubtful = false;
-
             }
+
             if ( value.HasMember(_T("altitude")) ) { 
                 pTargetData->altitude = value[_T("altitude ")].AsInt(); }
         } else if (update_path == _T("navigation.speedOverGround")) {
