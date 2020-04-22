@@ -19,8 +19,8 @@ sudo systemctl disable --now dnf-makecache.timer
 sudo dnf clean all
 
 # Install required packages
-su -c "dnf install -y sudo dnf-plugins-core"
-sudo dnf install -y flatpak-builder ccrypt make rsync gnupg2
+su -c "dnf install -y -q sudo dnf-plugins-core"
+sudo dnf install -q -y flatpak-builder ccrypt make rsync gnupg2
 
 test -d /opencpn-ci && cd /opencpn-ci || :
 
@@ -47,7 +47,7 @@ rm -rf ../ci/gpg.tar.gz opencpn-gpg
 # Deploy website/ to deployment server.
 ccdecrypt --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt
 rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
-rsync -av --rsh="ssh -o 'StrictHostKeyChecking no' -i ../ci/amazon-ec2.pem" \
+rsync -a --rsh="ssh -o 'StrictHostKeyChecking no' -i ../ci/amazon-ec2.pem" \
     website/ $rsync_host:/var/www/ocpn-website-beta/website
 rm -f ../ci/amazon-ec2.pem
 
