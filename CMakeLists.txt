@@ -181,6 +181,8 @@ else (APPLE OR WIN32)
   bundle_tcdata_opt("OFF")
 endif (APPLE OR WIN32)
 
+option(OCPN_BUNDLE_GSHHS "Bundle minimal GSHHS data files" ON)
+
 option(OCPN_VERBOSE "Make verbose builds"  ON)
 option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
 
@@ -2076,7 +2078,6 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_PKGDATA}
   )
 
-  install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
   install(
     DIRECTORY data/svg/markicons/
@@ -2108,6 +2109,10 @@ if (NOT APPLE)
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     install(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
   endif ()
+
+  if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+    install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
+  endif ()  
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
