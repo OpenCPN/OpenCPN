@@ -50,3 +50,6 @@ rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
 rsync -av --rsh="ssh -o 'StrictHostKeyChecking no' -i ../ci/amazon-ec2.pem" \
     website/ $rsync_host:/var/www/ocpn-website-beta/website
 rm -f ../ci/amazon-ec2.pem
+
+# Restore the patched file so the caching works.
+git checkout ../flatpak/org.opencpn.OpenCPN.yaml
