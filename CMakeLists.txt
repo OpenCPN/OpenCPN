@@ -2623,13 +2623,17 @@ endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
 # Appstream data (linux in general, in particular flatpak).
 #
 configure_file(
-
   "${CMAKE_SOURCE_DIR}/data/opencpn.appdata.xml.in"
   "${CMAKE_BINARY_DIR}/opencpn.appdata.xml"
   @ONLY
 )
- 
-
+add_custom_command(
+  TARGET ${PACKAGE_NAME}
+  PRE_BUILD
+  COMMAND ${CMAKE_SOURCE_DIR}/ci/circleci-flatpak-buildnum.sh
+  WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}
+  COMMENT "Patch in build number in version data."
+)
 
 #
 # Debian package setup
