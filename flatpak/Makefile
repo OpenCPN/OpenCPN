@@ -33,7 +33,7 @@ sign:
 	flatpak build-update-repo --gpg-sign=$(GPG_KEY) --prune \
 	    --gpg-homedir=$(GPG_HOMEDIR) \
 	    $(CURDIR)/repo/repo
-	-cp ../flatpak/repo/*flat* ../flatpak/repo/index.html repo
+	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html repo
 	@for file in $(CURDIR)/repo/opencpn.flatpakrepo \
 	   $(CURDIR)/repo/index.html \
            $(CURDIR)/repo/opencpn.flatpakref;\
