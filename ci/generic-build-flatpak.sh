@@ -34,20 +34,23 @@ flatpak --user install -y org.freedesktop.Sdk//18.08
 cd flatpak
 sed -i '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
     org.opencpn.OpenCPN.yaml
-make build
+test -d ../build || mkdir ../build
+cd ../build
+make -f ../flatpak/Makefile build
 
 # Decrypt and unpack gpg keys, sign and install into website/
-ccdecrypt --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt
-tar xf ../ci/gpg.tar.gz
+ccat --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt > gpg.tar.gz
+tar xf gpg.tar.gz
 chmod 500 opencpn-gpg
-make GPG_HOMEDIR=opencpn-gpg sign
-make GPG_HOMEDIR=opencpn-gpg install
-rm -rf ../ci/gpg.tar.gz opencpn-gpg
+make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
+make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile install
+rm -rf gpg.tar.gz opencpn-gpg
 
 # Deploy website/ to deployment server.
-ccdecrypt --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt
+ccat --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt > amazon-ec2.pem
+chmod 400 amazon-ec2.pem
 rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
-rsync -a --rsh="ssh -o 'StrictHostKeyChecking no' -i ../ci/amazon-ec2.pem" \
+rsync -a --rsh="ssh -o 'StrictHostKeyChecking no' -i amazon-ec2.pem" \
     website/ $rsync_host:/var/www/ocpn-website-beta/website
 rm -f ../ci/amazon-ec2.pem
 
