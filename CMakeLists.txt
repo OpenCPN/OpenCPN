@@ -2166,7 +2166,10 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps
     )
     install(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications)
-    install(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata)
+    install(
+      FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
+      DESTINATION ${PREFIX_DATA}/appdata
+    )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
 
@@ -2615,6 +2618,18 @@ if (OCPN_BUNDLE_TCDATA MATCHES "ON")
 else (OCPN_BUNDLE_TCDATA MATCHES "ON")
   message(STATUS "*** Package will NOT include tide and current data ***")
 endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
+
+#
+# Appstream data (linux in general, in particular flatpak).
+#
+configure_file(
+
+  "${CMAKE_SOURCE_DIR}/data/opencpn.appdata.xml.in"
+  "${CMAKE_BINARY_DIR}/opencpn.appdata.xml"
+  @ONLY
+)
+ 
+
 
 #
 # Debian package setup
