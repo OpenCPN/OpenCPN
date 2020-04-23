@@ -89,4 +89,4 @@ modules:
             url: ..
             branch: master
           - type: patch
-            path: src/0008-flatpak-Add-a-shell-wrapper.patch
+            path: ../flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
