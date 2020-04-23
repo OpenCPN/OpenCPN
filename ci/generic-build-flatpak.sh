@@ -37,6 +37,7 @@ sed -i '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
 test -d ../build || mkdir ../build
 cd ../build
 make -f ../flatpak/Makefile build
+flatpak list
 
 # Decrypt and unpack gpg keys, sign and install into website/
 ccat --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt > gpg.tar.gz
