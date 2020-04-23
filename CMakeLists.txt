@@ -189,6 +189,7 @@ option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
+option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -1163,7 +1164,7 @@ else ()
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 endif ()
 
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1399,7 +1400,7 @@ endif (OCPN_USE_NEWSERIAL)
 
 # Search for opengles, short of running a program to test the speed of
 # acceleration, I simply use gles on "native linux" arm systems
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
