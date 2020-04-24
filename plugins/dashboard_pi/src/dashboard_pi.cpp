@@ -212,7 +212,7 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Depth");
         case ID_DBP_D_DPT:
             return _("Depth");
-	case ID_DBP_D_MDA:
+        case ID_DBP_D_MDA:
             return _("Barometric pressure");
         case ID_DBP_I_MDA:
             return _("Barometric pressure");
