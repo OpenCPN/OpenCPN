@@ -12,7 +12,7 @@ DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
 RSYNC_RSH       ?= ssh
 RSYNC_HOST      ?= amazon-ec2
-REPO_URL        ?= http://leamas.fedorapeople.org/opencpn/repo
+REPO_URL        ?= http://opencpn.duckdns.org/opencpn-beta
 
 all: build sign
 
