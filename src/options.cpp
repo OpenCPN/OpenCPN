@@ -6221,7 +6221,9 @@ void options::CreateControls(void) {
   SetColorScheme(static_cast<ColorScheme>(0));
 
   // Set the maximum size of the entire settings dialog
-  SetSizeHints(-1, -1, width - 100, height - 100);
+  // leaving a little border for larger displays.
+  if(width > 800)
+      SetSizeHints(-1, -1, width - 100, height - 100);
 
   //  The s57 chart panel is the one which controls the minimum width required
   //  to avoid horizontal scroll bars
