@@ -4,7 +4,7 @@ MACRO (TODAY RESULT)
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
                ${RESULT} ${${RESULT}})
     ELSEIF(UNIX OR MINGW)
-        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
+        EXECUTE_PROCESS(COMMAND "date" "-u" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
                ${RESULT} ${${RESULT}})
     ELSE ()
