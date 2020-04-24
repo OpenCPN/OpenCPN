@@ -51,7 +51,7 @@ rm -rf gpg.tar.gz opencpn-gpg
 ccat --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt > amazon-ec2.pem
 chmod 400 amazon-ec2.pem
 rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
-rsync -a --rsh="ssh -o 'StrictHostKeyChecking no' -i amazon-ec2.pem" \
+rsync -a --info=stats --rsh="ssh -o 'StrictHostKeyChecking no' -i amazon-ec2.pem" \
     website/ $rsync_host:/var/www/ocpn-website-beta/website
 rm -f ../ci/amazon-ec2.pem
 
