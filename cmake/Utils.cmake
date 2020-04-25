@@ -23,3 +23,13 @@ MACRO (COMMIT_ID RESULT)
     )
     SET(${RESULT} ${COMMIT_HASH})
 ENDMACRO (COMMIT_ID)
+
+MACRO (BUILD_NUM RESULT)
+    # Get the current Travis/CircleCI build number, possibly ""
+    execute_process(
+      COMMAND /usr/bin/sh -c "echo $CIRCLE_BUILD_NUM$TRAVIS_BUILD_NUM"
+      OUTPUT_VARIABLE _BUILD_NUM
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+SET(${RESULT} ${_BUILD_NUM})
+ENDMACRO (BUILD_NUM)

@@ -560,7 +560,11 @@ if (OCPN_CI_BUILD)
   include(Utils)
   today(DATE)
   commit_id(COMMIT)
+  build_num(BUILD_NUMBER)
   set(VERSION_TAIL "+${COMMIT}")
+  if (NOT BUILD_NUMBER STREQUAL "")
+      set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
+  endif ()
   set(VERSION_DATE "${DATE}")
 endif (OCPN_CI_BUILD)
 
@@ -568,6 +572,8 @@ set(
   PACKAGE_VERSION
   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}"
 )
+message(STATUS "Build num: ${BUILD_NUM}")
+message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
 if (APPLE)
