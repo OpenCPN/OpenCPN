@@ -2633,13 +2633,6 @@ configure_file(
   "${CMAKE_BINARY_DIR}/opencpn.appdata.xml"
   @ONLY
 )
-add_custom_command(
-  TARGET ${PACKAGE_NAME}
-  PRE_BUILD
-  COMMAND ${CMAKE_SOURCE_DIR}/ci/circleci-flatpak-buildnum.sh
-  WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}
-  COMMENT "Patch in build number in version data."
-)
 
 #
 # Debian package setup
