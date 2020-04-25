@@ -43,7 +43,13 @@
       a under länken "Download".
     </p>
    </description>
-
+  <releases>
+    <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@">
+      <description>
+        <p>The latest upstream commit.</p>
+      </description>
+    </release>
+  </releases>
   <screenshots>
     <screenshot type="default">
       <image>

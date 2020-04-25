@@ -56,10 +56,21 @@ jobs:
      machine:
        image: ubuntu-1604:201903-01
      environment:
-       - OCPN_TARGET:  mingw
+       - OCPN_TARGET:  flatpak
      steps:
        - checkout
+       - restore_cache:
+           keys:
+              - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
        - run: ci/circleci-build-flatpak.sh
+       - save_cache:
+           key: fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+           paths:
+             - build/.flatpak-builder/cache
+             - build/.flatpak-builder/ccache
+             - build/.flatpak-builder/checksums
+             - build/.flatpak-builder/downloads
+             - build/.flatpak-builder/rofiles
 
 
 workflows:
