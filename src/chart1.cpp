@@ -4534,12 +4534,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
 
         case ID_MENU_ZOOM_IN:{
-            GetPrimaryCanvas()->ZoomCanvas( g_plus_minus_zoom_factor, false );
+            if(GetFocusCanvas()){
+                GetFocusCanvas()->ZoomCanvas( g_plus_minus_zoom_factor, false );
+            }
             break;
         }
 
         case ID_MENU_ZOOM_OUT:{
-            GetPrimaryCanvas()->ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
+            if(GetFocusCanvas()){
+                GetFocusCanvas()->ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
+            }
             break;
         }
 
