@@ -1717,6 +1717,10 @@ wxString &OCPNPlatform::GetConfigFileName()
         m_config_file_name.Append(_T("opencpn"));
         appendOSDirSlash(&m_config_file_name);
         m_config_file_name.Append(_T("opencpn.ini"));
+#elif defined FLATPAK
+        m_config_file_name = GetPrivateDataDir();
+        m_config_file_name.Append(_T("/opencpn.conf"));
+            // Usually ~/.var/app/org.opencpn.OpenCPN/config/opencpn.conf
 #else
         m_config_file_name = std_path.GetUserDataDir(); // should be ~/.opencpn
         appendOSDirSlash(&m_config_file_name);

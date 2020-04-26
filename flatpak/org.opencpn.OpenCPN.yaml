@@ -69,7 +69,6 @@ modules:
       config-opts:
           - -DOCPN_BUNDLE_DOCS=ON
           - -DOCPN_BUNDLE_TCDATA=ON
-          - -DOCPN_BUNDLE_GSHHS=CRUDE
           - -DOCPN_CI_BUILD=ON
           - -DOCPN_FLATPAK=ON
           - -DBUILD_SHARED_LIBS=OFF
@@ -89,4 +88,4 @@ modules:
             url: ..
             branch: master
           - type: patch
-            path: src/0008-flatpak-Add-a-shell-wrapper.patch
+            path: ../flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
