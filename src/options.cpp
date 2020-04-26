@@ -5559,6 +5559,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxStaticBoxSizer(rolloverBox, wxVERTICAL);
   aisSizer->Add(rolloverSizer, 0, wxALL | wxEXPAND, border_size);
 
+  pRollover = new wxCheckBox(panelAIS, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
+  rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
+
   wxStaticText* pStatic_Dummy4 =
       new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
   rolloverSizer->Add(pStatic_Dummy4, 1, wxALL, 2 * group_item_spacing);
@@ -5830,9 +5833,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pResponsive->Hide();
 #endif
 
-  pRollover = new wxCheckBox(itemPanelFont, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
-  miscOptions->Add(pRollover, 0, wxALL, border_size);
-  
   pZoomButtons = new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));
   miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
 #ifndef __OCPN__ANDROID__
