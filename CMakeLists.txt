@@ -573,7 +573,6 @@ set(
   PACKAGE_VERSION
   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}"
 )
-message(STATUS "Build num: ${BUILD_NUM}")
 message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
