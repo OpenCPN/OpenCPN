@@ -30,10 +30,12 @@ flatpak --user remote-add --if-not-exists \
 flatpak --user install -y org.freedesktop.Platform//18.08
 flatpak --user install -y org.freedesktop.Sdk//18.08
 
-# Patch to use official master branch from github and build
+# Patch to use official master branch from github and build + build number.
 cd flatpak
-sed -i '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+    -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
     org.opencpn.OpenCPN.yaml
+
 test -d ../build || mkdir ../build
 cd ../build
 make -f ../flatpak/Makefile build
