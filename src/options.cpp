@@ -9724,7 +9724,7 @@ void options::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(FALSE);
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("8375"));
+      m_tNetPort->SetValue(_T("3000"));
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
     m_cbOutput->SetValue(FALSE);
