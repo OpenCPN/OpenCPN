@@ -66,8 +66,14 @@ mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 sudo chmod 644 /usr/local/lib/lib*.dylib
 make install
-#make install # Dunno why the second is needed but it is, otherwise
+make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
+
+#  A truly awful hack...
+#  fixup_bundle (part of MacOS install step) seems to somehow miss the required copy of libpixman
+#  Or the second install kills it...
+#  So we do it explicitely.
+sudo cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 
 make create-dmg
 make create-pkg
