@@ -66,6 +66,7 @@ extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
+extern std::vector<int>      g_quilt_noshow_index_array;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -1463,6 +1464,16 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               else {
                                 delete pce;
                               }
+                        }
+                        
+                        //  A performance optimization.
+                        //  Hide this chart's MBTiles overlay on initial MBTile chart load, or reload after cache purge.
+                        //  This can help avoid excessively long startup and group switch time when large tilesets are in use.
+                        //  See FS#2601
+                        if(chart_type == CHART_TYPE_MBTILES){
+                            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), dbindex) == g_quilt_noshow_index_array.end()) {
+                                g_quilt_noshow_index_array.push_back( dbindex );
+                            }
                         }
                   }
                   else if(INIT_FAIL_REMOVE == ir)                 // some problem in chart Init()
