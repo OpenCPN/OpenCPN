@@ -172,9 +172,8 @@ macro (BUNDLE_TCDATA_OPT onoff)
 endmacro (BUNDLE_TCDATA_OPT)
 
 macro (BUNDLE_GSHHS_OPT onoff)
-  option(OCPN_BUNDLE_GSHHS "Include GSHHS charts in package" ${onoff})
+    option(OCPN_BUNDLE_GSHHS "Bundle minimal GSHHS data files" ${onoff})
 endmacro (BUNDLE_GSHHS_OPT)
-
 
 # If on Windows or Apple, build the monolithic package, to override use a non-
 # sense values from the commandline (due to cmake inability to distinguish
@@ -190,12 +189,14 @@ else (APPLE OR WIN32)
   bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
+
 option(OCPN_VERBOSE "Make verbose builds"  ON)
 option(OCPN_PEDANTIC "Enable more compiler warnings" OFF)
 
 set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
+option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -396,6 +397,7 @@ message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
 message(
   STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
 )
+
 # ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 # TODO: Should we use  -fno-stack-protector IF NOT DEBUGGING CFLAGS="-O2
 # -march=native"
@@ -557,13 +559,16 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 # Version handling
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
-include(TargetSetup)
 
 if (OCPN_CI_BUILD)
   include(Utils)
   today(DATE)
   commit_id(COMMIT)
+  build_num(BUILD_NUMBER)
   set(VERSION_TAIL "+${COMMIT}")
+  if (NOT "${BUILD_NUMBER}" STREQUAL "")
+      set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
+  endif ()
   set(VERSION_DATE "${DATE}")
 endif (OCPN_CI_BUILD)
 
@@ -571,6 +576,7 @@ set(
   PACKAGE_VERSION
   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}"
 )
+message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
 if (APPLE)
@@ -590,6 +596,7 @@ endif (APPLE)
 
 message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
+
 #
 # Bundled data: docs, tcdata
 #
@@ -600,13 +607,6 @@ if (OCPN_BUNDLE_DOCS MATCHES "ON")
 else (OCPN_BUNDLE_DOCS MATCHES "ON")
   message(STATUS "*** Package will NOT include documentation ***")
 endif (OCPN_BUNDLE_DOCS MATCHES "ON")
-
-if (OCPN_BUNDLE_GSHHS MATCHES "ON")
-  message(STATUS "*** Package will include gshhs charts ***")
-else (OCPN_BUNDLE_GSHHS MATCHES "ON")
-  message(STATUS "*** Package will NOT include gshhs charts ***")
-endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
-
 
 #
 # Linux: set up GTK (wxWidgets prerequisite).
@@ -850,6 +850,7 @@ set(
   include/ConnectionParams.h
   include/cutil.h
   include/datastream.h
+  include/DepthFont.h
   include/DetailSlider.h
   include/Downloader.h
   include/download_mgr.h
@@ -870,6 +871,7 @@ set(
   include/Layer.h
   include/LinkPropDlg.h
   include/LLRegion.h
+  include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
@@ -977,6 +979,7 @@ set(
   src/ConnectionParams.cpp
   src/cutil.cpp
   src/datastream.cpp
+  src/DepthFont.cpp
   src/DetailSlider.cpp
   src/Downloader.cpp
   src/download_mgr.cpp
@@ -996,6 +999,7 @@ set(
   src/Layer.cpp
   src/LinkPropDlg.cpp
   src/LLRegion.cpp
+  src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
   src/MUIBar.cpp
@@ -1122,12 +1126,9 @@ add_library(ocpn::opencpn ALIAS _opencpn)
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES
-    ENABLE_EXPORTS
-    1
-    OUTPUT_NAME
-    ${PACKAGE_NAME}
-    ARCHIVE_OUTPUT_DIRECTORY
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ENABLE_EXPORTS 1
+    OUTPUT_NAME ${PACKAGE_NAME}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_include_directories(
@@ -1165,13 +1166,7 @@ if (DEFINED _wx_selected_config)
   if (_wx_selected_config MATCHES "androideabi-qt")
     message(STATUS "Building for wxQt-Android")
     message(STATUS "Qt_Base: " ${Qt_Base})
-    message(
-      STATUS
-        "wxQt_Base/Build: "
-        ${wxQt_Base}
-        "/"
-        ${wxQt_Build}
-    )
+    message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
     set(QT_ANDROID "ON")
   endif (_wx_selected_config MATCHES "androideabi-qt")
 endif (DEFINED _wx_selected_config)
@@ -1182,7 +1177,7 @@ else ()
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 endif ()
 
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1418,7 +1413,7 @@ endif (OCPN_USE_NEWSERIAL)
 
 # Search for opengles, short of running a program to test the speed of
 # acceleration, I simply use gles on "native linux" arm systems
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1651,6 +1646,12 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif (UNIX AND NOT APPLE)
 
+# Finalize config.h setup and deploy it.
+include(TargetSetup)
+if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u" AND PKG_TARGET STREQUAL "ubuntu")
+  set(PKG_TARGET "${PKG_TARGET}-gtk3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
+endif ()
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
@@ -1698,13 +1699,13 @@ if (MSVC)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS MATCHES "ON")
-  set(
-    gshhs
-      data/gshhs/poly-c-1.dat
-      data/gshhs/wdb_borders_c.b
-      data/gshhs/wdb_rivers_c.b
-  )
-endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
+    set(
+        gshhs
+        data/gshhs/poly-c-1.dat
+        data/gshhs/wdb_borders_c.b
+        data/gshhs/wdb_rivers_c.b
+    )
+ENDif (OCPN_BUNDLE_GSHHS MATCHES "ON")
 
 # Various data files
 
@@ -2094,10 +2095,6 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_PKGDATA}
   )
 
-  if (OCPN_BUNDLE_GSHHS MATCHES "ON")
-      install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
-  endif (OCPN_BUNDLE_GSHHS MATCHES "ON")
-
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
   install(
     DIRECTORY data/svg/markicons/
@@ -2129,6 +2126,10 @@ if (NOT APPLE)
   if (OCPN_BUNDLE_TCDATA MATCHES "ON")
     install(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
   endif ()
+
+  if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+    install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
+  endif ()  
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
@@ -2175,7 +2176,10 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps
     )
     install(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications)
-    install(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata)
+    install(
+      FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
+      DESTINATION ${PREFIX_DATA}/appdata
+    )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
 
@@ -2325,9 +2329,9 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
 endif (GETTEXT_MSGFMT_EXECUTABLE)
 
 #
-# Install wxstd.mo in Windows and Mac
+# Install wxstd.mo in Windows
 #
-if (WIN32 OR APPLE)
+if (WIN32)
 
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
@@ -2337,25 +2341,40 @@ if (WIN32 OR APPLE)
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
 
-    if (APPLE)
-      install(
-        FILES ${_current_wx_mofile}
-        DESTINATION
-          ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
-        RENAME wxstd.mo
-      )
-    else (APPLE)
-      install(
+    install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
         RENAME wxstd.mo
           PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       )
-    endif (APPLE)
 
   endforeach (_current_wx_mofile)
 
-endif (WIN32 OR APPLE)
+endif (WIN32)
+
+#
+# Install wxstd.mo in Mac
+#
+if (APPLE)
+
+  file(
+    GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildosx/wxWidgets/locale/*.mo
+  )
+
+  foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
+    get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
+    get_filename_component(_mlang ${_absFile} NAME_WE)
+
+    install(
+        FILES ${_current_wx_mofile}
+        DESTINATION
+          ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
+        RENAME wxstd.mo
+      )
+
+  endforeach (_current_wx_mofile)
+
+endif (APPLE)
 
 #
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable
@@ -2470,12 +2489,12 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 
 # The following components are regex's to match anywhere (unless anchored) in
 # absolute path + filename to find files or directories to be excluded from
-# source tarball.
+# source tarball created by 'make package_source'.
 set(
   CPACK_SOURCE_IGNORE_FILES
+  "\\\\.flatpak-builder*"
   "\\\\.git*"
-  "^${CMAKE_CURRENT_SOURCE_DIR}/build*"
-  "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
+  "${CMAKE_BINARY_DIR}*"
 )
 
 #
@@ -2611,6 +2630,15 @@ else (OCPN_BUNDLE_TCDATA MATCHES "ON")
 endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
 
 #
+# Appstream data (linux in general, in particular flatpak).
+#
+configure_file(
+  "${CMAKE_SOURCE_DIR}/data/opencpn.appdata.xml.in"
+  "${CMAKE_BINARY_DIR}/opencpn.appdata.xml"
+  @ONLY
+)
+
+#
 # Debian package setup
 #
 if (UNIX AND NOT APPLE)
@@ -2673,6 +2701,29 @@ if (APPLE)
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
     " COMPONENT Runtime)
+    
+  #Build standard MacOS installer package
+  #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
+  #  This avoids absolute paths in the XXX.pkgproj file
+
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/OpenCPN.pkgproj.in
+    ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+    )
+  configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)
+
+  ADD_CUSTOM_COMMAND(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+   COMMAND /usr/local/bin/packagesbuild -F ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+   COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
+   )
+
+ ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
+ DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
+
+  #Build standard MacOS .dmg 
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
@@ -2718,6 +2769,9 @@ if (MSVC)
     "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
+
+# Repack tarball using tar if available
+include(dist_target)
 
 # uninstall target
 if(NOT TARGET uninstall)
