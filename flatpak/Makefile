@@ -56,6 +56,7 @@ repourl:
 
 publish:
 	rsync -a  --info=stats --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \
+	    --delete-after \
 	    $(RSYNC_HOST):/var/www/ocpn-flatpak/website
 
 .phony:
