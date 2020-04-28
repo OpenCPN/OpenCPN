@@ -49,6 +49,12 @@ make -f ../flatpak/Makefile install
 make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
 rm -rf gpg.tar.gz opencpn-gpg
 
+# Debug: show version in local repo.
+flatpak remote-add  \
+    --user --gpg-import=website/opencpn.key local $PWD/website/repo
+flatpak update --appstream local
+flatpak remote-ls local
+
 # Deploy website/ to deployment server.
 ccat --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt > amazon-ec2.pem
 chmod 400 amazon-ec2.pem
@@ -59,3 +65,10 @@ rm -f ../ci/amazon-ec2.pem
 
 # Restore the patched file so the caching works.
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
+
+# Debug: show version in remote repo.
+flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak update --appstream opencpn
+flatpak remote-ls opencpn
+
+
