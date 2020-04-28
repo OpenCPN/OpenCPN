@@ -38,6 +38,7 @@
 #include <wx/progdlg.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
+#include <wx/uri.h>
 
 #include "catalog_mgr.h"
 #include "download_mgr.h"
@@ -206,26 +207,32 @@ class InstallButton: public wxPanel
                 PluginHandler::getInstance()->uninstall(m_metadata.name);
             }
             wxLogMessage("Installing %s", m_metadata.name.c_str());
-            auto downloader = new GuiDownloader(this, m_metadata);
-            downloader->run(this);
-            auto pic = PlugInByName(m_metadata.name,
-                                    g_pi_manager->GetPlugInArray());
-            if (!pic) {
-                wxLogMessage("Installation of %s failed",
-                             m_metadata.name.c_str());
-                return;
+            
+            auto pluginHandler = PluginHandler::getInstance();
+            bool cacheResult = pluginHandler->installPluginFromCache( m_metadata );
+            
+            if(!cacheResult){
+                auto downloader = new GuiDownloader(this, m_metadata);
+                downloader->run(this);
+                auto pic = PlugInByName(m_metadata.name,
+                                        g_pi_manager->GetPlugInArray());
+                if (!pic) {
+                    wxLogMessage("Installation of %s failed",
+                                m_metadata.name.c_str());
+                    return;
+                }
+                auto upwards = GetParent()->GetParent()->GetParent();
+                auto main_window = dynamic_cast<PluginDownloadDialog*>(upwards);
+                wxASSERT(main_window != 0);
+                auto listPanels =
+                    dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
+                wxASSERT(listPanels != 0);
+                listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+                auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();
+                auto btn = dynamic_cast<wxButton*>(window);
+                wxASSERT(btn != 0);
+                btn->SetLabel(_("Reinstall"));
             }
-            auto upwards = GetParent()->GetParent()->GetParent();
-            auto main_window = dynamic_cast<PluginDownloadDialog*>(upwards);
-            wxASSERT(main_window != 0);
-            auto listPanels =
-                dynamic_cast<PluginListPanel*>(main_window->GetRealParent()->GetPrevSibling());
-            wxASSERT(listPanels != 0);
-            listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
-            auto window = GetSizer()->GetItem((size_t) 0)->GetWindow();
-            auto btn = dynamic_cast<wxButton*>(window);
-            wxASSERT(btn != 0);
-            btn->SetLabel(_("Reinstall"));
         }
 
     private:
@@ -509,56 +516,98 @@ GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
         {}
 
-void GuiDownloader::run(wxWindow* parent)
+        
+std::string GuiDownloader::CheckCache()
 {
-            auto pluginHandler = PluginHandler::getInstance();
-            long size = get_filesize();
-            std::string label(_("Downloading "));
-            label += url;
-            m_dialog = new wxProgressDialog(
-                            _("Downloading"), label.c_str(), size, parent,
-                            wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
-            std::string path("");
-            bool ok = download(path);
-            if (!ok) {
-                delete m_dialog;
-                showErrorDialog("Download error");
-                return;
-            }
-            
-            // Download aborted?
-            if (m_dialog == 0) {
-                showErrorDialog("Download aborted");
-                return;
-            } else {
-                delete m_dialog;
-            }
+    // Look in the cache
+    wxURI uri( wxString(m_plugin.tarball_url.c_str()));
+    wxFileName fn(uri.GetPath());
+    wxString tarballFile = fn.GetFullName();
+    wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
+    wxString sep = _T("/");
+    cacheDir += sep + wxString(_T("cache"));
+    cacheDir += sep + wxString(_T("tarballs"));
+    wxString cacheCopy = cacheDir +sep + tarballFile;
+    if(wxFileExists( cacheCopy ))
+        return cacheCopy.ToStdString();
+    else
+        return std::string("");
+}
+        
+ 
 
-            m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
-            wxMessageDialog* dlg = 0;
+std::string GuiDownloader::run(wxWindow* parent)
+{
+            bool ok;
+            bool downloaded = false;
+            std::string path = CheckCache();
+            if(!path.size()){
+                long size = get_filesize();
+                std::string label(_("Downloading "));
+                label += url;
+                m_dialog = new wxProgressDialog(
+                                _("Downloading"), label.c_str(), size, parent,
+                                wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
+                ok = download(path);
+                if (!ok) {
+                    delete m_dialog;
+                    showErrorDialog("Download error");
+                    return "";
+                }
+                
+                // Download aborted?
+                if (m_dialog == 0) {
+                    showErrorDialog("Download aborted");
+                    return "";
+                } else {
+                    delete m_dialog;
+                }
+
+                m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
+                downloaded = true;
+            }
+                
+            auto pluginHandler = PluginHandler::getInstance();
             ok = pluginHandler->installPlugin(m_plugin, path);
             if (!ok) {
                 showErrorDialog("Installation error");
-                return;
+                return "";
             }
-#if 0            
-            auto pic = PlugInByName(m_plugin.name,
-                                    g_pi_manager->GetPlugInArray());
-#endif
-  bool pic = true;
-            if (!pic) {
-                showErrorDialog("Installation verification error");
-                return;
+            
+            if(downloaded){
+                // Cache the tarball from the tmp location to the plugin cache.
+                wxURI uri( wxString(m_plugin.tarball_url.c_str()));
+                wxFileName fn(uri.GetPath());
+                wxString tarballFile = fn.GetFullName();
+                wxString cacheDir = g_Platform->GetPrivateDataDir() + _T("/") + _T("plugins");
+                wxString sep = _T("/");
+                if( !wxDirExists(cacheDir) )
+                    wxMkdir( cacheDir);
+                cacheDir += sep + wxString(_T("cache"));
+                if( !wxDirExists(cacheDir) )
+                    wxMkdir( cacheDir);
+                cacheDir += sep + wxString(_T("tarballs"));
+                if( !wxDirExists(cacheDir) )
+                    wxMkdir( cacheDir);
+        
+                wxString destination = cacheDir + _T("/") + tarballFile;
+                wxLogMessage(" Trying to copy %s ",  path.c_str());
+                
+                if(wxFileExists(wxString( path.c_str()))){
+                    wxLogMessage("Copying %s to local cache",  tarballFile.c_str());
+                    wxCopyFile( wxString( path.c_str()), destination);
+                }
             }
-            else {
-                dlg = new wxMessageDialog(
+
+            
+            wxMessageDialog *dlg = new wxMessageDialog(
                         m_parent,
                         m_plugin.name + " " + m_plugin.version
                               + _(" successfully installed"),
                         _("Installation complete"),
                         wxOK | wxCENTRE | wxICON_INFORMATION);
-                dlg->ShowModal();
-            }
+            dlg->ShowModal();
+            return path;
 }
 
 void GuiDownloader::on_chunk(const char* buff, unsigned bytes) 

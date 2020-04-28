@@ -47,6 +47,7 @@
 #include "OCPNPlatform.h"
 #include "chart1.h"
 #include "cutil.h"
+#include "logger.h"
 #include "styles.h"
 #include "navutil.h"
 #include "ocpn_utils.h"
@@ -387,6 +388,24 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                 
             release_file.Close();
         }
+        if(detail->osd_name == _T("Linux Mint")){
+            if(wxFileExists(_T("/etc/upstream-release/lsb-release"))) {
+                wxTextFile upstream_release_file(_T("/etc/upstream-release/lsb-release"));
+                if(upstream_release_file.Open()) {
+                    wxString val;
+                    for(wxString str = upstream_release_file.GetFirstLine(); !upstream_release_file.Eof(); str = upstream_release_file.GetNextLine()) {
+                        if(str.StartsWith(_T("DISTRIB_RELEASE"))) {
+                            val = str.AfterFirst('=').Mid(0);
+                            val = val.Mid(0, val.Length());
+                            if(val.Length())
+                                detail->osd_version = std::string(val.mb_str());
+                        }
+                    }
+                    upstream_release_file.Close();
+                }
+            }
+        }
+
     }
 #endif
 
@@ -642,7 +661,13 @@ void OCPNPlatform::Initialize_2( void )
     
     //  Set a global toolbar scale factor
     g_toolbar_scalefactor = GetToolbarScaleFactor( g_GUIScaleFactor );
-    
+    auto configdir = wxFileName(GetPrivateDataDir());
+    if (!configdir.DirExists()) {
+        if (!configdir.Mkdir()) {
+	     auto msg = std::string("Cannot create config directory: ");
+             wxLogWarning(msg + configdir.GetFullPath());
+        }
+    }
 }
 
 //  Called from MyApp()::OnInit() just after gFrame is created, so gFrame is available
@@ -1462,6 +1487,17 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
 #ifdef __WXMSW__
         m_PrivateDataDir = GetHomeDir();                     // should be {Documents and Settings}\......
+#elif defined FLATPAK
+        std::string config_home;
+        if (getenv("XDG_CONFIG_HOME")) {
+            config_home = getenv("XDG_CONFIG_HOME");
+        }
+        else {
+          config_home = getenv("HOME");
+          config_home += "/.var/app/org.opencpn.OpenCPN/config";
+        }
+        m_PrivateDataDir = config_home + "/opencpn";
+
 #elif defined __WXOSX__
         m_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
         appendOSDirSlash(&m_PrivateDataDir);
@@ -1514,6 +1550,12 @@ static  wxString GetLinuxDataPath()
 
 wxString OCPNPlatform::GetPluginDataPath()
 {
+    if(g_bportable){
+        wxString sep = wxFileName::GetPathSeparator();
+        wxString ret = GetPrivateDataDir() + sep + _T("plugins");
+        return ret;
+    }
+    
     if (m_pluginDataPath != "" ) {
         return m_pluginDataPath;
     }
@@ -1528,9 +1570,14 @@ wxString OCPNPlatform::GetPluginDataPath()
     else if (osSystemId & wxOS_WINDOWS) {
         dirs = GetWinPluginBaseDir();
     }
+    else if (osSystemId & wxOS_MAC) {
+        dirs = "/Applications/OpenCPN.app/Contents/SharedSupport/plugins;";
+        dirs +=
+            "~/Library/Application Support/OpenCPN/Contents/SharedSupport/plugins";
+    }
     m_pluginDataPath = ExpandPaths(dirs, this);
     if (m_pluginDataPath != "") {
-        m_pluginDataPath += PATH_SEP;
+        m_pluginDataPath += ";";
     }
     m_pluginDataPath += GetPluginDir();
     if (m_pluginDataPath.EndsWith(wxFileName::GetPathSeparator())) {
@@ -1670,6 +1717,10 @@ wxString &OCPNPlatform::GetConfigFileName()
         m_config_file_name.Append(_T("opencpn"));
         appendOSDirSlash(&m_config_file_name);
         m_config_file_name.Append(_T("opencpn.ini"));
+#elif defined FLATPAK
+        m_config_file_name = GetPrivateDataDir();
+        m_config_file_name.Append(_T("/opencpn.conf"));
+            // Usually ~/.var/app/org.opencpn.OpenCPN/config/opencpn.conf
 #else
         m_config_file_name = std_path.GetUserDataDir(); // should be ~/.opencpn
         appendOSDirSlash(&m_config_file_name);
@@ -1869,27 +1920,14 @@ bool OCPNPlatform::InitializeLogFile( void )
                 ::wxRenameFile( mlog_file, oldlog );
             }
     }
-        
 #ifdef __OCPN__ANDROID__
+    if( ::wxFileExists( mlog_file ) ){
         //  Force new logfile for each instance
         // TODO Remove this behaviour on Release
-    if( ::wxFileExists( mlog_file ) ){
         ::wxRemoveFile( mlog_file );
     }
 #endif
-        
-    flog = fopen( mlog_file.mb_str(), "a" );
-    g_logger = new wxLogStderr( flog );
-        
-#ifdef __OCPN__ANDROID__
-        //  Trouble printing timestamp
-    g_logger->SetTimestamp((const char *)NULL);
-#endif
-        
-#if defined(__WXGTK__) || defined(__WXOSX__)
-    g_logger->SetTimestamp(_T("%H:%M:%S %Z"));
-#endif
-        
+    g_logger = new OcpnLog(mlog_file.mb_str());
     m_Oldlogger = wxLog::SetActiveTarget( g_logger );
 
     return true;

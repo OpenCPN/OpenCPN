@@ -71,7 +71,8 @@ public:
       void AdjustBestSize(AIS_Target_Data *td);
       void CreateControls();
       void RenderHTMLQuery(AIS_Target_Data *td);
-      
+      void OnKey( wxKeyEvent& ke );
+
       void SetText(const wxString &text_string);
       void SetColorScheme(ColorScheme cs);
 

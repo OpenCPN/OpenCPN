@@ -1,0 +1,3 @@
+git_tag="@GIT_TAG@"
+git_date="@GIT_DATE@"
+git_hash="@GIT_HASH@"

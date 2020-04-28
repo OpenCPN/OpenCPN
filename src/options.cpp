@@ -1354,6 +1354,16 @@ options::~options(void) {
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
+  
+  // Take care of the plugin manager...
+ 
+  delete m_pPlugInCtrl;
+  if(g_pi_manager)
+    g_pi_manager->SetListPanelPtr( NULL );
+#ifndef __OCPN__ANDROID__      
+  delete m_PluginCatalogMgrPanel;
+#endif
+  
 }
 
 // with AIS it's called very often
@@ -1470,6 +1480,7 @@ void options::Init(void) {
   b_oldhaveWMM = b_haveWMM;
   
   lastPage = 0;
+  m_bneedNew =false;
 
   m_cs = (ColorScheme) 0;
   
@@ -2206,6 +2217,8 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_btnOutputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(options::OnBtnOStcs), NULL,
                               this);
+  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                      wxCommandEventHandler(options::OnConnValChange), NULL, this);
   pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
@@ -2899,6 +2912,9 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_btnOutputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler(options::OnBtnOStcs), NULL,
                               this);
+  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                      wxCommandEventHandler(options::OnConnValChange), NULL, this);
+
   pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                    wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
@@ -3956,7 +3972,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), inputFlags);
 
-    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
+                                  wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
      prepareSlider(m_pSlider_Zoom);
@@ -3966,22 +3983,36 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), inputFlags);
     
-    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+    m_pSlider_Zoom_Vector = new wxSlider( m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, 
+                                          wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
      prepareSlider(m_pSlider_Zoom_Vector);
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
+
+    itemBoxSizerUI->Add(
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("CM93 Detail level")),
+        labelFlags);
+    m_pSlider_CM93_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0,
+                           -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
+                           wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
     
-    itemBoxSizerUI->Add(0, border_size * 3);
-    
+#ifdef __OCPN__ANDROID__
+    prepareSlider(m_pSlider_CM93_Zoom);
+#endif
+
+    itemBoxSizerUI->Add(m_pSlider_CM93_Zoom, 0, wxALL, border_size);
+
+
+    itemBoxSizerUI->Add(0, border_size * 3);    
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
     //  Display size/DPI
-    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width")),
-                        inputFlags);
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, 
+        wxID_ANY, _("Physical Screen Width")), inputFlags);
     wxBoxSizer* pDPIRow = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(pDPIRow, 0, wxEXPAND);
 
@@ -4076,16 +4107,32 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 8);
     itemBoxSizerUI->Add(0, border_size * 8);
 
+    // Chart Zoom Scale Weighting
     wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
+
     itemBoxSizerUI->Add(zoomTextHead, labelFlags);
     itemBoxSizerUI->Add(0, border_size * 1);
+    itemBoxSizerUI->Add(0, border_size * 1);
     
+    wxStaticText* zoomText =
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY,
+            _("With a lower value, the same zoom level shows a less detailed chart.\n\
+With a higher value, the same zoom level shows a more detailed chart."));
+
+    smallFont = *dialogFont;  // we can't use Smaller() because
+                              // wx2.8 doesn't support it
+    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +
+        0.5);  // + 0.5 to round instead of truncate
+    zoomText->SetFont(smallFont);
+    itemBoxSizerUI->Add(zoomText, 0, wxALL | wxEXPAND, group_item_spacing);
+
+    // spacer
+    /*itemBoxSizerUI->Add(0, border_size * 8); itemBoxSizerUI->Add(0, border_size * 8);*/
     
-    // Chart Zoom Scale Weighting
-    wxSize sz = g_Platform->getDisplaySize();
+    //wxSize sz = g_Platform->getDisplaySize();
     
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
-    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom );
@@ -4094,34 +4141,34 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
-    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5,
+                                         wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
     
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom_Vector );
 #endif
     
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
+
+    //Spacer
+    itemBoxSizerUI->Add(0, border_size * 3); itemBoxSizerUI->Add(0, border_size * 3);
     
-    itemBoxSizerUI->Add(0, border_size * 3);
-    wxStaticText* zoomText =
-        new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                         _("With a lower value, the same zoom level shows a less detailed chart.\n\
-With a higher value, the same zoom level shows a more detailed chart."));
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
+        _("CM93 Detail level")), labelFlags);
+    m_pSlider_CM93_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0,
+        -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
+        wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-    smallFont = *dialogFont;  // we can't use Smaller() because
-                              // wx2.8 doesn't support it
-    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +
-                            0.5);  // + 0.5 to round instead of truncate
-    zoomText->SetFont(smallFont);
-    itemBoxSizerUI->Add(zoomText, 0, wxALL | wxEXPAND, group_item_spacing);
+#ifdef __OCPN__ANDROID__
+    prepareSlider(m_pSlider_CM93_Zoom);
+#endif
 
-    // spacer
-    itemBoxSizerUI->Add(0, border_size * 8);
-    itemBoxSizerUI->Add(0, border_size * 8);
+    itemBoxSizerUI->Add(m_pSlider_CM93_Zoom, 0, wxALL, border_size);
 
     // spacer
-    itemBoxSizerUI->Add(0, border_size * 3);
-    itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 3); itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 3); itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 3); itemBoxSizerUI->Add(0, border_size * 3);
 
     //  Display size/DPI
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
@@ -4352,23 +4399,6 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
 
-    // spacer
-    optionsColumn->Add(0, border_size * 4);
-    optionsColumn->Add(0, border_size * 4);
-
-    int slider_width = wxMax(m_fontHeight * 4, 150);
-
-    optionsColumn->Add(
-        new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")),
-        labelFlags);
-    m_pSlider_CM93_Zoom = new wxSlider(
-        ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
-    optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
-                       border_size);
-
-#ifdef __OCPN__ANDROID__
-    prepareSlider( m_pSlider_CM93_Zoom );
-#endif
 
     // 2nd column, Display Category / Mariner's Standard options
     wxBoxSizer* dispSizer = new wxBoxSizer(wxVERTICAL);
@@ -4559,20 +4589,6 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
-
-    wxSize sz = g_Platform->getDisplaySize();
-
-    optionsColumn->Add(
-        new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")),
-        inputFlags);
-    m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-        CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, m_sliderSize,  SLIDER_STYLE);
-    optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
-                       border_size);
-
-#ifdef __OCPN__ANDROID__
-    prepareSlider( m_pSlider_CM93_Zoom );
-#endif
 
     //  Display Category / Mariner's Standard options
     wxBoxSizer* dispSizer = new wxBoxSizer(wxVERTICAL);
@@ -5543,9 +5559,13 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxStaticBoxSizer(rolloverBox, wxVERTICAL);
   aisSizer->Add(rolloverSizer, 0, wxALL | wxEXPAND, border_size);
 
-  wxStaticText* pStatic_Dummy4 =
-      new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
-  rolloverSizer->Add(pStatic_Dummy4, 1, wxALL, 2 * group_item_spacing);
+  pRollover = new wxCheckBox(panelAIS, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
+  rolloverSizer->Add(pRollover, 1, wxALL, 2 * group_item_spacing);
+
+  pRollover->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,  wxCommandEventHandler(options::OnAISRolloverClick), NULL, this);
+   
+  pStatic_CallSign = new wxStaticText(panelAIS, -1, _("\"Ship Name\" MMSI (Call Sign)"));
+  rolloverSizer->Add(pStatic_CallSign, 1, wxALL, 2 * group_item_spacing);
 
   m_pCheck_Rollover_Class =
       new wxCheckBox(panelAIS, -1, _("[Class] Type (Status)"));
@@ -5814,9 +5834,6 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   pResponsive->Hide();
 #endif
 
-  pRollover = new wxCheckBox(itemPanelFont, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
-  miscOptions->Add(pRollover, 0, wxALL, border_size);
-  
   pZoomButtons = new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));
   miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
 #ifndef __OCPN__ANDROID__
@@ -6205,7 +6222,9 @@ void options::CreateControls(void) {
   SetColorScheme(static_cast<ColorScheme>(0));
 
   // Set the maximum size of the entire settings dialog
-  SetSizeHints(-1, -1, width - 100, height - 100);
+  // leaving a little border for larger displays.
+  if(width > 800)
+      SetSizeHints(-1, -1, width - 100, height - 100);
 
   //  The s57 chart panel is the one which controls the minimum width required
   //  to avoid horizontal scroll bars
@@ -6254,6 +6273,15 @@ void options::SetColorScheme(ColorScheme cs) {
       
 #endif
 }
+
+void options::OnAISRolloverClick(wxCommandEvent &event)
+{
+    m_pCheck_Rollover_Class->Enable(event.IsChecked());
+    m_pCheck_Rollover_COG->Enable(event.IsChecked());
+    m_pCheck_Rollover_CPA->Enable(event.IsChecked());
+    pStatic_CallSign->Enable(event.IsChecked());
+}
+
 
 void options::OnCanvasConfigSelectClick( int ID, bool selected)
 {
@@ -6345,6 +6373,12 @@ void options::SetInitialSettings(void) {
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
   pRollover->SetValue(g_bRollover);
+  m_pCheck_Rollover_Class->Enable(g_bRollover);
+  m_pCheck_Rollover_COG->Enable(g_bRollover);
+  m_pCheck_Rollover_CPA->Enable(g_bRollover);
+  pStatic_CallSign->Enable(g_bRollover);
+
+ 
   pZoomButtons->SetValue( g_bShowMuiZoomButtons );
 
   //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
@@ -7687,6 +7721,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
+  g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
   g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
@@ -7704,9 +7739,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
   g_bopengl = pOpenGL->GetValue();
 
-  //   Handle Vector Charts Tab
-  g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
- 
+  //   Handle Vector Charts Tab  
   int depthUnit = pDepthUnitSelect->GetSelection();
   g_nDepthUnitDisplay = depthUnit;
  
@@ -7903,6 +7936,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
     gFrame->RefreshAllCanvas();
   }
 
+  // Some layout changes requiring a new options instance?
+  if(m_bneedNew)
+    m_returnChanges |= NEED_NEW_OPTIONS;
   
   //  Record notice of any changes to last applied template
   UpdateTemplateTitleText();
@@ -8665,7 +8701,7 @@ void options::DoOnPageChange(size_t page) {
           new PluginListPanel(itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
                               wxDefaultSize, g_pi_manager->GetPlugInArray());
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
-      itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 1, wxEXPAND | wxALL, 4);
+      itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 01, wxEXPAND | wxGROW | wxALL, 4);
       if(g_pi_manager)
           g_pi_manager->SetListPanelPtr(m_pPlugInCtrl);
 
@@ -8673,8 +8709,7 @@ void options::DoOnPageChange(size_t page) {
       m_PluginCatalogMgrPanel = new CatalogMgrPanel(itemPanelPlugins);
       m_PluginCatalogMgrPanel->SetListPanelPtr(m_pPlugInCtrl);
       
-      itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel,
-                                    wxSizerFlags(0).Expand().TripleBorder());
+      itemBoxSizerPanelPlugins->Add(m_PluginCatalogMgrPanel, 0, wxEXPAND | wxALL, 4);
 #endif      
       itemBoxSizerPanelPlugins->Layout();
 
@@ -9705,7 +9740,7 @@ void options::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(FALSE);
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("8375"));
+      m_tNetPort->SetValue(_T("3000"));
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
     m_cbOutput->SetValue(FALSE);

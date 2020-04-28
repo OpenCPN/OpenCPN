@@ -456,12 +456,13 @@ class CatalogMgrPanel: public wxPanel
         void OnUpdateButton(wxCommandEvent &event);
         void OnChannelSelected(wxCommandEvent &event);
         void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
+        void OnTarballButton(wxCommandEvent &event);
     protected:
-        wxString GetCatalogText();
+        wxString GetCatalogText(bool);
         unsigned int GetChannelIndex(const wxArrayString* channels);
         void SetUpdateButtonLabel();
 
-        wxButton *m_updateButton, *m_advancedButton;
+        wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
         wxStaticText *m_catalogText, *m_customText;
         wxChoice *m_choiceChannel;
         wxTextCtrl *m_tcCustomURL;
@@ -491,7 +492,7 @@ public:
       void SelectByName(wxString &name);
 
       wxBoxSizer         *m_pitemBoxSizer01;
-
+      wxPanel            *m_panel;
 private:
       void AddPlugin(PlugInContainer* pic);
       int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
@@ -500,7 +501,7 @@ private:
       ArrayOfPlugIns     *m_pPluginArray;
       ArrayOfPluginPanel  m_PluginItems;
       PluginPanel        *m_PluginSelected;
-      
+      wxString            m_selectedName;
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
@@ -517,7 +518,7 @@ class WebsiteButton: public wxPanel
 class PluginPanel: public wxPanel
 {
 public:
-      PluginPanel( PluginListPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
+      PluginPanel( wxPanel *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, PlugInContainer *p_plugin );
       ~PluginPanel();
 
       void OnPluginSelected( wxMouseEvent &event );

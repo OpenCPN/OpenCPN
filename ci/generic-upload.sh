@@ -8,7 +8,7 @@ test -z "$TRAVIS_BUILD_DIR" || cd $TRAVIS_BUILD_DIR
 cd build
 
 case "$OCPN_TARGET" in
-    xenial|trusty|bionic) 
+    xenial|trusty|bionic*)
         for src in $(expand *.deb); do
             old=$(basename $src)
             new=$(echo $old | sed "s/opencpn/opencpn-${OCPN_TARGET}/")
@@ -39,16 +39,17 @@ if [ -z "$CLOUDSMITH_API_KEY" ]; then
 else
     echo 'Deploying to cloudsmith'
     set -x
-    if pyenv versions >/dev/null 2>&1; then   # circleci image
+    if pyenv versions >/dev/null 2>&1; then
         pyenv versions
         pyenv global $(pyenv versions | tail -1)
+        sudo -H python3 -m pip  install wheel
         sudo -H python3 -m pip install cloudsmith-cli
         pyenv rehash
     else
         # Assuming builders have installed python3 + pip
         sudo -H python3 -m pip install -q cloudsmith-cli
     fi
-    for src in $(expand *.dmg *setup.exe *.deb); do
+    for src in $(expand *.dmg *setup.exe *.deb *.pkg); do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
         if [ "$old" != "$new" ]; then sudo mv "$old" "$new"; fi

@@ -4922,6 +4922,12 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
         for(std::vector<int>::reverse_iterator rit = tiles_to_show.rbegin();
                             rit != tiles_to_show.rend(); ++rit) {
             ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
+        
+            // This test catches the case where the chart is added to no_show list when first loaded by OpenChartFromDBAndLock
+            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), *rit) != g_quilt_noshow_index_array.end()) {
+                continue;
+            }
+            
             ChartMBTiles *pcmbt = dynamic_cast<ChartMBTiles*>( chart );
             if(pcmbt){
                 pcmbt->RenderRegionViewOnGL(*m_pcontext, vp, screen_region, screenLLRegion);

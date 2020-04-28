@@ -7,6 +7,7 @@
 #else
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
 #endif
 
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)

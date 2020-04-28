@@ -102,7 +102,7 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	m_nbChoice = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
         sbSizerSourceSel->Add( m_nbChoice, 1, wxEXPAND | wxALL, 5 );
-        m_nbChoice->SetMinSize( wxSize( -1,150 ) );
+        m_nbChoice->SetMinSize( wxSize( -1, 6 * GetCharHeight() ) );
 
 
 	m_panelPredefined = new wxPanel( m_nbChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );

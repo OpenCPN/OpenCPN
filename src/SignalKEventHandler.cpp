@@ -1,6 +1,28 @@
-//
-// Created by balp on 2018-07-31.
-//
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  PlugIn Manager Object
+ * Author:   David Register
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+ //Originally by balp on 2018-07-28.
 
 #include <cstddef>
 
@@ -13,6 +35,7 @@
 #include "OCPN_SignalKEvent.h"
 #include "chart1.h"
 #include "pluginmanager.h"
+#include "logger.h"
 
 extern PlugInManager    *g_pi_manager;
 wxString                g_ownshipMMSI_SK;
@@ -22,7 +45,7 @@ void SignalKEventHandler::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
     wxJSONReader jsonReader;
     wxJSONValue root;
 
-    fprintf(stderr, "%s\n", event.GetString().c_str());
+    LOG_DEBUG("%s\n", event.GetString().c_str());
 
     std::string msgTerminated = event.GetString();
     msgTerminated.append("\r\n");

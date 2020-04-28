@@ -1479,7 +1479,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         dc.SetPen( target_pen );
 
         wxPoint Point = TargetPoint;
-        if (g_bDrawAISRealtime && (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B )) {
+        if (g_bDrawAISRealtime && 
+            (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B ) &&
+            td->SOG > g_ShowMoored_Kts) {
             wxDateTime now = wxDateTime::Now();
             now.MakeGMT();
             int target_age = now.GetTicks() - td->PositionReportTicks;
@@ -1648,7 +1650,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
         //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
         //    Symbolize it if set by most recent message
-        if( td->blue_paddle) { //if blue paddle info is available blue_paddle > 0
+        //    Blue paddel is used while "not engaged"(1) or "engaged"(2)  (3 == "reserved")
+        if( td->blue_paddle && td->blue_paddle < 3) {
             wxPoint ais_flag_icon[4];
             int penWidth = 2;
             

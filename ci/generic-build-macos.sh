@@ -30,9 +30,11 @@ if [ -n "$CI" ]; then
 fi
 
 set -o pipefail
-for pkg in cairo cmake libexif python3 wget xz; do
+for pkg in pixman cairo cmake libexif python3 wget xz; do
     brew list $pkg 2>/dev/null | head -10 || brew install $pkg
 done
+
+brew cask install packages
 
 export MACOSX_DEPLOYMENT_TARGET=10.9
 
@@ -45,8 +47,8 @@ make
 make install
 cd ..
 
-wget -q http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz
-tar xJf wx312_opencpn50_macos109.tar.xz -C /tmp
+wget -q http://opencpn.navnux.org/build_deps/wx312B_opencpn50_macos109.tar.xz
+tar xJf wx312B_opencpn50_macos109.tar.xz -C /tmp
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 
@@ -55,8 +57,8 @@ cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_USE_LIBCPP=ON \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312_opencpn50_macos109/bin/wx-config \
-  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312_opencpn50_macos109" \
+  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312B_opencpn50_macos109/bin/wx-config \
+  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 make -sj2
@@ -67,7 +69,15 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
+#  A truly awful hack...
+#  fixup_bundle (part of MacOS install step) seems to somehow miss the required copy of libpixman
+#  Or the second install kills it...
+#  So we do it explicitely.
+rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+
 make create-dmg
+make create-pkg
 
 # install the stuff needed by upload.
 sudo -H python3 -m ensurepip

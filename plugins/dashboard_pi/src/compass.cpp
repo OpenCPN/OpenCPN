@@ -51,6 +51,8 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
 
 void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
 {
+      if (std::isnan(data))
+          return;
       if (st == m_MainValueCap)
       {
             // Rotate the rose

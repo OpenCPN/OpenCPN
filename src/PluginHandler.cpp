@@ -37,6 +37,7 @@
 #include <wx/jsonreader.h>
 #include <wx/string.h>
 #include <wx/file.h>
+#include <wx/uri.h>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -48,15 +49,16 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #undef Yield                 // from win.h, conflicts with mingw headers
 #endif
 
-#include "Downloader.h"
-#include "OCPNPlatform.h"
-#include "PluginHandler.h"
-#include "PluginPaths.h"
-#include "pluginmanager.h"
-#include "navutil.h"
-#include "ocpn_utils.h"
 #include "catalog_parser.h"
 #include "catalog_handler.h"
+#include "Downloader.h"
+#include "logger.h"
+#include "navutil.h"
+#include "OCPNPlatform.h"
+#include "ocpn_utils.h"
+#include "PluginHandler.h"
+#include "pluginmanager.h"
+#include "PluginPaths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -74,6 +76,8 @@ extern PlugInManager* g_pi_manager;
 extern wxString       g_winPluginDir;
 extern MyConfig*      pConfig;
 extern OCPNPlatform*  g_Platform;
+extern bool           g_bportable;
+extern MyFrame        *gFrame;
 
 extern wxString       g_compatOS;
 extern wxString       g_compatOsVersion;
@@ -211,6 +215,10 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "msvc");
     }
 
+    // And so is MacOS...
+    if (compatOS == "darwin") {
+        return (plugin_os == "darwin");
+    }
 
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
@@ -344,9 +352,17 @@ static void win_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    if (ocpn::startswith(path, "./")) {
+        path = path.substr(1);
+    }
 
     // Remove top-level directory part
     int slashpos = path.find_first_of('/', 1);
+    if(slashpos < 0){
+        archive_entry_set_pathname(entry, "");
+        return;
+    }
+        
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
 
@@ -387,6 +403,9 @@ static void flatpak_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+    if (ocpn::startswith(path, "./")) {
+        path = path.substr(2);
+    }
     int slashpos = path.find_first_of('/', 1);
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
@@ -415,7 +434,11 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
         archive_entry_set_pathname(entry, "");
         return;
     }
+
     int slashpos = path.find_first_of('/', 1);
+    if(ocpn::startswith(path, "./"))
+        slashpos = path.find_first_of('/', 2);  // skip the './'
+
     string prefix = path.substr(0, slashpos);
     path = path.substr(prefix.size() + 1);
     if (ocpn::startswith(path, "usr/")) {
@@ -432,7 +455,24 @@ static void linux_entry_set_install_path(struct archive_entry* entry,
     ){
         location = "unknown";
     }
+    
     string dest = installPaths[location] + "/" + suffix;
+
+    if(g_bportable){
+        // A data dir?
+        if(ocpn::startswith(location, "share") && ocpn::startswith(suffix, "opencpn/plugins/") ){
+            slashpos = suffix.find_first_of("opencpn/plugins/");
+            suffix = suffix.substr(16);
+
+            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
+        }
+        if(ocpn::startswith(location, "lib") && ocpn::startswith(suffix, "opencpn/") ){
+            suffix = suffix.substr(8);
+
+            dest = g_Platform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" + suffix;
+        }
+    }
+    
     archive_entry_set_pathname(entry, dest.c_str());
 }
 
@@ -445,7 +485,10 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
     const string base = PluginPaths::getInstance()->Homedir()
         + "/Library/Application Support/OpenCPN";
 
-    const string path = archive_entry_pathname(entry);
+    string path = archive_entry_pathname(entry);
+    if(ocpn::startswith(path, "./"))
+        path = path.substr(2);
+
     string dest("");
     size_t slashes = count(path.begin(), path.end(), '/');
     if (slashes < 3) {
@@ -500,8 +543,7 @@ static void entry_set_install_path(struct archive_entry* entry,
     }
     const std::string dest = archive_entry_pathname(entry);
     if(dest.size()){
-        std::cout << "Installing " << src << " into " << dest << std::endl;
-        wxLogMessage( _T("Installing ") + wxString(src.c_str()) + _T(" into ") + wxString(dest.c_str()));
+        DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
     }
 }
 
@@ -532,6 +574,12 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if (!archive_check(r, "archive read header error", src)) {
             return false;
         }
+        
+        //  Ignore any occurrence of file "metadata.xml"
+        std::string path = archive_entry_pathname(entry);
+        if(std::string::npos != path.find("metadata.xml"))
+            continue;
+        
         entry_set_install_path(entry, pathmap);
         if (strlen(archive_entry_pathname(entry)) == 0) {
             continue;
@@ -639,6 +687,18 @@ std::string PluginHandler::getMetadataPath()
         metadataPath = path;
         return path;
     }
+    
+    // If default location for composit plugin metadata is not found, 
+    //  we look in the plugin cache directory, which will normally contain the last "master" catalog downloaded
+    path = g_Platform->GetPrivateDataDir().ToStdString();
+    path += SEP;
+    path += "plugins" + SEP + "cache" + SEP + "metadata" + SEP + "ocpn-plugins.xml";
+    if (ocpn::exists(path)) {
+        metadataPath = path;
+        return path;
+    }
+    
+    // And if that does not work, use the empty metadata file found in the distribution "data" directory
     metadataPath = g_Platform->GetSharedDataDir().ToStdString();
     metadataPath += SEP ;
     metadataPath += "ocpn-plugins.xml";
@@ -669,6 +729,9 @@ void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
+    if(!wxFileExists( wxString(filelist.c_str())))
+        return;
+    
     std::istringstream files(filelist);
     while (!files.eof()) {
         char line[256];
@@ -680,6 +743,33 @@ void PluginHandler::cleanup(const std::string& filelist,
             }
         }
     }
+    
+        // Make another limited recursive pass, and remove any empty directories
+    bool done = false;
+    int iloop = 0;
+    while(!done && (iloop < 6) ){
+        done = true;
+        std::ifstream dirs(filelist.c_str());
+        while (!dirs.eof()) {
+            char line[256];
+            dirs.getline(line, sizeof(line));
+            
+            wxFileName wxFile(line);
+            if(wxFile.IsDir() && wxFile.DirExists()){
+                wxDir dir(wxFile.GetFullPath());
+                if(!dir.HasFiles() && !dir.HasSubDirs()){
+                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                    done = false;
+                }
+            }
+        }
+        dirs.close();
+        
+        iloop++;
+    }
+
+    
+    
     std::string path = PluginHandler::fileListPath(plugname);
     if (ocpn::exists(path)) {
         remove(path.c_str());
@@ -758,7 +848,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
         PluginHandler::cleanup(filelist, plugin.name);
         return false;
     }
-    remove(path.c_str());
+    //remove(path.c_str());
     saveFilelist(filelist, plugin.name);
     saveDirlist(plugin.name);
     saveVersion(plugin.name, plugin.version);
@@ -794,7 +884,7 @@ bool PluginHandler::installPlugin(PluginMetadata plugin)
     path = std::string(fname);
     std::ofstream stream;
     stream.open(path.c_str(), std::ios::out|std::ios::binary|std::ios::trunc);
-    std::cout << "Downloading: " << plugin.name << std::endl;
+    DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
     auto downloader = Downloader(plugin.tarball_url);
     downloader.download(&stream);
 
@@ -828,6 +918,32 @@ bool PluginHandler::uninstall(const std::string plugin_name)
         }
     }
     files.close();
+    
+    // Make another limited recursive pass, and remove any empty directories
+    bool done = false;
+    int iloop = 0;
+    while(!done && (iloop < 6) ){
+        done = true;
+        ifstream dirs(path);
+        while (!dirs.eof()) {
+            char line[256];
+            dirs.getline(line, sizeof(line));
+            string dirc(line);
+            
+            wxFileName wxFile(line);
+            if(wxFile.IsDir() && wxFile.DirExists()){
+                wxDir dir(wxFile.GetFullPath());
+                if(!dir.HasFiles() && !dir.HasSubDirs()){
+                    wxFile.Rmdir( wxPATH_RMDIR_RECURSIVE );
+                    done = false;
+                }
+            }
+        }
+        dirs.close();
+        
+        iloop++;
+    }
+    
     int r = remove(path.c_str());
     if (r != 0) {
         wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
@@ -836,4 +952,37 @@ bool PluginHandler::uninstall(const std::string plugin_name)
     remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
 
     return true;
+}
+
+bool PluginHandler::installPluginFromCache( PluginMetadata plugin )
+{
+    // Look for the desired file
+    wxURI uri( wxString(plugin.tarball_url.c_str()));
+    wxFileName fn(uri.GetPath());
+    wxString tarballFile = fn.GetFullName();
+    wxString sep = _T("/");
+    wxString cacheFile = g_Platform->GetPrivateDataDir() + sep + _T("plugins")
+                            + sep + _T("cache") + sep + _T("tarballs")
+                            +sep + tarballFile;
+ 
+   if(wxFileExists( cacheFile)){
+        wxLogMessage("Installing %s from local cache",  tarballFile.c_str());
+        bool bOK = installPlugin( plugin, cacheFile.ToStdString());
+        if(!bOK){
+            wxLogWarning("Cannot install tarball file %s", cacheFile.c_str());
+             wxString message = _("Please check system log for more info.");
+            OCPNMessageBox(gFrame, message, _("Installation error"), wxICON_ERROR | wxOK | wxCENTRE);
+
+            return false;
+        }
+        
+        wxString message;
+        message.Printf("%s %s\n", plugin.name.c_str(),  plugin.version.c_str());
+        message += _(" successfully installed from cache");
+        OCPNMessageBox(gFrame, message, _("Installation complete"), wxICON_INFORMATION | wxOK | wxCENTRE);
+
+        return true;
+   }
+ 
+   return false;
 }

@@ -23,6 +23,12 @@ Show help info.
 .B \-p
 Run in portable mode.
 .TP
+.B  \-l, \-\-loglevel=<level>
+Set amount of logged information. Level is any of \fItrace\fR,
+\fIdebug\fR, \fIinfo\fR, \fImessage\fR, \fIwarning\fR or \fIerror\fR,
+defaulting to \fIinfo\fR if not set in environment; see ENVIRONMENT.
+
+.TP
 .B  \-fullscreen
 Switch to full screen mode on start.
 .TP
@@ -73,6 +79,21 @@ without modifications.
 Otherwise \fILD_LIBRARY_PATH\fR is set to the same path as from which plugins are
 loaded, see above. This ensures that helper binaries can load possible libraries
 installed in the same directories as the plugin.
+
+.SH ENVIRONMENT
+.TP
+.B OPENCPN_PLUGIN_DIRS
+Plugin load path, see PLUGIN LOADING
+.TP
+.B OPENCPN_LOGLEVEL
+Default loglevel if not defined on command line using -l/--loglevel. See
+the --loglevel option for allowed values.
+
+.SH FILES
+.TP
+.B ~/.opencpn/opencpn.log
+System log file, a useful tool to solve problems.
+
 
 .SH NOTES
 

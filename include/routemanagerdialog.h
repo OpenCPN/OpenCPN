@@ -147,6 +147,7 @@ class RouteManagerDialog : public wxFrame {
             void OnExportClick(wxCommandEvent &event);
             void OnExportVizClick(wxCommandEvent &event);
             void OnFilterChanged( wxCommandEvent& event );
+            void OnKey( wxKeyEvent& ke );
 
             // properties
             wxNotebook *m_pNotebook;

@@ -45,6 +45,7 @@ BEGIN_EVENT_TABLE ( S57QueryDialog, wxFrame )  //ws wxDialog
     EVT_SIZE ( S57QueryDialog::OnSize )
     EVT_CLOSE( S57QueryDialog::OnClose)
     EVT_HTML_LINK_CLICKED( wxID_ANY, S57QueryDialog::OnHtmlLinkClicked )
+    EVT_CHAR_HOOK(S57QueryDialog::OnKey)
 END_EVENT_TABLE()
 
 S57QueryDialog::S57QueryDialog()
@@ -175,6 +176,14 @@ void S57QueryDialog::SetColorScheme( void )
     m_phtml->SetBackgroundImage(tbm);
 #endif
     
+}
+
+void S57QueryDialog::OnKey( wxKeyEvent& ke )
+{
+    if ( ke.GetKeyCode() == WXK_ESCAPE )
+        Close( true );
+    else
+        ke.Skip(); 
 }
 
 void S57QueryDialog::SetHTMLPage( wxString& page )
