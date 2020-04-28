@@ -215,6 +215,10 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "msvc");
     }
 
+    // And so is MacOS...
+    if (compatOS == "darwin") {
+        return (plugin_os == "darwin");
+    }
 
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
