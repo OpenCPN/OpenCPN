@@ -78,6 +78,9 @@ Tidal/current wallpaper
   - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in
     package.
 
+GSHHS charts
+  - OCPN_BUNDLE_GSHHS (boolean) includes gshhs charts in package
+
 To build for android, use something like:
     $cmake -DUSE_GARMINHOST=OFF
         -D_wx_selected_config=androideabi-qt
@@ -183,7 +186,7 @@ if (APPLE OR WIN32)
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
   bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("ON")
+  bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
 
