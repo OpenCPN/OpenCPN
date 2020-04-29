@@ -23,7 +23,7 @@ build:
 	flatpak install -y --user --reinstall \
 	    $(CURDIR)/repo org.opencpn.OpenCPN
 
-install:
+install: .phony
 	rm -rf $(DESTDIR); mkdir $(DESTDIR)
 	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html $(DESTDIR)
 	cp -ar repo $(DESTDIR)
