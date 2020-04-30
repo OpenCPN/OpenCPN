@@ -235,12 +235,14 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     }
     else{
         // running OS may be "like" some known OS
-        if( os_detail->osd_name_like  == plugin_os){
-            if (plugin_os == "ubuntu") {
-                return plugin_os_version == os_detail->osd_version;            // Full version comparison required
+        for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
+            if( os_detail->osd_name_like[i]  == plugin_os){
+                if (plugin_os == "ubuntu") {
+                    return plugin_os_version == os_detail->osd_version;            // Full version comparison required
+                }
+                auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
+                return meta_vers == target_vers;
             }
-            auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
-            return meta_vers == target_vers;
         }
     }
     
