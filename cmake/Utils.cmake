@@ -27,7 +27,7 @@ ENDMACRO (COMMIT_ID)
 MACRO (BUILD_NUM RESULT)
     # Get the current Travis/CircleCI build number, possibly ""
     execute_process(
-      COMMAND /usr/bin/sh -c "echo $CIRCLE_BUILD_NUM$TRAVIS_BUILD_NUM"
+      COMMAND /usr/bin/sh -c "echo $CIRCLE_BUILD_NUM$TRAVIS_BUILD_NUM$BUILD_NUMBER"
       OUTPUT_VARIABLE _BUILD_NUM
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )

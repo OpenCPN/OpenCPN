@@ -477,6 +477,7 @@ class options : private Uncopyable,
   void EnableConnection( ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event); 
   void UpdateDiscoverStatus( wxString stat);
+  void OnAISRolloverClick(wxCommandEvent &event);
   
   void OnCanvasConfigSelectClick( int ID, bool selected);
   
@@ -598,6 +599,8 @@ class options : private Uncopyable,
   wxCheckBox *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+  wxStaticText* pStatic_CallSign;
+
 #if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL  
 #ifdef __WXGTK__

@@ -29,7 +29,8 @@ set +x
 echo "FLATPAK_KEY=$FLATPAK_KEY" > envvars
 set -x
 
-docker run --privileged -d -ti -e "container=docker"  \
+docker run --privileged -d -ti \
+    -e "container=docker"  -e "BUILD_NUMBER=$CIRCLE_BUILD_NUM" \
     --env-file envvars \
     -v /sys/fs/cgroup:/sys/fs/cgroup \
     -v $(pwd):/opencpn-ci:rw \

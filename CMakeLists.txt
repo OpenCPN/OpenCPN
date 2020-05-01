@@ -78,6 +78,9 @@ Tidal/current wallpaper
   - OCPN_BUNDLE_TCDATA (boolean) includes tide/current harmonics data in
     package.
 
+GSHHS charts
+  - OCPN_BUNDLE_GSHHS (boolean) includes gshhs charts in package
+
 To build for android, use something like:
     $cmake -DUSE_GARMINHOST=OFF
         -D_wx_selected_config=androideabi-qt
@@ -183,7 +186,7 @@ if (APPLE OR WIN32)
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
   bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("ON")
+  bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
 
@@ -563,7 +566,7 @@ if (OCPN_CI_BUILD)
   commit_id(COMMIT)
   build_num(BUILD_NUMBER)
   set(VERSION_TAIL "+${COMMIT}")
-  if (NOT BUILD_NUMBER STREQUAL "")
+  if (NOT "${BUILD_NUMBER}" STREQUAL "")
       set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
   set(VERSION_DATE "${DATE}")
@@ -573,7 +576,6 @@ set(
   PACKAGE_VERSION
   "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}"
 )
-message(STATUS "Build num: ${BUILD_NUM}")
 message(STATUS "Building version ${PACKAGE_VERSION}")
 
 # Detect the Apple Version of the build machine
@@ -2487,12 +2489,12 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 
 # The following components are regex's to match anywhere (unless anchored) in
 # absolute path + filename to find files or directories to be excluded from
-# source tarball.
+# source tarball created by 'make package_source'.
 set(
   CPACK_SOURCE_IGNORE_FILES
+  "\\\\.flatpak-builder*"
   "\\\\.git*"
-  "^${CMAKE_CURRENT_SOURCE_DIR}/build*"
-  "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
+  "${CMAKE_BINARY_DIR}*"
 )
 
 #
@@ -2767,6 +2769,9 @@ if (MSVC)
     "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
+
+# Repack tarball using tar if available
+include(dist_target)
 
 # uninstall target
 if(NOT TARGET uninstall)

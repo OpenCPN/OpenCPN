@@ -381,7 +381,9 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                 }
                 else if(str.StartsWith(_T("ID_LIKE"))){
                     val = str.AfterFirst('=');
-                    if(val.Length())  detail->osd_name_like = std::string(val.mb_str());
+                    if(val.Length()){
+                        detail->osd_name_like = ocpn::split(val.mb_str(), " ");
+                    }
                 }
 
             }
