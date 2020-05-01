@@ -2,22 +2,21 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: OpenCPN
 Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: https://github.com/OpenCPN/OpenCPN.git
-Files-Excluded: .*
+Files-Excluded:
  buildosx*
  buildandroid*
  buildwin*
  data/doc*
  Docs/*
- include/tinyxml.h
  plugins/chartdldr_pi/src/tinyxml*
  plugins/chartdldr_pi/src/unarr*
  plugins/chartdldr_pi/data/doc/highlight.min.js
  plugins/chartdldr_pi/data/doc/MathJax.js
  plugins/grib_pi/src/bzip2*
- src/serial*
- src/texcmp/lz4*
- src/tinyxml*
- src/wxsvg*
+ libs/lz4*
+ libs/serial*
+ libs/tinyxml*
+ libs/wxsvg*
 
 Files: *
 Copyright: 1995-1998, Brian Paul
