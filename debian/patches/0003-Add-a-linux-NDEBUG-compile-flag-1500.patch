@@ -1,0 +1,46 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 8 Dec 2019 01:05:49 +0100
+Subject: Add a linux NDEBUG compile flag (#1500).
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1500
+---
+ CMakeLists.txt | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 021692a..dbad89d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -772,6 +772,32 @@ if (NOT QT_ANDROID)
+   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+ endif (NOT QT_ANDROID)
+ 
++# Handle #1500: Force NDEBUG on gtk3 for wxwidgets < 3.2 (all builds)
++if (GTK3_FOUND)
++  set( _VERSPROG [=[
++    #include <stdio.h>
++    #include <wx/version.h>
++    int main(int argc, char**argv) { 
++      printf("%d\\n", wxMAJOR_VERSION * 10 + wxMINOR_VERSION);
++    }
++  ]=])
++  execute_process(
++    COMMAND "/bin/sh" "-c" "echo '${_VERSPROG}' > wx-32.c"
++    COMMAND "/bin/sh" "-c" "cc $(wx-config --cflags) wx-32.c"
++    COMMAND "./a.out"
++    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
++    OUTPUT_VARIABLE _WX_VERSION
++    ERROR_VARIABLE _WX_ERRORS
++    OUTPUT_STRIP_TRAILING_WHITESPACE
++  )
++  if(NOT "${_WX_ERRORS}" STREQUAL "")
++    message(FATAL_ERROR "Cannot run wxWidgets  version test (!)")
++  elseif ("${_WX_VERSION}" LESS 32)
++    add_definitions("-DNDEBUG")
++    message(STATUS "Forcing -NDEBUG on gtk3 build (#1500).")
++  endif ()
++endif ()
++
+ IF(QT_ANDROID)
+   SET( wxWidgets_LIBRARIES
+ 

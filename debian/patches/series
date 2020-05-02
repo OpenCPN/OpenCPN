@@ -1,0 +1,5 @@
+0001-build-Handle-missing-doc-files.patch
+0002-CMakelists-move-appdata.xml-to-usr-share-metainfo.patch
+0003-Add-a-linux-NDEBUG-compile-flag-1500.patch
+0004-build-gtk-Ensure-linking-to-required-gtk-libs.patch
+0005-Set-defaults-to-bundling-tcdata-and-gshhs-1894.patch
