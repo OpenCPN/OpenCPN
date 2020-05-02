@@ -12,12 +12,12 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
 	    -DCMAKE_INSTALL_PREFIX=/usr \
-	    -DBUNDLE_DOCS=OFF \
-            -DBUNDLE_TCDATA=ON \
-            -DBUNDLE_GSHHS=CRUDE \
+	    -DCMAKE_INSTALL_LIBDIR=/usr/lib \
             -DBUILD_SHARED_LIBS=OFF \
-            -DUSE_BUNDLED_LIBS=OFF \
-            -DOCPN_NEW_SERIAL=OFF \
+	    -DOCPN_BUNDLE_DOCS=OFF \
+            -DOCPN_BUNDLE_TCDATA=ON \
+            -DOCPN_USE_BUNDLED_LIBS=OFF \
+            -DOCPN_USE_NEWSERIAL=OFF \
             -DOCPN_FORCE_GTK3=ON
 
 override_dh_auto_install:
