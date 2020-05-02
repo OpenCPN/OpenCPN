@@ -19,19 +19,31 @@ Files-Excluded:
  libs/wxsvg*
 
 Files: *
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: LICENSING
+Copyright: The OpenCPN
+License: GPL-2+
+
+Files: data/copyright
+Copyright: -format/1.0
+License: GPL-2+
+
+Files: data/opencpn.appdata.xml.in
+Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
 License: GPL-2+
 
 Files: include/*
@@ -39,21 +51,37 @@ Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
 Files: include/AboutFrame.h
- include/RoutePropDlg.h
- include/tzdata.h
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+  include/RoutePropDlg.h
+  include/tzdata.h
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: include/DepthFont.h
+Copyright: 2020, David Register
+License: GPL-2+
+
+Files: include/Downloader.h
+  include/PluginHandler.h
+  include/catalog_handler.h
+  include/catalog_mgr.h
+  include/catalog_parser.h
+  include/download_mgr.h
+  include/ocpn_utils.h
+  include/semantic_vers.h
+  include/update_mgr.h
+Copyright: 2019, Alec Leamas
 License: GPL-2+
 
 Files: include/GL/*
@@ -62,15 +90,15 @@ License: Expat
 
 Files: include/GL/glext.h
 Copyright: 2007-2012, The Khronos Group Inc.
-License: MIT-KHRONOS
+License: Khronos
 
 Files: include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
 License: SGI-B-1.1
 
 Files: include/LLRegion.h
- include/TexFont.h
- include/ocpndc.h
+  include/TexFont.h
+  include/ocpndc.h
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
@@ -88,19 +116,20 @@ License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
 Files: include/gshhs.h
-Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
-           2012, David S. Register
+Copyright: zUGrib: meteorologic GRIB file data viewer / 2012, David S. Register / 2008, - Jacques Zaninetti - http:www.zygrib.org
 License: GPL-2+
 
 Files: include/macutils.h
-Copyright: 2007-2010, David S. Register, Richard M Smith
+Copyright: 2007
 License: GPL-2+
+
+Files: include/ogr_s57.h
+  include/s57.h
+Copyright: 1998-2003, Frank Warmerdam
+License: Expat
 
 Files: include/pugiconfig.hpp
-Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
-License: GPL-2+
-
-Files: include/pugixml.hpp
+  include/pugixml.hpp
 Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 License: Expat
 
@@ -109,16 +138,482 @@ Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
 Files: include/s52utils.h
-Copyright: 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+Copyright: 2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
 License: GPL-2+
 
 Files: include/scrollingdialog.h
 Copyright: Julian Smart
 License: GPL-2+
 
-Files: include/wx/*
+Files: include/zeroconf-detail.hpp
+  include/zeroconf-util.hpp
+  include/zeroconf.hpp
+Copyright: 2016, Yuri Yakovlev <yvzmail@gmail.com>
+License: GPL
+ Please fill license GPL from header of include/zeroconf-detail.hpp include/zeroconf-util.hpp include/zeroconf.hpp
+
+Files: libs/SQLiteCpp/*
+Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+License: Expat
+
+Files: libs/SQLiteCpp/include/SQLiteCpp/Backup.h
+Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+  2015, Shibao HONG (shibaohong@outlook.com)
+License: Expat
+
+Files: libs/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
+Copyright: 2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+  2016, Paul Dreik (github@pauldreik.se)
+License: Expat
+
+Files: libs/SQLiteCpp/src/Backup.cpp
+Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+  2015, Shibao HONG (shibaohong@outlook.com)
+License: Expat
+
+Files: libs/easywsclient/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+ 2012, 2013, <dhbaird@gmail.com>
+License: Expat or GPL-2+
+
+Files: libs/easywsclient/Makefile
+  libs/easywsclient/README.md
+  libs/easywsclient/easywsclient.cpp
+  libs/easywsclient/easywsclient.hpp
+  libs/easywsclient/example-client-cpp11.cpp
+  libs/easywsclient/example-client.cpp
+  libs/easywsclient/example-server.js
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/easywsclient/test/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/garmin/*
+Copyright: 2004-2006, Robert Lipe, robertlipe@usa.net
+License: GPL-2+
+
+Files: libs/garmin/jeeps/garmin_gps.h
+  libs/garmin/jeeps/garmin_wrapper_utils.c
+  libs/garmin/jeeps/garmin_wrapper_utils.h
+Copyright: 2010, David S Register
+License: GPL-2+
+
+Files: libs/garmin/jeeps/gpsapp.c
+  libs/garmin/jeeps/gpsapp.h
+  libs/garmin/jeeps/gpsdatum.h
+  libs/garmin/jeeps/gpsfmt.h
+  libs/garmin/jeeps/gpsinput.h
+  libs/garmin/jeeps/gpsmem.c
+  libs/garmin/jeeps/gpsmem.h
+  libs/garmin/jeeps/gpsport.h
+  libs/garmin/jeeps/gpsproj.h
+Copyright: 2007, Achim Schumacher
+  2004-2006, Robert Lipe
+  1999, 2000, Alan Bleasby
+License: LGPL-2+
+
+Files: libs/garmin/jeeps/gpscom.c
+  libs/garmin/jeeps/gpscom.h
+Copyright: 2010, Martin Buck
+  2007, Achim Schumacher
+  2005, 2006, Robert Lipe
+  1999, Alan Bleasby
+License: LGPL-2+
+
+Files: libs/garmin/jeeps/gpsmath.c
+  libs/garmin/jeeps/gpsmath.h
+  libs/garmin/jeeps/gpsutil.c
+  libs/garmin/jeeps/gpsutil.h
+Copyright: 1999, Alan Bleasby
+License: LGPL-2+
+
+Files: libs/garmin/jeeps/gpsprot.c
+  libs/garmin/jeeps/gpsprot.h
+  libs/garmin/jeeps/gpsread.c
+  libs/garmin/jeeps/gpsread.h
+  libs/garmin/jeeps/gpsrqst.c
+  libs/garmin/jeeps/gpsrqst.h
+  libs/garmin/jeeps/gpssend.c
+  libs/garmin/jeeps/gpssend.h
+  libs/garmin/jeeps/gpsserial.c
+  libs/garmin/jeeps/gpsserial.h
+Copyright: 2006, Robert Lipe
+  1999, 2000, Alan Bleasby
+License: LGPL-2+
+
+Files: libs/gdal/*
+Copyright: 1998-2003, Frank Warmerdam
+License: Expat
+
+Files: libs/gdal/include/gdal/cpl_error.h
+  libs/gdal/include/gdal/cpl_string.h
+Copyright: 1998, Daniel Morissette
+License: Expat
+
+Files: libs/gdal/include/gdal/cpl_list.h
+Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
+License: Expat
+
+Files: libs/gdal/include/gdal/ogr_attrind.h
+Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/gdal/include/gdal/ogr_feature.h
+  libs/gdal/include/gdal/ogr_spatialref.h
+  libs/gdal/include/gdal/ogrsf_frmts.h
+Copyright: 1999, Les Technologies SoftMap Inc.
+License: Expat
+
+Files: libs/gdal/src/cpl_error.cpp
+  libs/gdal/src/cpl_string.cpp
+Copyright: 1998, Daniel Morissette
+License: Expat
+
+Files: libs/gdal/src/ogrfeature.cpp
+  libs/gdal/src/ogrfeaturedefn.cpp
+  libs/gdal/src/ogrfielddefn.cpp
+  libs/gdal/src/ogrlayer.cpp
+Copyright: 1999, Les Technologies SoftMap Inc.
+License: Expat
+
+Files: libs/glshim/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+ 2013, Ryan Hileman
+License: Expat or GPL-2+
+
+Files: libs/glshim/README.md
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/glshim/include/*
+Copyright: 2007-2012, The Khronos Group Inc.
+License: Khronos
+
+Files: libs/glshim/include/GL/*
+Copyright: 1999-2007, Brian Paul
+License: Expat
+
+Files: libs/glshim/include/GL/gl.h
+Copyright: 2009, VMware, Inc.
+  1999-2006, Brian Paul
+License: Expat
+
+Files: libs/glshim/include/GL/gl_mangle.h
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/glshim/include/GL/glext.h
+  libs/glshim/include/GL/glxext.h
+Copyright: 2007-2012, The Khronos Group Inc.
+License: Khronos
+
+Files: libs/glshim/include/GL/glu.h
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/glshim/include/GL/glu_mangle.h
+Copyright: 1995-1998, Brian Paul
+License: LGPL-2+
+
+Files: libs/glshim/include/GL/internal/*
+Copyright: IBM Corporation 2004, / 2007-2008, Red Hat, Inc. / 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
+License: GPL-2+
+
+Files: libs/glshim/include/GLES/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/glshim/include/GLES/gl3.h
+Copyright: 2007-2012, The Khronos Group Inc.
+License: Khronos
+
+Files: libs/glshim/spec/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/glshim/src/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/glshim/src/gl/math/*
+Copyright: 1999-2007, Brian Paul
+License: Expat
+
+Files: libs/glshim/src/util/*
+Copyright: 2008, 2009, 2011, Attractive Chaos <attractor@live.co.uk>
+License: Expat
+
+Files: libs/glu/libtess/dict-list.h
+  libs/glu/libtess/dict.c
+  libs/glu/libtess/dict.h
+  libs/glu/libtess/geom.c
+  libs/glu/libtess/geom.h
+  libs/glu/libtess/memalloc.c
+  libs/glu/libtess/memalloc.h
+  libs/glu/libtess/mesh.c
+  libs/glu/libtess/mesh.h
+  libs/glu/libtess/normal.c
+  libs/glu/libtess/normal.h
+  libs/glu/libtess/priorityq-heap.c
+  libs/glu/libtess/priorityq-heap.h
+  libs/glu/libtess/priorityq-sort.h
+  libs/glu/libtess/priorityq.c
+  libs/glu/libtess/priorityq.h
+  libs/glu/libtess/render.c
+  libs/glu/libtess/render.h
+  libs/glu/libtess/sweep.c
+  libs/glu/libtess/sweep.h
+  libs/glu/libtess/tess.c
+  libs/glu/libtess/tess.h
+  libs/glu/libtess/tessmono.c
+  libs/glu/libtess/tessmono.h
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/glu/libutil/*
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/iso8211/*
+Copyright: 1998-2003, Frank Warmerdam
+License: Expat
+
+Files: libs/iso8211/include/*
+Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/libtess2/*
+Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
+License: GPL-2+
+
+Files: libs/libtess2/Include/StripStdafx.h
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/libtess2/Include/tesselator.h
+Copyright: [dates of first publication] Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/libtess2/Source/*
+Copyright: [dates of first publication] Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/libtess2/Source/Adjacency.cpp
+  libs/libtess2/Source/CustomArray.cpp
+  libs/libtess2/Source/RevisitedRadix.cpp
+  libs/libtess2/Source/Striper.cpp
+Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
+License: GPL-2+
+
+Files: libs/mipmap/*
+Copyright: 2011, 2013-2016, Sean DEpagnier
+License: GPL-2+
+
+Files: libs/nmea0183/*
+Copyright: 2010, Samuel R. Blackburn, David S Register
+License: GPL-2+
+
+Files: libs/sound/*
+Copyright: 2010, 2012-2019, David S. Register
+License: GPL-2+
+
+Files: libs/ssl_sha1/*
+Copyright: 2006-2014, Brainspark B.V.
+License: GPL-2+
+
+Files: libs/texcmp/*
+Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
+License: BSD-3-clause
+
+Files: libs/texcmp/squish/*
+Copyright: 2006, Simon Brown si@sjbrown.co.uk
+License: Expat
+
+Files: libs/texcmp/squish/clusterfit.cpp
+  libs/texcmp/squish/clusterfit.h
+Copyright: 2007, Ignacio Castano icastano@nvidia.com
+  2006, Simon Brown si@sjbrown.co.uk
+License: Expat
+
+Files: libs/texcmp/squish/singlecolourfitfast.cpp
+  libs/texcmp/squish/singlecolourfitfast.h
+  libs/texcmp/squish/twocolourfitfast.cpp
+  libs/texcmp/squish/twocolourfitfast.h
+Copyright: 2015, Sean DEPagnier
+License: Expat
+
+Files: libs/wxJSON/*
 Copyright: 2007, Luciano Cattani
-License: wxWidgets
+License: GPL-2+
+
+Files: libs/wxcurl/*
+Copyright: 2004, Casey ODonnell.
+License: GPL-2+
+
+Files: libs/wxcurl/include/wx/curl/dialog.h
+  libs/wxcurl/include/wx/curl/panel.h
+  libs/wxcurl/include/wx/curl/thread.h
+  libs/wxcurl/include/wx/curl/utils.h
+Copyright: 2005, 2007, Francesco Montorsi
+License: GPL-2+
+
+Files: libs/wxcurl/src/dialog.cpp
+  libs/wxcurl/src/panel.cpp
+  libs/wxcurl/src/thread.cpp
+  libs/wxcurl/src/utils.cpp
+Copyright: 2005, 2007, Francesco Montorsi
+License: GPL-2+
+
+Files: libs/wxcurl/src/include/*
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: libs/wxcurl/src/include/curl/*
+Copyright: 1998-2014, Daniel Stenberg, <daniel@haxx.se>, et al.
+License: GPL-2+
+
+Files: libs/wxservdisc/wxServDisc.cpp
+  libs/wxservdisc/wxServDisc.h
+Copyright: 2008, Christian Beier <dontmind@freeshell.org>
+License: GPL-2+
+
+Files: mingw/*
+Copyright: fedorainfracloud.org/coprs/leamas/opencpn-mingw.
+License: GPL-2+
 
 Files: opencpn.1
 Copyright: 2018, Alec Leamas <leamas.alec@gmail.com>
@@ -128,46 +623,61 @@ Files: plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
+Files: plugins/chartdldr_pi/src/androidSupport.cpp
+  plugins/chartdldr_pi/src/androidSupport.h
+Copyright: 2010, 2012-2019, David S. Register
+License: GPL-2+
+
 Files: plugins/chartdldr_pi/src/base64.h
 Copyright: 2005, Angelo Mandato (http:www.spaceblue.com)
 License: wxWidgets
 
 Files: plugins/chartdldr_pi/src/chartcatalog.cpp
- plugins/chartdldr_pi/src/chartcatalog.h
- plugins/chartdldr_pi/src/chartdldr_pi.cpp
- plugins/chartdldr_pi/src/chartdldr_pi.h
+  plugins/chartdldr_pi/src/chartcatalog.h
+  plugins/chartdldr_pi/src/chartdldr_pi.cpp
+  plugins/chartdldr_pi/src/chartdldr_pi.h
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/src/checkedlistctrl.cpp
- plugins/chartdldr_pi/src/checkedlistctrl.h
+  plugins/chartdldr_pi/src/checkedlistctrl.h
 Copyright: 2005, 2007, Francesco Montorsi
 License: wxWidgets
+
+Files: plugins/chartdldr_pi/src/pugiconfig.hpp
+  plugins/chartdldr_pi/src/pugixml.cpp
+  plugins/chartdldr_pi/src/pugixml.hpp
+Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+License: Expat
+
+Files: plugins/dashboard_pi/include/*
+Copyright: 2007, Luciano Cattani
+License: GPL-2+
 
 Files: plugins/dashboard_pi/src/*
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/icons.cpp
- plugins/dashboard_pi/src/icons.h
- plugins/dashboard_pi/src/iirfilter.cpp
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+  plugins/dashboard_pi/src/icons.h
+  plugins/dashboard_pi/src/iirfilter.cpp
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/iirfilter.h
-Copyright: 2016, Transmitterdan
+Copyright: 2016
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/nmea0183/*
@@ -190,92 +700,112 @@ Files: plugins/demo_pi_sample/src/nmea0183/*
 Copyright: 2010, Samuel R. Blackburn, David S Register
 License: GPL-2+
 
+Files: plugins/grib_pi/libs/*
+Copyright: 2001-2004, Michael David Adams.
+  1999, 2000, Image Power, Inc. and the University of
+License: GPL-2+
+
+Files: plugins/grib_pi/libs/jasper/src/base/*
+Copyright: 2001-2004, Michael David Adams.
+License: GPL-2+
+
+Files: plugins/grib_pi/libs/jasper/src/base/jas_getopt.c
+  plugins/grib_pi/libs/jasper/src/base/jas_image.c
+  plugins/grib_pi/libs/jasper/src/base/jas_malloc.c
+  plugins/grib_pi/libs/jasper/src/base/jas_seq.c
+  plugins/grib_pi/libs/jasper/src/base/jas_stream.c
+  plugins/grib_pi/libs/jasper/src/base/jas_string.c
+Copyright: 2001-2004, Michael David Adams.
+  1999, 2000, Image Power, Inc. and the University of
+License: GPL-2+
+
+Files: plugins/grib_pi/libs/jasper/src/include/jasper/jas_cm.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_config2.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_debug.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_icc.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_init.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_tmr.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_tvp.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jasper.h
+Copyright: 2001-2004, Michael David Adams.
+License: GPL-2+
+
+Files: plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h
+  plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
+License: GPL-2+
+
+Files: plugins/grib_pi/libs/jasper/src/jpc/jpc_math.h
+  plugins/grib_pi/libs/jasper/src/jpc/jpc_util.h
+Copyright: 2001-2004, Michael David Adams.
+License: GPL-2+
+
 Files: plugins/grib_pi/src/*
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
 Files: plugins/grib_pi/src/GribReader.cpp
- plugins/grib_pi/src/GribReader.h
- plugins/grib_pi/src/GribRecord.cpp
- plugins/grib_pi/src/GribRecord.h
- plugins/grib_pi/src/GribUIDialogBase.cpp
- plugins/grib_pi/src/GribUIDialogBase.h
- plugins/grib_pi/src/GribV1Record.cpp
- plugins/grib_pi/src/GribV1Record.h
- plugins/grib_pi/src/GribV2Record.cpp
- plugins/grib_pi/src/GribV2Record.h
- plugins/grib_pi/src/IsoLine.cpp
- plugins/grib_pi/src/IsoLine.h
- plugins/grib_pi/src/icons.cpp
- plugins/grib_pi/src/icons.h
- plugins/grib_pi/src/version.h
- plugins/grib_pi/src/zuFile.cpp
- plugins/grib_pi/src/zuFile.h
-Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
+  plugins/grib_pi/src/GribReader.h
+  plugins/grib_pi/src/GribRecord.cpp
+  plugins/grib_pi/src/GribRecord.h
+  plugins/grib_pi/src/GribV1Record.cpp
+  plugins/grib_pi/src/GribV1Record.h
+  plugins/grib_pi/src/GribV2Record.cpp
+  plugins/grib_pi/src/GribV2Record.h
+  plugins/grib_pi/src/IsoLine.cpp
+  plugins/grib_pi/src/IsoLine.h
+  plugins/grib_pi/src/zuFile.cpp
+  plugins/grib_pi/src/zuFile.h
+Copyright: 2008, - Jacques Zaninetti - http:www.zygrib.org
 License: GPL-3+
 
 Files: plugins/grib_pi/src/GribSettingsDialog.cpp
- plugins/grib_pi/src/GribSettingsDialog.h
- plugins/grib_pi/src/TexFont.cpp
- plugins/grib_pi/src/TexFont.h
+  plugins/grib_pi/src/GribSettingsDialog.h
+  plugins/grib_pi/src/pi_TexFont.cpp
+  plugins/grib_pi/src/pi_TexFont.h
+  plugins/grib_pi/src/pi_ocpndc.cpp
+  plugins/grib_pi/src/pi_ocpndc.h
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
+Files: plugins/grib_pi/src/GribUIDialogBase.cpp
+  plugins/grib_pi/src/GribUIDialogBase.h
+  plugins/grib_pi/src/icons.cpp
+  plugins/grib_pi/src/icons.h
+  plugins/grib_pi/src/version.h
+Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
+License: GPL-3+
+
 Files: plugins/grib_pi/src/email.cpp
- plugins/grib_pi/src/email.h
- plugins/grib_pi/src/msg.h
+  plugins/grib_pi/src/email.h
+  plugins/grib_pi/src/msg.h
 Copyright: Julian Smart
 License: GPL-3+
 
-Files: plugins/grib_pi/src/jasper/*
-Copyright: 1999-2000, Image Power, Inc.
-           1999-2000, The University of British Columbia
-           2001-2004, Michael David Adams.
-License: Jasper
-
-Files: plugins/grib_pi/src/jasper/base/*
-Copyright: 2001-2004, Michael David Adams.
-License: Jasper
-
-Files: plugins/grib_pi/src/jasper/base/jas_getopt.c
- plugins/grib_pi/src/jasper/base/jas_image.c
- plugins/grib_pi/src/jasper/base/jas_malloc.c
- plugins/grib_pi/src/jasper/base/jas_seq.c
- plugins/grib_pi/src/jasper/base/jas_stream.c
- plugins/grib_pi/src/jasper/base/jas_string.c
-Copyright: 1999-2000, Image Power, Inc.
-           1999-2000, The University of British Columbia
-           2001-2004, Michael David Adams.
-License: Jasper
-
-Files: plugins/grib_pi/src/jasper/include/jasper/jas_cm.h
- plugins/grib_pi/src/jasper/include/jasper/jas_config2.h
- plugins/grib_pi/src/jasper/include/jasper/jas_debug.h
- plugins/grib_pi/src/jasper/include/jasper/jas_icc.h
- plugins/grib_pi/src/jasper/include/jasper/jas_init.h
- plugins/grib_pi/src/jasper/include/jasper/jas_tmr.h
- plugins/grib_pi/src/jasper/include/jasper/jas_tvp.h
- plugins/grib_pi/src/jasper/include/jasper/jasper.h
-Copyright: 2001-2004, Michael David Adams.
-License: Jasper
-
-Files: plugins/grib_pi/src/jasper/jpc/jpc_math.h
- plugins/grib_pi/src/jasper/jpc/jpc_util.h
-Copyright: 2001-2004, Michael David Adams.
-License: Jasper
-
 Files: plugins/grib_pi/src/json_defs.h
- plugins/grib_pi/src/jsonreader.cpp
- plugins/grib_pi/src/jsonreader.h
- plugins/grib_pi/src/jsonval.cpp
- plugins/grib_pi/src/jsonval.h
- plugins/grib_pi/src/jsonwriter.cpp
- plugins/grib_pi/src/jsonwriter.h
+  plugins/grib_pi/src/jsonreader.cpp
+  plugins/grib_pi/src/jsonreader.h
+  plugins/grib_pi/src/jsonval.cpp
+  plugins/grib_pi/src/jsonval.h
+  plugins/grib_pi/src/jsonwriter.cpp
+  plugins/grib_pi/src/jsonwriter.h
 Copyright: 2007, Luciano Cattani
 License: wxWidgets
 
 Files: plugins/grib_pi/src/smapi.cpp
- plugins/grib_pi/src/smapi.h
+  plugins/grib_pi/src/smapi.h
 Copyright: PJ Naughter
 License: wxWidgets
 
@@ -288,27 +818,27 @@ Copyright: 2007, Luciano Cattani
 License: wxWidgets
 
 Files: plugins/wmm_pi/src/EGM9615.h
- plugins/wmm_pi/src/GeomagnetismHeader.h
- plugins/wmm_pi/src/icons.cpp
- plugins/wmm_pi/src/icons.h
- plugins/wmm_pi/src/icons.sh
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+  plugins/wmm_pi/src/GeomagnetismHeader.h
+  plugins/wmm_pi/src/icons.cpp
+  plugins/wmm_pi/src/icons.h
+  plugins/wmm_pi/src/icons.sh
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/GeomagnetismLibrary.c
-Copyright: disclaimed
+Copyright: protection. / ed works consisting predominantly of the material produced by
 License: public-domain
  The WMM source code is in the public domain and not licensed or under copyright.
  The information and software may be used freely by the public. As required by 17 U.S.C. 403,
@@ -317,20 +847,27 @@ License: public-domain
  incorporated and stating that such material is not subject to copyright protection.
 
 Files: plugins/wmm_pi/src/MagneticPlotMap.cpp
- plugins/wmm_pi/src/MagneticPlotMap.h
- plugins/wmm_pi/src/TexFont.cpp
- plugins/wmm_pi/src/TexFont.h
+  plugins/wmm_pi/src/MagneticPlotMap.h
+  plugins/wmm_pi/src/pi_TexFont.cpp
+  plugins/wmm_pi/src/pi_TexFont.h
+  plugins/wmm_pi/src/pi_ocpndc.cpp
+  plugins/wmm_pi/src/pi_ocpndc.h
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/WmmUIDialog.cpp
- plugins/wmm_pi/src/WmmUIDialog.h
+  plugins/wmm_pi/src/WmmUIDialog.h
 Copyright: 2014, ESA-VirES
 License: Expat
 Comment: https://github.com/ESA-VirES/WMM/blob/master/LICENSE
 
+Files: plugins/wmm_pi/src/pi_shaders.cpp
+  plugins/wmm_pi/src/pi_shaders.h
+Copyright: 2010, 2012-2019, David S. Register
+License: GPL-2+
+
 Files: plugins/wmm_pi/src/wmm_pi.cpp
- plugins/wmm_pi/src/wmm_pi.h
+  plugins/wmm_pi/src/wmm_pi.h
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
@@ -339,63 +876,41 @@ Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
 
 Files: src/AboutFrame.cpp
- src/RoutePropDlg.cpp
- src/TCWin.cpp
- src/opencpn.rc.in
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+  src/RoutePropDlg.cpp
+  src/TCWin.cpp
+  src/opencpn.rc.in
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
 License: GPL-2+
 
-Files: src/LLRegion.cpp
- src/TexFont.cpp
- src/ocpndc.cpp
+Files: src/DepthFont.cpp
+  src/LLRegion.cpp
+  src/TexFont.cpp
+  src/ocpndc.cpp
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
-Files: src/SQLiteCpp/*
-Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
-License: GPL-2+
-
-Files: src/SQLiteCpp/include/SQLiteCpp/Backup.h
-Copyright: 2015, Shibao HONG (shibaohong@outlook.com)
-      2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
-License: GPL-2+
-
-Files: src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
-Copyright: 2016, Paul Dreik (github@pauldreik.se)
-      2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
-License: GPL-2+
-
-Files: src/SQLiteCpp/sqlite3/*
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
-License: GPL-2+
-
-Files: src/SQLiteCpp/src/Backup.cpp
-Copyright: 2015, Shibao HONG (shibaohong@outlook.com)
-      2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+Files: src/Downloader.cpp
+  src/PluginHandler.cpp
+  src/catalog_handler.cpp
+  src/catalog_mgr.cpp
+  src/catalog_parser.cpp
+  src/download_mgr.cpp
+  src/ocpn_utils.cpp
+  src/semantic_vers.cpp
+  src/update_mgr.cpp
+Copyright: 2019, Alec Leamas
 License: GPL-2+
 
 Files: src/bbox.cpp
@@ -403,283 +918,54 @@ Copyright: 2000, Klaas Holwerda
 License: wxWidgets
 
 Files: src/bitmaps/png2wx.pl
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-     2010, 2012-2018, David S. Register
-           2000-2018, The OpenCPN Authors
+Copyright: 2011, 2014, Pavel Kalian
+  2011, 2013-2016, Sean D'Epagnier
+  2010, Samuel R. Blackburn, David S Register
+  2010, Anders Lund <anders@alweb.dk>
+  2010, 2012-2018, David S. Register
+  2008, Jacques Zaninetti - http:www.zygrib.org
+  2007, 2016, Transmitterdan
+  2006-2014, Brainspark B.V.
+  2006, dsr
+  2004-2006, Robert Lipe, robertlipe@usa.net
+  2000-2018, The OpenCPN Authors
+  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+  1995-1998, Brian Paul
 License: GPL-2+
 
 Files: src/crashprint.cpp
 Copyright: 2004, wxCode
 License: wxWidgets
 
-Files: src/garmin/*
-Copyright: 2004-2006, Robert Lipe, robertlipe@usa.net
-License: GPL-2+
-
-Files: src/garmin/jeeps/garmin_gps.h
- src/garmin/jeeps/garmin_wrapper.cpp
- src/garmin/jeeps/garmin_wrapper.h
- src/garmin/jeeps/garmin_wrapper_utils.c
- src/garmin/jeeps/garmin_wrapper_utils.h
+Files: src/garmin_wrapper.cpp
+  src/garmin_wrapper.h
 Copyright: 2010, David S Register
 License: GPL-2+
-
-Files: src/garmin/jeeps/gpsapp.c
- src/garmin/jeeps/gpsapp.h
- src/garmin/jeeps/gpsdatum.h
- src/garmin/jeeps/gpsfmt.h
- src/garmin/jeeps/gpsinput.h
- src/garmin/jeeps/gpsmem.c
- src/garmin/jeeps/gpsmem.h
- src/garmin/jeeps/gpsport.h
- src/garmin/jeeps/gpsproj.h
-Copyright: 1999-2000, Alan Bleasby
-           2004-2006, Robert Lipe
-                2007, Achim Schumacher
-License: LGPL-2+
-
-Files: src/garmin/jeeps/gpscom.c
- src/garmin/jeeps/gpscom.h
-Copyright: 1999, Alan Bleasby
-      2005-2006, Robert Lipe
-           2007, Achim Schumacher
-           2010, Martin Buck
-License: LGPL-2+
-
-Files: src/garmin/jeeps/gpsmath.c
- src/garmin/jeeps/gpsmath.h
- src/garmin/jeeps/gpsutil.c
- src/garmin/jeeps/gpsutil.h
-Copyright: 1999, Alan Bleasby
-License: LGPL-2+
-
-Files: src/garmin/jeeps/gpsprot.c
- src/garmin/jeeps/gpsprot.h
- src/garmin/jeeps/gpsread.c
- src/garmin/jeeps/gpsread.h
- src/garmin/jeeps/gpsrqst.c
- src/garmin/jeeps/gpsrqst.h
- src/garmin/jeeps/gpssend.c
- src/garmin/jeeps/gpssend.h
- src/garmin/jeeps/gpsserial.c
- src/garmin/jeeps/gpsserial.h
-Copyright: 1999-2000, Alan Bleasby
-                2006, Robert Lipe
-License: LGPL-2+
 
 Files: src/geodesic.cpp
 Copyright: 2002-2008, Chris Veness
 License: Expat
 Comment: https://geographiclib.sourceforge.io/
 
-Files: src/glshim/*
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-                2004, IBM Corporation
-           1999-2007, Brian Paul
-           2007-2008, Red Hat, Inc.
-                2009, VMware, Inc.
-     2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-           2012-2013, Wladimir J. van der Laan
-                2013, Ryan Hileman
-License: Expat
-
-Files: src/glshim/README.md
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-           1999-2007, Brian Paul
-                2004, IBM Corporation
-           2007-2008, Red Hat, Inc.
-                2009, VMware, Inc.
-     2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-                2013, Ryan Hileman
-           2012-2013, Wladimir J. van der Laan
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/*
-Copyright: 2007-2012, The Khronos Group Inc.
-License: MIT-KHRONOS
-
-Files: src/glshim/include/GL/*
-Copyright: 1999-2007, Brian Paul
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/GL/gl.h
-Copyright: 1999-2006, Brian Paul
-                2009, VMware, Inc.
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/GL/gl_mangle.h
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-                2004, IBM Corporation
-           1999-2007, Brian Paul
-           2007-2008, Red Hat, Inc.
-                2009, VMware, Inc.
-     2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-           2012-2013, Wladimir J. van der Laan
-                2013, Ryan Hileman
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/GL/glext.h
- src/glshim/include/GL/glxext.h
-Copyright: 2007-2012, The Khronos Group Inc.
-License: MIT-KHRONOS
-
-Files: src/glshim/include/GL/glu.h
-Copyright: 1991-2000, Silicon Graphics, Inc.
-License: SGI-B-2.0
-
-Files: src/glshim/include/GL/glu_mangle.h
-Copyright: 1995-1998, Brian Paul
-License: LGPL-2+
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/GL/internal/*
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-                2004, IBM Corporation
-           2007-2008, Red Hat, Inc.
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/include/GLES/*
-Copyright: 2007-2012, The Khronos Group Inc
-License: SGI-B-2.0
-
-Files: src/glshim/spec/*
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-                2004, IBM Corporation
-           1999-2007, Brian Paul
-           2007-2008, Red Hat, Inc.
-                2009, VMware, Inc.
-     2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-           2012-2013, Wladimir J. van der Laan
-                2013, Ryan Hileman
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/src/*
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-                2004, IBM Corporation
-           1999-2007, Brian Paul
-           2007-2008, Red Hat, Inc.
-                2009, VMware, Inc.
-     2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-           2012-2013, Wladimir J. van der Laan
-                2013, Ryan Hileman
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/src/gl/math/*
-Copyright: 1999-2007, Brian Paul
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glshim/src/util/*
-Copyright: 2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
-Files: src/glu/*
-Copyright: 1991-2000, Silicon Graphics, Inc.
-License: SGI-B-2.0
-
 Files: src/gshhs.cpp
-Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
-           2012, David S. Register
-License: GPL-2+
-
-Files: src/libtess2/*
-Copyright: [dates of first publication] Silicon Graphics, Inc.
-License: SGI-B-2.0
-
-Files: src/libtess2/Source/Adjacency.cpp
- src/libtess2/Source/Adjacency.h
- src/libtess2/Source/CustomArray.cpp
- src/libtess2/Source/CustomArray.h
- src/libtess2/Source/RevisitedRadix.cpp
- src/libtess2/Source/RevisitedRadix.h
- src/libtess2/Source/Striper.cpp
- src/libtess2/Source/Striper.h
-Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
-License: GPL-2+
-
-Files: src/libtess2/Source/StripStdafx.h
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
+Copyright: zUGrib: meteorologic GRIB file data viewer / 2012, David S. Register / 2008, - Jacques Zaninetti - http:www.zygrib.org
 License: GPL-2+
 
 Files: src/macutils.c
-Copyright: 2007-2010, David S. Register, Richard M Smith
-License: GPL-2+
-
-Files: src/mipmap/*
-Copyright: 2011, 2013-2016, Sean DEpagnier
-License: GPL-2+
-
-Files: src/mygdal/*
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
-
-Files: src/mygdal/cpl_error.cpp
- src/mygdal/cpl_error.h
- src/mygdal/cpl_string.cpp
- src/mygdal/cpl_string.h
-Copyright: 1998, Daniel Morissette
-License: Expat
-
-Files: src/mygdal/cpl_list.h
-Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
-License: Expat
-
-Files: src/mygdal/iso8211.h
- src/mygdal/ogr_attrind.h
-Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
-License: Expat
-
-Files: src/mygdal/ogr_feature.h
- src/mygdal/ogr_spatialref.h
- src/mygdal/ogrfeature.cpp
- src/mygdal/ogrfeaturedefn.cpp
- src/mygdal/ogrfielddefn.cpp
- src/mygdal/ogrlayer.cpp
- src/mygdal/ogrsf_frmts.h
-Copyright: 1999, Les Technologies SoftMap Inc.
-License: Expat
-
-Files: src/myiso8211/*
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
-
-Files: src/nmea0183/*
-Copyright: 2010, Samuel R. Blackburn, David S Register
+Copyright: 2007
 License: GPL-2+
 
 Files: src/ocpnhelper.c
 Copyright: 2006, dsr
 License: GPL-2+
+
+Files: src/ogrs57datasource.cpp
+  src/ogrs57layer.cpp
+  src/s57classregistrar.cpp
+  src/s57featuredefns.cpp
+  src/s57reader.cpp
+Copyright: 1998-2003, Frank Warmerdam
+License: Expat
 
 Files: src/pugixml.cpp
 Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
@@ -690,80 +976,13 @@ Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
 Files: src/s52cnsy.cpp
- src/s52utils.cpp
-Copyright: 2000-2004, Sylvain Duclos
-                2010, David S. Register
+  src/s52utils.cpp
+Copyright: 2010, David S. Register
+  2000-2004, Sylvain Duclos
 License: GPL-2+
 
 Files: src/scrollingdialog.cpp
 Copyright: Julian Smart
-License: GPL-2+
-
-Files: src/ssl/*
-Copyright: 2006-2014, Brainspark B.V.
-License: GPL-2+
-
-Files: src/texcmp/*
-Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
-License: BSD-3-clause
-
-Files: src/texcmp/squish/*
-Copyright: 2006, Simon Brown si@sjbrown.co.uk
-License: Expat
-
-Files: src/texcmp/squish/clusterfit.cpp
- src/texcmp/squish/clusterfit.h
-Copyright: 2006, Simon Brown si@sjbrown.co.uk
-           2007, Ignacio Castano icastano@nvidia.com
-License: Expat
-
-Files: src/texcmp/squish/singlecolourfitfast.cpp
- src/texcmp/squish/singlecolourfitfast.h
- src/texcmp/squish/twocolourfitfast.cpp
- src/texcmp/squish/twocolourfitfast.h
-Copyright: 2015, Sean DEPagnier
-License: Expat
-
-Files: src/wxJSON/*
-Copyright: 2007, Luciano Cattani
-License: wxWidgets
-
-Files: src/wxcurl/*
-Copyright: 2004, Casey ODonnell.
-License: GPL-2+
-
-Files: src/wxcurl/dialog.cpp
- src/wxcurl/panel.cpp
- src/wxcurl/thread.cpp
- src/wxcurl/utils.cpp
-Copyright: 2005, 2007, Francesco Montorsi
-License: GPL-2+
-
-Files: src/wxcurl/include/*
-Copyright: 1995-1998, Brian Paul
-           2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
-           2004-2006, Robert Lipe, robertlipe@usa.net
-                2006, dsr
-                2008, Jacques Zaninetti - http:www.zygrib.org
-                2010, Anders Lund <anders@alweb.dk>
-                2010, Samuel R. Blackburn, David S Register
-           2006-2014, Brainspark B.V.
-          2011, 2014, Pavel Kalian
-          2007, 2016, Transmitterdan
-     2011, 2013-2016, Sean D'Epagnier
-           2000-2018, The OpenCPN Authors
-     2010, 2012-2018, David S. Register
-License: GPL-2+
-
-Files: src/wxcurl/include/curl/*
-Copyright: 1998-2014, Daniel Stenberg, <daniel@haxx.se>, et al.
-License: GPL-2+
-
-Files: src/wxcurl/wx/curl/dialog.h
- src/wxcurl/wx/curl/panel.h
- src/wxcurl/wx/curl/thread.h
- src/wxcurl/wx/curl/utils.h
-Copyright: 2005, 2007, Francesco Montorsi
 License: GPL-2+
 
 License: BSD-3-clause
@@ -819,52 +1038,8 @@ License: GPL-3+
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
 
-License: Jasper
- Jasper License Version 2.0
- All rights reserved
- .
- Permission is hereby granted, free of charge, to any person (the
- "User") obtaining a copy of this software and associated documentation
- files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge,
- publish, distribute, and/or sell copies of the Software, and to permit
- persons to whom the Software is furnished to do so, subject to the
- following conditions
- :
- 1.  The above copyright notices and this permission notice (which
- includes the disclaimer below) shall be included in all copies or
- substantial portions of the Software
- .
- 2.  The name of a copyright holder shall not be used to endorse or
- promote products derived from the Software without specific prior
- written permission
- .
- THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS
- LICENSE.  NO USE OF THE SOFTWARE IS AUTHORIZED HEREUNDER EXCEPT UNDER
- THIS DISCLAIMER.  THE SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
- "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.  IN NO
- EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
- INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
- FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.  NO ASSURANCES ARE
- PROVIDED BY THE COPYRIGHT HOLDERS THAT THE SOFTWARE DOES NOT INFRINGE
- THE PATENT OR OTHER INTELLECTUAL PROPERTY RIGHTS OF ANY OTHER ENTITY.
- EACH COPYRIGHT HOLDER DISCLAIMS ANY LIABILITY TO THE USER FOR CLAIMS
- BROUGHT BY ANY OTHER ENTITY BASED ON INFRINGEMENT OF INTELLECTUAL
- PROPERTY RIGHTS OR OTHERWISE.  AS A CONDITION TO EXERCISING THE RIGHTS
- GRANTED HEREUNDER, EACH USER HEREBY ASSUMES SOLE RESPONSIBILITY TO SECURE
- ANY OTHER INTELLECTUAL PROPERTY RIGHTS NEEDED, IF ANY.  THE SOFTWARE
- IS NOT FAULT-TOLERANT AND IS NOT INTENDED FOR USE IN MISSION-CRITICAL
- SYSTEMS, SUCH AS THOSE USED IN THE OPERATION OF NUCLEAR FACILITIES,
- AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS, AIR TRAFFIC CONTROL
- SYSTEMS, DIRECT LIFE SUPPORT MACHINES, OR WEAPONS SYSTEMS, IN WHICH
- THE FAILURE OF THE SOFTWARE OR SYSTEM COULD LEAD DIRECTLY TO DEATH,
- PERSONAL INJURY, OR SEVERE PHYSICAL OR ENVIRONMENTAL DAMAGE ("HIGH
- RISK ACTIVITIES").  THE COPYRIGHT HOLDERS SPECIFICALLY DISCLAIM ANY
- EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
+License: Khronos
+ Please fill license Khronos from header of include/GL/glext.h
 
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
@@ -875,26 +1050,6 @@ License: LGPL-2+
  On Debian systems, the full text of the Lesser GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/LGPL-2'.
-
-License: MIT-KHRONOS
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and/or associated documentation files (the
- "Materials"), to deal in the Materials without restriction, including
- without limitation the rights to use, copy, modify, merge, publish,
- distribute, sublicense, and/or sell copies of the Materials, and to
- permit persons to whom the Materials are furnished to do so, subject to
- the following conditions
- :
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Materials
- .
- THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 
 License: SGI-B-1.1
  License Applicability. Except to the extent portions of this file are
