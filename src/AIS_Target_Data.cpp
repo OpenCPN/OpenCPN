@@ -51,7 +51,6 @@ void clear_hash_ERI()
 
 static wxString FormatTimeAdaptive( int seconds )
 {
-    int s = seconds % 60;
     int m = seconds / 60;
     if( seconds < 100 )
         return wxString::Format( _T("%3ds"), seconds );
@@ -337,8 +336,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         ClassStr = wxGetTranslation( cls );
     }
     
-    if(b_SarAircraftPosnReport)
-        ClassStr = _("SAR Aircraft");
+    if (b_SarAircraftPosnReport) {
+        int airtype = (MMSI % 1000) / 100;
+        ClassStr = airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft");
+    }
 
     if( IMOstr.Length() )
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
@@ -494,6 +495,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         now.MakeGMT();
         int target_age = now.GetTicks() - PositionReportTicks;
+     //   wxLogMessage(wxString::Format(_T("** PositionReportTicks %ld %ld %d"),
+     //                                 now.GetTicks(), PositionReportTicks, target_age));
 
         html << vertSpacer
              << rowStart << _("Position") << posTypeStr << _T("</font></td><td align=right><font size=-2>")
@@ -713,8 +716,10 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T(": "));
             result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
         }
-        else if(b_SarAircraftPosnReport)
-            result.Append(_("SAR Aircraft"));
+        else if (b_SarAircraftPosnReport) {
+            int airtype = (MMSI % 1000) / 100;
+            result.Append(airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft"));
+        }
         else
             result.Append( wxGetTranslation( Get_class_string( false ) ) );
         
@@ -880,7 +885,7 @@ wxString AIS_Target_Data::Get_vessel_type_string( bool b_short )
         return ais_get_short_type(i);
 }
 
-wxString AIS_Target_Data::Get_class_string( bool b_short )
+    wxString AIS_Target_Data::Get_class_string( bool b_short )
 {
     switch( Class ){
         case AIS_CLASS_A:
@@ -1124,7 +1129,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 516: return b_CntryLongStr ? _("Christmas Island") : _T("CX") ;
     case 518: return b_CntryLongStr ? _("Cook Islands") : _T("CK") ;
     case 520: return b_CntryLongStr ? _("Fiji") : _T("FJ") ;
-    case 523: return b_CntryLongStr ? _("Cocos") : _T("CC") ;
+    case 523: return b_CntryLongStr ? _("Cocos (Keeling) Islands") : _T("CC") ;
     case 525: return b_CntryLongStr ? _("Indonesia") : _T("ID") ;
     case 529: return b_CntryLongStr ? _("Kiribati") : _T("KI") ;
     case 531: return b_CntryLongStr ? _("Lao People's Dem. Rep.") : _T("LA") ;
@@ -1164,7 +1169,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 613: return b_CntryLongStr ? _("Cameroon") : _T("CM") ;
     case 615: return b_CntryLongStr ? _("Congo") : _T("CD") ;
     case 616: return b_CntryLongStr ? _("Comoros") : _T("KM") ;
-    case 617: return b_CntryLongStr ? _("Cape Verde") : _T("CV") ;
+    case 617: return b_CntryLongStr ? _("Capo Verde") : _T("CV") ;
     case 618: return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF") ;
     case 619: return b_CntryLongStr ? _("Ivory Coast") : _T("CI") ;
     case 620: return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM") ;
@@ -1181,7 +1186,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 633: return b_CntryLongStr ? _("Burkina Faso") : _T("BF") ;
     case 634: return b_CntryLongStr ? _("Kenya") : _T("KE") ;
     case 635: return b_CntryLongStr ? _("Kerguelen Islands") : _T("TF") ;
-    case 636: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
+    case 636:
     case 637: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 638: return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS") ;
     case 642: return b_CntryLongStr ? _("Libya") : _T("LY") ;
@@ -1221,7 +1226,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 730: return b_CntryLongStr ? _("Colombia") : _T("CO") ;
     case 735: return b_CntryLongStr ? _("Ecuador") : _T("EC") ;
     case 740: return b_CntryLongStr ? _("Falkland Islands") : _T("FK") ;
-    case 745: return b_CntryLongStr ? _("Guiana") : _T("GY") ;
+    case 745: return b_CntryLongStr ? _("France - Guiana") : _T("GY") ;
     case 750: return b_CntryLongStr ? _("Guyana") : _T("GY") ;
     case 755: return b_CntryLongStr ? _("Paraguay") : _T("PY") ;
     case 760: return b_CntryLongStr ? _("Peru") : _T("PE") ;

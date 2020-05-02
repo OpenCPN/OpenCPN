@@ -67,7 +67,7 @@ int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag)
     int acc = 0;
     int s0p = sp-1;                          // to zero base
 
-    int cp, cx, c0, cs;
+    int cp, cx, c0;
 
 
     for(int i=0 ; i<len ; i++)
@@ -75,7 +75,6 @@ int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag)
         acc  = acc << 1;
         cp = (s0p + i) / 6;
         cx = bitbytes[cp];        // what if cp >= byte_length?
-        cs = 5 - ((s0p + i) % 6);
         c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
         if(i == 0 && signed_flag && c0) // if signed value and first bit is 1, pad with 1's
             acc = ~acc;
@@ -107,7 +106,7 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
             cp = (s0p + i) / 6;
             cx = bitbytes[cp];        // what if cp >= byte_length?
             cs = 5 - ((s0p + i) % 6);
-            c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
+            c0 = (cx >> cs) & 1;
             acc |= c0;
 
             i++;

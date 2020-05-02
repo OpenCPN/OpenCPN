@@ -24,7 +24,6 @@
  **************************************************************************/
 
 #include <iostream>
-using namespace std;
 
 #include "wx/wxprec.h"
 
@@ -75,6 +74,8 @@ using namespace std;
 #define PRINT_WP_COURSE 2
 #define PRINT_WP_DISTANCE 3
 #define PRINT_WP_DESCRIPTION 4
+
+using namespace std;
 
 // Global print data, to remember settings during the session
 extern wxPrintData*     g_printData;
@@ -425,11 +426,11 @@ void RoutePrintSelection::CreateControls()
 
     m_CancelButton = new wxButton( itemDialog1, ID_ROUTEPRINT_SELECTION_CANCEL, _( "Cancel" ), wxDefaultPosition,
                                    wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
     m_OKButton = new wxButton( itemDialog1, ID_ROUTEPRINT_SELECTION_OK, _( "OK" ), wxDefaultPosition,
                                wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_OKButton->SetDefault();
 
     SetColorScheme( ( ColorScheme )0 );

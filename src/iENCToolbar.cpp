@@ -23,6 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include "config.h"
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -42,7 +44,6 @@
 
 extern s52plib *ps52plib;
 extern MyFrame * gFrame;
-extern PlugInManager *g_pi_manager;
 extern OCPNPlatform *g_Platform; 
 
 

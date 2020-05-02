@@ -491,11 +491,10 @@ void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, doubl
 
 // y =.5 ln( (1 + sin t) / (1 - sin t) )
       const double s = sin(lat * DEGREE);
-      const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+      //const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
 
       const double s0 = sin(lat0 * DEGREE);
-      const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
-      const double y4 = y3 - y30;
+      //const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
 
     //Add eccentricity terms
 
@@ -971,9 +970,6 @@ void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon
 
       dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
 
-      const double dh = (dx * clat * clon) + (dy * clat * slon) + (dz * slat)
-                  - (da * (from_a / rn)) + ((df * rn * ssqlat) / adb);
-
     } 
     
     *to_lon = lon + dlon/DEGREE;
@@ -1055,7 +1051,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
     int ellipse;
     double geod_f;
     double geod_a;
-    double es, onef, f, f64, f2, f4;
+    double es, onef, f, f4;
     
     /*      Setup the static parameters  */
     phi1 = lat * DEGREE;            /* Initial Position  */
@@ -1077,9 +1073,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
         es = 2 * f - f * f;
         onef = sqrt(1. - es);
         geod_f = 1 - onef;
-        f2 = geod_f/2;
         f4 = geod_f/4;
-        f64 = geod_f*geod_f/64;
         
         al12 = adjlon(al12); /* reduce to  +- 0-PI */
         signS = fabs(al12) > HALFPI ? 1 : 0;
@@ -1189,108 +1183,111 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
 void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                       double *bearing, double *dist)
 {
-//    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
-//    int merid, signS;
-    
-    /*   Input/Output from geodesic functions   */
-    double al12;           /* Forward azimuth */
-    double al21;           /* Back azimuth    */
-    double geod_S;         /* Distance        */
-    double phi1, lam1, phi2, lam2;
-    
-    int ellipse;
-    double geod_f;
-    double geod_a;
-    double es, onef, f, f64, f2, f4;
-    
-    /*      Setup the static parameters  */
-    phi1 = lat1 * DEGREE;            /* Initial Position  */
-    lam1 = lon1 * DEGREE;
-    phi2 = lat2 * DEGREE;
-    lam2 = lon2 * DEGREE;
-    
-    //void geod_inv(struct georef_state *state)
+    // For small distances do an ordinary mercator calc. (To prevent return of nan's )
+    if ((fabs(lon2-lon1)<0.1) &&  (fabs(lat2-lat1)<0.1)) 
     {
-        double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
-        sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
-        
-        
-        /*   Stuff the WGS84 projection parameters as necessary
-         *      To avoid having to include <geodesic,h>
-         */
-        
-        ellipse = 1;
-        f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
-        geod_a = WGS84_semimajor_axis_meters;
-        
-        es = 2 * f - f * f;
-        onef = sqrt(1. - es);
-        geod_f = 1 - onef;
-        f2 = geod_f/2;
-        f4 = geod_f/4;
-        f64 = geod_f*geod_f/64;
-        
-        
-        if (ellipse) {
-            th1 = atan(onef * tan(phi1));
-            th2 = atan(onef * tan(phi2));
-        } else {
-            th1 = phi1;
-            th2 = phi2;
-        }
-        thm = .5 * (th1 + th2);
-        dthm = .5 * (th2 - th1);
-        dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
-        if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
-            al12 =  al21 = geod_S = 0.;
-            if(bearing)
-                *bearing = 0.;
-            if(dist)
-                *dist = 0.;
-            return;
-        }
-        sindlamm = sin(dlamm);
-        costhm = cos(thm);      sinthm = sin(thm);
-        cosdthm = cos(dthm);    sindthm = sin(dthm);
-        L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
-                    * sindlamm * sindlamm;
-        d = acos(cosd = 1 - L - L);
-        if (ellipse) {
-              E = cosd + cosd;
-              sind = sin( d );
-              Y = sinthm * cosdthm;
-              Y *= (Y + Y) / (1. - L);
-              T = sindthm * costhm;
-              T *= (T + T) / L;
-              X = Y + T;
-              Y -= T;
-              T = d / sind;
-              D = 4. * T * T;
-              A = D * E;
-              B = D + D;
-              geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
-                          f64 * (X * (A + (T - .5 * (A - E)) * X) -
-                          Y * (B + E * Y) + D * X * Y));
-              tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
-                          (f2 * T + f64 * (32. * T - (20. * T - A)
-                            * X - (B + 4.) * Y)) * tan(dlam)));
-        } else {
-            geod_S = geod_a * d;
-            tandlammp = tan(dlamm);
-        }
-        u = atan2(sindthm , (tandlammp * costhm));
-        v = atan2(cosdthm , (tandlammp * sinthm));
-        al12 = adjlon(TWOPI + v - u);
-        al21 = adjlon(TWOPI - v - u);
+        DistanceBearingMercator( lat2, lon2, lat1, lon1, bearing, dist);
+        return;
     }
-    
-    if(al12 < 0)
-        al12 += 2*PI;
-    
-    if(bearing)
-        *bearing = al12 / DEGREE;
-    if(dist)
-        *dist = geod_S / 1852.0;
+    else{
+        /*   Input/Output from geodesic functions   */
+        double al12;           /* Forward azimuth */
+        double al21;           /* Back azimuth    */
+        double geod_S;         /* Distance        */
+        double phi1, lam1, phi2, lam2;
+        
+        int ellipse;
+        double geod_f;
+        double geod_a;
+        double es, onef, f, f64, f2, f4;
+        
+        /*      Setup the static parameters  */
+        phi1 = lat1 * DEGREE;            /* Initial Position  */
+        lam1 = lon1 * DEGREE;
+        phi2 = lat2 * DEGREE;
+        lam2 = lon2 * DEGREE;
+        
+        //void geod_inv(struct georef_state *state)
+        {
+            double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
+            sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
+            
+            
+            /*   Stuff the WGS84 projection parameters as necessary
+            *      To avoid having to include <geodesic,h>
+            */
+            
+            ellipse = 1;
+            f = 1.0 / WGSinvf;       /* WGS84 ellipsoid flattening parameter */
+            geod_a = WGS84_semimajor_axis_meters;
+            
+            es = 2 * f - f * f;
+            onef = sqrt(1. - es);
+            geod_f = 1 - onef;
+            f2 = geod_f/2;
+            f4 = geod_f/4;
+            f64 = geod_f*geod_f/64;
+            
+            
+            if (ellipse) {
+                th1 = atan(onef * tan(phi1));
+                th2 = atan(onef * tan(phi2));
+            } else {
+                th1 = phi1;
+                th2 = phi2;
+            }
+            thm = .5 * (th1 + th2);
+            dthm = .5 * (th2 - th1);
+            dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
+            if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
+                al12 =  al21 = geod_S = 0.;
+                if(bearing)
+                    *bearing = 0.;
+                if(dist)
+                    *dist = 0.;
+                return;
+            }
+            sindlamm = sin(dlamm);
+            costhm = cos(thm);      sinthm = sin(thm);
+            cosdthm = cos(dthm);    sindthm = sin(dthm);
+            L = sindthm * sindthm + (cosdthm * cosdthm - sinthm * sinthm)
+                        * sindlamm * sindlamm;
+            d = acos(cosd = 1 - L - L);
+            if (ellipse) {
+                E = cosd + cosd;
+                sind = sin( d );
+                Y = sinthm * cosdthm;
+                Y *= (Y + Y) / (1. - L);
+                T = sindthm * costhm;
+                T *= (T + T) / L;
+                X = Y + T;
+                Y -= T;
+                T = d / sind;
+                D = 4. * T * T;
+                A = D * E;
+                B = D + D;
+                geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
+                            f64 * (X * (A + (T - .5 * (A - E)) * X) -
+                            Y * (B + E * Y) + D * X * Y));
+                tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
+                            (f2 * T + f64 * (32. * T - (20. * T - A)
+                                * X - (B + 4.) * Y)) * tan(dlam)));
+            } else {
+                geod_S = geod_a * d;
+                tandlammp = tan(dlamm);
+            }
+            u = atan2(sindthm , (tandlammp * costhm));
+            v = atan2(cosdthm , (tandlammp * sinthm));
+            al12 = adjlon(TWOPI + v - u);
+            al21 = adjlon(TWOPI - v - u);
+            if(al12 < 0)
+                al12 += 2*PI;
+            if(bearing)
+                *bearing = al12 / DEGREE;
+            if(dist)
+                *dist = geod_S / 1852.0;
+        } 
+    }
 }
 
 void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
@@ -1321,15 +1318,15 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         return d5;    
     
     /*   Input/Output from geodesic functions   */
-    double al12;           /* Forward azimuth */
-    double al21;           /* Back azimuth    */
+    //double al12;           /* Forward azimuth */
+    //double al21;           /* Back azimuth    */
     double geod_S;         /* Distance        */
     double phi1, lam1, phi2, lam2;
     
     int ellipse;
     double geod_f;
     double geod_a;
-    double es, onef, f, f64, f2, f4;
+    double es, onef, f, f64, f4;
     
     phi1 = slat * DEGREE;
     lam1 = slon * DEGREE;
@@ -1339,7 +1336,8 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
     //void geod_inv(struct georef_state *state)
     {
         double      th1,th2,thm,dthm,dlamm,dlam,sindlamm,costhm,sinthm,cosdthm,
-        sindthm,L,E,cosd,d,X,Y,T,sind,tandlammp,u,v,D,A,B;
+        sindthm,L,E,cosd,d,X,Y,T,sind,D,A,B;
+	//double    tandlammp,u,v;
         
         
         /*   Stuff the WGS84 projection parameters as necessary
@@ -1353,7 +1351,7 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         es = 2 * f - f * f;
         onef = sqrt(1. - es);
         geod_f = 1 - onef;
-        f2 = geod_f/2;
+        //f2 = geod_f/2;
         f4 = geod_f/4;
         f64 = geod_f*geod_f/64;
         
@@ -1369,7 +1367,6 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
         dthm = .5 * (th2 - th1);
         dlamm = .5 * ( dlam = adjlon(lam2 - lam1) );
         if (fabs(dlam) < DTOL && fabs(dthm) < DTOL) {
-            al12 =  al21 = geod_S = 0.;
             return 0.0;
         }
         sindlamm = sin(dlamm);
@@ -1396,9 +1393,9 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
               geod_S = geod_a * sind * (T - f4 * (T * X - Y) +
                           f64 * (X * (A + (T - .5 * (A - E)) * X) -
                           Y * (B + E * Y) + D * X * Y));
-              tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
-                          (f2 * T + f64 * (32. * T - (20. * T - A)
-                          * X - (B + 4.) * Y)) * tan(dlam)));
+//              tandlammp = tan(.5 * (dlam - .25 * (Y + Y - E * (4. - X)) *
+//                          (f2 * T + f64 * (32. * T - (20. * T - A)
+//                          * X - (B + 4.) * Y)) * tan(dlam)));
         } else {
             geod_S = geod_a * d;
 //            tandlammp = tan(dlamm);
@@ -1415,69 +1412,53 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon)
 }
 
 
-void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist)
+void DistanceBearingMercator(double lat1, double lon1, double lat0, double lon0, double *brg, double *dist)
 {
-      //    Calculate bearing by conversion to SM (Mercator) coordinates, then simple trigonometry
+    //Calculate bearing and distance between two points
+    double latm = (lat0 + lat1)/2 * DEGREE; //median of latitude
+    double delta_lat = (lat1 - lat0);
+    double delta_lon = (lon1 - lon0);
+    double ex_lat0, ex_lat1;
+    double bearing, distance;
+    //make sure we calc the shortest route, even if this across the date line.
+    if(delta_lon < -180) delta_lon += 360;
+    if(delta_lon > 180) delta_lon -= 360;
+    
+    if (delta_lon == 0) bearing = .0;  //delta lon = 0 so course is due N or S
+    else if ( fabs(delta_lat) != .0 )
+        bearing = atan( delta_lon * cos(latm) / delta_lat );              
+        else
+            bearing = PI / 2; //delta lat = 0 so course must be E or W
+    
+    distance = sqrt( pow(delta_lat,2) + pow(delta_lon*cos(latm),2) ) ;    
+    
+    if (distance > 0.01745) //  > 1 degree we use exaggerated latitude to be more exact
+    {
+        if ( delta_lat != 0. ){
+            ex_lat0=10800/PI * log( tan( PI/4 + lat0*DEGREE/2 ));
+            ex_lat1=10800/PI * log( tan( PI/4 + lat1*DEGREE/2 ));
+            bearing = atan( delta_lon*60 / (ex_lat1-ex_lat0));
+            distance = fabs(delta_lat / cos( bearing ));            
+        }
+        else{
+            bearing = PI / 2;            
+        }         
+    }
 
-      double lon0x = lon0;
-      double lon1x = lon1;
-
-      //    Make lon points the same phase
-      if((lon0x * lon1x) < 0.)
-      {
-          lon0x < 0.0 ? lon0x += 360.0 : lon1x += 360.0;
-            //    Choose the shortest distance
-            if(fabs(lon0x - lon1x) > 180.)
-            {
-                lon0x > lon1x ? lon0x -= 360.0 : lon1x -= 360.0;
-            }
-
-            //    Make always positive
-            lon1x += 360.;
-            lon0x += 360.;
-      }
-
-      //    Classic formula, which fails for due east/west courses....
-      if(dist)
-      {
-          //    In the case of exactly east or west courses
-          //    we must make an adjustment if we want true Mercator distances
-
-          //    This idea comes from Thomas(Cagney)
-          //    We simply require the dlat to be (slightly) non-zero, and carry on.
-          //    MAS022210 for HamishB from 1e-4 && .001 to 1e-9 for better precision
-          //    on small latitude diffs
-          const double mlat0 = fabs(lat1 - lat0) < 1e-9 ? lat0 + 1e-9 : lat0;
-
-          double east, north;
-          toSM_ECC(lat1, lon1x, mlat0, lon0x, &east, &north);
-          const double C = atan2(east, north);
-          if(cos(C))
-          {
-              const double dlat = (lat1 - mlat0) * 60.;              // in minutes
-              *dist = (dlat /cos(C));
-          }
-          else
-          {
-              *dist = DistGreatCircle(lat0, lon0, lat1, lon1);
-          }
-      }
-
-      //    Calculate the bearing using the un-adjusted original latitudes and Mercator Sailing
-      if(brg)
-      {
-          double east, north;
-          toSM_ECC(lat1, lon1x, lat0, lon0x, &east, &north);
-
-          const double C = atan2(east, north);
-          const double brgt = 180. + (C * 180. / PI);
-          if (brgt < 0)
-              *brg = brgt + 360.;
-          else if (brgt >= 360.)
-              *brg = brgt - 360.;
-          else
-              *brg = brgt;
-      }
+        bearing = fabs( bearing );    
+        if ( lat1 > lat0){
+            if ( delta_lon < 0)
+                bearing = 2*PI - bearing;} //NW
+        else{
+            if ( delta_lon > 0)
+                bearing = PI - bearing; //SE
+            else
+                bearing = PI + bearing;} //SW
+        
+    if(brg)
+        *brg = bearing * RADIAN; //in degrees
+    if(dist)
+        *dist = distance * 60; //in NM
 }
 
 

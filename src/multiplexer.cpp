@@ -25,12 +25,23 @@
 
 #include "wx/wx.h"
 
+#include "config.h"
 #include "multiplexer.h"
 #include "navutil.h"
 #include "NMEALogWindow.h"
-#include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
+
+#ifdef USE_GARMINHOST
+#include "garmin_wrapper.h"
+#endif
+#include "OCPN_SignalKEvent.h"
+#include "datastream.h"
+#include "SerialDataStream.h"
+#include "wx/jsonval.h"
+#include "wx/jsonwriter.h"
+#include "wx/jsonreader.h"
+
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -44,11 +55,13 @@ extern wxString         g_TalkerIdText;
 
 extern "C" bool CheckSerialAccess( void );
 
-Multiplexer::Multiplexer()
+Multiplexer::Multiplexer() : params_save(NULL)
 {
     m_aisconsumer = NULL;
     m_gpsconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &Multiplexer::OnEvtSignalK );
+
     m_pdatastreams = new wxArrayOfDataStreams();
     if(g_GPS_Ident.IsEmpty())
         g_GPS_Ident = wxT("Generic");
@@ -56,6 +69,7 @@ Multiplexer::Multiplexer()
 
 Multiplexer::~Multiplexer()
 {
+    Disconnect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
     ClearStreams();
     delete m_pdatastreams;
 }
@@ -122,24 +136,8 @@ void Multiplexer::StartAllStreams( void )
             }
 #endif
 
-            dsPortType port_type = cp->IOSelect;
-            DataStream *dstr = new DataStream( this,
-                                               cp->Type,
-                                               cp->GetDSPort(),
-                                               wxString::Format(wxT("%i"),cp->Baudrate),
-                                               port_type,
-                                               cp->Priority,
-                                               cp->Garmin
-                                               );
-                                               dstr->SetInputFilter(cp->InputSentenceList);
-                                               dstr->SetInputFilterType(cp->InputSentenceListType);
-                                               dstr->SetOutputFilter(cp->OutputSentenceList);
-                                               dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                                               dstr->SetChecksumCheck(cp->ChecksumCheck);
-
+            AddStream(makeDataStream(this, cp));
             cp->b_IsSetup = true;
-
-            AddStream(dstr);
         }
     }
 
@@ -353,46 +351,46 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
     }
 }
 
+void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
+{
+    if( m_aisconsumer )
+        m_aisconsumer->AddPendingEvent(event);
+    if( m_gpsconsumer )
+        m_gpsconsumer->AddPendingEvent(event);
+    
+    wxJSONReader jsonReader;
+    wxJSONValue root;
+
+    std::string msgTerminated = event.GetString();
+    msgTerminated.append("\r\n");
+
+    int errors = jsonReader.Parse(msgTerminated, &root);
+    if( errors == 0)
+        g_pi_manager->SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
+}
+
 void Multiplexer::SaveStreamProperties( DataStream *stream )
 {
     if( stream ) {
-        type_save = stream->GetConnectionType();
-        port_save = stream->GetPort();
-        baud_rate_save = stream->GetBaudRate();
-        port_type_save = stream->GetPortType();
-        priority_save = stream->GetPriority();
-        input_sentence_list_save = stream->GetInputSentenceList();
-        input_sentence_list_type_save = stream->GetInputSentenceListType();
-        output_sentence_list_save = stream->GetOutputSentenceList();
-        output_sentence_list_type_save = stream->GetOutputSentenceListType();
-        bchecksum_check_save = stream->GetChecksumCheck();
-        bGarmin_GRMN_mode_save = stream->GetGarminMode();
+        wxLogMessage( wxString::Format(_T("SaveStreamProperties %s"),
+                                       stream->GetConnectionParams()->GetDSPort().c_str()) );
+        params_save = stream->GetConnectionParams();
     }
 }
 
 bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 {
-    DataStream *dstr = new DataStream( this,
-                                       type_save,
-                                       port_save,
-                                       baud_rate_save,
-                                       port_type_save,
-                                       priority_save,
-                                       bGarmin_GRMN_mode_save
-                                     );
-    dstr->SetInputFilter(input_sentence_list_save);
-    dstr->SetInputFilterType(input_sentence_list_type_save);
-    dstr->SetOutputFilter(output_sentence_list_save);
-    dstr->SetOutputFilterType(output_sentence_list_type_save);
-    dstr->SetChecksumCheck(bchecksum_check_save);
-
-    AddStream(dstr);
-
+    wxLogMessage( wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
+                                   params_save->GetDSPort().c_str()) );
+    AddStream(makeDataStream(this, params_save));
     return true;
 }
 
 
-int Multiplexer::SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
+int Multiplexer::SendRouteToGPS(Route *pr,
+        const wxString &com_name,
+        bool bsend_waypoints,
+        wxGauge *pProgress)
 {
     int ret_val = 0;
     DataStream *old_stream = FindStream( com_name );
@@ -401,7 +399,7 @@ int Multiplexer::SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_
         StopAndRemoveStream( old_stream );
     }
 
-#ifdef USE_GARMINHOST
+#ifdef USE_GARMINHOST         
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
@@ -546,18 +544,18 @@ ret_point:
             wxString baud;
 
             if( old_stream ) {
-                baud = baud_rate_save;
+                baud = wxString::Format(wxT("%i"), params_save->Baudrate);
             }
             else {
                 baud = _T("4800");
             }
 
-            DataStream *dstr = new DataStream( this,
-                                               SERIAL,
-                                               com_name,
-                                               baud,
-                                               DS_TYPE_INPUT_OUTPUT,
-                                               0 );
+            DataStream *dstr = makeSerialDataStream(this,
+                                                    SERIAL,
+                                                    com_name,
+                                                    baud,
+                                                    DS_TYPE_INPUT_OUTPUT,
+                                                    0, false);
 
             //  Wait up to 5 seconds for Datastream secondary thread to come up
             int timeout = 0;
@@ -971,7 +969,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         StopAndRemoveStream( old_stream );
     }
 
-#ifdef USE_GARMINHOST
+#ifdef USE_GARMINHOST 
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
@@ -1100,18 +1098,18 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
     wxString baud;
 
     if( old_stream ) {
-        baud = baud_rate_save;
+        baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
     }
     else {
         baud = _T("4800");
     }
 
-    DataStream *dstr = new DataStream( this,
-                                       SERIAL,
-                                       com_name,
-                                       baud,
-                                       DS_TYPE_INPUT_OUTPUT,
-                                       0 );
+    DataStream *dstr = makeSerialDataStream(this,
+                                            SERIAL,
+                                            com_name,
+                                            baud,
+                                            DS_TYPE_INPUT_OUTPUT,
+                                            0, false);
 
 
     //  Wait up to 1 seconds for Datastream secondary thread to come up

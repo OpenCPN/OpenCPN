@@ -23,6 +23,12 @@ Show help info.
 .B \-p
 Run in portable mode.
 .TP
+.B  \-l, \-\-loglevel=<level>
+Set amount of logged information. Level is any of \fItrace\fR,
+\fIdebug\fR, \fIinfo\fR, \fImessage\fR, \fIwarning\fR or \fIerror\fR,
+defaulting to \fIinfo\fR if not set in environment; see ENVIRONMENT.
+
+.TP
 .B  \-fullscreen
 Switch to full screen mode on start.
 .TP
@@ -65,10 +71,34 @@ properly.
 On other platforms, the plugin data directories always lives in a common
 parent defined at installation time.
 
+.SH LIBRARY LOADING AND LD_LIBRARY_PATH
+
+If \fILD_LIBRARY_PATH\fR exists in the environment \fBopencpn\fR uses it
+without modifications.
+.P
+Otherwise \fILD_LIBRARY_PATH\fR is set to the same path as from which plugins are
+loaded, see above. This ensures that helper binaries can load possible libraries
+installed in the same directories as the plugin.
+
+.SH ENVIRONMENT
+.TP
+.B OPENCPN_PLUGIN_DIRS
+Plugin load path, see PLUGIN LOADING
+.TP
+.B OPENCPN_LOGLEVEL
+Default loglevel if not defined on command line using -l/--loglevel. See
+the --loglevel option for allowed values.
+
+.SH FILES
+.TP
+.B ~/.opencpn/opencpn.log
+System log file, a useful tool to solve problems.
+
+
 .SH NOTES
 
 The support for OPENCPN_PLUGIN_DIRS and XDG_DATA_DIRS was introduced in
-version TBD. Prior to this, all plugins was loaded from a single directory
+version 5.0.0. Prior to this, all plugins was loaded from a single directory
 and all plugin data directories had a common parent.
 
 .SH SEE ALSO

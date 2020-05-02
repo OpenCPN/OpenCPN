@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "RoutePropDlg.h"
+#include "chart1.h"
 
 #if wxCHECK_VERSION(3, 1, 2)
   #define CELL_EDITABLE wxDATAVIEW_CELL_EDITABLE
@@ -17,6 +18,9 @@
 
 RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        SetFont( *qFont );
+
 	this->SetSizeHints( wxSize( 300,300 ), wxDefaultSize );
 
 	wxBoxSizer* bSizerMain;
@@ -115,18 +119,21 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_stDeparture->Wrap( -1 );
 	bSizerDeparture->Add( m_stDeparture, 0, wxALL, 5 );
 
-	wxBoxSizer* bSizerDepartureTS;
-	bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
+        wxBoxSizer* bSizerDepartureTS;
+        bSizerDepartureTS = new wxBoxSizer( wxHORIZONTAL );
+        bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
 
+#ifndef __OCPN__ANDROID__        
 	m_dpDepartureDate = new wxDatePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 	bSizerDepartureTS->Add( m_dpDepartureDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-	m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-
-	bSizerDeparture->Add( bSizerDepartureTS, 0, 0, 5 );
-
+#ifdef __WXGTK__
+        m_tpDepartureTime = new TimeCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize );
+#else
+        m_tpDepartureTime = new wxTimePickerCtrl( m_pnlBasic, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
+#endif
+        bSizerDepartureTS->Add( m_tpDepartureTime, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+#endif
 
 	wSizerParams->Add( bSizerDeparture, 1, wxEXPAND, 0 );
 
@@ -358,9 +365,11 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_ntbRteProp->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( RoutePropDlg::RoutePropDlgOnNotebookPageChanged ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
-        m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+    m_tcPlanSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+#ifndef __OCPN__ANDROID__
 	m_dpDepartureDate->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Connect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
+#endif        
 	m_choiceTimezone->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Connect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );
@@ -388,8 +397,10 @@ RoutePropDlg::~RoutePropDlg()
 	m_tcPlanSpeed->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( RoutePropDlg::PlanSpeedOnKillFocus ), NULL, this );
 	m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
         m_tcPlanSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RoutePropDlg::PlanSpeedOnTextEnter ), NULL, this );
+#ifndef __OCPN__ANDROID__
 	m_dpDepartureDate->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureDateOnDateChanged ), NULL, this );
 	m_tpDepartureTime->Disconnect( wxEVT_TIME_CHANGED, wxDateEventHandler( RoutePropDlg::DepartureTimeOnTimeChanged ), NULL, this );
+#endif
 	m_choiceTimezone->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( RoutePropDlg::TimezoneOnChoice ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_CONTEXT_MENU, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemContextMenu ), NULL, this );
 	m_dvlcWaypoints->Disconnect( wxEVT_COMMAND_DATAVIEW_ITEM_EDITING_DONE, wxDataViewEventHandler( RoutePropDlg::WaypointsOnDataViewListCtrlItemEditingDone ), NULL, this );

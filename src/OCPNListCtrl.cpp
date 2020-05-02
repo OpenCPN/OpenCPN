@@ -93,7 +93,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 break;
                 
             case tlNAME:
-                if( (!pAISTarget->b_nameValid && ( pAISTarget->Class == AIS_BASE )) || ( pAISTarget->Class == AIS_SART ) || pAISTarget->b_SarAircraftPosnReport)
+                if( (!pAISTarget->b_nameValid && ( pAISTarget->Class == AIS_BASE )) || ( pAISTarget->Class == AIS_SART ) )
                     ret = _("-");
                 else {
                     wxString uret = trimAISField( pAISTarget->ShipName );
@@ -118,8 +118,10 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 break;
 
             case tlCLASS:
-                if(pAISTarget->b_SarAircraftPosnReport)
-                    ret = _("SAR Aircraft");
+                if (pAISTarget->b_SarAircraftPosnReport) {
+                    int airtype = (pAISTarget->MMSI % 1000) / 100;
+                    ret = airtype == 5 ? _("SAR Helicopter") :_("SAR Aircraft");
+                }                    
                 else
                     ret = wxGetTranslation( pAISTarget->Get_class_string( true ) );
                 break;

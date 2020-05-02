@@ -60,8 +60,17 @@
 
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
+    WX_DEFINE_OBJARRAY(ArrayOfChartPanels);
+
+#ifdef __OCPN__ANDROID__    
+#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS    
+#endif
 
 #include <fstream>
+
+#ifdef __OCPN__ANDROID__
+#include "androidSupport.h"
+#endif    
 
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
@@ -75,7 +84,7 @@
     
     #define CATALOGS_NAME_WIDTH 350
     #define CATALOGS_DATE_WIDTH 230
-    #define CATALOGS_PATH_WIDTH 600
+    #define CATALOGS_PATH_WIDTH 1000
     #define CHARTS_NAME_WIDTH 520
     #define CHARTS_STATUS_WIDTH 150
     #define CHARTS_DATE_WIDTH 200
@@ -93,7 +102,35 @@
     #endif
 #endif // __WXMAC__
 
+#ifdef __OCPN__ANDROID__
+    #include <QtAndroidExtras/QAndroidJniObject>
+    #include "qdebug.h"
+    
+    extern JavaVM *java_vm;         // found in androidUtil.cpp, accidentally exported....
+    JNIEnv* jenv;
+    
+#endif    
+
+    bool getDisplayMetrics();
+    
 #define CHART_DIR "Charts"
+
+    
+void write_file( const wxString extract_file, char *data, unsigned long datasize )
+{
+    wxFileName fn(extract_file);
+    if( wxDirExists( fn.GetPath() ) )
+    {
+        if( !wxFileName::Mkdir(fn.GetPath(), 0755, wxPATH_MKDIR_FULL) )
+        {
+            wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
+            return;
+        }
+    }
+    wxFileOutputStream f(extract_file);
+    f.Write(data, datasize);
+    f.Close();
+}
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -106,6 +143,9 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
+
+double g_androidDPmm;
+chartdldr_pi *g_pi;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -140,6 +180,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
     m_leftclick_tool_id = -1;
     m_schartdldr_sources = wxEmptyString;
     
+    g_pi = this;
 }
 
 int chartdldr_pi::Init( void )
@@ -160,12 +201,15 @@ int chartdldr_pi::Init( void )
     //    And load the configuration items
     LoadConfig();
 
+    getDisplayMetrics();
+    
     wxStringTokenizer st(m_schartdldr_sources, _T("|"), wxTOKEN_DEFAULT);
     while( st.HasMoreTokens() )
     {
         wxString s1 = st.GetNextToken();
         wxString s2 = st.GetNextToken();
         wxString s3 = st.GetNextToken();
+        if(!s2.IsEmpty())                       // scrub empty sources.
         m_pChartSources->Add(new ChartSource(s1, s2, s3));
     }
     return (
@@ -287,7 +331,7 @@ bool chartdldr_pi::LoadConfig( void )
         wxLogMessage( _T ( "chartdldr_pi: " ) + m_base_chart_dir );
         wxLogMessage( _T ( "chartdldr_pi: " ) + fn.GetPath() );
         
-        pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, false );
+        pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, true );
         pConf->Read ( _T ( "PreselectUpdated" ), &m_preselect_updated, true );
         pConf->Read ( _T ( "AllowBulkUpdate" ), &m_allow_bulk_update, false );
         return true;
@@ -324,27 +368,184 @@ bool chartdldr_pi::SaveConfig(void)
         return false;
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
+}
+
+
 void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(m_parent_window);
+    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(parent);
+
+    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    dialog->SetFont(fo);
     
+#ifdef __OCPN__ANDROID__
     if( m_parent_window ){
-        //dialog->SetSize(parent->GetSize().GetWidth(), 450);
-        //dialog->CenterOnScreen();
+        int xmax = m_parent_window->GetSize().GetWidth();
+        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+        dialog->SetSize( xmax, ymax );
+        dialog->Layout();
+        
+        dialog->Move(0,0);
     }
+    
+    wxColour cl = wxColour(214,218,222);
+    SetBackColor( dialog, cl );
+#endif
     
     dialog->SetPath(m_base_chart_dir);
     dialog->SetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-    if( wxID_OK == dialog->ShowModal() )
-    {
-        m_base_chart_dir = dialog->GetPath();
-        dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-        SaveConfig();
-        if(m_dldrpanel)
-            m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
+    
+    dialog->ShowModal();
+    dialog->Destroy();
+}
+
+void chartdldr_pi::UpdatePrefs(ChartDldrPrefsDlgImpl *dialog)
+{
+    m_base_chart_dir = dialog->GetPath();
+    dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
+    SaveConfig();
+    if(m_dldrpanel)
+        m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
+}
+
+bool getDisplayMetrics()
+{
+#ifdef __OCPN__ANDROID__
+
+    g_androidDPmm = 4.0;           // nominal default
+
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        return false;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    //  Return string may have commas instead of periods, if using Euro locale
+    //  We just fix it here...
+    return_string.Replace( _T(","), _T(".") );
+
+    
+//     wxLogMessage(_T("Metrics:") + return_string);
+//     wxSize screen_size = ::wxGetDisplaySize();
+//     wxString msg;
+//     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
+//     wxLogMessage(msg);
+    
+    double density = 1.0;
+    wxStringTokenizer tk(return_string, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        
+        long b = ::wxGetDisplaySize().y;        
+        token.ToDouble( &density );
+        
+        token = tk.GetNextToken();              // ldpi
+        
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height - statusBarHeight
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height
+        token = tk.GetNextToken();              // dm.widthPixels
+        token = tk.GetNextToken();              // dm.heightPixels
+        
+        token = tk.GetNextToken();              // actionBarHeight
+        long abh;
+        token.ToLong( &abh );
+//        g_ActionBarHeight = wxMax(abh, 50);
+        
+        //        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
         
     }
-    delete dialog;
+    
+    double ldpi = 160. * density;
+    
+//    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+//    ret = (maxDim / ldpi) * 25.4;
+    
+//    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
+//    wxLogMessage(msg);
+    
+    //  Save some items as global statics for convenience
+    g_androidDPmm = ldpi / 25.4;
+//    g_androidDensity = density;
+    
+    //qDebug() << "PI Metrics" << g_androidDPmm << density;
+    return true;
+#else
+    
+    return true;
+#endif    
+    
+    
 }
 
 ChartSource::ChartSource( wxString name, wxString url, wxString localdir )
@@ -380,14 +581,13 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
     switch( evt.GetId() )
     {
         case ID_MNU_SELALL:
-            m_clCharts->CheckAll(true);
+            CheckAllCharts( true );
             break;
         case ID_MNU_DELALL:
-            m_clCharts->CheckAll(false);
+            CheckAllCharts( false );
             break;
         case ID_MNU_INVSEL:
-            for (int i = 0; i < m_clCharts->GetItemCount(); i++)
-                m_clCharts->Check(i, !m_clCharts->IsChecked(i));
+            InvertCheckAllCharts( );
             break;
         case ID_MNU_SELUPD:
         {
@@ -406,13 +606,13 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
 
 void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 {
-    if( m_clCharts->GetItemCount() == 0 )
-        return;
+    
     wxMenu menu;
-    wxPoint point = event.GetPosition();
-    wxPoint p1 = ((wxWindow *)m_clCharts)->GetPosition();
 
-#ifdef __OCPN_ANDROID__    
+    wxPoint mouseScreen = wxGetMousePosition();
+    wxPoint mouseClient = ScreenToClient(mouseScreen);
+
+#ifdef __OCPN__ANDROID__    
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
     
     // add stuff
@@ -448,7 +648,8 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
      
     menu.Connect(wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick, NULL, this);
     // and then display
-    PopupMenu(&menu, p1.x + point.x, p1.y + point.y);
+    PopupMenu(&menu, mouseClient.x, mouseClient.y);
+
 }
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
@@ -486,11 +687,13 @@ void ChartDldrPanelImpl::SetSource( int id )
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
         FillFromFile(cs->GetUrl(), cs->GetDir(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
+        m_chartsLabel->SetLabel(wxString::Format(_("Charts: %s"), cs->GetName().c_str()));
         if (::wxIsBusy()) ::wxEndBusyCursor();
     }
     else
     {
         pPlugIn->m_pChartSource = NULL;
+        m_chartsLabel->SetLabel( _("Charts"));
     }
 }
 
@@ -510,9 +713,13 @@ void ChartDldrPanelImpl::SetBulkUpdate( bool bulk_update )
 
 void ChartDldrPanelImpl::CleanForm()
 {
+#ifdef NEW_LIST
+    m_scrollWinChartList->ClearBackground();
+#else
     m_clCharts->Freeze();
     m_clCharts->DeleteAllItems();
     m_clCharts->Thaw();
+#endif    
     //m_stCatalogInfo->Show( false );
 }
 
@@ -535,6 +742,66 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         pPlugIn->m_pChartCatalog->LoadFromFile(path);
 //            m_tChartSourceInfo->SetValue(pPlugIn->m_pChartCatalog->GetDescription());
         //fill in the rest of the form
+        
+#ifdef NEW_LIST
+        size_t updated_charts = 0;
+        size_t new_charts = 0;
+        
+        // Clear any existing panels
+        for(unsigned int i = 0 ; i < m_panelArray.GetCount() ; i++){
+            delete m_panelArray.Item(i);
+        }
+        m_panelArray.Clear();
+        
+        m_scrollWinChartList->ClearBackground();
+        
+        for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts.Count(); i++ )
+        {
+            wxString status;
+            wxString latest;
+            bool bcheck = false;
+            wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename(true);
+            if( !pPlugIn->m_pChartSource->ExistsLocaly(pPlugIn->m_pChartCatalog->charts.Item(i).number, file) )
+            {
+                new_charts++;
+                status = _("New");
+                if (selnew)
+                    bcheck = true;
+            }
+            else
+            {
+                if( pPlugIn->m_pChartSource->IsNewerThanLocal(pPlugIn->m_pChartCatalog->charts.Item(i).number, file, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime()) )
+                {
+                    updated_charts++;
+                    status = _("Update available");
+                    if (selupd)
+                        bcheck = true;
+                }
+                else
+                {
+                    status = _("Up to date");
+                }
+            }
+            latest =  pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d"));
+            
+            ChartPanel *pC = new ChartPanel(m_scrollWinChartList, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), 
+                                            pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle(), status, latest, this, bcheck );
+            pC->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ChartDldrPanel::OnContextMenu ), NULL, this );
+            
+            m_boxSizerCharts->Add( pC, 0, wxEXPAND | wxLEFT | wxRIGHT, 2 );
+            m_panelArray.Add( pC );
+        }
+        
+        
+        m_scrollWinChartList->ClearBackground();
+        m_scrollWinChartList->FitInside();
+        m_scrollWinChartList->GetSizer()->Layout();
+        
+        Layout();
+        m_scrollWinChartList->ClearBackground();
+        
+        
+#else        
         m_clCharts->Freeze();
         m_clCharts->DeleteAllItems();
         size_t updated_charts = 0;
@@ -571,6 +838,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
         }
         m_clCharts->Thaw();
+#endif
 
         m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts.Count(), updated_charts, new_charts ) );
         m_stCatalogInfo->Show( true );
@@ -656,7 +924,7 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
-        wxMessageBox(_("Error, the URL to the chart source data seems wrong."), _("Error"));
+        OCPNMessageBox_PlugIn(this,_("Error, the URL to the chart source data seems wrong."), _("Error"));
         return;
     }
     wxFileName fn(url.GetPath());
@@ -669,6 +937,11 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
             m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
             m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
             m_lbChartSources->SetItem(id, 2, path);
+#ifdef __OCPN__ANDROID__
+            m_lbChartSources->GetHandle()->resizeColumnToContents(0);
+            m_lbChartSources->GetHandle()->resizeColumnToContents(1);
+            m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+#endif            
         }
     }
 }
@@ -698,6 +971,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
     }
     updatingAll = true;
     cancelled = false;
+    // Flip to the list of charts so user can observe the download progress
+    int oldPage = m_DLoadNB->SetSelection(1);
     for( long chartIndex = 0; chartIndex < m_lbChartSources->GetItemCount(); chartIndex++ )
     {
         m_lbChartSources->SetItemState(chartIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -710,12 +985,14 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
     }
     wxLogMessage( wxString::Format(_T("chartdldr_pi::UpdateAllCharts() downloaded %d out of %d charts."), attempted_to_update - failed_to_update, attempted_to_update) );
     if( failed_to_update > 0 )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."),
+        OCPNMessageBox_PlugIn( this, wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."),
                 failed_to_update, attempted_to_update ), _("Chart Downloader"), wxOK | wxICON_ERROR );
     if( attempted_to_update > failed_to_update )
         ForceChartDBUpdate();
     updatingAll = false;
     cancelled = false;
+    // Flip back to the original page
+    m_DLoadNB->SetSelection(oldPage);
 }
 
 
@@ -728,7 +1005,7 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     wxURI url(cs->GetUrl());
     if( url.IsReference() )
     {
-        wxMessageBox(_("Error, the URL to the chart source data seems wrong."), _("Error"));
+        OCPNMessageBox_PlugIn(this, _("Error, the URL to the chart source data seems wrong."), _("Error"));
         return;
     }
 
@@ -746,40 +1023,35 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     {
         if( !wxFileName::Mkdir(cs->GetDir(), 0755, wxPATH_MKDIR_FULL) )
         {
-            wxMessageBox(wxString::Format(_("Directory %s can't be created."), cs->GetDir().c_str()), _("Chart Downloader"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), cs->GetDir().c_str()), _("Chart Downloader"));
             return;
         }
     }
 
-    ///
-//     long id = GetSelectedCatalog();
-//     SetSource(id);
-//     
-//     FillFromFile(url.GetPath(), fn.GetPath(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
-//     m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
-//     m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
-//     m_lbChartSources->SetItem(id, 2, cs->GetDir());
-//     return;
-    ///
+    bool bok = false;
     
 #ifdef __OCPN__ANDROID__
-    const bool b_usetmpfile = false;
-#else
-    const bool b_usetmpfile = true;
-#endif    
+    wxString file_URI = _T("file://") + fn.GetFullPath();
+    
+//     wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
+//     if(!testFile.IsOpened()){
+//         wxMessageBox(this, wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
+//         return;
+//     }
+//     testFile.Close();
+//     ::wxRemoveFile(tfn.GetFullPath());
 
-    wxFileName tfn;
+    _OCPN_DLStatus ret = OCPN_downloadFile( cs->GetUrl(), file_URI,
+                                 _("Downloading file"),
+                                 _("Reading Headers: ") + url.BuildURI(), wxNullBitmap, this,
+                                 OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_AUTO_CLOSE,
+                                 10);
+    bok = true;
     
-    if(b_usetmpfile)
-        tfn = wxFileName::CreateTempFileName( fn.GetFullPath() );
-    else
-        tfn = fn;
     
-#ifdef __OCPN__ANDROID__
-    wxString file_URI = _T("file://") + tfn.GetFullPath();
 #else
+    wxFileName tfn = wxFileName::CreateTempFileName( fn.GetFullPath() );
     wxString file_URI = tfn.GetFullPath();
-#endif    
 
     _OCPN_DLStatus ret = OCPN_downloadFile( cs->GetUrl(), file_URI,
                                  _("Downloading file"),
@@ -787,35 +1059,35 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                                  OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_AUTO_CLOSE,
                                  10);
 
+    bok = wxCopyFile( tfn.GetFullPath(), fn.GetFullPath() );
+    wxRemoveFile ( tfn.GetFullPath() );
+
+#endif
+    
 //    wxLogMessage(_T("chartdldr_pi:  OCPN_downloadFile done:"));
     
     switch( ret )
     {
         case OCPN_DL_NO_ERROR:
         {
-            bool bok = true;
-            if ( b_usetmpfile)
-                bok = wxCopyFile( tfn.GetFullPath(), fn.GetFullPath() );
-            
             if( bok )
             {
                 long id = GetSelectedCatalog();
                 SetSource(id);
                 
-                FillFromFile(url.GetPath(), fn.GetPath(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
                 m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
                 m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
                 m_lbChartSources->SetItem(id, 2, cs->GetDir());
                 
             }
             else
-                wxMessageBox(wxString::Format( _("Failed to Find New Catalog: %s "), url.BuildURI().c_str() ),
+                OCPNMessageBox_PlugIn(this, wxString::Format( _("Failed to Find New Catalog: %s "), url.BuildURI().c_str() ),
                         _("Chart Downloader"), wxOK | wxICON_ERROR);
             break;
         }
         case OCPN_DL_FAILED:
         {
-            wxMessageBox(wxString::Format( _("Failed to Download Catalog: %s \nVerify there is a working Internet connection."), url.BuildURI().c_str() ),
+            OCPNMessageBox_PlugIn(this, wxString::Format( _("Failed to Download Catalog: %s \nVerify there is a working Internet connection."), url.BuildURI().c_str() ),
                     _("Chart Downloader"), wxOK | wxICON_ERROR);
             break;
         }
@@ -839,8 +1111,6 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
 
 
 
-    if(b_usetmpfile)
-        wxRemoveFile ( tfn.GetFullPath() );
 }
 
 void ChartSource::GetLocalFiles()
@@ -908,7 +1178,12 @@ void ChartSource::LoadUpdateData()
 
 void ChartSource::SaveUpdateData()
 {
-    wxString fn = GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+    wxString fn;
+    fn = GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+
+#ifdef __OCPN__ANDROID__
+    fn = AndroidGetCacheDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+#endif
 
     std::ofstream outfile( fn.mb_str() );
     if( !outfile.is_open() )
@@ -923,6 +1198,11 @@ void ChartSource::SaveUpdateData()
     }
 
     outfile.close();
+    
+#ifdef __OCPN__ANDROID__
+    AndroidSecureCopyFile(fn, GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME));
+#endif
+    
 }
 
 void ChartSource::ChartUpdated( wxString chart_number, time_t timestamp )
@@ -943,7 +1223,9 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
     m_bEditSource->Enable( enabled );
     m_bUpdateAllCharts->Enable( enabled );
     m_bUpdateChartList->Enable( enabled );
+#ifndef NEW_LIST    
     m_clCharts->Enable( enabled );
+#endif    
     m_lbChartSources->Enable( enabled );
 }
 
@@ -957,6 +1239,68 @@ void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
     DownloadCharts();
 }
 
+int ChartDldrPanelImpl::GetChartCount()
+{
+#ifndef NEW_LIST
+    return m_clCharts->GetItemCount();
+#else
+    return m_panelArray.GetCount();
+#endif    
+}
+
+int ChartDldrPanelImpl::GetCheckedChartCount()
+{
+#ifndef NEW_LIST
+    return m_lbChartSources->GetSelectedItemCount();
+#else
+    int cnt = 0;
+    for( int i=0 ; i < GetChartCount() ; i++){
+        if(m_panelArray.Item(i)->GetCB()->IsChecked())
+            cnt++;
+    }
+    return cnt;
+#endif    
+}
+
+bool ChartDldrPanelImpl::isChartChecked( int i )
+{
+#ifndef NEW_LIST
+    return m_clCharts->IsChecked(i);
+#else
+    if(i <= GetChartCount())
+        return m_panelArray.Item(i)->GetCB()->IsChecked();
+    else
+        return false;
+#endif    
+}
+
+void ChartDldrPanelImpl::CheckAllCharts( bool value )
+{
+#ifndef NEW_LIST
+    m_clCharts->CheckAll(value);
+
+#else
+    for( int i=0 ; i < GetChartCount() ; i++){
+        m_panelArray.Item(i)->GetCB()->SetValue( value );
+    }
+#endif
+}
+
+
+void ChartDldrPanelImpl::InvertCheckAllCharts( )
+{
+#ifndef NEW_LIST
+    for (int i = 0; i < GetChartCount(); i++)
+        m_clCharts->Check(i, !m_clCharts->IsChecked(i));
+    
+#else
+        for (int i = 0; i < GetChartCount(); i++)
+            m_panelArray.Item(i)->GetCB()->SetValue( !isChartChecked(i) );
+#endif
+}
+
+
+
 void ChartDldrPanelImpl::DownloadCharts()
 {
     if(!m_bconnected){
@@ -964,20 +1308,15 @@ void ChartDldrPanelImpl::DownloadCharts()
         m_bconnected = true;
     }
     
-    if( !m_lbChartSources->GetSelectedItemCount() && !updatingAll )
+    if( !GetCheckedChartCount() && !updatingAll )
     {
-        wxMessageBox(_("No charts selected for download."));
+        OCPNMessageBox_PlugIn(this, _("No charts selected for download."));
         return;
     }
     ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
-    if( m_clCharts->GetCheckedItemCount() == 0 && !updatingAll )
-    {
-        wxMessageBox(_("No charts selected for download."));
-        return;
-    }
 
     cancelled = false;
-    to_download = m_clCharts->GetCheckedItemCount();
+    to_download = GetCheckedChartCount();
     m_downloading = 0;
     m_failed_downloads = 0;
     DisableForDownload( false );
@@ -988,12 +1327,12 @@ void ChartDldrPanelImpl::DownloadCharts()
     wxFileName downloaded_p;
     int idx = -1;
 
-    for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
+    for( int i = 0; i < GetChartCount() && to_download; i++ )
     {
         if( cancelled )
             break;
         //Prepare download queues
-        if( !m_clCharts->IsChecked(i) )
+        if( !isChartChecked(i) )
             continue;
 
         m_bTransferComplete = false;
@@ -1003,7 +1342,7 @@ void ChartDldrPanelImpl::DownloadCharts()
         m_downloading++;
         if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
         {
-            if( wxYES == wxMessageBox(
+            if( wxID_YES == OCPNMessageBox_PlugIn(this, 
                             wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
 After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
             {
@@ -1016,7 +1355,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
         wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
         if( url.IsReference() )
         {
-            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
             this->Enable();
             /// XXX undo anything? return or break?
             return;
@@ -1052,13 +1391,19 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 
         while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
         {
+            if(m_failed_downloads)
             m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
                                                          m_downloading, to_download, m_failed_downloads,
                                                          m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            else
+                m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
+                                                                     m_downloading, to_download,
+                                                                     m_transferredsize.c_str(), m_totalsize.c_str() ) );
+
+            //if(g_pi && g_pi->m_dldrpanel)
+                //g_pi->m_dldrpanel->Raise();
             wxYield();
             wxMilliSleep(30);
-//            if( !IsShownOnScreen() )
-//                cancelled = true;
         }
         
         if(cancelled){
@@ -1085,17 +1430,17 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                                       pPlugIn->m_pChartCatalog->charts.Item(idx).GetUpdateDatetime().GetTicks() );
     }
     DisableForDownload( true );
-#ifdef __OCPN__ANDROID__
-    m_bDnldCharts->SetLabel( _("Download\n selected charts") );
-#else
     m_bDnldCharts->SetLabel( _("Download selected charts") );
-#endif
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
-    if( m_failed_downloads > 0 && !updatingAll )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
+    if( m_failed_downloads > 0 && !updatingAll && !cancelled )
+        OCPNMessageBox_PlugIn( this, wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
                 , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
+        
+    if( cancelled )
+        OCPNMessageBox_PlugIn( this, _("Chart download cancelled."), _("Chart Downloader"), wxOK | wxICON_INFORMATION );
+        
     if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
@@ -1109,8 +1454,16 @@ ChartDldrPanelImpl::~ChartDldrPanelImpl()
     OCPN_cancelDownloadFileBackground( 0 ); //Stop the thread, is something like this needed on Android as well?
 #endif
     
+#ifndef NEW_LIST
     m_lbChartSources->ClearAll();
     ((wxListCtrl *)m_clCharts)->DeleteAllItems();
+#else
+    for(unsigned int i = 0 ; i < m_panelArray.GetCount() ; i++){
+        delete m_panelArray.Item(i);
+    }
+    m_panelArray.Clear();
+    
+#endif    
 }
 
 ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style )
@@ -1124,10 +1477,12 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     m_lbChartSources->InsertColumn (2, _("Local path"), wxLIST_FORMAT_LEFT, CATALOGS_PATH_WIDTH);
     m_lbChartSources->Enable();
     
+#ifndef NEW_LIST    
     // Add columns
     ((wxListCtrl *)m_clCharts)->InsertColumn(0, _("Title"), wxLIST_FORMAT_LEFT, CHARTS_NAME_WIDTH);
     ((wxListCtrl *)m_clCharts)->InsertColumn(1, _("Status"), wxLIST_FORMAT_LEFT, CHARTS_STATUS_WIDTH);
     ((wxListCtrl *)m_clCharts)->InsertColumn(2, _("Latest"), wxLIST_FORMAT_LEFT, CHARTS_DATE_WIDTH);
+#endif    
 
     downloadInProgress = false;
     cancelled = true;
@@ -1165,7 +1520,9 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
 #ifdef __WXMAC__
     // Mojave does not paint the controls correctly without this.
     m_lbChartSources->Refresh(true);
+#ifndef NEW_LIST
     m_clCharts->Refresh(true);
+#endif    
 #endif
     event.Skip();
 }
@@ -1174,8 +1531,8 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
 {
     if( !m_lbChartSources->GetSelectedItemCount() )
         return;
-    if( wxYES != wxMessageBox(_("Do you really want to remove the chart source?\nThe local chart files will not be removed, but you will not be able to update the charts anymore."),
-                                 _("Chart Downloader"), wxYES_NO | wxCENTRE, this) )
+    if( wxID_YES != OCPNMessageBox_PlugIn(this, _("Do you really want to remove the chart source?\nThe local chart files will not be removed,\nbut you will not be able to update the charts anymore."),
+                                 _("Chart Downloader"), wxYES_NO | wxCENTRE) )
         return;
     int ToBeRemoved = GetSelectedCatalog();
     m_lbChartSources->SetItemState(ToBeRemoved, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
@@ -1194,6 +1551,13 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
     
+#ifdef __OCPN__ANDROID__    
+    wxSize sz = GetParent()->GetSize();          // This is the panel true size
+    dialog->SetSize(sz.GetWidth(), sz.GetHeight());
+    dialog->CenterOnScreen();
+    //Hide();                     // This cleans up the screen a bit, avoiding confusion...
+#endif    
+
     dialog->ShowWindowModalThenDo([this,dialog](int retcode){
         if ( retcode == wxID_OK ) {
             ChartSource *cs = new ChartSource(dialog->m_tSourceName->GetValue(), dialog->m_tChartSourceUrl->GetValue(),
@@ -1263,7 +1627,7 @@ void ChartDldrPanelImpl::DoEditSource()
                 }
             }
             if( !covered )
-                wxMessageBox( wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
+                OCPNMessageBox_PlugIn( this, wxString::Format(_("Path %s seems not to be covered by your configured Chart Directories.\nTo see the charts you have to adjust the configuration on the 'Chart Files' tab."), pPlugIn->m_pChartSources->Item(cat)->GetDir().c_str()),
                              _("Chart Downloader") );
 
             pPlugIn->SaveConfig();
@@ -1570,6 +1934,12 @@ bool chartdldr_pi::ExtractUnarrFiles( const wxString& aRarFile, const wxString& 
     if( aRemoveRar )
           wxRemoveFile(aRarFile);
 
+#ifdef _UNIX
+    // reset LC_NUMERIC locale, some locales use a comma for decimal point
+    // and it corrupts navobj.xml file
+    setlocale(LC_NUMERIC, "C");
+#endif
+
     return ret;
 }
 #endif
@@ -1578,16 +1948,23 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 {
     bool ret = true;
 
+#ifdef __OCPN__ANDROID__
+    int nStrip = 0;
+    if(aStripPath)
+        nStrip = 1;
+    
+    ret = AndroidUnzip(aZipFile, aTargetDir, nStrip, true);
+#else
     std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 
     do
     {
-        //wxLogError(_T("chartdldr_pi: Going to extract '")+aZipFile+_T("'."));
+        wxLogMessage(_T("chartdldr_pi: Going to extract '")+aZipFile+_T("'."));
         wxFileInputStream in(aZipFile);
 
         if( !in )
         {
-            wxLogError(_T("Can not open file '")+aZipFile+_T("'."));
+            wxLogMessage(_T("Can not open file '")+aZipFile+_T("'."));
             ret = false;
             break;
         }
@@ -1620,7 +1997,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 int perm = entry->GetMode();
                 if( !wxFileName::Mkdir(name, perm, wxPATH_MKDIR_FULL) )
                 {
-                    wxLogError(_T("Can not create directory '") + name + _T("'."));
+                    wxLogMessage(_T("Can not create directory '") + name + _T("'."));
                     ret = false;
                     break;
                 }
@@ -1629,13 +2006,13 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
             {
                 if( !zip.OpenEntry(*entry.get()) )
                 {
-                    wxLogError(_T("Can not open zip entry '") + entry->GetName() + _T("'."));
+                    wxLogMessage(_T("Can not open zip entry '") + entry->GetName() + _T("'."));
                     ret = false;
                     break;
                 }
                 if( !zip.CanRead() )
                 {
-                    wxLogError(_T("Can not read zip entry '") + entry->GetName() + _T("'."));
+                    wxLogMessage(_T("Can not read zip entry '") + entry->GetName() + _T("'."));
                     ret = false;
                     break;
                 }
@@ -1645,7 +2022,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 {
                     if( !wxFileName::Mkdir(fn.GetPath()) )
                     {
-                        wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
+                        wxLogMessage(_T("Can not create directory '") + fn.GetPath() + _T("'."));
                         ret = false;
                         break;
                     }
@@ -1655,7 +2032,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
                 if( !file )
                 {
-                    wxLogError(_T("Can not create file '")+name+_T("'."));
+                    wxLogMessage(_T("Can not create file '")+name+_T("'."));
                     ret = false;
                     break;
                 }
@@ -1671,23 +2048,67 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
     if( aRemoveZip )
         wxRemoveFile(aZipFile);
+#endif          //Android
 
     return ret;
 }
 
 ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSourceDlg( parent )
 {
-    p_iconList = new wxImageList(16, 16);
     wxFileName fn;
     fn.SetPath(*GetpSharedDataLocation());
     fn.AppendDir(_T("plugins"));
     fn.AppendDir(_T("chartdldr_pi"));
     fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("folder215.png"));
-    p_iconList->Add(wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG));
-    fn.SetFullName(_T("open182.png"));
-    p_iconList->Add(wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG));
+ 
+    int w = 16;                 // default for desktop
+    int h = 16;
+    
+#ifdef __OCPN__ANDROID__
+    w = 6 * g_androidDPmm;      // mm nominal size
+    h = w;
+
+    p_buttonIconList = new wxImageList(w, h);
+
+    fn.SetFullName(_T("button_right.png"));
+    wxImage im1(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im1.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im1);
+    
+    fn.SetFullName(_T("button_right.png"));
+    wxImage im2(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im2.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im2);
+
+    fn.SetFullName(_T("button_down.png"));
+    wxImage im3(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im3.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im3);
+    
+    fn.SetFullName(_T("button_down.png"));
+    wxImage im4(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im4);
+    
+    m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
+#else
+    p_iconList = new wxImageList(w, h);
+
+    fn.SetFullName(_T("folder.png"));
+    wxImage ima(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    ima.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(ima);
+
+    fn.SetFullName(_T("file.png"));
+    wxImage imb(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    imb.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(imb);
+
     m_treeCtrlPredefSrcs->AssignImageList(p_iconList);
+#endif    /* __OCPN__ANDROID__ */
+
+    m_treeCtrlPredefSrcs->SetIndent( w );
+    
     m_base_path = wxEmptyString;
     m_last_path = wxEmptyString;
     LoadSources();
@@ -1720,89 +2141,82 @@ bool ChartDldrGuiAddSourceDlg::LoadSources()
         }
     }
     wxString path = fn.GetFullPath();
-    TiXmlDocument * doc = new TiXmlDocument();
-    bool ret = doc->LoadFile(path.mb_str(), TIXML_ENCODING_UTF8);
+    
+    pugi::xml_document *doc = new pugi::xml_document;
+    bool ret = doc->load_file( path.mb_str() );
     if( ret )
     {
-        TiXmlElement * root = doc->RootElement();
-        wxString rootName = wxString::FromUTF8( root->Value() );
-        TiXmlNode *child;
-        for ( child = root->FirstChild(); child != 0; child = child->NextSibling())
-        {
-            wxString s = wxString::FromUTF8(child->Value());
-            if (s == _T("sections"))
-                LoadSections(tree, child);
+        pugi::xml_node root = doc->first_child();
+
+        for (pugi::xml_node element = root.first_child(); element; element = element.next_sibling()){
+            if( !strcmp(element.name(), "sections") ){
+                LoadSections(tree, element);
+            }
         }
     }
-    doc->Clear();
     wxDELETE(doc);
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSections( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if (s == _T("section"))
-            LoadSection(root, child);
-    }
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "section") ){
+            LoadSection(root, element);
+        }
+    } 
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadSection( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxTreeItemId item;
-    for( TiXmlNode *child = node->FirstChildElement(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") ){
-            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(child->FirstChild()->Value()), 0, 0);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") ){
+            item = m_treeCtrlPredefSrcs->AppendItem(root, wxString::FromUTF8(element.first_child().value()), 0, 0);
 
             wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
             if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( item, *pFont );
         }
-        
-        if( s == _T("sections") )
-            LoadSections(item, child);
-        if( s == _T("catalogs") )
-            LoadCatalogs(item, child);
-    }
+        if( !strcmp(element.name(), "sections") )
+            LoadSections(item, element);
+        if( !strcmp(element.name(), "catalogs") )
+            LoadCatalogs(item, element);
+
+    } 
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalogs( const wxTreeItemId &root, pugi::xml_node &node )
 {
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("catalog") )
-            LoadCatalog(root, child);
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "catalog") )
+            LoadCatalog(root, element);
     }
+
     return true;
 }
 
-bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, TiXmlNode *node )
+bool ChartDldrGuiAddSourceDlg::LoadCatalog( const wxTreeItemId &root, pugi::xml_node &node )
 {
     wxString name, type, location, dir;
-    for( TiXmlNode *child = node->FirstChild(); child != 0; child = child->NextSibling() )
-    {
-        wxString s = wxString::FromUTF8(child->Value());
-        if( s == _T("name") )
-            name = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("type") )
-            type = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("location") )
-            location = wxString::FromUTF8(child->FirstChild()->Value());
-        if( s == _T("dir") )
-            dir = wxString::FromUTF8(child->FirstChild()->Value());
+    for (pugi::xml_node element = node.first_child(); element; element = element.next_sibling()){
+        if( !strcmp(element.name(), "name") )
+            name = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "type") )
+            type = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "location") )
+            location = wxString::FromUTF8(element.first_child().value());
+        else if( !strcmp(element.name(), "dir") )
+            dir = wxString::FromUTF8(element.first_child().value());
     }
     ChartSource *cs = new ChartSource(name, location, dir);
     wxTreeItemId id = m_treeCtrlPredefSrcs->AppendItem(root, name, 1, 1, cs);
     
     wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
     if( pFont ) m_treeCtrlPredefSrcs->SetItemFont( id, *pFont );
-    
+
     return true;
 }
 
@@ -1866,7 +2280,7 @@ void ChartDldrPrefsDlgImpl::SetPath( const wxString path )
     //if( !wxDirExists(path) )
         //if( !wxFileName::Mkdir(path, 0755, wxPATH_MKDIR_FULL) )
         //{
-        //    wxMessageBox(wxString::Format(_("Directory %s can't be created."), m_dpDefaultDir->GetTextCtrlValue().c_str()), _("Chart Downloader"));
+        //    OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), m_dpDefaultDir->GetTextCtrlValue().c_str()), _("Chart Downloader"));
         //    return;
         //}
     m_tcDefaultDir->SetValue(path);
@@ -1914,7 +2328,7 @@ void ChartDldrGuiAddSourceDlg::OnOkClick( wxCommandEvent& event )
                 msg += wxString::Format(_("Directory %s can't be created."), m_tcChartDirectory->GetValue().c_str()) + _T("\n");
 
     if( msg != wxEmptyString )
-        wxMessageBox( msg, _("Chart source definition problem"), wxOK | wxCENTRE | wxICON_ERROR );
+        OCPNMessageBox_PlugIn( this, msg, _("Chart source definition problem"), wxOK | wxCENTRE | wxICON_ERROR );
     else {
         event.Skip();
         SetReturnCode(wxID_OK);
@@ -1931,26 +2345,37 @@ void ChartDldrGuiAddSourceDlg::OnCancelClick( wxCommandEvent& event )
 
 void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
 {
-    if( !wxDirExists(m_tcDefaultDir->GetValue()) )
+    
+    if( !wxDirExists(m_tcDefaultDir->GetValue()) ){
         if( !wxFileName::Mkdir(m_tcDefaultDir->GetValue(), 0755, wxPATH_MKDIR_FULL) )
         {
-            wxMessageBox(wxString::Format(_("Directory %s can't be created."), m_tcDefaultDir->GetValue().c_str()), _("Chart Downloader"));
+            OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be created."), m_tcDefaultDir->GetValue().c_str()), _("Chart Downloader"));
             return;
         }
+    }
+    
+    if(g_pi){
+        g_pi->UpdatePrefs(this);
+    }
+    
     event.Skip();
     EndModal( wxID_OK );
+
+    //Hide();
+    //Close();
 }
 
 void ChartDldrPrefsDlg::OnCancelClick( wxCommandEvent& event )
 {
     event.Skip();
     EndModal( wxID_CANCEL );
+    //Close();
 }
 
 void ChartDldrPrefsDlg::OnOkClick( wxCommandEvent& event )
 {
     event.Skip();
-    EndModal( wxID_OK );
+    //Close();
 }
 
 

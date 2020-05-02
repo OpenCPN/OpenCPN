@@ -46,6 +46,10 @@
 #include <cmath>
 #include "wx/tokenzr.h"
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
 double rad2deg(double angle)
 {
       return angle*180.0/M_PI;
@@ -94,19 +98,18 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
-{
-    // Filter out undefined data, normally comes through as "999".
-    // Test value must be greater than 360 to enable some compass-type displays.
-      if ( (st == m_MainValueCap) && (data < 1200.0) )
+{      
+      if (st == m_MainValueCap)
       {
             m_MainValue = data;
             m_MainValueUnit = unit;
       }
-      else if ( (st == m_ExtraValueCap) && (data < 1200.0) )
+      else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;
       }
+      Refresh();
 }
 
 void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
@@ -127,12 +130,14 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     m_radius = availableHeight / 2;
 
 
-    DrawLabels(bdc);
     DrawFrame(bdc);
+    DrawLabels(bdc);
     DrawMarkers(bdc);
     DrawBackground(bdc);
     DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat, m_MainValueOption);
+#ifndef __OCPN__ANDROID__    
     DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
+#endif    
     DrawForeground(bdc);
 }
 

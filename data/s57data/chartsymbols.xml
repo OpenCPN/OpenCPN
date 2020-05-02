@@ -11508,7 +11508,7 @@
 			<disp-prio>Point Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
-			<instruction>SY(LNDARE01);CS(QUAPOS01)</instruction>
+			<instruction>SY(LNDARE01);CS(QUAPOS01;TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26))</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>12010</comment>
 		</lookup>
@@ -22776,7 +22776,7 @@
 			<disp-prio>Point Symbol</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
-			<instruction>SY(LNDARE01);CS(QUAPOS01)</instruction>
+			<instruction>SY(LNDARE01);CS(QUAPOS01;TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26))</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>12010</comment>
 		</lookup>

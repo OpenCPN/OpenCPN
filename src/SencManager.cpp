@@ -37,8 +37,6 @@
 
 
 extern MyFrame*          gFrame;
-//extern SENCThreadManager *g_SencThreadManager;
-extern ColorScheme       global_color_scheme;
 extern int               g_nCPUCount;
 extern S57ClassRegistrar *g_poRegistrar;
 

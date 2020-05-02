@@ -35,9 +35,10 @@
 #include "wx/filename.h"
 #include "wx/wfstream.h"
 
+#include "config.h"
 #include "ChartDataInputStream.h"
 
-#ifdef USE_LZMA
+#ifdef OCPN_USE_LZMA
 
 wxCompressedFFileInputStream::wxCompressedFFileInputStream(const wxString& fileName)
 {
@@ -212,7 +213,7 @@ bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
     return in.GetLastError() != wxSTREAM_READ_ERROR;
 }
 
-#else // USE_LZMA
+#else // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
 {
@@ -222,4 +223,4 @@ bool DecompressXZFile(const wxString &input_path, const wxString &output_path)
     return false;
 }
 
-#endif // USE_LZMA
+#endif // OCPN_USE_LZMA

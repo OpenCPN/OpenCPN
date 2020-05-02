@@ -168,6 +168,8 @@ public:
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
+//    int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
+    int AdjustRefSelection(const ViewPort &vp_in);
     
     void SetHiliteIndex( int index ) {
         m_nHiLiteIndex = index;
@@ -196,6 +198,11 @@ public:
     {
         return m_reference_scale;
     }
+    
+    ChartFamilyEnum GetRefFamily(){ return (ChartFamilyEnum)m_reference_family; }
+    
+    void SetPreferrefFamily(ChartFamilyEnum family) { m_preferred_family = family; }
+    
     double GetRefNativeScale();
 
     std::vector<int> GetCandidatedbIndexArray( bool from_ref_chart, bool exclude_user_hidden );
@@ -228,9 +235,10 @@ public:
 
     int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
+    ChartFamilyEnum GetPreferredFamily( void ){ return m_preferred_family; }
     
 private:
-    bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    bool BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort &vp_in);
     int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
 
     bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
@@ -285,6 +293,7 @@ private:
     
     bool m_bquiltskew;
     bool m_bquiltanyproj;
+    ChartFamilyEnum m_preferred_family;
     ChartCanvas *m_parent;
     
 };

@@ -28,19 +28,20 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+#include "config.h"
 #include "ocpn_types.h"
 #include "compass.h"
 #include "chcanv.h"
 #include "styles.h"
 
 #include "dychart.h"
+#include "glChartCanvas.h"
 
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
-extern MyFrame *gFrame;
 extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass( ChartCanvas *parent, bool bShowGPS)
@@ -90,14 +91,33 @@ void ocpnCompass::Paint( ocpnDC& dc )
             glBindTexture( GL_TEXTURE_2D, texobj );
             glEnable( GL_TEXTURE_2D );
             
+#ifdef USE_ANDROID_GLES2
+            float coords[8];
+            float uv[8];
+            
+            //normal uv, normalized to POT
+            uv[0] = 0; uv[1] = 0; uv[2] = (float)m_image_width / m_tex_w; uv[3] = 0;
+            uv[4] = (float)m_image_width / m_tex_w; uv[5] = (float)m_image_height / m_tex_h; uv[6] = 0; uv[7] = (float)m_image_height / m_tex_h;
+            
+            // pixels
+            coords[0] = m_rect.x; coords[1] = m_rect.y; coords[2] = m_rect.x + m_rect.width; coords[3] = m_rect.y;
+            coords[4] = m_rect.x + m_rect.width; coords[5] = m_rect.y + m_rect.height; coords[6] = m_rect.x; coords[7] = m_rect.y + m_rect.height;
+            
+            
+            m_parent->GetglCanvas()->RenderTextures(coords, uv, 4, m_parent->GetpVP());
+#else            
+            
+           
             glBegin( GL_QUADS );
             
             glTexCoord2f( 0, 0 );  glVertex2i( m_rect.x, m_rect.y );
-            glTexCoord2f( 1, 0 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y );
-            glTexCoord2f( 1, 1 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y + m_rect.height );
-            glTexCoord2f( 0, 1 );  glVertex2i( m_rect.x, m_rect.y + m_rect.height );
+             glTexCoord2f( (float)m_image_width / m_tex_w, 0 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y );
+             glTexCoord2f( (float)m_image_width / m_tex_w, (float)m_image_height / m_tex_h );  glVertex2i( m_rect.x + m_rect.width, m_rect.y + m_rect.height );
+             glTexCoord2f( 0, (float)m_image_height / m_tex_h );  glVertex2i( m_rect.x, m_rect.y + m_rect.height );
             
             glEnd();
+#endif
+            
             glDisable( GL_TEXTURE_2D );
             
         }
@@ -124,8 +144,8 @@ bool ocpnCompass::MouseEvent( wxMouseEvent& event )
 
 void ocpnCompass::SetColorScheme( ColorScheme cs )
 {
-    UpdateStatus( true );
     m_cs = cs;
+    UpdateStatus( true );
 }
 
 void ocpnCompass::UpdateStatus( bool bnew )
@@ -301,7 +321,9 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), radius );
         sdc.SelectObject( wxNullBitmap );
     }
+#ifndef ocpnUSE_GLES
     m_StatBmp.SetMask(new wxMask(m_MaskBmp, *wxWHITE));
+#endif
 
     wxMemoryDC mdc;
     mdc.SelectObject( m_StatBmp );
@@ -385,20 +407,59 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         wxImage image = m_StatBmp.ConvertToImage(); 
         unsigned char *imgdata = image.GetData();
         unsigned char *imgalpha = image.GetAlpha();
-        int tex_w = image.GetWidth();
-        int tex_h = image.GetHeight();
+        m_tex_w = image.GetWidth();
+        m_tex_h = image.GetHeight();
+        m_image_width = m_tex_w;
+        m_image_height = m_tex_h;
+        
+        // Make it POT
+        int width_pot = m_tex_w;
+        int height_pot = m_tex_h;
+        
+        int xp = image.GetWidth();
+        if(((xp != 0) && !(xp & (xp - 1))))     // detect POT
+            width_pot = xp;
+         else{
+            int a = 0;
+            while( xp ) {
+                    xp = xp >> 1;
+                    a++;
+            }
+            width_pot = 1 << a;
+        }
+            
+        xp = image.GetHeight();
+        if(((xp != 0) && !(xp & (xp - 1))))
+            height_pot = xp;
+        else{
+            int a = 0;
+            while( xp ) {
+                    xp = xp >> 1;
+                    a++;
+            }
+            height_pot = 1 << a;
+        }
+        
+        m_tex_w = width_pot;
+        m_tex_h = height_pot;
         
         GLuint format = GL_RGBA;
         GLuint internalformat = format;
         int stride = 4;
         
         if(imgdata){
-            unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
+            unsigned char *teximage = (unsigned char *) malloc( stride * m_tex_w * m_tex_h );
         
-            for( int j = 0; j < tex_w*tex_h; j++ ){
-                for( int k = 0; k < 3; k++ )
-                    teximage[j * stride + k] = imgdata[3*j + k];
-                teximage[j * stride + 3] = imgalpha ? imgalpha[j] : 255;      // alpha
+            for(int i = 0 ; i < m_image_height ; i++){
+                for(int j = 0 ; j < m_image_width ; j++){
+                    int s = (i * 3 * m_image_width) + (j * 3);
+                    int d = (i * stride * m_tex_w) + (j * stride);
+        
+                    teximage[ d + 0] = imgdata[ s + 0 ]; 
+                    teximage[ d + 1] = imgdata[ s + 1 ]; 
+                    teximage[ d + 2] = imgdata[ s + 2 ]; 
+                    teximage[ d + 3] = 255;
+                }
             }
                 
             if(texobj){
@@ -409,12 +470,12 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
             glGenTextures( 1, &texobj );
             glBindTexture( GL_TEXTURE_2D, texobj );
             
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );        // No mipmapping
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             
-            glTexImage2D( GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0,
+            glTexImage2D( GL_TEXTURE_2D, 0, internalformat, m_tex_w, m_tex_h, 0,
                         format, GL_UNSIGNED_BYTE, teximage );
                             
             free(teximage);

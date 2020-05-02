@@ -55,7 +55,7 @@ Vagrant.configure(2) do |config|
   SHELL
   config.vm.provision "shell",
                       name: "cmake",
-                      inline: "sudo bash -c 'mkdir -p /src/build; cd /src/build; cmake -DBUNDLE_DOCS=ON -DBUNDLE_TCDATA=ON -DBUNDLE_GSHHS=CRUDE ../'"
+                      inline: "sudo bash -c 'mkdir -p /src/build; cd /src/build; cmake -DOCPN_BUNDLE_DOCS=ON -DOCPN_BUNDLE_TCDATA=ON -DOCPN_BUNDLE_GSHHS=CRUDE ../'"
   config.vm.provision "shell",
                       name: "make",
                       inline: "sudo bash -c 'cd /src/build; make'"

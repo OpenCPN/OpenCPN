@@ -29,6 +29,7 @@
 
 #include <OCPN_AUIManager.h>
 #include "chart1.h"
+#include "ocpn_plugin.h"
 
 #ifdef __WXMSW__
 #include "wx/msw/wrapwin.h"
@@ -522,7 +523,12 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
                 wxAuiManagerEvent e(wxEVT_AUI_PANE_BUTTON);
                 e.SetManager(this);
                 e.SetPane(m_actionPart->pane);
+
+#if wxCHECK_VERSION(3, 1, 4)
+                e.SetButton(m_actionPart->button);
+#else
                 e.SetButton(m_actionPart->button->button_id);
+#endif
                 ProcessMgrEvent(e);
             }
         }
@@ -644,13 +650,23 @@ void OCPN_AUIManager::SetDockSize( wxAuiDockInfo *dock, int size)
 
 bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target, const wxAuiPaneInfo& new_pos)
 {
-//    printf("DockResult direction: %d   layer: %d   position: %d\n" , new_pos.dock_direction, new_pos.dock_layer, new_pos.dock_pos);
-
+    //printf("DockResult direction: %d   layer: %d   position: %d %d\n" , new_pos.dock_direction, new_pos.dock_layer, new_pos.dock_pos, GetCanvasIndexUnderMouse());
+ 
     // If we are docking a Dashboard window, we restrict the spots that can accept the docking action    
-    if(new_pos.window->GetName().IsSameAs(_T("Dashboard"))){
-        // Dashboards can only go on layer 1, and not on the left( interferes with global toolbar )
-        if( (new_pos.dock_layer != 1)  || (new_pos.dock_direction == wxAUI_DOCK_LEFT) )
+    if(new_pos.window->GetName().IsSameAs(_T("panel"))){
+        // Dashboards can not go on the left( interferes with global toolbar )
+        if( /*(new_pos.dock_layer != 1)  ||*/ (new_pos.dock_direction == wxAUI_DOCK_LEFT) )
             return false;
+  
+        // Also, in multi-canvas mode, the dashboard  is restricted to layer 1 in right hand canvas.
+        // This forces it to dock at the far right only.
+        if(GetCanvasCount() > 1){
+            if(GetCanvasIndexUnderMouse() > 0){
+                if(new_pos.dock_layer == 0)
+                    return false;
+            }
+        }
+                
     }
     
     return wxAuiManager::ProcessDockResult(target, new_pos);

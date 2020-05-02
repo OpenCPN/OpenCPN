@@ -55,7 +55,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     wxBitmap logo(wxString::Format("%s/opencpn.png", g_Platform->GetSharedDataDir().c_str()), wxBITMAP_TYPE_ANY);
 
     m_hyperlinkHelp->SetURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
-#ifdef OCPN_USE_WEBVIEW
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
     m_htmlWinHelp->LoadURL(wxString::Format("file://%sdoc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
 #else
     m_htmlWinHelp->LoadFile(wxString::Format("%s/doc/help_en_US.html", g_Platform->GetSharedDataDir().c_str()));
@@ -66,8 +66,7 @@ AboutFrameImpl::AboutFrameImpl( wxWindow* parent, wxWindowID id, const wxString&
     int height = m_scrolledWindowAbout->GetSizer()->GetSize().GetHeight() + m_panelMainLinks->GetSizer()->GetSize().GetHeight() + EXTEND_HEIGHT;
 
     SetMinSize(wxSize(width, height));
-    Layout();
-    Fit();
+    RecalculateSize();
 }
 
 
@@ -92,7 +91,7 @@ void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
         m_htmlWinHelp->Show();
         m_scrolledWindowAbout->Hide();
         m_btnBack->Show();
-#ifdef OCPN_USE_WEBVIEW
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
         m_btnBack->Enable(m_htmlWinHelp->CanGoBack());
 #else
         m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
@@ -132,4 +131,32 @@ void AboutFrameImpl::AboutFrameOnActivate( wxActivateEvent& event )
     Layout();
     m_scrolledWindowAbout->Refresh();
     m_panelMainLinks->Refresh();
+}
+
+void AboutFrameImpl::RecalculateSize( void )
+{
+#ifdef __OCPN__ANDROID__    
+    //  Make an estimate of the dialog size, without scrollbars showing
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 20;
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    
+    SetSize(fsize);
+    Centre();
+
+#else 
+    Fit();
+    Centre();
+#endif
+    
 }

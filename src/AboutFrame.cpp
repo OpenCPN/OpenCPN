@@ -4,8 +4,10 @@
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
+#include <sstream>
 
 #include "AboutFrame.h"
+#include "ocpn_plugin.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -127,9 +129,14 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 
 	bSizerIniFile->Add( m_hyperlinkIniFile, 0, wxALL, 5 );
 
-
 	bSizerAbout->Add( bSizerIniFile, 1, wxEXPAND, 5 );
 
+	auto bApiInfo = new wxBoxSizer( wxHORIZONTAL );
+	std::ostringstream api_os;
+	api_os << _("Plugin API: ") << API_VERSION_MAJOR * 100 + API_VERSION_MINOR;
+	auto API_info = new wxStaticText( m_scrolledWindowAbout, wxID_ANY, api_os.str() );
+	bApiInfo->Add(API_info, 0, wxALL, 5 );
+	bSizerAbout->Add( bApiInfo, 1, wxEXPAND, 5 );
 
 	m_scrolledWindowAbout->SetSizer( bSizerAbout );
 	m_scrolledWindowAbout->Layout();
@@ -142,10 +149,10 @@ AboutFrame::AboutFrame( wxWindow* parent, wxWindowID id, const wxString& title, 
 	m_htmlWinLicense = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 	bSizerContent->Add( m_htmlWinLicense, 1, wxALL|wxEXPAND, 5 );
 
-#ifdef OCPN_USE_WEBVIEW
-    m_htmlWinHelp = wxWebView::New( this, wxID_ANY );
+#if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
+	m_htmlWinHelp = wxWebView::New( this, wxID_ANY );
 #else
-    m_htmlWinHelp = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	m_htmlWinHelp = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 #endif
 	bSizerContent->Add( m_htmlWinHelp, 1, wxALL|wxEXPAND, 5 );
 

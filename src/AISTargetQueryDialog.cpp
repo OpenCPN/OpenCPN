@@ -49,7 +49,6 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
 extern MyFrame *gFrame;
@@ -66,6 +65,7 @@ BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxFrame )
     EVT_CLOSE(AISTargetQueryDialog::OnClose)
     EVT_MOVE( AISTargetQueryDialog::OnMove )
     EVT_SIZE( AISTargetQueryDialog::OnSize )
+    EVT_CHAR_HOOK(AISTargetQueryDialog::OnKey)
 END_EVENT_TABLE()
 
 AISTargetQueryDialog::AISTargetQueryDialog()
@@ -108,12 +108,27 @@ void AISTargetQueryDialog::OnIdOKClick( wxCommandEvent& event )
     Close();
 }
 
+void AISTargetQueryDialog::OnKey( wxKeyEvent& ke )
+{
+    if ( ke.GetKeyCode() == WXK_ESCAPE )
+        Close( true );
+    else
+        ke.Skip(); 
+}
+
+
 void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
 {
     if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            wxString n =  wxString::Format(wxT("\"%s\"  %i "),td->ShipName,  td->MMSI).append(wxDateTime::Now().Format(wxT("%H:%M")));
+            wxString n0 = wxString::Format(wxT("%s"),td->ShipName);
+            n0.Replace(_T("@"), _T(" "));
+            n0.Trim();
+            wxString mmsi = wxString::Format(wxT("%i "),td->MMSI);
+            wxString n = _T("\"") + n0 + _T("\" ") + mmsi;
+            n.append(wxDateTime::Now().Format(wxT("%H:%M"))); 
+            //wxString n =  wxString::Format(wxT("\"%s\"  %i "),td->ShipName,  td->MMSI).append(wxDateTime::Now().Format(wxT("%H:%M")));
             RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, n, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );

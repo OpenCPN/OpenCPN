@@ -124,17 +124,17 @@ static char *_MARparamNm[]  = {
 static double _MARparamVal[] = {
     0.0,      // NONE
     TRUE,     // SHOW_TEXT
-    TRUE,     // TWO_SHADES
+    FALSE,    // TWO_SHADES
 
-    8.0,     // SAFETY_CONTOUR
+    3.0,     // SAFETY_CONTOUR
     //0.0,     // SAFETY_CONTOUR  --to test DEPCNT02 selection (GL) in CA49995A.000
     //0.5,     // SAFETY_CONTOUR  --to test DEPCNT02 selection (GL) in CA49995A.000
 
-    5.0,      // SAFETY_DEPTH
+    3.0,      // SAFETY_DEPTH
     //5.0,      // SAFETY_DEPTH
 
-    3.0,      // SHALLOW_CONTOUR
-    10.0,     // DEEP_CONTOUR
+    2.0,      // SHALLOW_CONTOUR
+    6.0,     // DEEP_CONTOUR
 
     //FALSE,    // SHALLOW_PATTERN
     TRUE,    // SHALLOW_PATTERN
@@ -143,9 +143,9 @@ static double _MARparamVal[] = {
     0.0,      // DISTANCE_TAGS
     0.0,      // TIME_TAGS
     TRUE,     // FULL_SECTORS
-    TRUE,     // SYMBOLIZED_BND
+    FALSE,     // SYMBOLIZED_BND
 
-    TRUE,     // SYMPLIFIED_PNT
+    FALSE,     // SYMPLIFIED_PNT
 
 //    'D',      // S52_MAR_DISP_CATEGORY --DISPLAYBASE
 //    'S',      // S52_MAR_DISP_CATEGORY --STANDARD

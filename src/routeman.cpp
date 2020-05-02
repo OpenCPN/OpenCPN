@@ -69,6 +69,12 @@
 #include "wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
+void appendOSDirSlash(wxString* pString);
+
 extern MyFrame          *gFrame;
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
@@ -83,7 +89,7 @@ extern wxRect           g_blink_rect;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;
-
+extern wxString         gRmcDate, gRmcTime;
 extern bool             g_bMagneticAPB;
 
 extern RoutePoint       *pAnchorWatchPoint1;
@@ -103,7 +109,6 @@ extern AIS_Decoder     *g_pAIS;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern wxString         g_uploadConnection;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
@@ -128,6 +133,8 @@ void appendOSDirSlash(wxString* pString);
 wxImage LoadSVGIcon( wxString filename, int width, int height )
 {
 #ifdef ocpnUSE_SVG
+
+#ifndef USE_ANDROID_GLES2
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return  svgDoc.Render( width, height, NULL, true, true ) ;
@@ -135,6 +142,15 @@ wxImage LoadSVGIcon( wxString filename, int width, int height )
         wxLogMessage(filename);
         return wxImage(32, 32);
     }
+#else
+    wxBitmap bmp = loadAndroidSVG( filename, width, height );
+    if(bmp.IsOk())
+        return bmp.ConvertToImage();
+    else
+        return wxImage(32, 32);
+    
+#endif
+
 #else
         return wxImage(32, 32);
 #endif // ocpnUSE_SVG
@@ -628,6 +644,20 @@ bool Routeman::UpdateAutopilot()
    double r_Sog(0.0), r_Cog(0.0);
    if (!std::isnan(gSog)) r_Sog = gSog;
    if (!std::isnan(gCog)) r_Cog = gCog;
+
+   // Send active leg info directly to plugins
+
+   ActiveLegDat leg_info;
+   leg_info.Btw = CurrentBrgToActivePoint;
+   leg_info.Dtw = CurrentRngToActivePoint;
+   leg_info.Xte = CurrentXTEToActivePoint;
+   if (XTEDir < 0) {
+     leg_info.Xte = -leg_info.Xte;    // Left side of the track -> negative XTE
+   }
+   leg_info.wp_name = pActivePoint->GetName().Truncate(6);
+   leg_info.arrival = m_bArrival;
+   g_pi_manager->SendActiveLegInfoToAllPlugIns(&leg_info);
+
     //RMB
         {
 
@@ -698,13 +728,20 @@ bool Routeman::UpdateAutopilot()
             } else
                 m_NMEA0183.Rmc.MagneticVariation = 361.; // A signal to NMEA converter, gVAR is unknown
 
-            wxDateTime now = wxDateTime::Now();
-            wxDateTime utc = now.ToUTC();
-            wxString time = utc.Format( _T("%H%M%S") );
-            m_NMEA0183.Rmc.UTCTime = time;
+            // Send GPS time to autopilot if available else send local system time
+            if ( !gRmcTime.IsEmpty() && !gRmcDate.IsEmpty() ) {
+                m_NMEA0183.Rmc.UTCTime = gRmcTime;
+                m_NMEA0183.Rmc.Date = gRmcDate;
+            }
+            else {
+                wxDateTime now = wxDateTime::Now();
+                wxDateTime utc = now.ToUTC();
+                wxString time = utc.Format( _T("%H%M%S") );
+                m_NMEA0183.Rmc.UTCTime = time;
+                wxString date = utc.Format( _T("%d%m%y") );
+                m_NMEA0183.Rmc.Date = date;
+            }
 
-            wxString date = utc.Format( _T("%d%m%y") );
-            m_NMEA0183.Rmc.Date = date;
             m_NMEA0183.Rmc.FAAModeIndicator = "A";
             m_NMEA0183.Rmc.Write( snt );
 
@@ -1039,11 +1076,15 @@ void Routeman::SetColorScheme( ColorScheme cs )
     int scaled_line_width = g_route_line_width;
     int track_scaled_line_width = g_track_line_width;
     if(g_btouch){
-        double size_mult =  g_ChartScaleFactorExp; // * 1.5;
-        double sline_width = wxRound(size_mult * scaled_line_width);
-        double tsline_width = wxRound( size_mult * track_scaled_line_width );
-        scaled_line_width = wxMax( sline_width, 1);
-        track_scaled_line_width = wxMax( tsline_width, 1 );
+        double nominal_line_width_pix = wxMax(1.5, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+        
+        double sline_width = wxMax(nominal_line_width_pix, g_route_line_width);
+        sline_width *= g_ChartScaleFactorExp;
+        scaled_line_width = wxMax( sline_width, 2);
+
+        double tsline_width = wxMax(nominal_line_width_pix, g_track_line_width);
+        tsline_width *= g_ChartScaleFactorExp;
+        track_scaled_line_width = wxMax( tsline_width, 2);
     }
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
@@ -1212,7 +1253,7 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
     wxString UserIconPath = g_Platform->GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
-    UserIconPath.Append( _T("UserIcons") );
+    UserIconPath.Append( _T("UserIcons/") );
     
     wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath );
     
@@ -1220,8 +1261,7 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
         wxLogMessage(_T("Loading UserIcons from ") + UserIconPath );
         wxArrayString FileList;
         
-        wxDir dir( UserIconPath );
-        int n_files = dir.GetAllFiles( UserIconPath, &FileList );
+        int n_files = wxDir::GetAllFiles( UserIconPath, &FileList, _T(""), wxDIR_FILES  );
         
         for( int ifile = 0; ifile < n_files; ifile++ ) {
             wxString name = FileList[ifile];
@@ -1232,11 +1272,13 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
             
             if( fn.GetExt().Lower() == _T("xpm") ) {
                 if( icon1.LoadFile( name, wxBITMAP_TYPE_XPM ) ) {
+                    wxLogMessage(_T("Adding icon: ") + iconname);
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
             if( fn.GetExt().Lower() == _T("png") ) {
                 if( icon1.LoadFile( name, wxBITMAP_TYPE_PNG ) ) {
+                    wxLogMessage(_T("Adding icon: ") + iconname);
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
@@ -1305,10 +1347,12 @@ void WayPointman::ProcessDefaultIcons()
         m_pLegacyIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
     
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Empty.svg"), _T("empty"), _T("Empty") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Triangle.svg"), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Active-Waypoint.svg"), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boarding-Location.svg"), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Airplane.svg"), _T("airplane"), _T("Airplane") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("1st-Anchorage.svg"), _T("anchorage"), _T("Anchorage") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Anchor2.svg"), _T("anchor"), _T("Anchor") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boarding-Location.svg"), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boundary.svg"), _T("boundary"), _T("Boundary Mark") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeA.svg"), _T("bouy1"), _T("Bouy Type A") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeB.svg"), _T("bouy2"), _T("Bouy Type B") ); if(pmi)pmi->preScaled = true;
@@ -1339,7 +1383,6 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Sandbar.svg"), _T("shoal"), _T("Shoal") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Snag.svg"), _T("snag"), _T("Snag") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Square.svg"), _T("square"), _T("Square") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Triangle.svg"), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("1st-Diamond.svg"), _T("diamond"), _T("Diamond") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Circle.svg"), _T("circle"), _T("Circle") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Wreck1.svg"), _T("wreck1"), _T("Wreck A") ); if(pmi)pmi->preScaled = true;
@@ -1347,9 +1390,6 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Blue.svg"), _T("xmblue"), _T("Blue X") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Green.svg"), _T("xmgreen"), _T("Green X") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Red.svg"), _T("xmred"), _T("Red X") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("1st-Active-Waypoint.svg"), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
-   
-   
     
     
     // Add the extended icons to their own sorted array
@@ -1358,7 +1398,7 @@ void WayPointman::ProcessDefaultIcons()
     else
         m_pExtendedIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
     
-
+#if 0
     wxArrayString FileList;
     double bm_size = -1;
      
@@ -1381,14 +1421,12 @@ void WayPointman::ProcessDefaultIcons()
         }
     }
 
-    
     for( int ifile = 0; ifile < n_files; ifile++ ) {
         wxString name = FileList[ifile];
             
         wxFileName fn( name );
         wxString iconname = fn.GetName();
         wxBitmap icon1;
-            
         if( fn.GetExt().Lower() == _T("svg") ) {
             wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
             MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
@@ -1396,6 +1434,97 @@ void WayPointman::ProcessDefaultIcons()
                 pmi->preScaled = true;
         }
     }
+#else
+   // Look for cached icons
+    
+    wxString iconCacheDir = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&iconCacheDir);
+    iconCacheDir.append(_T("iconCache"));
+    appendOSDirSlash(&iconCacheDir);
+    
+    //  Create the cache dir here if necessary
+    if(!wxDir::Exists(iconCacheDir))
+        wxFileName::Mkdir(iconCacheDir);
+ 
+    
+    wxArrayString FileList;
+    double bm_size = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
+    bm_size *= g_ChartScaleFactorExp;
+    
+    bool bcacheLoaded = false;
+    
+    int n_files = wxDir::GetAllFiles( iconDir, &FileList );
+    
+    // To expedite icon loading, look in the iconCache first
+    wxArrayString cacheFileList;
+    int n_cache_files = wxDir::GetAllFiles( iconCacheDir, &cacheFileList );
+    if(n_cache_files){
+        
+        bool bReload = false;
+        //  Load a cached icon file and get it's size for comparison
+        for( int ifile = 0; ifile < n_cache_files; ifile++ ) {
+            wxString name = cacheFileList[ifile];
+        
+            wxImage imagePNG;
+            if(imagePNG.LoadFile(name)){
+                int w = imagePNG.GetWidth();
+                if(fabs(w - bm_size) > 1)
+                    bReload = true;
+                break;
+            }
+        }
+        
+        // If cached files are the proper size(scale)...
+        if(!bReload){
+            for( int ifile = 0; ifile < n_cache_files; ifile++ ) {
+                wxString name = cacheFileList[ifile];
+            
+                wxFileName fn( name );
+                wxString iconname = fn.GetName();
+            
+                wxImage imagePNG;
+                if(imagePNG.LoadFile(name)){
+                    MarkIcon * pmi = ProcessExtendedIcon( imagePNG, iconname, iconname );
+                    if(pmi)
+                        pmi->preScaled = true;
+                    bcacheLoaded = true;  //At least one icon was loaded
+                }
+            }
+        }
+    }
+
+    // Possibly an upgrade of App, with more icons available
+    //  So, reload them all
+    if(n_cache_files < 50)
+        bcacheLoaded = false;
+    
+    //  Cache was unusable, so load from original
+    if(!bcacheLoaded)
+    {
+        g_Platform->ShowBusySpinner();
+
+        for( int ifile = 0; ifile < n_files; ifile++ ) {
+            wxString name = FileList[ifile];
+                
+            wxFileName fn( name );
+            wxString iconname = fn.GetName();
+            wxBitmap icon1;
+                
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+                    
+                // Cache the icon as .png file
+                wxString filePNG = iconCacheDir + iconname + _T(".png");
+                iconSVG.SaveFile(filePNG, wxBITMAP_TYPE_PNG);
+                MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
+                if(pmi)
+                    pmi->preScaled = true;
+            }
+        }
+        g_Platform->HideBusySpinner();
+
+    }
+#endif
 
 
     // Walk the two sorted lists, adding icons to the un-sorted master list
@@ -1499,11 +1628,25 @@ MarkIcon *WayPointman::ProcessExtendedIcon(wxImage &image, const wxString & key,
 MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description)
 {
     double bm_size = -1.0;
+
+#ifndef __OCPN__ANDROID__
     if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
         wxImage img = LoadSVGIcon(fileName, -1, -1 );
         bm_size = img.GetWidth() * g_ChartScaleFactorExp;
     }
-        
+#else    
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a "diamond" symbol about 4 mm square
+    //  Android uses "density buckets", so simpple math produces poor results.
+    //  Thus, these factors have been empirically tweaked to provide good results on a variety of devices
+    float nominal_legacy_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));   
+    float pix_factor = nominal_legacy_icon_size_pixels / 68.0;          // legacy icon size
+
+    wxImage img = LoadSVGIcon(fileName, -1, -1 );
+    bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
+#endif
+    
     wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size );
     wxRect rClip = CropImageOnAlpha(image);
     wxImage imageClip = image.GetSubImage(rClip);
