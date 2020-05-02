@@ -186,6 +186,11 @@ void SignalKDataStream::Open(void) {
                 wxLogDebug(wxString::Format(_T("SK server autodiscovery finds WebSocket service: %s:%d"), discoveredIP.c_str(), discoveredPort));
                 m_addr.Hostname(discoveredIP);
                 m_addr.Service(discoveredPort);
+                
+                // Update the connection params, by pointer to item in global params array
+                ConnectionParams *params = (ConnectionParams *)m_params;        // non-const
+                params->NetworkAddress = discoveredIP;
+                params->NetworkPort = discoveredPort;
             }
             else
                 wxLogDebug(_T("SK server autodiscovery finds no WebSocket server."));
