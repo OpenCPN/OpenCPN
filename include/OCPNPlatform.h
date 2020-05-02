@@ -287,6 +287,10 @@ protected:
     virtual void UpdateColour();
     wxSize DoGetBestSize() const;
 
+    void OnPaint(wxPaintEvent &event) ;
+
+    DECLARE_EVENT_TABLE() ;
+
 private:
     wxBitmap m_bitmap;
     wxColour m_colour;

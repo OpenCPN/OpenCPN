@@ -2823,6 +2823,12 @@ void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
 // OCPNColourPickerCtrl implementation
 // ============================================================================
 
+BEGIN_EVENT_TABLE(OCPNColourPickerCtrl, wxButton)
+#ifdef __WXMSW__
+    EVT_PAINT(OCPNColourPickerCtrl::OnPaint)
+#endif    
+END_EVENT_TABLE()
+
 // ----------------------------------------------------------------------------
 // OCPNColourPickerCtrl
 // ----------------------------------------------------------------------------
@@ -2914,6 +2920,8 @@ void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
 
 void OCPNColourPickerCtrl::UpdateColour()
 {
+    SetBitmapLabel(wxBitmap());
+    
     wxMemoryDC dc(m_bitmap);
     dc.SetPen( *wxTRANSPARENT_PEN );
     dc.SetBrush( wxBrush(m_colour) );
@@ -2955,5 +2963,18 @@ wxSize OCPNColourPickerCtrl::DoGetBestSize() const
     return sz;
 }
 
+void OCPNColourPickerCtrl::OnPaint(wxPaintEvent &event)
+{
 
+    wxPaintDC dc(this) ;
+
+    int offset_x = (GetSize().x - m_bitmap.GetWidth()) / 2;
+    int offset_y = (GetSize().y - m_bitmap.GetHeight()) / 2;
+    
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush(m_colour) );
+    dc.DrawRectangle( offset_x, offset_y, m_bitmap.GetWidth(), m_bitmap.GetHeight() );
+
+    event.Skip() ;
+}
 
