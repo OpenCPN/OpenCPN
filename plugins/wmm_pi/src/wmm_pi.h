@@ -44,6 +44,7 @@
 #define     MY_API_VERSION_MINOR    8
 
 #include "ocpn_plugin.h"
+#include "pi_ocpndc.h"
 
 #include "GeomagnetismHeader.h"
 #include "EGM9615.h"
@@ -59,6 +60,7 @@
 
 #define WMM_TOOL_POSITION    -1        // Request default positioning of toolbar tool
 class wmm_pi;
+class WmmPrefsDialog;
 
 class WmmUIDialog : public WmmUIDialogBase
 {      
@@ -104,7 +106,7 @@ public:
     void SetCursorLatLon(double lat, double lon);
     void SetPositionFix(PlugIn_Position_Fix &pfix);
 
-    void RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp);
+    void RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp);
     bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
     bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
     void RecomputePlot();
@@ -129,8 +131,8 @@ public:
     void ShowPlotSettings();
 
 //    WMM Declarations
-    MAGtype_MagneticModel *MagneticModels[1];
-    MAGtype_MagneticModel *MagneticModel, *TimedMagneticModel;
+    MAGtype_MagneticModel* MagneticModels[1];
+    MAGtype_MagneticModel* MagneticModel, * TimedMagneticModel;
     MAGtype_Ellipsoid Ellip;
     MAGtype_CoordSpherical CoordSpherical;
     MAGtype_CoordGeodetic CoordGeodetic;
@@ -140,13 +142,14 @@ public:
     wxString filename;
 
     wxWindow       *m_parent_window;
+    WmmUIDialog    *m_pWmmDialog;
+    
+    pi_ocpnDC *m_oDC;
 
 private:
     wxFileConfig     *m_pconfig;
     bool          LoadConfig(void);
     bool          SaveConfig(void);
-
-    WmmUIDialog    *m_pWmmDialog;
 
     int           m_wmm_dialog_x, m_wmm_dialog_y;
     int           m_display_width, m_display_height;

@@ -988,6 +988,11 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 6: ret = GRB_CAPE; break; // DATA_TO_GRBV2[DATA_CAPE] = grb2DataType(0,7,6);
             }
             break;
+        case 16: // Meteorological products, Forecast Radar Imagery category
+            switch (dataNum) {
+            case 196: ret =  GRB_COMP_REFL; break; // = grb2DataType(0,16, 196);
+            }
+            break;
         }
         break;
     case 10: // productDiscipline Oceanographic products 
@@ -1014,15 +1019,15 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
                 case 4: ret= GRB_WVDIR; break; // Direction of Wind Waves
                 case 5: ret= GRB_WVHGT; break; // Significant Height of Wind Waves
                 case 6: ret= GRB_WVPER; break; // Mean Period of Wind Waves
+                case 14: ret= GRB_DIR; break;  // Direction of Combined Wind Waves and Swell
+                case 15: ret= GRB_PER; break;  // Mean Period of Combined Wind Waves and Swell
             }
             break;
 
         case 1: // Currents 
             switch (dataNum) {
-            #if 0
                 case 0: ret = GRB_CUR_DIR; break;
                 case 1: ret = GRB_CUR_SPEED; break;
-            #endif
                 case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
                 case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
             }
@@ -1038,7 +1043,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        erreur("unknown %d %d %d", productDiscipline,  dataCat,dataNum);
+        erreur("unknown Discipline %d dataCat %d dataNum %d", productDiscipline,  dataCat, dataNum);
     }
 #endif    
     return ret;    
@@ -1263,6 +1268,9 @@ void  GribV2Record::translateDataType()
         if (levelType == LV_ATMOS_ENT) {
             levelType = LV_ATMOS_ALL;
         }
+        if (dataType == GRB_TEMP          //gfs Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
     }
     //------------------------
 	//DNMI-NEurope.grb
@@ -1321,11 +1329,6 @@ void  GribV2Record::translateDataType()
 	}
     else if (idCenter==84 && idModel <= 5 && idGrid==0)
     {
-        // XXX Météo France AROME-01 is 
-		if ( getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0)
-		{
-			levelType  = LV_MSL;
-		} // missing enum for dataCenterModel
     }
 	
 	//------------------------
@@ -1363,6 +1366,8 @@ void  GribV2Record::translateDataType()
             case GRB_HTSGW:
             case GRB_WVDIR:
             case GRB_WVPER:
+            case GRB_DIR:
+            case GRB_PER:
                 levelType  = LV_GND_SURF;
                 levelValue = 0;
                 break;

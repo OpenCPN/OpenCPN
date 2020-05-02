@@ -150,7 +150,7 @@ extern "C" double DistLoxodrome(double slat, double slon, double dlat, double dl
 extern "C" int GetDatumIndex(const char *str);
 extern "C" void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index);
 
-extern "C" void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist);
+extern "C" void DistanceBearingMercator(double lat1, double lon1, double lat0, double lon0, double *brg, double *dist);
 
 extern "C" int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon);
 extern "C" int Georef_Calculate_Coefficients_Proj(struct GeoRef *cp);

@@ -34,14 +34,15 @@
 
 #ifdef __WXMSW__
 	#include <windows.h>
-	#include <winioctl.h>
 	#include <initguid.h>
 	#include "setupapi.h"                   // presently stored in opencpn/src
 #endif
 
+#include "config.h"
+
 #include "dsPortType.h"
 
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
 #endif
 
@@ -114,7 +115,7 @@ public:
 
 
 private:
-#ifdef ocpnUSE_NEWSERIAL
+#ifdef OCPN_USE_NEWSERIAL
     serial::Serial m_serial;
     void ThreadMessage(const wxString &msg);
     bool OpenComPortPhysical(const wxString &com_name, int baud_rate);

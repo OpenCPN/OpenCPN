@@ -124,7 +124,6 @@ IDX_entry *TCDS_Ascii_Harmonic::GetIndexEntry(int n_index)
 TC_Error_Code TCDS_Ascii_Harmonic::init_index_file()
 {
     long int xref_start=0;
-    int doing_xref=0;
 
     num_IDX=0;
 

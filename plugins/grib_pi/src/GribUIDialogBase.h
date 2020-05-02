@@ -68,38 +68,39 @@
 #define ID_CB_AIR_TEMP 1021
 #define ID_CB_SEA_TEMP 1022
 #define ID_CB_CAPE 1023
+#define ID_CB_COMP_REFL 1024
 //GribSettingsDialogBase
-#define BARBFIXSPACING 1024
-#define BARBMINSPACING 1025
-#define DIRFIXSPACING 1026
-#define DIRMINSPACING 1027
-#define NUMFIXSPACING 1028
-#define NUMMINSPACING 1029
-#define AC0 1030
-#define AC1 1031
-#define NW0 1032
-#define NW1 1033
-#define ZC0 1034
-#define ZC1 1035
-#define SCD0 1036
-#define SCD1 1037
-#define PB0 1038
-#define PB1 1039
-#define TL0 1040
-#define TL1 1041
-#define OF0 1042
-#define OF1 1043
-#define STS0 1044
-#define STS1 1045
-#define RQ0 1046
-#define RQ1 1047
+#define BARBFIXSPACING 1025
+#define BARBMINSPACING 1026
+#define DIRFIXSPACING  1027
+#define DIRMINSPACING  1028
+#define NUMFIXSPACING  1029
+#define NUMMINSPACING  1030
+#define AC0  1031
+#define AC1  1032
+#define NW0  1033
+#define NW1  1034
+#define ZC0  1035
+#define ZC1  1036
+#define SCD0 1037
+#define SCD1 1038
+#define PB0  1039
+#define PB1  1040
+#define TL0  1041
+#define TL1  1042
+#define OF0  1043
+#define OF1  1044
+#define STS0 1045
+#define STS1 1046
+#define RQ0  1047
+#define RQ1  1048
 //GribRequestDialogBase
-#define MAXLAT 1048
-#define MAXLON 1049
-#define MINLAT 1050
-#define MINLON 1051
-#define MANSELECT 1052
-#define SAVEDZONE 1053
+#define MAXLAT 1049
+#define MAXLON 1050
+#define MINLAT 1051
+#define MINLON 1052
+#define MANSELECT 1053
+#define SAVEDZONE 1054
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUICtrlBarBase
@@ -195,6 +196,7 @@ class CursorDataBase : public wxPanel
 		wxTextCtrl* m_tcAirTemperature;
 		wxTextCtrl* m_tcSeaTemperature;
 		wxTextCtrl* m_tcCAPE;
+		wxTextCtrl* m_tcReflC;
 		wxCheckBox* m_cbAltitude;
 		wxTextCtrl* m_tcAltitude;
 		wxCheckBox* m_cbTemp;
@@ -219,6 +221,7 @@ class CursorDataBase : public wxPanel
 		wxCheckBox* m_cbAirTemperature;
 		wxCheckBox* m_cbSeaTemperature;
 		wxCheckBox* m_cbCAPE;
+		wxCheckBox* m_cbReflC;
 
 		CursorDataBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxNO_BORDER|wxTAB_TRAVERSAL );
 		~CursorDataBase();
@@ -329,6 +332,7 @@ class GribPreferencesDialogBase : public wxDialog
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnStartOptionChange( wxCommandEvent& event ) { event.Skip(); }
+                virtual void OnOKClick(wxCommandEvent& event){ event.Skip(); }
 
 
 	public:
@@ -391,9 +395,10 @@ class GribRequestSettingBase : public wxDialog
 		wxCheckBox* m_pRainfall;
 		wxCheckBox* m_pCloudCover;
 		wxCheckBox* m_pAirTemp;
+		wxCheckBox* m_pCAPE;
+		wxCheckBox* m_pReflectivity;
 		wxCheckBox* m_pSeaTemp;
 		wxCheckBox* m_pCurrent;
-		wxCheckBox* m_pCAPE;
 		wxCheckBox* m_pWaves;
 		wxChoice* m_pWModel;
 		wxCheckBox* m_pAltitudeData;

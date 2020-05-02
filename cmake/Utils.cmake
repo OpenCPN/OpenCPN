@@ -1,16 +1,16 @@
 MACRO (TODAY RESULT)
-    IF (WIN32)
+    IF (CMAKE_HOST_WIN32)
         EXECUTE_PROCESS(COMMAND "cmd" "/C" "date /T" OUTPUT_VARIABLE ${RESULT})
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
-${RESULT} ${${RESULT}})
-    ELSEIF(UNIX)
-        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
+               ${RESULT} ${${RESULT}})
+    ELSEIF(UNIX OR MINGW)
+        EXECUTE_PROCESS(COMMAND "date" "-u" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
         string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1"
-${RESULT} ${${RESULT}})
-    ELSE (WIN32)
+               ${RESULT} ${${RESULT}})
+    ELSE ()
         MESSAGE(SEND_ERROR "date not implemented")
         SET(${RESULT} 000000)
-    ENDIF (WIN32)
+    ENDIF ()
 ENDMACRO (TODAY)
 
 MACRO (COMMIT_ID RESULT)
@@ -23,3 +23,13 @@ MACRO (COMMIT_ID RESULT)
     )
     SET(${RESULT} ${COMMIT_HASH})
 ENDMACRO (COMMIT_ID)
+
+MACRO (BUILD_NUM RESULT)
+    # Get the current Travis/CircleCI build number, possibly ""
+    execute_process(
+      COMMAND /usr/bin/sh -c "echo $CIRCLE_BUILD_NUM$TRAVIS_BUILD_NUM$BUILD_NUMBER"
+      OUTPUT_VARIABLE _BUILD_NUM
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+SET(${RESULT} ${_BUILD_NUM})
+ENDMACRO (BUILD_NUM)

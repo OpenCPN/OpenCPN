@@ -128,6 +128,7 @@ private:
     bool        m_coAnimateByBitmaps;
     ColorScheme m_cs;
     bool        m_CanvasENCAvail;
+    bool        m_bEffects;
     
 DECLARE_EVENT_TABLE()
 };

@@ -69,6 +69,10 @@ int round (double x) {
 #endif
 #endif
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 #if wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
 #define SetBitmapLabelLabel SetBitmap
 #endif
@@ -185,6 +189,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "AirTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE], false );
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
+        pConf->Read( _T ( "CompReflectivityPlot" ), &m_bDataPlot[GribOverlaySettings::COMP_REFL], false );
 
 		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
@@ -244,6 +249,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->Write( _T ( "AirTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE]);
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE]);
         pConf->Write( _T ( "CAPEPlot" ), m_bDataPlot[GribOverlaySettings::CAPE]);
+        pConf->Write( _T ( "CompReflectivityPlot" ), m_bDataPlot[GribOverlaySettings::COMP_REFL]);
 
 		pConf->Write( _T ( "CursorDataShown" ), m_CDataIsShown );
 
@@ -318,8 +324,9 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
     SetRequestBitmap( m_ZoneSelMode );
 
-    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    // Careful here, this MinSize() sets the final width of the control bar, overriding the width of the wxChoice above it.
+    m_sTimeline->SetSize( wxSize( 20 * m_ScaledFactor , -1 ) );
+    m_sTimeline->SetMinSize( wxSize( 20 * m_ScaledFactor , -1 ) );
 
 }
 
@@ -482,6 +489,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     if(m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND))
         bconfigOK = true;
     if(m_bDataPlot[GribOverlaySettings::CAPE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::COMP_REFL] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND))
         bconfigOK = true;
 
     //  If no parameter seems to be enabled by config, enable them all just to be sure something shows.
@@ -666,6 +675,58 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 #endif
     SetSize( wxSize( sd.x, sd.y ) );
     SetMinSize( wxSize( sd.x, sd.y ) );
+    
+#ifdef __OCPN__ANDROID__
+    wxRect tbRect = GetMasterToolbarRect();
+    //qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
+
+    if( 1 ){
+        wxPoint pNew = pPlugIn->GetCtrlBarXY();
+        pNew.x = tbRect.x + tbRect.width + 4;
+        pNew.y = 0; //tbRect.y;
+        pPlugIn->SetCtrlBarXY( pNew );
+        //qDebug() << "pNew" << pNew.x;
+        
+        int widthAvail = GetCanvasByIndex(0)->GetClientSize().x - (tbRect.x +tbRect.width);
+        
+        if(sd.x > widthAvail){
+            //qDebug() << "Too big" << widthAvail << sd.x;
+            
+            int target_char_width = (float)widthAvail / 28;
+            wxScreenDC dc;
+            bool bOK = false;
+            int pointSize = 20;
+            int width, height;
+            wxFont *sFont;
+            while(!bOK){
+                //qDebug() << "PointSize" << pointSize;
+                sFont = FindOrCreateFont_PlugIn( pointSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE );
+                dc.GetTextExtent (_T("W"), &width, &height, NULL, NULL, sFont); 
+                if(width <= target_char_width)
+                    bOK = true;
+                pointSize--;
+                if(pointSize <= 10)
+                    bOK = true;
+            }
+                
+                
+            m_cRecordForecast->SetFont(*sFont);
+            
+            Layout();
+            Fit();
+            Hide();
+            SetSize( wxSize( widthAvail, sd.y ) );
+            SetMinSize( wxSize( widthAvail, sd.y ) );
+            Show();
+
+        }
+    }
+    wxPoint pNow = pPlugIn->GetCtrlBarXY();
+    pNow.y = 0;
+    pPlugIn->SetCtrlBarXY( pNow );
+
+#endif    
+
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
@@ -1842,7 +1903,9 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     GribRecord *pRec;
     bool isOK(false);
     bool polarWind(false);
-
+    bool polarCurrent(false);
+    bool sigWave(false);
+    bool sigH(false);
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1888,14 +1951,35 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         } else
                             idx = Idx_WIND_VY;
                         break;
+                    case GRB_CUR_DIR:
+                        polarCurrent = true;
+                        // fall through
+                    case GRB_UOGRD:
+                        idx = Idx_SEACURRENT_VX;
+                        break;
+                    case GRB_CUR_SPEED:
+                        polarCurrent = true;
+                        // fall through
+                    case GRB_VOGRD:
+                        idx = Idx_SEACURRENT_VY;
+                        break;
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
-                    case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_HTSGW:
+                        sigH = true;
+                        idx = Idx_HTSIGW;
+                        break;
+                    case GRB_PER:
+                        sigWave = true;
+                        idx = Idx_WVPER;
+                        break;
+                    case GRB_DIR:
+                        sigWave = true;
+                        idx = Idx_WVDIR;
+                        break;
                     case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
-                    case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
-                    case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
                     case GRB_PRECIP_RATE:
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
@@ -1916,6 +2000,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         if(pRec->getDataCenterModel() == NOAA_GFS ) mdx = 1000 + NOAA_GFS;
                         break;
                     case GRB_CAPE:      idx = Idx_CAPE;break;
+                    case GRB_COMP_REFL: idx = Idx_COMP_REFL;break;
                     case GRB_HUMID_REL:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
@@ -1948,14 +2033,32 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
                         // already one
                         GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
-                        if (polarWind) {
+                        if (idx == Idx_PRESSURE) {
+                            skip = (oRec->getLevelType() == LV_MSL);
+                        } 
+                        else {
                             // we favor UV over DIR/SPEED
-                            if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                            if (polarWind) {
+                                if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
+                                    skip = true;
+                            }
+                            if (polarCurrent) {
+                                if (oRec->getDataType() == GRB_UOGRD || oRec->getDataType() == GRB_VOGRD)
+                                    skip = true;
+                            }
+                            // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
+                            if (!skip && (oRec->getTimeRange() == 3)) {
                                 skip = true;
-                        }
-                        // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
-                        if (!skip && (oRec->getTimeRange() == 3)) {
-                            skip = true;
+                            }
+                            // we favor significant Wave other wind wave.
+                            if (sigH) {
+                                if (oRec->getDataType() == GRB_HTSGW)
+                                    skip = true;
+                            }
+                            if (sigWave) {
+                                if (oRec->getDataType() == GRB_DIR || oRec->getDataType() == GRB_PER)
+                                    skip = true;
+                            }
                         }
                     }
                     if (!skip) {
@@ -2002,6 +2105,33 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     continue;
                 GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
                 if (pRec1 == 0 || pRec1->getDataType() != GRB_WIND_SPEED) {
+                    continue;
+                }
+                GribRecord::Polar2UV(pRec, pRec1);
+            }
+        }
+    }
+    if (polarCurrent) {
+        for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
+            for(unsigned int i=0; i<Idx_COUNT; i++) {
+                GribRecord *GR1 = NULL, *GR2 = NULL;
+                int idx = -1;
+                GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
+
+                if ( pRec == 0 || pRec->getDataType() != GRB_CUR_DIR) {
+                    continue;
+                }
+                switch( i ) {
+                case Idx_SEACURRENT_VX:
+                    idx = Idx_SEACURRENT_VY;
+                    break;
+                default:
+                    break;
+                }
+                if (idx == -1)
+                    continue;
+                GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                if (pRec1 == 0 || pRec1->getDataType() != GRB_CUR_SPEED) {
                     continue;
                 }
                 GribRecord::Polar2UV(pRec, pRec1);

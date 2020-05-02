@@ -52,6 +52,11 @@
 
 #include <wx/dialog.h>
 
+#ifdef __WXGTK__
+//wxTimePickerCtrl is completely broken in Gnome based desktop environments as of wxGTK 3.0
+#include "time_textbox.h"
+#endif
+
 #define ID_WPT_RANGERINGS_NO     7507
 #define ID_RCLK_MENU_COPY_TEXT   7013
 #define ID_RCLK_MENU_DELETE      7015
@@ -64,6 +69,7 @@
 #define ID_RCLK_MENU_ADD_LINK    7025
 
 #include "tcmgr.h"
+#include "OCPNPlatform.h"
 
 /*!
  * Forward declarations
@@ -128,6 +134,8 @@ class   OCPNIconCombo;
 #endif
 
 WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
+
+class SaveDefaultsDialog;
 
 /*!
  * OCPNIconCombo class declaration
@@ -226,7 +234,7 @@ class MarkInfoDlg : public wxFrame
         wxBoxSizer*             bSizerLinks;
         wxButton*               m_buttonExtDescription;
         wxButton*               m_buttonLinksMenu;
-        wxButton*               m_buttonShowTides;
+        wxBitmapButton*         m_buttonShowTides;
         wxButton*               DefaultsBtn;
         wxCheckBox*             m_checkBoxScaMin;
         wxCheckBox*             m_checkBoxShowName;
@@ -235,7 +243,6 @@ class MarkInfoDlg : public wxFrame
         wxChoice*               m_choiceWaypointRangeRingsUnits;
         wxColourPickerCtrl*     m_PickColor;
         wxCheckBox*             m_cbEtaPresent;
-        wxDatePickerCtrl*       m_EtaDatePickerCtrl;
         wxBoxSizer*             bMainSizer;
         wxFlexGridSizer*        fSizerBasicProperties;
         wxFlexGridSizer*        waypointradarGrid;
@@ -244,12 +251,12 @@ class MarkInfoDlg : public wxFrame
         wxFlexGridSizer*        gbSizerInnerProperties;
         wxNotebook*             m_notebookProperties;
         wxObject*               m_contextObject;
-        wxPanel*                m_PanelBasicProperties;
-        wxPanel*                m_PanelDescription;
-        wxPanel*                m_PanelExtendedProperties;
+        wxScrolledWindow*       m_panelBasicProperties;
+        wxPanel*                m_panelDescription;
+        wxScrolledWindow*       m_panelExtendedProperties;
         wxSimpleHtmlListBox*    m_htmlList;
         wxSize                  m_defaultClientSize;
-        wxSpinCtrl*             m_SpinWaypointRangeRingsNumber;
+        wxChoice*               m_ChoiceWaypointRangeRingsNumber;
         wxStaticBitmap*         m_bitmapIcon;
         wxStaticBoxSizer*       sbS_Description;
         wxStaticBoxSizer*       sbSizerExtProperties;
@@ -283,7 +290,17 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textCtrlExtDescription;
         wxTextCtrl*             m_textCtrlGpx;
         wxTextCtrl*             m_textCtrlGuid;
+        wxScrolledWindow        *m_scrolledWindowLinks;
+        wxHyperlinkCtrl         *m_hyperlink17;
+        wxMenu                  *m_menuLink;
+        wxToggleButton          *m_toggleBtnEdit;
+        wxButton                *m_buttonAddLink;
+        
+#ifdef __OCPN__ANDROID__        
+        wxChoice*               m_comboBoxTideStation;
+#else
         wxComboBox*             m_comboBoxTideStation;
+#endif        
         wxTextCtrl*             m_textDescription;
         wxTextCtrl*             m_textLatitude;
         wxTextCtrl*             m_textLongitude;
@@ -291,8 +308,22 @@ class MarkInfoDlg : public wxFrame
         wxTextCtrl*             m_textScaMin;
         wxTextCtrl*             m_textWaypointRangeRingsStep;
         wxTextCtrl*             m_textCtrlPlSpeed;
+        wxBitmap               _img_MUI_settings_svg;
+        wxButton*               m_sdbSizerButtonsCancel;
+        wxButton*               m_sdbSizerButtonsOK;
+
+#ifndef __OCPN__ANDROID__
+        wxDatePickerCtrl*       m_EtaDatePickerCtrl;
+#ifdef __WXGTK__
+        TimeCtrl*               m_EtaTimePickerCtrl;
+#else
         wxTimePickerCtrl*       m_EtaTimePickerCtrl;
-        wxBitmap*               _img_MUI_settings_svg;
+#endif
+#endif
+        wxArrayString           m_choiceTideChoices;
+        wxBitmap                m_bmTide;
+        int                     m_sizeMetric;
+        wxHyperlinkCtrl         *m_pEditedLink;
         
         void initialize_images(void);
         void OnBitmapCombClick(wxCommandEvent& event);
@@ -305,13 +336,15 @@ class MarkInfoDlg : public wxFrame
         void OnShowWaypointNameSelectBasic( wxCommandEvent& event );
         void OnShowWaypointNameSelectExt( wxCommandEvent& event );
         void OnSelectScaMinExt( wxCommandEvent& event );
-        void OnWptRangeRingsNoChange( wxSpinEvent& event );
+        void OnWptRangeRingsNoChange( wxCommandEvent& event );
         void OnCopyPasteLatLon( wxCommandEvent& event );
         void OnWaypointRangeRingSelect( wxCommandEvent& event );
         void m_htmlListContextMenuBtn( wxCommandEvent &event );
         void m_htmlListContextMenu( wxMouseEvent &event );
         void OnRightClickLatLon( wxCommandEvent& event );
         void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
+        void OnHyperLinkClick( wxHyperlinkEvent &event );
+
         void On_html_link_popupmenu_Click( wxCommandEvent& event );
         void DefautlBtnClicked( wxCommandEvent& event );
         void OnNotebookPageChanged( wxNotebookEvent& event );
@@ -319,6 +352,7 @@ class MarkInfoDlg : public wxFrame
         void OnTideStationCombobox( wxCommandEvent& event);
         void OnClose( wxCloseEvent& event );
         void ShowTidesBtnClicked( wxCommandEvent& event );
+        void OnAddLink( wxCommandEvent& event );
         
     public:
         MarkInfoDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_FRAME_STYLE|wxFRAME_FLOAT_ON_PARENT|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
@@ -337,6 +371,9 @@ class MarkInfoDlg : public wxFrame
         wxSimpleHtmlListBox *GetSimpleBox()
             { return wxDynamicCast(m_htmlList, wxSimpleHtmlListBox); }
         void OnHtmlCellClicked(wxHtmlCellEvent &event);
+        
+        SaveDefaultsDialog* m_SaveDefaultDlg;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////

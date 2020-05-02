@@ -40,7 +40,7 @@
 #include "grib_pi.h"
 
 #ifdef __WXQT__
-//#include "qdebug.h"
+#include "qdebug.h"
 #endif
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -56,6 +56,10 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 }
 
 extern int   m_DialogStyle;
+
+grib_pi *g_pi;
+bool g_bpause;
+float g_piGLMinSymbolLineWidth;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -91,6 +95,7 @@ grib_pi::grib_pi(void *ppimgr)
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       m_GUIScaleFactor = -1.;
+      g_pi = this;
 }
 
 grib_pi::~grib_pi(void)
@@ -155,6 +160,17 @@ int grib_pi::Init(void)
           m_CursorDataxy = wxPoint( 20, 170 );
       }
 
+#ifdef ocpnUSE_GL
+        //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
+#else
+    glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
+      
       return (WANTS_OVERLAY_CALLBACK |
               WANTS_OPENGL_OVERLAY_CALLBACK |
               WANTS_CURSOR_LATLON       |
@@ -273,7 +289,22 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbLoadOptions->SetSelection( m_bLoadLastOpenFile );
     Pref->m_rbStartOptions->SetSelection( m_bStartOptions );
 
-     if( Pref->ShowModal() == wxID_OK ) {
+#ifdef __OCPN__ANDROID__
+    if( m_parent_window ){
+         int xmax = m_parent_window->GetSize().GetWidth();
+         int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+         Pref->SetSize( xmax, ymax );
+         Pref->Layout();
+         Pref->Move(0,0);
+    }
+    Pref->Show();
+#else
+    Pref->ShowModal();
+#endif    
+}
+
+void grib_pi::UpdatePrefs( GribPreferencesDialog* Pref )
+{
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
@@ -329,8 +360,9 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
          SaveConfig();
      }
-     delete Pref;
-}
+
+
+
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 {   // Make sure drag bar (title bar) or grabber always screen
@@ -443,6 +475,10 @@ void grib_pi::OnToolbarToolCallback(int id)
                 MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
             }
+#ifdef __OCPN__ANDROID__
+            m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
+            m_pGribCtrlBar->Refresh();
+#endif
         }
         m_pGribCtrlBar->Show();
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {
@@ -498,30 +534,47 @@ void grib_pi::OnGribCtrlBarClose()
 
 bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
-    if(!m_pGribCtrlBar ||
-       !m_pGribCtrlBar->IsShown() ||
-       !m_pGRIBOverlayFactory)
-        return false;
-
-    m_pGribCtrlBar->SetViewPort( vp );
-    m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
-    if( m_pGribCtrlBar->pReq_Dialog )
-        m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay( dc );
-    if( ::wxIsBusy() ) ::wxEndBusyCursor();
-    return true;
+    return false;
 }
 
-bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
 {
     if(!m_pGribCtrlBar ||
        !m_pGribCtrlBar->IsShown() ||
        !m_pGRIBOverlayFactory)
         return false;
 
-    m_pGribCtrlBar->SetViewPort( vp );
+    m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
+    
+    if((canvasIndex > 0) || (GetCanvasCount() == 1)){
+        m_pGribCtrlBar->SetViewPort( vp );
+        if( m_pGribCtrlBar->pReq_Dialog )
+            m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay( dc );
+    }
+    if( ::wxIsBusy() ) ::wxEndBusyCursor();
+    return true;
+}
+
+bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{
+    return false;
+}
+
+bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
+{
+    if(!m_pGribCtrlBar ||
+       !m_pGribCtrlBar->IsShown() ||
+       !m_pGRIBOverlayFactory)
+        return false;
+
     m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
-    if( m_pGribCtrlBar->pReq_Dialog )
-        m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
+
+    if((canvasIndex > 0) || (GetCanvasCount() == 1)){
+        m_pGribCtrlBar->SetViewPort( vp );
+        if( m_pGribCtrlBar->pReq_Dialog )
+            m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
+    }
+    
     if( ::wxIsBusy() ) ::wxEndBusyCursor();
     
     #ifdef __OCPN__ANDROID__
@@ -533,22 +586,12 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 
 bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp, int canvasIndex)
 {
-    // If multicanvas are active, render the overlay on the right canvas only
-    if(GetCanvasCount() > 1 && canvasIndex != 1){            // multi?
-        return false;
-    }
-
-    return RenderGLOverlay( pcontext, vp);
+    return DoRenderGLOverlay( pcontext, vp, canvasIndex);
 }
 
 bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex)
 {
-    // If multicanvas are active, render the overlay on the right canvas only
-    if(GetCanvasCount() > 1 && canvasIndex != 1) {            // multi?
-        return false;
-    }
-
-    return RenderOverlay( dc, vp);
+    return DoRenderOverlay( dc, vp, canvasIndex);
 }
 
 void grib_pi::SetCursorLatLon(double lat, double lon)
@@ -831,4 +874,12 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
         OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed\nThis can decrease accuracy!"),
                 _("Warning!"));
     }
+}
+
+void GribPreferencesDialog::OnOKClick(wxCommandEvent& event)
+{ 
+    if(g_pi)
+        g_pi->UpdatePrefs( this );
+    Close();
+    
 }

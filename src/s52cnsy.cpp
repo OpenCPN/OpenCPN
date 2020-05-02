@@ -707,7 +707,6 @@ static void *DEPARE01(void *param)
 
    //   Create a string of the proper color reference
 
-    bool shallow  = TRUE;
     wxString rule_str =_T("AC(DEPIT)");
 
 
@@ -720,7 +719,6 @@ static void *DEPARE01(void *param)
             drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
     }
     else
@@ -733,14 +731,12 @@ static void *DEPARE01(void *param)
                 drval2 >  S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR))
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
 
         if (drval1 >= S52_getMarinerParam(S52_MAR_DEEP_CONTOUR)  &&
                 drval2 >  S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
         {
             rule_str  = _T("AC(DEPDW)");
-            shallow = FALSE;
         }
 
     }
@@ -753,7 +749,6 @@ static void *DEPARE01(void *param)
         if (!drval1_found) //If DRVAL1 was not defined...
         {
             rule_str  = _T("AC(DEPMD)");
-            shallow = FALSE;
         }
         rule_str.Append(_T(";AP(DRGARE01)"));
         rule_str.Append(_T(";LS(DASH,1,CHGRF)"));
@@ -822,7 +817,6 @@ static void *DEPCNT02 (void *param)
 //      int      objl      = 0;
 //      GString *quaposstr = NULL;
 //      int      quapos    = 0;
-      double   depth_value;
       double drval1, drval2;
       bool safe = FALSE;
       wxString rule_str;
@@ -898,8 +892,6 @@ static void *DEPCNT02 (void *param)
                               */
             }
 
-            depth_value = drval1;
-
       }
       else
       {
@@ -908,8 +900,6 @@ static void *DEPCNT02 (void *param)
             GetDoubleAttr(obj, "VALDCO", valdco);
 //            GString *valdcostr = S57_getAttVal(geo, "VALDCO");
 //            double   valdco    = (NULL == valdcostr) ? 0.0 : atof(valdcostr->str);
-
-            depth_value = valdco;
 
             if (valdco == safety_contour)
                   safe = TRUE;   // this is useless !?!?
@@ -1911,6 +1901,7 @@ static void *OBSTRN04 (void *param)
       wxString *quapnt01str = NULL;
 
       GetDoubleAttr(obj, "VALSOU", valsou);
+      wxString *objName = GetStringAttrWXS(obj, "OBJNAM");
 
       if (valsou != UNKNOWN)
       {
@@ -2146,30 +2137,29 @@ static void *OBSTRN04 (void *param)
 //                        GString *watlevstr = S57_getAttVal(geo, "WATLEV");
 
                         if (watlev == -9)   // default
-                              obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
+                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                         else {
-                              if (3 == watlev) {
-                                    int catobs = -9;
-                                    GetIntAttr(obj, "CATOBS", catobs);
-//                                    GString *catobsstr = S57_getAttVal(geo, "CATOBS");
-                                    if (6 == catobs)
-                                          obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
-                              } else {
-                                    switch (watlev) {
-                                          case 1:
-                                          case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
-                                          case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
-                                          case 5:
-                                          case 3:
-                                                default : obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            switch (watlev) {
+                                case 1:
+                                case 2: obstrn04str.Append(_T(";AC(CHBRN);LS(SOLD,2,CSTLN)")); break;
+                                case 4: obstrn04str.Append(_T(";AC(DEPIT);LS(DASH,2,CSTLN)")); break;
+                                case 5:
+                                case 3:
+                                    {
+                                        int catobs = -9;
+                                        GetIntAttr(obj, "CATOBS", catobs);
+                                        if (6 == catobs)
+                                            obstrn04str.Append(_T(";AC(DEPVS);AP(FOULAR01);LS(DOTT,2,CHBLK)"));
+                                        else
+                                            obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));
                                     }
-                              }
+                                    break;
+                                default: obstrn04str.Append(_T(";AC(DEPVS);LS(DOTT,2,CHBLK)"));  break;
+                            }
                         }
                   }
-
                   obstrn04str.Append(*quapnt01str);
                   goto end;
-
 
 /*
             // Continuation C (AREAS_T)
@@ -2227,6 +2217,12 @@ static void *OBSTRN04 (void *param)
       }
 
 end:
+
+    // This is a specialization, to print OBJNAM for obstructions, if available
+    // Seen in NZ ENCs, e.g. "Horn Rock"
+    if(objName)
+        obstrn04str.Append(_T(";TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)"));
+    
     obstrn04str.Append('\037');
 
     char *r = (char *)malloc(obstrn04str.Len() + 1);
@@ -3934,6 +3930,19 @@ static wxString _LITDSN01(S57Obj *obj)
 }
 
 
+static void *SYMINS01(void *param)
+{
+    ObjRazRules *rzRules = (ObjRazRules *)param;
+    S57Obj *obj = rzRules->obj;
+    char symins[80] = {'\0'};
+    GetStringAttr(obj, "SYMINS", symins, 79);
+
+    char *r = (char *)malloc(strlen(symins) + 1);
+    strcpy(r, symins);
+
+   return r;
+}
+
 //--------------------------------
 //
 // JUMP TABLE SECTION
@@ -3969,6 +3978,7 @@ Cond condTable[] = {
    {"VRMEBL01",VRMEBL01},
    {"WRECKS02",WRECKS02},
    {"SOUNDG03",SOUNDG03},                   // special case for MPS
+   {"SYMINS01",SYMINS01},                   //  Container for Virtual AIS ATONS, special case
    {"########",NULL}
 };
 

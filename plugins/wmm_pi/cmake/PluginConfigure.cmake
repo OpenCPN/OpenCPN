@@ -36,13 +36,14 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT MSVC)
- ADD_DEFINITIONS( "-fvisibility=hidden" )
+    ADD_COMPILE_OPTIONS( "-fvisibility=hidden" )
  IF(PROFILING)
-  ADD_DEFINITIONS( "-Wall -g -fprofile-arcs -ftest-coverage -fexceptions" )
- ELSE(PROFILING)
+     ADD_COMPILE_OPTIONS(
+         "-Wall" "-g" "-fprofile-arcs" "-ftest-coverage" "-fexceptions")
+ ELSE ()
 #  ADD_DEFINITIONS( "-Wall -g -fexceptions" )
- ADD_DEFINITIONS( "-Wall -Wno-unused-result -g -O2 -fexceptions" )
- ENDIF(PROFILING)
+   ADD_COMPILE_OPTIONS("-Wall" "-Wno-unused-result" "-g" "-O2" "-fexceptions")
+ ENDIF ()
 
  IF(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic")
@@ -110,10 +111,6 @@ IF(QT_ANDROID)
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
-#    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-#    add_subdirectory(src/glshim)
-
-#    add_subdirectory(src/glu)
 
 ELSE(QT_ANDROID)
     FIND_PACKAGE(OpenGL)
@@ -129,37 +126,6 @@ ELSE(QT_ANDROID)
     ELSE(OPENGL_GLU_FOUND)
         MESSAGE (STATUS "OpenGL not found..." )
     ENDIF(OPENGL_GLU_FOUND)
-
-ENDIF(QT_ANDROID)
-
-# On Android, PlugIns need a specific linkage set....
-IF (QT_ANDROID )
-  # These libraries are needed to create PlugIns on Android.
-
-  SET(OCPN_Core_LIBRARIES
-        # Presently, Android Plugins are built in the core tree, so the variables {wxQT_BASE}, etc.
-        # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
-
-        # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
-
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
-
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
-        )
 
 ENDIF(QT_ANDROID)
 

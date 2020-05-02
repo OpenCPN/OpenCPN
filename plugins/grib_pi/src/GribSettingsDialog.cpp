@@ -36,21 +36,24 @@ static const wxString units4_names[] = {_("Millimeters"), _("Inches"), wxEmptySt
 static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
 static const wxString units6_names[] = {_("j/kg"), wxEmptyString};
 static const wxString units7_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), wxEmptyString};
+static const wxString units8_names[] = {_("dBZ"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names,
-                                       units3_names, units4_names, units5_names, units6_names, units7_names};
+                                       units3_names, units4_names, units5_names,
+                                       units6_names, units7_names, units8_names};
 
 static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Pressure"),
                                            _T("Waves"), _T("Current"),
                                            _T("Rainfall"), _T("CloudCover"),
                                            _T("AirTemperature"), _T("SeaTemperature"), _T("CAPE"),
-                                           _T("Altitude"), _T("RelativeHumidity") };
+                                           _T("CompositeReflectivity"),_T("Altitude"), _T("RelativeHumidity") };
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
                                             _("Waves"), _("Current"),
                                             _("Rainfall"), _("Cloud Cover"),
                                             _("Air Temperature"), _("Sea Temperature"), _("CAPE"),
+                                            _T("Composite Reflectivity"),
                                             _("Altitude(Geopotential)"), _("Relative Humidity") };
 
-static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 7, 4, 5, 3, 3, 6, 2, 5};
+static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 7, 4, 5, 3, 3, 6, 8, 2, 5};
 
 static const int minuttes_from_index [] = { 2, 5, 10, 20, 30, 60, 90, 180, 360, 720, 1440 };
 
@@ -164,12 +167,13 @@ void GribOverlaySettings::Read()
 	//gui options
     m_iCtrlandDataStyle = m_DialogStyle;
     wxString s1, s2;
-    pConf->Read ( _T( "CtrlBarCtrlVisibility1" ), &s1, _T( "XXXXXXXXX" ) );
-    if(s1.Len() != wxString (_T( "XXXXXXXXX" ) ).Len() )
-        s1 = _T( "XXXXXXXXX" );
-    pConf->Read ( _T( "CtrlBarCtrlVisibility2" ), &s2, _T( "XXXXXXXXX" ) );
-    if(s2.Len() != wxString (_T( "XXXXXXXXX" ) ).Len() )
-        s2 = _T( "XXXXXXXXX" );
+    wxString const dflt = _T( "XXXXXXXXX" );
+    pConf->Read ( _T( "CtrlBarCtrlVisibility1" ), &s1, dflt );
+    if(s1.Len() != dflt.Len() )
+        s1 = dflt;
+    pConf->Read ( _T( "CtrlBarCtrlVisibility2" ), &s2, dflt );
+    if(s2.Len() != dflt.Len() )
+        s2 = dflt;
     m_iCtrlBarCtrlVisible[0] = s1;
     m_iCtrlBarCtrlVisible[1] = s2;
 	//data options
@@ -249,7 +253,7 @@ void GribOverlaySettings::Write()
             SaveSettingGroups(pConf, i, NUMBERS);
             SaveSettingGroups(pConf, i, PARTICLES);
         }
-        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
+        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE || i == COMP_REFL) {
             SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
             SaveSettingGroups(pConf, i, OVERLAY);
             SaveSettingGroups(pConf, i, NUMBERS);
@@ -357,7 +361,8 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input, bool r
         case INCHES:      return 1./25.4;
         } break;
     case 5:
-    case 6: return 1;
+    case 6: 
+    case 8: return 1;
     }
 
     return 1;
@@ -459,6 +464,9 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
         case MPH:    return _T("mph");
         case KPH:    return _T("km/h");
         } break;
+    case 8: switch(Settings[settings].m_Units) {
+        case DBZ:  return _T("dBZ");
+        } break;
     }
     return _T("");
 }
@@ -488,6 +496,7 @@ double GribOverlaySettings::GetMax(int settings)
     case AIR_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     case SEA_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     case CAPE:            max = 3500;    break; /* j/kg */
+    case COMP_REFL:       max = 80;    break; /* dBZ */
     }
     return CalibrateValue(settings, max);
 }
@@ -795,6 +804,14 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
+        break;
+    case GribOverlaySettings::COMP_REFL:
+        ShowSettings( ISO_LINE_SHORT );
+        ShowSettings( ISO_LINE );
+        m_cbIsoBars->SetLabel(_("Display Comp. Reflectivity"));
+        ShowSettings( OVERLAY );
+        ShowSettings( NUMBERS );
+        break;
     }
 
 	wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE && m_cDataUnits->GetSelection() == GribOverlaySettings::INHG) ? _T("(0.03 " ) : _T("(");
@@ -977,7 +994,7 @@ wxString GribOverlaySettings::SettingsToJSON(wxString json)
             UpdateJSONval(v, i, NUMBERS);
             UpdateJSONval(v, i, PARTICLES);
         }
-        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
+        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE || i == COMP_REFL) {
             UpdateJSONval(v, i, ISO_LINE_SHORT);
             UpdateJSONval(v, i, OVERLAY);
             UpdateJSONval(v, i, NUMBERS);

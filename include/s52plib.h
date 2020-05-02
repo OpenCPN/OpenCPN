@@ -34,6 +34,7 @@ class wxGLContext;
 
 #include "LLRegion.h"
 #include "ocpn_types.h"
+#include "DepthFont.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
@@ -291,6 +292,7 @@ private:
 	render_canvas_parms *pb_spec );
     int RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
 
     //    Object Renderers
     int RenderTX( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
@@ -305,10 +307,11 @@ private:
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
     int RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
     void UpdateOBJLArray( S57Obj *obj );
 
-    int reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest);
+    int reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest, int *maskIn, int **maskOut);
     
     int RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
@@ -317,6 +320,10 @@ private:
     int RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
+    int RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    
+    void DrawDashLine( wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, ViewPort *vp);
+    
     render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
         Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 
@@ -324,7 +331,7 @@ private:
         S52color *c, render_canvas_parms *pb_spec,
         render_canvas_parms *patt_spec, ViewPort *vp );
 
-    void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+    void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, int *mask,
         int npt, float sym_len, float sym_factor, Rule *draw_rule,
         ViewPort *vp );
 
@@ -332,6 +339,8 @@ private:
         ViewPort *vp, float rot_angle = 0. );
     bool RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         ViewPort *vp, float rot_angle = 0. );
+    bool RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+        ViewPort *vp, wxColor symColor, float rot_angle = 0. );
     wxImage RuleXBMToImage( Rule *prule );
 
     bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
@@ -377,6 +386,7 @@ private:
 
     float canvas_pix_per_mm; // Set by parent, used to scale symbols/lines/patterns
     double m_rv_scale_factor;
+    float m_display_size_mm;
     
     S52color m_unused_color;
     wxColor m_unused_wxColor;
@@ -414,7 +424,7 @@ private:
     RenderFromHPGL* HPGL;
 
     TexFont *m_txf;
-    
+    DepthFont m_texSoundings;
     bool m_benableGLLS;
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
@@ -433,6 +443,7 @@ private:
     int  m_TextureFormat;
     bool m_GLLineSmoothing;
     bool m_GLPolygonSmoothing;
+    wxFont *m_soundFont;
 };
 
 
@@ -448,7 +459,17 @@ public:
 #if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
 #endif
+    void SetVP( ViewPort *pVP ){ m_vp = pVP; }
     bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle, bool bSymbol);
+    wxBrush *getBrush(){ return brush; }
+    
+    GLUtesselator *m_tobj;
+    int          s_odc_tess_vertex_idx;
+    int          s_odc_tess_vertex_idx_this;
+    int          s_odc_tess_buf_len;
+    GLenum       s_odc_tess_mode;
+    int          s_odc_nvertex;
+    GLfloat     *s_odc_tess_work_buf;
 
 private:
     const char* findColorNameInRef( char colorCode, char* col );
@@ -459,6 +480,9 @@ private:
     void Circle( wxPoint center, int radius, bool filled = false );
     void Polygon();
 
+    void DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset );
+    void DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, float scale, float angle );
+    
     s52plib* plib;
     double scaleFactor;
 
@@ -482,6 +506,13 @@ private:
     bool renderToDC;
     bool renderToOpenGl;
     bool renderToGCDC;
+    ViewPort *m_vp;
+    
+     
+    float *workBuf;
+    size_t workBufSize;
+    unsigned int workBufIndex;
+
 };
 
 #endif //_S52PLIB_H_

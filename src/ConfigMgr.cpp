@@ -21,10 +21,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/tokenzr.h>
 
-#include "ConfigMgr.h"
 #include "config.h"
+#include "ConfigMgr.h"
 
 #include <wx/filename.h>
 #include <wx/fileconf.h>
@@ -68,10 +73,8 @@
 #include "chartdb.h"
 #include "CanvasConfig.h"
 
-#ifdef USE_S57
 #include "s52plib.h"
 #include "cm93.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -83,18 +86,11 @@
 extern OCPNPlatform     *g_Platform;
 extern MyFrame          *gFrame;
 
-extern double           g_ChartNotRenderScaleFactor;
 extern int              g_restore_stackindex;
 extern int              g_restore_dbindex;
-extern RouteList        *pRouteList;
-extern TrackList        *pTrackList;
 extern LayerList        *pLayerList;
-extern int              g_LayerIdx;
-extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern ArrayOfCDI       g_ChartDirArray;
 extern double           initial_scale_ppm, initial_rotation;
-extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowTrue, g_bShowMag;
 extern double           g_UserVar;
@@ -103,19 +99,13 @@ extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
 extern int              g_nDepthUnitDisplay;
 
-extern wxToolBarBase    *toolBar;
 
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
-extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AIS_Decoder      *g_pAIS;
 extern wxString         *pInit_Chart_Dir;
 extern wxString         gWorldMapLocation;
-extern WayPointman      *pWayPointMan;
-extern Routeman         *g_pRouteMan;
 
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
@@ -130,13 +120,9 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
-extern bool             g_bdisable_opengl;
 extern bool             g_bSoftwareGL;
 extern bool             g_bShowFPS;
 extern bool             g_bsmoothpanzoom;
-extern bool             g_fog_overzoom;
-extern double           g_overzoom_emphasis_base;
-extern bool             g_oz_vector_scale;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
@@ -161,14 +147,11 @@ extern int              g_route_prop_sx, g_route_prop_sy;
 extern double           g_PlanSpeed;
 extern wxString         g_VisibleLayers;
 extern wxString         g_InvisibleLayers;
-extern wxRect           g_blink_rect;
 
-extern wxArrayString    *pMessageOnceArray;
 
 // LIVE ETA OPTION
 extern bool             g_bShowLiveETA;
 extern double           g_defaultBoatSpeed;
-extern double           g_defaultBoatSpeedUserUnit;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -212,6 +195,7 @@ extern wxString         g_AisTargetList_column_spec;
 extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bDrawAISRealtime;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
@@ -238,13 +222,10 @@ extern wxColour         g_colourOwnshipRangeRingsColour;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
-extern wxString         g_toolbarConfigSecondary;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern int              gps_watchdog_timeout_ticks;
 
-extern int              g_nCacheLimit;
-extern int              g_memCacheLimit;
 
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
@@ -256,18 +237,14 @@ extern double           g_ownship_HDTpredictor_miles;
 extern bool             g_own_ship_sog_cog_calc;
 extern int              g_own_ship_sog_cog_calc_damp_sec;
 
-#ifdef USE_S57
 extern s52plib          *ps52plib;
-#endif
 
 extern int              g_cm93_zoom_factor;
 extern bool             g_b_legacy_input_filter_behaviour;
 extern bool             g_bShowDetailSlider;
 extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 
-extern bool             g_bUseGreenShip;
 
-extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -279,15 +256,11 @@ extern double           g_n_arrival_circle_radius;
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bsimplifiedScalebar;
 
-extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
 
 extern wxString         g_locale;
 extern wxString         g_localeOverride;
 
-extern bool             g_bUseRaster;
-extern bool             g_bUseVector;
-extern bool             g_bUseCM93;
 
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
@@ -295,22 +268,18 @@ extern int              g_COGAvgSec;
 extern bool             g_bMagneticAPB;
 extern bool             g_bShowChartBar;
 
-extern int              g_MemFootSec;
 extern int              g_MemFootMB;
 
 extern int              g_nCOMPortCheck;
 
-extern bool             g_bbigred;
 
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_BSBImgDebug;
 
-extern int             n_NavMessageShown;
 extern wxString        g_config_version_string;
 extern wxString        g_config_version_string;
 
-extern wxString        g_CmdSoundString;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -320,7 +289,6 @@ extern bool             g_bDebugGPSD;
 
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
-extern int              g_SOGFilterSec;
 
 extern int              g_navobjbackups;
 
@@ -334,7 +302,6 @@ extern int              g_maintoolbar_x;
 extern int              g_maintoolbar_y;
 extern long             g_maintoolbar_orient;
 
-extern int              g_GPU_MemSize;
 
 extern int              g_lastClientRectx;
 extern int              g_lastClientRecty;
@@ -351,26 +318,18 @@ extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
-extern int              g_GroupIndex;
 
 extern bool             g_bDebugOGL;
-extern int              g_current_arrow_scale;
-extern int              g_tide_rectangle_scale;
-extern int              g_tcwin_scale;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern wxString         g_uploadConnection;
 
-extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
-extern Multiplexer      *g_pMUX;
-extern bool             portaudio_initialized;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
 
-extern bool             bGPSValid;              // for track recording
 extern bool             g_bGLexpert;
 
 extern int              g_SENC_LOD_pixels;
@@ -398,9 +357,7 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
-extern float            g_ChartScaleFactorExp;
 extern int              g_ShipScaleFactor;
-extern float            g_ShipScaleFactorExp;
 
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
@@ -408,8 +365,6 @@ extern int              g_iENCToolbarPosY;
 
 extern bool             g_bSpaceDropMark;
 
-extern bool             g_bShowTide;
-extern bool             g_bShowCurrent;
 
 extern bool             g_benableUDPNullHeader;
 extern bool             g_bShowMenuBar;
@@ -419,13 +374,9 @@ extern wxString         g_uiStyle;
 extern bool             g_useMUI;
 extern wxString         g_gpx_path;
 
-extern int              g_nCPUCount;
 
 extern bool             g_bDarkDecorations;
 extern unsigned int     g_canvasConfig;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
-//extern OCPN_AUIManager  *g_pauimgr;
-//extern arrayofCanvasPtr  g_canvasArray;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -880,7 +831,6 @@ wxPanel *ConfigMgr::GetConfigPanel( wxWindow *parent, wxString GUID )
 OCPNConfigObject *ConfigMgr::GetConfig( wxString GUID )
 {
     // Find the GUID-matching config in the member list
-    OCPNConfigObject *config = NULL;
     for ( ConfigObjectList::Node *node = configList->GetFirst(); node; node = node->GetNext() )
     {
         OCPNConfigObject *look = node->GetData();
@@ -929,9 +879,6 @@ bool ConfigMgr::ApplyConfigGUID( wxString GUID)
     
     //  Found it?
     if(config){
-        // Record current canvas config
-        unsigned int last_canvasConfig = g_canvasConfig;
-        
         wxString thisConfig = GetConfigDir() + config->templateFileName;
 
         // Special case for Recovery template
@@ -1094,7 +1041,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     
     conf->Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     conf->Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
-    conf->Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
     
     conf->Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     conf->Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
@@ -1148,7 +1094,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     //    S57 Object Filter Settings
     conf->SetPath( _T ( "/Settings/ObjectFilter" ) );
     
-    #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -1161,7 +1106,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
             conf->Write( st1, pOLE->nViz );
         }
     }
-    #endif
     
     //    Global State
     
@@ -1199,6 +1143,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     conf->Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     conf->Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
+    conf->Write( _T ( "bDrawAISRealtime" ), g_bDrawAISRealtime );
     conf->Write( _T ( "bShowAISName" ), g_bShowAISName );
     conf->Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     conf->Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
@@ -1233,7 +1178,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     conf->Write( _T ( "bAISAlertAckTimeout" ), g_bAIS_ACK_Timeout );
     conf->Write( _T ( "AlertAckTimeoutMinutes" ), g_AckTimeout_Mins );
     
-    #ifdef USE_S57
     conf->SetPath( _T ( "/Settings/GlobalState" ) );
     if( ps52plib ) {
         conf->Write( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
@@ -1258,7 +1202,6 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
         conf->Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
         conf->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
     }
-    #endif
     
     conf->SetPath( _T ( "/Settings/Others" ) );
     
@@ -1466,8 +1409,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     
     CHECK_INT( _T ( "ShowFPS" ), &g_bShowFPS );
     
-    //Read( _T ( "ActiveChartGroup" ), &g_GroupIndex );
-
     CHECK_INT( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision );
     
     CHECK_STR( _T( "TalkerIdText" ), g_TalkerIdText );
@@ -1504,15 +1445,12 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier );
     CHECK_INT( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector );
     
-#ifdef USE_S57
     CHECK_INT( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor );
     CHECK_INT( _T ( "CM93DetailZoomPosX" ), &g_detailslider_dialog_x );
     CHECK_INT( _T ( "CM93DetailZoomPosY" ), &g_detailslider_dialog_y );
     CHECK_INT( _T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider );
 
     CHECK_INT( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels );
-
-#endif
 
     CHECK_INT( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod );
 
@@ -1645,6 +1583,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T(  "AISShowScaled"), &g_bShowScaled );
     CHECK_INT( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     CHECK_INT( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
+    CHECK_INT( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
     CHECK_INT( _T ( "bShowAISName" ), &g_bShowAISName );
     CHECK_INT( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     CHECK_INT( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
@@ -1679,9 +1618,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_STR( _T ( "PresentationLibraryData" ), g_UserPresLibData)
     ///CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
     
-#ifdef USE_S57
     CHECK_STR( _T ( "SENCFileLocation" ), g_SENCPrefix)
-#endif
 
     
     CHECK_STR( _T ( "GPXIODir" ), g_gpx_path );           // Get the Directory name
@@ -1869,7 +1806,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     #define CHECK_FFN(s, t)         conf->Read( s , &dval); \
                                     if( fabs(dval - t) > 0.1) return false;
                                     
-#ifdef USE_S57
     if( ps52plib ){
     
         int read_int;
@@ -1939,10 +1875,6 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
             }
         }
     }
-
-#endif          // S57
-    
-    
     
     conf->SetPath( _T ( "/MMSIProperties" ) );
     int iPMax = conf->GetNumberOfEntries();

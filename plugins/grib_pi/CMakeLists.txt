@@ -19,13 +19,17 @@
 ## ***************************************************************************
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
+
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
     CMAKE_POLICY(SET CMP0043 NEW)
   endif (POLICY CMP0043)
 ENDIF (COMMAND cmake_policy)
+
+if (NOT CMAKE_MODULE_PATH)
+  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+endif ()
 
 PROJECT(grib_pi)
 
@@ -37,7 +41,7 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
@@ -51,8 +55,6 @@ IF(NOT WIN32 AND NOT APPLE)
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
-   ADD_DEFINITIONS( "-fexceptions -fvisibility=hidden" )
-   ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
 
@@ -66,6 +68,7 @@ ENDIF(MSVC)
 IF(QT_ANDROID)
     SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
     SET(BUILD_SHARED_LIBS "ON")
+    ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
 ELSE(QT_ANDROID)
 IF(NOT DEFINED wxWidgets_USE_FILE)
     SET(wxWidgets_USE_LIBS base core net xml html adv)
@@ -104,8 +107,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-            src/TexFont.h
-            src/TexFont.cpp
+            src/pi_TexFont.h
+            src/pi_TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/CustomGrid.h
@@ -117,15 +120,18 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-
-            ../../src/wxJSON/jsonval.cpp
-            ../../src/wxJSON/jsonreader.cpp
-            ../../src/wxJSON/jsonwriter.cpp
+            src/pi_ocpndc.cpp
+            src/pi_ocpndc.h
 )
 IF(WIN32)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
            SET(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
 ENDIF(WIN32)
+
+IF(QT_ANDROID)
+           SET(SRC_GRIB ${SRC_GRIB} src/pi_shaders.h)
+           SET(SRC_GRIB ${SRC_GRIB} src/pi_shaders.cpp)
+ENDIF(QT_ANDROID)
 
 IF(NOT UNIX)
     SET(SRC_BZIP
@@ -163,56 +169,19 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-    #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
-    
-    file(GLOB jasper_base_sources "src/jasper/base/*.c")
-    file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
-    file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
-    file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
-    file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
-    file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
-    
-    SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
-
-    ADD_DEFINITIONS(-DJASPER)
-    ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
-   
-    INCLUDE_DIRECTORIES(BEFORE "src/jasper/include")
-
-
-
-# On Android, PlugIns need a specific linkage set....
-IF (QT_ANDROID )
-  # These libraries are needed to create PlugIns on Android.
-
-  SET(OCPN_Core_LIBRARIES
-        # Presently, Android Plugins are built in the core tree, so the variables {wxQT_BASE}, etc.
-        # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
-
-        # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
-
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
-
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
-        )
-
-ENDIF(QT_ANDROID)
-
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+
+find_package(Jasper)
+USE_BUNDLED_LIB(USE_BUNDLED_JASPER jasper)
+if (JASPER_FOUND AND NOT USE_BUNDLED_JASPER)
+  message(STATUS "Using system jasper library...")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${JASPER_LIBRARIES})
+  target_include_directories(${PACKAGE_NAME} BEFORE PRIVATE  ${JASPER_INCLUDE_DIR})
+else ()
+  message(STATUS "Using bundled jasper library...")
+  add_subdirectory("libs/jasper")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE JASPER)
+endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     # FIXME: Need better handling after 5.0.0
@@ -222,31 +191,61 @@ endif ()
 
 IF(WIN32)
   IF(MSVC)
-    SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
-    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib")
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+	  PRIVATE "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib"
+          "GLU_static"
+      )
   ELSE(MSVC)
-    SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
     SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENGL_LIBRARIES}
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
+	${OPENGL_LIBRARIES}
 #      "-L${wxWidgets_ROOT_DIR}/lib -lwxzlib-3.1-i686-w64-mingw32")
-      "-L${wxWidgets_ROOT_DIR}/lib -lwxzlib-2.8")
+#      "-L${wxWidgets_ROOT_DIR}/lib -lwxzlib-2.8"
+       "-lz"
+    )
   ENDIF(MSVC)
 
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} LIB_BZIP ${OPENCPN_IMPORT_LIB})
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}
+      PRIVATE LIB_BZIP 
+  )
   ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
+IF (NOT QT_ANDROID )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES} )
+    target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
+ELSE (NOT QT_ANDROID )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lGLESv1_CM" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lGLESv2" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE  ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so )
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
+ENDIF(NOT QT_ANDROID)
 
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ocpn::wxjson )
 
 IF(NOT WIN32)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE "-lz" )
 ENDIF()
+
 IF(APPLE)
  FIND_PACKAGE(ZLIB REQUIRED)
- TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${ZLIB_LIBRARIES} )
+ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARIES} )
 ENDIF(APPLE)
+
+if  (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  include(OcpnFindGtk)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+  find_package(PANGO REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
+endif ()
 
 IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
     FIND_PACKAGE(BZip2 REQUIRED)
@@ -254,16 +253,35 @@ IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
     FIND_PACKAGE(ZLIB REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY})
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE
+        ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY}
+    )
 ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
+target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+
+IF( APPLE )
+    target_compile_options(${PACKAGE_NAME} PRIVATE
+        "-Wall" "-Wno-unused" "-fexceptions"
+        "-Wno-overloaded-virtual"
+        "-Wno-deprecated" "-Wno-deprecated-declarations"
+        "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+    )
+ENDIF(APPLE)
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang|GNU")
+  target_compile_options(${PACKAGE_NAME} PRIVATE "-Wno-unknown-pragmas")
+endif ()
+
+
 IF(APPLE)
-    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION
+            ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
 
-	IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-		INSTALL(DIRECTORY data DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
-	ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
-
+    IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
+       INSTALL(DIRECTORY data DESTINATION 
+           ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/SharedSupport/plugins/${PACKAGE_NAME})
+    ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 ENDIF(APPLE)
 
 IF(UNIX AND NOT APPLE)
@@ -283,7 +301,7 @@ ENDIF(UNIX AND NOT APPLE)
 IF(WIN32)
 	INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
 
-	SET(INSTALL_DIRECTORY "plugins\\\\${PACKAGE_NAME}")
+	SET(INSTALL_DIRECTORY "plugins/${PACKAGE_NAME}")
 
     IF(EXISTS ${PROJECT_SOURCE_DIR}/data)
 		INSTALL(DIRECTORY data DESTINATION "${INSTALL_DIRECTORY}")

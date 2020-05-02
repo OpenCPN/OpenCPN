@@ -30,6 +30,7 @@
 #include <math.h>
 
 #include "LLRegion.h"
+#include "logger.h"
 
 static inline double cross(const contour_pt &v1, const contour_pt &v2)
 {
@@ -307,8 +308,7 @@ static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
 {
     const GLubyte *estring;
     estring = gluErrorString(errorCode);
-    fprintf (stderr, "Tessellation Error: %s\n", estring);
-    wxLogMessage( _T("Tessellation Error: %s"), (char *)estring );
+    LOG_INFO ("Tessellation Error: %s\n", estring);
     //exit (0);
 }
 
@@ -607,7 +607,6 @@ void LLRegion::Optimize()
 #endif
 
         // eliminiate parallel segments
-        bool end = false;
         poly_contour::iterator j = i->begin();
         int s = i->size();
         for(int c=0; c<s; c++) {

@@ -188,6 +188,14 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
         }//cape
 
+        //create and polulate the Composite Reflectivity data row
+        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND) {
+            nrows++;
+            AddDataRow( nrows, i, _("C. Reflect."), datarow );
+            m_pGribTable->SetCellValue(nrows, i, GetCompRefl(RecordArray));
+            m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+        }//composite Reflectivity
+
         /*create and populate the current data rows
             1)create two lines for direstion and speed
             2) these two or three lines will be part of the same block*/
@@ -494,6 +502,22 @@ wxString GRIBTable::GetCAPE(GribRecord **recordarray)
             cape = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
             skn.Printf( wxString::Format( _T("%5.0f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
             m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CAPE, cape);
+        }
+    }
+    return skn;
+}
+
+wxString GRIBTable::GetCompRefl(GribRecord **recordarray)
+{
+    wxString skn(wxEmptyString);
+    if( recordarray[Idx_COMP_REFL] ) {
+        double refl = recordarray[Idx_COMP_REFL]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+
+        if( refl != GRIB_NOTDEF ) {
+            refl = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::COMP_REFL, refl);
+            skn.Printf( wxString::Format( _T("%5.0f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::COMP_REFL), refl ) );
+            m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::COMP_REFL, refl);
         }
     }
     return skn;

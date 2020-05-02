@@ -71,7 +71,7 @@ struct GribOverlaySettings
     wxString m_iCtrlBarCtrlVisible[2];
 
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
-                       AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, GEO_ALTITUDE, REL_HUMIDITY, SETTINGS_COUNT};
+                       AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, COMP_REFL, GEO_ALTITUDE, REL_HUMIDITY, SETTINGS_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH, BFS};
     enum Units1 {MILLIBARS, MMHG, INHG};
     enum Units2 {METERS, FEET};
@@ -79,6 +79,7 @@ struct GribOverlaySettings
     enum Units4 {MILLIMETERS, INCHES};
     enum Units5 {PERCENTAGE};
     enum Units6 {JPKG};
+    enum Units7 {DBZ};
 
     struct OverlayDataSettings {
         int m_Units;

@@ -50,7 +50,8 @@ typedef enum
     TCP = 0,
     UDP = 1,
     GPSD = 2,
-    PROTO_UNDEFINED = 3
+    SIGNALK = 3,
+    PROTO_UNDEFINED = 4
 } NetworkProtocol;
 
 typedef enum
@@ -140,6 +141,7 @@ public:
     bool            Garmin;
     bool            GarminUpload;
     bool            FurunoGP3X;
+    bool            AutoSKDiscover;
     dsPortType      IOSelect;
     ListType        InputSentenceListType;
     wxArrayString   InputSentenceList;
@@ -149,17 +151,17 @@ public:
     bool            bEnabled;
     wxString        UserComment;
     
-    wxString        Serialize();
+    wxString        Serialize() const;
     void            Deserialize(const wxString &configStr);
 
-    wxString GetSourceTypeStr();
-    wxString GetAddressStr();
-    wxString GetParametersStr();
-    wxString GetIOTypeValueStr();
-    wxString GetFiltersStr();
-    wxString GetDSPort();
-    wxString GetLastDSPort();
-    wxString GetPortStr(){ return Port; }
+    wxString GetSourceTypeStr() const;
+    wxString GetAddressStr() const;
+    wxString GetParametersStr() const;
+    wxString GetIOTypeValueStr() const;
+    wxString GetFiltersStr() const;
+    wxString GetDSPort() const;
+    wxString GetLastDSPort() const;
+    wxString GetPortStr() const { return Port; }
     void SetPortStr( wxString str ){ Port = str; }
     
     
@@ -167,7 +169,7 @@ public:
     bool            b_IsSetup;
     ConnectionParamsPanel *m_optionsPanel;
 private:
-    wxString FilterTypeToStr(ListType type, FilterDirection dir);
+    wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
     
 };
 

@@ -48,7 +48,3 @@ IF(OCPN_BUILD_SAMPLE)
     ENDFOREACH(PLUGIN)
 ENDIF(OCPN_BUILD_SAMPLE)
 
-# Allow chaining of any PlugIn package dependencies upstream to the global package
-# PlugIns may then individually, as required, include the following:
-# SET(PACKAGE_DEPS "${PACKAGE_DEPS}, dep1, dep2" PARENT_SCOPE) 
-SET(PACKAGE_DEPS ${PACKAGE_DEPS} PARENT_SCOPE)

@@ -32,8 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GribSettingsDialog.h"
 #include "GribOverlayFactory.h"
 
-#ifdef __WXGTK__
-#include <gdk/gdk.h>
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
 #endif
 
 //static void GenerateSpline(int n, wxPoint points[]);
@@ -409,21 +409,23 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
           dc->SetPen(ppISO);
       } else { /* opengl */
 #ifdef ocpnUSE_GL
-          if(m_pixelMM > 0.2){        // pixel size large enough to render well
-          //      Enable anti-aliased lines, at best quality
-            glEnable( GL_LINE_SMOOTH );
-            glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-            glLineWidth( 2 );
+//#ifndef USE_ANDROID_GLES2
+//           if(m_pixelMM > 0.2){        // pixel size large enough to render well
+//           //      Enable anti-aliased lines, at best quality
+//             glEnable( GL_LINE_SMOOTH );
+//             glEnable( GL_BLEND );
+//             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+//             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+//             glLineWidth( 2 );
+//           }
+//           else{
+//             glLineWidth( 0.4/m_pixelMM);        //  set a target line width by MM
+//           }
+//#else          
+          if(pof->m_oDC){
+            wxPen ppISO ( isoLineColor, 2 );
+            pof->m_oDC->SetPen(ppISO);
           }
-          else{
-            glLineWidth( 0.4/m_pixelMM);        //  set a target line width by MM
-          }
-          
-          glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
-                     255/*isoLineColor.Alpha()*/);
-          glBegin( GL_LINES );
 #endif          
       }
 
@@ -466,132 +468,21 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
                 dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
         } else { /* opengl */
 #ifdef ocpnUSE_GL
-            glVertex2d(ab.x, ab.y);
-            glVertex2d(cd.x, cd.y);
+
+            if(pof->m_oDC){
+                pof->m_oDC->DrawLine(ab.x, ab.y, cd.x, cd.y);
+            }
+
 #endif                
-        }
-    }
-
-#if 0
-      int text_sx, text_sy;
-      dc.GetTextExtent(_T("10000"), &text_sx, &text_sy);
-//      double m = text_sy / 2;
-      int label_size = text_sx;
-      int label_space = 400;
-//      double coef = .01;
-      int len = label_space/4;
-
-      //    Allocate an array big enough
-      wxPoint *pPoints = new wxPoint[nsegs+1];
-
-      MySegListList::Node *listnode;
-      listnode = m_SegListList.GetFirst();
-      while(listnode)
-      {
-            MySegList *listsort = listnode->GetData();
-
-            //    Fill in the array
-            MySegList::Node *node;
-            Segment *seg;
-
-            node = listsort->GetFirst();
-            if(node)
-            {
-                  seg = node->GetData();
-//                  wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
-//                  wxPoint ab(0,0);
-				  wxPoint ab;
-				  GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-                  pPoints[0] = ab;
-            }
-            int ip=1;
-
-            while (node)
-            {
-                  seg = node->GetData();
-//                  wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
-//                  wxPoint cd(0,0);
-				  wxPoint cd;
-				  GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
-                  pPoints[ip++] = cd;
-
-                  node=node->GetNext();
-            }
-
-            int np = listsort->GetCount() + 1;
-
-
-            if(np > 1)
-            {
-
-      // Test code
-      //          dc.DrawLines(np, pPoints);
-
-                  GenerateSpline(np, pPoints);
-
-      //    Test Code
-      //            dc.DrawLines(&ocpn_wx_spline_point_list, 0, 0 );
-
-                  bool bDrawing = true;
-                  wxPoint lstart;
-
-                  wxList::compatibility_iterator snode = ocpn_wx_spline_point_list.GetFirst();
-                  wxPoint *point0 = (wxPoint *)snode->GetData();
-                  snode=snode->GetNext();
-
-                  while (snode)
-                  {
-                        wxPoint *point = (wxPoint *)snode->GetData();
-
-                        ClipResult res = cohen_sutherland_line_clip_i ( &point0->x, &point0->y, &point->x, &point->y,
-                                    0, vp->pix_width, 0, vp->pix_height );
-                        if ( res != Invisible )
-                        {
-                              int dl = (int)sqrt(
-                                            (double)((point0->x - point->x) * (point0->x - point->x))
-                                          +(double)((point0->y - point->y) * (point0->y - point->y)));
-                              if(bDrawing)
-                              {
-                                    len += dl;
-                                    if(len > label_space)
-                                    {
-                                          bDrawing = false;
-                                          len = 0;
-                                          lstart = *point;
                                     }
                               }
-                              else
-                              {
-                                    len += dl;
-                                    if(len > label_size)
-                                    {
-                                          bDrawing = true;
-                                          len = 0;
-                                    }
-                              }
-                        }
-
-                        *point0 = *point;
-                        snode=snode->GetNext();
-                  }
-
-                  ClearSplineList();
-            }
-
-            listnode = listnode->GetNext();             // Next continuous chain
-
-      }
-
-      delete[] pPoints;
-
-#endif
 
 #if wxUSE_GRAPHICS_CONTEXT
       delete pgc;
 #endif
 
-      if(!dc) /* opengl */
-          glEnd();
+//      if(!dc) /* opengl */
+//          glEnd();
 }
 
 //---------------------------------------------------------------
@@ -688,6 +579,18 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                 r.Inflate(w);
                 if (!prev.Intersects(r)) 
                 {
+#if 1
+                    prev = r;
+                    if(pof->m_oDC){
+
+                        //m_oDC->SetFont( *mfont );
+                        pof->m_oDC->SetPen( *wxBLACK_PEN );
+                        pof->m_oDC->SetBrush( color );
+                        pof->m_oDC->DrawRectangle( x, y, w, h );
+                        pof->m_oDC->DrawText( label, xd, yd );
+                    }
+
+#else                    
                       prev = r;
                       glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 
@@ -711,6 +614,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                       glEnable(GL_TEXTURE_2D);
                       texfont.RenderString(label, xd, yd);
                       glDisable(GL_TEXTURE_2D);
+#endif                      
                 }
             }
         }

@@ -37,6 +37,8 @@
 #include "wx/msw/private.h"
 #endif
 
+#include "config.h"
+
 #include "ocpn_types.h"
 #include "viewport.h"
 #include "nmea0183.h"
@@ -44,14 +46,12 @@
 #include "s52s57.h"
 #include "SencManager.h"
 
-#ifdef USE_S57
-#include "mygdal/cpl_error.h"
+#include "gdal/cpl_error.h"
+#include "SignalKEventHandler.h"
+
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
-
-
-#endif
 
 wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 wxFont GetOCPNGUIScaledFont( wxString item );
@@ -202,6 +202,7 @@ enum
     ID_CMD_SELECT_CHART_TYPE,
     ID_CMD_SELECT_CHART_FAMILY,
     ID_CMD_INVALIDATE,
+    ID_CMD_CLOSE_ALL_DIALOGS,
 
     ID_MENU_SHOW_NAVOBJECTS,
 
@@ -221,6 +222,8 @@ enum
 #define ID_CMD_TRIGGER_RESIZE 302
 #define ID_CMD_SETVP 303
 #define ID_CMD_POST_JSON_TO_PLUGINS 304
+#define ID_CMD_SET_LOCALE 305
+#define ID_CMD_SOUND_FINISHED 306
 
 #define N_STATUS_BAR_FIELDS_MAX     20
 
@@ -258,8 +261,11 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
+class OCPN_SignalKEvent;
 class DataStream;
 class AIS_Target_Data;
+
+bool isSingleChart(ChartBase *chart);
 
 class  OCPNMessageDialog: public wxDialog
 {
@@ -337,6 +343,7 @@ class MyApp: public wxApp
 
 class MyFrame: public wxFrame
 {
+    friend class SignalKEventHandler;
   public:
     MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size, long style);
 
@@ -355,6 +362,8 @@ class MyFrame: public wxFrame
     bool DoChartUpdate(void);
     void OnEvtTHREADMSG(OCPN_ThreadMessageEvent& event);
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
+    void OnEvtOCPN_SignalK(OCPN_SignalKEvent &event);
+    void OnEvtOCPN_SIGNALK_Test(OCPN_SignalKEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
     void OnRecaptureTimer(wxTimerEvent& event);
@@ -407,6 +416,7 @@ class MyFrame: public wxFrame
 //     void SelectdbChart(int dbindex);
 //     void SelectQuiltRefChart(int selected_index);
 //     void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
+    void CenterView(ChartCanvas *cc, const LLBBox& bbox);
 
     void JumpToPosition( ChartCanvas *cc, double lat, double lon, double scale );
     
@@ -546,6 +556,16 @@ class MyFrame: public wxFrame
     static void RebuildChartDatabase();
     void PositionIENCToolbar();
 
+    bool ParsePosition(const LATLONG &Position);
+    void setSatelitesInView(int no);
+    void setPosition(double lat, double lon);
+    void setSpeedOverGround(double sog);
+    void setCourseOverGround(double cog);
+    void setHeadingTrue(double heading);
+    void setHeadingMagnetic(double heading);
+    void setMagneticVariation(double var);
+
+
   private:
 
     void CheckToolbarPosition();
@@ -557,7 +577,7 @@ class MyFrame: public wxFrame
     void FilterCogSog(void);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
+    void PostProcessNMEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
@@ -574,7 +594,7 @@ class MyFrame: public wxFrame
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads
 
     wxDateTime       m_MMEAeventTime;
-    unsigned long    m_ulLastNEMATicktime;
+    unsigned long    m_ulLastNMEATicktime;
 
     wxMutex          m_mutexNMEAEvent;         // Mutex to handle static data from NMEA threads
 
@@ -612,6 +632,8 @@ class MyFrame: public wxFrame
     int                 m_nMasterToolCountShown;
     wxTimer             m_recaptureTimer;
     
+    SignalKEventHandler m_signalKHandler;
+
     DECLARE_EVENT_TABLE()
 };
 

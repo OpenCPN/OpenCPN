@@ -34,15 +34,18 @@
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
+#include "pi_ocpndc.h"
+
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#include "pi_shaders.h"
+#endif
 
 #include "GribUIDialog.h"
 #include "GribOverlayFactory.h"
 
-#ifdef __WXGTK__
-#include <gdk/gdk.h>
-#endif
-
 extern int m_Altitude;
+extern bool g_bpause;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -123,6 +126,7 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 static GLuint texture_format = 0;
 #endif
 
+#if 0
 static GLboolean QueryExtension( const char *extName )
 {
     /*
@@ -163,6 +167,8 @@ static GLboolean QueryExtension( const char *extName )
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
 
+#endif 
+
 void LineBuffer::pushLine( float x0, float y0, float x1, float y1 )
 {
     buffer.push_back(x0);
@@ -199,6 +205,22 @@ void LineBuffer::Finalize()
         lines[i++] = *it;
 };
 
+int  adjustSpacing( int dialogSetSpacing )
+{
+#ifdef __OCPN__ANDROID__
+    // Treat the slider control as a percentage value.
+    // Maximum space (100%) is established as one-half of the smaller of screen dismensions x and y.
+    wxSize sz = GetOCPNCanvasWindow()->GetClientSize();
+    int sizeMin = wxMin(sz.x, sz.y);
+    int space = ((double)dialogSetSpacing) * (sizeMin / 2) / 100;
+    //qDebug() << "Space: " << dialogSetSpacing << sizeMin << space;
+    return space;
+
+#else
+    return dialogSetSpacing;
+#endif
+}
+
 
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
@@ -218,7 +240,12 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
 #endif    
 
     if(wxGetDisplaySize().x > 0){
-         m_pixelMM = PlugInGetDisplaySizeMM() / wxGetDisplaySize().x;
+//#ifdef __WXGTK__
+//        GdkScreen *screen = gdk_screen_get_default();
+//        m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) / wxGetDisplaySize().x;
+//#else
+        m_pixelMM = (double)PlugInGetDisplaySizeMM() / wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y);
+//#endif
          m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
     }
     else
@@ -227,6 +254,8 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
+    m_oDC = NULL;
+    
     InitColorsTable();
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_pOverlay[i] = NULL;
@@ -251,6 +280,13 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     int pointerLength = windArrowSize / 3;
 
     // the barbed arrows
+    for(i=1; i<14; i++) {
+        LineBuffer &arrow = m_WindArrowCache[i];
+
+        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
+        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
+        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
+    }
 
     int featherPosition = windArrowSize / 6;
     
@@ -306,14 +342,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition, lgrande );
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition*3, lgrande );
 
-    for(i=1; i<14; i++) {
-        LineBuffer &arrow = m_WindArrowCache[i];
-
-        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
-        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
-        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
-    }
-
     for(i=0; i<14; i++)
         m_WindArrowCache[i].Finalize();
 
@@ -356,6 +384,10 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
     ClearCachedData();
 
     ClearParticles();
+    
+    if(m_oDC)
+        delete m_oDC;
+    
 }
 
 void GRIBOverlayFactory::Reset()
@@ -381,14 +413,44 @@ void GRIBOverlayFactory::ClearCachedData( void )
     }
 }
 
+#ifdef __OCPN__ANDROID__
+#include "pi_shaders.h"
+#endif
+
 bool GRIBOverlayFactory::RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp )
 {
+    if(g_bpause)
+        return false;
+    
+    //qDebug() << "RenderGLGribOverlay" << sw.GetTime();
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(NULL);
+    
     m_pdc = NULL;                  // inform lower layers that this is OpenGL render
-    return DoRenderGribOverlay( vp );
+    
+   
+    bool rv = DoRenderGribOverlay( vp );
+
+    //qDebug() << "RenderGLGribOverlayDone" << sw.GetTime();
+    
+    
+    return rv;
 }
 
 bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
 {
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(&dc);
+    
+    m_pdc = NULL;
+#if 0    
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
     pmdc = wxDynamicCast(&dc, wxMemoryDC);
@@ -396,7 +458,10 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     m_gdc = pgc;
 #endif
     m_pdc = &dc;
-    return DoRenderGribOverlay( vp );
+#endif    
+    bool rv = DoRenderGribOverlay( vp );
+    
+    return rv;
 }
 
 void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
@@ -424,6 +489,8 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
         if( !m_Altitude ) { idx = Idx_SEA_TEMP; } break;
     case GribOverlaySettings::CAPE:
         if( !m_Altitude ) { idx = Idx_CAPE; } break;
+    case GribOverlaySettings::COMP_REFL:
+        if( !m_Altitude ) { idx = Idx_COMP_REFL; } break;
     }
 }
 
@@ -537,10 +604,18 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in, 
 
     /* for some reason r g b values are inverted, but not alpha,
        this fixes it, but I would like to find the actual cause */
+#ifndef __OCPN__ANDROID__
     data[0] = 255-r;
     data[1] = 255-g;
     data[2] = 255-b;
     data[3] = a;
+#else
+    data[0] = r;
+    data[1] = g;
+    data[2] = b;
+    data[3] = a;
+#endif
+    
 }
 
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR)
@@ -549,7 +624,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
 
     // create the texture to the size of the grib data plus a transparent border
     int tw, th, samples = 1;
-    double delta;
+    double delta = 0;;
     if (pGR->getNi() > 1024 || pGR->getNj() > 1024 ) {
         // downsample
         samples = 0;
@@ -577,6 +652,46 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     if( tw > 1024 || th > 1024 )
         return false;
 
+    pGO->m_iTexDataDim[0] = tw;
+    pGO->m_iTexDataDim[1] = th;
+
+#ifdef USE_ANDROID_GLES2 
+    int width_pot = tw;
+    int height_pot = th;
+    
+    // If required by platform, grow the texture to next larger NPOT size.
+    //  Retain actual data size in class storage, for later render scaling
+    //if( b_pot )
+    {
+        int xp = tw;
+        if(((xp != 0) && !(xp & (xp - 1))))     // detect already exact POT
+            width_pot = xp;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            width_pot = 1 << a;
+        }
+            
+        xp = th;
+        if(((xp != 0) && !(xp & (xp - 1))))
+            height_pot = xp;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            height_pot = 1 << a;
+        }
+    }
+
+    tw = width_pot;
+    th = height_pot;
+#endif    
+    
     unsigned char *data = new unsigned char[tw*th*4];
     if (samples == 0) {
         for( int j = 0; j < pGR->getNj(); j++ ) {
@@ -694,6 +809,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glTexParameteri( texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
+#ifndef USE_ANDROID_GLES2    
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -705,6 +821,10 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
+#else
+    glTexImage2D(texture_format, 0, GL_RGBA, tw, th,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
 
     delete [] data;
 
@@ -1080,7 +1200,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     if( m_Settings.Settings[settings].m_bBarbArrFixSpac ) {
 
         //set spacing between arrows
-        int space = m_Settings.Settings[settings].m_iBarbArrSpacing;
+        int space = adjustSpacing( m_Settings.Settings[settings].m_iBarbArrSpacing);
 
         PlugIn_ViewPort uvp = *vp;
         uvp.rotation = uvp.skew = 0;
@@ -1370,7 +1490,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     if( m_Settings.Settings[settings].m_bDirArrFixSpac ) {						//fixed spacing
 
         //Set spacing between arrows
-        int space = m_Settings.Settings[settings].m_iDirArrSpacing;
+        int space = adjustSpacing( m_Settings.Settings[settings].m_iDirArrSpacing );
 
         for( int i = 0; i < m_ParentSize.GetWidth(); i+= (space + arrowSize) ) {
             for( int j = 0; j < m_ParentSize.GetHeight(); j+= (space + arrowSize) ) {
@@ -1539,17 +1659,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         {
 #ifdef ocpnUSE_GL
 
-            if(!texture_format) {
-                // prefer npot over texture rectangles
-                if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) ||
-                    QueryExtension( "GL_OES_texture_npot" ) )
-                    texture_format = GL_TEXTURE_2D;
-                else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
-                    texture_format = GL_TEXTURE_RECTANGLE_ARB;
-            }
-#ifdef __OCPN__ANDROID__
             texture_format = GL_TEXTURE_2D;
-#endif
 
             if(!texture_format) // it's very unlikely to not have any of the above extensions
                 m_Message_Hiden.Append(_("Overlays not supported by this graphics hardware (Disable OpenGL)"));
@@ -1632,7 +1742,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 	if( m_Settings.Settings[settings].m_bNumFixSpac ) {						//fixed spacing
 
 		//Set spacing between numbers
-		int space = m_Settings.Settings[settings].m_iNumbersSpacing;
+                int space = adjustSpacing( m_Settings.Settings[settings].m_iNumbersSpacing);
 
 		PlugIn_ViewPort uvp = *vp;
 		uvp.rotation = uvp.skew = 0;
@@ -1733,6 +1843,8 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
                 m_pdc->DrawBitmap(label, p.x, p.y, true);
     } else {
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
+        
 		glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glColor4ub(back_color.Red(), back_color.Green(),
@@ -1768,6 +1880,38 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
         glEnable(GL_TEXTURE_2D);
         m_TexFontNumbers.RenderString( label, p.x, p.y );
         glDisable(GL_TEXTURE_2D);
+#else
+        
+        #ifdef __WXQT__
+        wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+        #else
+        wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        #endif
+        
+        wxString label = getLabelString(value, settings);
+
+        m_oDC->SetFont(font);
+        int w, h;
+        m_oDC->GetTextExtent(label, &w, &h);
+        
+        int label_offsetx = 5, label_offsety = 1;
+        int x = p.x - label_offsetx, y = p.y - label_offsety;
+        w += 2*label_offsetx, h += 2*label_offsety;
+        
+        
+        m_oDC->SetBrush( wxBrush( back_color ) );
+        m_oDC->DrawRoundedRectangle( x, y, w, h, 0);
+            
+            /* draw bounding rectangle */
+        m_oDC->SetPen( wxPen( wxColour(0,0,0), 1 ) );
+        m_oDC->DrawLine(x,   y,   x+w, y);
+        m_oDC->DrawLine(x+w, y,   x+w, y+h);
+        m_oDC->DrawLine(x+w, y+h, x,   y+h);
+        m_oDC->DrawLine(x  , y+h, x,   y);
+        
+        m_oDC->DrawText(label, p.x, p.y);
+        
+#endif         
 #endif
 	}
 }
@@ -2028,12 +2172,16 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     int cnt=0;
     unsigned char *&ca = m_ParticleMap->color_array;
     float *&va = m_ParticleMap->vertex_array;
+    float *&caf = m_ParticleMap->color_float_array;
 
     if(m_ParticleMap->array_size < particles.size() && !m_pdc) {
         m_ParticleMap->array_size = 2*particles.size();
         delete [] ca;
         delete [] va;
+        delete [] caf;
+
         ca = new unsigned char[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 8];
+        caf = new float[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 8];
         va = new float[m_ParticleMap->array_size * MAX_PARTICLE_HISTORY * 4];
     }
 
@@ -2048,6 +2196,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         bool lip_valid = false;
         float *lp = NULL, lip[2];
         wxUint8 lc[4];
+        float lcf[4];
 
         for(;;) {
             float (&dp)[2] = it->m_History[i].m_Pos;
@@ -2056,6 +2205,11 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 wxUint8 (&ci)[3] = it->m_History[i].m_Color;
 
                 wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240-alpha/2), alpha};
+                float cf[4];
+                cf[0] = ci[0] / 256.;
+                cf[1] = ci[1] / 256.;
+                cf[2] = ((unsigned char)(ci[2] + 240-alpha/2)) / 256.;
+                cf[3] = alpha / 256.;
 
                 if(lp && fabsf(lp[0]-sp[0]) < vp->pix_width) {
                     float sip[2];
@@ -2072,9 +2226,11 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                             m_pdc->DrawLine( sip[0], sip[1], lip[0], lip[1] );
                         } else {
                             memcpy(ca + 4*cnt, c, sizeof lc);
+                            memcpy(caf + 4*cnt, cf, sizeof lcf);
                             memcpy(va + 2*cnt, lip, sizeof sp);
                             cnt++;
                             memcpy(ca + 4*cnt, lc, sizeof c);
+                            memcpy(caf + 4*cnt, lcf, sizeof cf);
                             memcpy(va + 2*cnt, sip, sizeof sp);
                             cnt++;
                         }
@@ -2085,6 +2241,8 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 }
 
                 memcpy(lc, c, sizeof lc);
+                memcpy(lcf, cf, sizeof lcf);
+
                 lp = sp;
             }
 
@@ -2102,15 +2260,9 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     }
 
     if( !m_pdc ) {
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-
-        glColorPointer(4, GL_UNSIGNED_BYTE, 4*sizeof(unsigned char), ca);
-        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), va);
-        glDrawArrays(GL_LINES, 0, cnt);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_COLOR_ARRAY);
+        if(m_oDC){
+            m_oDC->DrawGLLineArray(cnt, va, caf, ca, false);
+        }
     }
 
     //  On some platforms, especially slow ones, the GPU will lag behind the CPU.
@@ -2172,6 +2324,24 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
                       wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
     } else {
+        
+        if(m_oDC){
+            m_oDC->SetFont( *mfont );
+            m_oDC->SetPen( *wxTRANSPARENT_PEN);
+
+            m_oDC->SetBrush( wxColour(243, 229, 47 ) );
+            int w, h;
+            m_oDC->GetTextExtent( msg, &w, &h );
+            h += 2;
+            int yp = y - ( 2 * GetChartbarHeight() + h );
+
+            int label_offset = 10;
+            int wdraw = w + ( label_offset * 2 );
+            m_oDC->DrawRectangle( 0, yp, wdraw, h );
+            m_oDC->DrawText( msg, label_offset, yp );
+
+        }
+/*        
         m_TexFontMessage.Build(*mfont);
         int w, h;
         m_TexFontMessage.GetTextExtent( msg, &w, &h);
@@ -2194,6 +2364,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         glEnable(GL_TEXTURE_2D);
         m_TexFontMessage.RenderString( msg, 0, yp);
         glDisable(GL_TEXTURE_2D);
+*/        
     }
 }
 
@@ -2208,8 +2379,10 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-        glLineWidth(arrowWidth);
+        if(m_oDC){
+            wxPen pen( arrowColor, arrowWidth );
+            m_oDC->SetPen( pen );
+        }
     }
 
     drawLineBuffer(m_DoubleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2226,8 +2399,10 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
 			m_gdc->SetPen(pen);
 #endif
     } else {
-        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
-        glLineWidth(arrowWidth);
+        if(m_oDC){
+            wxPen pen( arrowColor, arrowWidth );
+            m_oDC->SetPen( pen );
+        }
     }
 
     drawLineBuffer(m_SingleArrow[arrowSizeIdx], x, y, ang, scale);
@@ -2239,6 +2414,8 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
     if(m_Settings.Settings[settings].m_iBarbedColour == 1)
         arrowColor = GetGraphicColor(settings, vkn);
 
+    float penWidth = .4 / m_pixelMM;
+    
     if( m_pdc ) {
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
@@ -2250,8 +2427,14 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
 #endif
     }
 #ifdef ocpnUSE_GL
-    else
-        glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+    else{
+        if(m_oDC){
+            wxPen pen( arrowColor, penWidth );
+            m_oDC->SetPen( pen );
+        }
+//         else
+//             glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
+    }
 #endif
 
     int cacheidx;
@@ -2304,20 +2487,149 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
         }
     } else {                       // OpenGL mode
 #ifdef ocpnUSE_GL
-        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), vertexes);
-        glDrawArrays(GL_LINES, 0, 2*count);
+    if(m_oDC){
+        for(int i=0; i < buffer.count; i++) {
+            float *l = vertexes + 4*i;
+            if( m_hiDefGraphics )
+                m_oDC->StrokeLine( l[0], l[1], l[2], l[3] );
+            else
+                m_oDC->DrawLine( l[0], l[1], l[2], l[3] );
+        }
+    }
+
+//        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), vertexes);
+//        glDrawArrays(GL_LINES, 0, 2*count);
 #endif
     }
 }
 
 #ifdef ocpnUSE_GL
-void GRIBOverlayFactory::texcoord(double u, double v, GribRecord *pGR)
-{
+//      Render a texture
+//      x/y : origin in screen pixels of UPPER RIGHT corner of render rectangle
+//      width/height : in screen pixels
+void GRIBOverlayFactory::DrawSingleGLTexture( GribOverlay *pGO, GribRecord *pGR, double uv[], double x, double y, double width, double height ){
+
+#ifdef __OCPN__ANDROID__
+
+    glEnable(texture_format);
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+    
+    float coords[8];
+
+    coords[0] = -width; coords[1] = -height;
+    coords[2] = 0; coords[3] = -height;
+    coords[4] = 0; coords[5] = 0;
+    coords[6] = -width; coords[7] = 0;
+    
+    extern int pi_texture_2D_shader_program;
+    glUseProgram( pi_texture_2D_shader_program );
+    
+    // Get pointers to the attributes in the program.
+    GLint mPosAttrib = glGetAttribLocation( pi_texture_2D_shader_program, "aPos" );
+    GLint mUvAttrib  = glGetAttribLocation( pi_texture_2D_shader_program, "aUV" );
+    
+    // Set up the texture sampler to texture unit 0
+    GLint texUni = glGetUniformLocation( pi_texture_2D_shader_program, "uTex" );
+    glUniform1i( texUni, 0 );
+    
+    // Disable VBO's (vertex buffer objects) for attributes.
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    
+    // Set the attribute mPosAttrib with the vertices in the screen coordinates...
+    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
+    // ... and enable it.
+    glEnableVertexAttribArray( mPosAttrib );
+    
+    // Set the attribute mUvAttrib with the vertices in the GL coordinates...
+    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
+    // ... and enable it.
+    glEnableVertexAttribArray( mUvAttrib );
+    
+    // Rotate 
+    float angle = 0;
+    mat4x4 I, Q;
+    mat4x4_identity(I);
+    mat4x4_rotate_Z(Q, I, angle);
+    
+    // Translate
+     Q[3][0] = x;
+     Q[3][1] = y;
+    
+    
+    GLint matloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
+    
+    // Select the active texture unit.
+    glActiveTexture( GL_TEXTURE0 );
+    
+    // Perform the actual drawing.
+    
+    // For some reason, glDrawElements is busted on Android
+    // So we do this a hard ugly way, drawing two triangles...
+    #if 0
+    GLushort indices1[] = {0,1,3,2}; 
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
+    #else
+    
+    float co1[8];
+    co1[0] = coords[0];
+    co1[1] = coords[1];
+    co1[2] = coords[2];
+    co1[3] = coords[3];
+    co1[4] = coords[6];
+    co1[5] = coords[7];
+    co1[6] = coords[4];
+    co1[7] = coords[5];
+    
+    float tco1[8];
+    tco1[0] = uv[0];
+    tco1[1] = uv[1];
+    tco1[2] = uv[2];
+    tco1[3] = uv[3];
+    tco1[4] = uv[6];
+    tco1[5] = uv[7];
+    tco1[6] = uv[4];
+    tco1[7] = uv[5];
+    
+    glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
+    glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    glDisable(GL_BLEND);
+    glDisable(texture_format);
+    
+    // Restore identity matrix
+    mat4x4_identity(I);
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
+    
+    #endif
+    
+#else
+
+    glColor4f(1, 1, 1, 1);
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
     if(texture_format != GL_TEXTURE_2D) {
-        u *= pGR->getNi();
-        v *= pGR->getNj();
+        for(int i = 0 ; i < 4 ; i++){
+            uv[i*2] *= pGR->getNi();
+            uv[(i*2)+1] *= pGR->getNj();
+        }
     }
-    glTexCoord2d(u, v);
+
+    glBegin(GL_QUADS);
+        glTexCoord2d(uv[0], uv[1]), glVertex2f(x-width, y-height);
+        glTexCoord2d(uv[2], uv[3]), glVertex2f(x   , y-height);
+        glTexCoord2d(uv[4], uv[5]), glVertex2f(x   , y);
+        glTexCoord2d(uv[6], uv[7]), glVertex2f(x-width, y);
+    glEnd();
+
+#endif    
 }
 
 void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp )
@@ -2327,10 +2639,6 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glColor4f(1, 1, 1, 1);
-
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
 
     double lat_min = pGR->getLatMin(), lon_min = pGR->getLonMin();
 
@@ -2361,7 +2669,6 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
         ysquares = wxMax(ysquares, 2);
 //    }
 
-    glBegin(GL_QUADS);
     double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
     int i = 0, j = 0;
     typedef double mx[2][2];
@@ -2370,6 +2677,9 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     int tw = pGO->m_iTextureDim[0], th = pGO->m_iTextureDim[1];
     double latstep = fabs(pGR->getDj()) / (th-2-1) * (pGR->getNj()-1);
     double lonstep = pGR->getDi() / (tw-2*!repeat-1) * (pGR->getNi()-1);
+    
+    double potNormX = (double)pGO->m_iTexDataDim[0] / tw;
+    double potNormY = (double)pGO->m_iTexDataDim[1] / th;
     
     double clon = (lon_min + pGR->getLonMax())/2;
     
@@ -2387,8 +2697,8 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                     lon -= 360;
             }
 
-            lva[i][j][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
-            lva[i][j][1] = ((lat - lat_min) / latstep          + 1.5) / th;
+            lva[i][j][0] = (((lon - lon_min) / lonstep - repeat + 1.5) / tw) * potNormX;
+            lva[i][j][1] = (((lat - lat_min) / latstep          + 1.5) / th) * potNormY;
 
             if(pGR->getDj() < 0)
                 lva[i][j][1] = 1 - lva[i][j][1];
@@ -2410,10 +2720,15 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                      (u0 <= 1 || u1 <= 1 || u2 <= 1 || u3 <= 1))) &&
                    (v0 >= 0 || v1 >= 0 || v2 >= 0 || v3 >= 0) &&
                    (v0 <= 1 || v1 <= 1 || v2 <= 1 || v3 <= 1)) {
-                    texcoord(u0, v0, pGR), glVertex2f(x-xs, y-ys);
-                    texcoord(u1, v1, pGR), glVertex2f(x   , y-ys);
-                    texcoord(u2, v2, pGR), glVertex2f(x   , y);
-                    texcoord(u3, v3, pGR), glVertex2f(x-xs, y);
+                    
+                       double uv[8];
+                       uv[0] = u0; uv[1] = v0;
+                       uv[2] = u1; uv[3] = v1;
+                       uv[4] = u2; uv[5] = v2;
+                       uv[6] = u3; uv[7] = v3;
+
+                       DrawSingleGLTexture( pGO, pGR, uv, x, y, xs, ys );
+
                 }
             }
 
@@ -2421,7 +2736,6 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
         }
         j = !j;
     }
-    glEnd();
     delete [] lva;
 
     glDisable(GL_BLEND);

@@ -31,6 +31,8 @@
 
 #include <stdint.h>
 
+#include "config.h"
+
 #include "dychart.h"
 
 #include "viewport.h"
@@ -54,22 +56,17 @@
 #include "lz4.h"
 #include "lz4hc.h"
 
-extern bool g_bopengl;
-extern bool g_bDebugOGL;
 extern long g_tex_mem_used;
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
-extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 
 extern ColorScheme global_color_scheme;
 
 extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;
-extern wxString         g_PrivateDataDir;
 
 extern int              g_tile_size;
-extern int              g_uncompressed_tile_size;
 
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
@@ -277,6 +274,7 @@ bool glTexFactory::OnTimer()
     return false;
 }
 
+#if 0
 #ifdef __OCPN__ANDROID__
     // delete any uncompressed textures if texture memory is more than 30
     // on android??   Maybe this should be removed now
@@ -292,6 +290,7 @@ bool glTexFactory::OnTimer()
         }
     }
 #endif    
+#endif
 
 void glTexFactory::AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size)
 {
@@ -629,7 +628,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     return true;
 }
 
-bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme )
+bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, int mem_used )
 {    
     glTextureDescriptor *ptd = NULL;
 
@@ -639,7 +638,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     ptd->m_colorscheme = color_scheme;
     
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
+    //glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
     
     if(!BuildTexture(ptd, base_level, rect))
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
@@ -657,21 +656,29 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         // Free the map in ram
         ptd->FreeMap();
     }
-    
+
+#if 0
+ /* this is not a good place to call GetMemoryStatus
+    function as implemented takes for me 1 millisecond to execute.
+    In the worst case zoomed out charts can reach thousands of textures and several seconds to render one frame instead of 20-30fps disabling this here
+
+    Memory is already freed in glTextureManager::FactoryCrunch(double factor)
+    so the below is probably not needed.*/
+
     //   If global memory is getting short, we can crunch here.
     //   All mipmaps >= ptd->level_min have been uploaded to the GPU,
     //   so there is no reason to save the bits forever.
     //   Of course, this means that if the texture is deleted elsewhere, then the bits will need to be
     //   regenerated.  The price to pay for memory limits....
-    
-    int mem_used;
-    GetMemoryStatus(0, &mem_used);
-    //    qDebug() << mem_used;
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10))
-        ptd->FreeMap();
+    if (g_memCacheLimit > 0) {
+        // GetMemoryStatus is slow on linux
+        if(mem_used > g_memCacheLimit * 7 / 10)
+            ptd->FreeMap();
 
-    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 9 / 10))
-        ptd->FreeAll();
+        if(mem_used > g_memCacheLimit * 9 / 10)
+            ptd->FreeAll();
+    }
+#endif
 
 //    g_Platform->HideBusySpinner();
     
@@ -800,9 +807,6 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 
             tile->box.Set(latmin, lonmin, latmax, lonmax);
 
-            double sx = rect.width;
-            double sy = rect.height;
-                                
             double xs = rect.width / xsplits;
             double ys = rect.height / ysplits;
             double x1 = rect.x, u1 = 0;

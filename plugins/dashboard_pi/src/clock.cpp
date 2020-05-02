@@ -71,8 +71,10 @@ void DashboardInstrument_Clock::SetData( int, double, wxString )
 
 void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 {
-    if (data.IsValid())
+    if (data.IsValid()){
         m_data = GetDisplayTime( data );
+        Refresh();
+    }
 }
 
 wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
@@ -108,6 +110,7 @@ void DashboardInstrument_CPUClock::SetData( int, double, wxString )
 void DashboardInstrument_CPUClock::SetUtcTime( wxDateTime data )
 {
     m_data = wxDateTime::Now().FormatISOTime().Append( _T( " CPU" ) );
+    Refresh();
 }
 
 DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :
@@ -133,9 +136,9 @@ wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
 {
-    if( st == OCPN_DBP_STC_LAT ) {
-        m_hemisphere = (value < 0 ? _T("S") : _T("N") );
-    }
+    if( st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
+        m_hemisphere = (value < 0 ? _T("S") : _T("N"));
+    } 
 }
 
 void DashboardInstrument_Moon::Draw(wxGCDC* dc)
@@ -334,14 +337,16 @@ void DashboardInstrument_Sun::SetUtcTime( wxDateTime data )
 
 void DashboardInstrument_Sun::SetData( int st, double data, wxString unit )
 {
-      if( st == OCPN_DBP_STC_LAT )
-      {
-            m_lat = data;
-      }
-      else if( st == OCPN_DBP_STC_LON )
-      {
+    if(!std::isnan(data)){
+        if (st == OCPN_DBP_STC_LAT)
+            {
+                m_lat = data;
+            }
+        else if (st == OCPN_DBP_STC_LON)
+        {
             m_lon = data;
-      }
+        }
+    }
 }
 
 void DashboardInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){

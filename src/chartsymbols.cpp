@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "config.h"
 
 #include "wx/wxprec.h"
 
@@ -1269,7 +1270,13 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
             glTexImage2D(g_texture_rectangle_format, 0, format, w, h,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, e);
 
-            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+//             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+//             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+            glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            
+            glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER,  GL_NEAREST );   // No mipmapping
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
             rasterSymbolsTextureSize = wxSize(w, h);

@@ -47,8 +47,14 @@
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
 #include <wx/fontpicker.h>
+#include <wx/jsonval.h>
+
 //wx2.9 #include <wx/wrapsizer.h>
 #include "../../../include/ocpn_plugin.h"
+
+#ifdef __OCPN__ANDROID__
+#include <wx/qt/private/wxQtGesture.h>
+#endif
 
 #include "nmea0183/nmea0183.h"
 #include "instrument.h"
@@ -71,6 +77,15 @@ class DashboardInstrumentContainer;
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
 #define gps_watchdog_timeout_ticks  10
+#define no_nav_watchdog_timeout_ticks 40    // SignalK motor & environ instr defaults 30 sec
+#define GEODESIC_RAD2DEG(r) ((r)*(180.0/M_PI))
+#define MS2KNOTS(r) ((r)*(1.9438444924406))
+#define KELVIN2C(r) ((r)-(273.15))
+#define PA2HPA(r) ((r)/(100))
+#define METERS2NM(r) ((r)/(1852))
+
+#define wxFontPickerCtrl OCPNFontButton
+class OCPNFontButton;
 
 class DashboardWindowContainer
 {
@@ -155,10 +170,17 @@ public:
 
 private:
       bool LoadConfig(void);
+      void LoadFont(wxFont **target, wxString native_info);
+      
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
+
+      void ParseSignalK( wxString &msg);
+      void handleSKUpdate(wxJSONValue &update);
+      void updateSKItem(wxJSONValue &item, wxString &sfixtime);
+      wxString          m_self;
 
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;
@@ -170,6 +192,7 @@ private:
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
       short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
+      short                mPriSTW, mPriWTP, mPriATMP, mPriWDN;
       double               mVar;
       // FFU
       double               mSatsInView;
@@ -181,6 +204,19 @@ private:
       int                  mHDT_Watchdog;
       int                  mGPS_Watchdog;
       int                  mVar_Watchdog;
+      int                  mMWVA_Watchdog;
+      int                  mMWVT_Watchdog;
+      int                  mDPT_DBT_Watchdog;
+      int                  mSTW_Watchdog;
+      int                  mWTP_Watchdog;
+      int                  mRSA_Watchdog;
+      int                  mVMG_Watchdog;
+      int                  mUTC_Watchdog;
+      int                  mATMP_Watchdog;
+      int                  mWDN_Watchdog;
+      int                  mMDA_Watchdog;
+      int                  mPITCH_Watchdog;
+      int                  mHEEL_Watchdog;
 
       iirfilter            mSOGFilter;
       iirfilter            mCOGFilter;
@@ -205,6 +241,7 @@ public:
       void OnInstrumentUp(wxCommandEvent& event);
       void OnInstrumentDown(wxCommandEvent& event);
       void SaveDashboardConfig();
+      void RecalculateSize( void );
 
       wxArrayOfDashboard            m_Config;
       wxFontPickerCtrl             *m_pFontPickerTitle;
@@ -220,6 +257,7 @@ public:
       wxSpinCtrlDouble             *m_pSpinDBTOffset;
       wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
+      wxCheckBox                   *m_pUseTrueWinddata;
 
 private:
       void UpdateDashboardButtonsState(void);
@@ -262,6 +300,7 @@ enum
       ID_DASH_PREFS = 999,
       ID_DASH_VERTICAL,
       ID_DASH_HORIZONTAL,
+      ID_DASH_RESIZE,
       ID_DASH_UNDOCK
 };
 
@@ -278,6 +317,14 @@ public:
     void OnSize( wxSizeEvent& evt );
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
+    
+    void OnMouseEvent( wxMouseEvent& event );
+
+#ifdef __OCPN__ANDROID__
+    void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
+    void OnEvtPanGesture( wxQT_PanGestureEvent &event);
+#endif    
+    
     bool isInstrumentListEqual( const wxArrayInt& list );
     void SetInstrumentList( wxArrayInt list );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
@@ -288,6 +335,14 @@ public:
 
     DashboardWindowContainer* m_Container;
 
+    bool m_binPinch;
+    bool m_binPan;
+    
+    wxPoint m_resizeStartPoint;
+    wxSize m_resizeStartSize;
+    bool m_binResize;
+    bool m_binResize2;
+    
 private:
       wxAuiManager         *m_pauimgr;
       dashboard_pi*         m_plugin;
@@ -295,6 +350,81 @@ private:
 //wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;
       wxArrayOfInstrument  m_ArrayOfInstrument;
+      
+      wxButton*            m_tButton;
+};
+
+
+
+#include "wx/button.h"
+#include "wx/fontdata.h"
+
+//-----------------------------------------------------------------------------
+// OCPNFontButton: a button which brings up a wxFontDialog
+//-----------------------------------------------------------------------------
+
+class OCPNFontButton : public wxButton
+{
+public:
+    OCPNFontButton() {}
+    OCPNFontButton(wxWindow *parent,
+                        wxWindowID id,
+                        const wxFont &initial = wxNullFont,
+                        const wxPoint& pos = wxDefaultPosition,
+                        const wxSize& size = wxDefaultSize,
+                        long style = wxFONTBTN_DEFAULT_STYLE,
+                        const wxValidator& validator = wxDefaultValidator,
+                        const wxString& name = wxFontPickerWidgetNameStr)
+    {
+        Create(parent, id, initial, pos, size, style, validator, name);
+    }
+    
+    virtual wxColour GetSelectedColour() const
+    { return m_data.GetColour(); }
+    
+    virtual void SetSelectedColour(const wxColour &colour)
+    { m_data.SetColour(colour); UpdateFont(); }
+    
+    virtual ~OCPNFontButton() {}
+    
+    
+    public:     // API extensions specific for OCPNFontButton
+
+    // user can override this to init font data in a different way
+    virtual void InitFontData();
+    
+    // returns the font data shown in wxFontDialog
+    wxFontData *GetFontData() { return &m_data; }
+    
+    // get the font chosen
+    wxFont GetSelectedFont() const { return m_selectedFont; }
+    
+    
+public:
+    
+    bool Create(wxWindow *parent,
+                wxWindowID id,
+                const wxFont &initial = *wxNORMAL_FONT,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize,
+                long style = wxFONTBTN_DEFAULT_STYLE,
+                const wxValidator& validator = wxDefaultValidator,
+                const wxString& name = wxFontPickerWidgetNameStr);
+    
+    void OnButtonClick(wxCommandEvent &);
+
+    
+    
+protected:
+    
+    void UpdateFont();
+    
+    wxFontData m_data;
+    
+    wxFont m_selectedFont;
+    
+private:
+    DECLARE_DYNAMIC_CLASS(OCPNFontButton)
 };
 
 #endif

@@ -61,7 +61,6 @@ extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
-extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;
@@ -200,6 +199,7 @@ JobTicket::JobTicket()
     }
 }
 
+#if 0
 /* reduce pixel values to 5/6/5, because this is the format they are stored
  *   when compressed anyway, and this way the compression algorithm will use
  *   the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
@@ -225,6 +225,7 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
                 data[off + 2] &= 0xfc;
             }
 }
+#endif
 
 /* return malloced data which is the etc compressed texture of the source */
 static 
@@ -257,6 +258,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
 {
     if( !s_glGetCompressedTexImage )
         return false;
+#ifndef USE_ANDROID_GLES2
     
     GLuint comp_tex;
     if(!inplace) {
@@ -291,6 +293,9 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
         glDeleteTextures(1, &comp_tex);
     
     return true;
+#else
+    return false;
+#endif
 }
 
 static 
@@ -404,8 +409,6 @@ bool JobTicket::DoJob()
     int nx_tex = ceil( (float)size_X / dim );
     int ny_tex = ceil( (float)size_Y / dim );
         
-    int nt = ny_tex * nx_tex;
-        
     wxRect rect;
     rect.y = 0;
     rect.width = dim;
@@ -510,7 +513,7 @@ bool JobTicket::DoJob(const wxRect &rect)
     }
     
     //OK, got the bits?
-    int ssize, dim;
+    int dim;
     if(!bit_array[0] )
         return false;
     
@@ -1305,10 +1308,9 @@ bool glTextureManager::FactoryCrunch(double factor)
         return false;
     }
 
-    int mem_used, mem_start;
+    int mem_used;
     GetMemoryStatus(0, &mem_used);
     double hysteresis = 0.90;
-    mem_start = mem_used;
     ChartPathHashTexfactType::iterator it0;
 
     bool bMemCrunch = ( g_memCacheLimit && ( (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
@@ -1466,7 +1468,7 @@ void glTextureManager::BuildCompressedCache()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
 
-        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        wxString filename = cte.GetFullSystemPath();
 
         compress_target *pct = new compress_target;
         pct->distance = distance;
@@ -1519,7 +1521,6 @@ void glTextureManager::BuildCompressedCache()
     m_progDialog->Layout();
     wxSize sza = m_progDialog->GetSize();
 
-    wxSize pprog_size = sz;
     m_progDialog->Centre();
     m_progDialog->Show();
     m_progDialog->Raise();
@@ -1564,8 +1565,6 @@ void glTextureManager::BuildCompressedCache()
 
         int nx_tex = ceil( (float)size_X / tex_dim );
         int ny_tex = ceil( (float)size_Y / tex_dim );
-
-        int nt = ny_tex * nx_tex;
 
         wxRect rect;
         rect.y = 0;

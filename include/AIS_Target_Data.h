@@ -87,6 +87,7 @@ public:
     char                      Euro_VIN[EURO_VIN_LEN];	      // includes terminator
     int                       UN_shiptype;
     bool                      b_isEuroInland;
+    bool                      b_hasInlandDac;  // intermediate storage for EU Inland. SignalK
     bool                      b_blue_paddle;
     int                       blue_paddle;
 

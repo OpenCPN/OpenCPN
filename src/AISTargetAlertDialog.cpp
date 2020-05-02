@@ -35,6 +35,10 @@
 #include "RoutePoint.h"
 #include "chcanv.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;

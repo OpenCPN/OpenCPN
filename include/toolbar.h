@@ -82,7 +82,6 @@ public:
     wxString m_ToggledIconSVG;
 };
 
-//WX_DECLARE_OBJARRAY(ToolbarItemContainer, ArrayOfToolbarItemContainer);
 typedef std::vector<ToolbarItemContainer *> ArrayOfToolbarItemContainer;
 
 //----------------------------------------------------------------------------
@@ -396,6 +395,8 @@ DECLARE_EVENT_TABLE()
 public:
       ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient, float size_factor );
       ~ocpnFloatingToolbarDialog();
+
+      //void Hide();
 
       void OnClose( wxCloseEvent& event );
       void OnWindowCreate( wxWindowCreateEvent& event );
