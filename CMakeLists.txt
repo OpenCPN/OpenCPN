@@ -611,9 +611,9 @@ endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
-#if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-#  include(OcpnFindGtk)
-#endif ()
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  include(OcpnFindGtk)
+endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
@@ -1181,8 +1181,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 # Linux: set up GTK
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-#  include(OcpnFindGtk)
-#  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+  include(OcpnFindGtk)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 # Search for opengles, short of running a program to test the speed of
