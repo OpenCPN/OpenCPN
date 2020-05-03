@@ -5520,38 +5520,38 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
 //     }
 //    else
     {
-    m_nStep = 20; 
-    m_nTotal = 100;
-    
-    m_nStep = 10; 
-    m_nTotal = 40;
-    
-    m_nRun = 0;
-    
-    float perStep = m_nStep / m_nTotal;
-    
- 
-    if(zoomTimer.IsRunning()){
-        m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+        m_nStep = 20; 
+        m_nTotal = 100;
         
-    }
-    else{
-        m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
-
-        m_runoffsetx = m_lastfbo_offsetx;
-        m_runoffsety = m_lastfbo_offsety;
-        m_runswidth = m_lastfbo_swidth;
-        m_runsheight = m_lastfbo_sheight;
-    }
-
-    if(!zoomTimer.IsRunning())
-        zoomTimer.Start(m_nStep);
+        m_nStep = 10; 
+        m_nTotal = 40;
+        
+        m_nRun = 0;
+        
+        float perStep = m_nStep / m_nTotal;
+        
+     
+        if(zoomTimer.IsRunning()){
+            m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+            
+        }
+        else{
+            m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
+    
+            m_runoffsetx = m_lastfbo_offsetx;
+            m_runoffsety = m_lastfbo_offsety;
+            m_runswidth = m_lastfbo_swidth;
+            m_runsheight = m_lastfbo_sheight;
+        }
+    
+        if(!zoomTimer.IsRunning())
+            zoomTimer.Start(m_nStep);
         m_zoomFinal = false;
     }
 }
