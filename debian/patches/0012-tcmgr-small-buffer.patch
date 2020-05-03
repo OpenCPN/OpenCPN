@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 4 May 2020 23:19:46 +0200
+Subject: tcmgr: Reading outside buffer fix.
+
+---
+ src/tcmgr.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tcmgr.cpp b/src/tcmgr.cpp
+index 8236117..0a662eb 100644
+--- a/src/tcmgr.cpp
++++ b/src/tcmgr.cpp
+@@ -4515,7 +4515,7 @@ static NV_BOOL read_tide_db_header ()
+     NV_INT32            temp_int;
+     NV_CHAR             varin[ONELINER_LENGTH], *info;
+     NV_U_INT32          utemp, i, j, pos, size, key_count;
+-    NV_U_BYTE           *buf, checksum_c[4];
++    NV_U_BYTE           *buf, checksum_c[5];
+     TIDE_RECORD         rec;
+ 
+     if (!fp) {

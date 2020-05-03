@@ -1,0 +1,80 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 3 May 2020 10:51:22 +0200
+Subject: src: Fix uninitialized variables.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1267
+---
+ src/GarminProtocolHandler.cpp | 2 +-
+ src/OCPNRegion.cpp            | 2 +-
+ src/ais.cpp                   | 2 +-
+ src/chart1.cpp                | 4 +++-
+ src/concanv.cpp               | 2 +-
+ 5 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/src/GarminProtocolHandler.cpp b/src/GarminProtocolHandler.cpp
+index f552e82..7758447 100644
+--- a/src/GarminProtocolHandler.cpp
++++ b/src/GarminProtocolHandler.cpp
+@@ -976,7 +976,7 @@ GARMIN_USB_Thread::~GARMIN_USB_Thread()
+ 
+ void *GARMIN_USB_Thread::Entry()
+ {
+-    garmin_usb_packet iresp;
++    garmin_usb_packet iresp = {0};
+     int n_short_read = 0;
+     m_receive_state = rs_fromintr;
+ 
+diff --git a/src/OCPNRegion.cpp b/src/OCPNRegion.cpp
+index c60c761..b2d164a 100644
+--- a/src/OCPNRegion.cpp
++++ b/src/OCPNRegion.cpp
+@@ -3283,7 +3283,7 @@ else gdk_region_intersect (a,b)
+      OScanLineList *pSLL;     /* current scanLineList    */
+      OGdkPoint *pts;          /* output buffer           */
+      OEdgeTableEntry *pPrevAET;        /* ptr to previous AET     */
+-     OEdgeTable ET;                    /* header node for ET      */
++     OEdgeTable ET = {0};              /* header node for ET      */
+      OEdgeTableEntry AET;              /* header node for AET     */
+      OEdgeTableEntry *pETEs;           /* EdgeTableEntries pool   */
+      OScanLineListBlock SLLBlock;      /* header for scanlinelist */
+diff --git a/src/ais.cpp b/src/ais.cpp
+index 3f29880..3c4ef17 100644
+--- a/src/ais.cpp
++++ b/src/ais.cpp
+@@ -1744,7 +1744,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
+         //  create vector of x-y points
+         int TrackLength = td->m_ptrack->GetCount();
+         int TrackPointCount;
+-        wxPoint *TrackPoints;
++        wxPoint *TrackPoints = 0;
+         if (TrackLength > 1) {
+             TrackPoints = new wxPoint[TrackLength];
+             wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+diff --git a/src/chart1.cpp b/src/chart1.cpp
+index 8c4782d..8502470 100644
+--- a/src/chart1.cpp
++++ b/src/chart1.cpp
+@@ -8227,7 +8227,9 @@ GetMemoryStatus( int *mem_total, int *mem_used )
+         FILE* file = fopen ( "/proc/self/statm", "r");
+         if ( file )
+         {
+-            fscanf( file, "%d", mem_used);
++            if (fscanf( file, "%d", mem_used) != 1) {
++                wxLogWarning("Cannot parse /proc/self/statm (!)");
++            }
+             *mem_used *= 4; // XXX assume 4K page
+             fclose( file );
+         }
+diff --git a/src/concanv.cpp b/src/concanv.cpp
+index 27349c0..af80683 100644
+--- a/src/concanv.cpp
++++ b/src/concanv.cpp
+@@ -394,7 +394,7 @@ void ConsoleCanvas::UpdateRouteData()
+ 
+                 wxString tttg_s;
+                 wxTimeSpan tttg_span;
+-                float tttg_sec;
++                float tttg_sec = 0.0;
+                 if( speed > 0. )
+                 {
+                     tttg_sec = ( trng / gSog ) * 3600.;

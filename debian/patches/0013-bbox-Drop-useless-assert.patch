@@ -1,0 +1,23 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 4 May 2020 23:40:43 +0200
+Subject: bbox: Drop useless assert.
+
+---
+ src/bbox.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/bbox.cpp b/src/bbox.cpp
+index e526c07..3b71c1e 100644
+--- a/src/bbox.cpp
++++ b/src/bbox.cpp
+@@ -166,8 +166,8 @@ OVERLAP wxBoundingBox::Intersect(const wxBoundingBox &other, double Marge) const
+ {
+     assert (m_validbbox == TRUE);
+ 
+-    // other boundingbox must exist
+-    assert (&other);
++    // other boundingbox exists, it is a reference:
++    // assert (&other);
+ 
+     if (((m_minx - Marge) > (other.m_maxx + Marge)) ||
+          ((m_maxx + Marge) < (other.m_minx - Marge)) ||

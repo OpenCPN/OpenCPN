@@ -1,0 +1,24 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 3 May 2020 15:27:44 +0200
+Subject: libtess2: Handle a unused return value warning.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1267
+---
+ libs/libtess2/Source/CustomArray.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/libs/libtess2/Source/CustomArray.cpp b/libs/libtess2/Source/CustomArray.cpp
+index f45570e..433731b 100644
+--- a/libs/libtess2/Source/CustomArray.cpp
++++ b/libs/libtess2/Source/CustomArray.cpp
+@@ -50,7 +50,9 @@ CustomArray::CustomArray(const char* filename) :  mCollapsed(null), mAddresses(n
+ 	FILE* fp = fopen(filename, "rb");
+ 	if(fp)
+ 	{
+-		fread(mCurrentCell->Item.Addy, StartSize, 1, fp);
++		if (fread(mCurrentCell->Item.Addy, StartSize, 1, fp)) { 
++                    // Ignore 
++                };
+ 		fclose(fp);
+ 	}
+ 

@@ -1,0 +1,53 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 3 May 2020 10:46:25 +0200
+Subject: libs: gdal, iso8211: Handle warning for strange < condition.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1267
+---
+ libs/iso8211/src/ddffield.cpp        | 4 ++--
+ libs/iso8211/src/ddfsubfielddefn.cpp | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/libs/iso8211/src/ddffield.cpp b/libs/iso8211/src/ddffield.cpp
+index 96845bf..47d11b6 100644
+--- a/libs/iso8211/src/ddffield.cpp
++++ b/libs/iso8211/src/ddffield.cpp
+@@ -83,7 +83,7 @@
+  * New
+  *
+  */
+-
++#include <algorithm>
+ #include "iso8211.h"
+ #include "gdal/cpl_conv.h"
+ 
+@@ -133,7 +133,7 @@ void DDFField::Dump( FILE * fp )
+     fprintf( fp, "      Data = \n" );
+     
+     int il = 0;
+-    for( int i = 0; i < MIN(nDataSize,1000); i++ )
++    for( int i = 0; i < std::min(nDataSize,1000); i++ )
+     {
+         //if( pachData[i] < 32 || pachData[i] > 126 )
+             fprintf( fp, "\\%02X", ((unsigned char *) pachData)[i] );
+diff --git a/libs/iso8211/src/ddfsubfielddefn.cpp b/libs/iso8211/src/ddfsubfielddefn.cpp
+index 04d2a01..5cfd503 100644
+--- a/libs/iso8211/src/ddfsubfielddefn.cpp
++++ b/libs/iso8211/src/ddfsubfielddefn.cpp
+@@ -73,6 +73,7 @@
+  *
+  */
+ 
++#include <algorithm>
+ #include "gdal/cpl_conv.h"
+ #include "iso8211.h"
+ 
+@@ -781,7 +782,7 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
+         GByte   *pabyBString = (GByte *) ExtractStringData( pachData, nMaxBytes, &nBytes );
+ 
+         fprintf( fp, "      Subfield `%s' = 0x", pszName );
+-        for( i = 0; i < MIN(nBytes,24); i++ )
++        for( i = 0; i < std::min(nBytes,24); i++ )
+             fprintf( fp, "%02X", pabyBString[i] );
+ 
+         if( nBytes > 24 )
