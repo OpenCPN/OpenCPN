@@ -179,14 +179,16 @@ endmacro (BUNDLE_GSHHS_OPT)
 # sense values from the commandline (due to cmake inability to distinguish
 # between not set and set to FALSE): cmake -DOCPN_BUNDLE_DOCS=BLAH
 # -DOCPN_BUNDLE_TCDATA=BLAH 
+
+# Bundle tcdata and gshhs by default also on linux, to keep the defaults
+# close to the official Debian package.
+bundle_gshhs_opt("ON")
+bundle_tcdata_opt("ON")
+
 if (APPLE OR WIN32)
   bundle_docs_opt("ON")
-  bundle_tcdata_opt("ON")
-  bundle_gshhs_opt("ON")
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
-  bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
 
