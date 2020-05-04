@@ -3,7 +3,7 @@ usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
 usr/share/icons/hicolor/*/apps/opencpn.*
 usr/share/man/man1/opencpn.1
-usr/share/metainfo/opencpn.appdata.xml
+usr/share/metainfo/opencpn.metainfo.xml
 usr/share/doc/opencpn/changelog
 usr/share/doc/opencpn/copyright
 usr/share/doc/opencpn/license.txt
