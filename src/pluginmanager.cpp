@@ -760,6 +760,8 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
+            m_parent = wxDynamicCast(parent, PluginPanel);
+
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -770,6 +772,8 @@ class StatusIconPanel: public wxPanel
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
             Layout();
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
+            Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
+
        }
 
         void OnPaint(wxPaintEvent& event)
@@ -796,13 +800,21 @@ class StatusIconPanel: public wxPanel
             m_icon_name = icon_by_status[m_stat];
             Refresh();
          }
-             
+          
+         void OnIconSelected( wxMouseEvent &event )
+         {
+             if(m_parent){
+                 m_parent->OnPluginSelected(event);
+             }
+         }
+
 
     protected:
         wxBitmap m_bitmap;
         std::string m_icon_name;
         PluginStatus m_stat;
-
+        PluginPanel *m_parent;
+        
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
