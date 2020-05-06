@@ -179,14 +179,16 @@ endmacro (BUNDLE_GSHHS_OPT)
 # sense values from the commandline (due to cmake inability to distinguish
 # between not set and set to FALSE): cmake -DOCPN_BUNDLE_DOCS=BLAH
 # -DOCPN_BUNDLE_TCDATA=BLAH 
+
+# Bundle tcdata and gshhs by default also on linux, to keep the defaults
+# close to the official Debian package.
+bundle_gshhs_opt("ON")
+bundle_tcdata_opt("ON")
+
 if (APPLE OR WIN32)
   bundle_docs_opt("ON")
-  bundle_tcdata_opt("ON")
-  bundle_gshhs_opt("ON")
 else (APPLE OR WIN32)
   bundle_docs_opt("OFF")
-  bundle_tcdata_opt("OFF")
-  bundle_gshhs_opt("OFF")
 endif (APPLE OR WIN32)
 
 
@@ -611,9 +613,9 @@ endif (OCPN_BUNDLE_DOCS MATCHES "ON")
 #
 # Linux: set up GTK (wxWidgets prerequisite).
 #
-#if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-#  include(OcpnFindGtk)
-#endif ()
+if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+  include(OcpnFindGtk)
+endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
@@ -771,6 +773,32 @@ if (NOT QT_ANDROID)
 
   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 endif (NOT QT_ANDROID)
+
+# Handle #1500: Force NDEBUG on gtk3 for wxwidgets < 3.2 (all builds)
+if (GTK3_FOUND)
+  set( _VERSPROG [=[
+    #include <stdio.h>
+    #include <wx/version.h>
+    int main(int argc, char**argv) { 
+      printf("%d\\n", wxMAJOR_VERSION * 10 + wxMINOR_VERSION);
+    }
+  ]=])
+  execute_process(
+    COMMAND "/bin/sh" "-c" "echo '${_VERSPROG}' > wx-32.c"
+    COMMAND "/bin/sh" "-c" "cc $(wx-config --cflags) wx-32.c"
+    COMMAND "./a.out"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    OUTPUT_VARIABLE _WX_VERSION
+    ERROR_VARIABLE _WX_ERRORS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(NOT "${_WX_ERRORS}" STREQUAL "")
+    message(FATAL_ERROR "Cannot run wxWidgets  version test (!)")
+  elseif ("${_WX_VERSION}" LESS 32)
+    add_definitions("-DNDEBUG")
+    message(STATUS "Forcing -NDEBUG on gtk3 build (#1500).")
+  endif ()
+endif ()
 
 IF(QT_ANDROID)
   SET( wxWidgets_LIBRARIES
@@ -1155,8 +1183,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 # Linux: set up GTK
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-#  include(OcpnFindGtk)
-#  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
+  include(OcpnFindGtk)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
 endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
 # Search for opengles, short of running a program to test the speed of
