@@ -8229,7 +8229,9 @@ GetMemoryStatus( int *mem_total, int *mem_used )
         FILE* file = fopen ( "/proc/self/statm", "r");
         if ( file )
         {
-            fscanf( file, "%d", mem_used);
+            if (fscanf( file, "%d", mem_used) != 1) {
+                wxLogWarning("Cannot parse /proc/self/statm (!)");
+            }
             *mem_used *= 4; // XXX assume 4K page
             fclose( file );
         }

@@ -15,6 +15,9 @@ add_library(ocpn::wxservdisc ALIAS WXSERVDISC)
 
 set_property(TARGET WXSERVDISC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(WXSERVDISC PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(WXSERVDISC PRIVATE -Wno-pointer-sign -Wno-parentheses)
+endif ()
 
 if (WIN32)
   target_link_libraries(WXSERVDISC PRIVATE ws2_32)

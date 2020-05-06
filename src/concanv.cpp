@@ -394,7 +394,7 @@ void ConsoleCanvas::UpdateRouteData()
 
                 wxString tttg_s;
                 wxTimeSpan tttg_span;
-                float tttg_sec;
+                float tttg_sec = 0.0;
                 if( speed > 0. )
                 {
                     tttg_sec = ( trng / gSog ) * 3600.;
