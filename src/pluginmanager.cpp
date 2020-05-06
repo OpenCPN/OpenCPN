@@ -1476,6 +1476,8 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_common_name = wxString(plugin.name.c_str());
             new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
             new_pic->m_ManagedMetadata = plugin;
+            new_pic->m_version_major = 0;
+            new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
         }

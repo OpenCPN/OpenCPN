@@ -178,7 +178,7 @@ class InstallButton: public wxPanel
             PlugInContainer* found =
                 PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
             std::string label(_("Install"));
-            if (found) {
+            if (found && ((found->m_version_major > 0) || (found->m_version_minor > 0))) {
                 label = getUpdateLabel(found, metadata);
                 m_remove = true;
             }
