@@ -449,7 +449,7 @@ static void run_update_dialog(PluginListPanel* parent,
             PluginHandler::fileListPath(update.name);
         if(!isRegularFile(manifestPath.c_str())) {
             wxLogMessage("Installation of %s failed",  update.name.c_str());
-            PluginHandler::cleanup(manifestPath, update.name);
+            PluginHandler::cleanupFiles(manifestPath, update.name);
             bOK = false;
         }
 
@@ -481,8 +481,36 @@ static void run_update_dialog(PluginListPanel* parent,
             }
         }
     }
-            
-        //  Reload all plugins, which will bring in the action results.
+    
+    //  Check the library compatibility of the installed plugin
+    // Find the first dll/so/dylib file
+#ifdef __WXMSW__
+    wxString pispec = _T(".dll");
+#elif defined(__WXOSX__)
+    wxString pispec = _T(".dylib");
+#else
+    wxString pispec = _T(".so");
+#endif
+
+    std::string manifestPath = PluginHandler::fileListPath(update.name);
+    wxTextFile manifest_file(manifestPath);
+    if( manifest_file.Open()){
+        wxString val;
+        for ( wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof() ; str = manifest_file.GetNextLine() ){
+            if(str.Contains(pispec)){
+                if( !g_pi_manager->CheckPluginCompatibility(str)){
+                    wxString msg = _("The plugin is not compatible with this version of OpenCPN, and will be uninstalled.");
+                    OCPNMessageBox( NULL, msg, wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
+                    
+                    PluginHandler::cleanupFiles(manifestPath, update.name);
+                }
+                break;
+            }
+        }
+    }
+
+    
+    //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
     
     // Check to see if this plugin needs an options instance reload
@@ -685,7 +713,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
-                PluginHandler::cleanup(manifestPath,
+                PluginHandler::cleanupFiles(manifestPath,
                                        actionPIC->m_ManagedMetadata.name);
             }
             plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
@@ -2047,7 +2075,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     }
     fclose(f);
 #endif // __WXGTK__ or __WXQT__
-    
+   
     wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }

@@ -365,12 +365,12 @@ public:
       void DimeWindow(wxWindow *win);
       pluginUtilHandler *GetUtilHandler(){ return m_utilHandler; }
       void SetListPanelPtr( PluginListPanel *ptr ) { m_listPanel = ptr; }
+      bool CheckPluginCompatibility(wxString plugin_file);
 
 private:
       bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
       bool UpDateChartDataTypes(void);
-      bool CheckPluginCompatibility(wxString plugin_file);
       bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog);
       void ProcessLateInit(PlugInContainer *pic);
 
