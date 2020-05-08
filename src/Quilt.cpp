@@ -1150,9 +1150,99 @@ LLRegion Quilt::GetHiliteRegion()
                 }
             }
         }
+        
+        // Might be MBTiles....
+        if(r.Empty()){
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( m_nHiLiteIndex );
+            if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                r = GetTilesetRegion( m_nHiLiteIndex );
+            }
+        }
+
     }
     return r;
 }
+
+const LLRegion &Quilt::GetTilesetRegion( int dbIndex)
+{
+    LLRegion world_region(-90, -180, 90, 180);
+
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry( dbIndex );
+    LLRegion &target_region = const_cast<LLRegion &>(cte.quilt_candidate_region);
+
+    if( !target_region.Empty() )
+        return target_region;
+
+    //    If the chart has an aux ply table, use it for finer region precision
+    int nAuxPlyEntries = cte.GetnAuxPlyEntries();
+    if( nAuxPlyEntries >= 1 ) {
+        target_region.Clear();
+        for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
+            float *pfp = cte.GetpAuxPlyTableEntry( ip );
+            int nAuxPly = cte.GetAuxCntTableEntry( ip );
+
+            target_region.Union(LLRegion( nAuxPly, pfp ));
+
+        }
+    } else {
+        std::vector<float> vec = ChartData->GetReducedPlyPoints(dbIndex);
+        
+        std::vector<float> vecr;
+        for(size_t i =0 ; i < vec.size()/2;  i++){
+            float a = vec[i*2+1];
+            vecr.push_back(a);
+            a = vec[i*2];
+            vecr.push_back(a);
+        }
+            
+        std::vector <float>::iterator it = vecr.begin();
+            
+        if( vecr.size()/2 >= 3 ){ // could happen with old database and some charts, e.g. SHOM 2381.kap
+
+            target_region = LLRegion( vecr.size() / 2, (float *)&(*it) );
+        }
+        else
+            target_region = world_region;
+    }
+
+    //  Remove the NoCovr regions
+    if( !target_region.Empty() ){              // don't bother if the region is already empty
+        int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
+        if( nNoCovrPlyEntries ) {
+            for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
+                float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
+                int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
+
+                LLRegion t_region = LLRegion( nNoCovrPly, pfp );
+
+                //  We do a test removal of the NoCovr region.
+                //  If the result iz empty, it must be that the NoCovr region is
+                //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
+                //  We ignore it.
+
+                if(!t_region.Empty()) {
+                    LLRegion test_region = target_region;
+                    test_region.Subtract( t_region );
+
+                    if( !test_region.Empty())
+                        target_region = test_region;
+                }
+            }
+        }
+    }
+
+    //    Another superbad hack....
+    //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
+    //    and Plypoints georef is problematic......
+    //    So, force full screen coverage in the quilt
+//    if( (cte.GetScale() > 90000000) && (cte.GetChartFamily() == CHART_FAMILY_RASTER) )
+//        target_region = world_region;
+
+    return target_region;
+
+}
+
+
 
 bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index, ViewPort &vp_in)
 {

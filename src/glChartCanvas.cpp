@@ -4946,6 +4946,39 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                 }
             }
         }
+        
+        // Render the HiLite on piano rollover
+        LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
+
+        if( !hiregion.Empty() ) {
+            glEnable( GL_BLEND );
+
+            double hitrans;
+            switch( global_color_scheme ) {
+            case GLOBAL_COLOR_SCHEME_DAY:
+                hitrans = .4;
+                break;
+            case GLOBAL_COLOR_SCHEME_DUSK:
+                hitrans = .2;
+                break;
+            case GLOBAL_COLOR_SCHEME_NIGHT:
+                hitrans = .1;
+                break;
+            default:
+                hitrans = .4;
+                break;
+            }
+
+#ifndef USE_ANDROID_GLES2
+            glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+#else
+            s_regionColor = wxColor(204, 102, 102, hitrans * 256);
+#endif
+
+            DrawRegion(vp, hiregion);
+
+            glDisable( GL_BLEND );
+        }
     }
 }
     
