@@ -731,7 +731,13 @@ if (NOT QT_ANDROID)
     add_definitions(-DwxUSE_WEBVIEW=0)
     list(REMOVE_ITEM wxWidgets_FIND_COMPONENTS webview)
     message(STATUS "Could not find wxWidgets webview add-on")
-    find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED)
+    find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
+  endif ()
+  if (NOT wxWidgets_FOUND)
+    message (FATAL_ERROR
+      "Cannot find wxWidgets, giving up. On linux you might want to try"
+      " using -DOCPN_FORCE_GTK3."
+    )
   endif ()
   if (MSYS)
     # Convert msys to windows paths, and handle the missing /usr
