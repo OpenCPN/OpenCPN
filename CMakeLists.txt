@@ -178,7 +178,7 @@ endmacro (BUNDLE_GSHHS_OPT)
 # If on Windows or Apple, build the monolithic package, to override use a non-
 # sense values from the commandline (due to cmake inability to distinguish
 # between not set and set to FALSE): cmake -DOCPN_BUNDLE_DOCS=BLAH
-# -DOCPN_BUNDLE_TCDATA=BLAH 
+# -DOCPN_BUNDLE_TCDATA=BLAH
 
 # Bundle tcdata and gshhs by default also on linux, to keep the defaults
 # close to the official Debian package.
@@ -590,10 +590,7 @@ if (APPLE)
   exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
   string(
     REGEX
-      MATCH
-      "[0-9]+"
-      DARWIN_VERSION
-      ${DARWIN_VERSION}
+      MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION}
   )
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
@@ -645,7 +642,6 @@ IF(DEFINED _wx_selected_config)
     ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
     ADD_DEFINITIONS(-DUSE_GLSL)
     INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
-
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
@@ -744,10 +740,8 @@ if (NOT QT_ANDROID)
     string(
       REGEX
       REPLACE
-        "/usr/local"
-        ";C:/MinGW/msys/1.0/local"
-        wxWidgets_INCLUDE_DIRS
-        "${wxWidgets_INCLUDE_DIRS}"
+        "/usr/local"            ";C:/MinGW/msys/1.0/local"
+        wxWidgets_INCLUDE_DIRS  "${wxWidgets_INCLUDE_DIRS}"
     )
   endif (MSYS)
   include(${wxWidgets_USE_FILE})
@@ -788,7 +782,7 @@ if (GTK3_FOUND)
   set( _VERSPROG [=[
     #include <stdio.h>
     #include <wx/version.h>
-    int main(int argc, char**argv) { 
+    int main(int argc, char**argv) {
       printf("%d\\n", wxMAJOR_VERSION * 10 + wxMINOR_VERSION);
     }
   ]=])
@@ -801,7 +795,7 @@ if (GTK3_FOUND)
     ERROR_VARIABLE _WX_ERRORS
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-  if(NOT "${_WX_ERRORS}" STREQUAL "")
+  if (NOT "${_WX_ERRORS}" STREQUAL "")
     message(FATAL_ERROR "Cannot run wxWidgets  version test (!)")
   elseif ("${_WX_VERSION}" LESS 32)
     add_definitions("-DNDEBUG")
@@ -812,7 +806,7 @@ endif ()
 IF(QT_ANDROID)
   SET( wxWidgets_LIBRARIES
 
-        # Link order is critical to avoid circular dependencies
+    # Link order is critical to avoid circular dependencies
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
     ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
@@ -833,7 +827,7 @@ IF(QT_ANDROID)
     ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
 
-    )
+  )
 ENDIF(QT_ANDROID)
 
 message(STATUS "")
@@ -853,7 +847,6 @@ IF(QT_ANDROID)
       "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
   INCLUDE_DIRECTORIES("${wxQt_Base}/include")
   include_directories("${CMAKE_SOURCE_DIR}/include")
-
 
   add_definitions(-DQT_WIDGETS_LIB)
 endif (QT_ANDROID)
@@ -1130,15 +1123,15 @@ IF(QT_ANDROID)
 ENDIF(QT_ANDROID)
 
 IF(USE_GLES2)
-    SET(HDRS ${HDRS} include/shaders.h)
-    SET(SRCS ${SRCS} src/shaders.cpp)
+  SET(HDRS ${HDRS} include/shaders.h)
+  SET(SRCS ${SRCS} src/shaders.cpp)
 ENDIF(USE_GLES2)
 
 SET(SRC_TINYXML
-    src/tinyxml.cpp
-    src/tinyxmlerror.cpp
-    src/tinyxmlparser.cpp
-    include/tinyxml.h
+  src/tinyxml.cpp
+  src/tinyxmlerror.cpp
+  src/tinyxmlparser.cpp
+  include/tinyxml.h
 )
 
 if (APPLE)
@@ -1255,7 +1248,6 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
-
 endif ()
 
 if (OCPN_USE_CRASHREPORT)
@@ -1508,8 +1500,10 @@ if (OCPN_VERBOSE)
 endif ()
 
 if (QT_ANDROID)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
+  target_include_directories(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
+  target_link_libraries(${PACKAGE_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
 else (QT_ANDROID)
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
@@ -1699,10 +1693,8 @@ endif ()
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
     ${PACKAGE_NAME}
-    PRIVATE
-      setupapi.lib
-      # glu32.lib
-      "GLU_static" psapi.lib
+    PRIVATE setupapi.lib "GLU_static" psapi.lib
+    # glu32.lib 
   )
 
   # use gdi plus only on MSVC, it is not a free library
@@ -1742,7 +1734,7 @@ if (OCPN_BUNDLE_GSHHS)
         data/gshhs/wdb_borders_c.b
         data/gshhs/wdb_rivers_c.b
     )
-ENDif (OCPN_BUNDLE_GSHHS)
+endif (OCPN_BUNDLE_GSHHS)
 
 # Various data files
 
@@ -2092,7 +2084,9 @@ endif ()
 # Sanitizers, part 2/2
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(${PACKAGE_NAME} PRIVATE -fsanitize=${ENABLE_SANITIZER})
+    target_link_libraries(${PACKAGE_NAME}
+        PRIVATE -fsanitize=${ENABLE_SANITIZER}
+    )
   endif ()
 endif ()
 
@@ -2128,8 +2122,8 @@ if (NOT APPLE)
   endif ()
 
   install(
-      FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
-      DESTINATION ${PREFIX_PKGDATA}
+    FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
+    DESTINATION ${PREFIX_PKGDATA}
   )
 
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
@@ -2166,7 +2160,7 @@ if (NOT APPLE)
 
   if (OCPN_BUNDLE_GSHHS)
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
-  endif ()  
+  endif ()
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
@@ -2223,13 +2217,6 @@ if (NOT APPLE)
 endif (NOT APPLE)
 # Fix up time_t definition Checks for 32-bit version. And always use 32-bit
 # time_t for compatibility
-
-# uninstall-local: rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/* rm -fr
-# $(DESTDIR)$(pkgdatadir)/gshhs/* rm -fr $(DESTDIR) $(pkgdatadir)/s57data/* rm
-# -fr $(DESTDIR)$(pkgdatadir)/tcdata/* rmdir $(DESTDIR)$(pkgdatadir)/wvsdata
-# rmdir $(DESTDIR)$(pkgdatadir)/gshhs rmdir $(DESTDIR)$(pkgdatadir)/s57data
-# rmdir $(DESTDIR)$(pkgdatadir)/tcdata rmdir $(DESTDIR)$(pkgdatadir)
-#
 
 #
 # Gettext languages setup.
@@ -2403,12 +2390,11 @@ if (APPLE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
 
     install(
-        FILES ${_current_wx_mofile}
-        DESTINATION
-          ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
-        RENAME wxstd.mo
-      )
-
+      FILES ${_current_wx_mofile}
+      DESTINATION
+        ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Resources/${_mlang}.lproj
+      RENAME wxstd.mo
+    )
   endforeach (_current_wx_mofile)
 
 endif (APPLE)
@@ -2483,7 +2469,7 @@ endif ()
 #
 if (MINGW)
   set(
-      CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
+    CMD "sed -e 's|/TRIMLEFT||' NSIS.template.in.in >build/NSIS.template.in"
   )
   file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
   add_custom_target(
@@ -2738,7 +2724,7 @@ if (APPLE)
     include(BundleUtilities)
     fixup_bundle(\"${APPS}\"   \"${LIBS}\"   \"${DIRS}\")
     " COMPONENT Runtime)
-    
+
   #Build standard MacOS installer package
   #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
   #  This avoids absolute paths in the XXX.pkgproj file
@@ -2760,7 +2746,7 @@ if (APPLE)
  ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
 
-  #Build standard MacOS .dmg 
+  #Build standard MacOS .dmg
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
@@ -2811,12 +2797,14 @@ endif (MSVC)
 include(dist_target)
 
 # uninstall target
-if(NOT TARGET uninstall)
-    configure_file(
-        "${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in"
-        "${CMAKE_BINARY_DIR}/uninstall.cmake"
-        IMMEDIATE @ONLY)
-
-    add_custom_target(uninstall
-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake)
-endif()
+if (NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in"
+    "${CMAKE_BINARY_DIR}/uninstall.cmake"
+    IMMEDIATE @ONLY
+  )
+  add_custom_target(
+    uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake
+  )
+endif ()
