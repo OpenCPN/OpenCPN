@@ -609,11 +609,11 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #
 
 
-if (OCPN_BUNDLE_DOCS MATCHES "ON")
+if (OCPN_BUNDLE_DOCS)
   message(STATUS "*** Package will include documentation ***")
-else (OCPN_BUNDLE_DOCS MATCHES "ON")
+else (OCPN_BUNDLE_DOCS)
   message(STATUS "*** Package will NOT include documentation ***")
-endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+endif (OCPN_BUNDLE_DOCS)
 
 #
 # Linux: set up GTK (wxWidgets prerequisite).
@@ -1214,7 +1214,7 @@ else ()
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 endif ()
 
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1450,7 +1450,7 @@ endif (OCPN_USE_NEWSERIAL)
 
 # Search for opengles, short of running a program to test the speed of
 # acceleration, I simply use gles on "native linux" arm systems
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND (OCPN_USE_GLES_SHIM MATCHES "ON"))
+if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1735,14 +1735,14 @@ if (MSVC)
   target_sources(${PACKAGE_NAME} PRIVATE src/opencpn.rc)
 endif ()
 
-if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+if (OCPN_BUNDLE_GSHHS)
     set(
         gshhs
         data/gshhs/poly-c-1.dat
         data/gshhs/wdb_borders_c.b
         data/gshhs/wdb_rivers_c.b
     )
-ENDif (OCPN_BUNDLE_GSHHS MATCHES "ON")
+ENDif (OCPN_BUNDLE_GSHHS)
 
 # Various data files
 
@@ -1784,14 +1784,14 @@ set(
   data/s57data/chartsymbols.xml
 )
 
-if (OCPN_BUNDLE_TCDATA MATCHES "ON")
+if (OCPN_BUNDLE_TCDATA)
   set(
     tcData
     data/tcdata/HARMONIC
     data/tcdata/HARMONIC.IDX
     data/tcdata/README.harmonics
   )
-endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
+endif (OCPN_BUNDLE_TCDATA)
 
 if (APPLE)
   target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
@@ -1836,13 +1836,13 @@ if (APPLE)
     PROPERTIES
       MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
-  if (OCPN_BUNDLE_TCDATA MATCHES "ON")
+  if (OCPN_BUNDLE_TCDATA)
     set_source_files_properties(
       ${tcData}
       PROPERTIES
         MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
-  endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
+  endif (OCPN_BUNDLE_TCDATA)
 
   set_source_files_properties(
     data/license.html
@@ -1989,7 +1989,7 @@ if (APPLE)
       MACOSX_PACKAGE_LOCATION SharedSupport/doc
   )
 
-  if (OCPN_BUNDLE_DOCS MATCHES "ON")
+  if (OCPN_BUNDLE_DOCS )
     set_source_files_properties(
       data/doc/help_en_US.html
       PROPERTIES
@@ -2017,7 +2017,7 @@ if (APPLE)
       )
     endforeach (_currentWikiDocFile)
 
-  endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+  endif (OCPN_BUNDLE_DOCS )
 
   set_source_files_properties(
     buildosx/opencpn.icns
@@ -2038,16 +2038,16 @@ if (APPLE)
   set(MACOSX_BUNDLE_BUNDLE_NAME "OpenCPN")
   set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
 
-  if (OCPN_BUNDLE_DOCS MATCHES "ON")
+  if (OCPN_BUNDLE_DOCS )
     set(
       DOC_FILES
       data/doc/help_web.html
       data/doc/help_en_US.html
       ${WIKI_DOC_FILES}
     )
-  else (OCPN_BUNDLE_DOCS MATCHES "ON")
+  else (OCPN_BUNDLE_DOCS )
     set(DOC_FILES data/doc/help_web.html)
-  endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+  endif (OCPN_BUNDLE_DOCS )
 
   target_sources(
     ${PACKAGE_NAME}
@@ -2160,11 +2160,11 @@ if (NOT APPLE)
 
   install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 
-  if (OCPN_BUNDLE_TCDATA MATCHES "ON")
+  if (OCPN_BUNDLE_TCDATA)
     install(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata)
   endif ()
 
-  if (OCPN_BUNDLE_GSHHS MATCHES "ON")
+  if (OCPN_BUNDLE_GSHHS)
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   endif ()  
 
@@ -2192,11 +2192,11 @@ if (NOT APPLE)
 
   install(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds)
 
-  if (OCPN_BUNDLE_DOCS MATCHES "ON")
+  if (OCPN_BUNDLE_DOCS )
     install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
-  else (OCPN_BUNDLE_DOCS MATCHES "ON")
+  else (OCPN_BUNDLE_DOCS )
     install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
-  endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+  endif (OCPN_BUNDLE_DOCS )
 
   if (UNIX)
     install(
@@ -2660,11 +2660,11 @@ else (WIN32 AND NOT UNIX)
   )
 endif (WIN32 AND NOT UNIX)
 
-if (OCPN_BUNDLE_TCDATA MATCHES "ON")
+if (OCPN_BUNDLE_TCDATA)
   message(STATUS "*** Package will include tide and current data ***")
-else (OCPN_BUNDLE_TCDATA MATCHES "ON")
+else (OCPN_BUNDLE_TCDATA)
   message(STATUS "*** Package will NOT include tide and current data ***")
-endif (OCPN_BUNDLE_TCDATA MATCHES "ON")
+endif (OCPN_BUNDLE_TCDATA)
 
 #
 # Appstream data (linux in general, in particular flatpak).
