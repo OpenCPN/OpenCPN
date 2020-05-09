@@ -138,6 +138,113 @@ void  GribV1Record::translateDataType()
 			levelValue = 0;
 		}
 	}
+	//----------------------------------------------
+	// ECMWF ERA5
+	//----------------------------------------------
+    else if (idCenter==98 && (idModel==145|| idModel==255 ) && idGrid==255 && tableVersion == 128)
+    {
+        dataCenterModel = ECMWF_ERA5;
+        if (getLevelType() == LV_ISOBARIC){ // for pressure level data
+            if (getDataType() == 130)
+            {
+                dataType = GRB_TEMP;
+            }
+            else if (getDataType() == 131) // u wind
+            {
+                dataType = GRB_WIND_VX;
+            }
+            else if (getDataType() == 132)  // v wind
+            {
+                dataType = GRB_WIND_VY;
+            }
+            else if (getDataType() == 157)  // rh
+            {
+                dataType = GRB_HUMID_REL;
+            }
+            else if (getDataType() == 129)  // geopotential
+            {
+                dataType = GRB_GEOPOT_HGT;
+                multiplyAllData(0.102); // convert to geopot height
+            }
+        }
+        if (getLevelType()==LV_GND_SURF && getLevelValue()==0) {  // single level data
+            if (getDataType() == 141) // Snow depth  (m of water equivalent)
+            {
+                dataType = GRB_SNOW_DEPTH;
+            }
+            else if (getDataType() == 151)
+            {
+                dataType = GRB_PRESSURE;
+                levelType = LV_MSL;
+            }
+            else if (getDataType() == 165 || getDataType() == 166)
+            {
+                if (getDataType() == 165)
+                    dataType = GRB_WIND_VX;
+                if (getDataType()== 166)
+                    dataType = GRB_WIND_VY;
+                levelType = LV_ABOV_GND;
+                levelValue = 10;
+            }
+            else if (getDataType() == 167)
+            {
+                dataType = GRB_TEMP;
+                levelType = LV_ABOV_GND;
+                levelValue = 2;
+            }
+            else if (getDataType() == 168)
+            {
+                dataType = GRB_DEWPOINT;
+                levelType = LV_ABOV_GND;
+                levelValue = 2;
+            }
+            else if (getDataType() == 34)
+            {
+                dataType = -1; // Sea surface temperature (K)
+            }
+            else if (getDataType() == 164)
+            {
+                dataType = GRB_CLOUD_TOT;
+                levelType = LV_ATMOS_ALL;
+                multiplyAllData( 100.0 ); // ECMWF ERA5 cloud range is 0-1, but we expect 0-100
+            }
+            else if (getDataType() == 228)
+            {
+                dataType = GRB_PRECIP_TOT;
+                // m/h -> mm/h
+                multiplyAllData( 1000.0 );
+            }
+        }
+    }
+    else if (idCenter==98 && idModel==145 && idGrid==255 && tableVersion == 228)
+    {
+        dataCenterModel = ECMWF_ERA5;
+        if (getLevelType()==LV_GND_SURF && getLevelValue()==0) {
+            if (getDataType() == 29)
+            {
+                dataType = GRB_WIND_GUST;
+                // levelValue = 10; // XXX really 10 but we only display 0
+            }
+        }
+    }
+	//----------------------------------------------
+	// ECMWF ERA5 WAVE
+	//----------------------------------------------
+    else if (idCenter==98 && idModel==111 && idGrid==255 && tableVersion == 140)
+    {
+        dataCenterModel = ECMWF_ERA5;
+        switch (getDataType()) {
+        case 229: // SWH Significant height of combined wind waves and swell (m)
+            dataType = GRB_HTSGW;
+            break;
+        case 230: // MWD Mean wave direction (Degree true)
+            dataType = GRB_WVDIR;
+            break;
+        case 232: // MWP Mean wave period  (s)
+            dataType = GRB_WVPER;
+            break;
+        }
+    }
 	//------------------------
 	// EMCWF grib1...
 	//------------------------

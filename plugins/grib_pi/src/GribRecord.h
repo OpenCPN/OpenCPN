@@ -114,6 +114,7 @@ enum DataCenterModel {
     FNMOC_WW3_GLB,
     FNMOC_WW3_MED,
     NORWAY_METNO,
+    ECMWF_ERA5,
     OTHER_DATA_CENTER
 };
 
