@@ -49,10 +49,12 @@
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
+#include "options.h"
 
 extern PlugInManager*           g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform*            g_Platform;
+extern options                 *g_options;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -300,12 +302,18 @@ class PluginTextPanel: public wxPanel
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
             auto name = staticText(plugin->name + "    " + plugin->version);
-            m_descr = staticText(plugin->description);
+
+            m_widthDescription = g_options->GetSize().x / 2;
+            m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1), wxST_NO_AUTORESIZE );
+            m_descText = wxString(plugin->description.c_str());
+            m_descr->SetLabel( m_descText );
+            m_descr->Wrap( m_widthDescription );
             m_descr->Hide();
             vbox->Add(name, flags);
             vbox->Add(sum_hbox, flags);
-            vbox->Add(m_descr, flags.Expand());
+            vbox->Add(m_descr, 1);
             SetSizer(vbox);
+            Fit();
 
             m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
             m_descr->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
@@ -314,6 +322,11 @@ class PluginTextPanel: public wxPanel
         void OnClick(wxMouseEvent& event)
         {
             m_descr->Show(!m_descr->IsShown());
+            m_descr->SetLabel( _T("") );
+            m_descr->SetLabel( m_descText );
+            m_descr->Wrap( m_widthDescription );
+            Layout();
+
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
             GetParent()->SendSizeEvent();
@@ -336,6 +349,8 @@ class PluginTextPanel: public wxPanel
         wxStaticText* m_more;
         wxStaticText* m_summary;
         CandidateButtonsPanel* m_buttons;
+        int m_widthDescription;
+        wxString m_descText;
 };
 
 
