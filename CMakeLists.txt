@@ -207,7 +207,12 @@ else ()
 endif ()
 
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-  option(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+  find_library(GTK2U NAMES wx_gtk2u_core)
+  if (GTK2U)
+    option(OCPN_FORCE_GTK3 "Force the build to use GTK3 [OFF]" "OFF")
+  else ()
+    option(OCPN_FORCE_GTK3 "Force the build to use GTK3 [ON]" "ON")
+  endif ()
 endif ()
 
 if (NOT WIN32 AND NOT APPLE)
