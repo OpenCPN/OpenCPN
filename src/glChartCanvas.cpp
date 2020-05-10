@@ -2134,9 +2134,13 @@ extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&Min
 extern wxString CalcGridText( float latlon, float spacing, bool bPostfix );
 void glChartCanvas::GridDraw( )
 {
+    
     if( !m_pParentCanvas->m_bDisplayGrid ) return;
 
     ViewPort &vp = m_pParentCanvas->GetVP();
+    
+    if(vp.IsValid() || vp.GetBBox().GetValid())
+        return;
 
     // TODO: make minor grid work all the time
     bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
@@ -4975,7 +4979,7 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
             s_regionColor = wxColor(204, 102, 102, hitrans * 256);
 #endif
 
-            DrawRegion(vp, hiregion);
+            DrawRegion(VPoint, hiregion);
 
             glDisable( GL_BLEND );
         }
