@@ -689,7 +689,8 @@ int                       g_click_stop;
 int                       g_MemFootSec;
 int                       g_MemFootMB;
 
-std::vector<int>               g_quilt_noshow_index_array;
+std::vector<int>          g_quilt_noshow_index_array;
+std::vector<int>          g_quilt_yesshow_index_array;
 
 wxStaticBitmap            *g_pStatBoxTool;
 bool                      g_bShowStatusBar;

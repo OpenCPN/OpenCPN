@@ -42,6 +42,7 @@
 #include "chart1.h"
 #include "thumbwin.h"
 #include "mbtiles.h"
+#include "CanvasConfig.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -67,6 +68,9 @@ extern int          g_memCacheLimit;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 extern std::vector<int>      g_quilt_noshow_index_array;
+extern std::vector<int>      g_quilt_yesshow_index_array;
+extern int          g_canvasConfig;
+extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
@@ -243,6 +247,10 @@ ChartDB::ChartDB()
             msg.Printf(_T("ChartDB Cache policy:  Max open chart limit is %d."), g_nCacheLimit);
             wxLogMessage(msg);
       }
+      
+      m_checkGroupIndex[0] = m_checkGroupIndex[1] = -1;
+      m_checkedTileOnly[0] = m_checkedTileOnly[1] = false;
+
 
 }
 
@@ -746,6 +754,43 @@ bool ChartDB::IsENCInGroup(const int groupIndex)
       
       return retVal;
 }
+
+bool ChartDB::IsNonMBTileInGroup(const int groupIndex)
+{
+    // Walk the database, looking in specified group for anything other than MBTile
+    // Return true if so.
+      bool retVal = false;
+      
+      for(int db_index=0 ; db_index<GetChartTableEntries() ; db_index++){
+            const ChartTableEntry &cte = GetChartTableEntry(db_index);
+            
+            //    Check to see if the candidate chart is in the currently active group
+            bool b_group_add = false;
+            if(groupIndex > 0)
+            {
+                  const int ng = cte.GetGroupArray().size();
+                  for(int ig=0 ; ig < ng; ig++){
+                      if(groupIndex == cte.GetGroupArray()[ig]){
+                              b_group_add = true;
+                              break;
+                      }
+                  }
+            }
+            else
+                  b_group_add = true;
+
+    
+            if(b_group_add){
+                if(cte.GetChartType() != CHART_TYPE_MBTILES){
+                    retVal = true;
+                    break;   // the outer for loop
+                }
+            }
+      }
+      
+      return retVal;
+}
+
 
 //-------------------------------------------------------------------
 //    Check to see it lat/lon is within a database chart at index
@@ -1470,9 +1515,20 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                         //  Hide this chart's MBTiles overlay on initial MBTile chart load, or reload after cache purge.
                         //  This can help avoid excessively long startup and group switch time when large tilesets are in use.
                         //  See FS#2601
+                        //  Further optimization:
+                        //  If any chart group being shown contains only MBTiles, and the target file is less than 5 GB in size,
+                        //   then allow immediate opening.  Otherwise, add this chart to the "no-show" array.
                         if(chart_type == CHART_TYPE_MBTILES){
-                            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), dbindex) == g_quilt_noshow_index_array.end()) {
-                                g_quilt_noshow_index_array.push_back( dbindex );
+                            wxFileName tileFile(ChartFullPath);
+                            wxULongLong tileSize = tileFile.GetSize();
+                            if(!CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
+                                // Check to see if the tile has been "clicked".
+                                // If so, do not add to no-show array again.
+                                if(std::find(g_quilt_yesshow_index_array.begin(), g_quilt_yesshow_index_array.end(), dbindex) == g_quilt_yesshow_index_array.end()) {
+                                    if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), dbindex) == g_quilt_noshow_index_array.end()) {
+                                        g_quilt_noshow_index_array.push_back( dbindex );
+                                    }
+                                }
                             }
                         }
                   }
@@ -1885,8 +1941,89 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
       return doc;
 }
 
+bool ChartDB::CheckExclusiveTileGroup( int canvasIndex )
+{
+    // Return true if the group active in the passed canvasIndex has only MBTiles present
+    // Also, populate the persistent member variables, so that subsequent checks are very fast.
+    
+    // Get the chart canvas indexed by canvasIndex
+    canvasConfig *cc;
+    ChartCanvas *canvas = NULL;
+    switch(g_canvasConfig){
+        case 1:
+            if(canvasIndex == 0){
+                cc = g_canvasConfigArray.Item(0);
+                if(cc )
+                    canvas = cc->canvas;
+            }
+            else{
+                cc = g_canvasConfigArray.Item(1);
+                if(cc )
+                    canvas = cc->canvas;
+            }
+            break;
+            
+        default:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc )
+                canvas = cc->canvas;
+    }
+    
+    if(!canvas)
+        return false;
+    
+    // This canvas group index already checked?
+    if(canvas->m_groupIndex == m_checkGroupIndex[canvasIndex])
+        return m_checkedTileOnly[canvasIndex];
+        
+    // Check the group for anything other than MBTiles...
+    bool rv = IsNonMBTileInGroup(canvas->m_groupIndex);
+    
+    m_checkGroupIndex[canvasIndex] = canvas->m_groupIndex;
+    m_checkedTileOnly[canvasIndex] = !rv;
+    
+    return !rv;                 // true iff group has only MBTiles
 
+}
+    
+bool ChartDB::CheckAnyCanvasExclusiveTileGroup( )
+{
+    // Check to determine if any canvas group is exclusively MBTiles
+    // if so, return true;
+    
+    bool rv = false;
+    
+    canvasConfig *cc;
+    ChartCanvas *canvas = NULL;
+    switch(g_canvasConfig){
+        case 1:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                    rv |= m_checkedTileOnly[0];
+            }
 
+            cc = g_canvasConfigArray.Item(1);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->m_groupIndex == m_checkGroupIndex[1])
+                    rv |= m_checkedTileOnly[1];
+            }
+            break;
+            
+        default:
+            cc = g_canvasConfigArray.Item(0);
+            if(cc ){
+                ChartCanvas *canvas = cc->canvas;
+                if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                    rv |= m_checkedTileOnly[0];
+            }
+
+    }
+    
+    return rv;
+}
 
 
 //  Private version of PolyPt testing using floats instead of doubles

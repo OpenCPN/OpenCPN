@@ -245,6 +245,7 @@ extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
 
 extern std::vector<int>      g_quilt_noshow_index_array;
+extern std::vector<int>      g_quilt_yesshow_index_array;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
@@ -1323,7 +1324,10 @@ void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
     //  Update the MUIBar for ENC availability
     if(m_muiBar)
         m_muiBar->SetCanvasENCAvailable(m_bENCGroup);
-    
+
+    //  Allow the chart database to pre-calculate the MBTile inclusion test boolean...
+    ChartData->CheckExclusiveTileGroup(m_canvasIndex);
+     
     //  Invalidate the "sticky" chart on group change, since it might not be in the new group
     g_sticky_chart = -1;
     
@@ -1635,6 +1639,10 @@ bool ChartCanvas::DoCanvasUpdate( void )
          m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
                 
          if( m_bFirstAuto ) {
+             
+             //  Allow the chart database to pre-calculate the MBTile inclusion test boolean...
+            ChartData->CheckExclusiveTileGroup(m_canvasIndex);
+
                     double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale(); // as set from config load
                         
                         int initial_db_index = m_restore_dbindex;
@@ -12689,6 +12697,10 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
            if(!bfound){
                g_quilt_noshow_index_array.push_back(selected_dbIndex);
            }
+           
+           // If not already present, add this tileset to the "yes_show" array.
+           if(std::find(g_quilt_yesshow_index_array.begin(), g_quilt_yesshow_index_array.end(), selected_dbIndex) == g_quilt_yesshow_index_array.end())
+                g_quilt_yesshow_index_array.push_back( selected_dbIndex );
         }
         
         else{
