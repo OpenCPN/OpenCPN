@@ -88,6 +88,10 @@ Elément de base d'un fichier GRIB
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
 #define GRB_WIND_GUST     180   /* m/s "wind gust */
+#define GRB_WIND_GUST_VX  181   /* m/s */
+#define GRB_WIND_GUST_VY  182   /* m/s */
+
+
 #define GRB_USCT          190   /* Scatterometer estimated U Wind, NCEP Center 7  */
 #define GRB_VSCT          191   /* Scatterometer estimated V Wind, NCEP Center 7  */
 

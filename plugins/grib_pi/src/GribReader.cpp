@@ -107,6 +107,13 @@ static bool RecordIsWind(GribRecord *rec)
          rec->getDataType()==GRB_WIND_DIR || rec->getDataType()==GRB_WIND_SPEED;
 }
 
+//---------------------------------------------------------------------------------
+static bool RecordIsGust(GribRecord *rec)
+{
+  return rec->getDataType()==GRB_WIND_GUST_VX || rec->getDataType()==GRB_WIND_GUST_VY ||
+		 rec->getDataType()==GRB_WIND_GUST;
+}
+
 static bool RecordIsCurrent(GribRecord *rec)
 {
   return rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD ||
@@ -193,8 +200,7 @@ void GribReader::readAllGribRecords()
                ) )
             storeRecordInMap(rec);
 
-        else if( (rec->getDataType()==GRB_WIND_GUST
-                    && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
+        else if( (RecordIsGust(rec) && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
             storeRecordInMap(rec);
 
         else if( RecordIsWind(rec) && rec->getLevelType()==LV_GND_SURF)
