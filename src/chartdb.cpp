@@ -69,7 +69,7 @@ extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 extern std::vector<int>      g_quilt_noshow_index_array;
 extern std::vector<int>      g_quilt_yesshow_index_array;
-extern int          g_canvasConfig;
+extern unsigned int  g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
 
