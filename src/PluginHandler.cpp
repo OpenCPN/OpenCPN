@@ -727,12 +727,22 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
+void PluginHandler::cleanupFiles(const std::string& manifestFile,
+                                 const std::string& plugname)
+{
+    std::ifstream diskfiles(manifestFile);
+    if (diskfiles.is_open()) {
+        std::stringstream buffer;
+        buffer << diskfiles.rdbuf();
+        PluginHandler::cleanup(buffer.str(), plugname);
+    }
+}
+
+
 void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
-    if(!wxFileExists( wxString(filelist.c_str())))
-        return;
     
     std::istringstream files(filelist);
     while (!files.eof()) {
@@ -751,7 +761,7 @@ void PluginHandler::cleanup(const std::string& filelist,
     int iloop = 0;
     while(!done && (iloop < 6) ){
         done = true;
-        std::ifstream dirs(filelist.c_str());
+        std::istringstream dirs(filelist);
         while (!dirs.eof()) {
             char line[256];
             dirs.getline(line, sizeof(line));
@@ -765,8 +775,6 @@ void PluginHandler::cleanup(const std::string& filelist,
                 }
             }
         }
-        dirs.close();
-        
         iloop++;
     }
 
@@ -856,20 +864,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
     saveVersion(plugin.name, plugin.version);
 
     return true;
-#if 0    
-    int before = g_pi_manager->GetPlugInArray()->GetCount();
-    g_pi_manager->LoadAllPlugIns(false);
-    int after = g_pi_manager->GetPlugInArray()->GetCount();
-    wxLogMessage("install: Reloading plugins, before: %d, after:  %d",
-                 before, after);
-    if (before >= after) {
-        last_error_msg = "Cannot load the installed plugin";
-        PluginHandler::cleanup(filelist, plugin.name);
-    }
-    //std::cout << "Installed: " << plugin.name << std::endl;
-
-    return after > before;
-#endif    
 }
 
 

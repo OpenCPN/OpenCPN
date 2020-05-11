@@ -315,15 +315,18 @@ void *OCP_DataStreamInput_Thread::Entry()
             //    Found a NL char, thus end of message?
             if (nl_found){
                 bool done = false;
-                while ((newdata > 0) && !done) {
+                while ( !done ) {
+                    
+                    if(circle.empty()){
+                        done = true;
+                        break;
+                    }
+                    
                     //    Copy the message into a temporary circular buffer
-
                     uint8_t take_byte = circle.get();
-                    newdata--;
-                    while ( (take_byte != 0x0a) && (newdata > 0)) {
+                    while ( (take_byte != 0x0a) && !circle.empty()) {
                         circle_temp.put(take_byte);
                         take_byte = circle.get();
-                        newdata--;
                     }
                     
                     circle_temp.put(take_byte);

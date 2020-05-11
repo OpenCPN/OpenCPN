@@ -82,6 +82,8 @@ class PluginHandler {
         /** Cleanup failed installation attempt using filelist for plugin. */
         static void
             cleanup(const std::string& filelist, const std::string& plugname);
+        static void
+            cleanupFiles(const std::string& manifestFile, const std::string& plugname);
 
         /** Return path to installation manifest for given plugin. */
         static std::string fileListPath(std::string name);

@@ -73,6 +73,7 @@
  *
  */
 
+#include <algorithm>
 #include "gdal/cpl_conv.h"
 #include "iso8211.h"
 
@@ -781,7 +782,7 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
         GByte   *pabyBString = (GByte *) ExtractStringData( pachData, nMaxBytes, &nBytes );
 
         fprintf( fp, "      Subfield `%s' = 0x", pszName );
-        for( i = 0; i < MIN(nBytes,24); i++ )
+        for( i = 0; i < std::min(nBytes,24); i++ )
             fprintf( fp, "%02X", pabyBString[i] );
 
         if( nBytes > 24 )

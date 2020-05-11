@@ -449,7 +449,7 @@ static void run_update_dialog(PluginListPanel* parent,
             PluginHandler::fileListPath(update.name);
         if(!isRegularFile(manifestPath.c_str())) {
             wxLogMessage("Installation of %s failed",  update.name.c_str());
-            PluginHandler::cleanup(manifestPath, update.name);
+            PluginHandler::cleanupFiles(manifestPath, update.name);
             bOK = false;
         }
 
@@ -481,8 +481,36 @@ static void run_update_dialog(PluginListPanel* parent,
             }
         }
     }
-            
-        //  Reload all plugins, which will bring in the action results.
+    
+    //  Check the library compatibility of the installed plugin
+    // Find the first dll/so/dylib file
+#ifdef __WXMSW__
+    wxString pispec = _T(".dll");
+#elif defined(__WXOSX__)
+    wxString pispec = _T(".dylib");
+#else
+    wxString pispec = _T(".so");
+#endif
+
+    std::string manifestPath = PluginHandler::fileListPath(update.name);
+    wxTextFile manifest_file(manifestPath);
+    if( manifest_file.Open()){
+        wxString val;
+        for ( wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof() ; str = manifest_file.GetNextLine() ){
+            if(str.Contains(pispec)){
+                if( !g_pi_manager->CheckPluginCompatibility(str)){
+                    wxString msg = _("The plugin is not compatible with this version of OpenCPN, and will be uninstalled.");
+                    OCPNMessageBox( NULL, msg, wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
+                    
+                    PluginHandler::cleanupFiles(manifestPath, update.name);
+                }
+                break;
+            }
+        }
+    }
+
+    
+    //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
     
     // Check to see if this plugin needs an options instance reload
@@ -685,7 +713,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
-                PluginHandler::cleanup(manifestPath,
+                PluginHandler::cleanupFiles(manifestPath,
                                        actionPIC->m_ManagedMetadata.name);
             }
             plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
@@ -760,6 +788,8 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
+            m_parent = wxDynamicCast(parent, PluginPanel);
+
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -770,6 +800,8 @@ class StatusIconPanel: public wxPanel
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
             Layout();
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
+            Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
+
        }
 
         void OnPaint(wxPaintEvent& event)
@@ -796,13 +828,21 @@ class StatusIconPanel: public wxPanel
             m_icon_name = icon_by_status[m_stat];
             Refresh();
          }
-             
+          
+         void OnIconSelected( wxMouseEvent &event )
+         {
+             if(m_parent){
+                 m_parent->OnPluginSelected(event);
+             }
+         }
+
 
     protected:
         wxBitmap m_bitmap;
         std::string m_icon_name;
         PluginStatus m_stat;
-
+        PluginPanel *m_parent;
+        
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -1464,6 +1504,8 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_common_name = wxString(plugin.name.c_str());
             new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
             new_pic->m_ManagedMetadata = plugin;
+            new_pic->m_version_major = 0;
+            new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
         }
@@ -1930,28 +1972,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #if defined(__WXGTK__) || defined(__WXQT__)
-#if 0
-    wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
-    FILE *ldd = popen( cmd.mb_str(), "r" );
-    if (ldd != NULL)
-    {
-        char buf[1024];
-        
-        char strver[22]; //Enough space even for very big integers...
-        sprintf( strver, "%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
-
-        while( fscanf(ldd, "%s", buf) != EOF )
-        {
-            if( strstr(buf, "libwx") != NULL )
-            {
-                if(  strstr(buf, strver) == NULL )
-                    b_compat = false;
-                break;
-            }
-        }
-        fclose(ldd);
-    }
-#elif defined(USE_LIBELF)
+#if defined(USE_LIBELF)
 
     static bool b_own_info_queried = false;
     static bool b_own_info_usable = false;
@@ -1965,11 +1986,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         if( app.argc && !app.argv[0].IsEmpty())
         {
             wxString app_path( app.argv[0] );
-#if defined(USE_LIBELF)
             b_own_info_usable = ReadModuleInfoFromELF( app_path, dependencies, own_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         }
         else
         {
@@ -1982,11 +1999,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     {
         bool b_pi_info_usable = false;
         ModuleInfo pi_info;
-#if defined(USE_LIBELF)
         b_pi_info_usable = ReadModuleInfoFromELF( plugin_file, dependencies, pi_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         if( b_pi_info_usable )
         {
             b_compat = ( pi_info.type_magic == own_info.type_magic );
@@ -2018,14 +2031,21 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         b_compat = true;
     }
 
-#else
-    // this is 3x faster than the other method
+    if(!b_compat){
+        wxLogMessage("Plugin is incompatible by elf library scan.");
+        return false;           // definitely not compatible by ELF lib dependency comparison
+    }
+
+#endif  // LIBELF
+
     
     //  But Android Plugins do not include the wxlib specification in their ELF file.
     //  So we assume Android Plugins are compatible....
 #ifdef __OCPN__ANDROID__
     return true;
 #endif
+
+    // File scan is 3x faster than the ELF scan method
     
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
@@ -2054,8 +2074,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
             pos = 0;
     }
     fclose(f);
-#endif
-#endif // __WXGTK__
+#endif // __WXGTK__ or __WXQT__
+   
     wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }

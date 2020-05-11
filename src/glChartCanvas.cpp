@@ -2134,9 +2134,13 @@ extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&Min
 extern wxString CalcGridText( float latlon, float spacing, bool bPostfix );
 void glChartCanvas::GridDraw( )
 {
+    
     if( !m_pParentCanvas->m_bDisplayGrid ) return;
 
     ViewPort &vp = m_pParentCanvas->GetVP();
+    
+    if(vp.IsValid() || vp.GetBBox().GetValid())
+        return;
 
     // TODO: make minor grid work all the time
     bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
@@ -4946,6 +4950,39 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                 }
             }
         }
+        
+        // Render the HiLite on piano rollover
+        LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
+
+        if( !hiregion.Empty() ) {
+            glEnable( GL_BLEND );
+
+            double hitrans;
+            switch( global_color_scheme ) {
+            case GLOBAL_COLOR_SCHEME_DAY:
+                hitrans = .4;
+                break;
+            case GLOBAL_COLOR_SCHEME_DUSK:
+                hitrans = .2;
+                break;
+            case GLOBAL_COLOR_SCHEME_NIGHT:
+                hitrans = .1;
+                break;
+            default:
+                hitrans = .4;
+                break;
+            }
+
+#ifndef USE_ANDROID_GLES2
+            glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+#else
+            s_regionColor = wxColor(204, 102, 102, hitrans * 256);
+#endif
+
+            DrawRegion(VPoint, hiregion);
+
+            glDisable( GL_BLEND );
+        }
     }
 }
     
@@ -5520,38 +5557,38 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
 //     }
 //    else
     {
-    m_nStep = 20; 
-    m_nTotal = 100;
-    
-    m_nStep = 10; 
-    m_nTotal = 40;
-    
-    m_nRun = 0;
-    
-    float perStep = m_nStep / m_nTotal;
-    
- 
-    if(zoomTimer.IsRunning()){
-        m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+        m_nStep = 20; 
+        m_nTotal = 100;
         
-    }
-    else{
-        m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
-        m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
-        m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
-        m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
-
-        m_runoffsetx = m_lastfbo_offsetx;
-        m_runoffsety = m_lastfbo_offsety;
-        m_runswidth = m_lastfbo_swidth;
-        m_runsheight = m_lastfbo_sheight;
-    }
-
-    if(!zoomTimer.IsRunning())
-        zoomTimer.Start(m_nStep);
+        m_nStep = 10; 
+        m_nTotal = 40;
+        
+        m_nRun = 0;
+        
+        float perStep = m_nStep / m_nTotal;
+        
+     
+        if(zoomTimer.IsRunning()){
+            m_offsetxStep = (m_fbo_offsetx - m_runoffsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_runoffsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_runswidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_runsheight) * perStep;
+            
+        }
+        else{
+            m_offsetxStep = (m_fbo_offsetx - m_lastfbo_offsetx) * perStep;
+            m_offsetyStep = (m_fbo_offsety - m_lastfbo_offsety) * perStep;
+            m_swidthStep = (m_fbo_swidth - m_lastfbo_swidth) * perStep;
+            m_sheightStep = (m_fbo_sheight - m_lastfbo_sheight) * perStep;
+    
+            m_runoffsetx = m_lastfbo_offsetx;
+            m_runoffsety = m_lastfbo_offsety;
+            m_runswidth = m_lastfbo_swidth;
+            m_runsheight = m_lastfbo_sheight;
+        }
+    
+        if(!zoomTimer.IsRunning())
+            zoomTimer.Start(m_nStep);
         m_zoomFinal = false;
     }
 }

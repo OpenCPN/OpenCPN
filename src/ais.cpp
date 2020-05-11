@@ -1744,7 +1744,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         //  create vector of x-y points
         int TrackLength = td->m_ptrack->GetCount();
         int TrackPointCount;
-        wxPoint *TrackPoints;
+        wxPoint *TrackPoints = 0;
         if (TrackLength > 1) {
             TrackPoints = new wxPoint[TrackLength];
             wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
