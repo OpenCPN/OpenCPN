@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2018 Alec Leamas <leamas@nowhere.net> -->
 <component type="desktop">
-  <id>opencpn.desktop</id>
-  <metadata_license>gpl-2+</metadata_license>
+  <id>org.opencpn.OpenCPN</id>
+  <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>OpenCPN</name>
   <summary>A concise Chartplotter and Navigation software</summary>
   <summary xml:lang="sv">Kartplotter och navigationsprogram</summary>
+  <provides>
+    <binary>opencpn</binary>
+  </provides>
+  <launchable type="desktop-id">org.opencpn.OpenCPN.desktop</launchable>
   <description>
     <p>
       A cross-platform ship-borne GUI navigation application made
@@ -28,21 +32,6 @@
       at the same site.
     </p>
   </description>
-  <description xml:lang="sv">
-    <p> Plattformsoberoende navigationsprogram som stödjer: </p>
-    <ul>
-      <li> GPS/GPDS positionsdata </li>
-      <li> Presentation av BSB rasterkort. </li>
-      <li> Presentation av S57 och CM93 vektorkort </li>
-      <li> AIS-data </li>
-      <li> Rutter och girpunkter för att styra autopilot </li>
-    </ul>
-    <p>
-      Ytterligare sjökort kan laddas ner från projektets webbplats
-      opencpn.org. Här finns också ytterligare tillägg till programmet, bl
-      a under länken "Download".
-    </p>
-   </description>
   <releases>
     <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@">
       <description>
@@ -52,9 +41,8 @@
   </releases>
   <screenshots>
     <screenshot type="default">
-      <image>
-        https://upload.wikimedia.org/wikipedia/commons/c/cd/Opencpn-screenshot.png
-      </image>
+      <caption>Main window</caption>
+      <image>https://en.wikipedia.org/wiki/OpenCPN#/media/File:OCPN_5_0.jpg</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://opencpn.org/</url>
