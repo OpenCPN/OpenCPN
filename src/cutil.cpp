@@ -538,24 +538,32 @@ void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon, std::ve
     double dmax = 0;
     int maxdistIndex = -1;
     
-    vector2D va(PointList[2*fp] - PointList[2*lp],
-                PointList[2*fp+1] - PointList[2*lp+1]);
+    vector2D va(PointList[3*fp] - PointList[3*lp],
+                PointList[3*fp+1] - PointList[3*lp+1]);
+    double da = sqrt(va.x*va.x + va.y*va.y);
     
-    double da = va.x*va.x + va.y*va.y;
+    double y2 = PointList[3*lp+1];
+    double y1 = PointList[3*fp+1];
+    double x2 = PointList[3*lp];
+    double x1 = PointList[3*fp];
+    
     for(int i = fp+1 ; i < lp ; ++i) {
-        vector2D vb(PointList[2*i] - PointList[2*fp],
-                    PointList[2*i + 1] - PointList[2*fp+1]);
         
-        double dab = va.x*vb.x + va.y*vb.y;
-        double db = vb.x*vb.x + vb.y*vb.y;
-        double d = da - dab*dab/db;
+        // Distance from point to line.
+        // ref.  https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+        double d = (y2 - y1) * PointList[3 * i] -
+            (x2 - x1) * PointList[3 * i + 1] +
+            (x2 * y1) - (y2 * x1);
+            
+        d = fabs( d / da);
+        
         if ( d > dmax ) {
             maxdistIndex = i;
             dmax = d;
         }
     }
     // If max distance is greater than epsilon, recursively simplify
-    if ( dmax > epsilon*epsilon ) {
+    if ( dmax > epsilon ) {
         
         // Recursive call
         DouglasPeuckerDI(PointList, fp, maxdistIndex, epsilon, keep);

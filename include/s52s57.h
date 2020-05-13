@@ -34,7 +34,7 @@
 
 #include <vector>
 
-#define CURRENT_SENC_FORMAT_VERSION  200
+#define CURRENT_SENC_FORMAT_VERSION  201
 
 #define OBJL_NAME_LEN  6
 
