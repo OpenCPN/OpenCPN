@@ -2139,7 +2139,7 @@ void glChartCanvas::GridDraw( )
 
     ViewPort &vp = m_pParentCanvas->GetVP();
     
-    if(vp.IsValid() || vp.GetBBox().GetValid())
+    if(!vp.IsValid() || !vp.GetBBox().GetValid())
         return;
 
     // TODO: make minor grid work all the time
