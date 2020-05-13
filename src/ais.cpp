@@ -75,6 +75,7 @@ extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bDrawAISRealtime;
+extern double           g_AIS_RealtPred_Kts;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bInlandEcdis;
@@ -1481,7 +1482,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         wxPoint Point = TargetPoint;
         if (g_bDrawAISRealtime && 
             (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B ) &&
-             td->SOG > g_ShowMoored_Kts &&
+             td->SOG > g_AIS_RealtPred_Kts &&
              td->SOG < 103.0) {
             wxDateTime now = wxDateTime::Now();
             now.MakeGMT();

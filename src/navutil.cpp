@@ -228,6 +228,7 @@ extern wxString         g_AisTargetList_column_order;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bDrawAISRealtime;
+extern double           g_AIS_RealtPred_Kts;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
@@ -1122,6 +1123,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bDrawAISRealtime" ), &g_bDrawAISRealtime );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
+    Read( _T ( "AISRealtimeMinSpeedKnots" ), &g_AIS_RealtPred_Kts, 0.7 );
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     Read( _T ( "ShowAISTargetNameScale" ), &g_Show_Target_Name_Scale );
     Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition );
@@ -2553,6 +2555,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
     Write( _T ( "bDrawAISRealtime" ), g_bDrawAISRealtime );
+    Write( _T ( "AISRealtimeMinSpeedKnots" ), g_AIS_RealtPred_Kts );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
