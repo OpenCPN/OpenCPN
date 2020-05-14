@@ -2207,13 +2207,10 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps
     )
     install(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications)
-    install(DIRECTORY DESTINATION ${PREFIX_DATA}/metainfo)
     install(
-       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
-       DESTINATION ${PREFIX_DATA}/metainfo
-       RENAME opencpn.metainfo.xml
+      FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
+      DESTINATION ${PREFIX_DATA}/metainfo
     )
-
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
 
