@@ -1490,9 +1490,6 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues( double &M, double &A, int idx1, i
     if(!beforeX || !afterX)
         return false;
 
-    if(!beforeY || !afterY)
-        return false;
-
     time_t t1 = beforeX->getRecordCurrentDate();
     time_t t2 = afterX->getRecordCurrentDate();
     if (t1 == t2) {
@@ -2072,72 +2069,63 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
         }
     }
 
-    if (polarWind) {
+    if (polarWind || polarCurrent) {
         for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
             for(unsigned int i=0; i<Idx_COUNT; i++) {
-                GribRecord *GR1 = NULL, *GR2 = NULL;
                 int idx = -1;
-                GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
+                if (polarWind) {
+                    GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
 
-                if ( pRec == 0 || pRec->getDataType() != GRB_WIND_DIR) {
-                    continue;
+                    if ( pRec != nullptr && pRec->getDataType() == GRB_WIND_DIR) {
+                        switch( i ) {
+                        case Idx_WIND_VX300:
+                            idx = Idx_WIND_VY300;
+                            break;
+                        case Idx_WIND_VX500:
+                            idx = Idx_WIND_VY500;
+                            break;
+                        case Idx_WIND_VX700:
+                            idx = Idx_WIND_VY700;
+                            break;
+                        case Idx_WIND_VX850:
+                            idx = Idx_WIND_VY850;
+                            break;
+                        case Idx_WIND_VX:
+                            idx = Idx_WIND_VY;
+                            break;
+                        default:
+                            break;
+                        }
+                        if (idx != -1) {
+                            GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                            if (pRec1 != nullptr && pRec1->getDataType() == GRB_WIND_SPEED)
+                                GribRecord::Polar2UV(pRec, pRec1);
+                        }
+                    }
                 }
-                switch( i ) {
-                case Idx_WIND_VX300:
-                    idx = Idx_WIND_VY300;
-                    break;
-                case Idx_WIND_VX500:
-                    idx = Idx_WIND_VY500;
-                    break;
-                case Idx_WIND_VX700:
-                    idx = Idx_WIND_VY700;
-                    break;
-                case Idx_WIND_VX850:
-                    idx = Idx_WIND_VY850;
-                    break;
-                case Idx_WIND_VX:
-                    idx = Idx_WIND_VY;
-                    break;
-                default:
-                    break;
+                if (polarCurrent) {
+                    idx = -1;
+                    GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
+
+                    if ( pRec != nullptr && pRec->getDataType() == GRB_CUR_DIR) {
+                        switch( i ) {
+                        case Idx_SEACURRENT_VX:
+                            idx = Idx_SEACURRENT_VY;
+                            break;
+                        default:
+                            break;
+                        }
+                        if (idx != -1) {
+                            GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                            if (pRec1 != nullptr && pRec1->getDataType() == GRB_CUR_SPEED)
+                                GribRecord::Polar2UV(pRec, pRec1);
+                        }
+                    }
                 }
-                if (idx == -1)
-                    continue;
-                GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
-                if (pRec1 == 0 || pRec1->getDataType() != GRB_WIND_SPEED) {
-                    continue;
-                }
-                GribRecord::Polar2UV(pRec, pRec1);
             }
         }
     }
-    if (polarCurrent) {
-        for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
-            for(unsigned int i=0; i<Idx_COUNT; i++) {
-                GribRecord *GR1 = NULL, *GR2 = NULL;
-                int idx = -1;
-                GribRecord *pRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[i];
 
-                if ( pRec == 0 || pRec->getDataType() != GRB_CUR_DIR) {
-                    continue;
-                }
-                switch( i ) {
-                case Idx_SEACURRENT_VX:
-                    idx = Idx_SEACURRENT_VY;
-                    break;
-                default:
-                    break;
-                }
-                if (idx == -1)
-                    continue;
-                GribRecord *pRec1 = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
-                if (pRec1 == 0 || pRec1->getDataType() != GRB_CUR_SPEED) {
-                    continue;
-                }
-                GribRecord::Polar2UV(pRec, pRec1);
-            }
-        }
-    }
     if(isOK) m_pRefDateTime = pRec->getRecordRefDate();     //to ovoid crash with some bad files
 }
 
