@@ -200,6 +200,7 @@ extern bool g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;
 extern bool g_bDrawAISRealtime;
+extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
 extern bool g_bWplIsAprsPosition;
@@ -5505,7 +5506,15 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
+  
+  m_pCheck_Draw_Realtime_Prediction = new wxCheckBox(
+      panelAIS, -1, _("Draw AIS realtime prediction, target speed min (kn)"));
+  pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL, group_item_spacing);
 
+  m_pText_RealtPred_Speed = new wxTextCtrl(panelAIS, -1);
+  pDisplayGrid->Add(m_pText_RealtPred_Speed, 1, wxALL | wxALIGN_RIGHT,
+      group_item_spacing);
+    
   m_pCheck_Scale_Priority = new wxCheckBox(
       panelAIS, -1, _("Allow attenuation of less critical targets if more than ... targets"));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
@@ -5527,13 +5536,6 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   wxStaticText* pStatic_Dummy6 = new wxStaticText(panelAIS, -1, _T(""));
   pDisplayGrid->Add(pStatic_Dummy6, 1, wxALL, group_item_spacing);
-
-  m_pCheck_Draw_Realtime_Prediction =
-      new wxCheckBox(panelAIS, -1, _("Draw AIS realtime prediction"));
-  pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL, group_item_spacing);
-  
-  wxStaticText* pStatic_Dummy6a = new wxStaticText(panelAIS, -1, _T(""));
-  pDisplayGrid->Add(pStatic_Dummy6a, 1, wxALL, group_item_spacing);
 
   m_pCheck_Show_Target_Name = new wxCheckBox(
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
@@ -6577,6 +6579,11 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
+
+  m_pCheck_Draw_Realtime_Prediction->SetValue(g_bDrawAISRealtime);
+
+  s.Printf(_T("%4.1f"), g_AIS_RealtPred_Kts);
+  m_pText_RealtPred_Speed->SetValue(s);
   
   m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
   
@@ -7691,6 +7698,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bHideMoored = m_pCheck_Hide_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
+  g_bDrawAISRealtime = m_pCheck_Draw_Realtime_Prediction->GetValue();
+  m_pText_RealtPred_Speed->GetValue().ToDouble(&g_AIS_RealtPred_Kts);
+
   g_bAllowShowScaled = m_pCheck_Scale_Priority->GetValue();
   long l;
   m_pText_Scale_Priority->GetValue().ToLong(&l);
@@ -7698,7 +7708,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
   
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-  g_bDrawAISRealtime = m_pCheck_Draw_Realtime_Prediction->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
   long ais_name_scale = 5000;
   m_pText_Show_Target_Name_Scale->GetValue().ToLong(&ais_name_scale);

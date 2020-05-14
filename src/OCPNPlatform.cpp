@@ -159,6 +159,7 @@ extern double                    g_ShowMoored_Kts;
 extern bool                      g_bShowAreaNotices;
 extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
+extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
 
 extern int                       gps_watchdog_timeout_ticks;
@@ -1112,6 +1113,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bDrawAISRealtime = false;
+    g_AIS_RealtPred_Kts = 0.7;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
