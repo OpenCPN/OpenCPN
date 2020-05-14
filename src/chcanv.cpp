@@ -3956,8 +3956,14 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                         s.Append( _("(unnamed)") );
                     else
                         s.Append( pt->GetName() );
-                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive(pt->Length());
-
+                    double tlenght = pt->Length();
+                    s << _T("\n") << _("Total Track: ") << FormatDistanceAdaptive(tlenght);
+                    if( pt->GetLastPoint()->GetTimeString() && pt->GetPoint(0)->GetTimeString() ) {
+                        wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() - pt->GetPoint(0)->GetCreateTime();
+                        double htime = ttime.GetSeconds().ToDouble() / 3600.;
+                        s << wxString::Format( _T("  %.1f "), (float)(tlenght / htime) ) << getUsrSpeedUnit();
+                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd:%H:%M")): ttime.Format(_T("  %H:%M")));
+                    }
                     if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
                         s << _T("\n") << _("Segment Created: ") << segShow_point_b->GetTimeString();
 
