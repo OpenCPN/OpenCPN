@@ -3990,7 +3990,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                         wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() - pt->GetPoint(0)->GetCreateTime();
                         double htime = ttime.GetSeconds().ToDouble() / 3600.;
                         s << wxString::Format( _T("  %.1f "), (float)(tlenght / htime) ) << getUsrSpeedUnit();
-                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd:%H:%M")): ttime.Format(_T("  %H:%M")));
+                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd %H:%M")): ttime.Format(_T("  %H:%M")));
                     }
                     if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
                         s << _T("\n") << _("Segment Created: ") << segShow_point_b->GetTimeString();
