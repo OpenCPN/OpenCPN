@@ -76,6 +76,7 @@ extern double   g_AckTimeout_Mins;
 extern bool     g_bShowAreaNotices;
 extern bool     g_bDrawAISSize;
 extern bool     g_bDrawAISRealtime;
+extern double   g_AIS_RealtPred_Kts;
 extern bool     g_bShowAISName;
 extern int      g_Show_Target_Name_Scale;
 extern bool     g_bAllowShowScaled;

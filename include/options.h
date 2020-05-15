@@ -543,6 +543,7 @@ class options : private Uncopyable,
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
   wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
+  wxTextCtrl *m_pText_RealtPred_Speed;
 
   // For Display->Configs page...
   wxScrolledWindow *m_DisplayConfigsPage;

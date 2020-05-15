@@ -616,6 +616,7 @@ bool                      g_bShowScaled;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
 bool                      g_bDrawAISRealtime;
+double                    g_AIS_RealtPred_Kts;
 bool                      g_bShowAISName;
 int                       g_Show_Target_Name_Scale;
 bool                      g_bWplIsAprsPosition;
