@@ -3570,7 +3570,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     else{
         m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
         m_pdc->SetFont(*m_soundFont);
-        charHeight -= charDescent;
+        //charHeight -= charDescent;
     }
 
     int pivot_x;
@@ -3621,25 +3621,6 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
           pivot_y = pivotHeight / 3;
     }
     
-    
-/*      
-    }
-    else{                       // DC
-      if(symPivot < 4){
-        pivot_x = charWidth * symPivot;
-        pivot_y = charHeight / 2;
-      }
-      else if(symPivot == 4){
-        pivot_x = -charWidth;
-        pivot_y = charHeight / 2;
-      }
-      else{
-        pivot_x = 0;
-        pivot_y = charHeight / 8;
-      }
-    }
-*/
-
     //        Get the bounding box for the to-be-drawn symbol
     int b_width, b_height;
     b_width = prule->parm2;
