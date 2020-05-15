@@ -467,7 +467,7 @@ void RoutePoint::CalculateNameExtents( void )
         m_NameExtents = wxSize(w,h);
 #else        
         dc.SetFont( *m_pMarkFont );
-        m_NameExtents = dc.GetTextExtent( m_MarkName );
+        m_NameExtents = dc.GetMultiLineTextExtent( m_MarkName );
 #endif        
     } else
         m_NameExtents = wxSize( 0, 0 );
