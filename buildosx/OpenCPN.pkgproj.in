@@ -22987,7 +22987,7 @@
 																	<key>CHILDREN</key>
 																	<array/>
 																	<key>GID</key>
-																	<integer>20</integer>
+																	<integer>0</integer>
 																	<key>PATH</key>
 																	<string>/private/tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/tcdata/HARMONIC</string>
 																	<key>PATH_TYPE</key>
