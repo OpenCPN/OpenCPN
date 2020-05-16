@@ -12,11 +12,6 @@ set -xe
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
 
-sudo apt-get -qq update
-if [ -z "$CIRCLE_BUILD_NUM" ]; then
-    sudo apt install -y docker docker.io
-fi
-
 DOCKER_SOCK="unix:///var/run/docker.sock"
 
 echo "DOCKER_OPTS=\"-H tcp://127.0.0.1:2375 -H $DOCKER_SOCK -s devicemapper\"" \
