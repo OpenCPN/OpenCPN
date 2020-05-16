@@ -3854,7 +3854,11 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     s << FormatDistanceAdaptive( dist );
 
                     // Compute and display cumulative distance from route start point to current
-                    // leg end point.
+                    // leg end point and RNG,TTG,ETA from ship to current leg end point for active route
+                    double shiptoEndLeg = 0.;
+                    bool validActive = false;
+                    if( pr->IsActive() && pr->pRoutePointList->GetFirst()->GetData()->m_bIsActive )
+                            validActive = true;
 
                     if( segShow_point_a != pr->pRoutePointList->GetFirst()->GetData() ) {
                         wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
@@ -3864,13 +3868,37 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
                         while( node ) {
                             prp = node->GetData();
+                            if( validActive )
+                                shiptoEndLeg += prp->m_seg_len;
+                            else if ( prp->m_bIsActive )
+                                validActive = true;
                             dist_to_endleg += prp->m_seg_len;
                             if( prp->IsSame( segShow_point_a ) ) break;
                             node = node->GetNext();
                         }
                         s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
                     }
-
+                    //write from ship to end selected leg point data if the route is active
+                    if(validActive) {
+                        s << _T("\n") << _("From Ship To") << _T(" ") << segShow_point_b->GetName() << _T("\n");
+                        shiptoEndLeg += g_pRouteMan->GetCurrentRngToActivePoint();//add distance from ship to active point
+                        shiptoEndLeg += segShow_point_b->m_seg_len; //add the lenght of the selected leg
+                        s << FormatDistanceAdaptive( shiptoEndLeg );
+                        //ensure sog/cog are valid and vmg is positive to keep data coherent
+                        double vmg = 0.;
+                        if( !std::isnan(gCog) && !std::isnan(gSog) )
+                            vmg = gSog * cos( ( g_pRouteMan->GetCurrentBrgToActivePoint() - gCog ) * PI / 180. );
+                        if( vmg > 0. ) {
+                            float ttg_sec = ( shiptoEndLeg / gSog ) * 3600.;
+                            wxTimeSpan ttg_span = wxTimeSpan::Seconds( (long) ttg_sec );
+                            s << _T(" - ") << wxString( ttg_sec > SECONDS_PER_DAY ?
+                                          ttg_span.Format(_("%Dd %H:%M")) : ttg_span.Format(_("%H:%M")) );
+                            wxDateTime dtnow, eta;
+                            eta = dtnow.SetToCurrent().Add( ttg_span );
+                            s  << _T(" - ") << eta.Format(_T("%b")).Mid(0, 4) << eta.Format(_T(" %d %H:%M"));
+                        } else
+                            s << _T("   ----   ----");
+                    }
                     m_pRouteRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
@@ -3962,7 +3990,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                         wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() - pt->GetPoint(0)->GetCreateTime();
                         double htime = ttime.GetSeconds().ToDouble() / 3600.;
                         s << wxString::Format( _T("  %.1f "), (float)(tlenght / htime) ) << getUsrSpeedUnit();
-                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd:%H:%M")): ttime.Format(_T("  %H:%M")));
+                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd %H:%M")): ttime.Format(_T("  %H:%M")));
                     }
                     if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
                         s << _T("\n") << _("Segment Created: ") << segShow_point_b->GetTimeString();
