@@ -20,7 +20,7 @@ sudo dnf clean all
 
 # Install required packages
 su -c "dnf install -y -q sudo dnf-plugins-core"
-sudo dnf install -q -y flatpak-builder ccrypt make rsync gnupg2
+sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2 
 
 test -d /opencpn-ci && cd /opencpn-ci || :
 
@@ -71,4 +71,5 @@ flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
 flatpak update --appstream opencpn
 flatpak remote-ls opencpn
 
-
+# Validate the appstream data:
+appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml
