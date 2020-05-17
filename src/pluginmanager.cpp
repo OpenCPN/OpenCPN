@@ -264,7 +264,7 @@ icon_by_status({
     {PluginStatus::Unknown,   "emblem-default.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
-    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-default.svg" },
+    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledDowngradeAvailable,   "emblem-default.svg" },
     {PluginStatus::PendingListRemoval,   "emblem-default.svg" }
@@ -1522,6 +1522,7 @@ void PlugInManager::UpdateManagedPlugins()
                     stream.open(path, std::ifstream::in);
                     stream >> installed;
                 }
+                pic->m_InstalledManagedVersion = installed;
                 auto installedVersion = SemanticVersion::parse(installed);
                 
                 //Compare to the version reported in metadata
@@ -6003,6 +6004,10 @@ void PluginPanel::SetSelected( bool selected )
         
        if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
             m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
+
+       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable) )
+            m_pVersion->SetLabel( wxString(m_pPlugin->m_InstalledManagedVersion) );
+
     }
     
 
@@ -6046,7 +6051,8 @@ void PluginPanel::SetSelected( bool selected )
                 break;
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
-                label = _("Update...");
+                label = _("Update to ");
+                label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;

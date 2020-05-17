@@ -202,6 +202,7 @@ class PlugInContainer
             wxString          m_version_str;    // Complete version as of
                                                 // semantic_vers
             PluginStatus      m_pluginStatus;
+            std::string       m_InstalledManagedVersion;  // As detected from manifest
             PluginMetadata    m_ManagedMetadata;
 };
 
