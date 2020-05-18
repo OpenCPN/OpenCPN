@@ -10861,10 +10861,14 @@ bool s52plib::ObjectRenderCheckRules( ObjRazRules *rzRules, ViewPort *vp, bool c
         return false;
 
     // The Feature M_QUAL, in MARINERS_STANDARD catagory, is a special case,
-    // since it is also controlled by a global hotkey in display category ALL
+    // since it is also controlled by a global hotkey in display category ALL and MARINERS_STANDARD
     if(m_nDisplayCategory == MARINERS_STANDARD){
-        if(strncmp(rzRules->obj->FeatureName, "M_QUAL", 6)){
+        if(strncmp(rzRules->obj->FeatureName, "M_QUAL", 6)){            // Anything other than M_QUAL
             if( check_noshow && IsObjNoshow( rzRules->LUP->OBCL) )
+                return 0;
+        }
+        else{
+            if(!m_qualityOfDataOn)
                 return 0;
         }
     }
