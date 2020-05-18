@@ -10376,7 +10376,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
     double reference_value = 0.5;
     
     bool b_filter = false;
-    #if defined(__WXMAC__)
+#if defined(__WXMAC__) || defined(__WXGTK3__)
     S52color *primary_color = 0;
     if( prule->definition.SYDF == 'V' ){
         b_filter = true;
@@ -10391,7 +10391,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
             reference_value = hsv.value;
         }
     }
-    #endif
+#endif
     
     unsigned char *ps;
     
