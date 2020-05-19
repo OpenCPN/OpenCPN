@@ -47,4 +47,5 @@
   </screenshots>
   <url type="homepage">https://opencpn.org/</url>
   <update_contact>https://opencpn.org/flyspray/</update_contact>
+  <content_rating type="oars-1.0" />
 </component>
