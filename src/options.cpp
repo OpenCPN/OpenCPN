@@ -346,6 +346,9 @@ extern bool     g_bShowMuiZoomButtons;
 extern "C" bool CheckSerialAccess(void);
 extern  wxString GetShipNameFromFile(int);
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr   g_canvasArray;
+
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 static int lang_list[] = {
@@ -6779,10 +6782,22 @@ void options::SetInitialVectorSettings(void)
         
         if(pDispCat)
             pDispCat->SetSelection(nset);
+
+        // Enable the UserStandard object list if either canvas is in MARINERS_STANDARD display category
+        bool benableMarStd = false;
+        // .. for each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
+                if(cc->GetENCDisplayCategory() == MARINERS_STANDARD)
+                    benableMarStd = true;
+            }
+        }
+
         
-        bool benableMarStd = MARINERS_STANDARD == ps52plib->GetDisplayCategory();
 //        if(g_useMUI)
 //           benableMarStd = true;
+        
         
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(benableMarStd);
