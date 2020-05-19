@@ -2210,6 +2210,7 @@ if (NOT APPLE)
     install(
       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
       DESTINATION ${PREFIX_DATA}/metainfo
+      RENAME opencpn.metainfo.xml
     )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
