@@ -6,8 +6,7 @@
 # (at your option) any later version.
 #
 
-# This manifest is used to build development snapshots (including
-# nightly builds) of the flatpak package.
+# This manifest is used to build the official flathub package. 
 
 
 app-id: org.opencpn.OpenCPN
@@ -90,7 +89,8 @@ modules:
           - install -Dm 755 ../data/opencpn.sh /app/bin/opencpn.sh
       sources:
           - type: git
-            url: ..
-            branch: master
+            url: https://github.com/OpenCPN/OpenCPN.git
+            # tag: 5.1.511-Beta
+            commit: c3b67169f
           - type: patch
-            path: ../flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
+            path: flatpak/src/0008-flatpak-Add-a-shell-wrapper.patch
