@@ -391,7 +391,8 @@ class MyFrame: public wxFrame
     void InvalidateAllGL();
     void RefreshAllCanvas( bool bErase = true);
     void CancelAllMouseRoute();
-    
+    void InvalidateAllQuilts();
+
     wxMenuBar *GetMainMenuBar(){ return m_pMenuBar; }
     
     ChartCanvas *GetPrimaryCanvas();

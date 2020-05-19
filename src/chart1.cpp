@@ -6664,6 +6664,18 @@ void MyFrame::ChartsRefresh( )
 
 }
 
+void MyFrame::InvalidateAllQuilts()
+{
+     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if( cc ) {
+            cc->InvalidateQuilt();
+            cc->SetQuiltRefChart( -1 );
+            cc->m_singleChart = NULL;
+        }
+    }
+}   
+
 bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bool b_prog,
         const wxString &ChartListFileName )
 {

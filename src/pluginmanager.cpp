@@ -1624,8 +1624,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         if(pic->m_bInitState){
             
             // Unload chart cache if this plugin is responsible for any charts
-            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
-                ChartData->PurgeCache();
+            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
+                ChartData->PurgeCachePlugins();
+                gFrame->InvalidateAllQuilts();
+            }
 
             pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
