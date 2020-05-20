@@ -1483,7 +1483,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         if (g_bDrawAISRealtime && 
             (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B ) &&
              td->SOG > g_AIS_RealtPred_Kts &&
-             td->SOG < 103.0) {
+             td->SOG < 102.2) {
             wxDateTime now = wxDateTime::Now();
             now.MakeGMT();
             int target_age = now.GetTicks() - td->PositionReportTicks;
