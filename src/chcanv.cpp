@@ -7112,7 +7112,9 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             
             if(!g_btouch )
                 CheckEdgePan( x, y, event.Dragging(), 5, 2 );
-            Refresh( false );
+
+            if(event.Moving())
+                Refresh( false );
         }
         
         
@@ -7124,7 +7126,9 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             
             if(!g_btouch )
                 CheckEdgePan( x, y, event.Dragging(), 5, 2 );
-            Refresh( false );
+
+            if(event.Moving())
+                Refresh( false );
         }
     }
     return bret; 
