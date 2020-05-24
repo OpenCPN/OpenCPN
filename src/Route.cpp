@@ -55,6 +55,7 @@ Route::Route()
     m_bRtIsSelected = false;
     m_bRtIsActive = false;
     m_pRouteActivePoint = NULL;
+    m_pPrevInsertPoint = NULL;
     m_bIsBeingEdited = false;
     m_bIsBeingCreated = false;
     m_nm_sequence = 1;
@@ -266,12 +267,13 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
         if ( m_bVisible )
         {
+            bool show_leg = !(m_pPrevInsertPoint && m_pPrevInsertPoint == prp1);
             //    Handle offscreen points
             bool b_2_on = vp.GetBBox().Contains( prp2->m_lat,  prp2->m_lon );
             bool b_1_on = vp.GetBBox().Contains( prp1->m_lat,  prp1->m_lon );
 
             //Simple case
-            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth ); // with arrows
+            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth, show_leg ); // with arrows
 
             //    In the cases where one point is on, and one off
             //    we must decide which way to go in longitude
@@ -292,7 +294,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp, true, m_hiliteWidth );
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp, true, m_hiliteWidth, show_leg );
             } else
                 if( !b_1_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
@@ -305,7 +307,7 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
                     
                     if( dp < dtest ) adder = 0;
 
-                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth );
+                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth, show_leg );
                 }
         }
 
@@ -371,8 +373,9 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
 
         // Provisional, to properly set status of last point in route
         prp2->m_pos_on_screen = false;
+
         {
-            
+
             wxPoint2DDouble r2;
             canvas->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
             if(std::isnan(r2.m_x)) {
@@ -434,24 +437,24 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
                         if(olon > prp1->m_lon || olon < prp2->m_lon)
                             adder = pix_full_circle;
             }
-
-            if( dc )
+            if( dc ) {
                 if(adder) {
                     float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
                     dc->DrawLine(r1.m_x, r1.m_y, r2.m_x + adderc, r2.m_y + adders);
                     dc->DrawLine(r1.m_x - adderc, r1.m_y - adders, r2.m_x, r2.m_y);
                 } else
                     dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
-            else {
-#ifndef USE_ANDROID_GLES2                
-                glVertex2f(r1.m_x, r1.m_y);
-                if(adder) {
-                    float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
-                    glVertex2f(r2.m_x+adderc, r2.m_y+adders);
-                    glVertex2f(r1.m_x-adderc, r1.m_y-adders);
+             } else {
+#ifndef USE_ANDROID_GLES2
+                if( !(m_pPrevInsertPoint && m_pPrevInsertPoint == prp1) ) {
+                    glVertex2f(r1.m_x, r1.m_y);
+                    if(adder) {
+                        float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
+                        glVertex2f(r2.m_x+adderc, r2.m_y+adders);
+                        glVertex2f(r1.m_x-adderc, r1.m_y-adders);
+                    }
+                    glVertex2f(r2.m_x, r2.m_y);
                 }
-                glVertex2f(r2.m_x, r2.m_y);
-
                 // cache screen position for arrows and points
                 if(!r1valid) {
                     prp1->m_pos_on_screen = !lat1l && !lat1r && !lon1l && !lon1r;
@@ -567,11 +570,15 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
     /* direction arrows.. could probably be further optimized for opengl */
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     wxPoint rpt1, rpt2;
+    bool show_leg = true;
     while(node) {
         RoutePoint *prp = node->GetData();
         canvas->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-        if(node != pRoutePointList->GetFirst())
-            RenderSegmentArrowsGL( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
+        if(node != pRoutePointList->GetFirst()) {
+            if( show_leg )
+                RenderSegmentArrowsGL( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
+        }
+        show_leg = !(m_pPrevInsertPoint && m_pPrevInsertPoint == prp);
         rpt1 = rpt2;
         node = node->GetNext();
     }
@@ -580,8 +587,8 @@ void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
 
 static int s_arrow_icon[] = { 0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0 };
 
-void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp,
-        bool bdraw_arrow, int hilite_width )
+void Route::RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp,
+        bool bdraw_arrow, int hilite_width, bool show_leg )
 {
     //    Get the dc boundary
     int sx, sy;
@@ -616,14 +623,16 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             dc.StrokeLine( x0, y0, x1, y1 );
 
             dc.SetPen( psave );
-            dc.StrokeLine( x0, y0, x1, y1 );
+            if( show_leg )
+                dc.StrokeLine( x0, y0, x1, y1 );
         }
     } else {
         if( Visible == cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) )
-            dc.StrokeLine( x0, y0, x1, y1 );
+            if( show_leg )
+                dc.StrokeLine( x0, y0, x1, y1 );
     }
 
-    if( bdraw_arrow ) {
+    if( bdraw_arrow && show_leg ) {
         //    Draw a direction arrow
 
         double theta = atan2( (double) ( yb - ya ), (double) ( xb - xa ) );

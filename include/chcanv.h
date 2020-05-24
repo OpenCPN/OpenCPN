@@ -412,6 +412,7 @@ public:
       bool        m_bMeasure_DistCircle;
       wxString    m_active_upload_port;
       bool        m_bAppendingRoute;
+      bool        m_bInsertingWpt;
       int         m_nMeasureState;
       Route       *m_pMeasureRoute;
       MyFrame     *parent_frame;

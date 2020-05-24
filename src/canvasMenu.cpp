@@ -1361,35 +1361,26 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         break;
 
     case ID_RT_MENU_INSERT:
-
+    {
         if( m_pSelectedRoute->m_bIsInLayer ) break;
 
-        m_pSelectedRoute->InsertPointAfter( m_pFoundRoutePoint, zlat, zlon );
+        parent->m_pMouseRoute = m_pSelectedRoute;
+        parent->m_routeState = m_pSelectedRoute->GetnPoints() + 1;
+        parent->m_pMouseRoute->m_lastMousePointIndex = m_pSelectedRoute->pRoutePointList->IndexOf( m_pFoundRoutePoint ) + 1;
 
-        pSelect->DeleteAllSelectableRoutePoints( m_pSelectedRoute );
-        pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
+        parent->m_prev_rlat = m_pFoundRoutePoint->m_lat;
+        parent->m_prev_rlon = m_pFoundRoutePoint->m_lon;
+        parent->m_prev_pMousePoint = m_pFoundRoutePoint;
+        parent->m_pMouseRoute->m_pPrevInsertPoint = m_pFoundRoutePoint;
+        parent->m_pMouseRoute->SetHiLite(50);
 
-        pSelect->AddAllSelectableRouteSegments( m_pSelectedRoute );
-        pSelect->AddAllSelectableRoutePoints( m_pSelectedRoute );
+        parent->m_bInsertingWpt = true;
 
-        //    As a special case (which comes up often)...
-        //    If the inserted waypoint is on the active leg of an active route
-        /*            if(m_pSelectedRoute->m_bRtIsActive)
-         {
-         if(m_pSelectedRoute->m_nRouteActivePoint == np + 1)
-         {
-         pNew_Point = m_pSelectedRoute->GetPoint(np + 2);
-         pRouteMan->ActivateRoutePoint(m_pSelectedRoute, pNew_Point);
-         }
-         }
-         */
-        pConfig->UpdateRoute( m_pSelectedRoute );
-
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute, true );
-        }
+        parent->SetCursor( *parent->pCursorPencil );
+        parent->HideGlobalToolbar();
 
         break;
+    }
 
     case ID_RT_MENU_APPEND:
 

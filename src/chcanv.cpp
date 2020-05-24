@@ -399,6 +399,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bShowNavobjects = true;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
+    m_bInsertingWpt = false;
     pThumbDIBShow = NULL;
     m_bShowCurrent = false;
     m_bShowTide = false;
@@ -7680,20 +7681,41 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 if( NULL == pMousePoint ) {                 // need a new point
+
                     pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
-                    
-                    pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
+
+                    if( m_bInsertingWpt ){
+                        pMousePoint->m_bIsInRoute = true;
+                        pMousePoint->m_bDynamicName = true;
+                    } else {
+                    pConfig->AddNewWayPoint( pMousePoint, -1 );
                     pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
-                    
                     if( m_routeState > 1 )
                         undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
+                    }
                 }
                 
                 if(m_pMouseRoute){
                     if( m_routeState == 1 ) {
                         // First point in the route.
                         m_pMouseRoute->AddPoint( pMousePoint );
+
+                    } else if( m_bInsertingWpt ){
+                        pSelect->DeleteAllSelectableRoutePoints( m_pMouseRoute );
+                        pSelect->DeleteAllSelectableRouteSegments( m_pMouseRoute );
+
+                        if( pMousePoint->GetName().IsEmpty())
+                            pMousePoint->SetName(m_pMouseRoute->GetNewMarkSequenced());
+
+                        m_pMouseRoute->pRoutePointList->Insert( m_pMouseRoute->m_lastMousePointIndex, pMousePoint);
+
+                        m_pMouseRoute->FinalizeForRendering();
+                        m_pMouseRoute->UpdateSegmentDistances();
+
+                        pSelect->AddAllSelectableRouteSegments( m_pMouseRoute );
+                        pSelect->AddAllSelectableRoutePoints( m_pMouseRoute );
+
                     } else {
                         if( m_pMouseRoute->m_NextLegGreatCircle ) {
                             double rhumbBearing, rhumbDist, gcBearing, gcDist;
@@ -7759,8 +7781,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             undo->AfterUndoableAction( m_pMouseRoute );
                         }
                     }
+
                 }
-                
                 m_prev_rlat = rlat;
                 m_prev_rlon = rlon;
                 m_prev_pMousePoint = pMousePoint;
@@ -7769,6 +7791,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 
                 m_routeState++;
                 gFrame->RefreshAllCanvas();
+
+                if( m_bInsertingWpt )
+                    FinishRoute();
+
                 ret = true;
             }
             
@@ -8132,17 +8158,34 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 if( NULL == pMousePoint ) {                 // need a new point
                     pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
-                    
-                    pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
-                    pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
-                    
-                    if( m_routeState > 1 )
-                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
+                    if( m_bInsertingWpt ){
+                        pMousePoint->m_bIsInRoute = true;
+                        pMousePoint->m_bDynamicName = true;
+                    } else {
+                        pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
+                        pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
+                        if( m_routeState > 1 )
+                            undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
+                    }
                 }
                 
                 if( m_routeState == 1 ) {
                     // First point in the route.
                     m_pMouseRoute->AddPoint( pMousePoint );
+                } else if( m_bInsertingWpt ){
+                    pSelect->DeleteAllSelectableRoutePoints( m_pMouseRoute );
+                    pSelect->DeleteAllSelectableRouteSegments( m_pMouseRoute );
+
+                    if( pMousePoint->GetName().IsEmpty())
+                        pMousePoint->SetName(m_pMouseRoute->GetNewMarkSequenced());
+
+                    m_pMouseRoute->pRoutePointList->Insert( m_pMouseRoute->m_lastMousePointIndex, pMousePoint);
+                    m_pMouseRoute->FinalizeForRendering();
+                    m_pMouseRoute->UpdateSegmentDistances();
+
+                    pSelect->AddAllSelectableRouteSegments( m_pMouseRoute );
+                    pSelect->AddAllSelectableRoutePoints( m_pMouseRoute );
+
                 } else {
                     if( m_pMouseRoute->m_NextLegGreatCircle ) {
                         double rhumbBearing, rhumbDist, gcBearing, gcDist;
@@ -8208,7 +8251,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         undo->AfterUndoableAction( m_pMouseRoute );
                     }
                 }
-                
+
                 m_prev_rlat = rlat;
                 m_prev_rlon = rlon;
                 m_prev_pMousePoint = pMousePoint;
@@ -8216,6 +8259,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 
                 m_routeState++;
                 Refresh( true );
+
+                if( m_bInsertingWpt )
+                    FinishRoute();
+
                 ret = true;
             }
             else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
@@ -9287,6 +9334,8 @@ void ChartCanvas::StartRoute( void )
     // Do not allow more than one canvas to create a route at one time.
     if(g_brouteCreating)
         return;
+    if(m_bInsertingWpt)
+        return;
     
     if(g_MainToolbar)
         g_MainToolbar->DisableTooltips();
@@ -9321,7 +9370,7 @@ void ChartCanvas::FinishRoute( void )
     SetCursor( *pCursorArrow );
 
     if( m_pMouseRoute ) {
-        if( m_bAppendingRoute ) 
+        if( m_bAppendingRoute || m_bInsertingWpt )
             pConfig->UpdateRoute( m_pMouseRoute );
         else {
             if( m_pMouseRoute->GetnPoints() > 1 ) {
@@ -9331,8 +9380,7 @@ void ChartCanvas::FinishRoute( void )
                 m_pMouseRoute = NULL;
             }
         }
-        if( m_pMouseRoute )
-            m_pMouseRoute->SetHiLite(0);
+        m_pMouseRoute->SetHiLite(0);
 
         if( RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
@@ -9342,9 +9390,11 @@ void ChartCanvas::FinishRoute( void )
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateRouteListCtrl();
         }
+        m_pMouseRoute->m_pPrevInsertPoint = NULL;
 
     }
     m_bAppendingRoute = false;
+    m_bInsertingWpt = false;
     m_pMouseRoute = NULL;
 
     m_pSelectedRoute = NULL;
@@ -9677,15 +9727,19 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
     
         double render_lat = m_cursor_lat;
         double render_lon = m_cursor_lon;
-        
         if(route){
-            int np = route->GetnPoints();
-            if(np){
-                if(g_btouch && (np > 1))
-                    np --;
-                RoutePoint rp = route->GetPoint(np);
-                render_lat = rp.m_lat;
-                render_lon = rp.m_lon;
+            if( m_bInsertingWpt ) {
+                render_lat = m_prev_pMousePoint->m_lat;
+                render_lon = m_prev_pMousePoint->m_lon;
+            } else {
+                int np = route->GetnPoints();
+                if(np){
+                    if(g_btouch && (np > 1))
+                        np --;
+                    RoutePoint rp = route->GetPoint(np);
+                    render_lat = rp.m_lat;
+                    render_lon = rp.m_lon;
+                }
             }
         }
                 
@@ -9698,17 +9752,16 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         wxPoint destPoint, lastPoint;
 
-
         double brg = rhumbBearing;
         double dist = rhumbDist;
         route->m_NextLegGreatCircle = false;
         int milesDiff = rhumbDist - gcDistm;
-        if( milesDiff > 1 ) {
+        if( milesDiff > 1 && !m_bInsertingWpt ) {
             brg = gcBearing;
             dist = gcDistm;
             route->m_NextLegGreatCircle = true;
         }
-
+        double brg_insert;
         if( 1/*!g_btouch*/) {
             route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
 
@@ -9725,6 +9778,19 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             else {
                 if (r_rband.x && r_rband.y) {    // RubberBand disabled?
                     route->DrawSegment(dc, this, &lastPoint, &r_rband, GetVP(), false);
+                    if( m_bInsertingWpt ) {
+                        //draw the insert 2nd leg
+                        RoutePoint *rp = route->GetPoint( route->m_lastMousePointIndex + 1 );
+                        GetCanvasPointPix( rp->m_lat, rp->m_lon, &destPoint );
+                        route->DrawSegment(dc, this, &r_rband, &destPoint, GetVP(), false);
+                        double dis;
+                        //remove the original leg lenght (to be split)
+                        DistanceBearingMercator( m_prev_pMousePoint->m_lat, m_prev_pMousePoint->m_lon, rp->m_lat, rp->m_lon, NULL, &dis );
+                        dist -= dis;
+                        //add the insert 2nd leg lenght
+                        DistanceBearingMercator( rp->m_lat, rp->m_lon, m_cursor_lat, m_cursor_lon, &brg_insert, &dis );
+                        dist += dis; //total distance added by the insert
+                    }
 
                     if (m_bMeasure_DistCircle) {
                         double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
@@ -9739,14 +9805,21 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if( g_bShowTrue )
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+        if( g_bShowTrue ) {
+            if( m_bInsertingWpt )
+                routeInfo << wxString::Format( wxString("%03d° - %03d° ", wxConvUTF8 ), (int)brg, (int)brg_insert );
+            else
+                routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+        }
         if( g_bShowMag ){
             double latAverage = (m_cursor_lat + render_lat)/2;
             double lonAverage = (m_cursor_lon + render_lon)/2;
             double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
-            
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+            if( m_bInsertingWpt ) {
+                double varBrg_insert = gFrame->GetMag( brg_insert, latAverage, lonAverage);
+                routeInfo << wxString::Format( wxString("%03d°(M) - %03d°(M) ", wxConvUTF8 ), (int)varBrg, (int)varBrg_insert );
+            } else
+                routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
         }
 
         routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
