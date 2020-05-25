@@ -42,9 +42,10 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main window</caption>
-      <image>https://en.wikipedia.org/wiki/OpenCPN#/media/File:OCPN_5_0.jpg</image>
+      <image>http://download.opencpn.org/screenshots/82434783-624dea00-9a61-11ea-847b-347d91b8f0fd.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://opencpn.org/</url>
   <update_contact>https://opencpn.org/flyspray/</update_contact>
+  <content_rating type="oars-1.0" />
 </component>
