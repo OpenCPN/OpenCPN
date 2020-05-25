@@ -419,18 +419,18 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
 #endif
 
     //  Set the default processor architecture
-    detail->osd_arch = std::string("X86_64");
+    detail->osd_arch = std::string("x86_64");
     
     // then see what is actually running.
     wxPlatformInfo platformInfo = wxPlatformInfo::Get();
     wxArchitecture arch = platformInfo.GetArchitecture();
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("X86_32");
+        detail->osd_arch = std::string("i386");
     
 #ifdef ocpnARM
-    detail->osd_arch = std::string("ARM64");
+    detail->osd_arch = std::string("arm64");
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("ARMHF");
+        detail->osd_arch = std::string("armhf");
 #endif    
     
     
