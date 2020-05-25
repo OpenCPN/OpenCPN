@@ -502,6 +502,8 @@ bool JobTicket::DoJob(const wxRect &rect)
             if(pchart && ChartData->IsChartLocked( index )){
                 ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
                 if( pBSBChart ) {
+                    wxCharBuffer buffer=m_ChartPath.ToUTF8();
+                    printf("%s  %d %d %d %d %d %d\n", buffer.data(), ncrect.x, ncrect.y, ncrect.width, ncrect.height, pBSBChart->GetSize_X(), pBSBChart->GetSize_Y());
                     bit_array[0] = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
                     pBSBChart->GetChartBits( ncrect, bit_array[0], 1 );
                 }
