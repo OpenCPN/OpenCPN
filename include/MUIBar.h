@@ -82,7 +82,8 @@ public:
     CanvasOptions *GetCanvasOptions(){ return m_canvasOptions; }
     void SetColorScheme( ColorScheme cs );
     void SetCanvasENCAvailable( bool avail );
-    
+    void OnScaleSelected( wxMouseEvent &event );
+
 private:
     void Init( void );
     void CreateControls();
