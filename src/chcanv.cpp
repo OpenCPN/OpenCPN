@@ -5378,11 +5378,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             
         // Create a nice renderable string
-        double round_factor = 100.;
-        if(VPoint.chart_scale < 1000.)
+        double round_factor = 1000.;
+        if(VPoint.chart_scale <= 1000.)
             round_factor = 10.;
-        else if (VPoint.chart_scale < 10000.)
-            round_factor = 50.;
+        else if (VPoint.chart_scale <= 10000.)
+            round_factor = 100.;
+        else if (VPoint.chart_scale <= 100000.)
+            round_factor = 1000.;
             
         double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
         wxString text;

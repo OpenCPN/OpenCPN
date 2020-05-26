@@ -686,10 +686,15 @@ void MUIBar::OnScaleSelected( wxMouseEvent &event )
             // Try to constrain the scale to something reasonable
             dScale = wxMin(dScale, 3e6);
             dScale = wxMax(dScale, 1000);
-            int displayScaleNow = pcc->GetScaleValue();
-            float displayPPMNow = pcc->GetVPScale();
-            double factor = dScale / displayScaleNow;
-            pcc->SetVPScale( displayPPMNow / factor );
+            double displayScaleNow = pcc->GetScaleValue();
+            double factor = displayScaleNow / dScale;
+            pcc->DoZoomCanvas( factor );
+            
+            // Run the calculation again, to reduce roundoff error in large scale jumps.
+            displayScaleNow = pcc->GetScaleValue();
+            factor = displayScaleNow / dScale;
+            pcc->DoZoomCanvas( factor );
+            
         }
     }
 }
