@@ -474,7 +474,7 @@ public:
       void ToggleCanvasQuiltMode( void );
       
       wxString GetScaleText(){ return m_scaleText; }
-      int GetScaleValue(){ return m_scaleValue; }
+      double GetScaleValue(){ return m_scaleValue; }
       
       bool        m_b_paint_enable;
 
@@ -551,7 +551,7 @@ private:
       int         cursor_region;
       bool        m_bTCupdate;
       wxString    m_scaleText;
-      int         m_scaleValue;
+      double      m_scaleValue;
       bool        m_bShowScaleInStatusBar;
       wxRect      bbRect;
 

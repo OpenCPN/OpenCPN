@@ -41,6 +41,7 @@
 #include "OCPNPlatform.h"
 #include "CanvasOptions.h"
 #include "styles.h"
+#include "navutil.h"
 
 #ifdef ocpnUSE_SVG
 #include "wxSVG/svg.h"
@@ -84,6 +85,150 @@ double getValue(int animationType, double t);
 
 
 //  Helper classes
+
+
+#define ID_SCALE_CANCEL 8301
+#define ID_SCALE_OK 8302
+#define ID_SCALECTRL 8303
+
+class SetScaleDialog: public wxDialog
+{
+      DECLARE_EVENT_TABLE()
+
+      public:
+    /// Constructors
+            SetScaleDialog( );
+            SetScaleDialog( wxWindow* parent, wxWindowID id = SYMBOL_GOTOPOS_IDNAME,
+                                const wxString& caption = _("Set scale"),
+                                const wxPoint& pos = wxDefaultPosition,
+                                const wxSize& size = wxDefaultSize,
+                                long style = wxDEFAULT_DIALOG_STYLE );
+
+            ~SetScaleDialog();
+
+    /// Creation
+            bool Create( wxWindow* parent, wxWindowID id = wxID_ANY,
+                         const wxString& caption = _("Set scale"),
+                         const wxPoint& pos = wxDefaultPosition,
+                         const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+
+            void SetColorScheme(ColorScheme cs);
+
+            void CreateControls();
+
+            void OnSetScaleCancelClick( wxCommandEvent& event );
+            void OnSetScaleOKClick( wxCommandEvent& event );
+
+      /// Should we show tooltips?
+
+            wxTextCtrl*   m_ScaleCtl;
+            wxButton*     m_CancelButton;
+            wxButton*     m_OKButton;
+
+};
+
+BEGIN_EVENT_TABLE( SetScaleDialog, wxDialog )
+    EVT_BUTTON( ID_GOTOPOS_CANCEL, SetScaleDialog::OnSetScaleCancelClick )
+    EVT_BUTTON( ID_GOTOPOS_OK, SetScaleDialog::OnSetScaleOKClick )
+END_EVENT_TABLE()
+
+/*!
+ * SetScaleDialog constructors
+ */
+
+SetScaleDialog::SetScaleDialog()
+{
+}
+
+SetScaleDialog::SetScaleDialog( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
+{
+    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
+
+    Create( parent, id, caption, pos, size, wstyle );
+
+}
+
+SetScaleDialog::~SetScaleDialog()
+{
+}
+
+/*!
+ * SetScaleDialog creator
+ */
+
+bool SetScaleDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
+                                 const wxPoint& pos, const wxSize& size, long style )
+{
+    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
+    wxDialog::Create( parent, id, caption, pos, size, style );
+
+    CreateControls();
+    GetSizer()->SetSizeHints( this );
+    Centre();
+
+    return TRUE;
+}
+
+/*!
+ * Control creation for GoToPositionDialog
+ */
+
+void SetScaleDialog::CreateControls()
+{
+    SetScaleDialog* itemDialog1 = this;
+
+    wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
+    itemDialog1->SetSizer( itemBoxSizer2 );
+
+    wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( itemDialog1, wxID_ANY,
+            _("Chart Scale") );
+
+    wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static,
+            wxVERTICAL );
+    itemBoxSizer2->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
+
+    wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _(""),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticBoxSizer4->Add( itemStaticText5, 0,
+                              wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+
+    m_ScaleCtl = new wxTextCtrl( itemDialog1, ID_SCALECTRL, _T(""), wxDefaultPosition,  wxSize( 180, -1 ), 0 );
+    itemStaticBoxSizer4->Add( m_ScaleCtl, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
+
+     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
+
+    m_CancelButton = new wxButton( itemDialog1, ID_GOTOPOS_CANCEL, _("Cancel"), wxDefaultPosition,
+                                   wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+
+    m_OKButton = new wxButton( itemDialog1, ID_GOTOPOS_OK, _("OK"), wxDefaultPosition,
+                               wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    m_OKButton->SetDefault();
+
+    SetColorScheme( (ColorScheme) 0 );
+}
+
+void SetScaleDialog::SetColorScheme( ColorScheme cs )
+{
+    DimeControl( this );
+}
+
+
+void SetScaleDialog::OnSetScaleCancelClick( wxCommandEvent& event )
+{
+    Close();
+    event.Skip();
+}
+
+void SetScaleDialog::OnSetScaleOKClick( wxCommandEvent& event )
+{
+    SetReturnCode(wxID_OK);
+    EndModal(wxID_OK);
+    return;
+}
+
 
 
 //------------------------------------------------------------------------------
@@ -473,6 +618,9 @@ MUIBar::~MUIBar()
         m_canvasOptions->Destroy();
         m_canvasOptions = 0;
     }
+    if(m_scaleTextBox)
+        m_scaleTextBox->Unbind(wxEVT_LEFT_DOWN, &MUIBar::OnScaleSelected, this);
+
 }
 
 void MUIBar::Init()
@@ -523,6 +671,34 @@ void MUIBar::SetColorScheme( ColorScheme cs )
     }
 }
 
+void MUIBar::OnScaleSelected( wxMouseEvent &event )
+{
+    ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+        if(!pcc) return;
+
+    SetScaleDialog dlg(pcc);
+    dlg.Centre();
+    dlg.ShowModal();
+    if( dlg.GetReturnCode() == wxID_OK ) {
+        wxString newScale = dlg.m_ScaleCtl->GetValue();
+        double dScale;
+        if(newScale.ToDouble(&dScale)){
+            // Try to constrain the scale to something reasonable
+            dScale = wxMin(dScale, 3e6);
+            dScale = wxMax(dScale, 1000);
+            double displayScaleNow = pcc->GetScaleValue();
+            double factor = displayScaleNow / dScale;
+            pcc->DoZoomCanvas( factor );
+            
+            // Run the calculation again, to reduce roundoff error in large scale jumps.
+            displayScaleNow = pcc->GetScaleValue();
+            factor = displayScaleNow / dScale;
+            pcc->DoZoomCanvas( factor );
+            
+        }
+    }
+}
+
 void MUIBar::SetCanvasENCAvailable(bool avail)
 {
     m_CanvasENCAvail = avail;
@@ -566,6 +742,8 @@ void MUIBar::CreateControls()
         wxColour textbackColor = GetGlobalColor( _T("GREY1") );
         m_scaleTextBox->SetForegroundColour(textbackColor);
         barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL );
+        m_scaleTextBox->Bind(wxEVT_LEFT_DOWN, &MUIBar::OnScaleSelected, this);
+
         barSizer->AddSpacer(5);
         
         m_followButton = new MUIButton( this, ID_FOLLOW, m_scaleFactor,
@@ -1101,4 +1279,3 @@ double getValue(int animationType, double t)
     
     return value;
 }
-
