@@ -173,12 +173,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 {
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
     
-    // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
-    if(metadata.target_arch.size()){
-        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
-            return false;
-    }
-
     // Get the specified system definition,
     //   or the baked in (build system) values,
     //   or the environment override,
@@ -203,11 +197,9 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         }
     }
     compatOS = ocpn::tolower(compatOS);
-    
-   compatOsVersion = ocpn::tolower(compatOsVersion);
+    compatOsVersion = ocpn::tolower(compatOsVersion);
     
     //  Compare to the required values in the metadata
-    
     std::string plugin_os = ocpn::tolower(metadata.target);
 
     // msvc is simple...
@@ -218,6 +210,13 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     // And so is MacOS...
     if (compatOS == "darwin") {
         return (plugin_os == "darwin");
+    }
+
+    //  For linux variants....
+    // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
+    if(metadata.target_arch.size()){
+        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
+            return false;
     }
 
     std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
