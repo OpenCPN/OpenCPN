@@ -2034,10 +2034,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         b_compat = true;
     }
 
-    if(!b_compat){
-        wxLogMessage("Plugin is incompatible by elf library scan.");
-        return false;           // definitely not compatible by ELF lib dependency comparison
-    }
+    wxLogMessage("Plugin is compatible by elf library scan: %s", b_compat ? "true" : "false");
+    return b_compat;
 
 #endif  // LIBELF
 
@@ -2048,6 +2046,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     return true;
 #endif
 
+    // If libelf is not available, then we must use a simplistic file scan method.
+    // This is easily fooled if the wxWidgets version in use is not exactly recognized.
     // File scan is 3x faster than the ELF scan method
     
     FILE *f = fopen(plugin_file, "r");
