@@ -482,7 +482,9 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
     wxString RouteName;
     wxString DescString;
     bool b_propviz = false;
+    bool b_propSWPviz =false;
     bool b_viz = true;
+    bool swpViz = false;
     Route *pTentRoute = NULL;
     
     wxString Name = wxString::FromUTF8( wpt_node.name() );
@@ -517,6 +519,12 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                                 b_viz = ( viz == _T("1") );
                     }
                     
+                    else
+                    if( ext_name == _T ( "opencpn:sharedWPviz" ) ) {
+                                wxString viz = wxString::FromUTF8(ext_child.first_child().value());
+                                b_propSWPviz = true;
+                                swpViz = ( viz == _T("1") );
+                    }
                     else
                     if( ext_name == _T ( "opencpn:style" ) ) {
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
@@ -655,6 +663,9 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         } else if( b_fullviz ) {
             pTentRoute->SetVisible();
         }
+        
+        if( b_propSWPviz)
+            pTentRoute->SetSharedWPViz( swpViz );
  
         if( b_layer ){
             pTentRoute->SetVisible( b_layerviz );
@@ -1020,6 +1031,12 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     child = child_ext.append_child("opencpn:viz");
     child.append_child(pugi::node_pcdata).set_value(pRoute->IsVisible() == true ? "1" : "0");
     
+    if(pRoute->ContainsSharedWP()){
+        child = child_ext.append_child("opencpn:sharedWPviz");
+        child.append_child(pugi::node_pcdata).set_value(pRoute->GetSharedWPViz() == true ? "1" : "0");
+
+    }
+ 
     if( pRoute->m_RouteStartString.Len() ) {
         wxCharBuffer buffer=pRoute->m_RouteStartString.ToUTF8();
         if(buffer.data()) {
@@ -1060,11 +1077,11 @@ static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         if( pRoute->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pRoute->m_style;
     }
-
+ 
     pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:RouteExtension");
     child = gpxx_ext.append_child("gpxx:IsAutoNamed");
     child.append_child(pugi::node_pcdata).set_value("false");
-
+    
     if( pRoute->m_Colour != wxEmptyString ) {
         child = gpxx_ext.append_child("gpxx:DisplayColor");
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_Colour.mb_str());
