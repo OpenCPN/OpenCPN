@@ -229,7 +229,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     if (compatOS_ARCH  == plugin_os) {
         //  OS matches so far, so must compare versions
 
-        if (plugin_os.rfind("ubuntu", 0) == 0){                       // starts_with()
+        if (ocpn::startswith(plugin_os, "ubuntu")){
             if(plugin_os_version == compatOsVersion)            // Full version comparison required
                 rv = true;
         }
@@ -243,7 +243,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         // running OS may be "like" some known OS
         for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
             if( os_detail->osd_name_like[i]  == plugin_os){
-                if (plugin_os.rfind("ubuntu", 0) == 0){                              // starts_with()
+                if (ocpn::startswith(plugin_os, "ubuntu")){
                     if( plugin_os_version == os_detail->osd_version )            // Full version comparison required
                         rv = true;
                 }
@@ -261,7 +261,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         if (compatOS  == plugin_os) {
         //  OS matches so far, so must compare versions
 
-            if (plugin_os.rfind("ubuntu", 0) == 0){                       // starts_with()
+            if (ocpn::startswith(plugin_os, "ubuntu")){
                 if(plugin_os_version == compatOsVersion)            // Full version comparison required
                     rv = true;
             }
