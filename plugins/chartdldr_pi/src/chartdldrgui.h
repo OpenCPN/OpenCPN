@@ -184,8 +184,8 @@ public:
     
 private:
     wxCheckBox* m_cb;
-    wxStaticText *m_chartInfo;
-    wxStaticText *m_chartInfo2;
+//    wxStaticText *m_chartInfo;
+//    wxStaticText *m_chartInfo2;
     wxString m_stat;
     wxString m_latest;
     ChartDldrPanel *m_dldrPanel;
