@@ -590,17 +590,11 @@ void ChartDldrPanelImpl::OnPopupClick( wxCommandEvent &evt )
             InvertCheckAllCharts( );
             break;
         case ID_MNU_SELUPD:
-        {
-            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
-            FillFromFile(cs->GetUrl(), cs->GetDir(), false, true);
+            CheckUpdatedCharts(true);
             break;
-        }
         case ID_MNU_SELNEW:
-        {
-            ChartSource *cs = pPlugIn->m_pChartSources->Item(GetSelectedCatalog());
-            FillFromFile(cs->GetUrl(), cs->GetDir(), true, false);
+            CheckNewCharts(true);
             break;
-        }
     }
 }
 
@@ -1225,7 +1219,7 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
     m_bUpdateChartList->Enable( enabled );
 #ifndef NEW_LIST    
     m_clCharts->Enable( enabled );
-#endif    
+#endif	/* NEW_LIST */
     m_lbChartSources->Enable( enabled );
 }
 
@@ -1245,7 +1239,7 @@ int ChartDldrPanelImpl::GetChartCount()
     return m_clCharts->GetItemCount();
 #else
     return m_panelArray.GetCount();
-#endif    
+#endif	/* NEW_LIST */
 }
 
 int ChartDldrPanelImpl::GetCheckedChartCount()
@@ -1259,7 +1253,7 @@ int ChartDldrPanelImpl::GetCheckedChartCount()
             cnt++;
     }
     return cnt;
-#endif    
+#endif	/* NEW_LIST */
 }
 
 bool ChartDldrPanelImpl::isChartChecked( int i )
@@ -1271,7 +1265,7 @@ bool ChartDldrPanelImpl::isChartChecked( int i )
         return m_panelArray.Item(i)->GetCB()->IsChecked();
     else
         return false;
-#endif    
+#endif	/* NEW_LIST */
 }
 
 void ChartDldrPanelImpl::CheckAllCharts( bool value )
@@ -1283,9 +1277,24 @@ void ChartDldrPanelImpl::CheckAllCharts( bool value )
     for( int i=0 ; i < GetChartCount() ; i++){
         m_panelArray.Item(i)->GetCB()->SetValue( value );
     }
-#endif
+#endif	/* NEW_LIST */
 }
 
+void ChartDldrPanelImpl::CheckNewCharts(bool value)
+{
+    for (int i = 0; i < GetChartCount(); i++) {
+        if (m_panelArray.Item(i)->isNew())
+            m_panelArray.Item(i)->GetCB()->SetValue(value);
+    }
+}
+
+void ChartDldrPanelImpl::CheckUpdatedCharts(bool value)
+{
+    for (int i = 0; i < GetChartCount(); i++) {
+        if (m_panelArray.Item(i)->isUpdated())
+            m_panelArray.Item(i)->GetCB()->SetValue(value);
+    }
+}
 
 void ChartDldrPanelImpl::InvertCheckAllCharts( )
 {
@@ -1296,7 +1305,7 @@ void ChartDldrPanelImpl::InvertCheckAllCharts( )
 #else
         for (int i = 0; i < GetChartCount(); i++)
             m_panelArray.Item(i)->GetCB()->SetValue( !isChartChecked(i) );
-#endif
+#endif	/* NEW_LIST */
 }
 
 
