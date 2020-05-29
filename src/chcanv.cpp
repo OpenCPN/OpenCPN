@@ -9386,7 +9386,10 @@ void ChartCanvas::FinishRoute( void )
                 m_pMouseRoute = NULL;
             }
         }
-        m_pMouseRoute->SetHiLite(0);
+        if( m_pMouseRoute ) {
+            m_pMouseRoute->SetHiLite(0);
+            m_pMouseRoute->m_pPrevInsertPoint = NULL;
+        }
 
         if( RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
@@ -9396,7 +9399,6 @@ void ChartCanvas::FinishRoute( void )
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateRouteListCtrl();
         }
-        m_pMouseRoute->m_pPrevInsertPoint = NULL;
 
     }
     m_bAppendingRoute = false;
