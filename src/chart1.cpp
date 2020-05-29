@@ -1788,6 +1788,10 @@ bool MyApp::OnInit()
     }
 #endif  // __OCPN__ANDROID__
 
+    if (getenv("OPENCPN_FATAL_ERROR") != 0) {
+        wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
+    }
+
     // Check if last run failed, set up safe_mode.
     if (!safe_mode::get_mode()) {
         safe_mode::check_last_start();
