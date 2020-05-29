@@ -2088,6 +2088,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cConfig, bool bApplyAsTemplate )
         Read( _T ( "canvasbFollow" ), &cConfig->bFollow, 0 );
     
         Read( _T ( "canvasCourseUp" ), &cConfig->bCourseUp, 0 );
+        Read( _T ( "canvasHeadUp" ), &cConfig->bHeadUp, 0 );
         Read( _T ( "canvasLookahead" ), &cConfig->bLookahead, 0 );
     }
 
@@ -2228,7 +2229,8 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cConfig )
         Write( _T ( "canvasENCShowLightDescriptions" ), cConfig->canvas->GetShowENCLightDesc() );
         Write( _T ( "canvasENCShowLights" ), cConfig->canvas->GetShowENCLights() );
         
-        Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetCourseUP() );
+        Write( _T ( "canvasCourseUp" ), cConfig->canvas->GetUpMode() == COURSE_UP_MODE );
+        Write( _T ( "canvasHeadUp" ), cConfig->canvas->GetUpMode() == HEAD_UP_MODE );
         Write( _T ( "canvasLookahead" ), cConfig->canvas->GetLookahead() );
         
         

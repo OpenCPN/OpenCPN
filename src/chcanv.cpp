@@ -425,7 +425,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bFirstAuto = true;
     m_groupIndex = 0;
     m_singleChart = NULL;
-    m_bCourseUp = false;
+    m_upMode = NORTH_UP_MODE;
     m_bShowAIS = true;
     m_bShowAISScaled = false;
     
@@ -710,7 +710,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     proute_bm = NULL;
     m_prot_bm = NULL;
 
-    m_bCourseUp = false;
+    m_upMode = NORTH_UP_MODE;
     m_bLookAhead = false;
     
 // Set some benign initial values
@@ -1118,7 +1118,14 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
     m_encShowLights = pcc->bShowENCLights;
     
-    m_bCourseUp = pcc->bCourseUp;
+    bool courseUp = pcc->bCourseUp;
+    bool headUp = pcc->bHeadUp;
+    m_upMode = NORTH_UP_MODE;
+    if(courseUp)
+        m_upMode = COURSE_UP_MODE;
+    else if(headUp)
+        m_upMode = HEAD_UP_MODE;
+    
     m_bLookAhead = pcc->bLookahead;
     
     m_singleChart = NULL;
@@ -1547,7 +1554,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         double d_east = dx / GetVP().view_scale_ppm;
         double d_north = dy / GetVP().view_scale_ppm;
 
-        if(!m_bCourseUp){
+        if(GetUpMode() == NORTH_UP_MODE){
             fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
         }
         else{
@@ -3342,12 +3349,11 @@ void ChartCanvas::ToggleLookahead( )
 
 }
 
-
-void ChartCanvas::ToggleCourseUp( )
+void ChartCanvas::SetUpMode( int mode)
 {
-    m_bCourseUp = !m_bCourseUp;
+    m_upMode = mode;
     
-    if( m_bCourseUp ) {
+    if( mode != NORTH_UP_MODE ) {
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = 0;
         if( !std::isnan(gCog) )
@@ -3370,21 +3376,26 @@ void ChartCanvas::ToggleCourseUp( )
     if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
         GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
 
-    //DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     gFrame->DoChartUpdate();
 }
 
 bool ChartCanvas::DoCanvasCOGSet( void )
 {
-    if( !m_bCourseUp )
+    if( GetUpMode() == NORTH_UP_MODE )
         return false;
     
     if (std::isnan(g_COGAvg))
         return true;
     
     double old_VPRotate = m_VPRotate;
-    m_VPRotate = -g_COGAvg * PI / 180.;
+    
+    if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt) ) {
+        m_VPRotate = -gHdt * PI / 180.;
+    }
+    else if(GetUpMode() == COURSE_UP_MODE)
+        m_VPRotate = -g_COGAvg * PI / 180.;
+        
     
     SetVPRotation( m_VPRotate );
     bool bnew_chart = DoCanvasUpdate();
@@ -4582,8 +4593,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
 void ChartCanvas::RotateCanvas( double dir )
 {
-    if(m_bCourseUp)
-        m_bCourseUp = false;
+    SetUpMode( NORTH_UP_MODE);
 
     if(g_bsmoothpanzoom) {
         if(StartTimedMovement()) {
@@ -7044,7 +7054,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
 
     //  Kick off the Rotation control timer
-    if( m_bCourseUp ) {
+    if( GetUpMode() == COURSE_UP_MODE ) {
         m_b_rot_hidef = false;
         pRotDefTimer->Start( 500, wxTIMER_ONE_SHOT );
     } else
@@ -12132,11 +12142,7 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
         
-        case ID_TBSTATBOX: {
-            ToggleCourseUp();
-            break;
-        }
-        
+       
         default:
             break;
     }
@@ -12543,7 +12549,7 @@ void ChartCanvas::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_
         double oldskew = GetVPSkew();
         double newskew = m_singleChart->GetChartSkew() * PI / 180.0;
         
-        if (!g_bskew_comp && !m_bCourseUp) {
+        if (!g_bskew_comp && (GetUpMode() == NORTH_UP_MODE) ) {
             if (fabs(oldskew) > 0.0001)
                 rotation = 0.0;
             if (fabs(newskew) > 0.0001)

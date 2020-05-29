@@ -4772,9 +4772,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
-        case ID_MENU_CHART_NORTHUP:
+        case ID_MENU_CHART_NORTHUP:{
+            SetUpMode(GetPrimaryCanvas(), NORTH_UP_MODE);
+            break;
+        }
         case ID_MENU_CHART_COGUP:{
-            ToggleCourseUp(GetPrimaryCanvas());
+            SetUpMode(GetPrimaryCanvas(), COURSE_UP_MODE);
+            break;
+        }
+         case ID_MENU_CHART_HEADUP:{
+            SetUpMode(GetPrimaryCanvas(), HEAD_UP_MODE);
             break;
         }
 
@@ -5345,22 +5352,20 @@ void MyFrame::TrackDailyRestart( void )
 }
 }
 
-void MyFrame::ToggleCourseUp( ChartCanvas *cc )
+void MyFrame::SetUpMode( ChartCanvas *cc, int mode )
 {
     if(cc){
-        cc->ToggleCourseUp();
-        
-        bool bCourseUp = cc->m_bCourseUp;
+        cc->SetUpMode( mode );
 
-
-        SetMenubarItemState( ID_MENU_CHART_COGUP, bCourseUp );
-        SetMenubarItemState( ID_MENU_CHART_NORTHUP, !bCourseUp );
+        SetMenubarItemState( ID_MENU_CHART_COGUP, mode == COURSE_UP_MODE );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, mode == NORTH_UP_MODE );
+        SetMenubarItemState( ID_MENU_CHART_HEADUP, mode == HEAD_UP_MODE );
 
         if(m_pMenuBar)
             m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
-
     }
 }
+
 
 void MyFrame::ToggleENCText( ChartCanvas *cc )
 {
@@ -5673,6 +5678,7 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
+    nav_menu->AppendRadioItem( ID_MENU_CHART_HEADUP, _("Head Up Mode") );
     nav_menu->AppendSeparator();
 #ifndef __WXOSX__
     nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
@@ -5793,8 +5799,9 @@ void MyFrame::UpdateGlobalMenuItems()
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( GetPrimaryCanvas()->m_bFollow );
-    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !GetPrimaryCanvas()->m_bCourseUp );
-    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->m_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( GetPrimaryCanvas()->GetUpMode() == NORTH_UP_MODE );
+    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->GetUpMode() == COURSE_UP_MODE );
+    m_pMenuBar->FindItem( ID_MENU_CHART_HEADUP )->Check( GetPrimaryCanvas()->GetUpMode() == HEAD_UP_MODE );
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
@@ -5846,8 +5853,14 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( cc->m_bFollow );
-    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !cc->m_bCourseUp );
-    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( cc->m_bCourseUp );
+    
+    if(cc->GetUpMode() == NORTH_UP_MODE)
+        m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( true  );
+    else if (cc->GetUpMode() == COURSE_UP_MODE)    
+        m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( true );
+    else
+        m_pMenuBar->FindItem( ID_MENU_CHART_HEADUP )->Check( true );
+    
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( cc->GetShowOutlines() );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( cc->GetQuiltMode() );
@@ -7669,7 +7682,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //    In follow mode, if there has already been a full screen refresh, there is no need to check ownship or AIS,
 //       since they will be always drawn on the full screen paint.
 
-                if( ( !cc->m_bFollow ) || cc->m_bCourseUp ) {
+                if( ( !cc->m_bFollow ) || (cc->GetUpMode() != NORTH_UP_MODE) ) {
                     cc->UpdateShips();
                     cc->UpdateAIS();
                     cc->UpdateAlerts();
@@ -7831,7 +7844,7 @@ void MyFrame::OnFrameCOGTimer( wxTimerEvent& event )
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
         if(cc)
-            b_rotate |= cc->m_bCourseUp;
+            b_rotate |= (cc->GetUpMode() != NORTH_UP_MODE);
     }
     
     if(!b_rotate){

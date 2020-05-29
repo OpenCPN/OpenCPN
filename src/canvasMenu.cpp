@@ -189,6 +189,7 @@ enum
     ID_DEF_MENU_QUILTREMOVE,
     ID_DEF_MENU_COGUP,
     ID_DEF_MENU_NORTHUP,
+    ID_DEF_MENU_HEADUP,
     ID_DEF_MENU_TOGGLE_FULL,
     ID_DEF_MENU_TIDEINFO,
     ID_DEF_MENU_CURRENTINFO,
@@ -416,10 +417,17 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center view") + _T("...") );
 
     if( !g_bBasicMenus){
-        if( !parent->m_bCourseUp )
-            MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
+        if( parent->GetVP().b_quilt){
+            if( parent->GetUpMode() == NORTH_UP_MODE ){
+                MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
+                MenuAppend1( contextMenu, ID_DEF_MENU_HEADUP, _("Heading Up Mode") );
+            }
+            else{
+                MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
+            }
+        }    
         else {
-            if( !parent->GetVP().b_quilt && parent->m_singleChart && ( fabs( parent->m_singleChart->GetChartSkew() ) > .01 )
+            if( parent->m_singleChart && ( fabs( parent->m_singleChart->GetChartSkew() ) > .01 )
                 && !g_bskew_comp ) MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
             else
                 MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
@@ -1088,11 +1096,15 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_DEF_MENU_COGUP:
-        parent->ToggleCourseUp();
+        parent->SetUpMode(COURSE_UP_MODE);
+        break;
+
+   case ID_DEF_MENU_HEADUP:
+        parent->SetUpMode(HEAD_UP_MODE);
         break;
 
     case ID_DEF_MENU_NORTHUP:
-        parent->ToggleCourseUp();
+        parent->SetUpMode(NORTH_UP_MODE);
         break;
         
     case ID_DEF_MENU_TOGGLE_FULL:

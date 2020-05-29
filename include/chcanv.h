@@ -129,6 +129,12 @@ enum {
     ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
 };
 
+enum {
+    NORTH_UP_MODE,
+    COURSE_UP_MODE,
+    HEAD_UP_MODE
+};
+
 //----------------------------------------------------------------------------
 // ChartCanvas
 //----------------------------------------------------------------------------
@@ -320,7 +326,7 @@ public:
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
-      void ToggleCourseUp( );
+      void SetUpMode( int mode);
       void ToggleLookahead( );
       void SetShowGPS( bool show );
  
@@ -387,7 +393,7 @@ public:
       int         m_groupIndex;
       int          m_routeState;
       ChartBase   *m_singleChart;
-      bool        m_bCourseUp;
+      int         m_upMode;
       bool        m_bLookAhead;
       double      m_VPRotate;
       
@@ -501,7 +507,7 @@ public:
       bool GetShowENCDataQual(){ return m_encShowDataQual; }
       void SetShowENCDataQual( bool show );
       
-      bool GetCourseUP(){ return m_bCourseUp; }
+      int GetUpMode(){ return m_upMode; }
       bool GetLookahead(){ return m_bLookAhead; }
 
       bool GetShowAIS(){ return m_bShowAIS; }
