@@ -3,15 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:53\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2020-05-29 00:15\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: pl\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
@@ -23,8 +22,8 @@ msgstr "Rozpocznij żądanie"
 #: src/GribUIDialog.cpp:340
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr "Zaznacz Żądany Obszar\n"
-"lub Kliknij tu, aby porzucić żądanie"
+msgstr "Zaznacz żądany obszar\n"
+"lub lliknij tu, aby porzucić przerwać"
 
 #: src/GribUIDialog.cpp:344 src/GribUIDialog.cpp:819
 msgid "Valid Area and Continue"
@@ -44,7 +43,7 @@ msgstr " nie zawiera prawidłowych danych!"
 
 #: src/GribUIDialog.cpp:416
 msgid "No valid GRIB file"
-msgstr "Brak prawidłowego pliku"
+msgstr "Brak prawidłowego pliku GRIB"
 
 #: src/GribUIDialog.cpp:612 src/GribUIDialog.cpp:808
 msgid "Hide data at cursor"
@@ -64,7 +63,7 @@ msgstr "Menu"
 
 #: src/GribUIDialog.cpp:804
 msgid "Select geopotential altitude"
-msgstr "Wybierz wysokość geopotencjału"
+msgstr "Wybierz liczbę geopotencjalną"
 
 #: src/GribUIDialog.cpp:806 src/GribUIDialogBase.cpp:66
 #: src/GribUIDialogBase.cpp:177 src/GribUIDialogBase.cpp:1170
@@ -229,7 +228,7 @@ msgstr "CAPE"
 
 #: src/GribSettingsDialog.cpp:51
 msgid "Altitude(Geopotential)"
-msgstr "Wysokość (geopotencjał)"
+msgstr "Liczba geopotencjalna"
 
 #: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:240
 msgid "Relative Humidity"
@@ -314,7 +313,7 @@ msgstr "Następny"
 
 #: src/GribUIDialogBase.cpp:61 src/GribUIDialogBase.cpp:172
 msgid "Select geoptential altitude"
-msgstr ""
+msgstr "Wybierz liczbę geopotencjalną"
 
 #: src/GribUIDialogBase.cpp:405
 msgid "MyLabel"
@@ -455,7 +454,7 @@ msgstr "Mapa barwna"
 
 #: src/GribUIDialogBase.cpp:905
 msgid "Color scheme"
-msgstr ""
+msgstr "Schemat kolorów"
 
 #: src/GribUIDialogBase.cpp:909
 msgid "Generic"
@@ -565,7 +564,7 @@ msgstr "Pasek ikon oddzielony"
 
 #: src/GribUIDialogBase.cpp:1154
 msgid "Geopot. Height Choice"
-msgstr ""
+msgstr "Geopotencjał. Wybór liczby"
 
 #: src/GribUIDialogBase.cpp:1186
 msgid "Zoom to Center"
@@ -617,7 +616,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1417
 msgid "Zoom to file center when opened"
-msgstr ""
+msgstr "Ustaw na środku po otwarciu pliku"
 
 #: src/GribUIDialogBase.cpp:1425
 msgid "Load the More Recent File in Directory"
@@ -785,7 +784,7 @@ msgstr "Temperatura powierzchni morza"
 
 #: src/GribUIDialogBase.cpp:1815
 msgid "Geopotential Height"
-msgstr "Wysokość geopotencjału"
+msgstr "Liczba geopotencjalna"
 
 #: src/GribUIDialogBase.cpp:1825
 msgid "850 hPa"
@@ -847,7 +846,7 @@ msgstr "Dialog"
 
 #: src/GribOverlayFactory.cpp:503
 msgid "Warning : Data at Geopotential Height"
-msgstr ""
+msgstr "Ostrzeżenie: Dane dla liczby geopotencjalnej"
 
 #: src/GribOverlayFactory.cpp:1198
 msgid "IsoBar Unable to compute record magnitude"
@@ -997,7 +996,7 @@ msgstr "Przewidywana prędkość (w węzłach)"
 
 #: src/GribRequestDialog.cpp:142
 msgid "Enter your forecasted Course"
-msgstr "Wprowadź swój prognozowany kurs"
+msgstr "Wprowadź swój przewidywany kurs"
 
 #: src/GribRequestDialog.cpp:488
 msgid "Coord. "
@@ -1013,7 +1012,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Zażądano prognozy na więcej niż 8 dni naprzód.\n"
+"To ustawienie pozostaje w konflikcie z danymi zafalowania, które zostaną usunięte z żądania.\n"
+"Pamiętaj, że dla prognozy przekraczającej 8 dni gęstość siatki zostanie zmniejszona do 2.5° x 2.5°\n"
+"a przedział czasowy do 12 godzin."
 
 #: src/GribRequestDialog.cpp:861
 msgid "Max"
@@ -1035,7 +1037,7 @@ msgstr "Błąd! Max Szer. mniejsza niż Min Szer. lub Max Dług. mniejsza niż M
 
 #: src/GribRequestDialog.cpp:979
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Zbyt duży obszar! Obszar nie może mieć długości ani szerokości większej niż 180°!"
 
 #: src/GribRequestDialog.cpp:979
 msgid "Too small area for this resolution!"
@@ -1075,7 +1077,7 @@ msgstr "Dane na pozycji kursora"
 
 #: src/CursorData.cpp:236
 msgid "at Geopotential Height"
-msgstr ""
+msgstr "dla liczby geopotencjalnej"
 
 #: src/CursorData.cpp:239
 msgid "Temperature"

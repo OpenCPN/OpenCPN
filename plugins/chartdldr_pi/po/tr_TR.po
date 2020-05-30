@@ -2,16 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:54\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"POT-Creation-Date: 2019-07-30 09:34-0400\n"
+"PO-Revision-Date: 2020-05-29 00:16\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: tr\n"
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
@@ -30,356 +29,376 @@ msgstr "%s (%sden %sye), nehir mili %3.1f - %3.1f"
 msgid "%s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:227
+#: src/chartdldr_pi.cpp:268
 msgid "ChartDownloader"
 msgstr "Haritaİndirici"
 
-#: src/chartdldr_pi.cpp:232
+#: src/chartdldr_pi.cpp:273
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "OpenCPN için Harita İndirici Eklentisi"
 
-#: src/chartdldr_pi.cpp:237
+#: src/chartdldr_pi.cpp:278
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
-msgstr "OpenCPN için Chart Downloader Eklentisi \\ nGrup dosyaları ve güncellemeleri, \\ noNOAA Grafik Katalogu formatını destekleyen kaynaklardan yönetir\n"
+msgstr "OpenCPN için Harita İndirme Eklentisi \n"
+"Harita indirmelerini ve destekleyen kaynaklardan güncellemeleri yönetir. \n"
+"NOAA Harita Katalog Formatı\n"
 " "
 
-#: src/chartdldr_pi.cpp:244 src/chartdldr_pi.cpp:683 src/chartdldr_pi.cpp:690
-#: src/chartdldr_pi.cpp:696 src/chartdldr_pi.cpp:714 src/chartdldr_pi.cpp:749
-#: src/chartdldr_pi.cpp:813 src/chartdldr_pi.cpp:819 src/chartdldr_pi.cpp:1008
-#: src/chartdldr_pi.cpp:1098 src/chartdldr_pi.cpp:1174 src/chartdldr_pi.cpp:1263
-#: src/chartdldr_pi.cpp:1933
+#: src/chartdldr_pi.cpp:285 src/chartdldr_pi.cpp:956 src/chartdldr_pi.cpp:963
+#: src/chartdldr_pi.cpp:969 src/chartdldr_pi.cpp:987 src/chartdldr_pi.cpp:1022
+#: src/chartdldr_pi.cpp:1082 src/chartdldr_pi.cpp:1088 src/chartdldr_pi.cpp:1345
+#: src/chartdldr_pi.cpp:1437 src/chartdldr_pi.cpp:1440 src/chartdldr_pi.cpp:1531
+#: src/chartdldr_pi.cpp:1627 src/chartdldr_pi.cpp:2359
 msgid "Chart Downloader"
-msgstr "Grafik İndirici"
+msgstr "Harita İndirici"
 
-#: src/chartdldr_pi.cpp:419 src/chartdldr_pi.cpp:441
+#: src/chartdldr_pi.cpp:618 src/chartdldr_pi.cpp:640
 msgid "Select all"
 msgstr "Tümünü seç"
 
-#: src/chartdldr_pi.cpp:423 src/chartdldr_pi.cpp:442
+#: src/chartdldr_pi.cpp:622 src/chartdldr_pi.cpp:641
 msgid "Deselect all"
 msgstr "Tüm seçimleri kaldır"
 
-#: src/chartdldr_pi.cpp:427 src/chartdldr_pi.cpp:443
+#: src/chartdldr_pi.cpp:626 src/chartdldr_pi.cpp:642
 msgid "Invert selection"
-msgstr "Zıt seçim"
+msgstr "Seçimi tersine çevir"
 
-#: src/chartdldr_pi.cpp:431 src/chartdldr_pi.cpp:444
+#: src/chartdldr_pi.cpp:630 src/chartdldr_pi.cpp:643
 msgid "Select updated"
-msgstr "Güncellenmiş seçin"
+msgstr "Güncellenmişini seçin"
 
-#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:445
+#: src/chartdldr_pi.cpp:634 src/chartdldr_pi.cpp:644
 msgid "Select new"
 msgstr "Yeni Seç"
 
-#: src/chartdldr_pi.cpp:553
+#: src/chartdldr_pi.cpp:695 src/chartdldrgui.cpp:282
+msgid "Charts"
+msgstr "Haritalar"
+
+#: src/chartdldr_pi.cpp:766 src/chartdldr_pi.cpp:820
 msgid "New"
 msgstr "Yeni"
 
-#: src/chartdldr_pi.cpp:562
+#: src/chartdldr_pi.cpp:775 src/chartdldr_pi.cpp:829
 msgid "Update available"
-msgstr "Güncelleştirme kullanılabilir"
+msgstr "Güncelleme mevcut"
 
-#: src/chartdldr_pi.cpp:568
+#: src/chartdldr_pi.cpp:781 src/chartdldr_pi.cpp:835
 msgid "Up to date"
 msgstr "Güncel"
 
-#: src/chartdldr_pi.cpp:575
+#: src/chartdldr_pi.cpp:843
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr "Toplam% lu grafikler,% lu güncellendi,% lu yeni"
+msgstr "Toplam %lu haritalar, %lu güncellendi, %lu yeni"
 
-#: src/chartdldr_pi.cpp:654 src/chartdldr_pi.cpp:1237
+#: src/chartdldr_pi.cpp:922 src/chartdldr_pi.cpp:1601
 msgid "(Please update first)"
 msgstr "(İlk önce güncelleyin lütfen)"
 
-#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731
+#: src/chartdldr_pi.cpp:927 src/chartdldr_pi.cpp:1004
 msgid "Error, the URL to the chart source data seems wrong."
-msgstr "Hata, grafik kaynak verilerinin URL'si yanlış görünüyor."
+msgstr "Hata, harita kaynak verilerinin URL'si yanlış görünüyor."
 
-#: src/chartdldr_pi.cpp:659 src/chartdldr_pi.cpp:731 src/chartdldr_pi.cpp:1019
+#: src/chartdldr_pi.cpp:927 src/chartdldr_pi.cpp:1004 src/chartdldr_pi.cpp:1356
 msgid "Error"
 msgstr "Hata"
 
-#: src/chartdldr_pi.cpp:682
+#: src/chartdldr_pi.cpp:955
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
-msgstr "Tüm grafik kataloglarını güncellemeyi seçtiniz. \\ Ntüm yeni ve güncellenmiş grafikler indirilir. \\ Nbu uzun zaman alabilir."
+msgstr "Tüm harita kataloglarını güncellemeyi seçtiniz. \n"
+"tüm güncellenmiş ve yeni haritalar indirilir. \n"
+"bu uzun zaman alabilir."
 
-#: src/chartdldr_pi.cpp:689
+#: src/chartdldr_pi.cpp:962
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
-msgstr "Tüm grafik kataloglarını güncellemeyi seçtiniz. \\ Ndaha sonra sadece yeni (ancak güncellenmeyen) çizelgeleri indir. \\ Nbu uzun zaman alabilir."
+msgstr "Tüm harita kataloglarını güncellemeyi seçtiniz. \n"
+"daha sonra sadece yeni (ancak güncellenmeyen) haritaları indir. \n"
+"bu uzun zaman alabilir."
 
-#: src/chartdldr_pi.cpp:695
+#: src/chartdldr_pi.cpp:968
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
-msgstr "Tüm grafik kataloglarını güncellemeyi seçtiniz. \\ Nbu arada yalnızca güncellenmiş (ancak yeni değil) grafikleri indirmenizi seçtiniz. \\ Nbu uzun zaman alabilir."
+msgstr "Tüm harita kataloglarını güncellemeyi seçtiniz. \n"
+"daha sonra sadece güncellenen (ancak yeni olmayan) haritaları indir. \n"
+"bu uzun zaman alabilir."
 
-#: src/chartdldr_pi.cpp:713 src/chartdldr_pi.cpp:1096
+#: src/chartdldr_pi.cpp:986 src/chartdldr_pi.cpp:1435
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
-msgstr "% d grafik % d kadar indirilemedi. \\ nLütfen listeyi kontrol edin, çalışan bir İnternet bağlantısı olup olmadığını kontrol edin ve gerekirse işlemi tekrarlayın."
+msgstr "%d haritanın %d kadarı indirilemedi. \n"
+"Lütfen listeyi kontrol edin, çalışan bir İnternet bağlantısı olup olmadığını kontrol edin ve gerekirse işlemi tekrarlayın."
 
-#: src/chartdldr_pi.cpp:749 src/chartdldr_pi.cpp:1910 src/chartdldr_pi.cpp:1933
+#: src/chartdldr_pi.cpp:1022 src/chartdldr_pi.cpp:2335 src/chartdldr_pi.cpp:2359
 #, c-format
 msgid "Directory %s can't be created."
-msgstr "Dizin \"%s\" oluşturulamıyor."
+msgstr "Dizin %s oluşturulamadı."
 
-#: src/chartdldr_pi.cpp:785
+#: src/chartdldr_pi.cpp:1041 src/chartdldr_pi.cpp:1053
 msgid "Downloading file"
 msgstr "Dosya indiriliyor"
 
-#: src/chartdldr_pi.cpp:786
+#: src/chartdldr_pi.cpp:1042 src/chartdldr_pi.cpp:1054
 msgid "Reading Headers: "
-msgstr "Okuma Başlıkları: "
+msgstr "Başlıklar Okunuyor: "
 
-#: src/chartdldr_pi.cpp:812
+#: src/chartdldr_pi.cpp:1081
 #, c-format
 msgid "Failed to Find New Catalog: %s "
-msgstr "Yeni Katalog Bulunamadı:% s "
+msgstr "Yeni Katalog Bulunamadı: %s "
 
-#: src/chartdldr_pi.cpp:818
+#: src/chartdldr_pi.cpp:1087
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
-msgstr "Katalog İndirilemedi:% s \\ nİşe yarayan bir İnternet bağlantısı olduğunu doğrulayın."
+msgstr "Katalog İndirilemedi: %s \n"
+"Çalışan bir İnternet bağlantısı olduğunu doğrulayın."
 
-#: src/chartdldr_pi.cpp:969 src/chartdldr_pi.cpp:975
+#: src/chartdldr_pi.cpp:1310
 msgid "No charts selected for download."
-msgstr "İndirmek için seçilen bir grafik yok."
+msgstr "İndirmek için seçilen bir harita yok."
 
-#: src/chartdldr_pi.cpp:985
+#: src/chartdldr_pi.cpp:1322
 msgid "Abort download"
-msgstr "Indirmeyi bırak"
+msgstr "İndirmeyi bırak"
 
-#: src/chartdldr_pi.cpp:1001
+#: src/chartdldr_pi.cpp:1338
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#: src/chartdldr_pi.cpp:1007
+#: src/chartdldr_pi.cpp:1344
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
-msgstr "Seçili grafik '% s' otomatik olarak indirilemiyor, bir tarayıcı penceresi açıp bunları manuel olarak indirmemi istiyor musunuz? \\ N \\ n Grafikleri indirdikten sonra lütfen bunları% s'ye ayıklayın"
+msgstr "Seçili harita '%s' otomatik olarak indirilemiyor, bir tarayıcı penceresi açıp bunları manüel olarak indirmemi istiyor musunuz? \n\n"
+" Haritaları indirdikten sonra lütfen bunları %s'ye çıkartın"
 
-#: src/chartdldr_pi.cpp:1019
+#: src/chartdldr_pi.cpp:1356
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr "Hata, grafik (% s) verilerinin URL'si yanlış görünüyor."
+msgstr "Hata, harita (%s) verilerinin URL'si yanlış görünüyor."
 
-#: src/chartdldr_pi.cpp:1055
+#: src/chartdldr_pi.cpp:1393
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Harita İndiriliyor%u of %u, %u İndirme hatası (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1089 src/chartdldrgui.cpp:295
-msgid "Download\n"
-" selected charts"
-msgstr "\"Seçilen grafikleri indirin\""
+#: src/chartdldr_pi.cpp:1397
+#, c-format
+msgid "Downloading chart %u of %u (%s / %s)"
+msgstr "Harita indiriliyor %u of %u (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1091 src/chartdldrgui.cpp:402
+#: src/chartdldr_pi.cpp:1431 src/chartdldrgui.cpp:302
 msgid "Download selected charts"
 msgstr "Seçilen grafikleri indirin"
 
-#: src/chartdldr_pi.cpp:1122 src/chartdldrgui.cpp:96
+#: src/chartdldr_pi.cpp:1440
+msgid "Chart download cancelled."
+msgstr "Harita indirme iptal edildi."
+
+#: src/chartdldr_pi.cpp:1473 src/chartdldrgui.cpp:98
 msgid "Catalog"
 msgstr "Katalog"
 
-#: src/chartdldr_pi.cpp:1123
+#: src/chartdldr_pi.cpp:1474
 msgid "Released"
 msgstr "Yayınlandı"
 
-#: src/chartdldr_pi.cpp:1124
+#: src/chartdldr_pi.cpp:1475
 msgid "Local path"
 msgstr "Yerel yol"
 
-#: src/chartdldr_pi.cpp:1128
+#: src/chartdldr_pi.cpp:1480
 msgid "Title"
 msgstr "Başlık"
 
-#: src/chartdldr_pi.cpp:1129
+#: src/chartdldr_pi.cpp:1481
 msgid "Status"
 msgstr "Durum"
 
-#: src/chartdldr_pi.cpp:1130
+#: src/chartdldr_pi.cpp:1482
 msgid "Latest"
 msgstr "Son"
 
-#: src/chartdldr_pi.cpp:1173
+#: src/chartdldr_pi.cpp:1530
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed, but you will not be able to update the charts anymore."
 msgstr "Gerçekten grafik kaynağını kaldırmak istiyor musunuz? \n"
 " Yerel grafik dosyaları kaldırılmayacak, ancak artık grafikleri güncelleyemeyeceksiniz."
 
-#: src/chartdldr_pi.cpp:1228
+#: src/chartdldr_pi.cpp:1592
 msgid "Edit Chart Source"
 msgstr "Grafik Kaynağını Düzenle"
 
-#: src/chartdldr_pi.cpp:1262
+#: src/chartdldr_pi.cpp:1626
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Yol %s, yapılandırılmış Grafik Dizinleriniz tarafından kapsanmıyor gibi görünüyor. Grafikleri görmek için 'Grafik Dosyaları' sekmesindeki yapılandırmayı ayarlamanız gerekiyor."
 
-#: src/chartdldr_pi.cpp:1895 src/chartdldr_pi.cpp:1898
+#: src/chartdldr_pi.cpp:2320 src/chartdldr_pi.cpp:2323
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "Önceden tanımlanmış grafiklerden birini seçmeniz veya kendi grafiklerinizden birini oluşturmanız gerekir. \n"
 
-#: src/chartdldr_pi.cpp:1901
+#: src/chartdldr_pi.cpp:2326
 msgid "The chart source must have a name.\n"
 msgstr "Grafik kaynağı bir isme sahip olmalı.\n"
 
-#: src/chartdldr_pi.cpp:1904
+#: src/chartdldr_pi.cpp:2329
 msgid "The chart source must have a valid URL.\n"
 msgstr "Grafik kaynağı geçerli bir URL'ye sahip olmalı.\n"
 
-#: src/chartdldr_pi.cpp:1906
+#: src/chartdldr_pi.cpp:2331
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Grafikleri muhafaza için bir yerel klasör seçmelisin.\n"
 
-#: src/chartdldr_pi.cpp:1913
+#: src/chartdldr_pi.cpp:2338
 msgid "Chart source definition problem"
-msgstr "Grafik kaynağı tanım sorunu"
+msgstr "Harita kaynağı tanımlama sorunu"
 
-#: src/chartdldrgui.cpp:105
+#: src/chartdldrgui.cpp:107
 msgid "Predefined"
 msgstr "Önceden tanımlanmış"
 
-#: src/chartdldrgui.cpp:126
+#: src/chartdldrgui.cpp:128
 msgid "Name"
 msgstr "Ad"
 
-#: src/chartdldrgui.cpp:134
+#: src/chartdldrgui.cpp:136
 msgid "URL"
 msgstr "URL"
 
-#: src/chartdldrgui.cpp:146
+#: src/chartdldrgui.cpp:148
 msgid "Custom"
 msgstr "Özel"
 
-#: src/chartdldrgui.cpp:150
+#: src/chartdldrgui.cpp:152
 msgid "Chart Directory"
-msgstr "Grafik Rehberi"
+msgstr "Harita Klasörü"
 
-#: src/chartdldrgui.cpp:159 src/chartdldrgui.cpp:474
+#: src/chartdldrgui.cpp:161 src/chartdldrgui.cpp:463
 msgid "Select a folder"
 msgstr "Bir klasör seç"
 
-#: src/chartdldrgui.cpp:199 src/chartdldrgui.cpp:573
+#: src/chartdldrgui.cpp:170 src/chartdldrgui.cpp:501
+msgid "Cancel"
+msgstr "İptal"
+
+#: src/chartdldrgui.cpp:201 src/chartdldrgui.cpp:562
 msgid "Choose Chart File Directory"
-msgstr "Grafik Dosya Yöneticisi Seç"
+msgstr "Harita Dosya Klasörünü Seç"
 
-#: src/chartdldrgui.cpp:224 src/chartdldrgui.cpp:337
-msgid "Catalogs"
-msgstr "Kataloglar"
+#: src/chartdldrgui.cpp:227
+msgid "Select Catalog..."
+msgstr "Katalog Seçin..."
 
-#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
-msgid "Add"
-msgstr "Ekle"
+#: src/chartdldrgui.cpp:232
+msgid "Chart Catalogs Available"
+msgstr "Harita Katalogları Mevcut"
 
-#: src/chartdldrgui.cpp:248 src/chartdldrgui.cpp:349
+#: src/chartdldrgui.cpp:251
+msgid "Add Catalog"
+msgstr "Katalog Ekle"
+
+#: src/chartdldrgui.cpp:252
 msgid "Add a new chart catalog."
 msgstr "Yeni grafik kataloğu ekle."
 
-#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+#: src/chartdldrgui.cpp:256
 msgid "Delete"
 msgstr "Sil"
 
-#: src/chartdldrgui.cpp:253 src/chartdldrgui.cpp:354
+#: src/chartdldrgui.cpp:257
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr "Grafik kataloğunu sil. İndirilmiş grafikler silinmedi."
+msgstr "Harita kataloğunu sil. İndirilmiş haritalar silinmedi."
 
-#: src/chartdldrgui.cpp:257 src/chartdldrgui.cpp:358
+#: src/chartdldrgui.cpp:261
 msgid "Edit..."
 msgstr "Düzenle..."
 
-#: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
+#: src/chartdldrgui.cpp:264
 msgid "Update"
 msgstr "Güncelle"
 
-#: src/chartdldrgui.cpp:262 src/chartdldrgui.cpp:363
+#: src/chartdldrgui.cpp:266
 msgid "Download the current chart catalog and update the data."
-msgstr "Mevcut grafik kataloğunu indir ve veriyi güncelle."
+msgstr "Mevcut harita kataloğunu indir ve veriyi güncelle."
 
-#: src/chartdldrgui.cpp:266 src/chartdldrgui.cpp:367
+#: src/chartdldrgui.cpp:270
 msgid "Update All"
 msgstr "Hepsini güncelle"
 
-#: src/chartdldrgui.cpp:271 src/chartdldrgui.cpp:380
-msgid "Charts"
-msgstr "Grafikler"
+#: src/chartdldrgui.cpp:276
+msgid "Download Charts..."
+msgstr "Haritaları indir..."
 
-#: src/chartdldrgui.cpp:292 src/chartdldrgui.cpp:396
-msgid "Help"
-msgstr "Yardım"
-
-#: src/chartdldrgui.cpp:298 src/chartdldrgui.cpp:405
-msgid "Show local files"
-msgstr "Yerel dosyaları göster"
-
-#: src/chartdldrgui.cpp:304 src/chartdldrgui.cpp:389
+#: src/chartdldrgui.cpp:305
 #, c-format
 msgid "%u charts total, %u updated, %u new"
-msgstr ""
+msgstr "Toplam %u haritalar, %u güncellendi, %u yeni"
 
-#: src/chartdldrgui.cpp:465
+#: src/chartdldrgui.cpp:454
 msgid "Default Path to Charts"
-msgstr "Grafikler için varsayılan yol"
+msgstr "Haritalar için varsayılan yol"
 
-#: src/chartdldrgui.cpp:481
+#: src/chartdldrgui.cpp:470
 msgid "Preferences"
 msgstr "Tercihler"
 
-#: src/chartdldrgui.cpp:485
+#: src/chartdldrgui.cpp:474
 msgid "After catalog update select for download"
 msgstr "Katalog güncellemesinden sonra indirmek için seç"
 
-#: src/chartdldrgui.cpp:489
+#: src/chartdldrgui.cpp:478
 msgid "All updated charts"
-msgstr "Tüm güncellenmiş grafikler"
+msgstr "Tüm güncellenmiş haritalar"
 
-#: src/chartdldrgui.cpp:493
+#: src/chartdldrgui.cpp:482
 msgid "All new charts"
-msgstr "Tüm yeni grafikler"
+msgstr "Tüm yeni haritalar"
 
-#: src/chartdldrgui.cpp:499
+#: src/chartdldrgui.cpp:488
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "Onaylanmış grafik kaynakları ve grafiklerin toplu güncellenmelerine izin ver"
+msgstr "Onaylanmış harita kaynakları ve haritaların toplu güncellenmesine izin ver"
 
-#: src/chartdldrgui.cpp:503
+#: src/chartdldrgui.cpp:492
 msgid "Update chart source catalog"
-msgstr ""
+msgstr "Harita kaynak kataloğunu güncelle"
 
-#: src/chartdldrgui.cpp:537
+#: src/chartdldrgui.cpp:526
 msgid "Downloading chart sources"
-msgstr ""
+msgstr "Harita kaynağı indiriliyor"
 
-#: src/chartdldrgui.cpp:545
+#: src/chartdldrgui.cpp:534
 #, c-format
 msgid "Failed to save: %s "
-msgstr ""
+msgstr "Kaydedilemedi:%s "
 
-#: src/chartdldrgui.cpp:545 src/chartdldrgui.cpp:552
+#: src/chartdldrgui.cpp:534 src/chartdldrgui.cpp:541
 msgid "Chart downloader"
-msgstr ""
+msgstr "Harita İndirici"
 
-#: src/chartdldrgui.cpp:551
+#: src/chartdldrgui.cpp:540
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
-msgstr ""
+msgstr "Katalog İndirilemedi: %s \n"
+"Çalışan bir İnternet bağlantısı olduğunu doğrulayın."
 
-#: src/chartdldrgui.h:77
+#: src/chartdldrgui.h:81
 msgid "New chart source"
-msgstr "Yeni grafik kaynağı"
+msgstr "Yeni harita kaynağı"
 
-#: src/chartdldrgui.h:156
+#: src/chartdldrgui.h:171
 msgid "Chart Downloader Preferences"
-msgstr "Grafik İndirici Tercihleri"
+msgstr "Harita İndirici Tercihleri"
 

@@ -3,15 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:19-0400\n"
-"PO-Revision-Date: 2019-03-18 02:52\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2020-05-29 00:15\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: it\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
@@ -175,11 +174,11 @@ msgstr "Inclinazione laterale"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Ora locale GPS"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Ora locale CPU"
 
 #: src/dashboard_pi.cpp:198
 msgid "Local Sunrise/Sunset"
@@ -279,15 +278,15 @@ msgstr "Velocità"
 
 #: src/dashboard_pi.cpp:1861
 msgid "Speed Over Ground Damping Factor:"
-msgstr ""
+msgstr "Fattore di Smorzamento delle oscillazioni della velocità e della rotta rispetto al fondo:"
 
 #: src/dashboard_pi.cpp:1867
 msgid "COG Damping Factor:"
-msgstr ""
+msgstr "COG Smorzamento delle oscillazioni della velocità e della rotta rispetto al fondo:"
 
 #: src/dashboard_pi.cpp:1873
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Costamento (in ore) dal fuso Greenwich (UTC):"
 
 #: src/dashboard_pi.cpp:1892
 msgid "Boat speed units:"
@@ -340,7 +339,7 @@ msgstr "Centimetri"
 #: src/dashboard_pi.cpp:1909
 #, c-format
 msgid "Depth Offset (%s):"
-msgstr ""
+msgstr "Valore di profondità (%s):"
 
 #: src/dashboard_pi.cpp:1933
 msgid "Distance units:"
@@ -372,7 +371,7 @@ msgstr "Seleziona strumenti:"
 
 #: src/dashboard_pi.cpp:2266
 msgid "Undock"
-msgstr ""
+msgstr "Sgancia"
 
 #: src/dashboard_pi.cpp:2277
 msgid "Preferences..."

@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-12 22:18-0400\n"
-"PO-Revision-Date: 2019-03-18 02:55\n"
-"Last-Translator: nohal <pavel@kalian.cz>\n"
+"PO-Revision-Date: 2019-11-27 15:33\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
 "Language-Team: Icelandic\n"
 "Language: is_IS\n"
 "MIME-Version: 1.0\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
-msgstr ""
+msgstr "WMM viðbót"
 
 #: src/wmm_pi.cpp:208 src/wmm_pi.cpp:280 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:26
 msgid "Boat"
-msgstr ""
+msgstr "Bátur"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
@@ -125,7 +125,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
-msgstr ""
+msgstr "Kross"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
-msgstr ""
+msgstr "Stillingar..."
 
 #: src/WmmUIDialog.cpp:274
 msgid "Extended"
@@ -149,7 +149,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
-msgstr ""
+msgstr "Skoða"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
@@ -177,7 +177,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
-msgstr ""
+msgstr "Gráður"
 
 #: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:359
 msgid "Inclination"
@@ -201,15 +201,15 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:381
 msgid "About"
-msgstr ""
+msgstr "Um"
 
 #: src/WmmUIDialog.cpp:384
 msgid "Save"
-msgstr ""
+msgstr "Vista"
 
 #: src/WmmUIDialog.cpp:387
 msgid "Cancel"
-msgstr ""
+msgstr "Hætta við"
 
 #: src/MagneticPlotMap.cpp:357
 msgid "Building Magnetic Map"
