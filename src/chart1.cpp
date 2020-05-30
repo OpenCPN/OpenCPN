@@ -9233,6 +9233,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         }
     }
 
+    if( g_own_ship_sog_cog_calc ) 
+        cog_sog_valid = true;
+
     if( bis_recognized_sentence ) PostProcessNMEA( pos_valid, cog_sog_valid, sfixtime );
 }
 
