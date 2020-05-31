@@ -82,7 +82,11 @@ make install # Dunno why the second is needed but it is, otherwise
 rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 
-cp /usr/local/lib/libintl.8.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libintl.8.dylib
+sudo ls -l /usr/local/opt
+sudo ls -l /usr/local/lib
+
+sudo cp /usr/local/opt/libintl.8.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libintl.8.dylib
+sudo cp /usr/local/lib/libintl.8.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libintl.8.dylib
 
 make create-dmg
 make create-pkg
