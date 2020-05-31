@@ -30,7 +30,10 @@ if [ -n "$CI" ]; then
 fi
 
 set -o pipefail
-for pkg in pixman cairo cmake gettext libexif python3 wget xz; do
+
+brew uninstall --force gettext
+
+for pkg in pixman cairo cmake gettext libexif libintl python3 wget xz; do
     brew list $pkg 2>/dev/null | head -10 || brew install $pkg
 done
 
