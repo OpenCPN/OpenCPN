@@ -32,10 +32,13 @@ fi
 set -o pipefail
 
 brew uninstall --force gettext
+brew install gettext
 
-for pkg in pixman cairo cmake gettext libexif libintl python3 wget xz; do
+for pkg in pixman cairo cmake libexif python3 wget xz; do
     brew list $pkg 2>/dev/null | head -10 || brew install $pkg
 done
+
+brew link --force gettext
 
 brew cask install packages
 
@@ -78,6 +81,8 @@ make install # Dunno why the second is needed but it is, otherwise
 #  So we do it explicitely.
 rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
+
+cp /usr/local/lib/libintl.8.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libintl.8.dylib
 
 make create-dmg
 make create-pkg
