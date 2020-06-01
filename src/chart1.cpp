@@ -3789,6 +3789,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
 
+    // Provisionally save all settings before deactivating plugins
+    pConfig->UpdateSettings();
+
     //    Deactivate the PlugIns
     if( g_pi_manager ) {
         g_pi_manager->DeactivateAllPlugIns();
