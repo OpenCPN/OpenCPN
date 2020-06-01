@@ -115,6 +115,7 @@ public:
     
       wxString GetName() const { return m_RouteNameString; }
       wxString GetTo() const { return m_RouteEndString; }
+      wxString GetGUID() const { return m_GUID; }
 
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
