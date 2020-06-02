@@ -7157,18 +7157,11 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         default:
         {
             // Last call....
-
+            wxLogMessage(_T("OnInitTimer...Last Call"));
+            
             PositionIENCToolbar();
 
             g_bDeferredInitDone = true;
-            
-            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-                ChartCanvas *cc = g_canvasArray.Item(i);
-                if(cc){
-                    cc->CreateMUIBar();
-                    cc->CheckGroupValid();
-                }
-            }
             
             GetPrimaryCanvas()->SetFocus();
             g_focusCanvas = GetPrimaryCanvas();
@@ -7180,6 +7173,16 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if(b_reloadForPlugins){
                 DoChartUpdate();
                 ChartsRefresh();
+            }
+
+            wxLogMessage(_T("OnInitTimer...Finalize Canvases"));
+
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc){
+                    cc->CreateMUIBar();
+                    cc->CheckGroupValid();
+                }
             }
 
 #ifdef __OCPN__ANDROID__
