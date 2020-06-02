@@ -297,6 +297,7 @@ public:
       void StopAutoPan(void);
 
       void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
+      void ZoomCanvasSimple(double factor);
       void DoZoomCanvas(double factor,  bool can_zoom_to_cursor = true);
 
       void RotateCanvas( double dir );
