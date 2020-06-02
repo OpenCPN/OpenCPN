@@ -48,6 +48,7 @@
 #include <wx/wfstream.h>
 #include <memory>
 #include <wx/regex.h>
+#include <wx/wupdlock.h>
 #ifdef DLDR_USE_LIBARCHIVE
   #include <archive.h>
   #include <archive_entry.h>
@@ -748,7 +749,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         m_panelArray.Clear();
         
         m_scrollWinChartList->ClearBackground();
-        
+        wxWindowUpdateLocker noUpdates(m_scrollWinChartList);
         for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts.Count(); i++ )
         {
             wxString status;
