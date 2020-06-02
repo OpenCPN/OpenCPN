@@ -5615,11 +5615,14 @@ void MyFrame::ApplyGlobalSettings( bool bnewtoolbar )
         }
     }
 
+    wxSize lastOptSize = options_lastWindowSize;
     SendSizeEvent();
 
     BuildMenuBar();
 
     SendSizeEvent();
+    options_lastWindowSize = lastOptSize;
+
 
     if( bnewtoolbar )
         UpdateAllToolbars( global_color_scheme );
@@ -6120,7 +6123,8 @@ int MyFrame::DoOptionsDialog()
 
       // Correct some fault in Options dialog layout logic on GTK3 by forcing a re-layout to new slightly reduced size.      
 #ifdef __WXGTK3__        
-        g_options->SetSize( options_lastWindowSize.x - 1, options_lastWindowSize.y );
+        if( options_lastWindowSize != wxSize(0,0) ) 
+            g_options->SetSize( options_lastWindowSize.x - 1, options_lastWindowSize.y );
 #endif
         
 #endif        
