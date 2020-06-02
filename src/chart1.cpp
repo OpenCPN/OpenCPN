@@ -6856,6 +6856,9 @@ void MyFrame::PositionIENCToolbar()
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
     InitTimer.Stop();
+    wxString msg;
+    msg.Printf(_T("OnInitTimer...%d"), m_iInitCount);
+    wxLogMessage(msg);
     
     switch(m_iInitCount++) {
         case 0:
