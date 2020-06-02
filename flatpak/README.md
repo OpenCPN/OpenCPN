@@ -50,7 +50,7 @@ on the device used - the rest could be dropped.
 Developer usage
 ---------------
 
-The Makefile is capable of building installing the opencpn flatpak
+The Makefile is capable of building and installing the opencpn flatpak
 package locally. The first steps are about installing *flatpak* and
 *flatpak-builder* as described at https://flatpak.org/setup/
 
@@ -61,10 +61,12 @@ Armed with these tools, initialize by installing the runtime and sdk:
 
 Review the `org.opencpn.OpenCPN.yaml` manifest file. In the very end
 are the definitions for the opencpn source; the current setup is
-to build the tip of the master branch.  Review and update as
-required. Build and install the opencpn flatpak package:
+to build the tip of the master branch. Update as required.
+
+Build and install the opencpn flatpak package:
 
     $ cd build; make -f ../flatpak/Makefile build
+
 
 Repo maintenance
 ----------------
@@ -91,3 +93,6 @@ Sign contents + summary i. e., the result of the build:
 Given proper permissions, the result can be published using
 
     $ cd build; make -f ../flatpak/Makefile publish
+
+There are multiple variables in the Makefile making it possible to tweak 
+this workflow in various ways.
