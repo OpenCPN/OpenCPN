@@ -1560,12 +1560,11 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
     ChartDldrGuiAddSourceDlg *dialog = new ChartDldrGuiAddSourceDlg(this);
     dialog->SetBasePath(pPlugIn->GetBaseChartDir());
     
-#ifdef __OCPN__ANDROID__    
-    wxSize sz = GetParent()->GetSize();          // This is the panel true size
+//#ifdef __OCPN__ANDROID__    
+    wxSize sz = GetParent()->GetGrandParent()->GetSize();          // This is the options panel true size
     dialog->SetSize(sz.GetWidth(), sz.GetHeight());
-    dialog->CenterOnScreen();
-    //Hide();                     // This cleans up the screen a bit, avoiding confusion...
-#endif    
+    dialog->Center();
+//#endif    
 
     dialog->ShowWindowModalThenDo([this,dialog](int retcode){
         if ( retcode == wxID_OK ) {
