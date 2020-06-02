@@ -6117,6 +6117,12 @@ int MyFrame::DoOptionsDialog()
         if( options_lastWindowSize != wxSize(0,0) ) {
             g_options->SetSize( options_lastWindowSize );
         }
+
+      // Correct some fault in Options dialog layout logic on GTK3 by forcing a re-layout to new slightly reduced size.      
+#ifdef __WXGTK3__        
+        g_options->SetSize( options_lastWindowSize.x - 1, options_lastWindowSize.y );
+#endif
+        
 #endif        
 
     if( g_MainToolbar)
