@@ -133,6 +133,12 @@ SET(SRC_NMEA0183
 		src/nmea0183/gga.cpp
 		src/nmea0183/gsv.hpp
 		src/nmea0183/gsv.cpp
+    src/nmea0183/apb.cpp
+    src/nmea0183/apb.hpp
+    src/nmea0183/GPwpl.cpp
+    src/nmea0183/GPwpl.hpp
+    src/nmea0183/xte.cpp
+    src/nmea0183/xte.hpp
 	)
 INCLUDE_DIRECTORIES(nmea0183)
 
