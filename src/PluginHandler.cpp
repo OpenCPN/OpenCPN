@@ -242,7 +242,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     else{
         // running OS may be "like" some known OS
         for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
-            if( os_detail->osd_name_like[i]  == plugin_os){
+            std::string osd_like_arch = os_detail->osd_name_like[i] + "-" + os_detail->osd_arch;
+            if( osd_like_arch  == plugin_os){
                 if (ocpn::startswith(plugin_os, "ubuntu")){
                     if( plugin_os_version == os_detail->osd_version )            // Full version comparison required
                         rv = true;
@@ -257,20 +258,20 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     }
     
     // Try some simple legacy comparisons to catch unmodified metadata naming scheme.
-    if(!rv){
-        if (compatOS  == plugin_os) {
-        //  OS matches so far, so must compare versions
-
-            if (ocpn::startswith(plugin_os, "ubuntu")){
-                if(plugin_os_version == compatOsVersion)            // Full version comparison required
-                    rv = true;
-            }
-
-            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-            if( meta_vers == target_vers )
-                rv = true;
-        }
-    }
+//     if(!rv){
+//         if (compatOS  == plugin_os) {
+//         //  OS matches so far, so must compare versions
+// 
+//             if (ocpn::startswith(plugin_os, "ubuntu")){
+//                 if(plugin_os_version == compatOsVersion)            // Full version comparison required
+//                     rv = true;
+//             }
+// 
+//             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+//             if( meta_vers == target_vers )
+//                 rv = true;
+//         }
+//     }
     
     return rv;
 }
