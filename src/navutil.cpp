@@ -3071,6 +3071,9 @@ void UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool isdire
                 bLayerViz = false;
             l->m_bIsVisibleOnChart = bLayerViz;
 
+            // Default for new layers is "Names visible"
+            l->m_bHasVisibleNames = wxCHK_CHECKED;
+
             wxString laymsg;
             laymsg.Printf( wxT("New layer %d: %s"), l->m_LayerID, l->m_LayerName.c_str() );
             wxLogMessage( laymsg );
