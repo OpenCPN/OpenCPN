@@ -5915,9 +5915,14 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     itemBoxSizer02->Add(itemBoxSizer03);
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
     m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    wxFont font = *wxNORMAL_FONT;
+    
+    // Avoid known bug in wxGTK3
+#ifndef __WXGTK3__    
+    wxFont font = GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
+#endif    
+    
     itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
 
     m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
