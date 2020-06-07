@@ -423,8 +423,10 @@ static void run_update_dialog(PluginListPanel* parent,
     if (status != wxID_OK) {
         return;
     }
+    
     auto update = dialog.GetUpdate();
     if (uninstall) {
+        g_Platform->ShowBusySpinner();
         g_pi_manager->DeactivatePlugIn(pic);
         pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
@@ -432,6 +434,8 @@ static void run_update_dialog(PluginListPanel* parent,
         wxLogMessage("Uninstalling %s", plugin);
         PluginHandler::getInstance()->uninstall(plugin);
         g_pi_manager->UpdatePlugIns();
+        g_Platform->HideBusySpinner();
+
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
@@ -440,6 +444,9 @@ static void run_update_dialog(PluginListPanel* parent,
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
+        g_Platform->ShowBusySpinner();          // Will be cancelled in downloader->run()
+        wxYield();
+        
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg);
         
@@ -5161,7 +5168,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     std::string filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
     auto catalogHdlr = CatalogHandler::getInstance();
+    
+    g_Platform->ShowBusySpinner();
     auto status = catalogHdlr->DownloadCatalog( filePath, url);
+    g_Platform->HideBusySpinner();
+    
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
         message = _("Cannot download data from url");

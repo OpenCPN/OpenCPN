@@ -514,7 +514,7 @@ PluginDownloadDialog::PluginDownloadDialog(wxWindow* parent)
 GuiDownloader::GuiDownloader(wxWindow* parent, PluginMetadata plugin)
             :Downloader(plugin.tarball_url),
             m_downloaded(0), m_dialog(0), m_plugin(plugin), m_parent(parent)
-        {}
+            { }
 
         
 std::string GuiDownloader::CheckCache()
@@ -548,7 +548,10 @@ std::string GuiDownloader::run(wxWindow* parent)
                 m_dialog = new wxProgressDialog(
                                 _("Downloading"), label.c_str(), size, parent,
                                 wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
+                
                 ok = download(path);
+                g_Platform->HideBusySpinner();
+
                 if (!ok) {
                     delete m_dialog;
                     showErrorDialog("Download error");
@@ -566,7 +569,7 @@ std::string GuiDownloader::run(wxWindow* parent)
                 m_dialog = 0;    // make sure that on_chunk() doesn't misbehave.
                 downloaded = true;
             }
-                
+
             auto pluginHandler = PluginHandler::getInstance();
             ok = pluginHandler->installPlugin(m_plugin, path);
             if (!ok) {
