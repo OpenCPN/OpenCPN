@@ -33,6 +33,22 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
+   build-focal:
+     docker:
+       - image: circleci/buildpack-deps:focal-scm
+     environment:
+       - OCPN_TARGET: focal
+     steps:
+       - checkout
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ focal main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ focal-updates main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
    build-mingw:
      docker:
          - image: fedora:31
@@ -83,6 +99,16 @@ workflows:
               only:
                 - master
       - build-trusty:
+          filters:
+            branches:
+              only:
+                - master
+      - build-focal:
+          filters:
+            branches:
+              only:
+                - master
+      - build-macos:
           filters:
             branches:
               only:
