@@ -301,18 +301,18 @@ class PluginTextPanel: public wxPanel
             sum_hbox->Add(m_more, wxSizerFlags());
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
+            SetSizer(vbox);
             auto name = staticText(plugin->name + "    " + plugin->version);
 
             m_widthDescription = g_options->GetSize().x / 2;
-            m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1), wxST_NO_AUTORESIZE );
+            m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
             m_descText = wxString(plugin->description.c_str());
             m_descr->SetLabel( m_descText );
             m_descr->Wrap( m_widthDescription );
             m_descr->Hide();
             vbox->Add(name, flags);
             vbox->Add(sum_hbox, flags);
-            vbox->Add(m_descr, 1);
-            SetSizer(vbox);
+            vbox->Add(m_descr, 0);
             Fit();
 
             m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
@@ -326,13 +326,16 @@ class PluginTextPanel: public wxPanel
             m_descr->SetLabel( m_descText );
             m_descr->Wrap( m_widthDescription );
             Layout();
+            wxSize asize = GetEffectiveMinSize();
 
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
-            GetParent()->SendSizeEvent();
-            GetParent()->GetParent()->GetParent()->Layout();
-            GetParent()->GetParent()->GetParent()->Refresh(true);
-            GetParent()->GetParent()->GetParent()->Update();
+            
+            GetGrandParent()->SetSize(-1, asize.GetHeight() + 8 * GetCharHeight());
+//             GetParent()->SendSizeEvent();
+//             GetParent()->GetParent()->GetParent()->Layout();
+//             GetParent()->GetParent()->GetParent()->Refresh(true);
+//             GetParent()->GetParent()->GetParent()->Update();
         }
 
     protected:
@@ -402,7 +405,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
                     new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
                 grid->Add(new PluginTextPanel(this, &plugin, buttons),
-                        flags.Proportion(1).Right());
+                        flags.Proportion(0).Right());
                 grid->Add(buttons, flags.DoubleBorder());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
