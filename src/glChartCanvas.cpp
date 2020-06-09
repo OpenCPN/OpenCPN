@@ -31,6 +31,7 @@
 #endif //precompiled headers
 
 #include <wx/tokenzr.h>
+#include <wx/vector.h>
 
 #include <stdint.h>
 
@@ -164,6 +165,8 @@ extern bool             b_inCompressAllCharts;
 extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
 extern float            g_ShipScaleFactorExp;
+
+extern wxVector<wxPoint> g_shipPoints;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -2717,66 +2720,43 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 RenderSingleTexture(coords, uv, m_pParentCanvas->GetpVP(), x, y, icon_rad - PI/2); 
 
                 glDisable(GL_TEXTURE_2D);
-            } else if( g_OwnShipIconType == 2 ) { // Scaled Vector
-//                 static const GLint s_ownship_icon[] = { 5, -42, 11, -28, 11, 42, -11, 42,
-//                                                         -11, -28, -5, -42, -11, 0, 11, 0,
-//                                                         0, 42, 0, -42       };
+            } else if( g_OwnShipIconType == 2 ) { // Scaled Vector (loaded in application initialization)
+              wxVector<wxPoint> m_shipPoints;
 
-                wxPoint shipPoints[6];
+              wxColour colour = m_pParentCanvas->ShipColor();
+              wxPen ppPen ( *wxBLACK, 1 );
+              wxBrush ppBrush( colour );
+              dc.SetPen( ppPen );
+              dc.SetBrush( ppBrush );
 
-                wxColour colour = m_pParentCanvas->ShipColor();
-                wxPen ppPen ( *wxBLACK, 1 );
-                wxBrush ppBrush( colour );
-                dc.SetPen( ppPen );
-                dc.SetBrush( ppBrush );
 
-                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -28*scale_factor_y;
-                shipPoints[1].x = 11*scale_factor_x; shipPoints[1].y = -28*scale_factor_y;
-                shipPoints[2].x = 11*scale_factor_x; shipPoints[2].y = 42*scale_factor_y;
-                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = 42*scale_factor_y;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
+              for(long unsigned int pti = 0; pti < g_shipPoints.size(); pti++){
+                m_shipPoints.push_back(wxPoint(g_shipPoints[pti].x*scale_factor_x, g_shipPoints[pti].y*scale_factor_y));
+              }
+              dc.DrawPolygon(m_shipPoints.size(), &m_shipPoints[0], lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
+
+              // draw with cross
+              double p1x = -11 * scale_factor_x;
+              double p2x =  11 * scale_factor_x;
+              double p1y = 0;
+              double p2y = 0;
+              double p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
+              double p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
+              double p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
+              double p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
+              dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);    
+
+              p1x = 0;
+              p2x = 0;
+              p1y = -42 * scale_factor_y;
+              p2y =  42 * scale_factor_y;
+              p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
+              p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
+              p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
+              p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
+              dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);
                 
-                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -42*scale_factor_y;
-                shipPoints[1].x = 5*scale_factor_x; shipPoints[1].y = -42*scale_factor_y;
-                shipPoints[2].x = 11*scale_factor_x; shipPoints[2].y = -28*scale_factor_y;
-                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = -28*scale_factor_y;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
-                
-                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -28*scale_factor_y;
-                shipPoints[1].x = -11*scale_factor_x; shipPoints[1].y = -28*scale_factor_y;
-                shipPoints[2].x = -11*scale_factor_x; shipPoints[2].y = 42*scale_factor_y;
-                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = 42*scale_factor_y;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
-
-                shipPoints[0].x = 0*scale_factor_x; shipPoints[0].y = -42*scale_factor_y;
-                shipPoints[1].x = -5*scale_factor_x; shipPoints[1].y = -42*scale_factor_y;
-                shipPoints[2].x = -11*scale_factor_x; shipPoints[2].y = -28*scale_factor_y;
-                shipPoints[3].x = 0*scale_factor_x; shipPoints[3].y = -28*scale_factor_y;
-                dc.DrawPolygon( 4, shipPoints, lShipMidPoint.x, lShipMidPoint.y, 1, icon_rad - PI/2 );
- 
-                // draw with cross
-                double p1x = -11 * scale_factor_x;
-                double p2x =  11 * scale_factor_x;
-                double p1y = 0;
-                double p2y = 0;
-                double p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
-                double p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
-                double p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
-                double p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
-                dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);    
-
-                p1x = 0;
-                p2x = 0;
-                p1y = -42 * scale_factor_y;
-                p2y =  42 * scale_factor_y;
-                p1xr = ((p1x) * cos(icon_rad - PI/2)) - ((p1y) * sin(icon_rad - PI/2));
-                p2xr = ((p2x) * cos(icon_rad - PI/2)) - ((p2y) * sin(icon_rad - PI/2));
-                p1yr = ((p1y) * cos(icon_rad - PI/2)) + ((p1x) * sin(icon_rad - PI/2));
-                p2yr = ((p2y) * cos(icon_rad - PI/2)) + ((p2x) * sin(icon_rad - PI/2));
-                dc.DrawLine(p1xr+ lShipMidPoint.x, p1yr+ lShipMidPoint.y, p2xr+ lShipMidPoint.x, p2yr+ lShipMidPoint.y);    
-
-                
-            }
+            } 
 
             img_height = ownShipLength * scale_factor_y;
         
