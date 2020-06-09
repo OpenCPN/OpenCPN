@@ -370,18 +370,19 @@ class OcpnScrolledWindow : public wxScrolledWindow
             m_updates(updates),
             m_grid(new wxFlexGridSizer(3, 0, 0))
         {
+            m_twidth = 0;
             auto box = new wxBoxSizer(wxVERTICAL);
             populateGrid(m_grid);
-            box->Add(m_grid, wxSizerFlags().Proportion(1).Expand());
+            box->Add(m_grid, wxSizerFlags().Proportion(0).Expand());
             auto butt_box = new wxBoxSizer(wxHORIZONTAL);
             auto cancel_btn = new wxButton(this, wxID_CANCEL, _("Dismiss"));
             butt_box->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
             butt_box->Add(cancel_btn,  wxSizerFlags().Right().Border());
-            box->Add(butt_box, wxSizerFlags().Expand());
+            box->Add(butt_box, wxSizerFlags().Proportion(0).Expand());
 
 
             SetSizer(box);
-            FitInside();
+            //FitInside();
             // TODO: Compute size using wxWindow::GetEffectiveMinSize()
             SetScrollRate(1, 1);
         };
@@ -404,8 +405,10 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 grid->Add(
                     new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
-                grid->Add(new PluginTextPanel(this, &plugin, buttons),
-                        flags.Proportion(0).Right());
+                PluginTextPanel *tpanel = new PluginTextPanel(this, &plugin, buttons);
+                grid->Add(tpanel, flags.Proportion(1).Right());
+                wxSize tsize = tpanel->GetEffectiveMinSize();
+                m_twidth = wxMax(tsize.GetWidth(), m_twidth);
                 grid->Add(buttons, flags.DoubleBorder());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
@@ -424,6 +427,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             Refresh(true);
         }
 
+        int m_twidth;
     private:
         const std::vector<PluginMetadata> m_updates;
         wxFlexGridSizer* m_grid;
@@ -444,13 +448,18 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
 
     // The list has no natural height. Allocate 8 lines of text so some
     // items are displayed initially in Layout()
-    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 8;
+    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 9;
 
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
-    int width = GetParent()->GetClientSize().GetWidth();
-    SetMinClientSize(wxSize(width, min_height));
-
+    //int width = GetParent()->GetClientSize().GetWidth();
+  //  SetMinClientSize(wxSize(width, min_height));
+    int width = scrwin->m_twidth * 2;
+    width = wxMin(width, g_Platform->getDisplaySize().x);
+    SetMinSize(wxSize(width, min_height));
+ 
+    SetMaxSize(g_Platform->getDisplaySize());
+    
     SetSizer(vbox);
     Fit();
     Layout();
