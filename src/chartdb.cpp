@@ -2000,15 +2000,19 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup( )
             cc = g_canvasConfigArray.Item(0);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[0])
-                    rv |= m_checkedTileOnly[0];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                        rv |= m_checkedTileOnly[0];
+                }
             }
 
             cc = g_canvasConfigArray.Item(1);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[1])
-                    rv |= m_checkedTileOnly[1];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[1])
+                        rv |= m_checkedTileOnly[1];
+                }
             }
             break;
             
@@ -2016,8 +2020,10 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup( )
             cc = g_canvasConfigArray.Item(0);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[0])
-                    rv |= m_checkedTileOnly[0];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                        rv |= m_checkedTileOnly[0];
+                }
             }
 
     }

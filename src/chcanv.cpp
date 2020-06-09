@@ -10330,7 +10330,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+            if(IsTileOverlayIndexInNoShow(stackIndexArray[is])){
                 continue;
             }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
@@ -12692,6 +12692,14 @@ void ChartCanvas::selectCanvasChartDisplay( int type, int family)
 }
 
 
+bool ChartCanvas::IsTileOverlayIndexInYesShow( int index ){
+    return std::find(m_tile_yesshow_index_array.begin(), m_tile_yesshow_index_array.end(), index) != m_tile_yesshow_index_array.end();
+}
+
+bool ChartCanvas::IsTileOverlayIndexInNoShow( int index ){
+    return std::find(m_tile_noshow_index_array.begin(), m_tile_noshow_index_array.end(), index) != m_tile_noshow_index_array.end();
+}
+
 
 
 
@@ -12736,20 +12744,20 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
         // Left click simply toggles the noshow array index entry
         if( CHART_TYPE_MBTILES == ChartData->GetDBChartType( selected_dbIndex ) ){
            bool bfound=false; 
-           for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-                if( g_quilt_noshow_index_array[i] == selected_dbIndex ){ // chart is in the noshow list
-                    g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );  // erase it
+           for( unsigned int i = 0; i < m_tile_noshow_index_array.size(); i++ ) {
+                if( m_tile_noshow_index_array[i] == selected_dbIndex ){ // chart is in the noshow list
+                    m_tile_noshow_index_array.erase(m_tile_noshow_index_array.begin() + i );  // erase it
                     bfound = true;
                     break;
                 }
            }
            if(!bfound){
-               g_quilt_noshow_index_array.push_back(selected_dbIndex);
+               m_tile_noshow_index_array.push_back(selected_dbIndex);
            }
            
            // If not already present, add this tileset to the "yes_show" array.
-           if(std::find(g_quilt_yesshow_index_array.begin(), g_quilt_yesshow_index_array.end(), selected_dbIndex) == g_quilt_yesshow_index_array.end())
-                g_quilt_yesshow_index_array.push_back( selected_dbIndex );
+           if(!IsTileOverlayIndexInYesShow(selected_dbIndex))
+                m_tile_yesshow_index_array.push_back( selected_dbIndex );
         }
         
         else{
@@ -12886,6 +12894,7 @@ void ChartCanvas::UpdateCanvasControlBar( void )
         m_Piano->SetEclipsedIndexArray( piano_eclipsed_chart_index_array );
         
         m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        //m_Piano->SetNoshowIndexArray( m_tile_noshow_index_array );
         
         sel_type = ChartData->GetDBChartType(GetQuiltReferenceChartIndex());
         sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
