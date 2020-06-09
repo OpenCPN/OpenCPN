@@ -544,7 +544,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                      }
                      
                      else
-                     if( ext_name == _T ( "opencpn:rte_properties" ) ) {
+                     if( ext_name == _T ( "opencpn:planned_speed" ) ) {
                         pTentRoute->m_PlannedSpeed = atof( ext_child.first_child().value() );
                      }
                      
