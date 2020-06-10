@@ -326,7 +326,8 @@ class options : private Uncopyable,
   void OnButtonSetStd(wxCommandEvent& event);
       
   void OnPageChange(wxListbookEvent &event);
-  void OnNBPageChange(wxNotebookEvent &event);
+  void OnTopNBPageChange(wxNotebookEvent &event);
+  void OnSubNBPageChange(wxNotebookEvent &event);
   void DoOnPageChange(size_t page);
 
   void OnButtonSelectSound(wxCommandEvent &event);

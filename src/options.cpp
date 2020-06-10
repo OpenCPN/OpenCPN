@@ -1620,7 +1620,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     m_pListbook->RemovePage(parent + 1);
     wxString previoustitle = page->GetName();
     page->Reparent(nb);
-    nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(options::OnNBPageChange), NULL,  this);
+    nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(options::OnSubNBPageChange), NULL,  this);
 
     nb->AddPage(page, previoustitle);
     /* wxNotebookPage is hidden under wxGTK after RemovePage/Reparent
@@ -6134,7 +6134,7 @@ void options::CreateControls(void) {
   m_pListbook = new wxNotebook(itemDialog1, ID_NOTEBOOK, wxDefaultPosition,
                                wxSize(-1, -1), flags);
   m_pListbook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                       wxNotebookEventHandler(options::OnNBPageChange), NULL,
+                       wxNotebookEventHandler(options::OnMainNBPageChange), NULL,
                        this);
 #endif
 
@@ -8600,7 +8600,7 @@ void options::OnPageChange(wxListbookEvent& event) {
   DoOnPageChange(event.GetSelection());
 }
 
-void options::OnNBPageChange(wxNotebookEvent& event) {
+void options::OnSubNBPageChange(wxNotebookEvent& event) {
   // In the case where wxNotebooks are nested, we need to identify the subpage
   // But otherwise do nothing
   if(event.GetEventObject()){
@@ -8618,7 +8618,9 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 
       }
   }
-  // Must be top level notebook
+}
+
+void options::OnTopNBPageChange(wxNotebookEvent& event) {
   DoOnPageChange(event.GetSelection());
 }
 
