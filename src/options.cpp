@@ -326,6 +326,7 @@ extern float g_ChartScaleFactorExp;
 extern bool g_bRollover;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
+extern int g_ENCSoundingScaleFactor;
 extern bool  g_bShowMuiZoomButtons;
 
 extern double g_config_display_size_mm;
@@ -5897,8 +5898,7 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
   sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      inputFlags);
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
@@ -5909,14 +5909,25 @@ void options::CreatePanel_UI(size_t parent, int border_size, int group_item_spac
   m_pSlider_Ship_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
   m_pSlider_Ship_Factor->Hide();
   sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
-                   inputFlags);
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")), inputFlags);
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
   
 #ifdef __OCPN__ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+  
+  m_pSlider_Text_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,  m_sliderSize, SLIDER_STYLE);
+  m_pSlider_Text_Factor->Hide();
+  sliderSizer->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, _("ENC Sounding factor")), inputFlags);
+  sliderSizer->Add(m_pSlider_Text_Factor, 0, wxALL, border_size);
+  m_pSlider_Text_Factor->Show();
+  
+#ifdef __OCPN__ANDROID__
+  m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+
   miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
   miscOptions->AddSpacer(20);
 }
@@ -6648,6 +6659,7 @@ void options::SetInitialSettings(void) {
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
+  m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -7786,6 +7798,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
   g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  g_ENCSoundingScaleFactor =  m_pSlider_Text_Factor->GetValue();
+
   
   //  Only reload the icons if user has actually visted the UI page    
   //if(m_bVisitLang)    
@@ -7874,6 +7888,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_nBoundaryStyle = pBoundStyle->GetSelection() == 0
                                      ? PLAIN_BOUNDARIES
                                      : SYMBOLIZED_BOUNDARIES;
+    ps52plib->m_nSoundingFactor = m_pSlider_Text_Factor->GetValue();
 
     S52_setMarinerParam(S52_MAR_TWO_SHADES, (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
 

@@ -417,6 +417,8 @@ extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
 extern int              g_ShipScaleFactor;
 extern float            g_ShipScaleFactorExp;
+extern int              g_ENCSoundingScaleFactor;
+
 
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
@@ -837,6 +839,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor );
     Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor );
+    Read( _T ( "ENCSoundingScaleFactor" ), &g_ENCSoundingScaleFactor );
 
     // Plugin catalog handler persistent variables.
     Read( "CatalogCustomURL", &g_catalog_custom_url);
@@ -1531,6 +1534,10 @@ void MyConfig::LoadS57Config()
 
     Read( _T ( "bShowNationalText" ), &read_int, 0 );
     ps52plib->m_bShowNationalTexts = !( read_int == 0 );
+    
+    Read( _T ( "ENCSoundingScaleFactor" ), &read_int, 0 );
+    ps52plib->m_nSoundingFactor = read_int;
+
 
     if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 3.0 ) ) {
         S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
@@ -2309,6 +2316,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
     Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+    Write( _T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor );
 
     // Plugin catalog persistent values.
     Write( _T( "CatalogCustomURL"), g_catalog_custom_url);
@@ -2619,6 +2627,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
         Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
         Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
+        Write( _T ( "ENCSoundingScaleFactor" ), g_ENCSoundingScaleFactor );
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );

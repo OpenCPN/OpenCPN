@@ -415,6 +415,8 @@ float                     g_ChartScaleFactorExp;
 int                       g_last_ChartScaleFactor;
 int                       g_ShipScaleFactor;
 float                     g_ShipScaleFactorExp;
+int                       g_ENCSoundingScaleFactor;
+
 
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;
