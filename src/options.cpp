@@ -3538,18 +3538,16 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   wxString* pListBoxStrings = NULL;
 
-  pActiveChartsList =
-      new wxListBox(chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
-                    0, pListBoxStrings, wxLB_MULTIPLE);
-
-#ifdef __OCPN__ANDROID__
-  pActiveChartsList->GetHandle()->setStyleSheet( getScrollBarsStyleSheet() );
-#endif
-
+  pActiveChartsList = new wxListCtrl( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
+                                       wxLC_REPORT | wxLC_NO_HEADER );
+#ifdef __OCPN__ANDROID__    
+    pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+#endif    
+ 
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
-      wxEVT_COMMAND_LISTBOX_SELECTED,
+      wxEVT_COMMAND_LIST_ITEM_SELECTED,
       wxCommandEventHandler(options::OnChartDirListSelect), NULL, this);
 
   wxBoxSizer* cmdButtonSizer = new wxBoxSizer(wxVERTICAL);
@@ -3558,11 +3556,23 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   // Currently loaded chart dirs
   wxString dirname;
   if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    int nDir = m_CurrentDirList.GetCount();
-    for (int i = 0; i < nDir; i++) {
-      dirname = m_CurrentDirList[i].fullpath;
-      if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
+    pActiveChartsList->DeleteAllItems();
+
+    // Add first column       
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("") );
+    col0.SetWidth(500);
+    pActiveChartsList->InsertColumn(0, col0);
+
+    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+        wxListItem li;
+        li.SetId( i );
+
+        long idx = pActiveChartsList->InsertItem( li );
+
+        wxString dirname = m_CurrentDirList[i].fullpath;
+        pActiveChartsList->SetItem(i, 0, dirname);
     }
   }
 
@@ -6342,15 +6352,19 @@ void options::SetInitialSettings(void) {
   m_screenConfig = g_canvasConfig;
           
   // ChartsLoad
-  int nDir = m_CurrentDirList.GetCount();
 
   if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    for (int i = 0; i < nDir; ++i) {
+    pActiveChartsList->DeleteAllItems();
+
+    for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+        wxListItem li;
+        li.SetId( i );
+
+        long idx = pActiveChartsList->InsertItem( li );
+
         wxString dirname = m_CurrentDirList[i].fullpath;
-        if (!dirname.IsEmpty() && pActiveChartsList) {
-            pActiveChartsList->Append(dirname);
-        }
+        pActiveChartsList->SetItem(i, 0, dirname);
+
     }
   }
 
@@ -7041,9 +7055,9 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 #endif
 }
 
-void options::OnChartDirListSelect(wxCommandEvent& event) {
-    wxArrayInt sel;
-    bool selected = pActiveChartsList->GetSelections(sel);
+void options::OnChartDirListSelect(wxCommandEvent& event)
+{
+    bool selected = (pActiveChartsList->GetSelectedItemCount() > 0);
     m_removeBtn->Enable(selected);
     if(m_compressBtn)
         m_compressBtn->Enable(selected);
@@ -7109,43 +7123,55 @@ void options::OnButtonaddClick(wxCommandEvent& event) {
 }
 
 void options::AddChartDir(const wxString& dir) {
-  wxFileName dirname = wxFileName(dir);
-  pInit_Chart_Dir->Empty();
+   wxFileName dirname = wxFileName(dir);
+   pInit_Chart_Dir->Empty();
+ 
+   wxString dirAdd;
+   if (g_bportable) {
+     wxFileName f(dir);
+     f.MakeRelativeTo(g_Platform->GetHomeDir());
+     dirAdd = f.GetFullPath();
+   } else {
+     pInit_Chart_Dir->Append(dirname.GetPath());
+     dirAdd = dir;
+   }
 
-  if (g_bportable) {
-    wxFileName f(dir);
-    f.MakeRelativeTo(g_Platform->GetHomeDir());
-    pActiveChartsList->Append(f.GetFullPath());
-  } else {
-    pInit_Chart_Dir->Append(dirname.GetPath());
-    pActiveChartsList->Append(dir);
-  }
+   wxListItem li;
+   int id = pActiveChartsList->GetItemCount();      // next index
+   li.SetId( id );
+   long idx = pActiveChartsList->InsertItem( li );
+   pActiveChartsList->SetItem(id, 0, dirAdd);
 
-  k_charts |= CHANGE_CHARTS;
-
-  pScanCheckBox->Disable();
+   k_charts |= CHANGE_CHARTS;
+ 
+   pScanCheckBox->Disable();
 }
 
 void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
-  wxString dirname;
-  if (pActiveChartsList) {
-    pActiveChartsList->Clear();
-    int nDir = p.GetCount();
-    for (int i = 0; i < nDir; i++) {
-      dirname = p[i].fullpath;
-      if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
-    }
-  }
+   if (pActiveChartsList) {
+       pActiveChartsList->DeleteAllItems();
+       for (size_t i = 0; i < p.GetCount(); i++) {
+            wxListItem li;
+            li.SetId( i );
+
+            long idx = pActiveChartsList->InsertItem( li );
+
+            wxString dirname = p[i].fullpath;
+            pActiveChartsList->SetItem(i, 0, dirname);
+        }
+   }
 }
 
 void options::UpdateWorkArrayFromTextCtl(void) {
-  wxString dirname;
 
-  int n = pActiveChartsList->GetCount();
+   wxString dirname;
+
+  int n = pActiveChartsList->GetItemCount();
   if (m_pWorkDirList) {
     m_pWorkDirList->Clear();
     for (int i = 0; i < n; i++) {
-      dirname = pActiveChartsList->GetString(i);
+        
+      dirname = pActiveChartsList->GetItemText(i);
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
         //    GetLineText()
@@ -7179,6 +7205,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
       }
     }
   }
+  
 }
 
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
@@ -8005,34 +8032,31 @@ void options::Finish(void) {
   EndModal(m_returnChanges);
 }
 
-void options::OnButtondeleteClick(wxCommandEvent& event) {
-  wxString dirname;
-
-#ifndef __WXQT__  // Multi selection is not implemented in wxQT
-  wxArrayInt pListBoxSelections;
-  pActiveChartsList->GetSelections(pListBoxSelections);
-  int nSelections = pListBoxSelections.GetCount();
-  for (int i = 0; i < nSelections; i++) {
-    pActiveChartsList->Delete(pListBoxSelections.Item((nSelections - i) - 1));
+void options::OnButtondeleteClick(wxCommandEvent& event)
+{
+  long item = -1;
+  for ( ;; )
+  {
+      item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      if ( item == -1 )
+          break;
+      pActiveChartsList->DeleteItem( item );
+      item = -1;      // Restart
   }
-#else
-  unsigned int n = pActiveChartsList->GetSelection();
-  if( n < pActiveChartsList->GetCount())        // Protect against invalid index
-  pActiveChartsList->Delete(n);
-#endif
 
   UpdateWorkArrayFromTextCtl();
 
   if (m_pWorkDirList) {
-    pActiveChartsList->Clear();
+      pActiveChartsList->DeleteAllItems();
+      for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxListItem li;
+        li.SetId( id );
 
-    int nDir = m_pWorkDirList->GetCount();
-    for (int id = 0; id < nDir; id++) {
-      dirname = m_pWorkDirList->Item(id).fullpath;
-      if (!dirname.IsEmpty()) {
-        pActiveChartsList->Append(dirname);
-      }
-    }
+        long idx = pActiveChartsList->InsertItem( li );
+
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
+        pActiveChartsList->SetItem(id, 0, dirname);
+     }
   }
 
   k_charts |= CHANGE_CHARTS;
@@ -8040,6 +8064,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
   pScanCheckBox->Disable();
 
   event.Skip();
+  
 }
 
 void options::OnButtonParseENC(wxCommandEvent &event)
@@ -8242,18 +8267,19 @@ static bool CompressChart(wxString in, wxString out)
     return false;
 }
 
-void options::OnButtoncompressClick(wxCommandEvent& event) {
-  wxString dirname;
-
+void options::OnButtoncompressClick(wxCommandEvent& event)
+{
   wxArrayInt pListBoxSelections;
-#ifndef __WXQT__  // Multi selection is not implemented in wxQT
-  pActiveChartsList->GetSelections(pListBoxSelections);
-  int nSelections = pListBoxSelections.GetCount();
-#else
-  int nSelections = 1;
-  int n = pActiveChartsList->GetSelection();
-  pListBoxSelections.Add( n );
-#endif
+  long item = -1;
+  for ( ;; )
+  {
+      item = pActiveChartsList->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      if ( item == -1 )
+          break;
+      pListBoxSelections.Add((int)item);
+      item = -1;      // Restart
+  }
+  
 
     if(OCPNMessageBox( this, _("Compression will alter chart files on disk.\n\
 This may make them incompatible with other programs or older versions of OpenCPN.\n\
@@ -8284,7 +8310,7 @@ They can be decompressed again using unxz or 7 zip programs."),
 
   wxArrayString charts;
   for(unsigned int i=0; i<pListBoxSelections.GetCount(); i++) {
-      dirname = pActiveChartsList->GetString(pListBoxSelections[i]);
+      wxString dirname = pActiveChartsList->GetItemText( pListBoxSelections[i] );
       if (dirname.IsEmpty())
           continue;
       //    This is a fix for OSX, which appends EOL to results of
@@ -8356,24 +8382,27 @@ They can be decompressed again using unxz or 7 zip programs."),
       _("OpenCPN Info"));
   
   UpdateWorkArrayFromTextCtl();
-
+  
   if (m_pWorkDirList) {
-    pActiveChartsList->Clear();
+      pActiveChartsList->DeleteAllItems();
+      for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxListItem li;
+        li.SetId( id );
 
-    int nDir = m_pWorkDirList->GetCount();
-    for (int id = 0; id < nDir; id++) {
-      dirname = m_pWorkDirList->Item(id).fullpath;
-      if (!dirname.IsEmpty()) {
-        pActiveChartsList->Append(dirname);
-      }
-    }
+        long idx = pActiveChartsList->InsertItem( li );
+
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
+        pActiveChartsList->SetItem(id, 0, dirname);
+     }
   }
+
 
   k_charts |= CHANGE_CHARTS;
 
   pScanCheckBox->Disable();
 
   event.Skip();
+  
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
