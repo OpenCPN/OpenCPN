@@ -448,7 +448,7 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
 
     // The list has no natural height. Allocate 8 lines of text so some
     // items are displayed initially in Layout()
-    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 9;
+    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 10;
 
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
