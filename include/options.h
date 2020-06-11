@@ -648,7 +648,7 @@ class options : private Uncopyable,
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
   int m_returnChanges;
-  wxListBox *tcDataSelected;
+  wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;
