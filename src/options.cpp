@@ -6147,7 +6147,7 @@ void options::CreateControls(void) {
   m_pListbook = new wxNotebook(itemDialog1, ID_NOTEBOOK, wxDefaultPosition,
                                wxSize(-1, -1), flags);
   m_pListbook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                       wxNotebookEventHandler(options::OnMainNBPageChange), NULL,
+                       wxNotebookEventHandler(options::OnTopNBPageChange), NULL,
                        this);
 #endif
 
