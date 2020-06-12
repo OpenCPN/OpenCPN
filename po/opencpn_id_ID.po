@@ -1,10 +1,11 @@
-#: src/pluginmanager.cpp:238 src/pluginmanager.cpp:250 src/pluginmanager.cpp:252
+#: src/options.cpp:3565 src/options.cpp:4669 src/pluginmanager.cpp:238
+#: src/pluginmanager.cpp:250 src/pluginmanager.cpp:252
 msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-18 22:01-0400\n"
-"PO-Revision-Date: 2020-05-29 00:14\n"
+"POT-Creation-Date: 2020-06-11 11:17-0400\n"
+"PO-Revision-Date: 2020-06-12 02:30\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
@@ -16,16 +17,16 @@ msgstr ""
 "X-Crowdin-Language: id\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5782
-#: src/chart1.cpp:10015 src/toolbar.cpp:1410
+#: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5793
+#: src/chart1.cpp:10049 src/toolbar.cpp:1410
 msgid "About OpenCPN"
 msgstr "Tentang OpenCPN"
 
 #: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1071
-#: src/routemanagerdialog.cpp:1120 src/routemanagerdialog.cpp:1769
-#: src/routemanagerdialog.cpp:1876 src/routemanagerdialog.cpp:2195
-#: src/routemanagerdialog.cpp:2228 src/routemanagerdialog.cpp:2367
-#: src/routemanagerdialog.cpp:2516 src/toolbar.cpp:3197
+#: src/routemanagerdialog.cpp:1120 src/routemanagerdialog.cpp:1771
+#: src/routemanagerdialog.cpp:1878 src/routemanagerdialog.cpp:2197
+#: src/routemanagerdialog.cpp:2230 src/routemanagerdialog.cpp:2369
+#: src/routemanagerdialog.cpp:2518 src/toolbar.cpp:3208
 msgid "OpenCPN Alert"
 msgstr "Peringatan OpenCPN"
 
@@ -35,12 +36,12 @@ msgstr "Peringatan AIS OpenCPN"
 
 #: include/AISTargetQueryDialog.h:48 include/AISTargetQueryDialog.h:60
 #: include/S57QueryDialog.h:44 include/S57QueryDialog.h:54
-#: src/canvasMenu.cpp:387 src/canvasMenu.cpp:393 src/chcanv.cpp:8881
+#: src/canvasMenu.cpp:388 src/canvasMenu.cpp:394 src/chcanv.cpp:8907
 msgid "Object Query"
 msgstr "Obyek Query"
 
 #: include/GoToPositionDialog.h:40 src/AISTargetListDialog.cpp:646
-#: src/canvasMenu.cpp:416
+#: src/canvasMenu.cpp:417
 msgid "Center view"
 msgstr "Tampilan pusat"
 
@@ -48,8 +49,8 @@ msgstr "Tampilan pusat"
 msgid "Link Properties"
 msgstr "Properti Tautan"
 
-#: include/options.h:85 src/chart1.cpp:5772 src/chart1.cpp:6034
-#: src/chart1.cpp:7089 src/chart1.cpp:9976 src/options.cpp:4224
+#: include/options.h:85 src/chart1.cpp:5783 src/chart1.cpp:6052
+#: src/chart1.cpp:7117 src/chart1.cpp:10010 src/options.cpp:4238
 #: src/toolbar.cpp:1339
 msgid "Options"
 msgstr "Pilihan"
@@ -59,7 +60,7 @@ msgid "Print Route Selection"
 msgstr "Cetak Rute Seleksi"
 
 #: include/RoutePropDlg.h:147 include/RoutePropDlgImpl.h:83
-#: src/canvasMenu.cpp:1551 src/chcanv.cpp:7576 src/RoutePropDlgImpl.cpp:452
+#: src/canvasMenu.cpp:1564 src/chcanv.cpp:7602 src/RoutePropDlgImpl.cpp:452
 msgid "Route Properties"
 msgstr "Rute properti"
 
@@ -68,10 +69,10 @@ msgstr "Rute properti"
 msgid "Extra Object Info"
 msgstr ""
 
-#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:636 src/canvasMenu.cpp:725
-#: src/canvasMenu.cpp:776 src/canvasMenu.cpp:1442 src/canvasMenu.cpp:1453
-#: src/canvasMenu.cpp:1466 src/canvasMenu.cpp:1478
-#: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2338
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:645 src/canvasMenu.cpp:734
+#: src/canvasMenu.cpp:785 src/canvasMenu.cpp:1455 src/canvasMenu.cpp:1466
+#: src/canvasMenu.cpp:1479 src/canvasMenu.cpp:1491
+#: src/routemanagerdialog.cpp:1403 src/routemanagerdialog.cpp:2340
 msgid "Send to GPS"
 msgstr "Kirim ke GPS"
 
@@ -84,7 +85,7 @@ msgstr "Melacak properti"
 msgid "< Back"
 msgstr ""
 
-#: src/AboutFrame.cpp:49 src/options.cpp:7907
+#: src/AboutFrame.cpp:49 src/options.cpp:7983
 msgid "OpenCPN"
 msgstr ""
 
@@ -154,13 +155,13 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr ""
 
 #: src/AboutFrameImpl.cpp:81 src/AISTargetQueryDialog.cpp:191
-#: src/chart1.cpp:2998 src/chart1.cpp:6400 src/chart1.cpp:10981
-#: src/chart1.cpp:11016 src/LinkPropDlg.cpp:129 src/navutil.cpp:3120
-#: src/options.cpp:843 src/options.cpp:3822 src/options.cpp:8298
-#: src/options.cpp:8335 src/options.cpp:10296 src/pluginmanager.cpp:503
-#: src/pluginmanager.cpp:1191 src/pluginmanager.cpp:2089
-#: src/pluginmanager.cpp:2131 src/pluginmanager.cpp:2160
-#: src/pluginmanager.cpp:2194 src/Route.cpp:1195 src/RoutePoint.cpp:1133
+#: src/chart1.cpp:2997 src/chart1.cpp:6425 src/chart1.cpp:11015
+#: src/chart1.cpp:11050 src/LinkPropDlg.cpp:129 src/navutil.cpp:3134
+#: src/options.cpp:847 src/options.cpp:3836 src/options.cpp:8373
+#: src/options.cpp:8410 src/options.cpp:10373 src/pluginmanager.cpp:510
+#: src/pluginmanager.cpp:1198 src/pluginmanager.cpp:2096
+#: src/pluginmanager.cpp:2138 src/pluginmanager.cpp:2167
+#: src/pluginmanager.cpp:2201 src/Route.cpp:1211 src/RoutePoint.cpp:1132
 #: src/tcmgr.cpp:763 src/MarkInfo.cpp:1782
 msgid "OpenCPN Info"
 msgstr "Informasi OpenCPN"
@@ -226,8 +227,8 @@ msgid "Reserved 14"
 msgstr "Dicadangkan 14"
 
 #: src/ais.cpp:133 src/AIS_Target_Data.cpp:405 src/ConnectionParams.cpp:206
-#: src/ConnectionParams.cpp:502 src/ConnectionParams.cpp:599
-#: src/ConnectionParams.cpp:824 src/ConnectionParams.cpp:848
+#: src/ConnectionParams.cpp:514 src/ConnectionParams.cpp:611
+#: src/ConnectionParams.cpp:836 src/ConnectionParams.cpp:860
 msgid "Undefined"
 msgstr "Tidak Terdefenisi"
 
@@ -1309,7 +1310,7 @@ msgstr "Sayap yang dipasang di bawah lampung kapal"
 msgid "%02X"
 msgstr ""
 
-#: src/AIS_Decoder.cpp:2831
+#: src/AIS_Decoder.cpp:2913
 msgid "AIS Alert"
 msgstr "Siaga AIS"
 
@@ -1345,7 +1346,7 @@ msgid "SAR Aircraft"
 msgstr "Pesawat SAR"
 
 #: src/AIS_Target_Data.cpp:346 src/AIS_Target_Data.cpp:355
-#: src/AISTargetListDialog.cpp:529 src/options.cpp:714 src/options.cpp:1037
+#: src/AISTargetListDialog.cpp:529 src/options.cpp:718 src/options.cpp:1041
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -1416,7 +1417,7 @@ msgstr "Kanan"
 msgid "Left"
 msgstr "Kiri"
 
-#: src/AIS_Target_Data.cpp:626 src/options.cpp:5181 src/options.cpp:5297
+#: src/AIS_Target_Data.cpp:626 src/options.cpp:5208 src/options.cpp:5324
 #: src/RoutePropDlg.cpp:226 src/TrackPropDlg.cpp:224 src/TrackPropDlg.cpp:1190
 msgid "Speed"
 msgstr "Kecepatan"
@@ -1471,7 +1472,7 @@ msgstr "Ketinggian"
 msgid " COG Unavailable"
 msgstr " COG Tidak tersedia"
 
-#: src/AIS_Target_Data.cpp:802 src/navutil.cpp:4278
+#: src/AIS_Target_Data.cpp:802 src/navutil.cpp:4292
 msgid "in"
 msgstr "di"
 
@@ -1491,8 +1492,8 @@ msgstr ""
 msgid "Aid to Navigation"
 msgstr "Bantuan untuk Navigasi"
 
-#: src/AIS_Target_Data.cpp:898 src/options.cpp:4262 src/options.cpp:4445
-#: src/CanvasOptions.cpp:237
+#: src/AIS_Target_Data.cpp:898 src/options.cpp:4276 src/options.cpp:4459
+#: src/CanvasOptions.cpp:241
 msgid "Base"
 msgstr "Pangkalan"
 
@@ -2473,23 +2474,23 @@ msgstr "Venezuela"
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1587 src/chart1.cpp:6710
-#: src/chart1.cpp:11462 src/chart1.cpp:12429 src/chcanv.cpp:10951
-#: src/chcanv.cpp:10982 src/ChInfoWin.cpp:56 src/cm93.cpp:6833
-#: src/concanv.cpp:103 src/ConnectionParams.cpp:330 src/ConnectionParams.cpp:412
-#: src/ConnectionParams.cpp:895 src/glChartCanvas.cpp:4042
+#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1589 src/chart1.cpp:6735
+#: src/chart1.cpp:11496 src/chart1.cpp:12463 src/chcanv.cpp:10979
+#: src/chcanv.cpp:11010 src/ChInfoWin.cpp:56 src/cm93.cpp:6833
+#: src/concanv.cpp:103 src/ConnectionParams.cpp:330 src/ConnectionParams.cpp:424
+#: src/ConnectionParams.cpp:907 src/glChartCanvas.cpp:4042
 #: src/LinkPropDlg.cpp:37 src/OCPNPlatform.cpp:1845 src/OCPNPlatform.cpp:2278
-#: src/OCPNPlatform.cpp:2318 src/options.cpp:1006 src/options.cpp:1503
-#: src/options.cpp:2424 src/options.cpp:8963 src/options.cpp:9178
-#: src/options.cpp:10331 src/options.cpp:10475 src/Osenc.cpp:1663
+#: src/OCPNPlatform.cpp:2318 src/options.cpp:1010 src/options.cpp:1507
+#: src/options.cpp:2428 src/options.cpp:9043 src/options.cpp:9258
+#: src/options.cpp:10408 src/options.cpp:10552 src/Osenc.cpp:1663
 #: src/routemanagerdialog.cpp:291 src/RoutePropDlg.cpp:21 src/TCWin.cpp:81
-#: src/TCWin.cpp:195 src/toolbar.cpp:3295 src/TrackPropDlg.cpp:104
+#: src/TCWin.cpp:195 src/toolbar.cpp:3306 src/TrackPropDlg.cpp:104
 #: src/TrackPropDlg.cpp:243 src/TrackPropDlg.cpp:539 src/CanvasOptions.cpp:81
 #: src/MarkInfo.cpp:269 src/MarkInfo.cpp:312
 msgid "Dialog"
 msgstr "Dialog"
 
-#: src/AISTargetListDialog.cpp:323 src/canvasMenu.cpp:578 src/chart1.cpp:5748
+#: src/AISTargetListDialog.cpp:323 src/canvasMenu.cpp:587 src/chart1.cpp:5759
 msgid "AIS target list"
 msgstr "Daftar target AIS"
 
@@ -2507,9 +2508,9 @@ msgstr "Nama"
 msgid "Call"
 msgstr "Panggilan"
 
-#: src/AISTargetListDialog.cpp:545 src/ConnectionParams.cpp:450
-#: src/ConnectionParams.cpp:545 src/ConnectionParams.cpp:641
-#: src/ConnectionParams.cpp:725 src/options.cpp:2249 src/options.cpp:2952
+#: src/AISTargetListDialog.cpp:545 src/ConnectionParams.cpp:462
+#: src/ConnectionParams.cpp:557 src/ConnectionParams.cpp:653
+#: src/ConnectionParams.cpp:737 src/options.cpp:2253 src/options.cpp:2956
 msgid "Type"
 msgstr "Jenis"
 
@@ -2589,9 +2590,9 @@ msgid "AISTargetQuery"
 msgstr "Permintaan Sasaran AIS"
 
 #: src/AISTargetQueryDialog.cpp:327 src/cm93.cpp:6897
-#: src/GoToPositionDialog.cpp:146 src/options.cpp:658 src/options.cpp:764
-#: src/options.cpp:6155 src/routeprintout.cpp:431 src/TCWin.cpp:153
-#: src/TCWin.cpp:164 src/toolbar.cpp:3359 src/TrackPropDlg.cpp:500
+#: src/GoToPositionDialog.cpp:146 src/options.cpp:662 src/options.cpp:768
+#: src/options.cpp:6192 src/routeprintout.cpp:431 src/TCWin.cpp:153
+#: src/TCWin.cpp:164 src/toolbar.cpp:3370 src/TrackPropDlg.cpp:500
 #: src/TrackPropDlg.cpp:835
 msgid "OK"
 msgstr "OK"
@@ -2615,299 +2616,303 @@ msgstr "Perangkat android anda memiliki GPS internal, tapi tidak diaktifkan.\n"
 msgid "Nothing found"
 msgstr "Tidak ditemukan"
 
-#: src/androidUTIL.cpp:4749 src/chart1.cpp:3849
+#: src/androidUTIL.cpp:4749 src/chart1.cpp:3851
 msgid "Anchorage created "
 msgstr "Anchorage diciptakan "
 
-#: src/canvasMenu.cpp:260 src/canvasMenu.cpp:277 src/options.cpp:957
+#: src/canvasMenu.cpp:261 src/canvasMenu.cpp:278 src/options.cpp:961
 msgid "Menu"
 msgstr "Menu"
 
-#: src/canvasMenu.cpp:298
+#: src/canvasMenu.cpp:299
 msgid "End Route"
 msgstr "Jalur akhir"
 
-#: src/canvasMenu.cpp:303
+#: src/canvasMenu.cpp:304
 msgid "Measure Off"
 msgstr "Pengukur mati"
 
-#: src/canvasMenu.cpp:305
+#: src/canvasMenu.cpp:306
 msgid "Measure"
 msgstr "Pengukur"
 
-#: src/canvasMenu.cpp:312
+#: src/canvasMenu.cpp:313
 msgid "Undo"
 msgstr "Kembali"
 
-#: src/canvasMenu.cpp:318
+#: src/canvasMenu.cpp:319
 msgid "Redo"
 msgstr "Mengulangi"
 
-#: src/canvasMenu.cpp:381
+#: src/canvasMenu.cpp:382
 msgid "Max Detail Here"
 msgstr "Perincian maksimal disini"
 
-#: src/canvasMenu.cpp:382 src/canvasMenu.cpp:397
+#: src/canvasMenu.cpp:383 src/canvasMenu.cpp:398
 msgid "Scale In"
 msgstr "Skala Dalam"
 
-#: src/canvasMenu.cpp:383 src/canvasMenu.cpp:398
+#: src/canvasMenu.cpp:384 src/canvasMenu.cpp:399
 msgid "Scale Out"
 msgstr "Skala Luar"
 
-#: src/canvasMenu.cpp:405
+#: src/canvasMenu.cpp:406
 msgid "Drop Mark"
 msgstr "Tanda Penurunan"
 
-#: src/canvasMenu.cpp:406
+#: src/canvasMenu.cpp:407
 msgid "New Route..."
 msgstr ""
 
-#: src/canvasMenu.cpp:409
+#: src/canvasMenu.cpp:410
 msgid "Move Boat Here"
 msgstr "Pindahkan Perahu Disini"
 
-#: src/canvasMenu.cpp:413
+#: src/canvasMenu.cpp:414
 msgid "Navigate To Here"
 msgstr "Arahkan Ke sini"
 
-#: src/canvasMenu.cpp:420 src/chart1.cpp:5675
+#: src/canvasMenu.cpp:422 src/chart1.cpp:5685
 msgid "Course Up Mode"
 msgstr "Mode Haluan Atas"
 
-#: src/canvasMenu.cpp:423
-msgid "Chart Up Mode"
-msgstr "Mode Grafik atas"
+#: src/canvasMenu.cpp:424
+msgid "Heading Up Mode"
+msgstr ""
 
-#: src/canvasMenu.cpp:425 src/chart1.cpp:5360 src/chart1.cpp:5674
-#: src/chart1.cpp:7906
+#: src/canvasMenu.cpp:427 src/canvasMenu.cpp:434 src/chart1.cpp:5367
+#: src/chart1.cpp:5684 src/chart1.cpp:7937
 msgid "North Up Mode"
 msgstr "Mode Utara"
 
-#: src/canvasMenu.cpp:433 src/canvasMenu.cpp:440
+#: src/canvasMenu.cpp:432
+msgid "Chart Up Mode"
+msgstr "Mode Grafik atas"
+
+#: src/canvasMenu.cpp:442 src/canvasMenu.cpp:449
 msgid "Toggle Full Screen"
 msgstr "Beralih Layar Penuh"
 
-#: src/canvasMenu.cpp:445 src/canvasMenu.cpp:604 src/canvasMenu.cpp:621
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:613 src/canvasMenu.cpp:630
 msgid "Zero XTE"
 msgstr "Nol XTE"
 
-#: src/canvasMenu.cpp:452
+#: src/canvasMenu.cpp:461
 msgid "Paste Waypoint"
 msgstr "Tempel Titik Arah"
 
-#: src/canvasMenu.cpp:456 src/canvasMenu.cpp:464
+#: src/canvasMenu.cpp:465 src/canvasMenu.cpp:473
 msgid "Paste Route"
 msgstr "Tempel Rute"
 
-#: src/canvasMenu.cpp:460 src/canvasMenu.cpp:465
+#: src/canvasMenu.cpp:469 src/canvasMenu.cpp:474
 msgid "Paste Track"
 msgstr "Tempel Jalur"
 
-#: src/canvasMenu.cpp:473
+#: src/canvasMenu.cpp:482
 msgid "CM93 Offset Dialog..."
 msgstr "Mengimbangi dialog CM93..."
 
-#: src/canvasMenu.cpp:496 src/options.cpp:4677 src/options.cpp:4735
+#: src/canvasMenu.cpp:505 src/options.cpp:4704 src/options.cpp:4762
 msgid "Chart Groups"
 msgstr "Kelompok grafik"
 
-#: src/canvasMenu.cpp:504
+#: src/canvasMenu.cpp:513
 msgid "temporary"
 msgstr ""
 
-#: src/canvasMenu.cpp:507
+#: src/canvasMenu.cpp:516
 msgid "All Active Charts"
 msgstr "Semua Grafik Aktif"
 
-#: src/canvasMenu.cpp:543 src/CanvasOptions.cpp:173
+#: src/canvasMenu.cpp:552 src/CanvasOptions.cpp:177
 msgid "AIS"
 msgstr "AIS"
 
-#: src/canvasMenu.cpp:544
+#: src/canvasMenu.cpp:553
 msgid "Target Query..."
 msgstr "Pertanyaan Target..."
 
-#: src/canvasMenu.cpp:547
+#: src/canvasMenu.cpp:556
 msgid "Hide Target CPA"
 msgstr "Sembunyikan BPA Target"
 
-#: src/canvasMenu.cpp:549
+#: src/canvasMenu.cpp:558
 msgid "Show Target CPA"
 msgstr "Menunjukkan Target BPA"
 
-#: src/canvasMenu.cpp:551
+#: src/canvasMenu.cpp:560
 msgid "Target List..."
 msgstr "Daftar target..."
 
-#: src/canvasMenu.cpp:554
+#: src/canvasMenu.cpp:563
 msgid "Hide Target Track"
 msgstr "Menyembunyikan Tujuan Lintasan"
 
-#: src/canvasMenu.cpp:556
+#: src/canvasMenu.cpp:565
 msgid "Show Target Track"
 msgstr "Menampilkan Tujuan Lintasan"
 
-#: src/canvasMenu.cpp:559
+#: src/canvasMenu.cpp:568
 msgid "Copy Target MMSI"
 msgstr "Menyalin Tujuan MMSI"
 
-#: src/canvasMenu.cpp:564 src/canvasMenu.cpp:570
+#: src/canvasMenu.cpp:573 src/canvasMenu.cpp:579
 msgid "Object Query..."
 msgstr "Tujuan bertanya..."
 
-#: src/canvasMenu.cpp:586
+#: src/canvasMenu.cpp:595
 msgid "Unnamed Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:595
+#: src/canvasMenu.cpp:604
 msgid "Layer Route"
 msgstr "Lapisan rute"
 
-#: src/canvasMenu.cpp:596 src/canvasMenu.cpp:613 src/canvasMenu.cpp:667
-#: src/canvasMenu.cpp:671 src/canvasMenu.cpp:694 src/canvasMenu.cpp:701
-#: src/canvasMenu.cpp:759 src/canvasMenu.cpp:763 src/options.cpp:1789
+#: src/canvasMenu.cpp:605 src/canvasMenu.cpp:622 src/canvasMenu.cpp:676
+#: src/canvasMenu.cpp:680 src/canvasMenu.cpp:703 src/canvasMenu.cpp:710
+#: src/canvasMenu.cpp:768 src/canvasMenu.cpp:772 src/options.cpp:1793
 #: src/MarkInfo.cpp:357
 msgid "Properties"
 msgstr "Properti"
 
-#: src/canvasMenu.cpp:601 src/canvasMenu.cpp:618 src/canvasMenu.cpp:711
+#: src/canvasMenu.cpp:610 src/canvasMenu.cpp:627 src/canvasMenu.cpp:720
 msgid "Activate Next Waypoint"
 msgstr "Aktifkan titik jalan berikutnya"
 
-#: src/canvasMenu.cpp:603 src/canvasMenu.cpp:620 src/routemanagerdialog.cpp:1016
+#: src/canvasMenu.cpp:612 src/canvasMenu.cpp:629 src/routemanagerdialog.cpp:1016
 msgid "Deactivate"
 msgstr "Tidak diaktifkan"
 
-#: src/canvasMenu.cpp:607 src/canvasMenu.cpp:624 src/canvasMenu.cpp:697
-#: src/canvasMenu.cpp:704 src/routemanagerdialog.cpp:1010
+#: src/canvasMenu.cpp:616 src/canvasMenu.cpp:633 src/canvasMenu.cpp:706
+#: src/canvasMenu.cpp:713 src/routemanagerdialog.cpp:1010
 msgid "Activate"
 msgstr "Mengaktifkan"
 
-#: src/canvasMenu.cpp:612 src/chcanv.cpp:3831 src/chcanv.cpp:9756
+#: src/canvasMenu.cpp:621 src/chcanv.cpp:3849 src/chcanv.cpp:9782
 #: src/concanv.cpp:142 src/concanv.cpp:161 src/concanv.cpp:203
 msgid "Route"
 msgstr "Rute"
 
-#: src/canvasMenu.cpp:627
+#: src/canvasMenu.cpp:636
 msgid "Insert Waypoint"
 msgstr "Msukkan titik arah"
 
-#: src/canvasMenu.cpp:628 src/undo.cpp:91
+#: src/canvasMenu.cpp:637 src/undo.cpp:91
 msgid "Append Waypoint"
 msgstr "Tambahkan Titikarah"
 
-#: src/canvasMenu.cpp:629 src/canvasMenu.cpp:672 src/canvasMenu.cpp:717
-#: src/canvasMenu.cpp:768
+#: src/canvasMenu.cpp:638 src/canvasMenu.cpp:681 src/canvasMenu.cpp:726
+#: src/canvasMenu.cpp:777
 msgid "Copy as KML"
 msgstr "Salin sebagai KML"
 
-#: src/canvasMenu.cpp:630 src/canvasMenu.cpp:673 src/canvasMenu.cpp:720
-#: src/canvasMenu.cpp:771 src/options.cpp:953 src/options.cpp:10180
+#: src/canvasMenu.cpp:639 src/canvasMenu.cpp:682 src/canvasMenu.cpp:729
+#: src/canvasMenu.cpp:780 src/options.cpp:957 src/options.cpp:10257
 #: src/RoutePropDlg.cpp:279 src/TrackPropDlg.cpp:747 src/MarkInfo.cpp:487
 #: src/MarkInfo.cpp:1074 src/MarkInfo.cpp:1112
 msgid "Delete"
 msgstr "Hapus"
 
-#: src/canvasMenu.cpp:631
+#: src/canvasMenu.cpp:640
 msgid "Reverse..."
 msgstr "Cadangan..."
 
-#: src/canvasMenu.cpp:645 src/canvasMenu.cpp:734
+#: src/canvasMenu.cpp:654 src/canvasMenu.cpp:743
 msgid "Send to new GPS"
 msgstr "Kirim ke GPS baru"
 
-#: src/canvasMenu.cpp:666
+#: src/canvasMenu.cpp:675
 msgid "Layer Track"
 msgstr "Jalur Lapisan"
 
-#: src/canvasMenu.cpp:670 src/chcanv.cpp:3979
+#: src/canvasMenu.cpp:679 src/chcanv.cpp:3997
 msgid "Track"
 msgstr "Jalur"
 
-#: src/canvasMenu.cpp:684 src/canvasMenu.cpp:749
+#: src/canvasMenu.cpp:693 src/canvasMenu.cpp:758
 msgid "Unnamed Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:693 src/canvasMenu.cpp:758
+#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:767
 msgid "Layer Waypoint"
 msgstr "Lapisan titik Way"
 
-#: src/canvasMenu.cpp:700 src/canvasMenu.cpp:762
+#: src/canvasMenu.cpp:709 src/canvasMenu.cpp:771
 msgid "Waypoint"
 msgstr "Titik arah"
 
-#: src/canvasMenu.cpp:715
+#: src/canvasMenu.cpp:724
 msgid "Remove from Route"
 msgstr "Hapus dari rute"
 
-#: src/canvasMenu.cpp:766
+#: src/canvasMenu.cpp:775
 msgid "Navigate To This"
 msgstr "Arahkan ke ini"
 
-#: src/canvasMenu.cpp:786
+#: src/canvasMenu.cpp:795
 msgid "Clear Anchor Watch"
 msgstr "Jaga kebersihan Jangkar"
 
-#: src/canvasMenu.cpp:796
+#: src/canvasMenu.cpp:805
 msgid "Set Anchor Watch"
 msgstr "Amati pengaturan jangkar"
 
-#: src/canvasMenu.cpp:834
+#: src/canvasMenu.cpp:843
 msgid "Main Menu"
 msgstr ""
 
-#: src/canvasMenu.cpp:846
+#: src/canvasMenu.cpp:855
 msgid "Show Tide Information"
 msgstr "Tampilkan informasi pasang surut"
 
-#: src/canvasMenu.cpp:852
+#: src/canvasMenu.cpp:861
 msgid "Show Current Information"
 msgstr "Tampilkan informasi arus"
 
-#: src/canvasMenu.cpp:1014
+#: src/canvasMenu.cpp:1023
 msgid "Temporary GOTO Route"
 msgstr "Rute GOTO Sementara"
 
-#: src/canvasMenu.cpp:1015 src/canvasMenu.cpp:1078
-#: src/routemanagerdialog.cpp:2287
+#: src/canvasMenu.cpp:1024 src/canvasMenu.cpp:1087
+#: src/routemanagerdialog.cpp:2289
 msgid "Here"
 msgstr "Di sini"
 
-#: src/canvasMenu.cpp:1017
+#: src/canvasMenu.cpp:1026
 msgid "There"
 msgstr "Di sana"
 
-#: src/canvasMenu.cpp:1074 src/routemanagerdialog.cpp:1945
-#: src/routemanagerdialog.cpp:2283
+#: src/canvasMenu.cpp:1083 src/routemanagerdialog.cpp:1947
+#: src/routemanagerdialog.cpp:2285
 msgid "(Unnamed Waypoint)"
 msgstr "(Titik arah yang tidak disebutkan namanya)"
 
-#: src/canvasMenu.cpp:1075 src/routemanagerdialog.cpp:2284
+#: src/canvasMenu.cpp:1084 src/routemanagerdialog.cpp:2286
 msgid "Go to "
 msgstr "Pergi ke "
 
-#: src/canvasMenu.cpp:1282 src/routemanagerdialog.cpp:1206
+#: src/canvasMenu.cpp:1295 src/routemanagerdialog.cpp:1206
 msgid "Rename Waypoints?"
 msgstr "Ubah nama titik arah?"
 
-#: src/canvasMenu.cpp:1305
+#: src/canvasMenu.cpp:1318
 msgid "Are you sure you want to delete this route?"
 msgstr "Yakin ingin menghapus rute ini?"
 
-#: src/canvasMenu.cpp:1306
+#: src/canvasMenu.cpp:1319
 msgid "OpenCPN Route Delete"
 msgstr "Rute OpenCPN Hapus"
 
-#: src/canvasMenu.cpp:1563
+#: src/canvasMenu.cpp:1576
 msgid "Are you sure you want to delete this track?"
 msgstr "Apakah anda yakin ingin menghapus julur ini?"
 
-#: src/canvasMenu.cpp:1564 src/routeman.cpp:1023
+#: src/canvasMenu.cpp:1577 src/routeman.cpp:1023
 msgid "OpenCPN Track Delete"
 msgstr "Hapus julur OpenCPN"
 
-#: src/chart1.cpp:1019
+#: src/chart1.cpp:1021
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
 "See the GNU General Public License for more details.\n\n"
@@ -2921,409 +2926,413 @@ msgstr "\n"
 "apakah anda TIDAK mengandalkan pada OpenCPN untuk keselamatan hidup atau properti.\n\n"
 "silahkan klik \"OK\" untuk menyetujui dan melanjutkan, \"Cancel\" untuk keluar.\n"
 
-#: src/chart1.cpp:1035
+#: src/chart1.cpp:1037
 msgid "OpenCPN for Android"
 msgstr ""
 
-#: src/chart1.cpp:1051
+#: src/chart1.cpp:1053
 msgid "Welcome to OpenCPN"
 msgstr "Selamat datang di OpenCPN"
 
-#: src/chart1.cpp:1110
+#: src/chart1.cpp:1112
 msgid "Show usage syntax."
 msgstr "Tampilkan sintaks penggunaan."
 
-#: src/chart1.cpp:1111
+#: src/chart1.cpp:1113
 msgid "Run in portable mode."
 msgstr "Jalankan dalam mode portabel."
 
-#: src/chart1.cpp:1112
+#: src/chart1.cpp:1114
 msgid "Switch to full screen mode on start."
 msgstr "Beralih ke mode layar penuh saat memulai."
 
-#: src/chart1.cpp:1113
+#: src/chart1.cpp:1115
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr "Menonaktifkan akselerasi video OpenGL. Pengaturan ini akan diingat."
 
-#: src/chart1.cpp:1116
+#: src/chart1.cpp:1118
 msgid "Amount of logging: error, warning, message, info, debug or trace"
 msgstr ""
 
-#: src/chart1.cpp:1117
+#: src/chart1.cpp:1119
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr "Tampilkan tayangan slide <num> bagan dan kemudian keluar. Nol atau negatif <num> tidak ditentukan oleh batas."
 
-#: src/chart1.cpp:1590
+#: src/chart1.cpp:1592
 msgid "OpenCPN ENC Prepare"
 msgstr "Mempersiapkan OpenCPN ENC"
 
-#: src/chart1.cpp:1620
+#: src/chart1.cpp:1622
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Jarak dari kapal:  %4.0f NMi"
 
-#: src/chart1.cpp:1651
+#: src/chart1.cpp:1653
 msgid "ENC Completed."
 msgstr "ENC Selesai."
 
-#: src/chart1.cpp:1782
+#: src/chart1.cpp:1784
 msgid "Sorry, an existing instance of OpenCPN may be too busy too respond.\n"
 "Please retry."
 msgstr ""
 
-#: src/chart1.cpp:2003 src/chart1.cpp:2009
+#: src/chart1.cpp:2009 src/chart1.cpp:2015
 msgid "Failed to initialize the user interface. "
 msgstr "Gagal untuk menginisialisasi antarmuka pengguna. "
 
-#: src/chart1.cpp:2004
+#: src/chart1.cpp:2010
 msgid "OpenCPN cannot start. "
 msgstr "Tidak dapat memulai OpenCPN. "
 
-#: src/chart1.cpp:2005
+#: src/chart1.cpp:2011
 msgid "The necessary configuration files were not found. "
 msgstr "Berkas konfigurasi yang diperlukan tidak ditemukan. "
 
-#: src/chart1.cpp:2006
+#: src/chart1.cpp:2012
 msgid "See the log file at "
 msgstr "Lihat berkas catatan di "
 
-#: src/chart1.cpp:2006
+#: src/chart1.cpp:2012
 msgid " for details."
 msgstr " untuk rinciannya."
 
-#: src/chart1.cpp:2307
+#: src/chart1.cpp:2301
 msgid " -- [Portable(-p) executing from "
 msgstr " - [Portable (-p) yang dijalankan dari "
 
-#: src/chart1.cpp:2389
+#: src/chart1.cpp:2383
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Mengambil direktori grafik awal dari Windows Registry"
 
-#: src/chart1.cpp:2609
+#: src/chart1.cpp:2567
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN diinisialisasi dalam %ld ms."
 
-#: src/chart1.cpp:2996
+#: src/chart1.cpp:2995
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr ""
 
-#: src/chart1.cpp:3005
+#: src/chart1.cpp:3004
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Membangun kembali tabel penyimpan data dari masukan berkas pengaturan..."
 
-#: src/chart1.cpp:3008
+#: src/chart1.cpp:3007
 msgid "Elapsed time : "
 msgstr "Waktu habis : "
 
-#: src/chart1.cpp:3009
+#: src/chart1.cpp:3008
 msgid "Estimated time : "
 msgstr "Perkiraan waktu : "
 
-#: src/chart1.cpp:3010
+#: src/chart1.cpp:3009
 msgid "Remaining time : "
 msgstr "Waktu yang tersisa : "
 
-#: src/chart1.cpp:3011 src/chart1.cpp:6705 src/chart1.cpp:6713
+#: src/chart1.cpp:3010 src/chart1.cpp:6730 src/chart1.cpp:6738
 msgid "OpenCPN Chart Update"
 msgstr "Memperbarui peta OpenCPN"
 
-#: src/chart1.cpp:3216 src/chcanv.cpp:11902
+#: src/chart1.cpp:3215 src/chcanv.cpp:11930
 msgid "AIS Target Query"
 msgstr "AIS Tujuan Pertanyaan"
 
-#: src/chart1.cpp:4308 src/chart1.cpp:4324 src/chcanv.cpp:5433
+#: src/chart1.cpp:4310 src/chart1.cpp:4326 src/chcanv.cpp:5459
 #: src/OCPNPlatform.cpp:2048
 msgid "StatusBar"
 msgstr "Status bar"
 
-#: src/chart1.cpp:4790 src/chart1.cpp:4898
+#: src/chart1.cpp:4799 src/chart1.cpp:4907
 msgid "Show Toolbar"
 msgstr ""
 
-#: src/chart1.cpp:4792 src/chart1.cpp:4900 src/chart1.cpp:9969
+#: src/chart1.cpp:4801 src/chart1.cpp:4909 src/chart1.cpp:10003
 msgid "Hide Toolbar"
 msgstr ""
 
-#: src/chart1.cpp:5116 src/chart1.cpp:5176
+#: src/chart1.cpp:5125 src/chart1.cpp:5185
 msgid "MAN OVERBOARD"
 msgstr "LAKI-LAKI KE LAUT"
 
-#: src/chart1.cpp:5117 src/chart1.cpp:9571
+#: src/chart1.cpp:5126 src/chart1.cpp:9605
 msgid " at "
 msgstr ""
 
-#: src/chart1.cpp:5119 src/chart1.cpp:9573
+#: src/chart1.cpp:5128 src/chart1.cpp:9607
 msgid " on "
 msgstr ""
 
-#: src/chart1.cpp:5137
+#: src/chart1.cpp:5146
 msgid "1.0 NM along COG"
 msgstr "1.0 NM sepanjang COG"
 
-#: src/chart1.cpp:5148
+#: src/chart1.cpp:5157
 msgid "Temporary MOB Route"
 msgstr "Rute MOB sementara"
 
-#: src/chart1.cpp:5149
+#: src/chart1.cpp:5158
 msgid "Assumed 1 Mile Point"
 msgstr "Diasumsikan 1 mil titik"
 
-#: src/chart1.cpp:5177 src/chart1.cpp:9625 src/chart1.cpp:9669
+#: src/chart1.cpp:5186 src/chart1.cpp:9659 src/chart1.cpp:9703
 msgid " Time: "
 msgstr ""
 
-#: src/chart1.cpp:5179
+#: src/chart1.cpp:5188
 msgid "  Position: "
 msgstr ""
 
-#: src/chart1.cpp:5199
+#: src/chart1.cpp:5208
 msgid "Disable Tracking"
 msgstr "Nonaktifkan Pelacakan"
 
-#: src/chart1.cpp:5224 src/chart1.cpp:8525 src/chart1.cpp:8654
+#: src/chart1.cpp:5233 src/chart1.cpp:8556 src/chart1.cpp:8685
 msgid "(Unnamed Track)"
 msgstr "(Jalur tanpa nama)"
 
-#: src/chart1.cpp:5273 src/chart1.cpp:5672 src/chart1.cpp:9994
+#: src/chart1.cpp:5282 src/chart1.cpp:5682 src/chart1.cpp:10028
 #: src/toolbar.cpp:1393
 msgid "Enable Tracking"
 msgstr "Aktifkan Pelacakan"
 
-#: src/chart1.cpp:5671 src/toolbar.cpp:1332
+#: src/chart1.cpp:5681 src/toolbar.cpp:1332
 msgid "Auto Follow"
 msgstr "Otomatis diikuti"
 
-#: src/chart1.cpp:5678 src/chart1.cpp:5681 src/toolbar.cpp:1297
+#: src/chart1.cpp:5686
+msgid "Head Up Mode"
+msgstr ""
+
+#: src/chart1.cpp:5689 src/chart1.cpp:5692 src/toolbar.cpp:1297
 msgid "Zoom In"
 msgstr "Memperbesar"
 
-#: src/chart1.cpp:5679 src/chart1.cpp:5682 src/toolbar.cpp:1303
+#: src/chart1.cpp:5690 src/chart1.cpp:5693 src/toolbar.cpp:1303
 msgid "Zoom Out"
 msgstr "Memperkecil"
 
-#: src/chart1.cpp:5685
+#: src/chart1.cpp:5696
 msgid "Larger Scale Chart"
 msgstr "Bagan skala lebih besar"
 
-#: src/chart1.cpp:5686
+#: src/chart1.cpp:5697
 msgid "Smaller Scale Chart"
 msgstr "Bagan skala lebih kecil"
 
-#: src/chart1.cpp:5689
+#: src/chart1.cpp:5700
 msgid "Exit OpenCPN"
 msgstr "Keluar dari OpenCPN"
 
-#: src/chart1.cpp:5691
+#: src/chart1.cpp:5702
 msgid "&Navigate"
 msgstr "&Navigasi"
 
-#: src/chart1.cpp:5696 src/chart1.cpp:5699 src/options.cpp:4852
-#: src/options.cpp:5022 src/CanvasOptions.cpp:156
+#: src/chart1.cpp:5707 src/chart1.cpp:5710 src/options.cpp:4879
+#: src/options.cpp:5049 src/CanvasOptions.cpp:160
 msgid "Enable Chart Quilting"
 msgstr "Mengaktifkan bagan Quilting"
 
-#: src/chart1.cpp:5697 src/chart1.cpp:5700 src/options.cpp:4896
-#: src/options.cpp:5070 src/CanvasOptions.cpp:164
+#: src/chart1.cpp:5708 src/chart1.cpp:5711 src/options.cpp:4923
+#: src/options.cpp:5097 src/CanvasOptions.cpp:168
 msgid "Show Chart Outlines"
 msgstr "Tampilkan bagan garis"
 
-#: src/chart1.cpp:5702 src/options.cpp:5740
+#: src/chart1.cpp:5713 src/options.cpp:5767
 msgid "Show Chart Bar"
 msgstr "Tampilkan bagan balok"
 
-#: src/chart1.cpp:5706 src/chart1.cpp:5713 src/toolbar.cpp:1352
+#: src/chart1.cpp:5717 src/chart1.cpp:5724 src/toolbar.cpp:1352
 msgid "Show ENC text"
 msgstr "Tampilkan teks ENC"
 
-#: src/chart1.cpp:5707 src/chart1.cpp:5714
+#: src/chart1.cpp:5718 src/chart1.cpp:5725
 msgid "Show ENC Lights"
 msgstr "Tampilkan Lampu ENC"
 
-#: src/chart1.cpp:5708 src/chart1.cpp:5715
+#: src/chart1.cpp:5719 src/chart1.cpp:5726
 msgid "Show ENC Soundings"
 msgstr "Tampilkan Suara ENC"
 
-#: src/chart1.cpp:5709 src/chart1.cpp:5716
+#: src/chart1.cpp:5720 src/chart1.cpp:5727
 msgid "Show ENC Anchoring Info"
 msgstr "Tampilkan Info Jangkar ENC"
 
-#: src/chart1.cpp:5710 src/chart1.cpp:5717
+#: src/chart1.cpp:5721 src/chart1.cpp:5728
 msgid "Show ENC Data Quality"
 msgstr "Tampilkan Kualitas data ENC"
 
-#: src/chart1.cpp:5711 src/chart1.cpp:5718
+#: src/chart1.cpp:5722 src/chart1.cpp:5729
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/chart1.cpp:5721 src/chcanv.cpp:1220 src/toolbar.cpp:1374
+#: src/chart1.cpp:5732 src/chcanv.cpp:1228 src/toolbar.cpp:1374
 msgid "Show Tides"
 msgstr "Pasang Tampilkan"
 
-#: src/chart1.cpp:5722 src/chcanv.cpp:1256 src/toolbar.cpp:1368
-#: src/CanvasOptions.cpp:197
+#: src/chart1.cpp:5733 src/chcanv.cpp:1264 src/toolbar.cpp:1368
+#: src/CanvasOptions.cpp:201
 msgid "Show Currents"
 msgstr "Tampilkan Sekarang"
 
-#: src/chart1.cpp:5725 src/chart1.cpp:5727 src/chart1.cpp:9999
+#: src/chart1.cpp:5736 src/chart1.cpp:5738 src/chart1.cpp:10033
 #: src/toolbar.cpp:1400
 msgid "Change Color Scheme"
 msgstr "Mengubah skema warna"
 
-#: src/chart1.cpp:5732 src/chart1.cpp:5734
+#: src/chart1.cpp:5743 src/chart1.cpp:5745
 msgid "Enter Full Screen"
 msgstr "Buka Layar Penuh"
 
-#: src/chart1.cpp:5736
+#: src/chart1.cpp:5747
 msgid "&View"
 msgstr "&lihat"
 
-#: src/chart1.cpp:5740 src/toolbar.cpp:1456
+#: src/chart1.cpp:5751 src/toolbar.cpp:1456
 msgid "Show AIS Targets"
 msgstr "Tampilkan AIS target"
 
-#: src/chart1.cpp:5741 src/chcanv.cpp:12330 src/toolbar.cpp:1447
+#: src/chart1.cpp:5752 src/chcanv.cpp:12354 src/toolbar.cpp:1447
 msgid "Attenuate less critical AIS targets"
 msgstr "Atenuasi kurang kritis target AIS"
 
-#: src/chart1.cpp:5743
+#: src/chart1.cpp:5754
 msgid "Hide Moored AIS Targets"
 msgstr "Sembunyikan Target Tambatan AIS"
 
-#: src/chart1.cpp:5744
+#: src/chart1.cpp:5755
 msgid "Show AIS Target Tracks"
 msgstr "Tampilkan Jalur Target AIS"
 
-#: src/chart1.cpp:5745
+#: src/chart1.cpp:5756
 msgid "Show CPA Alert Dialogs"
 msgstr "Tampilkan dialog siaga CPA"
 
-#: src/chart1.cpp:5746
+#: src/chart1.cpp:5757
 msgid "Sound CPA Alarms"
 msgstr "Suara alarm CPA"
 
-#: src/chart1.cpp:5749
+#: src/chart1.cpp:5760
 msgid "&AIS"
 msgstr "&AIS"
 
-#: src/chart1.cpp:5753 src/chart1.cpp:5755
+#: src/chart1.cpp:5764 src/chart1.cpp:5766
 msgid "Measure Distance"
 msgstr "Mengukur Jarak"
 
-#: src/chart1.cpp:5759
+#: src/chart1.cpp:5770
 msgid "Route && Mark Manager..."
 msgstr "Jalur && Menandai pengelola..."
 
-#: src/chart1.cpp:5760 src/chart1.cpp:9982 src/toolbar.cpp:1325
+#: src/chart1.cpp:5771 src/chart1.cpp:10016 src/toolbar.cpp:1325
 msgid "Create Route"
 msgstr "Membuat Rute"
 
-#: src/chart1.cpp:5762
+#: src/chart1.cpp:5773
 msgid "Drop Mark at Boat"
 msgstr "Menurunkan tanda pada kapal"
 
-#: src/chart1.cpp:5763
+#: src/chart1.cpp:5774
 msgid "Drop Mark at Cursor"
 msgstr "Jatuhkan tanda pada kursor"
 
-#: src/chart1.cpp:5766 src/chart1.cpp:5770 src/chart1.cpp:10024
+#: src/chart1.cpp:5777 src/chart1.cpp:5781 src/chart1.cpp:10058
 #: src/toolbar.cpp:1419
 msgid "Drop MOB Marker"
 msgstr "Drop MOD Penanda"
 
-#: src/chart1.cpp:5768 src/pluginmanager.cpp:5930
+#: src/chart1.cpp:5779 src/pluginmanager.cpp:5946
 msgid "Preferences"
 msgstr "Pereferensi"
 
-#: src/chart1.cpp:5774
+#: src/chart1.cpp:5785
 msgid "&Tools"
 msgstr "&Alat"
 
-#: src/chart1.cpp:5778
+#: src/chart1.cpp:5789
 msgid "&Window"
 msgstr ""
 
-#: src/chart1.cpp:5783
+#: src/chart1.cpp:5794
 msgid "OpenCPN Help"
 msgstr "Bantuan OpenCPN"
 
-#: src/chart1.cpp:5784
+#: src/chart1.cpp:5795
 msgid "&Help"
 msgstr "&Bantuan"
 
-#: src/chart1.cpp:6399
+#: src/chart1.cpp:6424
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Silakan mulai ulang OpenCPN untuk mengaktifkan perubahan bahasa atau gaya."
 
-#: src/chart1.cpp:7899
+#: src/chart1.cpp:7930
 msgid "Rotated Mode"
 msgstr "Mode berputar"
 
-#: src/chart1.cpp:8392 src/routeprintout.cpp:494
+#: src/chart1.cpp:8423 src/routeprintout.cpp:494
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Ada masalah pada proses pencetakan.\n"
 "Mungkin pencetak anda saat ini tidak diatur dengan benar?"
 
-#: src/chart1.cpp:8574 src/chart1.cpp:8635 src/routemanagerdialog.cpp:947
+#: src/chart1.cpp:8605 src/chart1.cpp:8666 src/routemanagerdialog.cpp:947
 msgid "(Unnamed Route)"
 msgstr "(Jalur yang tidak dikenal)"
 
-#: src/chart1.cpp:9317
+#: src/chart1.cpp:9351
 msgid " Ship "
 msgstr " Kapal "
 
-#: src/chart1.cpp:9570 src/chart1.cpp:9624
+#: src/chart1.cpp:9604 src/chart1.cpp:9658
 msgid "AIS MAN OVERBOARD"
 msgstr "PRIA ke luar kapal AIS"
 
-#: src/chart1.cpp:9586 src/options.cpp:3044
+#: src/chart1.cpp:9620 src/options.cpp:3048
 msgid "Own ship"
 msgstr "Kapal sendiri"
 
-#: src/chart1.cpp:9597
+#: src/chart1.cpp:9631
 msgid "Temporary AISMOB Route"
 msgstr "Jalur AISMOB Sementara"
 
-#: src/chart1.cpp:9598
+#: src/chart1.cpp:9632
 msgid "Present own ship"
 msgstr "Hadirkan kapal sendiri"
 
-#: src/chart1.cpp:9627 src/chart1.cpp:9671
+#: src/chart1.cpp:9661 src/chart1.cpp:9705
 msgid "  Ownship Position: "
 msgstr ""
 
-#: src/chart1.cpp:9631 src/chart1.cpp:9675
+#: src/chart1.cpp:9665 src/chart1.cpp:9709
 msgid "  MOB Position: "
 msgstr ""
 
-#: src/chart1.cpp:9668
+#: src/chart1.cpp:9702
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "Memperbaharui AIS MAN Ke luar kapal"
 
-#: src/chart1.cpp:9988 src/routemanagerdialog.cpp:288 src/toolbar.cpp:1386
+#: src/chart1.cpp:10022 src/routemanagerdialog.cpp:288 src/toolbar.cpp:1386
 msgid "Route & Mark Manager"
 msgstr "Manajer Rute & Mark"
 
-#: src/chart1.cpp:10010 src/toolbar.cpp:1380
+#: src/chart1.cpp:10044 src/toolbar.cpp:1380
 msgid "Print Chart"
 msgstr "Mencetak bagan"
 
-#: src/chart1.cpp:10024 src/toolbar.cpp:1419
+#: src/chart1.cpp:10058 src/toolbar.cpp:1419
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/chart1.cpp:10976
+#: src/chart1.cpp:11010
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN membutuhkan akses port serial untuk menggunakan data NMEA serial.\n"
 
-#: src/chart1.cpp:10978
+#: src/chart1.cpp:11012
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Tidak ada port serial yang dapat ditemukan pada sistem ini.\n"
 "Anda harus memasang port serial (modprobe modul kernel yang benar) atau pasang aplikasi tambahan pada perangkat serial usb.\n"
 
-#: src/chart1.cpp:11004
+#: src/chart1.cpp:11038
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3343,9 +3352,9 @@ msgstr " BerkasBagan:  "
 msgid " Name:  "
 msgstr " Nama:  "
 
-#: src/chartdbs.cpp:1409 src/chartdbs.cpp:1411 src/chcanv.cpp:5393
-#: src/chcanv.cpp:5395 src/chcanv.cpp:5398 src/chcanv.cpp:5402
-#: src/chcanv.cpp:5405 src/chcanv.cpp:5442 src/routemanagerdialog.cpp:591
+#: src/chartdbs.cpp:1409 src/chartdbs.cpp:1411 src/chcanv.cpp:5419
+#: src/chcanv.cpp:5421 src/chcanv.cpp:5424 src/chcanv.cpp:5428
+#: src/chcanv.cpp:5431 src/chcanv.cpp:5468 src/routemanagerdialog.cpp:591
 msgid "Scale"
 msgstr "Skala"
 
@@ -3405,182 +3414,182 @@ msgstr "Memeriksa direktori OpenCPN...."
 msgid "OpenCPN Chart Add...."
 msgstr "Menambah bagan OpenCPN...."
 
-#: src/chcanv.cpp:1222
+#: src/chcanv.cpp:1230
 msgid "Hide Tides"
 msgstr "Sembunyikan petunjuk"
 
-#: src/chcanv.cpp:1258
+#: src/chcanv.cpp:1266
 msgid "Hide Currents"
 msgstr "Menyembunyikan arus"
 
-#: src/chcanv.cpp:1358 src/chcanv.cpp:1373
+#: src/chcanv.cpp:1366 src/chcanv.cpp:1381
 msgid "Group \""
 msgstr "Kelompok \""
 
-#: src/chcanv.cpp:1363
+#: src/chcanv.cpp:1371
 msgid "\" is empty."
 msgstr ""
 
-#: src/chcanv.cpp:1365 src/chcanv.cpp:1380
+#: src/chcanv.cpp:1373 src/chcanv.cpp:1388
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN kelompok pemberitahuan"
 
-#: src/chcanv.cpp:1378
+#: src/chcanv.cpp:1386
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\"kosong, beralih ke kelompok\"Semua bagan aktif\"."
 
-#: src/chcanv.cpp:3833 src/chcanv.cpp:9758
+#: src/chcanv.cpp:3851 src/chcanv.cpp:9784
 msgid "Layer Route: "
 msgstr "Lapisan jalur: "
 
-#: src/chcanv.cpp:3835 src/chcanv.cpp:3984
+#: src/chcanv.cpp:3853 src/chcanv.cpp:4002
 msgid "(unnamed)"
 msgstr "(tidak disebutkan namanya)"
 
-#: src/chcanv.cpp:3839
+#: src/chcanv.cpp:3857
 msgid "Total Length: "
 msgstr "Panjang total: "
 
-#: src/chcanv.cpp:3840
+#: src/chcanv.cpp:3858
 msgid "Leg: from "
 msgstr "Kaki: dari "
 
-#: src/chcanv.cpp:3841
+#: src/chcanv.cpp:3859
 msgid " to "
 msgstr " ke "
 
-#: src/chcanv.cpp:3883
+#: src/chcanv.cpp:3901
 msgid "From Ship To"
 msgstr ""
 
-#: src/chcanv.cpp:3895 src/concanv.cpp:404
+#: src/chcanv.cpp:3913 src/concanv.cpp:404
 msgid "%Dd %H:%M"
 msgstr "%Dd %H:%M"
 
-#: src/chcanv.cpp:3895 src/TrackPropDlg.cpp:1017
+#: src/chcanv.cpp:3913 src/TrackPropDlg.cpp:1017
 msgid "%H:%M"
 msgstr "%H:%M"
 
-#: src/chcanv.cpp:3981
+#: src/chcanv.cpp:3999
 msgid "Layer Track: "
 msgstr "Lapisan Jalur: "
 
-#: src/chcanv.cpp:3988
+#: src/chcanv.cpp:4006
 msgid "Total Track: "
 msgstr ""
 
-#: src/chcanv.cpp:3996
+#: src/chcanv.cpp:4014
 msgid "Segment Created: "
 msgstr ""
 
-#: src/chcanv.cpp:7662 src/chcanv.cpp:8111
+#: src/chcanv.cpp:7688 src/chcanv.cpp:8137
 msgid "Use nearby waypoint?"
 msgstr "Gunakan titik arah terdekat?"
 
-#: src/chcanv.cpp:7663 src/chcanv.cpp:7715 src/chcanv.cpp:8112
-#: src/chcanv.cpp:8163
+#: src/chcanv.cpp:7689 src/chcanv.cpp:7741 src/chcanv.cpp:8138
+#: src/chcanv.cpp:8189
 msgid "OpenCPN Route Create"
 msgstr "Buat Jalur OpenCPN"
 
-#: src/chcanv.cpp:7708 src/chcanv.cpp:8157
+#: src/chcanv.cpp:7734 src/chcanv.cpp:8183
 msgid "For this leg the Great Circle route is "
 msgstr "Untuk jalur lintasan besar ini adalah "
 
-#: src/chcanv.cpp:7709 src/chcanv.cpp:8158
+#: src/chcanv.cpp:7735 src/chcanv.cpp:8184
 msgid " shorter than rhumbline.\n\n"
 msgstr " lebih pendek dari jalur rhumb.\n\n"
 
-#: src/chcanv.cpp:7710 src/chcanv.cpp:8159
+#: src/chcanv.cpp:7736 src/chcanv.cpp:8185
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Maukah anda memasukkan lingkaran besar ke kaki ini?"
 
-#: src/chcanv.cpp:8877 src/chcanv.cpp:8885 src/S57QueryDialog.cpp:90
+#: src/chcanv.cpp:8903 src/chcanv.cpp:8911 src/S57QueryDialog.cpp:90
 #: src/S57QueryDialog.cpp:259
 msgid "ObjectQuery"
 msgstr "TujuanPertanyaan"
 
-#: src/chcanv.cpp:8989 src/chcanv.cpp:8992 src/routemanagerdialog.cpp:2167
-#: src/routemanagerdialog.cpp:2170 src/RoutePropDlgImpl.cpp:810
+#: src/chcanv.cpp:9015 src/chcanv.cpp:9018 src/routemanagerdialog.cpp:2169
+#: src/routemanagerdialog.cpp:2172 src/RoutePropDlgImpl.cpp:810
 msgid "Waypoint Properties"
 msgstr "Properti waypoint"
 
-#: src/chcanv.cpp:8989 src/routemanagerdialog.cpp:2167
+#: src/chcanv.cpp:9015 src/routemanagerdialog.cpp:2169
 #: src/RoutePropDlgImpl.cpp:456
 msgid "Layer"
 msgstr "Lapisan"
 
-#: src/chcanv.cpp:9073
+#: src/chcanv.cpp:9099
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Ada titik temu yang ada di lokasi yang sama dengan lokasi yang anda tempel. Apakah anda ingin menggabungkan data yang disisipkan dengannya?\n\n"
 
-#: src/chcanv.cpp:9074
+#: src/chcanv.cpp:9100
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Menjawab 'Tidak' akan membuat titik temu yang baru di lokasi yang sama."
 
-#: src/chcanv.cpp:9075
+#: src/chcanv.cpp:9101
 msgid "Merge waypoint?"
 msgstr "Menggabungkan titik temu?"
 
-#: src/chcanv.cpp:9131
+#: src/chcanv.cpp:9157
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Ada titik arah yang ada di lokasi yang sama dengan beberapa yang anda tempel. Apakah anda ingin menggabungkan data yang disisipkan ke dalamnya?\n\n"
 
-#: src/chcanv.cpp:9132
+#: src/chcanv.cpp:9158
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Menjawab 'Tidak' akan menciptakan semua titik arah baru untuk jalur ini."
 
-#: src/chcanv.cpp:9133
+#: src/chcanv.cpp:9159
 msgid "Merge waypoints?"
 msgstr "Menggabungkan titik temu?"
 
-#: src/chcanv.cpp:9625 src/chcanv.cpp:9656 src/RolloverWin.cpp:135
+#: src/chcanv.cpp:9651 src/chcanv.cpp:9682 src/RolloverWin.cpp:135
 #: src/RolloverWin.cpp:235 src/RolloverWin.cpp:374
 msgid "RouteLegInfoRollover"
 msgstr "Project testing"
 
-#: src/chcanv.cpp:10323
+#: src/chcanv.cpp:10351
 msgid "MBTile requires OpenGL to be enabled"
 msgstr ""
 
-#: src/chcanv.cpp:10968 src/options.cpp:5197 src/options.cpp:5310
+#: src/chcanv.cpp:10996 src/options.cpp:5224 src/options.cpp:5337
 msgid "Feet"
 msgstr "Kaki"
 
-#: src/chcanv.cpp:10969 src/options.cpp:5170 src/options.cpp:5197
-#: src/options.cpp:5289 src/options.cpp:5310
+#: src/chcanv.cpp:10997 src/options.cpp:5197 src/options.cpp:5224
+#: src/options.cpp:5316 src/options.cpp:5337
 msgid "Meters"
 msgstr "Meter"
 
-#: src/chcanv.cpp:10970 src/options.cpp:5197 src/options.cpp:5310
+#: src/chcanv.cpp:10998 src/options.cpp:5224 src/options.cpp:5337
 msgid "Fathoms"
 msgstr "Memahami"
 
-#: src/chcanv.cpp:10973
+#: src/chcanv.cpp:11001
 msgid "OverZoom"
 msgstr "Lebih besar"
 
-#: src/chcanv.cpp:11364 src/chcanv.cpp:11365
+#: src/chcanv.cpp:11392 src/chcanv.cpp:11393
 msgid "ExtendedTideIcon"
 msgstr "Translation"
 
-#: src/chcanv.cpp:11673
+#: src/chcanv.cpp:11701
 msgid "CurrentValue"
 msgstr "Nilai sekarang"
 
-#: src/chcanv.cpp:12329
+#: src/chcanv.cpp:12353
 msgid "Show all AIS Targets"
 msgstr "Tampilkan semua AIS tujuan"
 
-#: src/chcanv.cpp:12331 src/toolbar.cpp:1361 src/toolbar.cpp:1449
+#: src/chcanv.cpp:12355 src/toolbar.cpp:1361 src/toolbar.cpp:1449
 #: src/toolbar.cpp:1452
 msgid "Hide AIS Targets"
 msgstr "Menyembunyikan AIS tujuan"
 
-#: src/chcanv.cpp:12990
+#: src/chcanv.cpp:13023
 msgid "Show This Chart"
 msgstr "Tampilkan bagan ini"
 
-#: src/chcanv.cpp:12995
+#: src/chcanv.cpp:13028
 msgid "Hide This Chart"
 msgstr "Sembunyakan Grafik ini"
 
@@ -3616,9 +3625,9 @@ msgstr "Mengimbangi X pengguna"
 msgid "User Y Offset"
 msgstr "Mengimbangi Y pengguna"
 
-#: src/cm93.cpp:6883 src/cm93.cpp:6890 src/options.cpp:4380 src/options.cpp:4390
-#: src/options.cpp:4400 src/options.cpp:4575 src/options.cpp:4582
-#: src/options.cpp:4589 src/options.cpp:6844
+#: src/cm93.cpp:6883 src/cm93.cpp:6890 src/options.cpp:4394 src/options.cpp:4404
+#: src/options.cpp:4414 src/options.cpp:4589 src/options.cpp:4596
+#: src/options.cpp:4603 src/options.cpp:6904
 msgid "meters"
 msgstr "meter"
 
@@ -3669,13 +3678,13 @@ msgstr ""
 msgid "ETA  @SOG"
 msgstr ""
 
-#: src/ConnectionParams.cpp:167 src/ConnectionParams.cpp:479
-#: src/ConnectionParams.cpp:827 src/options.cpp:1798 src/options.cpp:2445
+#: src/ConnectionParams.cpp:167 src/ConnectionParams.cpp:491
+#: src/ConnectionParams.cpp:839 src/options.cpp:1802 src/options.cpp:2449
 msgid "Serial"
 msgstr "Bersambung"
 
-#: src/ConnectionParams.cpp:169 src/ConnectionParams.cpp:574
-#: src/ConnectionParams.cpp:853 src/options.cpp:1803 src/options.cpp:2450
+#: src/ConnectionParams.cpp:169 src/ConnectionParams.cpp:586
+#: src/ConnectionParams.cpp:865 src/options.cpp:1807 src/options.cpp:2454
 msgid "Network"
 msgstr "Jaringan"
 
@@ -3691,19 +3700,19 @@ msgstr "BT"
 msgid "Internal"
 msgstr "Dari dalam"
 
-#: src/ConnectionParams.cpp:198 src/options.cpp:1884 src/options.cpp:2532
+#: src/ConnectionParams.cpp:198 src/options.cpp:1888 src/options.cpp:2536
 msgid "TCP"
 msgstr "TCP"
 
-#: src/ConnectionParams.cpp:200 src/options.cpp:1890 src/options.cpp:2538
+#: src/ConnectionParams.cpp:200 src/options.cpp:1894 src/options.cpp:2542
 msgid "UDP"
 msgstr "UDP"
 
-#: src/ConnectionParams.cpp:202 src/options.cpp:1896 src/options.cpp:2544
+#: src/ConnectionParams.cpp:202 src/options.cpp:1900 src/options.cpp:2548
 msgid "GPSD"
 msgstr "GPSD"
 
-#: src/ConnectionParams.cpp:204 src/options.cpp:1901 src/options.cpp:2549
+#: src/ConnectionParams.cpp:204 src/options.cpp:1905 src/options.cpp:2553
 msgid "Signal K"
 msgstr ""
 
@@ -3751,55 +3760,55 @@ msgstr "Keluar"
 msgid ", Out: None"
 msgstr ", keluar: tidak ada"
 
-#: src/ConnectionParams.cpp:430 src/options.cpp:2952
+#: src/ConnectionParams.cpp:442 src/options.cpp:2956
 msgid "Enable"
 msgstr "Aktifkan"
 
-#: src/ConnectionParams.cpp:458 src/ConnectionParams.cpp:553
-#: src/ConnectionParams.cpp:649 src/ConnectionParams.cpp:733
+#: src/ConnectionParams.cpp:470 src/ConnectionParams.cpp:565
+#: src/ConnectionParams.cpp:661 src/ConnectionParams.cpp:745
 msgid "Direction"
 msgstr ""
 
-#: src/ConnectionParams.cpp:462 src/ConnectionParams.cpp:557
-#: src/options.cpp:1874 src/options.cpp:1960 src/options.cpp:2523
-#: src/options.cpp:2620
+#: src/ConnectionParams.cpp:474 src/ConnectionParams.cpp:569
+#: src/options.cpp:1878 src/options.cpp:1964 src/options.cpp:2527
+#: src/options.cpp:2624
 msgid "Protocol"
 msgstr "Protokol"
 
-#: src/ConnectionParams.cpp:466
+#: src/ConnectionParams.cpp:478
 msgid "Serial Port"
 msgstr ""
 
-#: src/ConnectionParams.cpp:470 src/options.cpp:1943 src/options.cpp:2603
+#: src/ConnectionParams.cpp:482 src/options.cpp:1947 src/options.cpp:2607
 msgid "Baudrate"
 msgstr "Baudrate"
 
-#: src/ConnectionParams.cpp:474 src/ConnectionParams.cpp:569
-#: src/ConnectionParams.cpp:665 src/ConnectionParams.cpp:749
-#: src/options.cpp:1976 src/options.cpp:2636 src/options.cpp:2953
+#: src/ConnectionParams.cpp:486 src/ConnectionParams.cpp:581
+#: src/ConnectionParams.cpp:677 src/ConnectionParams.cpp:761
+#: src/options.cpp:1980 src/options.cpp:2640 src/options.cpp:2957
 msgid "Priority"
 msgstr "Diutamakan"
 
-#: src/ConnectionParams.cpp:532 src/ConnectionParams.cpp:629
-#: src/ConnectionParams.cpp:713 src/ConnectionParams.cpp:797
-#: src/ConnectionParams.cpp:834 src/ConnectionParams.cpp:860
-#: src/ConnectionParams.cpp:864 src/ConnectionParams.cpp:869
+#: src/ConnectionParams.cpp:544 src/ConnectionParams.cpp:641
+#: src/ConnectionParams.cpp:725 src/ConnectionParams.cpp:809
+#: src/ConnectionParams.cpp:846 src/ConnectionParams.cpp:872
+#: src/ConnectionParams.cpp:876 src/ConnectionParams.cpp:881
 msgid "Comment: "
 msgstr ""
 
-#: src/ConnectionParams.cpp:561
+#: src/ConnectionParams.cpp:573
 msgid "Network Address"
 msgstr ""
 
-#: src/ConnectionParams.cpp:565
+#: src/ConnectionParams.cpp:577
 msgid "Network Port"
 msgstr ""
 
-#: src/ConnectionParams.cpp:670 src/options.cpp:1809 src/options.cpp:2456
+#: src/ConnectionParams.cpp:682 src/options.cpp:1813 src/options.cpp:2460
 msgid "Built-in GPS"
 msgstr "GPS tetap terpasang"
 
-#: src/ConnectionParams.cpp:754 src/options.cpp:1818
+#: src/ConnectionParams.cpp:766 src/options.cpp:1822
 msgid "Built-in Bluetooth"
 msgstr "Bluetooth tetap terpasang"
 
@@ -3815,8 +3824,8 @@ msgstr ""
 msgid "Vectorchart Zoom/Scale Weighting"
 msgstr ""
 
-#: src/glChartCanvas.cpp:2157 src/s52plib.cpp:2287 src/s52plib.cpp:2312
-#: src/s52plib.cpp:2420 src/s52plib.cpp:2599
+#: src/glChartCanvas.cpp:2157 src/s52plib.cpp:2292 src/s52plib.cpp:2317
+#: src/s52plib.cpp:2425 src/s52plib.cpp:2604
 msgid "ChartTexts"
 msgstr "Tulisan grafik"
 
@@ -3834,10 +3843,10 @@ msgstr "Lintang"
 msgid "Longitude"
 msgstr "Garis bujur"
 
-#: src/GoToPositionDialog.cpp:142 src/LinkPropDlg.cpp:76 src/navutil.cpp:3733
-#: src/options.cpp:655 src/options.cpp:761 src/options.cpp:6159
-#: src/options.cpp:10184 src/options.cpp:10393 src/routeprintout.cpp:427
-#: src/RoutePropDlg.cpp:347 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:3355
+#: src/GoToPositionDialog.cpp:142 src/LinkPropDlg.cpp:76 src/navutil.cpp:3747
+#: src/options.cpp:659 src/options.cpp:765 src/options.cpp:6196
+#: src/options.cpp:10261 src/options.cpp:10470 src/routeprintout.cpp:427
+#: src/RoutePropDlg.cpp:347 src/SendToGpsDlg.cpp:132 src/toolbar.cpp:3366
 #: src/TrackPropDlg.cpp:496 src/TrackPropDlg.cpp:831 src/MarkInfo.cpp:682
 #: src/MarkInfo.cpp:1753
 msgid "Cancel"
@@ -3891,159 +3900,159 @@ msgstr "Pilih sebuah berkas"
 msgid "Link not complete, can't be saved."
 msgstr "Tautan tidak lengkap, tidak dapat disimpan."
 
-#: src/navutil.cpp:1714 src/navutil.cpp:3089 src/options.cpp:739
-#: src/options.cpp:900
+#: src/navutil.cpp:1721 src/navutil.cpp:3103 src/options.cpp:743
+#: src/options.cpp:904
 msgid "Persistent"
 msgstr "Gigih"
 
-#: src/navutil.cpp:2780 src/navutil.cpp:2892
+#: src/navutil.cpp:2791 src/navutil.cpp:2903
 msgid "Export GPX file"
 msgstr "Ekspor berkas GPX"
 
-#: src/navutil.cpp:2793
+#: src/navutil.cpp:2804
 msgid "Overwrite existing file?"
 msgstr "Timpa berkas yang sudah ada?"
 
-#: src/navutil.cpp:2994 src/navutil.cpp:3028
+#: src/navutil.cpp:3005 src/navutil.cpp:3039
 msgid "Import GPX file"
 msgstr "Masukkan berkas GPX"
 
-#: src/navutil.cpp:3089
+#: src/navutil.cpp:3103
 msgid "Temporary"
 msgstr ""
 
-#: src/navutil.cpp:3120
+#: src/navutil.cpp:3134
 msgid "duplicate waypoints detected during import and ignored."
 msgstr ""
 
-#: src/navutil.cpp:3638
+#: src/navutil.cpp:3652
 msgid "&Font family:"
 msgstr "&jenis Huruf Family:"
 
-#: src/navutil.cpp:3644 src/navutil.cpp:3646
+#: src/navutil.cpp:3658 src/navutil.cpp:3660
 msgid "The font family."
 msgstr "Keluarga font."
 
-#: src/navutil.cpp:3651
+#: src/navutil.cpp:3665
 msgid "&Style:"
 msgstr "@Gaya:"
 
-#: src/navutil.cpp:3655 src/navutil.cpp:3657
+#: src/navutil.cpp:3669 src/navutil.cpp:3671
 msgid "The font style."
 msgstr "Gaya tulisan."
 
-#: src/navutil.cpp:3662
+#: src/navutil.cpp:3676
 msgid "&Weight:"
 msgstr "&Berat:"
 
-#: src/navutil.cpp:3666 src/navutil.cpp:3668
+#: src/navutil.cpp:3680 src/navutil.cpp:3682
 msgid "The font weight."
 msgstr "Berat font."
 
-#: src/navutil.cpp:3675
+#: src/navutil.cpp:3689
 msgid "C&olour:"
 msgstr "W&arna:"
 
-#: src/navutil.cpp:3685 src/navutil.cpp:3687
+#: src/navutil.cpp:3699 src/navutil.cpp:3701
 msgid "The font colour."
 msgstr "Warna tulisan."
 
-#: src/navutil.cpp:3693
+#: src/navutil.cpp:3707
 msgid "&Point size:"
 msgstr "&Ukuran titik:"
 
-#: src/navutil.cpp:3698 src/navutil.cpp:3700
+#: src/navutil.cpp:3712 src/navutil.cpp:3714
 msgid "The font point size."
 msgstr "Ukuran font titik."
 
-#: src/navutil.cpp:3707
+#: src/navutil.cpp:3721
 msgid "&Underline"
 msgstr "&garis bawah"
 
-#: src/navutil.cpp:3710 src/navutil.cpp:3712
+#: src/navutil.cpp:3724 src/navutil.cpp:3726
 msgid "Whether the font is underlined."
 msgstr "Kalau font digarisbawahi."
 
-#: src/navutil.cpp:3719
+#: src/navutil.cpp:3733
 msgid "Preview:"
 msgstr "Pratinjau:"
 
-#: src/navutil.cpp:3724 src/navutil.cpp:3726
+#: src/navutil.cpp:3738 src/navutil.cpp:3740
 msgid "Shows the font preview."
 msgstr "Menampilkan pratinjau tulisan."
 
-#: src/navutil.cpp:3736
+#: src/navutil.cpp:3750
 msgid "Click to cancel the font selection."
 msgstr "Klik untuk membatalkan pilihan bentuk tulisan."
 
-#: src/navutil.cpp:3739
+#: src/navutil.cpp:3753
 msgid "&OK"
 msgstr "&OK"
 
-#: src/navutil.cpp:3741 src/navutil.cpp:3743
+#: src/navutil.cpp:3755 src/navutil.cpp:3757
 msgid "Click to confirm the font selection."
 msgstr "Klik untuk konfirmasi pilihan bentuk tulisan."
 
-#: src/navutil.cpp:4260
+#: src/navutil.cpp:4274
 msgid "NMi"
 msgstr "NMi"
 
-#: src/navutil.cpp:4263
+#: src/navutil.cpp:4277
 msgid "mi"
 msgstr "mi"
 
-#: src/navutil.cpp:4266
+#: src/navutil.cpp:4280
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4269
+#: src/navutil.cpp:4283
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:4272
+#: src/navutil.cpp:4286
 msgid "ft"
 msgstr "ft"
 
-#: src/navutil.cpp:4275
+#: src/navutil.cpp:4289
 msgid "fa"
 msgstr "fa"
 
-#: src/navutil.cpp:4281
+#: src/navutil.cpp:4295
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:4349
+#: src/navutil.cpp:4363
 msgid "kts"
 msgstr "kts"
 
-#: src/navutil.cpp:4352
+#: src/navutil.cpp:4366
 msgid "mph"
 msgstr "mph"
 
-#: src/navutil.cpp:4355 src/options.cpp:5183 src/options.cpp:5299
+#: src/navutil.cpp:4369 src/options.cpp:5210 src/options.cpp:5326
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:4358 src/options.cpp:5183 src/options.cpp:5299
+#: src/navutil.cpp:4372 src/options.cpp:5210 src/options.cpp:5326
 msgid "m/s"
 msgstr "m/s"
 
-#: src/navutil.cpp:4375
+#: src/navutil.cpp:4389
 #, c-format
 msgid "%dd "
 msgstr ""
 
-#: src/navutil.cpp:4376
+#: src/navutil.cpp:4390
 #, c-format
 msgid "%2dH %2dM"
 msgstr ""
 
-#: src/navutil.cpp:4377
+#: src/navutil.cpp:4391
 #, c-format
 msgid "%2dM %2dS"
 msgstr ""
 
-#: src/navutil.cpp:4390 src/RoutePropDlgImpl.cpp:320
+#: src/navutil.cpp:4404 src/RoutePropDlgImpl.cpp:320
 #: src/RoutePropDlgImpl.cpp:325
 msgid "N/A"
 msgstr ""
@@ -4070,126 +4079,126 @@ msgstr "Tidak dapat memuat data suara dari '%s'."
 msgid "Sound file '%s' is in unsupported format."
 msgstr "File suara '%s' ada dalam format yang tidak didukung."
 
-#: src/options.cpp:630 src/ConfigMgr.cpp:577
+#: src/options.cpp:634 src/ConfigMgr.cpp:577
 msgid "Title"
 msgstr ""
 
-#: src/options.cpp:637 src/routeprintout.cpp:118 src/routeprintout.cpp:415
+#: src/options.cpp:641 src/routeprintout.cpp:118 src/routeprintout.cpp:415
 #: src/RoutePropDlg.cpp:230 src/RoutePropDlg.cpp:248 src/TrackPropDlg.cpp:726
 #: src/ConfigMgr.cpp:582 src/MarkInfo.cpp:440 src/MarkInfo.cpp:521
 msgid "Description"
 msgstr "Deskripsi"
 
-#: src/options.cpp:645
+#: src/options.cpp:649
 msgid "Create a private configuration template based on current settings.\n"
 "This template will be saved, and may be selected for further use at any time.\n"
 "               "
 msgstr ""
 
-#: src/options.cpp:709
+#: src/options.cpp:713
 msgid "MMSI Extended Properties"
 msgstr "Properti Extended MMSI"
 
-#: src/options.cpp:723
+#: src/options.cpp:727
 msgid "Tracking"
 msgstr "Pelacakan"
 
-#: src/options.cpp:728
+#: src/options.cpp:732
 msgid "Default tracking"
 msgstr "Pelacakan default"
 
-#: src/options.cpp:733
+#: src/options.cpp:737
 msgid "Always track"
 msgstr "Selalu lacak"
 
-#: src/options.cpp:736
+#: src/options.cpp:740
 msgid " Never track"
 msgstr " Jangan pernah melacak"
 
-#: src/options.cpp:745
+#: src/options.cpp:749
 msgid "Ignore this MMSI"
 msgstr "Abaikan MMSI ini"
 
-#: src/options.cpp:749
+#: src/options.cpp:753
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Menangani ini MMSI sebagai SART/PLB(AIS) MOB."
 
-#: src/options.cpp:752
+#: src/options.cpp:756
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "Mengubah AIVDM ke AIVDO untuk MMSI ini"
 
-#: src/options.cpp:755
+#: src/options.cpp:759
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "MMSI ini adalah Follower - No BPA Alert"
 
-#: src/options.cpp:843
+#: src/options.cpp:847
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "Id MMSI umumnya berjumlah sembilan digit.\n"
 " Silakan periksa entri Anda dan batalkan jika perlu."
 
-#: src/options.cpp:888 src/options.cpp:3078 src/RoutePropDlg.cpp:181
+#: src/options.cpp:892 src/options.cpp:3082 src/RoutePropDlg.cpp:181
 #: src/RoutePropDlg.cpp:197 src/TrackPropDlg.cpp:392 src/TrackPropDlg.cpp:410
 #: src/TrackPropDlg.cpp:618 src/TrackPropDlg.cpp:628
 msgid "Default"
 msgstr "Bawaan"
 
-#: src/options.cpp:891 src/routemanagerdialog.cpp:1940
-#: src/routemanagerdialog.cpp:2116
+#: src/options.cpp:895 src/routemanagerdialog.cpp:1942
+#: src/routemanagerdialog.cpp:2118
 msgid "Always"
 msgstr "Selalu"
 
-#: src/options.cpp:894
+#: src/options.cpp:898
 msgid "Never"
 msgstr "Tidak pernah"
 
-#: src/options.cpp:931 src/options.cpp:979
+#: src/options.cpp:935 src/options.cpp:983
 msgid "Edit MMSI Properties"
 msgstr "Sunting pengaturan MMSI"
 
-#: src/options.cpp:948 src/options.cpp:5386 src/options.cpp:5393
+#: src/options.cpp:952 src/options.cpp:5413 src/options.cpp:5420
 msgid "MMSI Properties"
 msgstr "Pengaturan MMSI"
 
-#: src/options.cpp:950 src/RoutePropDlg.cpp:271 src/RoutePropDlg.cpp:295
+#: src/options.cpp:954 src/RoutePropDlg.cpp:271 src/RoutePropDlg.cpp:295
 #: src/TrackPropDlg.cpp:741 src/TrackPropDlg.cpp:766 src/MarkInfo.cpp:491
 #: src/MarkInfo.cpp:1075 src/MarkInfo.cpp:1118
 msgid "Edit"
 msgstr "Sunting"
 
-#: src/options.cpp:1045
+#: src/options.cpp:1049
 msgid "Track Mode"
 msgstr "Mode lintasan"
 
-#: src/options.cpp:1053
+#: src/options.cpp:1057
 msgid "Ignore"
 msgstr "Abaikan"
 
-#: src/options.cpp:1062
+#: src/options.cpp:1066
 msgid "MOB"
 msgstr "MOB"
 
-#: src/options.cpp:1070
+#: src/options.cpp:1074
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: src/options.cpp:1078
+#: src/options.cpp:1082
 msgid "Ship name"
 msgstr "Nama kapal"
 
-#: src/options.cpp:1086
+#: src/options.cpp:1090
 msgid "Follower"
 msgstr "Pengikut"
 
-#: src/options.cpp:1090
+#: src/options.cpp:1094
 msgid "New..."
 msgstr "Baru..."
 
-#: src/options.cpp:1113
+#: src/options.cpp:1117
 msgid "Add MMSI Properties"
 msgstr "Tambahkan pengaturan MMSI"
 
-#: src/options.cpp:1538
+#: src/options.cpp:1542
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -4200,7 +4209,7 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1550
+#: src/options.cpp:1554
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -4212,1298 +4221,1302 @@ msgid "\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1576 src/options.cpp:8241 src/routeman.cpp:885
+#: src/options.cpp:1580 src/options.cpp:8316 src/routeman.cpp:885
 #: src/routeman.cpp:966
 msgid "OpenCPN Warning"
 msgstr "Peringatan OpenCPN"
 
-#: src/options.cpp:1682 src/options.cpp:2298
+#: src/options.cpp:1686 src/options.cpp:2302
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:1692 src/options.cpp:2308 src/options.cpp:4797
+#: src/options.cpp:1696 src/options.cpp:2312 src/options.cpp:4824
 msgid "General"
 msgstr "Umum"
 
-#: src/options.cpp:1701
+#: src/options.cpp:1705
 msgid "Filter NMEA COG/SOG"
 msgstr "Menyaring NMEA COG/SOG"
 
-#: src/options.cpp:1711 src/options.cpp:2326
+#: src/options.cpp:1715 src/options.cpp:2330
 msgid "Filter period (sec)"
 msgstr "Periode penyaringan (sec)"
 
-#: src/options.cpp:1732 src/options.cpp:2346
+#: src/options.cpp:1736 src/options.cpp:2350
 msgid "Show NMEA Debug Window"
 msgstr "Tampilkan NMEA jendela debug"
 
-#: src/options.cpp:1738
+#: src/options.cpp:1742
 msgid "Use Furuno GP3X for uploads"
 msgstr "Menggunakan Furuno GP3X untuk mengunggah"
 
-#: src/options.cpp:1744
+#: src/options.cpp:1748
 msgid "Use GRMN for uploads"
 msgstr "Menggunakan GRMN untuk mengunggah"
 
-#: src/options.cpp:1750 src/options.cpp:2365
+#: src/options.cpp:1754 src/options.cpp:2369
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "Gunakan bantalan magnet pada output kalimat ECAPB"
 
-#: src/options.cpp:1761 src/options.cpp:2376
+#: src/options.cpp:1765 src/options.cpp:2380
 msgid "Data Connections"
 msgstr "Sambungan data"
 
-#: src/options.cpp:1775 src/options.cpp:4720 src/options.cpp:10179
+#: src/options.cpp:1779 src/options.cpp:4747 src/options.cpp:10256
 #: src/RoutePropDlg.cpp:292 src/TrackPropDlg.cpp:763
 msgid "Add"
 msgstr "Tambah"
 
-#: src/options.cpp:1779
+#: src/options.cpp:1783
 msgid "Remove"
 msgstr "Menghapus"
 
-#: src/options.cpp:1822 src/options.cpp:2469 src/options.cpp:9462
+#: src/options.cpp:1826 src/options.cpp:2473 src/options.cpp:9539
 msgid "BT Scan"
 msgstr "Memeriksa BT"
 
-#: src/options.cpp:1830
+#: src/options.cpp:1834
 msgid "BT Sources"
 msgstr "BT sumber"
 
-#: src/options.cpp:1911 src/options.cpp:2556
+#: src/options.cpp:1915 src/options.cpp:2560
 msgid "Address"
 msgstr "Alamat"
 
-#: src/options.cpp:1919 src/options.cpp:1934 src/options.cpp:2565
-#: src/options.cpp:2594 src/options.cpp:2952
+#: src/options.cpp:1923 src/options.cpp:1938 src/options.cpp:2569
+#: src/options.cpp:2598 src/options.cpp:2956
 msgid "DataPort"
 msgstr ""
 
-#: src/options.cpp:1949 src/options.cpp:2609
+#: src/options.cpp:1953 src/options.cpp:2613
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1949 src/options.cpp:2609
+#: src/options.cpp:1953 src/options.cpp:2613
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1949 src/options.cpp:2609
+#: src/options.cpp:1953 src/options.cpp:2613
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1949 src/options.cpp:2609
+#: src/options.cpp:1953 src/options.cpp:2613
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1949 src/options.cpp:2609
+#: src/options.cpp:1953 src/options.cpp:2613
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1950 src/options.cpp:2610
+#: src/options.cpp:1954 src/options.cpp:2614
 msgid "4800"
 msgstr ""
 
-#: src/options.cpp:1950 src/options.cpp:2610
+#: src/options.cpp:1954 src/options.cpp:2614
 msgid "9600"
 msgstr ""
 
-#: src/options.cpp:1950 src/options.cpp:2610
+#: src/options.cpp:1954 src/options.cpp:2614
 msgid "19200"
 msgstr ""
 
-#: src/options.cpp:1950 src/options.cpp:2610
+#: src/options.cpp:1954 src/options.cpp:2614
 msgid "38400"
 msgstr ""
 
-#: src/options.cpp:1950 src/options.cpp:2610
+#: src/options.cpp:1954 src/options.cpp:2614
 msgid "57600"
 msgstr ""
 
-#: src/options.cpp:1951 src/options.cpp:2611
+#: src/options.cpp:1955 src/options.cpp:2615
 msgid "115200"
 msgstr ""
 
-#: src/options.cpp:1951 src/options.cpp:2611
+#: src/options.cpp:1955 src/options.cpp:2615
 msgid "230400"
 msgstr ""
 
-#: src/options.cpp:1951 src/options.cpp:2611
+#: src/options.cpp:1955 src/options.cpp:2615
 msgid "460800"
 msgstr ""
 
-#: src/options.cpp:1951 src/options.cpp:2611
+#: src/options.cpp:1955 src/options.cpp:2615
 msgid "921600"
 msgstr ""
 
-#: src/options.cpp:1965 src/options.cpp:2625
+#: src/options.cpp:1969 src/options.cpp:2629
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:1965 src/options.cpp:2625
+#: src/options.cpp:1969 src/options.cpp:2629
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:1966 src/options.cpp:2626
+#: src/options.cpp:1970 src/options.cpp:2630
 msgid "Seatalk"
 msgstr "Kapur"
 
-#: src/options.cpp:1981 src/options.cpp:2641
+#: src/options.cpp:1985 src/options.cpp:2645
 msgid "0"
 msgstr ""
 
-#: src/options.cpp:1981 src/options.cpp:2641
+#: src/options.cpp:1985 src/options.cpp:2645
 msgid "1"
 msgstr ""
 
-#: src/options.cpp:1981 src/options.cpp:2641
+#: src/options.cpp:1985 src/options.cpp:2645
 msgid "2"
 msgstr ""
 
-#: src/options.cpp:1981 src/options.cpp:2641
+#: src/options.cpp:1985 src/options.cpp:2645
 msgid "3"
 msgstr ""
 
-#: src/options.cpp:1981 src/options.cpp:2641
+#: src/options.cpp:1985 src/options.cpp:2645
 msgid "4"
 msgstr ""
 
-#: src/options.cpp:1982 src/options.cpp:2642
+#: src/options.cpp:1986 src/options.cpp:2646
 msgid "5"
 msgstr ""
 
-#: src/options.cpp:1982 src/options.cpp:2642
+#: src/options.cpp:1986 src/options.cpp:2646
 msgid "6"
 msgstr ""
 
-#: src/options.cpp:1982 src/options.cpp:2642
+#: src/options.cpp:1986 src/options.cpp:2646
 msgid "7"
 msgstr ""
 
-#: src/options.cpp:1982 src/options.cpp:2642
+#: src/options.cpp:1986 src/options.cpp:2646
 msgid "8"
 msgstr ""
 
-#: src/options.cpp:1982 src/options.cpp:2642
+#: src/options.cpp:1986 src/options.cpp:2646
 msgid "9"
 msgstr ""
 
-#: src/options.cpp:1993 src/options.cpp:2668
+#: src/options.cpp:1997 src/options.cpp:2672
 msgid "Control checksum"
 msgstr "Kendali jumlah cek"
 
-#: src/options.cpp:1997 src/options.cpp:2672
+#: src/options.cpp:2001 src/options.cpp:2676
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Jika dicentang, hanya kalimat dengan jumlah cek berlaku yang melewati"
 
-#: src/options.cpp:2001
+#: src/options.cpp:2005
 msgid "Use GRMN mode for input"
 msgstr "Menggunakan mode GRMN untuk masukan"
 
-#: src/options.cpp:2010 src/options.cpp:2685
+#: src/options.cpp:2014 src/options.cpp:2689
 msgid "Receive Input on this Port"
 msgstr "Menerima masukan pada masukan ini"
 
-#: src/options.cpp:2014 src/options.cpp:2691
+#: src/options.cpp:2018 src/options.cpp:2695
 msgid "Output on this port"
 msgstr "Hasil dari masukan ini"
 
-#: src/options.cpp:2022 src/options.cpp:2696
+#: src/options.cpp:2026 src/options.cpp:2700
 msgid "Talker ID"
 msgstr "ID pembicara"
 
-#: src/options.cpp:2033 src/options.cpp:2707
+#: src/options.cpp:2037 src/options.cpp:2711
 msgid "APB bearing precision"
 msgstr "Bantalan presisi APB"
 
-#: src/options.cpp:2054 src/options.cpp:2743
+#: src/options.cpp:2058 src/options.cpp:2747
 msgid "Input filtering"
 msgstr "Masukan penyaringan"
 
-#: src/options.cpp:2060 src/options.cpp:2749 src/options.cpp:10228
+#: src/options.cpp:2064 src/options.cpp:2753 src/options.cpp:10305
 msgid "Accept only sentences"
 msgstr "Hanya menerima kalimat"
 
-#: src/options.cpp:2064 src/options.cpp:2753 src/options.cpp:10228
+#: src/options.cpp:2068 src/options.cpp:2757 src/options.cpp:10305
 msgid "Ignore sentences"
 msgstr "Mengabaikan kalimat"
 
-#: src/options.cpp:2087 src/options.cpp:2777
+#: src/options.cpp:2091 src/options.cpp:2781
 msgid "Output filtering"
 msgstr "Hasil penyaringan"
 
-#: src/options.cpp:2094 src/options.cpp:2784 src/options.cpp:10226
+#: src/options.cpp:2098 src/options.cpp:2788 src/options.cpp:10303
 msgid "Transmit sentences"
 msgstr "Mengirimkan kalimat"
 
-#: src/options.cpp:2098 src/options.cpp:2788 src/options.cpp:10226
+#: src/options.cpp:2102 src/options.cpp:2792 src/options.cpp:10303
 msgid "Drop sentences"
 msgstr "Menurunkan kalimat"
 
-#: src/options.cpp:2249
+#: src/options.cpp:2253
 msgid "On"
 msgstr "Hidup"
 
-#: src/options.cpp:2249
+#: src/options.cpp:2253
 msgid "Data Port"
 msgstr "Masukkan data"
 
-#: src/options.cpp:2249
+#: src/options.cpp:2253
 msgid "Prio"
 msgstr "Prio"
 
-#: src/options.cpp:2250
+#: src/options.cpp:2254
 msgid "Parm"
 msgstr "Parm"
 
-#: src/options.cpp:2250
+#: src/options.cpp:2254
 msgid "I/O"
 msgstr "I/O"
 
-#: src/options.cpp:2250 src/options.cpp:2954
+#: src/options.cpp:2254 src/options.cpp:2958
 msgid "Filters"
 msgstr "Saringan"
 
-#: src/options.cpp:2320
+#: src/options.cpp:2324
 msgid "Filter NMEA Course and Speed data"
 msgstr "Menyaring data NMEA lapangan dan kecepatan"
 
-#: src/options.cpp:2352
+#: src/options.cpp:2356
 msgid "Format uploads for Furuno GP3X"
 msgstr "Format upload untuk Furuno GP3X"
 
-#: src/options.cpp:2358
+#: src/options.cpp:2362
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Gunakan mode Garmin GRMN (Host) untuk upload"
 
-#: src/options.cpp:2411
+#: src/options.cpp:2415
 msgid "Add Connection"
 msgstr "Tambahkan jaringan"
 
-#: src/options.cpp:2415
+#: src/options.cpp:2419
 msgid "Remove Connection"
 msgstr "Menghapus Jaringan"
 
-#: src/options.cpp:2434 src/options.cpp:10071
+#: src/options.cpp:2438 src/options.cpp:10148
 msgid "Edit Selected Connection"
 msgstr ""
 
-#: src/options.cpp:2465
+#: src/options.cpp:2469
 msgid "Built-in Bluetooth SPP"
 msgstr "Bluetooth SPP tetap terpasang"
 
-#: src/options.cpp:2479
+#: src/options.cpp:2483
 msgid "Bluetooth Data Sources"
 msgstr "Sumber Data Bluetooth"
 
-#: src/options.cpp:2575 src/options.cpp:2659
+#: src/options.cpp:2579 src/options.cpp:2663
 msgid "User Comment"
 msgstr ""
 
-#: src/options.cpp:2676
+#: src/options.cpp:2680
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Menggunakan mode garmin (GRMN) untuk masukan"
 
-#: src/options.cpp:2691
+#: src/options.cpp:2695
 msgid "as autopilot or NMEA repeater"
 msgstr "sebagai pengulang autopilot atau NMEA"
 
-#: src/options.cpp:2696
+#: src/options.cpp:2700
 msgid "blank = default ID"
 msgstr "kosong = bawaan ID"
 
-#: src/options.cpp:2713
+#: src/options.cpp:2717
 msgid "x"
 msgstr ""
 
-#: src/options.cpp:2713
+#: src/options.cpp:2717
 msgid "x.x"
 msgstr ""
 
-#: src/options.cpp:2713
+#: src/options.cpp:2717
 msgid "x.xx"
 msgstr ""
 
-#: src/options.cpp:2714
+#: src/options.cpp:2718
 msgid "x.xxx"
 msgstr ""
 
-#: src/options.cpp:2714
+#: src/options.cpp:2718
 msgid "x.xxxx"
 msgstr ""
 
-#: src/options.cpp:2724
+#: src/options.cpp:2728
 msgid "Automatic server discovery"
 msgstr ""
 
-#: src/options.cpp:2727
+#: src/options.cpp:2731
 msgid "If checked, signal K server will be discovered automatically"
 msgstr ""
 
-#: src/options.cpp:2731
+#: src/options.cpp:2735
 msgid "Discover now..."
 msgstr ""
 
-#: src/options.cpp:2953
+#: src/options.cpp:2957
 msgid "Parameters"
 msgstr "Parameter"
 
-#: src/options.cpp:2953
+#: src/options.cpp:2957
 msgid "Connection"
 msgstr "Sambungan"
 
-#: src/options.cpp:3051 src/CanvasOptions.cpp:153
+#: src/options.cpp:3055 src/CanvasOptions.cpp:157
 msgid "Display Options"
 msgstr "Pilihan tampilan"
 
-#: src/options.cpp:3061
+#: src/options.cpp:3065
 msgid "COG Predictor Length (min)"
 msgstr "Panjang Prediktor COG (min)"
 
-#: src/options.cpp:3068
+#: src/options.cpp:3072
 msgid "Heading Predictor Length (NMi)"
 msgstr "Judul Predictor Length (NMi)"
 
-#: src/options.cpp:3075
+#: src/options.cpp:3079
 msgid "Ship Icon Type"
 msgstr "Jenis ikon kapal"
 
-#: src/options.cpp:3078
+#: src/options.cpp:3082
 msgid "Real Scale Bitmap"
 msgstr "Skala nyata Bitmap"
 
-#: src/options.cpp:3079
+#: src/options.cpp:3083
 msgid "Real Scale Vector"
 msgstr "Menunjukkan skala sebenarnya"
 
-#: src/options.cpp:3093
+#: src/options.cpp:3097
 msgid "Length Over All (m)"
 msgstr "Panjang atas semua (m)"
 
-#: src/options.cpp:3099
+#: src/options.cpp:3103
 msgid "Width Over All (m)"
 msgstr "Lebar atas semua (m)"
 
-#: src/options.cpp:3105
+#: src/options.cpp:3109
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS keluar dari busur (m)"
 
-#: src/options.cpp:3111
+#: src/options.cpp:3115
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS keluar dari tengah pelayaran (m)"
 
-#: src/options.cpp:3117
+#: src/options.cpp:3121
 msgid "Minimum Screen Size (mm)"
 msgstr "Layar ukuran minimal (mm)"
 
-#: src/options.cpp:3129
+#: src/options.cpp:3133
 msgid "Show range rings"
 msgstr "Menunjukkan berbagai batas"
 
-#: src/options.cpp:3132 src/options.cpp:3274 src/options.cpp:3623
+#: src/options.cpp:3136 src/options.cpp:3278 src/options.cpp:3637
 #: src/MarkInfo.cpp:576
 msgid "None"
 msgstr "Tidak ada"
 
-#: src/options.cpp:3146 src/options.cpp:3411
+#: src/options.cpp:3150 src/options.cpp:3415
 msgid "Distance between rings"
 msgstr "Jarak antara batas"
 
-#: src/options.cpp:3155 src/options.cpp:3422
+#: src/options.cpp:3159 src/options.cpp:3426
 msgid "Distance Unit"
 msgstr "Satuan unit"
 
-#: src/options.cpp:3158 src/options.cpp:3272 src/options.cpp:5169
-#: src/options.cpp:5288
+#: src/options.cpp:3162 src/options.cpp:3276 src/options.cpp:5196
+#: src/options.cpp:5315
 msgid "Nautical miles"
 msgstr "Mil laut"
 
-#: src/options.cpp:3158 src/options.cpp:3272 src/options.cpp:5170
-#: src/options.cpp:5289
+#: src/options.cpp:3162 src/options.cpp:3276 src/options.cpp:5197
+#: src/options.cpp:5316
 msgid "Kilometers"
 msgstr "Kilometer"
 
-#: src/options.cpp:3164
+#: src/options.cpp:3168
 msgid "Range Ring Colour"
 msgstr "Jarak lingkaran warna"
 
-#: src/options.cpp:3173 src/routemanagerdialog.cpp:451
+#: src/options.cpp:3177 src/routemanagerdialog.cpp:451
 msgid "Tracks"
 msgstr "Lintasan"
 
-#: src/options.cpp:3179
+#: src/options.cpp:3183
 msgid "Automatic Daily Tracks at midnight"
 msgstr "Automatic Daily Tracks pada tengah malam"
 
-#: src/options.cpp:3187
+#: src/options.cpp:3191
 msgid "Automatic Daily Tracks at"
 msgstr "Trek Harian Otomatis di"
 
-#: src/options.cpp:3197
+#: src/options.cpp:3201
 msgid "Computer"
 msgstr "Komputer"
 
-#: src/options.cpp:3200 src/RoutePropDlg.cpp:147 src/TrackPropDlg.cpp:354
+#: src/options.cpp:3204 src/RoutePropDlg.cpp:147 src/TrackPropDlg.cpp:354
 #: src/TrackPropDlg.cpp:361 src/TrackPropDlg.cpp:682
 msgid "UTC"
 msgstr "UTC"
 
-#: src/options.cpp:3203
+#: src/options.cpp:3207
 msgid "LMT"
 msgstr "LMT"
 
-#: src/options.cpp:3214
+#: src/options.cpp:3218
 msgid "Highlight Tracks"
 msgstr "Sorot lintasan"
 
-#: src/options.cpp:3217
+#: src/options.cpp:3221
 msgid "Track Colour"
 msgstr ""
 
-#: src/options.cpp:3231
+#: src/options.cpp:3235
 msgid "Tracking Precision"
 msgstr "Pelacakan presisi"
 
-#: src/options.cpp:3234
+#: src/options.cpp:3238
 msgid "Low"
 msgstr "Rendah"
 
-#: src/options.cpp:3234
+#: src/options.cpp:3238
 msgid "Medium"
 msgstr "Medium"
 
-#: src/options.cpp:3234
+#: src/options.cpp:3238
 msgid "High"
 msgstr "Tinggi"
 
-#: src/options.cpp:3241
+#: src/options.cpp:3245
 msgid "Calculate values"
 msgstr "Menghitung nilai"
 
-#: src/options.cpp:3250
+#: src/options.cpp:3254
 msgid "Calculate SOG and COG from position changes"
 msgstr "Menghitung SOG dan COG dari perubahan posisi"
 
-#: src/options.cpp:3254
+#: src/options.cpp:3258
 msgid "Min seconds between updates"
 msgstr "Minimal detik di antara pembaruan"
 
-#: src/options.cpp:3266
+#: src/options.cpp:3270
 msgid "Routes/Points"
 msgstr ""
 
-#: src/options.cpp:3280
+#: src/options.cpp:3284
 msgid "New Routes"
 msgstr ""
 
-#: src/options.cpp:3294 src/options.cpp:3353
+#: src/options.cpp:3298 src/options.cpp:3357
 msgid "Waypoint default icon"
 msgstr ""
 
-#: src/options.cpp:3297 src/options.cpp:3356 src/MarkInfo.cpp:404
+#: src/options.cpp:3301 src/options.cpp:3360 src/MarkInfo.cpp:404
 msgid "Combo!"
 msgstr ""
 
-#: src/options.cpp:3318
+#: src/options.cpp:3322
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Waypoint Arrival Circle Radius (NMi)"
 
-#: src/options.cpp:3327
+#: src/options.cpp:3331
 msgid "Advance route waypoint on arrival only"
 msgstr "Titik temu jalur awal pada saat kedatangan saja"
 
-#: src/options.cpp:3338
+#: src/options.cpp:3342
 msgid "New Waypoints"
 msgstr ""
 
-#: src/options.cpp:3376
+#: src/options.cpp:3380
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr ""
 
-#: src/options.cpp:3384
+#: src/options.cpp:3388
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr ""
 
-#: src/options.cpp:3396
+#: src/options.cpp:3400
 msgid "Waypoint range rings"
 msgstr "Kisaran titik arah cincin"
 
-#: src/options.cpp:3433
+#: src/options.cpp:3437
 msgid "Waypoint Range Ring Colours"
 msgstr "Jarak lingkaran warna pada titik arah"
 
-#: src/options.cpp:3452
+#: src/options.cpp:3456
 msgid "Control Options"
 msgstr ""
 
-#: src/options.cpp:3461
+#: src/options.cpp:3465
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "Kunci titik arah (Kecuali jika dialog properti titik arah terlihat)"
 
-#: src/options.cpp:3467
+#: src/options.cpp:3471
 msgid "Confirm deletion of tracks and routes"
 msgstr "Konfirmasikan penghapusan lintasan dan jalur"
 
-#: src/options.cpp:3526
+#: src/options.cpp:3530
 msgid "Chart Files"
 msgstr "Bagan berkas"
 
-#: src/options.cpp:3532
+#: src/options.cpp:3536
 msgid "Directories"
 msgstr "Direktori"
 
-#: src/options.cpp:3567
+#: src/options.cpp:3581
 msgid "Add Directory..."
 msgstr "Tambahkan Direktori..."
 
-#: src/options.cpp:3571 src/options.cpp:4659 src/RoutePropDlgImpl.cpp:814
+#: src/options.cpp:3585 src/options.cpp:4686 src/RoutePropDlgImpl.cpp:814
 msgid "Remove Selected"
 msgstr "Hapus yang dipilih"
 
-#: src/options.cpp:3577
+#: src/options.cpp:3591
 msgid "Compress Selected"
 msgstr "Meringkaskan yang dipilih"
 
-#: src/options.cpp:3585
+#: src/options.cpp:3599
 msgid "Update Control"
 msgstr "Memperbarui kontrol"
 
-#: src/options.cpp:3593
+#: src/options.cpp:3607
 msgid "Scan Charts and Update Database"
 msgstr "Scan Charts dan Update Database"
 
-#: src/options.cpp:3596
+#: src/options.cpp:3610
 msgid "Force Full Database Rebuild"
 msgstr "Memaksa kembali penyimpanan data yang sudah penuh"
 
-#: src/options.cpp:3599
+#: src/options.cpp:3613
 msgid "Prepare all ENC Charts"
 msgstr "Persiapkan semua bagan ENC"
 
-#: src/options.cpp:3619
+#: src/options.cpp:3633
 msgid " [Modified]"
 msgstr ""
 
-#: src/options.cpp:3629
+#: src/options.cpp:3643
 msgid "Templates"
 msgstr ""
 
-#: src/options.cpp:3641
+#: src/options.cpp:3655
 msgid "Template Status"
 msgstr ""
 
-#: src/options.cpp:3648
+#: src/options.cpp:3662
 msgid "Last Applied Template Title:"
 msgstr ""
 
-#: src/options.cpp:3660
+#: src/options.cpp:3674
 msgid "Saved Templates"
 msgstr ""
 
-#: src/options.cpp:3683
+#: src/options.cpp:3697
 msgid "Create Config..."
 msgstr ""
 
-#: src/options.cpp:3691
+#: src/options.cpp:3705
 msgid "Delete Selected Config..."
 msgstr ""
 
-#: src/options.cpp:3695
+#: src/options.cpp:3709
 msgid "Apply Selected Config"
 msgstr ""
 
-#: src/options.cpp:3763
+#: src/options.cpp:3777
 msgid "Create Config"
 msgstr ""
 
-#: src/options.cpp:3822
+#: src/options.cpp:3836
 msgid "Problem applying selected configuration."
 msgstr ""
 
-#: src/options.cpp:3901 src/RoutePropDlg.cpp:325 src/TrackPropDlg.cpp:780
+#: src/options.cpp:3915 src/RoutePropDlg.cpp:325 src/TrackPropDlg.cpp:780
 msgid "Advanced"
 msgstr "Maju"
 
-#: src/options.cpp:3921
+#: src/options.cpp:3935
 msgid "De-skew Raster Charts"
 msgstr "De-skew grafik raster"
 
-#: src/options.cpp:3932 src/options.cpp:4215
+#: src/options.cpp:3946 src/options.cpp:4229
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Gunakan Accelerated Graphics (OpenGL)"
 
-#: src/options.cpp:3938
+#: src/options.cpp:3952
 msgid "OpenGL Options"
 msgstr ""
 
-#: src/options.cpp:3951 src/options.cpp:4091
+#: src/options.cpp:3965 src/options.cpp:4105
 msgid "Chart Rotation Averaging Time"
 msgstr "Bagan Rotasi Rata-Rata Waktu"
 
-#: src/options.cpp:3963 src/options.cpp:4104 src/options.cpp:5762
+#: src/options.cpp:3977 src/options.cpp:4118 src/options.cpp:5789
 msgid "seconds"
 msgstr "detik"
 
-#: src/options.cpp:3969 src/options.cpp:4112
+#: src/options.cpp:3983 src/options.cpp:4126
 msgid "Chart Zoom/Scale Weighting"
 msgstr "Perbesar bagan/bobot skala"
 
-#: src/options.cpp:3974 src/options.cpp:4135
+#: src/options.cpp:3988 src/options.cpp:4149
 msgid "Raster"
 msgstr "Raster"
 
-#: src/options.cpp:3985 src/options.cpp:4144
+#: src/options.cpp:3999 src/options.cpp:4158
 msgid "Vector"
 msgstr "Vektor"
 
-#: src/options.cpp:3997 src/options.cpp:4158
+#: src/options.cpp:4011 src/options.cpp:4172
 msgid "CM93 Detail level"
 msgstr ""
 
-#: src/options.cpp:4016 src/options.cpp:4176
+#: src/options.cpp:4030 src/options.cpp:4190
 msgid "Physical Screen Width"
 msgstr "Lebar Layar Fisik"
 
-#: src/options.cpp:4020 src/options.cpp:4181
+#: src/options.cpp:4034 src/options.cpp:4195
 msgid "Auto"
 msgstr "Otomatis"
 
-#: src/options.cpp:4023 src/options.cpp:4185
+#: src/options.cpp:4037 src/options.cpp:4199
 msgid "Manual:"
 msgstr "Manual:"
 
-#: src/options.cpp:4032 src/options.cpp:4193
+#: src/options.cpp:4046 src/options.cpp:4207
 msgid "mm"
 msgstr "mm"
 
-#: src/options.cpp:4062 src/options.cpp:4846 src/options.cpp:5016
+#: src/options.cpp:4076 src/options.cpp:4873 src/options.cpp:5043
 msgid "Chart Display"
 msgstr "Tampilan bagan"
 
-#: src/options.cpp:4068
+#: src/options.cpp:4082
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Tampilkan Sketsa Raster Charts sebagai North-Up"
 
-#: src/options.cpp:4120
+#: src/options.cpp:4134
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Dengan nilai yang lebih rendah, tingkat pembesaran yang sama menunjukkan bagan yang kurang rinci.\n"
 "Dengan nilai yang lebih tinggi, tingkat pembesaran yang sama menunjukkan bagan yang lebih rinci."
 
-#: src/options.cpp:4209
+#: src/options.cpp:4223
 msgid "Graphics"
 msgstr "Grafis"
 
-#: src/options.cpp:4242
+#: src/options.cpp:4256
 msgid "Vector Chart Display"
 msgstr "Tampilan Grafik Vektor"
 
-#: src/options.cpp:4261 src/options.cpp:4444 src/CanvasOptions.cpp:236
+#: src/options.cpp:4275 src/options.cpp:4458 src/CanvasOptions.cpp:240
 msgid "Display Category"
 msgstr "Tampilan kategori"
 
-#: src/options.cpp:4262 src/options.cpp:4445 src/CanvasOptions.cpp:237
+#: src/options.cpp:4276 src/options.cpp:4459 src/CanvasOptions.cpp:241
 msgid "Standard"
 msgstr "Standar"
 
-#: src/options.cpp:4262 src/options.cpp:4445 src/CanvasOptions.cpp:237
+#: src/options.cpp:4276 src/options.cpp:4459 src/CanvasOptions.cpp:241
 msgid "All"
 msgstr "Semua"
 
-#: src/options.cpp:4262 src/options.cpp:4445
+#: src/options.cpp:4276 src/options.cpp:4459
 msgid "Mariner's Standard"
 msgstr "Standar pelayaran"
 
-#: src/options.cpp:4274 src/options.cpp:5480 src/options.cpp:6165
+#: src/options.cpp:4288 src/options.cpp:5507 src/options.cpp:6202
 msgid "Display"
 msgstr "Tampilan"
 
-#: src/options.cpp:4280 src/options.cpp:4461
+#: src/options.cpp:4294 src/options.cpp:4475
 msgid "Depth Soundings"
 msgstr "Kedalaman Suara"
 
-#: src/options.cpp:4285 src/options.cpp:4466
+#: src/options.cpp:4299 src/options.cpp:4480
 msgid "Chart Information Objects"
 msgstr "Bagan informasi objek"
 
-#: src/options.cpp:4291
+#: src/options.cpp:4305
 msgid "Buoys/Lights"
 msgstr "Pelampung/lampu"
 
-#: src/options.cpp:4296 src/options.cpp:4474 src/CanvasOptions.cpp:216
+#: src/options.cpp:4310 src/options.cpp:4488 src/CanvasOptions.cpp:220
 msgid "Buoy/Light Labels"
 msgstr "Pelampung/lampu tanda"
 
-#: src/options.cpp:4300 src/options.cpp:4479 src/CanvasOptions.cpp:224
+#: src/options.cpp:4314 src/options.cpp:4493 src/CanvasOptions.cpp:228
 msgid "Light Descriptions"
 msgstr "Gambaran cahaya"
 
-#: src/options.cpp:4304 src/options.cpp:4483
+#: src/options.cpp:4318 src/options.cpp:4497
 msgid "Extended Light Sectors"
 msgstr "Bidang lampu yang diperpanjang"
 
-#: src/options.cpp:4309
+#: src/options.cpp:4323
 msgid "Chart Texts"
 msgstr "Bagan teks"
 
-#: src/options.cpp:4314 src/options.cpp:4491
+#: src/options.cpp:4328 src/options.cpp:4505
 msgid "National text on chart"
 msgstr "Teks nasional pada bagan"
 
-#: src/options.cpp:4319 src/options.cpp:4496
+#: src/options.cpp:4333 src/options.cpp:4510
 msgid "Important Text Only"
 msgstr "Hanya teks penting"
 
-#: src/options.cpp:4324 src/options.cpp:4501
+#: src/options.cpp:4338 src/options.cpp:4515
 msgid "De-Cluttered Text"
 msgstr "Teks berantakan"
 
-#: src/options.cpp:4328
+#: src/options.cpp:4342
 msgid "Chart Detail"
 msgstr "Rincian bagan"
 
-#: src/options.cpp:4331 src/options.cpp:4506
+#: src/options.cpp:4345 src/options.cpp:4520
 msgid "Reduced Detail at Small Scale"
 msgstr "Mengurangi Detail pada Skala Kecil"
 
-#: src/options.cpp:4340 src/options.cpp:4522
+#: src/options.cpp:4354 src/options.cpp:4536
 msgid "Graphics Style"
 msgstr "Gaya Grafis"
 
-#: src/options.cpp:4343 src/options.cpp:4524
+#: src/options.cpp:4357 src/options.cpp:4538
 msgid "Paper Chart"
 msgstr "Kertas grafik"
 
-#: src/options.cpp:4343 src/options.cpp:4524
+#: src/options.cpp:4357 src/options.cpp:4538
 msgid "Simplified"
 msgstr "Disederhanakan"
 
-#: src/options.cpp:4349 src/options.cpp:4534
+#: src/options.cpp:4363 src/options.cpp:4548
 msgid "Boundaries"
 msgstr "Batas"
 
-#: src/options.cpp:4352 src/options.cpp:4536
+#: src/options.cpp:4366 src/options.cpp:4550
 msgid "Plain"
 msgstr "Sederhana"
 
-#: src/options.cpp:4352 src/options.cpp:4536
+#: src/options.cpp:4366 src/options.cpp:4550
 msgid "Symbolized"
 msgstr "Dilambangkan"
 
-#: src/options.cpp:4358 src/options.cpp:4546
+#: src/options.cpp:4372 src/options.cpp:4560
 msgid "Colors"
 msgstr "Warna"
 
-#: src/options.cpp:4361 src/options.cpp:4549
+#: src/options.cpp:4375 src/options.cpp:4563
 msgid "2 Color"
 msgstr "2 Warna"
 
-#: src/options.cpp:4361 src/options.cpp:4549
+#: src/options.cpp:4375 src/options.cpp:4563
 msgid "4 Color"
 msgstr "4 Warna"
 
-#: src/options.cpp:4372 src/options.cpp:4570
+#: src/options.cpp:4386 src/options.cpp:4584
 msgid "Shallow Depth"
 msgstr "Kedalaman Dangkal"
 
-#: src/options.cpp:4383 src/options.cpp:4578
+#: src/options.cpp:4397 src/options.cpp:4592
 msgid "Safety Depth"
 msgstr "Kedalaman yang aman"
 
-#: src/options.cpp:4393 src/options.cpp:4585
+#: src/options.cpp:4407 src/options.cpp:4599
 msgid "Deep Depth"
 msgstr "Kedalaman"
 
-#: src/options.cpp:4409 src/options.cpp:4601
+#: src/options.cpp:4423 src/options.cpp:4615
 msgid "User Standard Objects"
 msgstr ""
 
-#: src/options.cpp:4419 src/options.cpp:4607 src/options.cpp:10177
+#: src/options.cpp:4433 src/options.cpp:4621 src/options.cpp:10254
 msgid "Select All"
 msgstr "Pilih Semua"
 
-#: src/options.cpp:4421 src/options.cpp:4609 src/options.cpp:10178
+#: src/options.cpp:4435 src/options.cpp:4623 src/options.cpp:10255
 msgid "Clear All"
 msgstr "Bersihkan Semua"
 
-#: src/options.cpp:4426 src/options.cpp:4614
+#: src/options.cpp:4440 src/options.cpp:4628
 msgid "Reset to STANDARD"
 msgstr "Setel ulang ke STANDAR"
 
-#: src/options.cpp:4635
+#: src/options.cpp:4649
 msgid "Tides && Currents"
 msgstr "Pasang surut air laut & pasang"
 
-#: src/options.cpp:4640
+#: src/options.cpp:4654
 msgid "Active Datasets"
 msgstr "Dataset Aktif"
 
-#: src/options.cpp:4657
+#: src/options.cpp:4684
 msgid "Add Dataset..."
 msgstr "Tambahkan Dataset..."
 
-#: src/options.cpp:4704
+#: src/options.cpp:4731
 msgid "All Available Charts"
 msgstr "Semua bagan yang tersedia"
 
-#: src/options.cpp:4722
+#: src/options.cpp:4749
 msgid "Remove Chart"
 msgstr "Menghapus bagan"
 
-#: src/options.cpp:4751
+#: src/options.cpp:4778
 msgid "All Charts"
 msgstr "Semua bagan"
 
-#: src/options.cpp:4768
+#: src/options.cpp:4795
 msgid "New Group..."
 msgstr "Grup Baru..."
 
-#: src/options.cpp:4769
+#: src/options.cpp:4796
 msgid "Delete Group"
 msgstr "Hapus Grup"
 
-#: src/options.cpp:4819 src/options.cpp:4989 src/CanvasOptions.cpp:130
+#: src/options.cpp:4846 src/options.cpp:5016 src/CanvasOptions.cpp:130
 msgid "Navigation Mode"
 msgstr "Mode Navigasi"
 
-#: src/options.cpp:4827 src/options.cpp:4997 src/CanvasOptions.cpp:136
+#: src/options.cpp:4854 src/options.cpp:5024 src/CanvasOptions.cpp:136
 msgid "North Up"
 msgstr "Ke Utara"
 
-#: src/options.cpp:4830 src/options.cpp:5000 src/CanvasOptions.cpp:140
+#: src/options.cpp:4857 src/options.cpp:5027 src/CanvasOptions.cpp:140
 msgid "Course Up"
 msgstr "Atas Kursus"
 
-#: src/options.cpp:4837 src/options.cpp:5007 src/CanvasOptions.cpp:144
+#: src/options.cpp:4864 src/options.cpp:5034 src/CanvasOptions.cpp:148
 msgid "Look Ahead Mode"
 msgstr "Melihat cara selanjutnya"
 
-#: src/options.cpp:4856 src/options.cpp:5026
+#: src/options.cpp:4883 src/options.cpp:5053
 msgid "Preserve scale when switching charts"
 msgstr "Pertahankan skala saat beralih grafik"
 
-#: src/options.cpp:4865 src/options.cpp:5035
+#: src/options.cpp:4892 src/options.cpp:5062
 msgid "Controls"
 msgstr "Kendali"
 
-#: src/options.cpp:4871 src/options.cpp:5041
+#: src/options.cpp:4898 src/options.cpp:5068
 msgid "Smooth Panning / Zooming"
 msgstr "Halus mendulang / menanjak"
 
-#: src/options.cpp:4875 src/options.cpp:5044
+#: src/options.cpp:4902 src/options.cpp:5071
 msgid "Zoom to Cursor"
 msgstr "Untuk Perbesar cursor"
 
-#: src/options.cpp:4886 src/options.cpp:5060
+#: src/options.cpp:4913 src/options.cpp:5087
 msgid "Display Features"
 msgstr "Fitur tampilan"
 
-#: src/options.cpp:4892 src/options.cpp:5066 src/CanvasOptions.cpp:160
+#: src/options.cpp:4919 src/options.cpp:5093 src/CanvasOptions.cpp:164
 msgid "Show Grid"
 msgstr "Tampilkan Kotak"
 
-#: src/options.cpp:4900 src/options.cpp:5074 src/CanvasOptions.cpp:168
+#: src/options.cpp:4927 src/options.cpp:5101 src/CanvasOptions.cpp:172
 msgid "Show Depth Units"
 msgstr "Tampilkan Unit Kedalaman"
 
-#: src/options.cpp:4916
+#: src/options.cpp:4943
 msgid "Status Bar Option"
 msgstr "Opsi Status Bar"
 
-#: src/options.cpp:4922 src/options.cpp:5096
+#: src/options.cpp:4949 src/options.cpp:5123
 msgid "Live ETA at Cursor"
 msgstr "Hidup di ETA Kursor"
 
-#: src/options.cpp:4929 src/options.cpp:5103
+#: src/options.cpp:4956 src/options.cpp:5130
 msgid "Default Boat Speed "
 msgstr "Kecepatan Perahu "
 
-#: src/options.cpp:4942 src/options.cpp:5115
+#: src/options.cpp:4969 src/options.cpp:5142
 msgid "Canvas Layout"
 msgstr ""
 
-#: src/options.cpp:5090
+#: src/options.cpp:5117
 msgid "Status Bar"
 msgstr ""
 
-#: src/options.cpp:5148
+#: src/options.cpp:5175
 msgid "Units"
 msgstr "Unit"
 
-#: src/options.cpp:5167 src/options.cpp:5286 src/routeprintout.cpp:115
+#: src/options.cpp:5194 src/options.cpp:5313 src/routeprintout.cpp:115
 #: src/routeprintout.cpp:408 src/RoutePropDlg.cpp:73 src/RoutePropDlg.cpp:214
 #: src/TrackPropDlg.cpp:218 src/MarkInfo.cpp:570
 msgid "Distance"
 msgstr "Jarak"
 
-#: src/options.cpp:5169 src/options.cpp:5288
+#: src/options.cpp:5196 src/options.cpp:5315
 msgid "Statute miles"
 msgstr "Undang-undang mil"
 
-#: src/options.cpp:5183 src/options.cpp:5299
+#: src/options.cpp:5210 src/options.cpp:5326
 msgid "Knots"
 msgstr "Knot"
 
-#: src/options.cpp:5183 src/options.cpp:5299
+#: src/options.cpp:5210 src/options.cpp:5326
 msgid "Mph"
 msgstr "Mph"
 
-#: src/options.cpp:5194 src/options.cpp:5307
+#: src/options.cpp:5221 src/options.cpp:5334
 msgid "Depth"
 msgstr "Kedalaman"
 
-#: src/options.cpp:5212 src/options.cpp:5322
+#: src/options.cpp:5239 src/options.cpp:5349
 msgid "Lat/Long"
 msgstr "Lintang/bujur"
 
-#: src/options.cpp:5214 src/options.cpp:5324
+#: src/options.cpp:5241 src/options.cpp:5351
 msgid "Degrees, Decimal Minutes"
 msgstr "Derajat, desimal menit"
 
-#: src/options.cpp:5215 src/options.cpp:5325
+#: src/options.cpp:5242 src/options.cpp:5352
 msgid "Decimal Degrees"
 msgstr "Desimal derajat"
 
-#: src/options.cpp:5216 src/options.cpp:5326
+#: src/options.cpp:5243 src/options.cpp:5353
 msgid "Degrees, Minutes, Seconds"
 msgstr "Derajat, menit, detik"
 
-#: src/options.cpp:5231 src/options.cpp:5338
+#: src/options.cpp:5258 src/options.cpp:5365
 msgid "Bearings"
 msgstr "Hubungan"
 
-#: src/options.cpp:5236
+#: src/options.cpp:5263
 msgid "Show true"
 msgstr "Menunjukkan benar"
 
-#: src/options.cpp:5240
+#: src/options.cpp:5267
 msgid "Show magnetic"
 msgstr ""
 
-#: src/options.cpp:5253
+#: src/options.cpp:5280
 msgid "Assumed magnetic variation"
 msgstr "Diasumsikan perbedaan magnetik"
 
-#: src/options.cpp:5265 src/options.cpp:5369
+#: src/options.cpp:5292 src/options.cpp:5396
 msgid "deg (-W, +E)"
 msgstr "deg (-W, +E)"
 
-#: src/options.cpp:5346
+#: src/options.cpp:5373
 msgid "Show true bearings and headings"
 msgstr "Tunjukkan bantalan dan judul yang benar"
 
-#: src/options.cpp:5349
+#: src/options.cpp:5376
 msgid "Show magnetic bearings and headings."
 msgstr "Tunjukkan bantalan dan judul magnetik."
 
-#: src/options.cpp:5360 src/options.cpp:6403
+#: src/options.cpp:5387 src/options.cpp:6450
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "Aplikasi tambahan WMM menghitung perbedaan magnetik"
 
-#: src/options.cpp:5374
+#: src/options.cpp:5401
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " Untuk mengatur perbedaan magnetik secara manual,\n"
 " anda harus menonaktifkan aplikasi tambahan WMM."
 
-#: src/options.cpp:5409
+#: src/options.cpp:5436
 msgid "AIS Targets"
 msgstr "Sasaran AIS"
 
-#: src/options.cpp:5416
+#: src/options.cpp:5443
 msgid "CPA Calculation"
 msgstr "Perhitungan CPA"
 
-#: src/options.cpp:5426
+#: src/options.cpp:5453
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "Tidak ada peringatan CPA(T) jika kisaran sasaran lebih besar dari (NMi)"
 
-#: src/options.cpp:5433
+#: src/options.cpp:5460
 msgid "Warn if CPA less than (NMi)"
 msgstr "Memperingatkan jika CPA kurang (NMi)"
 
-#: src/options.cpp:5445
+#: src/options.cpp:5472
 msgid "...and TCPA is less than (min)"
 msgstr "...dan TCPA berjarak kurang dari (minimal)"
 
-#: src/options.cpp:5453
+#: src/options.cpp:5480
 msgid "Lost Targets"
 msgstr "Target yang hilang"
 
-#: src/options.cpp:5462
+#: src/options.cpp:5489
 msgid "Mark targets as lost after (min)"
 msgstr "Tandai target hilang setelah (min)"
 
-#: src/options.cpp:5469
+#: src/options.cpp:5496
 msgid "Remove lost targets after (min)"
 msgstr "Hapus target yang hilang setelah (min)"
 
-#: src/options.cpp:5489
+#: src/options.cpp:5516
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Tampilkan panah prediksi prediktor COG, panjang (min)"
 
-#: src/options.cpp:5497
+#: src/options.cpp:5524
 msgid "Show target tracks, length (min)"
 msgstr "Tampilkan trek target, panjang (min)"
 
-#: src/options.cpp:5505
+#: src/options.cpp:5532
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "Menekan target berlabuh / ditambatkan, kecepatan maks (kn)"
 
-#: src/options.cpp:5513
+#: src/options.cpp:5540
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr ""
 
-#: src/options.cpp:5521
+#: src/options.cpp:5548
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "Izinkan pelemahan target yang kurang penting jika lebih dari ... target"
 
-#: src/options.cpp:5529
+#: src/options.cpp:5556
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Tampilkan pemberitahuan area (dari pesan biner AIS)"
 
-#: src/options.cpp:5536
+#: src/options.cpp:5563
 msgid "Show AIS targets real size"
 msgstr "Tampilkan AIS menargetkan ukuran sebenarnya"
 
-#: src/options.cpp:5543
+#: src/options.cpp:5570
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Tunjukkan nama dengan target AIS pada skala lebih besar dari 1:"
 
-#: src/options.cpp:5551
+#: src/options.cpp:5578
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Perlakukan kalimat WPL sebagai laporan posisi APRS"
 
-#: src/options.cpp:5561
+#: src/options.cpp:5588
 msgid "Rollover"
 msgstr "Berputar"
 
-#: src/options.cpp:5566
+#: src/options.cpp:5593
 msgid "Enable route/AIS info block"
 msgstr ""
 
-#: src/options.cpp:5571
+#: src/options.cpp:5598
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Nama Kapal\" MMSI (Call Sign)"
 
-#: src/options.cpp:5575
+#: src/options.cpp:5602
 msgid "[Class] Type (Status)"
 msgstr "[Class] tipe (status)"
 
-#: src/options.cpp:5578
+#: src/options.cpp:5605
 msgid "SOG COG"
 msgstr "SOG COG"
 
-#: src/options.cpp:5581
+#: src/options.cpp:5608
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: src/options.cpp:5586
+#: src/options.cpp:5613
 msgid "CPA/TCPA Alerts"
 msgstr "Tanda BPA / TCPA"
 
-#: src/options.cpp:5595
+#: src/options.cpp:5622
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Tampilkan Dialog Lansiran BPA / TCPA"
 
-#: src/options.cpp:5599
+#: src/options.cpp:5626
 msgid "Select Alert Sound"
 msgstr "Pilih Suara Peringatan"
 
-#: src/options.cpp:5605
+#: src/options.cpp:5632
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Mainkan Sound on CPA / TCPA Alerts dan DSC / SART emergencies."
 
-#: src/options.cpp:5609
+#: src/options.cpp:5636
 msgid "Test Alert Sound"
 msgstr "Uji Suara Peringatan"
 
-#: src/options.cpp:5614
+#: src/options.cpp:5641
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:5621
+#: src/options.cpp:5648
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Aktifkan Target Alert Mengakui timeout (min)"
 
-#: src/options.cpp:5633
+#: src/options.cpp:5660
 msgid "General Options"
 msgstr "Pilihan umum"
 
-#: src/options.cpp:5641
+#: src/options.cpp:5668
 msgid "Language"
 msgstr "Bahasa"
 
-#: src/options.cpp:5653
+#: src/options.cpp:5680
 msgid "Fonts"
 msgstr "Huruf-huruf"
 
-#: src/options.cpp:5686
+#: src/options.cpp:5713
 msgid "Choose Font..."
 msgstr "Pilih Huruf..."
 
-#: src/options.cpp:5691
+#: src/options.cpp:5718
 msgid "Choose Font Color..."
 msgstr "Pilih Warna Huruf..."
 
-#: src/options.cpp:5695
+#: src/options.cpp:5722
 msgid "Sample"
 msgstr ""
 
-#: src/options.cpp:5702
+#: src/options.cpp:5729
 msgid "Toolbar and Window Style"
 msgstr "Toolbar dan Gaya Jendela"
 
-#: src/options.cpp:5720
+#: src/options.cpp:5747
 msgid "Interface Options"
 msgstr "Pilihan Antarmuka"
 
-#: src/options.cpp:5726
+#: src/options.cpp:5753
 msgid "Show Status Bar"
 msgstr "Tampilkan Bar Status"
 
-#: src/options.cpp:5731
+#: src/options.cpp:5758
 msgid "Show Menu Bar"
 msgstr "Tampilkan Menu Bar"
 
-#: src/options.cpp:5745
+#: src/options.cpp:5772
 msgid "Show Compass/GPS Status Window"
 msgstr "Tampilkan Jendela Status Kompas / GPS"
 
-#: src/options.cpp:5753
+#: src/options.cpp:5780
 msgid "Enable Toolbar auto-hide"
 msgstr "Aktifkan Toolbar secara otomatis"
 
-#: src/options.cpp:5769
+#: src/options.cpp:5796
 msgid "Play Ships Bells"
 msgstr "Mainkan Ships Bells"
 
-#: src/options.cpp:5780
+#: src/options.cpp:5807
 msgid "Audio Play command:"
 msgstr ""
 
-#: src/options.cpp:5799
+#: src/options.cpp:5826
 msgid "Unknown device :"
 msgstr ""
 
-#: src/options.cpp:5816
+#: src/options.cpp:5843
 msgid "Sound Device"
 msgstr ""
 
-#: src/options.cpp:5828
+#: src/options.cpp:5855
 msgid "Enable Touchscreen interface"
 msgstr "Aktifkan antarmuka layar sentuh"
 
-#: src/options.cpp:5832
+#: src/options.cpp:5859
 msgid "Enable Scaled Graphics interface"
 msgstr "Aktifkan antarmuka Scaled Graphics"
 
-#: src/options.cpp:5841
+#: src/options.cpp:5868
 msgid "Show Zoom buttons"
 msgstr ""
 
-#: src/options.cpp:5847
+#: src/options.cpp:5874
 msgid "Use Inland ECDIS V2.3"
 msgstr ""
 
-#: src/options.cpp:5856
+#: src/options.cpp:5883
 msgid "Use dark window decorations"
 msgstr ""
 
-#: src/options.cpp:5874
+#: src/options.cpp:5901
 msgid "User Interface scale factor"
 msgstr "Faktor skala User Interface"
 
-#: src/options.cpp:5887
+#: src/options.cpp:5914
 msgid "Chart Object scale factor"
 msgstr "Faktor ukuran Chart Object"
 
-#: src/options.cpp:5899
+#: src/options.cpp:5925
 msgid "Ship scale factor"
 msgstr "Faktor skala kapal"
 
-#: src/options.cpp:6134 src/options.cpp:6195
+#: src/options.cpp:5936
+msgid "ENC Sounding factor"
+msgstr ""
+
+#: src/options.cpp:6171 src/options.cpp:6232
 msgid "Connections"
 msgstr "Koneksi"
 
-#: src/options.cpp:6162
+#: src/options.cpp:6199
 msgid "Apply"
 msgstr "Menerapkan"
 
-#: src/options.cpp:6171
+#: src/options.cpp:6208
 msgid "Charts"
 msgstr "Grafik"
 
-#: src/options.cpp:6205
+#: src/options.cpp:6242
 msgid "Ships"
 msgstr "Kapal"
 
-#: src/options.cpp:6214
+#: src/options.cpp:6251
 msgid "User Interface"
 msgstr "Antarmuka pengguna"
 
-#: src/options.cpp:6217 src/options.cpp:6218
+#: src/options.cpp:6254 src/options.cpp:6255
 msgid "Plugins"
 msgstr "Tambahan"
 
-#: src/options.cpp:6409
+#: src/options.cpp:6456
 msgid "User set magnetic variation"
 msgstr "Pengguna mengatur perbedaan magnetik"
 
-#: src/options.cpp:6844
+#: src/options.cpp:6904
 msgid "feet"
 msgstr "kaki"
 
-#: src/options.cpp:6844
+#: src/options.cpp:6904
 msgid "fathoms"
 msgstr "mengerti"
 
-#: src/options.cpp:7083
+#: src/options.cpp:7143
 msgid "Add a directory containing chart files"
 msgstr "Tambahkan sebuah penyimpan data yang berisi berkas bagan"
 
-#: src/options.cpp:7320
+#: src/options.cpp:7393
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - panjang kapal anda harus > 0"
 
-#: src/options.cpp:7322
+#: src/options.cpp:7395
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - balok kapal anda harus > 0"
 
-#: src/options.cpp:7325
+#: src/options.cpp:7398
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - GPS kamu mengimbangi dari tengah perjalanan anda harus berada dalam kapal balok"
 
-#: src/options.cpp:7329
+#: src/options.cpp:7402
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - GPS kamu mengimbangi dari busur harus anda harus berada dalam jarak kapal anda"
 
-#: src/options.cpp:7331
+#: src/options.cpp:7404
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - ukuran tanda kapal minimal anda harus antara 1 dan 100 mm"
 
-#: src/options.cpp:7333
+#: src/options.cpp:7406
 msgid "The settings for own ship real size are not correct:"
 msgstr "Pengaturan untuk ukuran kapal sebenarnya tidak benar:"
 
-#: src/options.cpp:7334 src/routemanagerdialog.cpp:1495
+#: src/options.cpp:7407 src/routemanagerdialog.cpp:1497
 msgid "OpenCPN info"
 msgstr "Informasi OpenCPN"
 
-#: src/options.cpp:7906
+#: src/options.cpp:7982
 msgid "The changes to the window decorations will take full effect the next time you start OpenCPN."
 msgstr ""
 
-#: src/options.cpp:8237
+#: src/options.cpp:8312
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -5513,15 +5526,15 @@ msgstr "Kompresi akan mengubah file grafik pada disk.\n"
 " Grafik terkompresi mungkin memerlukan waktu sedikit lebih lama untuk dimuat dan ditampilkan pada beberapa sistem.\n"
 " Mereka dapat didekompresi lagi dengan menggunakan program zip unxz atau 7."
 
-#: src/options.cpp:8254 src/options.cpp:8305
+#: src/options.cpp:8329 src/options.cpp:8380
 msgid "OpenCPN Compress Charts"
 msgstr "Menekan bagan OpenCPN"
 
-#: src/options.cpp:8297
+#: src/options.cpp:8372
 msgid "No charts found to compress."
 msgstr "Bagan tidak ditemukan untuk ditekan."
 
-#: src/options.cpp:8331
+#: src/options.cpp:8406
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -5530,51 +5543,51 @@ msgstr "dikompresi %ld grafik\n"
 "dari %.1fMB untuk %.1fMB\n"
 "disimpan %.1fMB (%.1f%%)"
 
-#: src/options.cpp:8777 src/options.cpp:8788
+#: src/options.cpp:8857 src/options.cpp:8868
 msgid "Select Sound File"
 msgstr "Pilih berkas suara"
 
-#: src/options.cpp:9181
+#: src/options.cpp:9261
 msgid "Enter Group Name"
 msgstr "Masukkan nama kelompok"
 
-#: src/options.cpp:9181
+#: src/options.cpp:9261
 msgid "New Chart Group"
 msgstr "Kelompok bagan baru"
 
-#: src/options.cpp:9346 src/options.cpp:9360
+#: src/options.cpp:9426 src/options.cpp:9440
 msgid "Select Tide/Current Data"
 msgstr "Pilih Tide/Current Data"
 
-#: src/options.cpp:9408
+#: src/options.cpp:9485
 msgid "Stop Scan"
 msgstr "Hentikan pemindaian"
 
-#: src/options.cpp:10000
+#: src/options.cpp:10077
 msgid "Configure new connection"
 msgstr ""
 
-#: src/options.cpp:10097
+#: src/options.cpp:10174
 msgid "Signal K server available."
 msgstr ""
 
-#: src/options.cpp:10100
+#: src/options.cpp:10177
 msgid "Signal K server not found."
 msgstr ""
 
-#: src/options.cpp:10165
+#: src/options.cpp:10242
 msgid "Sentence Filter"
 msgstr "Saring Kalimat"
 
-#: src/options.cpp:10273
+#: src/options.cpp:10350
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
 msgstr "Masukkan kalimat NMEA (2, 3 atau 5 karakter) "
 
-#: src/options.cpp:10274
+#: src/options.cpp:10351
 msgid "Enter the NMEA sentence"
 msgstr "Masukkan kalimat NMEA"
 
-#: src/options.cpp:10291
+#: src/options.cpp:10368
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5586,63 +5599,63 @@ msgstr "Kalimat NMEA umumnya panjangnya 3 karakter (seperti RMC, GGA dll.)\n"
 "            Anda dapat menyaring semua kalimat dengan awalan TALKER tertentu (seperti GP, AI, dsb.).\n\n"
 "            Filter hanya menerima ketiga format ini."
 
-#: src/options.cpp:10338
+#: src/options.cpp:10415
 msgid "Texture Compression"
 msgstr "Tekstur Kompresi"
 
-#: src/options.cpp:10339
+#: src/options.cpp:10416
 msgid "Texture Compression with Caching"
 msgstr "Tekstur Kompresi dengan Caching"
 
-#: src/options.cpp:10341
+#: src/options.cpp:10418
 msgid "Texture Compression Caching"
 msgstr "Kompresi Tekstur Caching"
 
-#: src/options.cpp:10343
+#: src/options.cpp:10420
 msgid "Texture Memory Size (MB)"
 msgstr "Ukuran Memori Tekstur (MB)"
 
-#: src/options.cpp:10347 src/options.cpp:10520
+#: src/options.cpp:10424 src/options.cpp:10597
 msgid "Size: "
 msgstr "Ukuran: "
 
-#: src/options.cpp:10349
+#: src/options.cpp:10426
 msgid "Rebuild Texture Cache"
 msgstr "Bangun kembali Tekstur Cache"
 
-#: src/options.cpp:10351
+#: src/options.cpp:10428
 msgid "Clear Texture Cache"
 msgstr "Bersihkan Tekstur Cache"
 
-#: src/options.cpp:10355
+#: src/options.cpp:10432
 msgid "Show FPS"
 msgstr "Tunjukkan FPS"
 
-#: src/options.cpp:10356
+#: src/options.cpp:10433
 msgid "Polygon Smoothing"
 msgstr "Poligon smoothing"
 
-#: src/options.cpp:10357
+#: src/options.cpp:10434
 msgid "Line Smoothing"
 msgstr "Menghaluskan garis"
 
-#: src/options.cpp:10359
+#: src/options.cpp:10436
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "OpenGL perangkat lunak (restart OpenCPN)"
 
-#: src/options.cpp:10361
+#: src/options.cpp:10438
 msgid "Use Accelerated Panning"
 msgstr "Gunakan Dipercepat Panning"
 
-#: src/options.cpp:10363
+#: src/options.cpp:10440
 msgid "Texture Settings"
 msgstr "Pengaturan Tekstur"
 
-#: src/options.cpp:10370
+#: src/options.cpp:10447
 msgid "Texture Cache"
 msgstr "Tekstur Cache"
 
-#: src/options.cpp:10377
+#: src/options.cpp:10454
 msgid "Miscellaneous"
 msgstr "Miscellaneous"
 
@@ -5704,24 +5717,24 @@ msgstr ""
 msgid "Plugin is latest available"
 msgstr ""
 
-#: src/pluginmanager.cpp:502
+#: src/pluginmanager.cpp:509
 msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
 msgstr ""
 
-#: src/pluginmanager.cpp:751
+#: src/pluginmanager.cpp:758
 msgid "successfully un-installed"
 msgstr ""
 
-#: src/pluginmanager.cpp:761
+#: src/pluginmanager.cpp:768
 msgid "Un-Installation complete"
 msgstr ""
 
-#: src/pluginmanager.cpp:1191
+#: src/pluginmanager.cpp:1198
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
 msgstr "Aplikasi tambahan %s tidak sesuai dengan versi OpenCPN ini, silahkan untuk mendapatkan versi terbaru."
 
-#: src/pluginmanager.cpp:2117
+#: src/pluginmanager.cpp:2124
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
@@ -5730,11 +5743,11 @@ msgstr "Aplikasi tambahan %s (%s), versi baru %i.%i terdeteksi.\n"
 " Versi ini diketahui tidak stabil dan tidak akan bekerja.\n"
 "Silahkan perbarui aplikasi tambahan ini di situs opencpn.org."
 
-#: src/pluginmanager.cpp:2118 src/pluginmanager.cpp:2124
+#: src/pluginmanager.cpp:2125 src/pluginmanager.cpp:2131
 msgid "Blacklisted plugin detected..."
 msgstr "Aplikasi tambahan terdeteksi masuk dalam daftar hitam..."
 
-#: src/pluginmanager.cpp:2123
+#: src/pluginmanager.cpp:2130
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
@@ -5743,159 +5756,159 @@ msgstr "PlugIn %s (%s), versi %i.%i terdeteksi.\n"
 " Versi ini diketahui tidak stabil.\n"
 " Harap perbarui PlugIn ini di situs opencpn.org."
 
-#: src/pluginmanager.cpp:2157
+#: src/pluginmanager.cpp:2164
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
 msgstr "Perpustakaan PlugIn yang tidak terbaca terdeteksi, periksa hak akses file:\n"
 
-#: src/pluginmanager.cpp:2183
+#: src/pluginmanager.cpp:2190
 msgid "Incompatible plugin detected"
 msgstr "Aplikasi tambahan yang tidak sesuai terdeteksi"
 
-#: src/pluginmanager.cpp:2186
+#: src/pluginmanager.cpp:2193
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr "Aplikasi tambahan [ %s ] versi %i.%i"
 
-#: src/pluginmanager.cpp:2191
+#: src/pluginmanager.cpp:2198
 msgid ", and all previous versions,"
 msgstr ", dan semua versi sebelumnya,"
 
-#: src/pluginmanager.cpp:2192
+#: src/pluginmanager.cpp:2199
 msgid " is incompatible with this version of OpenCPN."
 msgstr " tidak sesuai dengan versi OpenCPN ini."
 
-#: src/pluginmanager.cpp:5068
+#: src/pluginmanager.cpp:5075
 msgid "Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5081 src/pluginmanager.cpp:5614
+#: src/pluginmanager.cpp:5088 src/pluginmanager.cpp:5625
 msgid "Update Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5085
+#: src/pluginmanager.cpp:5092
 msgid "Choose Remote Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5107
+#: src/pluginmanager.cpp:5114
 msgid "Import plugin..."
 msgstr ""
 
-#: src/pluginmanager.cpp:5167
+#: src/pluginmanager.cpp:5178
 msgid "Cannot download data from url"
 msgstr ""
 
-#: src/pluginmanager.cpp:5168 src/pluginmanager.cpp:5176
-#: src/pluginmanager.cpp:5195 src/pluginmanager.cpp:5219
+#: src/pluginmanager.cpp:5179 src/pluginmanager.cpp:5187
+#: src/pluginmanager.cpp:5206 src/pluginmanager.cpp:5230
 msgid "OpenCPN Catalog update"
 msgstr ""
 
-#: src/pluginmanager.cpp:5176
+#: src/pluginmanager.cpp:5187
 msgid "Unable to copy catalog file"
 msgstr ""
 
-#: src/pluginmanager.cpp:5195
+#: src/pluginmanager.cpp:5206
 msgid "Unable to copy catalog file to cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:5219
+#: src/pluginmanager.cpp:5230
 msgid "Catalog update successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:5321
+#: src/pluginmanager.cpp:5332
 msgid "Select tarball file"
 msgstr ""
 
-#: src/pluginmanager.cpp:5411
+#: src/pluginmanager.cpp:5422
 msgid "Error extracting import plugin tarball."
 msgstr ""
 
-#: src/pluginmanager.cpp:5411 src/pluginmanager.cpp:5417
-#: src/pluginmanager.cpp:5430 src/pluginmanager.cpp:5437
-#: src/pluginmanager.cpp:5448
+#: src/pluginmanager.cpp:5422 src/pluginmanager.cpp:5428
+#: src/pluginmanager.cpp:5441 src/pluginmanager.cpp:5448
+#: src/pluginmanager.cpp:5459
 msgid "OpenCPN Plugin Import Error"
 msgstr ""
 
-#: src/pluginmanager.cpp:5417
+#: src/pluginmanager.cpp:5428
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:5430
+#: src/pluginmanager.cpp:5441
 msgid "Error processing import plugin metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:5437
+#: src/pluginmanager.cpp:5448
 msgid "Incompatible import plugin detected."
 msgstr ""
 
-#: src/pluginmanager.cpp:5448
+#: src/pluginmanager.cpp:5459
 msgid "Cannot access current catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:5548
+#: src/pluginmanager.cpp:5559
 msgid "Plugin imported successfully"
 msgstr ""
 
-#: src/pluginmanager.cpp:5550
+#: src/pluginmanager.cpp:5561
 msgid "Active catalog updated."
 msgstr ""
 
-#: src/pluginmanager.cpp:5552
+#: src/pluginmanager.cpp:5563
 msgid "Plugin may be installed or updated now."
 msgstr ""
 
-#: src/pluginmanager.cpp:5553
+#: src/pluginmanager.cpp:5564
 msgid "OpenCPN Plugin Import Successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:5563
+#: src/pluginmanager.cpp:5574
 msgid "Active Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5563
+#: src/pluginmanager.cpp:5574
 msgid "Last Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:5577
+#: src/pluginmanager.cpp:5588
 msgid "Version"
 msgstr ""
 
-#: src/pluginmanager.cpp:5580
+#: src/pluginmanager.cpp:5591
 msgid "Please Update Plugin Catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:5933
+#: src/pluginmanager.cpp:5949
 msgid "Action"
 msgstr ""
 
-#: src/pluginmanager.cpp:5936
+#: src/pluginmanager.cpp:5952
 msgid "Uninstall"
 msgstr ""
 
-#: src/pluginmanager.cpp:5939
+#: src/pluginmanager.cpp:5955
 msgid "Enabled"
 msgstr ""
 
-#: src/pluginmanager.cpp:6043
+#: src/pluginmanager.cpp:6059
 msgid "Upgrade to managed Version "
 msgstr ""
 
-#: src/pluginmanager.cpp:6050
+#: src/pluginmanager.cpp:6066
 msgid "Install..."
 msgstr ""
 
-#: src/pluginmanager.cpp:6056
+#: src/pluginmanager.cpp:6072
 msgid "Update to "
 msgstr ""
 
-#: src/pluginmanager.cpp:6063
+#: src/pluginmanager.cpp:6079
 msgid "Reinstall"
 msgstr ""
 
-#: src/pluginmanager.cpp:6069
+#: src/pluginmanager.cpp:6085
 msgid "Downgrade"
 msgstr ""
 
-#: src/pluginmanager.cpp:6262
+#: src/pluginmanager.cpp:6278
 msgid "Website"
 msgstr ""
 
@@ -5907,15 +5920,15 @@ msgstr "AISRollover"
 msgid "TideCurrentGraphRollover"
 msgstr ""
 
-#: src/Route.cpp:1188
+#: src/Route.cpp:1204
 msgid "Route Transmitted."
 msgstr "Rute ditransmisikan."
 
-#: src/Route.cpp:1191
+#: src/Route.cpp:1207
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "Terjadi kesalahan pada proses unggah jalur. Garmin GPS tidak terhubung"
 
-#: src/Route.cpp:1193
+#: src/Route.cpp:1209
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Terjadi kesalahan pada proses unggah jalur. Silahkan cek catatan berkas..."
 
@@ -6069,8 +6082,8 @@ msgstr "Daftar isi"
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1071 src/routemanagerdialog.cpp:1769
-#: src/routemanagerdialog.cpp:2195
+#: src/routemanagerdialog.cpp:1071 src/routemanagerdialog.cpp:1771
+#: src/routemanagerdialog.cpp:2197
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Apakah kamu yakin ingin menghapus objek yang dipilih(s)"
 
@@ -6086,70 +6099,70 @@ msgstr "Apakah kamu ingin membuat dan membagikan titik arah menjadi bagian dari 
 msgid "Question"
 msgstr "Pertanyaan"
 
-#: src/routemanagerdialog.cpp:1431
+#: src/routemanagerdialog.cpp:1433
 msgid "&Merge Selected Tracks"
 msgstr "&Menggabungkan lintasan yang terpilih"
 
-#: src/routemanagerdialog.cpp:1433
+#: src/routemanagerdialog.cpp:1435
 msgid "Reduce Data..."
 msgstr "Mengecilkan Data..."
 
-#: src/routemanagerdialog.cpp:1435
+#: src/routemanagerdialog.cpp:1437
 msgid "&Copy as text"
 msgstr "&Menyalin teks"
 
-#: src/routemanagerdialog.cpp:1465
+#: src/routemanagerdialog.cpp:1467
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr "Pilih kesalahan maksimum yang diizinkan (dalam meter)\n"
 " setelah reduksi data:"
 
-#: src/routemanagerdialog.cpp:1466
+#: src/routemanagerdialog.cpp:1468
 msgid "Reduce Data Precision"
 msgstr "Kurangi Presisi Data"
 
-#: src/routemanagerdialog.cpp:1493
+#: src/routemanagerdialog.cpp:1495
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr "Jumlah data yang digunakan oleh track\n"
 " dikurangi %d%%."
 
-#: src/routemanagerdialog.cpp:1588
+#: src/routemanagerdialog.cpp:1590
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr "Track yang sedang berjalan tidak digabungkan.\n"
 "Kamu bisa menggabungkannya nanti jika sudah selesai."
 
-#: src/routemanagerdialog.cpp:1842
+#: src/routemanagerdialog.cpp:1844
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN mengubah Track ke Rute...."
 
-#: src/routemanagerdialog.cpp:1843
+#: src/routemanagerdialog.cpp:1845
 msgid "Processing Waypoints..."
 msgstr "Pengolahan Waypoints..."
 
-#: src/routemanagerdialog.cpp:1853
+#: src/routemanagerdialog.cpp:1855
 msgid "Done."
 msgstr "Selesai."
 
-#: src/routemanagerdialog.cpp:1875
+#: src/routemanagerdialog.cpp:1877
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Apakah kamu yakin ingin menghapus <ALL> tracks?"
 
-#: src/routemanagerdialog.cpp:1941
+#: src/routemanagerdialog.cpp:1943
 msgid "Overruled"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2228
+#: src/routemanagerdialog.cpp:2230
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "Waypoint yang ingin kamu hapus digunakan dalam rute, apakah kamu sungguh ingin menghapusnya?"
 
-#: src/routemanagerdialog.cpp:2357
+#: src/routemanagerdialog.cpp:2359
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Apakah kamu yakin ingin menghapus <ALL> waypoints?"
 
-#: src/routemanagerdialog.cpp:2363
+#: src/routemanagerdialog.cpp:2365
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
@@ -6159,15 +6172,15 @@ msgstr "Ada beberapa waypoints yang dipakai dalam rute atau jangkar larem.\n"
 " Ini akan mengubah rute dan menonaktifkan jangkar larem.\n"
 " Jangan menyimpan waypoints yang digunakan dalam rute atau larem."
 
-#: src/routemanagerdialog.cpp:2508
+#: src/routemanagerdialog.cpp:2510
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "Yakin ingin menghapus lapisan ini dan <ALL> isinya?"
 
-#: src/routemanagerdialog.cpp:2512
+#: src/routemanagerdialog.cpp:2514
 msgid "The file will also be deleted from OpenCPN's layer directory."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2800
+#: src/routemanagerdialog.cpp:2802
 msgid "(Unnamed Layer)"
 msgstr "(Layar tidak disebutkan nama)"
 
@@ -6181,32 +6194,32 @@ msgid "Waypoints can be renamed to reflect the new order, the names will be '001
 msgstr "Titik -titik arah dapat diganti namanya untuk mencerminkan orde baru, namanya adalah '001', '002', dll.\n\n"
 " Apakah Anda ingin mengubah nama titik arah?"
 
-#: src/RoutePoint.cpp:592 src/RoutePoint.cpp:593 src/RoutePoint.cpp:764
-#: src/RoutePoint.cpp:765
+#: src/RoutePoint.cpp:596 src/RoutePoint.cpp:597 src/RoutePoint.cpp:763
+#: src/RoutePoint.cpp:764
 msgid "Marks"
 msgstr "Tanda"
 
-#: src/RoutePoint.cpp:1125
+#: src/RoutePoint.cpp:1124
 msgid "Waypoint(s) Transmitted."
 msgstr "Waypoint (s) ditransmisikan."
 
-#: src/RoutePoint.cpp:1128
+#: src/RoutePoint.cpp:1127
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Kesalahan pada saat mengungah Waypoint Garmin GPS tidak bisa terhubung"
 
-#: src/RoutePoint.cpp:1130
+#: src/RoutePoint.cpp:1129
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Kesalahan pada Upload Waypoint Silahkan cek logfiles..."
 
-#: src/RoutePoint.cpp:1198
+#: src/RoutePoint.cpp:1197
 msgid "The ScaMin value for new waypoints is set to"
 msgstr ""
 
-#: src/RoutePoint.cpp:1199
+#: src/RoutePoint.cpp:1198
 msgid "but current chartscale is"
 msgstr ""
 
-#: src/RoutePoint.cpp:1200
+#: src/RoutePoint.cpp:1199
 msgid "Therefore the new waypoint will not be visible at this zoom level."
 msgstr ""
 
@@ -6677,25 +6690,25 @@ msgstr "Menyembunyikan teks ENC"
 msgid "ToolTips"
 msgstr "Keterangan alat"
 
-#: src/toolbar.cpp:3204
+#: src/toolbar.cpp:3215
 msgid "No, I don't want to hide it."
 msgstr "Tidak, saya tidak ingin menyembunyikannya."
 
-#: src/toolbar.cpp:3207
+#: src/toolbar.cpp:3218
 msgid "No, and permanently remove the option to hide it."
 msgstr "Tidak, dan secara permanen menghapus opsi untuk menyembunyikannya."
 
-#: src/toolbar.cpp:3210
+#: src/toolbar.cpp:3221
 msgid "Yes, hide it."
 msgstr "Ya, sembunyikan itu."
 
-#: src/toolbar.cpp:3216
+#: src/toolbar.cpp:3227
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "Tombol Man Over Board bisa menjadi fitur keselamatan yang penting.\n"
 " Yakin ingin menyembunyikannya?"
 
-#: src/toolbar.cpp:3312
+#: src/toolbar.cpp:3323
 msgid "Choose Toolbar Icons"
 msgstr "Memilih ikon toolbar"
 
@@ -6964,43 +6977,47 @@ msgstr ""
 msgid "Chart Panel Options"
 msgstr ""
 
-#: src/CanvasOptions.cpp:176
-msgid "Show AIS targets"
+#: src/CanvasOptions.cpp:144
+msgid "Heading Up"
 msgstr ""
 
 #: src/CanvasOptions.cpp:180
+msgid "Show AIS targets"
+msgstr ""
+
+#: src/CanvasOptions.cpp:184
 msgid "Minimize less critical targets"
 msgstr ""
 
-#: src/CanvasOptions.cpp:190
+#: src/CanvasOptions.cpp:194
 msgid "Tides and Currents"
 msgstr ""
 
-#: src/CanvasOptions.cpp:193
+#: src/CanvasOptions.cpp:197
 msgid "Show Tide stations"
 msgstr ""
 
-#: src/CanvasOptions.cpp:205
+#: src/CanvasOptions.cpp:209
 msgid "Vector Charts"
 msgstr ""
 
-#: src/CanvasOptions.cpp:208
+#: src/CanvasOptions.cpp:212
 msgid "Show text"
 msgstr ""
 
-#: src/CanvasOptions.cpp:212
+#: src/CanvasOptions.cpp:216
 msgid "Show depths"
 msgstr ""
 
-#: src/CanvasOptions.cpp:220
+#: src/CanvasOptions.cpp:224
 msgid "Lights"
 msgstr ""
 
-#: src/CanvasOptions.cpp:228
+#: src/CanvasOptions.cpp:232
 msgid "Anchoring Info"
 msgstr ""
 
-#: src/CanvasOptions.cpp:237
+#: src/CanvasOptions.cpp:241
 msgid "User Standard"
 msgstr ""
 
