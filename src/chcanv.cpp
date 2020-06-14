@@ -245,8 +245,6 @@ extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
 
-extern std::vector<int>      g_quilt_noshow_index_array;
-extern std::vector<int>      g_quilt_yesshow_index_array;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
@@ -2027,7 +2025,7 @@ void ChartCanvas::SetupCanvasQuiltMode( void )
     {
         ChartData->LockCache();
         
-        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        m_Piano->SetNoshowIndexArray( m_quilt_noshow_index_array );
         
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         
@@ -12706,7 +12704,12 @@ bool ChartCanvas::IsTileOverlayIndexInNoShow( int index ){
 }
 
 
-
+void ChartCanvas::AddTileOverlayIndexToNoShow( int index )
+{
+    if(std::find(m_tile_noshow_index_array.begin(), m_tile_noshow_index_array.end(), index) == m_tile_noshow_index_array.end()) {
+        m_tile_noshow_index_array.push_back( index );
+    }
+}
 
 //-------------------------------------------------------------------------------------------------------
 //
@@ -12898,8 +12901,8 @@ void ChartCanvas::UpdateCanvasControlBar( void )
         std::vector<int>  piano_eclipsed_chart_index_array = GetQuiltEclipsedStackdbIndexArray();
         m_Piano->SetEclipsedIndexArray( piano_eclipsed_chart_index_array );
         
-        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
-        //m_Piano->SetNoshowIndexArray( m_tile_noshow_index_array );
+        m_Piano->SetNoshowIndexArray( m_quilt_noshow_index_array );
+        m_Piano->AddNoshowIndexArray( m_tile_noshow_index_array );
         
         sel_type = ChartData->GetDBChartType(GetQuiltReferenceChartIndex());
         sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
@@ -13007,8 +13010,8 @@ void ChartCanvas::PianoPopupMenu( int x, int y, int selected_index, int selected
 
     //    Search the no-show array
     bool b_is_in_noshow = false;
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
                 {
             b_is_in_noshow = true;
             break;
@@ -13045,10 +13048,10 @@ void ChartCanvas::PianoPopupMenu( int x, int y, int selected_index, int selected
 
 void ChartCanvas::OnPianoMenuEnableChart( wxCommandEvent& event )
 {
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == menu_selected_dbIndex ) // chart is in the noshow list
-                {
-            g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == menu_selected_dbIndex ) // chart is in the noshow list
+        {
+            m_quilt_noshow_index_array.erase(m_quilt_noshow_index_array.begin() + i );
             break;
         }
     }
@@ -13096,15 +13099,15 @@ void ChartCanvas::OnPianoMenuDisableChart( wxCommandEvent& event )
 void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
 {
     //    Remove the item from the list (if it appears) to avoid multiple addition
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == dbIndex ) // chart is already in the noshow list
-                {
-                    g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );
-                    break;
-                }
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == dbIndex ) // chart is already in the noshow list
+        {
+            m_quilt_noshow_index_array.erase(m_quilt_noshow_index_array.begin() + i );
+            break;
+        }
     }
     
-    g_quilt_noshow_index_array.push_back( dbIndex );
+    m_quilt_noshow_index_array.push_back( dbIndex );
     
 }
 

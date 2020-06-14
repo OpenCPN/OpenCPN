@@ -138,7 +138,6 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern bool             g_bShowChartBar;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
-extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
