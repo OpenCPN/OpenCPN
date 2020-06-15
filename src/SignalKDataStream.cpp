@@ -578,23 +578,20 @@ void *WebSocketThread::Entry()
     while (true) {
         if(TestDestroy()){
             //printf("receiving delete\n");
-            break;
+	    ws->close();
         }
         
+        if(ws->getReadyState() == WebSocket::CLOSED){
+	    //printf("closed\n");
+	    break;
+	}
+    	ws->poll(10);
         if(ws->getReadyState() == WebSocket::OPEN){
-            ws->poll(10);
-            if(ws->getReadyState() == WebSocket::CLOSED){
-                //printf("closed\n");
-                break;
-            }
             ws->dispatch(HandleMessage);
         }
-        else
-            wxThread::Sleep(1);
     }
     
-    //printf("ws close\n");
-    ws->close();
+    //printf("ws delete\n");
     delete ws; 
 
     m_parentStream->SetThreadRunning(false);
