@@ -1356,6 +1356,8 @@ options::~options(void) {
                                     NULL, this);
         
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
+  delete groupsPanel;
+  
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
@@ -9049,6 +9051,8 @@ ChartGroupsUI::ChartGroupsUI(wxWindow* parent)
 
 ChartGroupsUI::~ChartGroupsUI(void) {
   m_DirCtrlArray.Clear();
+  m_GroupNB->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(ChartGroupsUI::OnGroupPageChange), NULL, this);
+
   delete iFont;
 }
 
