@@ -3537,14 +3537,13 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   activeSizer = new wxStaticBoxSizer(loadedBox, wxHORIZONTAL);
   chartPanel->Add(activeSizer, 1, wxALL | wxEXPAND, border_size);
 
-  wxString* pListBoxStrings = NULL;
-
-  pActiveChartsList = new wxListCtrl( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
+  pActiveChartsList = new wxListCtrl( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxSize(100, -1),
                                        wxLC_REPORT | wxLC_NO_HEADER );
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__
     pActiveChartsList->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif    
  
+    
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
@@ -3563,17 +3562,18 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
     wxListItem col0;
     col0.SetId(0);
     col0.SetText( _("") );
+    col0.SetAlign(wxLIST_FORMAT_LEFT);
     col0.SetWidth(500);
     pActiveChartsList->InsertColumn(0, col0);
 
     for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+        wxString dirname = m_CurrentDirList[i].fullpath;
         wxListItem li;
         li.SetId( i );
-
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
         long idx = pActiveChartsList->InsertItem( li );
-
-        wxString dirname = m_CurrentDirList[i].fullpath;
-        pActiveChartsList->SetItem(i, 0, dirname);
     }
   }
 
@@ -4655,7 +4655,7 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   wxStaticBoxSizer* tcSizer = new wxStaticBoxSizer(tcBox, wxHORIZONTAL);
   mainHBoxSizer->Add(tcSizer, 1, wxALL | wxEXPAND, border_size);
 
-  tcDataSelected =  new wxListCtrl(tcPanel, ID_TIDESELECTED, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_NO_HEADER);
+  tcDataSelected =  new wxListCtrl(tcPanel, ID_TIDESELECTED, wxDefaultPosition, wxSize(100, -1), wxLC_REPORT | wxLC_NO_HEADER);
 
   tcSizer->Add(tcDataSelected, 1, wxALL | wxEXPAND, border_size);
 
@@ -4668,6 +4668,8 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   col0.SetId(0);
   col0.SetText( _("") );
   col0.SetWidth(500);
+  col0.SetAlign(wxLIST_FORMAT_LEFT);
+
   tcDataSelected->InsertColumn(0, col0);
 
   for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
@@ -6381,14 +6383,13 @@ void options::SetInitialSettings(void) {
     pActiveChartsList->DeleteAllItems();
 
     for (size_t i = 0; i < m_CurrentDirList.GetCount(); i++) {
+        wxString dirname = m_CurrentDirList[i].fullpath;
         wxListItem li;
         li.SetId( i );
-
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
         long idx = pActiveChartsList->InsertItem( li );
-
-        wxString dirname = m_CurrentDirList[i].fullpath;
-        pActiveChartsList->SetItem(i, 0, dirname);
-
     }
   }
 
@@ -7164,8 +7165,11 @@ void options::AddChartDir(const wxString& dir) {
    wxListItem li;
    int id = pActiveChartsList->GetItemCount();      // next index
    li.SetId( id );
+   li.SetAlign(wxLIST_FORMAT_LEFT);
+   li.SetText(dirAdd);
+   li.SetColumn(0);
+
    long idx = pActiveChartsList->InsertItem( li );
-   pActiveChartsList->SetItem(id, 0, dirAdd);
 
    k_charts |= CHANGE_CHARTS;
  
@@ -7176,13 +7180,13 @@ void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
    if (pActiveChartsList) {
        pActiveChartsList->DeleteAllItems();
        for (size_t i = 0; i < p.GetCount(); i++) {
+            wxString dirname = p[i].fullpath;
             wxListItem li;
             li.SetId( i );
-
+            li.SetAlign(wxLIST_FORMAT_LEFT);
+            li.SetText(dirname);
+            li.SetColumn(0);
             long idx = pActiveChartsList->InsertItem( li );
-
-            wxString dirname = p[i].fullpath;
-            pActiveChartsList->SetItem(i, 0, dirname);
         }
    }
 }
@@ -8077,13 +8081,13 @@ void options::OnButtondeleteClick(wxCommandEvent& event)
   if (m_pWorkDirList) {
       pActiveChartsList->DeleteAllItems();
       for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
         wxListItem li;
         li.SetId( id );
-
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
         long idx = pActiveChartsList->InsertItem( li );
-
-        wxString dirname = m_pWorkDirList->Item(id).fullpath;
-        pActiveChartsList->SetItem(id, 0, dirname);
      }
   }
 
@@ -8414,13 +8418,13 @@ They can be decompressed again using unxz or 7 zip programs."),
   if (m_pWorkDirList) {
       pActiveChartsList->DeleteAllItems();
       for (size_t id = 0; id < m_pWorkDirList->GetCount(); id++) {
+        wxString dirname = m_pWorkDirList->Item(id).fullpath;
         wxListItem li;
         li.SetId( id );
-
+        li.SetAlign(wxLIST_FORMAT_LEFT);
+        li.SetText(dirname);
+        li.SetColumn(0);
         long idx = pActiveChartsList->InsertItem( li );
-
-        wxString dirname = m_pWorkDirList->Item(id).fullpath;
-        pActiveChartsList->SetItem(id, 0, dirname);
      }
   }
 
