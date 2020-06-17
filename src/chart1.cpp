@@ -417,6 +417,8 @@ float                     g_ChartScaleFactorExp;
 int                       g_last_ChartScaleFactor;
 int                       g_ShipScaleFactor;
 float                     g_ShipScaleFactorExp;
+int                       g_ENCSoundingScaleFactor;
+
 
 wxVector<wxPoint>         g_shipPoints;
 
@@ -693,9 +695,6 @@ int                       g_click_stop;
 
 int                       g_MemFootSec;
 int                       g_MemFootMB;
-
-std::vector<int>          g_quilt_noshow_index_array;
-std::vector<int>          g_quilt_yesshow_index_array;
 
 wxStaticBitmap            *g_pStatBoxTool;
 bool                      g_bShowStatusBar;
@@ -2619,7 +2618,7 @@ extern ocpnGLOptions g_GLOptions;
 #ifdef __OCPN__ANDROID__    
         //  We defer the startup message to here to allow the app frame to be contructed,
         //  thus avoiding a dialog with NULL parent which might not work on some devices.    
-    if( !n_NavMessageShown || ( g_vs != g_config_version_string ) || (g_AndroidVersionCode != androidGetVersionCode()) )
+    if( !n_NavMessageShown || ( vs != g_config_version_string ) || (g_AndroidVersionCode != androidGetVersionCode()) )
     {
             //qDebug() << "Showing NavWarning";
         wxMilliSleep(500);

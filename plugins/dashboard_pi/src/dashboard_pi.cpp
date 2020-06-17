@@ -2518,24 +2518,28 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxFlexGridSizer *itemFlexGridSizer03 = new wxFlexGridSizer( 2 );
     itemFlexGridSizer03->AddGrowableCol( 1 );
     itemStaticBoxSizer01->Add( itemFlexGridSizer03, 1, wxEXPAND | wxALL, 0 );
+    
     wxStaticText* itemStaticText04 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Title:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText04, 0, wxEXPAND | wxALL, border_size );
     m_pFontPickerTitle = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontTitle,
             wxDefaultPosition, wxDefaultSize );
     itemFlexGridSizer03->Add( m_pFontPickerTitle, 0, wxALIGN_RIGHT | wxALL, 0 );
+
     wxStaticText* itemStaticText05 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Data:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText05, 0, wxEXPAND | wxALL, border_size );
     m_pFontPickerData = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontData,
             wxDefaultPosition, wxDefaultSize );
     itemFlexGridSizer03->Add( m_pFontPickerData, 0, wxALIGN_RIGHT | wxALL, 0 );
+    
     wxStaticText* itemStaticText06 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Label:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText06, 0, wxEXPAND | wxALL, border_size );
     m_pFontPickerLabel = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontLabel,
             wxDefaultPosition, wxDefaultSize );
     itemFlexGridSizer03->Add( m_pFontPickerLabel, 0, wxALIGN_RIGHT | wxALL, 0 );
+    
     wxStaticText* itemStaticText07 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Small:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText07, 0, wxEXPAND | wxALL, border_size );
@@ -3909,6 +3913,8 @@ void OCPNFontButton::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
         // fire an event
         wxFontPickerEvent event(this, GetId(), m_selectedFont);
         GetEventHandler()->ProcessEvent(event);
+        
+        UpdateFont();
     }
 }
 
@@ -3917,7 +3923,8 @@ void OCPNFontButton::UpdateFont()
     if ( !m_selectedFont.IsOk() )
         return;
     
-    SetForegroundColour(m_data.GetColour());
+    //  Leave black, until Instruments are modified to accept color fonts
+    //SetForegroundColour(m_data.GetColour());
     
     if (HasFlag(wxFNTP_USEFONT_FOR_LABEL))
     {
@@ -3925,11 +3932,19 @@ void OCPNFontButton::UpdateFont()
         wxButton::SetFont(m_selectedFont);
     }
     
+    wxString label = wxString::Format(wxT("%s, %d"),
+                                  m_selectedFont.GetFaceName().c_str(),
+                                  m_selectedFont.GetPointSize());
+                                  
     if (HasFlag(wxFNTP_FONTDESC_AS_LABEL))
     {
-        SetLabel(wxString::Format(wxT("%s, %d"),
-                                  m_selectedFont.GetFaceName().c_str(),
-                                  m_selectedFont.GetPointSize()));
+        SetLabel(label);
     }
+    
+    auto minsize = GetTextExtent(label);
+    SetSize(minsize);
+    
+    GetParent()->Layout();
+
 }
 

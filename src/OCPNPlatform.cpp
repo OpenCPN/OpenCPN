@@ -2928,7 +2928,9 @@ void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
 
 void OCPNColourPickerCtrl::UpdateColour()
 {
+#ifndef __OCPN__ANDROID__
     SetBitmapLabel(wxBitmap());
+#endif    
     
     wxMemoryDC dc(m_bitmap);
     dc.SetPen( *wxTRANSPARENT_PEN );
