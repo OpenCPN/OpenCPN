@@ -40,7 +40,7 @@
 ** You can use it any way you like.
 */
 
-extern wxString g_TalkerIdText;
+//extern wxString g_TalkerIdText;
 
 RESPONSE::RESPONSE()
 {
@@ -78,14 +78,14 @@ bool RESPONSE::Write( SENTENCE& sentence )
     if(NULL == container_p)
           sentence.Sentence.Append(_T("--"));
     else {
-        if ( g_TalkerIdText.length() == 0) {
+      //  if ( g_TalkerIdText.length() == 0) {
           sentence.Sentence.Append(container_p->TalkerID);
-        }
-        else {
-            sentence.Sentence.Append( g_TalkerIdText );
-        }
+      //  }
+      //  else {
+      //      sentence.Sentence.Append( g_TalkerIdText );
+      //  }
     }
-    
+
     sentence.Sentence.Append(Mnemonic);
 
    return( TRUE );

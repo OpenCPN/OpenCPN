@@ -17,7 +17,7 @@
 ## *   Free Software Foundation, Inc.,                                       *
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ## ***************************************************************************
- 
+
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1.1)
@@ -80,7 +80,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 
-SET(wxWidgets_USE_LIBS base core net xml html adv)
+SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 SET(BUILD_SHARED_LIBS TRUE)
 FIND_PACKAGE(wxWidgets REQUIRED)
 
@@ -88,7 +88,7 @@ INCLUDE(${wxWidgets_USE_FILE})
 
 FIND_PACKAGE(Gettext REQUIRED)
 
-# For convenience we define the sources as a variable. You can add 
+# For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
 
@@ -133,8 +133,6 @@ SET(SRC_NMEA0183
 		src/nmea0183/gga.cpp
 		src/nmea0183/gsv.hpp
 		src/nmea0183/gsv.cpp
-    src/nmea0183/apb.cpp
-    src/nmea0183/apb.hpp
     src/nmea0183/GPwpl.cpp
     src/nmea0183/GPwpl.hpp
     src/nmea0183/xte.cpp
