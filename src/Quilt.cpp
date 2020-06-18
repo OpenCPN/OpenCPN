@@ -1587,9 +1587,12 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_parent->GetCanvasScaleFactor(), false );
             double max_ref_scale = pc->GetNormalScaleMax( m_parent->GetCanvasScaleFactor(), m_canvas_width );
-
-            proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
-            proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
+            if((proposed_scale_onscreen >= min_ref_scale) && (proposed_scale_onscreen <= max_ref_scale))
+                return vp_in.view_scale_ppm;
+            else{
+                proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
+                proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
+            }
         }
     }
     return m_parent->GetCanvasScaleFactor() / proposed_scale_onscreen;
