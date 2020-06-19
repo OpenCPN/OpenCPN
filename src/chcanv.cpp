@@ -8971,8 +8971,11 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
-    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+    bool bNew = false;
+    if ( !g_pMarkInfoDialog ){    // There is one global instance of the MarkProp Dialog
         g_pMarkInfoDialog = new MarkInfoDlg(this);
+        bNew = true;
+    }
 
     if( 1/*g_bresponsive*/ ) {
         wxSize canvas_size = GetSize();
@@ -9015,6 +9018,8 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     g_pMarkInfoDialog->Show();
     g_pMarkInfoDialog->Raise();
     g_pMarkInfoDialog->InitialFocus();
+    if(bNew)
+        g_pMarkInfoDialog->CenterOnScreen();
 }
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
