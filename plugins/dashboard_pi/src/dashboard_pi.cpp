@@ -1435,6 +1435,7 @@ void dashboard_pi::ParseSignalK( wxString &msg)
     //wxString dmsg( _T("Dashboard:SignalK Event received: ") );
     //dmsg.append(msg);
     //wxLogMessage(dmsg);
+    //printf("%s\n", dmsg.ToUTF8().data());
 
     if(root.HasMember("self")) {
         if(root["self"].AsString().StartsWith(_T("vessels.")))
@@ -1515,20 +1516,22 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
         else if(update_path == _T("navigation.headingMagnetic")){
             if (mPriHeadingM >= 1){
                 mPriHeadingM = 1;
-                double hdm = GEODESIC_RAD2DEG(value.AsDouble());
-                SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
-                mHDx_Watchdog = gps_watchdog_timeout_ticks;
+                if(value.IsDouble()){
+                    double hdm = GEODESIC_RAD2DEG(value.AsDouble());
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+                    mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
-                // If no higher priority HDT, calculate it here.
-                if (mPriHeadingT >= 5 && (!std::isnan(mVar))) {
-                    mPriHeadingT = 5;
-                    double heading = hdm + mVar;
-                    if (heading < 0)
-                        heading += 360;
-                    else if (heading >= 360.0)
-                        heading -= 360;
-                    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
-                    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+                    // If no higher priority HDT, calculate it here.
+                    if (mPriHeadingT >= 5 && (!std::isnan(mVar))) {
+                        mPriHeadingT = 5;
+                        double heading = hdm + mVar;
+                        if (heading < 0)
+                            heading += 360;
+                        else if (heading >= 360.0)
+                            heading -= 360;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
+                        mHDT_Watchdog = gps_watchdog_timeout_ticks;
+                    }
                 }
             }
         }
