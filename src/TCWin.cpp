@@ -1,6 +1,8 @@
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
+#include "wx/listctrl.h"
+
 #include "TCWin.h"
 #include "timers.h"
 #include "chcanv.h"
@@ -145,9 +147,16 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     btc_valid = false;
 
     wxString* TClist = NULL;
-    m_tList = new wxListBox( this, -1, wxPoint( sx * 65 / 100, 11 ),
-                             wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), 0, TClist,
-                             wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_HSCROLL  );
+    m_tList = new wxListCtrl( this, -1, wxPoint( sx * 65 / 100, 11 ),
+                             wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), wxLC_REPORT | wxLC_NO_HEADER );
+    
+   // Add first column       
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("") );
+    col0.SetAlign(wxLIST_FORMAT_LEFT);
+    col0.SetWidth( sx * 30 / 100 ); 
+    m_tList->InsertColumn(0, col0);
 
     //  Measure the size of a generic button, with label
     wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
@@ -524,7 +533,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
             tcmax = -10;
             tcmin = 10;
             float val;
-            m_tList->Clear();
+            m_tList->DeleteAllItems();
             int list_index = 0;
             bool wt;
 
@@ -560,7 +569,12 @@ void TCWin::OnPaint( wxPaintEvent& event )
                         s.Append( _T("   ") );
                         ( wt ) ? s.Append( _("HW") ) : s.Append( _("LW") );         //write HW or LT
 
-                        m_tList->Insert( s, list_index );                       // update table list
+                        wxListItem li;
+                        li.SetId( list_index );
+                        li.SetAlign(wxLIST_FORMAT_LEFT);
+                        li.SetText(s);
+                        li.SetColumn(0);
+                        m_tList->InsertItem( li );
                         list_index++;
                         wt = !wt;                                            //change tide flow sens
                     }
@@ -577,7 +591,13 @@ void TCWin::OnPaint( wxPaintEvent& event )
                     if( pmsd ) s.Append( wxString( pmsd->units_abbrv, wxConvUTF8 ) );
                     s1.Printf( _T("  %03.0f"), dir );                              //write direction
                     s.Append( s1 );
-                    m_tList->Insert( s, list_index );                           // update table list
+                    
+                    wxListItem li;
+                    li.SetId( list_index );
+                    li.SetAlign(wxLIST_FORMAT_LEFT);
+                    li.SetText(s);
+                    li.SetColumn(0);
+                    m_tList->InsertItem( li );
                     list_index++;
                 }
 
