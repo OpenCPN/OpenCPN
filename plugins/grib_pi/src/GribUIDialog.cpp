@@ -325,8 +325,13 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
     SetRequestBitmap( m_ZoneSelMode );
 
     // Careful here, this MinSize() sets the final width of the control bar, overriding the width of the wxChoice above it.
+#ifdef __OCPN__ANDROID__
     m_sTimeline->SetSize( wxSize( 20 * m_ScaledFactor , -1 ) );
     m_sTimeline->SetMinSize( wxSize( 20 * m_ScaledFactor , -1 ) );
+#else
+    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+#endif    
 
 }
 
