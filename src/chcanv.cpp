@@ -11432,13 +11432,13 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif
 
-#if 0
+#ifndef __OCPN__ANDROID__
     // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
     //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
     float nominal_icon_size_pixels = 48;  // 3 x 16
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
-#endif
 
+#else    
     //  Yet another method goes like this:
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
@@ -11453,7 +11453,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float targetHeight = wxMin(targetHeight0, displaySize / 15);
     
     double pix_factor = targetHeight / symHeight;
-
+#endif
     
     scale_factor *= pix_factor;
     
