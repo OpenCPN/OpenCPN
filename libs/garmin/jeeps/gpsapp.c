@@ -36,6 +36,10 @@
 #include "garminusb.h"
 #include "gpsusbint.h"
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 #define XMIN(a,b) (a < b? a : b)
 
 static UC Is_Trackpoint_Invalid(GPS_PTrack trk);

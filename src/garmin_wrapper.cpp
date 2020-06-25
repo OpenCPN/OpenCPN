@@ -50,16 +50,10 @@ wxString GetLastGarminError(void)
 int Garmin_GPS_Init( const wxString &port_name)
 {
       int ret;
-#ifdef GPS_DEBUG0
-//      if (getenv("OPENCPN_GPS_ERROR") != NULL)
-	GPS_Enable_Error();
-//      if (getenv("OPENCPN_GPS_WARNING") != NULL)
-	GPS_Enable_Warning();
-//      if (getenv("OPENCPN_GPS_USER") != NULL)
-	GPS_Enable_User();
-//      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
-	GPS_Enable_Diagnose();
-#endif
+      GPS_Enable_Error();
+      GPS_Enable_Warning();
+      GPS_Enable_User();
+      GPS_Enable_Diagnose();
       char m[1];
       m[0] = '\0';
 

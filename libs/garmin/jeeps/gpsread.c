@@ -33,6 +33,9 @@
 #include <windows.h>
 #endif
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
 
 /* @func GPS_Time_Now ***********************************************
 **

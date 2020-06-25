@@ -33,6 +33,10 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 extern char last_error[];
 
 

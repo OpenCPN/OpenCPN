@@ -33,6 +33,10 @@
 #include "gpsusbcommon.h"
 //#include "../garmin_device_xml.h"
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 /* Constants from Garmin doc. */
 
 // {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0} 

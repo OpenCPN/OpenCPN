@@ -24,6 +24,9 @@
 ********************************************************************/
 #include "garmin_gps.h"
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
 
 static int32 GPS_A600_Rqst(gpsdevh *fd, time_t Time);
 static int32 GPS_A700_Rqst(gpsdevh *fd, double lat, double lon);
