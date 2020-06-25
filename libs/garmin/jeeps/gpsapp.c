@@ -287,20 +287,22 @@ static int32 GPS_A000(const char *port)
  
         // It seems that sometimes the first byte received after port open is lost...
         //      On error, Flush() and try once more....
-        GPS_Error("GPS_Get_Ack error");
+        GPS_Error("GPS_Get_Ack error: %d", gps_errno);
         
         GPS_Device_Flush(fd);
             
         if(!GPS_Write_Packet(fd,tra))
         {
-            GPS_Error("GPS_Write_Packet error");
+            GPS_Error("GPS_Write_Packet error: %d: %s",
+                       gps_errno, GetDeviceLastError());
             err = -55;
             goto carry_out;
         }
         
         if(!GPS_Get_Ack(fd, &tra, &rec))
         {
-            GPS_Error("GPS_Get_Ack error");
+            GPS_Error("GPS_Get_Ack error %d: %s",
+                      gps_errno, GetDeviceLastError());
             err = -56;
             goto carry_out;
         }            

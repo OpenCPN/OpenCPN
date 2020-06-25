@@ -109,8 +109,8 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 	    {
 		if(u != DLE)
 		{
-//		    (void) fprintf(stderr,"GPS_Packet_Read: No DLE.  Data received, but probably not a garmin packet.\n");
-//		    (void) fflush(stderr);
+		    GPS_Error(
+		        "GPS_Packet_Read: No DLE.  Data received, but probably not a garmin packet.\n");
 		    return 0;
 		}
                 ++len;
