@@ -212,12 +212,13 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 
 int32 GPS_Serial_Get_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec)
 {
-    if(!GPS_Serial_Packet_Read(fd, rec))
+    if(!GPS_Serial_Packet_Read(fd, rec)) {
+        gps_errno = INPUT_ERROR;
 	return 0;
-
+    }
     if(LINK_ID[0].Pid_Ack_Byte != (*rec)->type)
     {
-          gps_errno = FRAMING_ERROR;
+          gps_errno = PROTOCOL_ERROR;
 /* rjl	return 0; */
     }
 
