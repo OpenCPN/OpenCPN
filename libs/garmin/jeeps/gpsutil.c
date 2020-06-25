@@ -35,6 +35,7 @@ int32 gps_user    = 0;
 int32 gps_show_bytes = 0;
 int32 gps_errno = 0;
 
+const int LAST_ERROR_SIZE = 256;
 char last_error[256];
 
 

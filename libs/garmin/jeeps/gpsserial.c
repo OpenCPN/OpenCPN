@@ -34,6 +34,7 @@
 #include <time.h>
 
 extern char last_error[];
+extern const int LAST_ERROR_SIZE;
 
 #if 0
 #define GARMULATOR 1
@@ -94,10 +95,10 @@ typedef struct {
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
-      va_list argp;
-      va_start(argp, mb);
-      sprintf(last_error, mb, argp);
-      va_end(argp);
+      va_list ap;
+      va_start(ap, mb);
+      vsnprintf(last_error, LAST_ERROR_SIZE, mb, ap);
+      va_end(ap);
 
 /*
 	va_list ap;
