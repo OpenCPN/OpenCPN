@@ -36,6 +36,7 @@
 extern char last_error[];
 extern const int LAST_ERROR_SIZE;
 
+
 #if 0
 #define GARMULATOR 1
 char *rxdata[] = {
@@ -355,12 +356,10 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
-      va_list argp;
-      va_start(argp, mb);
-
-      sprintf(last_error, mb, argp);
-
-      va_end(argp);
+      va_list ap;
+      va_start(ap, mb);
+      vsnprintf(last_error, LAST_ERROR_SIZE, mb, ap);
+      va_end(ap);
 
 //      GPS_Error(mb);
 /*dsr
