@@ -511,20 +511,12 @@ void GPS_Fatal(char *s)
 
 void GPS_Error(char *fmt, ...)
 {
-    va_list argp;
-    va_start(argp, fmt);
-
+    va_list ap;
     if(!gps_error)
 	return;
-
-
-    fprintf(stderr, "[ERROR] ");
-    vfprintf(stderr, fmt, argp);
-    fprintf(stderr, "\n");
-
-    sprintf(last_error, fmt, argp);
-
-    va_end(argp);
+    va_start(ap, fmt);
+    vsnprintf(last_error, LAST_ERROR_SIZE, fmt, ap);
+    va_end(ap);
     return;
 }
 
