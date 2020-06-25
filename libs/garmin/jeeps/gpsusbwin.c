@@ -53,7 +53,7 @@ typedef struct {
         int booger;
 } winusb_unit_data;
 
-static HANDLE *usb_handle = INVALID_HANDLE_VALUE;
+static HANDLE usb_handle = INVALID_HANDLE_VALUE;
 static int usb_tx_packet_size ;
 //dsr static const gdx_info *gdx;
 
@@ -133,7 +133,7 @@ static gusb_llops_t win_llops = {
 };
 
 static
-HANDLE * garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
+HANDLE garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
 {
 	DWORD size;
 	PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
@@ -142,7 +142,7 @@ HANDLE * garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata
 	SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata, 
 			NULL, 0, &size, NULL);
 
-	pdd = malloc(size);
+	pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA) malloc(size);
 	pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
 	devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
@@ -190,7 +190,7 @@ static char ** get_garmin_mountpoints(void)
 #define BUFSIZE 512
   char szTemp[MAX_PATH];
   char *p = szTemp;
-  char **dlist = malloc(sizeof(*dlist));
+  char **dlist = (char**) malloc(sizeof(*dlist));
 
   int i = 0;
   dlist[0] = NULL;
@@ -223,7 +223,7 @@ gusb_init(const char *pname, gpsdevh **dh)
 	HDEVINFO hdevinfo;
 	SP_DEVICE_INTERFACE_DATA devinterface;
 
-	winusb_unit_data *wud = xcalloc(sizeof (winusb_unit_data), 1);
+	winusb_unit_data *wud = (winusb_unit_data*) xcalloc(sizeof (winusb_unit_data), 1);
 	*dh = (gpsdevh*) wud;
 
 	gusb_register_ll(&win_llops);
@@ -265,7 +265,7 @@ gusb_init(const char *pname, gpsdevh **dh)
 			return 0;
 		}
 		/* We've matched.  Now start the specific unit. */
-		garmin_usb_start(hdevinfo, &devinterface);
+		garmin_usb_start(&hdevinfo, &devinterface);
 		return 1;
 	}
 
@@ -287,7 +287,7 @@ gusb_init(const char *pname, gpsdevh **dh)
 			}	
 		}
 		/* We've matched.  Now start the specific unit. */
-		garmin_usb_start(hdevinfo, &devinterface);
+		garmin_usb_start(&hdevinfo, &devinterface);
 		gusb_close(NULL);
 	}
 	gusb_list_units();

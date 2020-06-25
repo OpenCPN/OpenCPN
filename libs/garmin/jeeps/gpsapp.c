@@ -174,7 +174,7 @@ static void   GPS_D501_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D550_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D551_Send(UC *data, GPS_PAlmanac alm);
 
-void  VerifySerialPortClosed(void);  /*  In gpsserial.c  */
+#include "gpsserial.h"
 
 void VerifyPortClosed()
 {
@@ -7461,7 +7461,7 @@ void GPS_Prepare_Track_For_Device(GPS_PTrack **trk, int32 *n)
 			trkpt->distance_populated = 0;
 			trkpt->heartrate = 0;
 			trkpt->cadence = 0xff;
-			*trk = xrealloc(*trk, (*n+1) * sizeof(GPS_PTrack));
+			*trk = (GPS_STrack**) xrealloc(*trk, (*n+1) * sizeof(GPS_PTrack));
 			memmove(&(*trk)[i+1], &(*trk)[i], (*n-i) * sizeof(GPS_PTrack));
 			(*trk)[i] = trkpt;
 			i++;

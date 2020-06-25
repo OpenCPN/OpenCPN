@@ -51,7 +51,7 @@ if (WIN32)
   set(SRC ${SRC} jeeps/gpsusbwin.c)
   add_definitions(-D__WIN32__)
 endif ()
-
+set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX )
 
 add_library(GARMINHOST STATIC ${SRC})
 add_library(ocpn::garminhost ALIAS GARMINHOST)

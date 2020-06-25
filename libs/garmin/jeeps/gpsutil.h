@@ -32,6 +32,8 @@ extern "C"
 
 #include "garmin_gps.h"
 
+#define LAST_ERROR_SIZE 256
+
 int32  GPS_Util_Little(void);
 
 US     GPS_Util_Get_Short(const UC *s);
@@ -47,8 +49,8 @@ int32  GPS_Util_Block(int32 fd, int32 state);
 void   GPS_Util_Put_Uint(UC *s, const uint32 v);
 uint32 GPS_Util_Get_Uint(const UC *s);
 
-void   GPS_Warning(char *s);
-void   GPS_Error(char *fmt, ...);
+void   GPS_Warning(const char *s);
+void   GPS_Error(const char *fmt, ...);
 void   GPS_Serial_Error(const char *hdr, ...);
 void   GPS_Fatal(char *s);
 void   GPS_Enable_Error(void);

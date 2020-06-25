@@ -164,7 +164,7 @@ void GPS_Math_UTM_EN_to_LatLon(int ReferenceEllipsoid,
 			       const double lambda0, const double E0, const double N0);
 
 int32 GPS_Lookup_Datum_Index(const char *n);
-char *GPS_Math_Get_Datum_Name(const int datum_index);
+const char *GPS_Math_Get_Datum_Name(const int datum_index);
 
 #endif
 

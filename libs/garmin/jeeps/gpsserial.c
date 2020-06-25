@@ -34,7 +34,6 @@
 #include <time.h>
 
 extern char last_error[];
-extern const int LAST_ERROR_SIZE;
 
 
 #if 0
@@ -130,7 +129,7 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 #endif
 
 	const char *xname = fix_win_serial_name(port);
-	win_serial_data *wsd = xcalloc(sizeof (win_serial_data), 1);
+	win_serial_data *wsd = (win_serial_data*) xcalloc(sizeof (win_serial_data), 1);
 	*dh = (gpsdevh*) wsd;
       g_gps_devh = (gpsdevh*) wsd;        // save a global copy
 
@@ -557,7 +556,7 @@ int32 GPS_Serial_Wait(gpsdevh *dh)
 
 int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 {
-    posix_serial_data *psd = xcalloc(sizeof (posix_serial_data), 1);
+    posix_serial_data *psd = (posix_serial_data*) xcalloc(sizeof (posix_serial_data), 1);
     *dh = (gpsdevh*) psd;
     g_gps_devh = (gpsdevh*) psd;        // save a global copy
 

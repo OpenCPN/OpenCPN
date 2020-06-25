@@ -35,8 +35,7 @@ int32 gps_user    = 0;
 int32 gps_show_bytes = 0;
 int32 gps_errno = 0;
 
-const int LAST_ERROR_SIZE = 256;
-char last_error[256];
+char last_error[LAST_ERROR_SIZE];
 
 
 char * GetDeviceLastError(void)
@@ -466,7 +465,7 @@ int32 GPS_Util_Block(int32 fd, int32 state)
 ** @@
 ****************************************************************************/
 
-void GPS_Warning(char *s)
+void GPS_Warning(const char *s)
 {
     if(!gps_warning)
 	return;
@@ -489,7 +488,7 @@ void GPS_Warning(char *s)
 ** @@
 ****************************************************************************/
 
-void GPS_Fatal(char *s)
+void GPS_Fatal(const char *s)
 {
 
     fprintf(stderr,"[FATAL] %s\n",s);
@@ -509,7 +508,7 @@ void GPS_Fatal(char *s)
 ** @@
 ****************************************************************************/
 
-void GPS_Error(char *fmt, ...)
+void GPS_Error(const char *fmt, ...)
 {
     va_list ap;
     if(!gps_error)
