@@ -318,7 +318,8 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
      */
     if((psd->fd = open(port, O_RDWR))==-1)
     {
-	GPS_Serial_Error("XSERIAL: Cannot open serial port '%s'", port);
+	GPS_Serial_Error("XSERIAL: Cannot open serial port '%s': %s",
+                         port, strerror(errno));
 	gps_errno = SERIAL_ERROR;
 	return 0;
     }
@@ -326,7 +327,7 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
     if(tcgetattr(psd->fd,&psd->gps_ttysave)==-1)
     {
 	gps_errno = HARDWARE_ERROR;
-	GPS_Serial_Error("SERIAL: tcgetattr error");
+	GPS_Serial_Error("SERIAL: tcgetattr error: %s", strerror(errno));
 	return 0;
     }
     tty = psd->gps_ttysave;
@@ -344,7 +345,7 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
 
     if(tcsetattr(psd->fd,TCSANOW|TCSAFLUSH,&tty)==-1)
     {
-	GPS_Serial_Error("SERIAL: tcsetattr error");
+	GPS_Serial_Error("SERIAL: tcsetattr error: %s", strerror(errno));
 	return 0;
     }
 
