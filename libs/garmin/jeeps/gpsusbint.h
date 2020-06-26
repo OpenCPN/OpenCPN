@@ -21,6 +21,8 @@
 
  */
 
+#include "gpsdevice.h"
+
 int32 GPS_Packet_Read_usb(gpsdevh *fd, GPS_PPacket *packet, int eatbulk);
 void  GPS_Make_Packet_usb(GPS_PPacket *packet, UC type, UC *data, int16 n);
 int32 GPS_Write_Packet_usb(gpsdevh *fd, GPS_PPacket packet);
