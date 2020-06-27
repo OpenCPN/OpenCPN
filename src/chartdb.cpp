@@ -67,8 +67,6 @@ extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
-extern std::vector<int>      g_quilt_noshow_index_array;
-extern std::vector<int>      g_quilt_yesshow_index_array;
 extern unsigned int  g_canvasConfig;
 extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
@@ -1517,16 +1515,66 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                         //  See FS#2601
                         //  Further optimization:
                         //  If any chart group being shown contains only MBTiles, and the target file is less than 5 GB in size,
-                        //   then allow immediate opening.  Otherwise, add this chart to the "no-show" array.
+                        //   then allow immediate opening.  Otherwise, add this chart to the "no-show" array for each chart.
                         if(chart_type == CHART_TYPE_MBTILES){
                             wxFileName tileFile(ChartFullPath);
                             wxULongLong tileSize = tileFile.GetSize();
                             if(!CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
-                                // Check to see if the tile has been "clicked".
+                                // Check to see if the tile has been "clicked" in either canvas.
                                 // If so, do not add to no-show array again.
-                                if(std::find(g_quilt_yesshow_index_array.begin(), g_quilt_yesshow_index_array.end(), dbindex) == g_quilt_yesshow_index_array.end()) {
-                                    if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), dbindex) == g_quilt_noshow_index_array.end()) {
-                                        g_quilt_noshow_index_array.push_back( dbindex );
+                                bool b_clicked = false;
+                                canvasConfig *cc;
+                                ChartCanvas *canvas = NULL;
+                                switch(g_canvasConfig){
+                                    case 1:
+                                        cc = g_canvasConfigArray.Item(0);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
+                                        }
+                                        cc = g_canvasConfigArray.Item(1);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
+                                        }
+                                        break;
+                                    default:
+                                        cc = g_canvasConfigArray.Item(0);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                b_clicked |= canvas->IsTileOverlayIndexInYesShow(dbindex);
+                                        }
+                                        break;
+                                }
+                                
+                                //  Add to all canvas noshow arrays
+                                if(!b_clicked) {
+                                    switch(g_canvasConfig){
+                                    case 1:
+                                        cc = g_canvasConfigArray.Item(0);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                canvas->AddTileOverlayIndexToNoShow(dbindex);
+                                        }
+                                        cc = g_canvasConfigArray.Item(1);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                canvas->AddTileOverlayIndexToNoShow(dbindex);
+                                        }
+                                        break;
+                                    default:
+                                        cc = g_canvasConfigArray.Item(0);
+                                        if(cc ){
+                                            ChartCanvas *canvas = cc->canvas;
+                                            if(canvas)
+                                                canvas->AddTileOverlayIndexToNoShow(dbindex);
+                                        }
+                                        break;
                                     }
                                 }
                             }
@@ -2000,15 +2048,19 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup( )
             cc = g_canvasConfigArray.Item(0);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[0])
-                    rv |= m_checkedTileOnly[0];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                        rv |= m_checkedTileOnly[0];
+                }
             }
 
             cc = g_canvasConfigArray.Item(1);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[1])
-                    rv |= m_checkedTileOnly[1];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[1])
+                        rv |= m_checkedTileOnly[1];
+                }
             }
             break;
             
@@ -2016,8 +2068,10 @@ bool ChartDB::CheckAnyCanvasExclusiveTileGroup( )
             cc = g_canvasConfigArray.Item(0);
             if(cc ){
                 ChartCanvas *canvas = cc->canvas;
-                if(canvas->m_groupIndex == m_checkGroupIndex[0])
-                    rv |= m_checkedTileOnly[0];
+                if(canvas){
+                    if(canvas->m_groupIndex == m_checkGroupIndex[0])
+                        rv |= m_checkedTileOnly[0];
+                }
             }
 
     }

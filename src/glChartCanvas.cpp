@@ -138,7 +138,6 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern bool             g_bShowChartBar;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
-extern std::vector<int> g_quilt_noshow_index_array;
 
 GLenum       g_texture_rectangle_format;
 
@@ -4901,10 +4900,26 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
         std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
-                continue;
-            }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
+                if(m_pParentCanvas->IsTileOverlayIndexInNoShow(stackIndexArray[is])){
+                // Turn off the piano highlite
+                    std::vector<int>  piano_active_array_tiles = m_pParentCanvas->m_Piano->GetActiveKeyArray();
+                    bool bfound = false;
+    
+                    for( unsigned int i = 0; i < piano_active_array_tiles.size(); i++ ) {
+                        if( piano_active_array_tiles[i] == stackIndexArray[is] ){ 
+                            piano_active_array_tiles.erase(piano_active_array_tiles.begin() + i );  // erase it
+                            bfound = true;
+                            break;
+                        }
+                    }
+
+                    if(bfound)
+                        m_pParentCanvas->m_Piano->SetActiveKeyArray( piano_active_array_tiles );
+                
+                    continue;
+                }
+                
                 tiles_to_show.push_back(stackIndexArray[is]);
                 if(!regionVPBuilt){
                     screen_region = OCPNRegion(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
@@ -4918,7 +4933,6 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
 
                     regionVPBuilt = true;
                 }
-    
             }
         }
     
@@ -4927,8 +4941,22 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                             rit != tiles_to_show.rend(); ++rit) {
             ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
         
+            wxFileName tileFile(chart->GetFullPath());
+            wxULongLong tileSize = tileFile.GetSize();
+        
+            if(!ChartData->CheckAnyCanvasExclusiveTileGroup() || (tileSize > 5e9)){
+                // Check to see if the tile has been "clicked".
+                // If so, do not add to no-show array again.
+                if(!m_pParentCanvas->IsTileOverlayIndexInYesShow(*rit)){
+                    if(!m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)){
+                        m_pParentCanvas->m_tile_noshow_index_array.push_back( *rit );
+                    }
+                }
+            }
+
+        
             // This test catches the case where the chart is added to no_show list when first loaded by OpenChartFromDBAndLock
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), *rit) != g_quilt_noshow_index_array.end()) {
+            if(m_pParentCanvas->IsTileOverlayIndexInNoShow(*rit)){
                 continue;
             }
             

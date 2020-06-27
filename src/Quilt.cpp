@@ -40,7 +40,6 @@
 WX_DEFINE_LIST( PatchList );
 
 extern ChartDB *ChartData;
-extern std::vector<int> g_quilt_noshow_index_array;
 extern s52plib *ps52plib;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
@@ -315,8 +314,8 @@ bool Quilt::IsChartQuiltableRef( int db_index )
 
     //    In noshow array?
     bool b_noshow = false;
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == db_index )        // chart is in the noshow list
+    for( unsigned int i = 0; i < m_parent->GetQuiltNoshowIindexArray().size(); i++ ) {
+        if( m_parent->GetQuiltNoshowIindexArray()[i] == db_index )        // chart is in the noshow list
         {
             b_noshow = true;
             break;
@@ -364,8 +363,8 @@ std::vector<int> Quilt::GetCandidatedbIndexArray( bool from_ref_chart, bool excl
                 // Search the no-show array
                 if( exclude_user_hidden ) {
                     bool b_noshow = false;
-                    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-                        if( g_quilt_noshow_index_array[i] == pqc->dbIndex ) // chart is in the noshow list
+                    for( unsigned int i = 0; i < m_parent->GetQuiltNoshowIindexArray().size(); i++ ) {
+                        if( m_parent->GetQuiltNoshowIindexArray()[i] == pqc->dbIndex ) // chart is in the noshow list
                         {
                             b_noshow = true;
                             break;
@@ -1588,9 +1587,12 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_parent->GetCanvasScaleFactor(), false );
             double max_ref_scale = pc->GetNormalScaleMax( m_parent->GetCanvasScaleFactor(), m_canvas_width );
-
-            proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
-            proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
+            if((proposed_scale_onscreen >= min_ref_scale) && (proposed_scale_onscreen <= max_ref_scale))
+                return vp_in.view_scale_ppm;
+            else{
+                proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
+                proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
+            }
         }
     }
     return m_parent->GetCanvasScaleFactor() / proposed_scale_onscreen;
@@ -1808,8 +1810,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 //  If this chart appears in the no-show array, then simply include it, but
                 //  don't subtract its region when determining the smaller scale charts to include.....
                 bool b_in_noshow = false;
-                for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.size(); ins++ ) {
-                    if( g_quilt_noshow_index_array[ins] == pqc->dbIndex ) // chart is in the noshow list
+                for( unsigned int ins = 0; ins < m_parent->GetQuiltNoshowIindexArray().size(); ins++ ) {
+                    if( m_parent->GetQuiltNoshowIindexArray()[ins] == pqc->dbIndex ) // chart is in the noshow list
                     {
                         b_in_noshow = true;
                         break;
@@ -1860,8 +1862,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
             
             if( cte.Scale_ge( m_reference_scale) ) {
                 bool b_in_noshow = false;
-                for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.size(); ins++ ) {
-                    if( g_quilt_noshow_index_array[ins] == pqc->dbIndex ) // chart is in the noshow list
+                for( unsigned int ins = 0; ins < m_parent->GetQuiltNoshowIindexArray().size(); ins++ ) {
+                    if( m_parent->GetQuiltNoshowIindexArray()[ins] == pqc->dbIndex ) // chart is in the noshow list
                     {
                         b_in_noshow = true;
                         break;
@@ -2053,8 +2055,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
         wxPatchListNode *pcinode = m_PatchList.Item(i);
         QuiltPatch *piqp = pcinode->GetData();
-        for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.size(); ins++ ) {
-            if( g_quilt_noshow_index_array[ins] == piqp->dbIndex ) // chart is in the noshow list
+        for( unsigned int ins = 0; ins < m_parent->GetQuiltNoshowIindexArray().size(); ins++ ) {
+            if( m_parent->GetQuiltNoshowIindexArray()[ins] == piqp->dbIndex ) // chart is in the noshow list
             {
                 piqp->b_Valid = false;
                 break;

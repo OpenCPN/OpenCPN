@@ -62,6 +62,7 @@ public:
     bool bShowOutlines;
     bool bShowDepthUnits;
     bool bCourseUp;
+    bool bHeadUp;
     bool bLookahead;
     bool bShowAIS;
     bool bAttenAIS;

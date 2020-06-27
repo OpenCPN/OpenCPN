@@ -326,7 +326,8 @@ class options : private Uncopyable,
   void OnButtonSetStd(wxCommandEvent& event);
       
   void OnPageChange(wxListbookEvent &event);
-  void OnNBPageChange(wxNotebookEvent &event);
+  void OnTopNBPageChange(wxNotebookEvent &event);
+  void OnSubNBPageChange(wxNotebookEvent &event);
   void DoOnPageChange(size_t page);
 
   void OnButtonSelectSound(wxCommandEvent &event);
@@ -402,7 +403,7 @@ class options : private Uncopyable,
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor;
+  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
   // LIVE ETA OPTION
@@ -517,7 +518,7 @@ class options : private Uncopyable,
   wxStaticBoxSizer *activeSizer;
   wxBoxSizer *chartPanel;
   wxTextCtrl *pSelCtl;
-  wxListBox *pActiveChartsList;
+  wxListCtrl *pActiveChartsList;
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
@@ -647,7 +648,7 @@ class options : private Uncopyable,
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
   int m_returnChanges;
-  wxListBox *tcDataSelected;
+  wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;

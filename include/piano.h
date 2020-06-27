@@ -64,6 +64,7 @@ public:
       void SetActiveKey(int iactive) { m_iactive = iactive; }
       void SetActiveKeyArray(std::vector<int> array);
       void SetNoshowIndexArray(std::vector<int> array);
+      void AddNoshowIndexArray(std::vector<int> array);
       void SetEclipsedIndexArray(std::vector<int> array);
       void SetSkewIndexArray(std::vector<int> array);
       void SetTmercIndexArray(std::vector<int> array);

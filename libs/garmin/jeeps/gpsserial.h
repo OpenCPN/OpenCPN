@@ -53,7 +53,7 @@ int32  GPS_Serial_Write_Packet(gpsdevh *fd, GPS_PPacket packet);
 int32  GPS_Serial_Send_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec);
 void   GPS_Serial_Error(const char *hdr, ...);
 
-void VerifySerialPortClosed(void);
+void VerifySerialPortClosed();
 int Garmin_Serial_GPS_PVT_On( const char *port_name );
 int Garmin_Serial_GPS_PVT_Off( const char *port_name );
 int GPS_Serial_Command_Pvt_Get(GPS_PPvt_Data *pvt );

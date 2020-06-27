@@ -130,17 +130,21 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxStaticBoxSizer* boxNavMode = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Navigation Mode")), wxVERTICAL);
     generalSizer->Add(boxNavMode, 0, wxALL | wxEXPAND, border_size);
     
-    wxBoxSizer* rowOrientation = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* rowOrientation = new wxBoxSizer(wxVERTICAL);
     boxNavMode->Add(rowOrientation);
 
-    pCBNorthUp = new wxRadioButton(pDisplayPanel, wxID_ANY, _("North Up"));
+    pCBNorthUp = new wxRadioButton(pDisplayPanel, wxID_ANY, _("North Up"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     rowOrientation->Add(pCBNorthUp, inputFlags);
     pCBNorthUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
 
     pCBCourseUp = new wxRadioButton(pDisplayPanel, IDCO_COURSEUPCHECKBOX, _("Course Up"));
     rowOrientation->Add(pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing * 2));
     pCBCourseUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
-    
+ 
+    pCBHeadUp = new wxRadioButton(pDisplayPanel, IDCO_HEADUPCHECKBOX, _("Heading Up"));
+    rowOrientation->Add(pCBHeadUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing * 2));
+    pCBHeadUp->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+ 
     pCBLookAhead = new wxCheckBox(pDisplayPanel, IDCO_CHECK_LOOKAHEAD, _("Look Ahead Mode"));
     boxNavMode->Add(pCBLookAhead, verticleInputFlags);
     pCBLookAhead->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
@@ -279,8 +283,14 @@ void CanvasOptions::RefreshControlValues( void )
 //    pCBToolbar->SetValue(parentCanvas->GetToolbarEnable());
 
     // Navigation Mode
-    pCBNorthUp->SetValue(!parentCanvas->GetCourseUP());
-    pCBCourseUp->SetValue(parentCanvas->GetCourseUP());
+     int mode = parentCanvas->GetUpMode();
+     if(mode == NORTH_UP_MODE)
+         pCBNorthUp->SetValue( true );
+     else if(mode == COURSE_UP_MODE)
+         pCBCourseUp->SetValue( true );
+     else
+         pCBHeadUp->SetValue( true );
+    
     pCBLookAhead->SetValue(parentCanvas->GetLookahead());
     
     //  Display options
@@ -440,9 +450,14 @@ void CanvasOptions::UpdateCanvasOptions( void )
         b_needReLoad = true;
     }
     
-    bool setcourseUp = pCBCourseUp->GetValue();
-    if(setcourseUp != parentCanvas->GetCourseUP()){
-        parentCanvas->ToggleCourseUp();
+    int newMode = NORTH_UP_MODE;
+    if(pCBCourseUp->GetValue())
+        newMode = COURSE_UP_MODE;
+    else if(pCBHeadUp->GetValue())
+        newMode = HEAD_UP_MODE;
+    
+    if(newMode != parentCanvas->GetUpMode()){
+        parentCanvas->SetUpMode(newMode);
         b_needReLoad = true;
     }
 

@@ -5,6 +5,14 @@ matrix:
   include:
   - if: branch IN (master, plugins, plugins-build)
     env:
+    - OCPN_TARGET=focal-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
+    dist: focal
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
     - OCPN_TARGET=bionic
     - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=OFF"
     dist: bionic

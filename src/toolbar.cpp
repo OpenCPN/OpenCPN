@@ -2027,10 +2027,21 @@ void ocpnToolBarSimple::KillTooltip()
     if( m_last_ro_tool ) {
         if( m_last_ro_tool->IsEnabled() ) {
             if( m_last_ro_tool->IsToggled() ) {
-                m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_TOGGLED ) );
+                if( m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
+                    m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_TOGGLED ) );
+                }
+                else{
+                    m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon( m_last_ro_tool->pluginNormalIcon, TOOLICON_TOGGLED ));
+                }
+
             }
             else {
-                m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_NORMAL ) );
+                if( m_style->NativeToolIconExists(m_last_ro_tool->GetToolname()) ) {
+                    m_last_ro_tool->SetNormalBitmap( m_style->GetToolIcon( m_last_ro_tool->GetToolname(), TOOLICON_NORMAL ) );
+                }
+                else{
+                    m_last_ro_tool->SetNormalBitmap(m_style->BuildPluginIcon( m_last_ro_tool->pluginNormalIcon, TOOLICON_NORMAL ));
+                }
             }
         }
     }

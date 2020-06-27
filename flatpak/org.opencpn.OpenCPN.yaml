@@ -59,6 +59,8 @@ modules:
           - --enable-no_deps
           - --disable-rpath
           - --enable-ipv6
+      cleanup:
+          - /include/
 
     - name:  zlib
       sources:

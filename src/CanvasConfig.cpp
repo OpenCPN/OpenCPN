@@ -64,6 +64,7 @@ void canvasConfig::Reset( void){
         bShowTides = false;
         bShowCurrents = false;
         bCourseUp = false;
+        bHeadUp = false;
         bLookahead = false;
         bShowAIS = true;
         bAttenAIS = false;
@@ -96,6 +97,7 @@ void canvasConfig::LoadFromLegacyConfig( wxFileConfig *conf )
     conf->Read( _T ( "ShowTide" ), &bShowTides, 0 );
     conf->Read( _T ( "ShowCurrent" ), &bShowCurrents, 0 );
     conf->Read( _T ( "CourseUpMode" ), &bCourseUp, 0 );
+    conf->Read( _T ( "HeadUpMode" ), &bHeadUp, 0 );
     conf->Read( _T ( "LookAheadMode" ), &bLookahead, 0 );
 
     conf->Read( _T ( "ShowGrid" ), &bShowGrid, 0 );

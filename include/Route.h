@@ -103,6 +103,10 @@ public:
       bool IsActive() { return m_bRtIsActive; }
       bool IsSelected() { return m_bRtIsSelected; }
 
+      bool ContainsSharedWP();
+      void SetSharedWPViz( bool sharedWPVIZ){ m_bsharedWPViz = sharedWPVIZ; }
+      bool GetSharedWPViz(){ return m_bsharedWPViz; }
+      
       int SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
@@ -111,6 +115,7 @@ public:
     
       wxString GetName() const { return m_RouteNameString; }
       wxString GetTo() const { return m_RouteEndString; }
+      wxString GetGUID() const { return m_GUID; }
 
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
@@ -152,6 +157,7 @@ private:
       bool        m_bVisible; // should this route be drawn?
       bool        m_bListed;
       double      m_ArrivalRadius;
+      bool        m_bsharedWPViz;
 };
 
 WX_DECLARE_LIST(Route, RouteList); // establish class Route as list member

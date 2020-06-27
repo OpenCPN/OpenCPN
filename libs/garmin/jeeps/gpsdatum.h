@@ -31,11 +31,13 @@ extern "C"
 #ifndef gpsdatum_h
 #define gpsdatum_h
 
+#include <stddef.h>
+
 
 
 typedef struct GPS_SEllipse
 {
-    char   *name;
+    const char* name;
     double a;
     double invf;
 } GPS_OEllipse, *GPS_PEllipse;
@@ -76,7 +78,7 @@ GPS_OEllipse GPS_Ellipse[]=
 
 typedef struct GPS_SDatum
 {
-    char   *name;
+    const char* name;
     int    ellipse;
     double dx;
     double dy;
@@ -217,7 +219,7 @@ GPS_ODatum GPS_Datum[]=
 
 typedef struct GPS_SDatum_Alias
 {
-    char *alias;
+    const char* alias;
     const int datum;
 } GPS_ODatum_Alias, *GPS_PDatum_Alias;
 
@@ -258,7 +260,7 @@ GPS_ODatum_Alias GPS_DatumAlias[] =
 
 
 /* UK Ordnance Survey Nation Grid Map Codes */
-static char *UKNG[]=
+const static char *UKNG[]=
 {
     "SV","SW","SX","SY","SZ","TV","TW","SQ","SR","SS","ST","SU","TQ","TR",
     "SL","SM","SN","SO","SP","TL","TM","SF","SG","SH","SJ","SK","TF","TG",

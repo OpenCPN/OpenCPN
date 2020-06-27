@@ -681,6 +681,8 @@ void MUIBar::OnScaleSelected( wxMouseEvent &event )
     dlg.ShowModal();
     if( dlg.GetReturnCode() == wxID_OK ) {
         wxString newScale = dlg.m_ScaleCtl->GetValue();
+        if(newScale.Contains(':'))
+            newScale = newScale.AfterFirst(':');
         double dScale;
         if(newScale.ToDouble(&dScale)){
             // Try to constrain the scale to something reasonable

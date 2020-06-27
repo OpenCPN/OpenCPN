@@ -34,6 +34,7 @@ set( SRC
     jeeps/gpsrqst.h
     jeeps/gpsserial.h
     jeeps/gpsusbint.h
+    jeeps/gps_wx_logging.h
     jeeps/garminusb.h
     jeeps/gpscom.h
     jeeps/gpsdevice.h
@@ -51,7 +52,7 @@ if (WIN32)
   set(SRC ${SRC} jeeps/gpsusbwin.c)
   add_definitions(-D__WIN32__)
 endif ()
-
+set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX )
 
 add_library(GARMINHOST STATIC ${SRC})
 add_library(ocpn::garminhost ALIAS GARMINHOST)
@@ -59,6 +60,7 @@ if (MINGW)
   target_compile_definitions(GARMINHOST PRIVATE "-D_UNICODE")
 endif ()
 
+target_compile_definitions(GARMINHOST PRIVATE "-DUSE_WX_LOGGING")
 set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})

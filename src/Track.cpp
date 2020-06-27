@@ -727,7 +727,8 @@ void Track::Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box )
                 i+=2;
             }
 
-            glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
+            if(i > 2)
+                glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
         }
         glDisableClientState(GL_VERTEX_ARRAY);
 

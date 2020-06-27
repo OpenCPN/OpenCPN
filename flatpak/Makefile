@@ -11,8 +11,8 @@ GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
 RSYNC_RSH       ?= ssh
-RSYNC_HOST      ?= amazon-ec2
-REPO_URL        ?= http://opencpn.duckdns.org/opencpn-beta
+RSYNC_HOST      ?= mumin.crabdance.com
+REPO_URL        ?= http://opencpn.duckdns.org/opencpn
 
 all: build sign
 
@@ -52,7 +52,7 @@ sign:   install
 
 
 repourl:
-	sed -i '/^Url/s|=.*|=$(REPO_URL)|' repo/opencpn.flatpakref
+	sed -i '/^Url/s|=.*|=$(REPO_URL)|' $(DESTDIR)/opencpn.flatpakref
 
 publish:
 	rsync -a  --info=stats --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \

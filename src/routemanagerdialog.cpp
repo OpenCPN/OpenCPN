@@ -1300,14 +1300,16 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         Route *route = (Route*)m_pRouteListCtrl->GetItemData( clicked_index );
 
         int wpts_set_viz = wxID_YES;
-        bool togglesharedwpts = true;
+        bool invizsharedwpts = true;
         bool has_shared_wpts = g_pRouteMan->DoesRouteContainSharedPoints(route);
         
         if( has_shared_wpts && route->IsVisible() ) {
             wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to make the shared waypoints being part of this route invisible?"), _("Question"), wxYES_NO );
-            togglesharedwpts = (wpts_set_viz == wxID_YES);
+            invizsharedwpts = (wpts_set_viz == wxID_YES);
         }
-        route->SetVisible( !route->IsVisible(), togglesharedwpts );
+        route->SetVisible( !route->IsVisible(), invizsharedwpts );
+        route->SetSharedWPViz( !invizsharedwpts);
+        
         m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
         ::wxBeginBusyCursor();

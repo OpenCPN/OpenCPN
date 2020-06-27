@@ -423,8 +423,10 @@ static void run_update_dialog(PluginListPanel* parent,
     if (status != wxID_OK) {
         return;
     }
+    
     auto update = dialog.GetUpdate();
     if (uninstall) {
+        g_Platform->ShowBusySpinner();
         g_pi_manager->DeactivatePlugIn(pic);
         pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
@@ -432,6 +434,8 @@ static void run_update_dialog(PluginListPanel* parent,
         wxLogMessage("Uninstalling %s", plugin);
         PluginHandler::getInstance()->uninstall(plugin);
         g_pi_manager->UpdatePlugIns();
+        g_Platform->HideBusySpinner();
+
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
@@ -440,6 +444,9 @@ static void run_update_dialog(PluginListPanel* parent,
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
+        g_Platform->ShowBusySpinner();          // Will be cancelled in downloader->run()
+        wxYield();
+        
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg);
         
@@ -2034,10 +2041,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         b_compat = true;
     }
 
-    if(!b_compat){
-        wxLogMessage("Plugin is incompatible by elf library scan.");
-        return false;           // definitely not compatible by ELF lib dependency comparison
-    }
+    wxLogMessage("Plugin is compatible by elf library scan: %s", b_compat ? "true" : "false");
+    return b_compat;
 
 #endif  // LIBELF
 
@@ -2048,6 +2053,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     return true;
 #endif
 
+    // If libelf is not available, then we must use a simplistic file scan method.
+    // This is easily fooled if the wxWidgets version in use is not exactly recognized.
     // File scan is 3x faster than the ELF scan method
     
     FILE *f = fopen(plugin_file, "r");
@@ -5161,7 +5168,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     std::string filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
     auto catalogHdlr = CatalogHandler::getInstance();
+    
+    g_Platform->ShowBusySpinner();
     auto status = catalogHdlr->DownloadCatalog( filePath, url);
+    g_Platform->HideBusySpinner();
+    
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
         message = _("Cannot download data from url");
@@ -5904,9 +5915,14 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     itemBoxSizer02->Add(itemBoxSizer03);
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
     m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    wxFont font = *wxNORMAL_FONT;
+    
+    // Avoid known bug in wxGTK3
+#ifndef __WXGTK3__    
+    wxFont font = GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
+#endif    
+    
     itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
 
     m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );

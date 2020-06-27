@@ -38,7 +38,7 @@ class wxCommandEvent;
 class wxCloseEvent;
 class wxTextCtrl;
 class wxButton;
-class wxListBox;
+class wxListCtrl;
 
 WX_DECLARE_LIST(wxPoint, SplineList);           // for spline curve points
 
@@ -95,7 +95,7 @@ private:
       float       tcv[26];
       time_t      tt_tcv[26];
       
-      wxListBox  *m_tList ;
+      wxListCtrl  *m_tList ;
       bool        btc_valid;
       ChartCanvas    *pParent;
       int         m_corr_mins;

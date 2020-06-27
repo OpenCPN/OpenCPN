@@ -229,7 +229,11 @@ protected:
     bool            isChartChecked( int i );
     void            CheckAllCharts( bool value );
     void            InvertCheckAllCharts( );
-    
+#ifdef NEW_LIST
+    void            CheckNewCharts( bool value );
+    void            CheckUpdatedCharts(bool value);
+#endif	/* NEW_LIST */
+
 public:
     //ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();

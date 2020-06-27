@@ -518,12 +518,16 @@ void RoutePoint::ReLoadIcon( void )
     m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
-bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas)
+bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz)
 {    
     if( m_bIsActive)  //  An active route point must always be visible
         return true;
-    if( !m_bIsVisible ) // if not visible nevermind the rest.
-        return false;         
+
+    if(!boverrideViz){
+        if( !m_bIsVisible ) // if not visible nevermind the rest.
+            return false;         
+    }
+    
     if( b_UseScamin ){
         if (g_bOverruleScaMin)
             return true;
@@ -534,7 +538,7 @@ bool RoutePoint::IsVisibleSelectable(ChartCanvas *canvas)
     return true;
 }
 
-void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
+void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn, bool boverride_viz )
 {
     wxPoint r;
     wxRect hilitebox;
@@ -549,7 +553,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
     if( !m_bIsActive)  //  An active route point must always be visible
         if( !IsScaVisible( canvas) )          
             return;   */ 
-    if ( !IsVisibleSelectable(canvas) ) return;
+    if ( !IsVisibleSelectable(canvas, boverride_viz) ) return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -691,14 +695,9 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords, bool bVizOverride )
 {
-//     if( !m_bIsVisible ) 
-//         return;
-//     if( !m_bIsActive)  //  An active route point must always be visible
-//         if( !IsScaVisible( canvas) )          
-//             return;  ;
-    if ( !IsVisibleSelectable(canvas) ) return;
+    if ( !IsVisibleSelectable(canvas, bVizOverride) ) return;
     
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;

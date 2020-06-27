@@ -415,6 +415,8 @@ float                     g_ChartScaleFactorExp;
 int                       g_last_ChartScaleFactor;
 int                       g_ShipScaleFactor;
 float                     g_ShipScaleFactorExp;
+int                       g_ENCSoundingScaleFactor;
+
 
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;
@@ -689,9 +691,6 @@ int                       g_click_stop;
 
 int                       g_MemFootSec;
 int                       g_MemFootMB;
-
-std::vector<int>          g_quilt_noshow_index_array;
-std::vector<int>          g_quilt_yesshow_index_array;
 
 wxStaticBitmap            *g_pStatBoxTool;
 bool                      g_bShowStatusBar;
@@ -1788,6 +1787,10 @@ bool MyApp::OnInit()
     }
 #endif  // __OCPN__ANDROID__
 
+    if (getenv("OPENCPN_FATAL_ERROR") != 0) {
+        wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
+    }
+
     // Check if last run failed, set up safe_mode.
     if (!safe_mode::get_mode()) {
         safe_mode::check_last_start();
@@ -2094,18 +2097,6 @@ bool MyApp::OnInit()
         wxString("Version ") +  VERSION_FULL + " Build " + VERSION_DATE;
     g_bUpgradeInProcess = (vs != g_config_version_string);
     
-#ifndef __OCPN__ANDROID__    
-//  Send the Welcome/warning message if it has never been sent before,
-//  or if the version string has changed at all
-//  We defer until here to allow for localization of the message
-    if( !n_NavMessageShown || ( vs != g_config_version_string ) ) {
-        if( wxID_CANCEL == ShowNavWarning() )
-            return false;
-        n_NavMessageShown = 1;
-    }
-
-    g_config_version_string = vs;
-#endif
     //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
         wxLogMessage( g_Platform->GetLargeLogMessage() );
@@ -2567,47 +2558,52 @@ extern ocpnGLOptions g_GLOptions;
 
     OCPNPlatform::Initialize_4( );
     
-    if( n_NavMessageShown == 1 ) {
-        //In case the user accepted the "not for navigation" nag, persist it here...
-        pConfig->UpdateSettings();
-    }
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
     wxMilliSleep(500);
 
 #ifdef __OCPN__ANDROID__    
         //  We defer the startup message to here to allow the app frame to be contructed,
         //  thus avoiding a dialog with NULL parent which might not work on some devices.    
-        if( !n_NavMessageShown || ( g_vs != g_config_version_string ) || (g_AndroidVersionCode != androidGetVersionCode()) )
-        {
+    if( !n_NavMessageShown || ( vs != g_config_version_string ) || (g_AndroidVersionCode != androidGetVersionCode()) )
+    {
             //qDebug() << "Showing NavWarning";
-            wxMilliSleep(500);
-            if( wxID_CANCEL == ShowNavWarning() ) {
-                  qDebug() << "Closing due to NavWarning Cancel";
-                  gFrame->Close();
-                  androidTerminate();
-                  return true;
-            }
-            n_NavMessageShown = 1;
-            g_config_version_string = g_vs;
-            
+        wxMilliSleep(500);
+        if( wxID_CANCEL == ShowNavWarning() ) {
+              qDebug() << "Closing due to NavWarning Cancel";
+              gFrame->Close();
+              androidTerminate();
+              return true;
         }
+        n_NavMessageShown = 1;
+          
+    }
         
         // Finished with upgrade checking, so persist the currect Version Code
-        g_AndroidVersionCode = androidGetVersionCode();
-        pConfig->UpdateSettings();
-
-        qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
+    g_AndroidVersionCode = androidGetVersionCode();
+    qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
+#else
+//  Send the Welcome/warning message if it has never been sent before,
+//  or if the version string has changed at all
+//  We defer until here to allow for localization of the message
+    if( !n_NavMessageShown || ( vs != g_config_version_string ) ) {
+        if( wxID_CANCEL == ShowNavWarning() )
+            return false;
+        n_NavMessageShown = 1;
+    }
 #endif
-        
-        
+
+    g_config_version_string = vs;
+
+    //The user accepted the "not for navigation" nag, so persist it here...
+    pConfig->UpdateSettings();
+
     // Start delayed initialization chain after some milliseconds
     gFrame->InitTimer.Start( 5, wxTIMER_CONTINUOUS );
     
-    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
-
     g_pauimgr->Update();
     
     return TRUE;
@@ -3789,18 +3785,32 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
 
-    //    Deactivate the PlugIns
-    if( g_pi_manager ) {
-        g_pi_manager->DeactivateAllPlugIns();
+    // Persist the toolbar locations
+    if( g_MainToolbar ) {
+        wxPoint tbp_incanvas = GetPrimaryCanvas()->GetToolbarPosition();
+        g_maintoolbar_x = tbp_incanvas.x;
+        g_maintoolbar_y = tbp_incanvas.y;
+        g_maintoolbar_orient = GetPrimaryCanvas()->GetToolbarOrientation();
+        //g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
+        if (g_MainToolbar) {
+            g_MainToolbar->GetScreenPosition(&g_maintoolbar_x, &g_maintoolbar_y);
+        }
     }
 
-    wxLogMessage( _T("opencpn::MyFrame exiting cleanly.") );
-
-    quitflag++;
+    if(g_iENCToolbar){
+        wxPoint locn = g_iENCToolbar->GetPosition();
+        wxPoint tbp_incanvas = GetPrimaryCanvas()->ScreenToClient( locn );
+        g_iENCToolbarPosY = tbp_incanvas.y;
+        g_iENCToolbarPosX = tbp_incanvas.x;
+    }
+    
+    g_bframemax = IsMaximized();
 
     FrameTimer1.Stop();
-
-    /*
+    FrameCOGTimer.Stop();
+    TrackOff();
+    
+     /*
      Automatically drop an anchorage waypoint, if enabled
      On following conditions:
      1.  In "Cruising" mode, meaning that speed has at some point exceeded 3.0 kts.
@@ -3855,35 +3865,20 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
-    FrameTimer1.Stop();
-    FrameCOGTimer.Stop();
 
-    g_bframemax = IsMaximized();
 
-    //    Record the current state of tracking
-//    g_bTrackCarryOver = g_bTrackActive;
-
-    TrackOff();
-
-    if( g_MainToolbar ) {
-        wxPoint tbp_incanvas = GetPrimaryCanvas()->GetToolbarPosition();
-        g_maintoolbar_x = tbp_incanvas.x;
-        g_maintoolbar_y = tbp_incanvas.y;
-        g_maintoolbar_orient = GetPrimaryCanvas()->GetToolbarOrientation();
-        //g_toolbarConfig = GetPrimaryCanvas()->GetToolbarConfigString();
-        if (g_MainToolbar) {
-            g_MainToolbar->GetScreenPosition(&g_maintoolbar_x, &g_maintoolbar_y);
-        }
-    }
-
-    if(g_iENCToolbar){
-        wxPoint locn = g_iENCToolbar->GetPosition();
-        wxPoint tbp_incanvas = GetPrimaryCanvas()->ScreenToClient( locn );
-        g_iENCToolbarPosY = tbp_incanvas.y;
-        g_iENCToolbarPosX = tbp_incanvas.x;
-    }
-    
+    // Provisionally save all settings before deactivating plugins
     pConfig->UpdateSettings();
+
+    //    Deactivate the PlugIns
+    if( g_pi_manager ) {
+        g_pi_manager->DeactivateAllPlugIns();
+    }
+
+    wxLogMessage( _T("opencpn::MyFrame exiting cleanly.") );
+
+    quitflag++;
+
     pConfig->UpdateNavObj();
 
 //    pConfig->m_pNavObjectChangesSet->Clear();
@@ -4772,9 +4767,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
-        case ID_MENU_CHART_NORTHUP:
+        case ID_MENU_CHART_NORTHUP:{
+            SetUpMode(GetPrimaryCanvas(), NORTH_UP_MODE);
+            break;
+        }
         case ID_MENU_CHART_COGUP:{
-            ToggleCourseUp(GetPrimaryCanvas());
+            SetUpMode(GetPrimaryCanvas(), COURSE_UP_MODE);
+            break;
+        }
+         case ID_MENU_CHART_HEADUP:{
+            SetUpMode(GetPrimaryCanvas(), HEAD_UP_MODE);
             break;
         }
 
@@ -5345,22 +5347,20 @@ void MyFrame::TrackDailyRestart( void )
 }
 }
 
-void MyFrame::ToggleCourseUp( ChartCanvas *cc )
+void MyFrame::SetUpMode( ChartCanvas *cc, int mode )
 {
     if(cc){
-        cc->ToggleCourseUp();
-        
-        bool bCourseUp = cc->m_bCourseUp;
+        cc->SetUpMode( mode );
 
-
-        SetMenubarItemState( ID_MENU_CHART_COGUP, bCourseUp );
-        SetMenubarItemState( ID_MENU_CHART_NORTHUP, !bCourseUp );
+        SetMenubarItemState( ID_MENU_CHART_COGUP, mode == COURSE_UP_MODE );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, mode == NORTH_UP_MODE );
+        SetMenubarItemState( ID_MENU_CHART_HEADUP, mode == HEAD_UP_MODE );
 
         if(m_pMenuBar)
             m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
-
     }
 }
+
 
 void MyFrame::ToggleENCText( ChartCanvas *cc )
 {
@@ -5607,11 +5607,14 @@ void MyFrame::ApplyGlobalSettings( bool bnewtoolbar )
         }
     }
 
+    wxSize lastOptSize = options_lastWindowSize;
     SendSizeEvent();
 
     BuildMenuBar();
 
     SendSizeEvent();
+    options_lastWindowSize = lastOptSize;
+
 
     if( bnewtoolbar )
         UpdateAllToolbars( global_color_scheme );
@@ -5673,6 +5676,7 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
+    nav_menu->AppendRadioItem( ID_MENU_CHART_HEADUP, _("Head Up Mode") );
     nav_menu->AppendSeparator();
 #ifndef __WXOSX__
     nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
@@ -5793,8 +5797,9 @@ void MyFrame::UpdateGlobalMenuItems()
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( GetPrimaryCanvas()->m_bFollow );
-    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !GetPrimaryCanvas()->m_bCourseUp );
-    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->m_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( GetPrimaryCanvas()->GetUpMode() == NORTH_UP_MODE );
+    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( GetPrimaryCanvas()->GetUpMode() == COURSE_UP_MODE );
+    m_pMenuBar->FindItem( ID_MENU_CHART_HEADUP )->Check( GetPrimaryCanvas()->GetUpMode() == HEAD_UP_MODE );
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
@@ -5846,8 +5851,14 @@ void MyFrame::UpdateGlobalMenuItems( ChartCanvas *cc)
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
     m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( cc->m_bFollow );
-    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !cc->m_bCourseUp );
-    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( cc->m_bCourseUp );
+    
+    if(cc->GetUpMode() == NORTH_UP_MODE)
+        m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( true  );
+    else if (cc->GetUpMode() == COURSE_UP_MODE)    
+        m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( true );
+    else
+        m_pMenuBar->FindItem( ID_MENU_CHART_HEADUP )->Check( true );
+    
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( cc->GetShowOutlines() );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( cc->GetQuiltMode() );
@@ -6101,6 +6112,13 @@ int MyFrame::DoOptionsDialog()
         if( options_lastWindowSize != wxSize(0,0) ) {
             g_options->SetSize( options_lastWindowSize );
         }
+
+      // Correct some fault in Options dialog layout logic on GTK3 by forcing a re-layout to new slightly reduced size.      
+#ifdef __WXGTK3__        
+        if( options_lastWindowSize != wxSize(0,0) ) 
+            g_options->SetSize( options_lastWindowSize.x - 1, options_lastWindowSize.y );
+#endif
+        
 #endif        
 
     if( g_MainToolbar)
@@ -6834,6 +6852,9 @@ void MyFrame::PositionIENCToolbar()
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
     InitTimer.Stop();
+    wxString msg;
+    msg.Printf(_T("OnInitTimer...%d"), m_iInitCount);
+    wxLogMessage(msg);
     
     switch(m_iInitCount++) {
         case 0:
@@ -7128,18 +7149,11 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         default:
         {
             // Last call....
-
+            wxLogMessage(_T("OnInitTimer...Last Call"));
+            
             PositionIENCToolbar();
 
             g_bDeferredInitDone = true;
-            
-            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-                ChartCanvas *cc = g_canvasArray.Item(i);
-                if(cc){
-                    cc->CreateMUIBar();
-                    cc->CheckGroupValid();
-                }
-            }
             
             GetPrimaryCanvas()->SetFocus();
             g_focusCanvas = GetPrimaryCanvas();
@@ -7151,6 +7165,16 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if(b_reloadForPlugins){
                 DoChartUpdate();
                 ChartsRefresh();
+            }
+
+            wxLogMessage(_T("OnInitTimer...Finalize Canvases"));
+
+            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+                ChartCanvas *cc = g_canvasArray.Item(i);
+                if(cc){
+                    cc->CreateMUIBar();
+                    cc->CheckGroupValid();
+                }
             }
 
 #ifdef __OCPN__ANDROID__
@@ -7669,7 +7693,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //    In follow mode, if there has already been a full screen refresh, there is no need to check ownship or AIS,
 //       since they will be always drawn on the full screen paint.
 
-                if( ( !cc->m_bFollow ) || cc->m_bCourseUp ) {
+                if( ( !cc->m_bFollow ) || (cc->GetUpMode() != NORTH_UP_MODE) ) {
                     cc->UpdateShips();
                     cc->UpdateAIS();
                     cc->UpdateAlerts();
@@ -7831,7 +7855,7 @@ void MyFrame::OnFrameCOGTimer( wxTimerEvent& event )
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
         if(cc)
-            b_rotate |= cc->m_bCourseUp;
+            b_rotate |= (cc->GetUpMode() != NORTH_UP_MODE);
     }
     
     if(!b_rotate){
@@ -8684,7 +8708,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 v[0][_T("range")] = g_pRouteMan->GetCurrentRngToActivePoint();
                 v[0][_T("bearing")] = g_pRouteMan->GetCurrentBrgToActivePoint();
                 v[0][_T("XTE")] = g_pRouteMan->GetCurrentXTEToActivePoint();
-                v[0][_T("active_route_GUID")] = g_pRouteMan->GetpActiveRoute()->m_RouteNameString;
+                v[0][_T("active_route_GUID")] = g_pRouteMan->GetpActiveRoute()->GetGUID();
                 v[0][_T("active_waypoint_lat")] = g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLatitude();
                 v[0][_T("active_waypoint_lon")] = g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLongitude();
             }
@@ -9219,6 +9243,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             wxLogMessage( msg );
         }
     }
+
+    if( g_own_ship_sog_cog_calc ) 
+        cog_sog_valid = true;
 
     if( bis_recognized_sentence ) PostProcessNMEA( pos_valid, cog_sog_valid, sfixtime );
 }
