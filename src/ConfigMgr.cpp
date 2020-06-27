@@ -345,6 +345,7 @@ extern wxString         g_TalkerIdText;
 extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool             g_bCreateRouteWithWaypointNameVisible;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
@@ -1033,6 +1034,7 @@ bool ConfigMgr::SaveTemplate( wxString fileName)
     
     conf->Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.3f"), g_n_arrival_circle_radius ));
     conf->Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
+    conf->Write( _T ( "CreateRouteWithWaypointNameVisible" ), g_bCreateRouteWithWaypointNameVisible);
     
     conf->Write( _T ( "StartWithTrackActive" ), g_bTrackCarryOver );
     conf->Write( _T ( "AutomaticDailyTracks" ), g_bTrackDaily );
@@ -1527,7 +1529,7 @@ bool ConfigMgr::CheckTemplate( wxString fileName)
     CHECK_INT( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour );
     
     CHECK_INT( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly);
-
+    CHECK_INT( _T( "CreateRouteWithWaypointNameVisible" ), &g_bCreateRouteWithWaypointNameVisible);
     CHECK_INT( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     CHECK_INT( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
     

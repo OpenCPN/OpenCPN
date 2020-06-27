@@ -188,6 +188,7 @@ extern bool             AnchorAlertOn1;
 extern bool             AnchorAlertOn2;
 extern int              g_nAWMax;
 extern int              g_iDistanceFormat;
+extern bool             g_bCreateRouteWithWaypointNameVisible;
 
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
@@ -7710,7 +7711,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 if( NULL == pMousePoint ) {                 // need a new point
 
                     pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
-                    pMousePoint->SetNameShown( false );
+                    pMousePoint->SetNameShown( g_bCreateRouteWithWaypointNameVisible );
 
                     if( m_bInsertingWpt ){
                         pMousePoint->m_bIsInRoute = true;
@@ -7779,7 +7780,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                     if( i < segmentCount ) {
                                         gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
                                                                   wxEmptyString );
-                                        gcPoint->SetNameShown( false );
+                                        gcPoint->SetNameShown( g_bCreateRouteWithWaypointNameVisible );
                                         pConfig->AddNewWayPoint( gcPoint, -1 );
                                         pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
                                     } else {
@@ -8184,7 +8185,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 
                 if( NULL == pMousePoint ) {                 // need a new point
                     pMousePoint = new RoutePoint( rlat, rlon, g_default_routepoint_icon, _T(""), wxEmptyString );
-                    pMousePoint->SetNameShown( false );
+                    pMousePoint->SetNameShown( g_bCreateRouteWithWaypointNameVisible );
                     if( m_bInsertingWpt ){
                         pMousePoint->m_bIsInRoute = true;
                         pMousePoint->m_bDynamicName = true;
@@ -8249,7 +8250,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                 if( i < segmentCount ) {
                                     gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
                                                               wxEmptyString );
-                                    gcPoint->SetNameShown( false );
+                                    gcPoint->SetNameShown( g_bCreateRouteWithWaypointNameVisible );
                                     pConfig->AddNewWayPoint( gcPoint, -1 );
                                     pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
                                 } else {

@@ -117,6 +117,7 @@ enum {
   ID_CM93ZOOM,
   ID_COURSEUPCHECKBOX,
   ID_DAILYCHECKBOX,
+  ID_VISICHECKBOX,
   ID_DEBUGCHECKBOX1,
   ID_DECLTEXTCHECKBOX,
   ID_DIRCTRL,
@@ -600,6 +601,7 @@ class options : private Uncopyable,
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
   wxCheckBox *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
+  wxCheckBox *pCreateRouteWithWaypointNameVisible;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText* pStatic_CallSign;
 

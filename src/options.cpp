@@ -252,6 +252,8 @@ extern int g_iSpeedFormat;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
+extern bool g_bCreateRouteWithWaypointNameVisible;
+
 extern int g_cm93_zoom_factor;
 
 extern int g_COGAvgSec;
@@ -3312,8 +3314,12 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
    min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
    pRoutepointDefaultIconChoice->SetMinSize( wxSize(GetCharHeight() * 15, min_size) );
    
-  routeSizer->AddSpacer(5);
+  pCreateRouteWithWaypointNameVisible =
+      new wxCheckBox(itemPanelRoutes, ID_VISICHECKBOX,
+                     _("Create With Routepoint Name Visible"));
+  routeSizer->Add(pCreateRouteWithWaypointNameVisible, 0, wxALL, 5);
 
+  routeSizer->AddSpacer(5);
 
   wxFlexGridSizer* pRouteGrid =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
@@ -6574,6 +6580,8 @@ void options::SetInitialSettings(void) {
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
+  pCreateRouteWithWaypointNameVisible->SetValue(
+      g_bCreateRouteWithWaypointNameVisible);
 
   pTrackDaily->SetValue(g_bTrackDaily);
   pTrackRotateLMT->SetValue(g_track_rotate_time_type == TIME_TYPE_LMT);
@@ -7711,6 +7719,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
 
   g_bAdvanceRouteWaypointOnArrivalOnly = pAdvanceRouteWaypointOnArrivalOnly->GetValue();
+  g_bCreateRouteWithWaypointNameVisible =  pCreateRouteWithWaypointNameVisible->GetValue();
 
   g_colourTrackLineColour =  m_colourTrackLineColour->GetColour();
   g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());

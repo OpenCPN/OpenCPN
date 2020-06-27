@@ -397,6 +397,7 @@ extern bool             g_bShowTrackPointTime;
 extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
+extern bool             g_bCreateRouteWithWaypointNameVisible;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
@@ -1023,7 +1024,7 @@ int MyConfig::LoadMyConfigRaw( bool bAsTemplate )
     
     // Boolean to cater for sailing when not approaching waypoint
     Read( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly);
-
+    Read( _T( "CreateRouteWithWaypointNameVisible" ), &g_bCreateRouteWithWaypointNameVisible);
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
     
@@ -2471,6 +2472,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
     Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
+    Write( _T( "CreateRouteWithWaypointNameVisible" ), g_bCreateRouteWithWaypointNameVisible);
     
     // LIVE ETA OPTION
     Write( _T( "LiveETA" ), g_bShowLiveETA);
