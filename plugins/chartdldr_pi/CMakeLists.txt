@@ -197,7 +197,7 @@ ELSE (NOT QT_ANDROID )
     ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so 
     ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
     ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
-    ${CMAKE_CURRENT_BINARY_DIR}/../../libopencpn.so
+    ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so
     "-lz" 
   )
   

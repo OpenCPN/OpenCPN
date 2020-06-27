@@ -153,6 +153,10 @@ IF(DEFINED _wx_selected_config)
   ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 ENDIF(DEFINED _wx_selected_config)
 
+if( QT_ANDROID )
+  set(PACKAGE_NAME gorp)
+endif( QT_ANDROID )
+
 include(FindPkgConfig)
 include(CMakeDependentOption)
 
@@ -517,7 +521,7 @@ if (QT_ANDROID)
         "-O3"
         "-fPIC"
   )
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libopencpn.so ")
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
 endif (QT_ANDROID)
 
 
