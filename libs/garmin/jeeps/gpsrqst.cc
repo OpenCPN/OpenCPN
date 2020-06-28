@@ -20,16 +20,13 @@
 ** You should have received a copy of the GNU Library General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-** Boston, MA 02110-1301,  USA.
+** Boston, MA  02110-1301, USA.
 ********************************************************************/
-#include "garmin_gps.h"
+#include "gps.h"
 
-#ifdef USE_WX_LOGGING
-#include "gps_wx_logging.h"
-#endif
 
-static int32 GPS_A600_Rqst(gpsdevh *fd, time_t Time);
-static int32 GPS_A700_Rqst(gpsdevh *fd, double lat, double lon);
+static int32 GPS_A600_Rqst(gpsdevh* fd, time_t Time);
+static int32 GPS_A700_Rqst(gpsdevh* fd, double lat, double lon);
 
 
 
@@ -43,21 +40,20 @@ static int32 GPS_A700_Rqst(gpsdevh *fd, double lat, double lon);
 ** @return [int32] true if OK
 ************************************************************************/
 
-int32 GPS_Rqst_Send_Time(gpsdevh *fd, time_t Time)
+int32 GPS_Rqst_Send_Time(gpsdevh* fd, time_t Time)
 {
-    time_t ret=0;
+  time_t ret=0;
 
-    switch(gps_date_time_transfer)
-    {
-    case pA600:
-	ret = GPS_A600_Rqst(fd, Time);
-	break;
-    default:
-	GPS_Error("Rqst_Send_Time: Unknown date/time protocol");
-	return PROTOCOL_ERROR;
-    }
+  switch (gps_date_time_transfer) {
+  case pA600:
+    ret = GPS_A600_Rqst(fd, Time);
+    break;
+  default:
+    GPS_Error("Rqst_Send_Time: Unknown date/time protocol");
+    return PROTOCOL_ERROR;
+  }
 
-    return (int32)ret;
+  return ret;
 }
 
 
@@ -71,34 +67,28 @@ int32 GPS_Rqst_Send_Time(gpsdevh *fd, time_t Time)
 **
 ** @return [int32] success
 ************************************************************************/
-static int32 GPS_A600_Rqst(gpsdevh *fd, time_t Time)
+static int32 GPS_A600_Rqst(gpsdevh* fd, time_t Time)
 {
-    GPS_PPacket tra;
-    GPS_PPacket rec;
+  GPS_PPacket tra;
+  GPS_PPacket rec;
 
-    if(!(tra = GPS_Packet_New()) || !(rec = GPS_Packet_New()))
-	return MEMORY_ERROR;
+  switch (gps_date_time_type) {
+  case pD600:
+    GPS_D600_Send(tra,Time);
+    break;
+  default:
+    GPS_Error("A600_Rqst: Unknown data/time protocol");
+    return PROTOCOL_ERROR;
+  }
 
+  if (!GPS_Write_Packet(fd,tra)) {
+    return gps_errno;
+  }
+  if (!GPS_Get_Ack(fd, &tra, &rec)) {
+    return gps_errno;
+  }
 
-    switch(gps_date_time_type)
-    {
-    case pD600:
-	GPS_D600_Send(&tra,Time);
-	break;
-    default:
-	GPS_Error("A600_Rqst: Unknown data/time protocol");
-	return PROTOCOL_ERROR;
-    }
-
-    if(!GPS_Write_Packet(fd,tra))
-	return gps_errno;
-    if(!GPS_Get_Ack(fd, &tra, &rec))
-	return gps_errno;
-
-    GPS_Packet_Del(&tra);
-    GPS_Packet_Del(&rec);
-
-    return 1;
+  return 1;
 }
 
 
@@ -114,21 +104,20 @@ static int32 GPS_A600_Rqst(gpsdevh *fd, time_t Time)
 ** @return [int32] success
 ************************************************************************/
 
-int32 GPS_Rqst_Send_Position(gpsdevh *fd, double lat, double lon)
+int32 GPS_Rqst_Send_Position(gpsdevh* fd, double lat, double lon)
 {
-    int32 ret=0;
+  int32 ret=0;
 
-    switch(gps_position_transfer)
-    {
-    case pA700:
-	ret = GPS_A700_Rqst(fd, lat, lon);
-	break;
-    default:
-	GPS_Error("Rqst_Send_Position: Unknown position protocol");
-	return PROTOCOL_ERROR;
-    }
+  switch (gps_position_transfer) {
+  case pA700:
+    ret = GPS_A700_Rqst(fd, lat, lon);
+    break;
+  default:
+    GPS_Error("Rqst_Send_Position: Unknown position protocol");
+    return PROTOCOL_ERROR;
+  }
 
-    return ret;
+  return ret;
 }
 
 
@@ -139,41 +128,33 @@ int32 GPS_Rqst_Send_Position(gpsdevh *fd, double lat, double lon)
 **
 ** @param [r] fd [int32] file descriptor
 ** @param [r] lat [double] latitude  (deg)
-** @param [r] lon [double] longitute (deg)
+** @param [r] lon [double] longitude (deg)
 **
 ** @return [int32] success
 ************************************************************************/
-static int32 GPS_A700_Rqst(gpsdevh *fd, double lat, double lon)
+static int32 GPS_A700_Rqst(gpsdevh* fd, double lat, double lon)
 {
-    GPS_PPacket tra;
-    GPS_PPacket rec;
+  GPS_PPacket tra;
+  GPS_PPacket rec;
 
-    if(!(tra = GPS_Packet_New()) || !(rec = GPS_Packet_New()))
-	return MEMORY_ERROR;
+  switch (gps_position_type) {
+  case pD700:
+    GPS_D700_Send(tra,lat,lon);
+    break;
+  default:
+    GPS_Error("A700_Rqst: Unknown position protocol");
+    return PROTOCOL_ERROR;
+  }
 
+  if (!GPS_Write_Packet(fd,tra)) {
+    return gps_errno;
+  }
 
-    switch(gps_position_type)
-    {
-    case pD700:
-	GPS_D700_Send(&tra,lat,lon);
-	break;
-    default:
-	GPS_Error("A700_Rqst: Unknown position protocol");
-	GPS_Packet_Del(&tra);
-	GPS_Packet_Del(&rec);
-	return PROTOCOL_ERROR;
-    }
-
-    if(!GPS_Write_Packet(fd,tra))
-	return gps_errno;
-
-    if(!GPS_Get_Ack(fd, &tra, &rec))
-	return gps_errno;
+  if (!GPS_Get_Ack(fd, &tra, &rec)) {
+    return gps_errno;
+  }
 
 
-    GPS_Packet_Del(&tra);
-    GPS_Packet_Del(&rec);
-
-    return 1;
+  return 1;
 }
 

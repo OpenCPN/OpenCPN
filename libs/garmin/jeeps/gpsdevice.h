@@ -15,57 +15,48 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 #ifndef gpsdevice_h
 #define gpsdevice_h
 
-typedef struct gpsdevh gpsdevh;
+  typedef struct gpsdevh gpsdevh;
 
-#include "garmin_gps.h"
+#include "gps.h"
 
 #define usecDELAY 180000	/* Microseconds before GPS sends A001 */
 
 
-int32  GPS_Device_Chars_Ready(gpsdevh *fd);
-int32  GPS_Device_On(const char *port, gpsdevh **fd);
-int32  GPS_Device_Off(gpsdevh *fd);
-int32  GPS_Device_Wait(gpsdevh * fd);
-int32  GPS_Device_Flush(gpsdevh * fd);
-int32  GPS_Device_Read(int32 ignored, void *ibuf, int size);
-int32  GPS_Device_Write(int32 ignored, const void *obuf, int size);
-void   GPS_Device_Error(char *hdr, ...);
-int32  GPS_Write_Packet(gpsdevh *fd, GPS_PPacket packet);
-int32  GPS_Send_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec);
-int32  GPS_Packet_Read(gpsdevh *fd, GPS_PPacket *packet);
-int32  GPS_Get_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec);
+  int32  GPS_Device_Chars_Ready(gpsdevh* fd);
+  int32  GPS_Device_On(const char* port, gpsdevh** fd);
+  int32  GPS_Device_Off(gpsdevh* fd);
+  int32  GPS_Device_Wait(gpsdevh* fd);
+  int32  GPS_Device_Flush(gpsdevh* fd);
+  int32  GPS_Device_Read(int32 ignored, void* ibuf, int size);
+  int32  GPS_Device_Write(int32 ignored, const void* obuf, int size);
+  void   GPS_Device_Error(char* hdr, ...);
+  int32  GPS_Write_Packet(gpsdevh* fd, GPS_PPacket& packet);
+  bool   GPS_Send_Ack(gpsdevh* fd, GPS_PPacket* tra, GPS_PPacket* rec);
+  int32  GPS_Packet_Read(gpsdevh* fd, GPS_PPacket* packet);
+  bool   GPS_Get_Ack(gpsdevh* fd, GPS_PPacket* tra, GPS_PPacket* rec);
 
-typedef int32 (*gps_device_op)(gpsdevh *);
-typedef int32 (*gps_device_op5)(const char *, gpsdevh **fd);
-typedef int32 (*gps_device_op10)(gpsdevh * fd,  GPS_PPacket *tra, GPS_PPacket *rec);
-typedef int32 (*gps_device_op12)(gpsdevh * fd, GPS_PPacket packet);
-typedef int32 (*gps_device_op13)(gpsdevh * fd, GPS_PPacket *packet);
-typedef struct {
-	gps_device_op5 Device_On;
-	gps_device_op Device_Off;
-	gps_device_op Device_Chars_Ready;
-	gps_device_op Device_Wait;
-	gps_device_op Device_Flush;
-	gps_device_op10 Send_Ack;
-	gps_device_op10 Get_Ack;
-	gps_device_op13 Read_Packet;
-	gps_device_op12 Write_Packet;
-} gps_device_ops;
+  typedef int32(*gps_device_op)(gpsdevh*);
+  typedef int32(*gps_device_op5)(const char*, gpsdevh** fd);
+  typedef bool(*gps_device_op10)(gpsdevh* fd, GPS_PPacket* tra, GPS_PPacket* rec);
+  typedef int32(*gps_device_op12)(gpsdevh* fd, GPS_PPacket& packet);
+  typedef int32(*gps_device_op13)(gpsdevh* fd, GPS_PPacket* packet);
+  typedef struct {
+    gps_device_op5 Device_On;
+    gps_device_op Device_Off;
+    gps_device_op Device_Chars_Ready;
+    gps_device_op Device_Wait;
+    gps_device_op Device_Flush;
+    gps_device_op10 Send_Ack;
+    gps_device_op10 Get_Ack;
+    gps_device_op13 Read_Packet;
+    gps_device_op12 Write_Packet;
+  } gps_device_ops;
 
 #endif /* gpsdevice.h */
-
-#ifdef __cplusplus
-}
-#endif

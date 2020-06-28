@@ -15,14 +15,10 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
-
-#ifndef _garmingusb_h
-#define _garmingusb_h
-
-#include <stdio.h>
+#include <cstdio>
 #include "gpsdevice.h"
 
 /* This structure is a bit funny looking to avoid variable length
@@ -32,18 +28,18 @@
  */
 typedef
 union {
-	struct {
-	unsigned char type;
-	unsigned char reserved1;
-	unsigned char reserved2;
-	unsigned char reserved3;
-	unsigned char pkt_id[2];
-	unsigned char reserved6;
-	unsigned char reserved7;
-	unsigned char datasz[4];
-	unsigned char databuf[4]; /* actually an variable length array... */
-	} gusb_pkt;
-	unsigned char dbuf[1024];
+  struct {
+    unsigned char type;
+    unsigned char reserved1;
+    unsigned char reserved2;
+    unsigned char reserved3;
+    unsigned char pkt_id[2];
+    unsigned char reserved6;
+    unsigned char reserved7;
+    unsigned char datasz[4];
+    unsigned char databuf[1]; /* actually an variable length array... */
+  } gusb_pkt;
+  unsigned char dbuf[1024];
 } garmin_usb_packet;
 
 /*
@@ -51,18 +47,20 @@ union {
  * OS implementation.
  */
 #define GUSB_MAX_UNITS 20
-extern struct garmin_unit_info {
-	unsigned long serial_number;
-	unsigned long unit_id;
-	unsigned long unit_version;
-	char *os_identifier; /* In case the OS has another name for it. */
-	char *product_identifier; /* From the hardware itself. */
-} garmin_unit_info[GUSB_MAX_UNITS];
+typedef struct {
+  unsigned long serial_number;
+  unsigned long unit_id;
+  unsigned long unit_version;
+  char* os_identifier; /* In case the OS has another name for it. */
+  char* product_identifier; /* From the hardware itself. */
+} garmin_unit_info_t;
 
-int gusb_cmd_send(const garmin_usb_packet *obuf, size_t sz);
-int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);
-int gusb_init(const char *portname, gpsdevh **dh);
-int gusb_close(gpsdevh *);
+extern garmin_unit_info_t garmin_unit_info[GUSB_MAX_UNITS];
+
+int gusb_cmd_send(const garmin_usb_packet* obuf, size_t sz);
+int gusb_cmd_get(garmin_usb_packet* ibuf, size_t sz);
+int gusb_init(const char* portname, gpsdevh** dh);
+int gusb_close(gpsdevh*, bool exit_lib = true);
 
 /*
  * New packet types in USB.
@@ -70,5 +68,3 @@ int gusb_close(gpsdevh *);
 #define GUSB_SESSION_START 5	/* We request units attention */
 #define GUSB_SESSION_ACK   6	/* Unit responds that we have its attention */
 #define GUSB_REQUEST_BULK  2	/* Unit requests we read from bulk pipe */
-
-#endif

@@ -1,9 +1,7 @@
 /*
-    Definitions for internal functions of Garmin USB implementation.
-    These symbols should not be publicly used.  They're "friend" functions
-    of USB details internal to jeeps.
+    Serial interface - private header for gbser*.c
 
-    Copyright (C) 2005, 2006 Robert Lipe, robertlipe@usa.net
+    Copyright (C) 2006-2014  Robert Lipe, robertlipe+source@gpsbabel.org
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +19,9 @@
 
  */
 
-int32 GPS_Packet_Read_usb(gpsdevh* fd, GPS_PPacket* packet, int eatbulk);
-void  GPS_Make_Packet_usb(GPS_PPacket* packet, UC type, UC* data, int16 n);
-int32 GPS_Write_Packet_usb(gpsdevh* fd, GPS_PPacket& packet);
+#define MYMAGIC 0x91827364
+#define BUFSIZE 512
 
+void gbser__db(int l, const char* msg, ...);
+int gbser__fill_buffer(void* h, unsigned want, unsigned* ms);
+unsigned gbser__read_buffer(void* handle, void** buf, unsigned* len);

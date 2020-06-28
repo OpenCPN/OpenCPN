@@ -1,5 +1,5 @@
 /*
-    Garmin USB layer - OS independent component.
+    Serial operations.
 
     Copyright (C) 2006 Robert Lipe, robertlipe@usa.net
 
@@ -19,27 +19,19 @@
 
  */
 
-/*
- * The 'low level ops' are registered by the OS layer (win32, libusb, etc.)
- * to provide gruntwork features for the common USB layer.
- */
-typedef int (*gusb_llop_get)(garmin_usb_packet* ibuf, size_t sz);
-typedef int (*gusb_llop_send)(const garmin_usb_packet* opkt, size_t sz);
-typedef int (*gusb_llop_close)(gpsdevh* dh, bool exit_lib);
+#include "gps.h"
+#include "gpsdevice.h"
+#include "gpsread.h"
+#include "gpsserial.h"
 
-typedef struct gusb_llops {
-  gusb_llop_get  llop_get_intr;
-  gusb_llop_get  llop_get_bulk;
-  gusb_llop_send llop_send;
-  gusb_llop_close llop_close;
-  int max_tx_size;
-} gusb_llops_t;
-
-/* Provided by the common code. */
-void gusb_syncup();
-void gusb_register_ll(struct gusb_llops*);
-void gusb_list_units();
-
-/* Provided by the OS layers */
-// int gusb_init(const char *portname, gpsdev **dh);
-
+gps_device_ops  gps_serial_ops = {
+  GPS_Serial_On,
+  GPS_Serial_Off,
+  GPS_Serial_Chars_Ready,
+  GPS_Serial_Wait,
+  GPS_Serial_Flush,
+  GPS_Serial_Send_Ack,
+  GPS_Serial_Get_Ack,
+  GPS_Serial_Packet_Read,
+  GPS_Serial_Write_Packet,
+};

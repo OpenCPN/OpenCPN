@@ -1,7 +1,7 @@
 /*
-    Serial operations.
+    Stubs to keep build happy when USB just isn't available to us.
 
-    Copyright (C) 2006 Robert Lipe, robertlipe@usa.net
+    Copyright (C) 2004, 2006 Robert Lipe, robertlipe@usa.net
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,22 +15,27 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
 
-#include "gpsdevice.h"
-#include "gpsserial.h"
-#include "gpsread.h"
 
-gps_device_ops  gps_serial_ops = {
-	GPS_Serial_On,
-	GPS_Serial_Off,
-	GPS_Serial_Chars_Ready,
-	GPS_Serial_Wait,
-	GPS_Serial_Flush,
-	GPS_Serial_Send_Ack,
-	GPS_Serial_Get_Ack,
-	GPS_Serial_Packet_Read,
-	GPS_Serial_Write_Packet,
-};
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "../defs.h"
+#include "src/core/logging.h"
+
+#if !HAVE_LIBUSB_1_0
+
+const char no_usb[] = "USB support is not available in this build.\n";
+typedef struct gpsdevh gpsdevh;
+int
+gusb_init(const char* portname, gpsdevh** dh)
+{
+  Fatal() << no_usb;
+  return 0;
+}
+
+#endif /* defined(HAVE_LIBUSB_1_0) */
