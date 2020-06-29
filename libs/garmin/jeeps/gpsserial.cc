@@ -35,12 +35,14 @@
 #include <QtCore/QThread>
 #endif
 
+#include <chrono>
 #include <cerrno>
 #include <cstdio>
 #include <ctime>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <thread>
 
 int gps_baud_rate = DEFAULT_BAUD;
 
@@ -281,7 +283,7 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
   // Sleep for a small amount of time, about 100 milliseconds,
   // to make sure the packet was successfully transmitted to the GPS unit.
 #ifdef LIBRARY_BUILD
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 #else
     QThread::usleep(100000);
 #endif
@@ -679,7 +681,7 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
   // Sleep for a small amount of time, about 100 milliseconds,
   // to make sure the packet was successfully transmitted to the GPS unit.
 #ifdef LIBRARY_BUILD
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 #else
     QThread::usleep(100000);
 #endif
