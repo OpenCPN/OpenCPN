@@ -4941,6 +4941,10 @@ void glChartCanvas::RenderMBTilesOverlay( ViewPort &VPoint)
                             rit != tiles_to_show.rend(); ++rit) {
             ChartBase *chart = ChartData->OpenChartFromDBAndLock(*rit, FULL_INIT);
         
+            // Chart may have been prevented from initial loading due to size, or some other reason...
+            if(chart == NULL)
+                continue;
+            
             wxFileName tileFile(chart->GetFullPath());
             wxULongLong tileSize = tileFile.GetSize();
         
