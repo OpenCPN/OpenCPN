@@ -3544,17 +3544,20 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         // judgement: all OK
         
         
-        scale_factor *= pix_factor;
+        //scale_factor *= pix_factor;
     }
  
     wxFontWeight fontWeight = wxFONTWEIGHT_NORMAL;
     wxString fontFacename = wxEmptyString;
+    double defaultHeight = 3.0;
+    
 #ifdef __OCPN__ANDROID__
     fontWeight = wxFONTWEIGHT_BOLD;
     fontFacename = _T("Roboto");
+    defaultHeight = 2.2;
 #endif
     
-        // calculate the required point size to give 2.5 mm height
+        // calculate the required point size to give specified height
     int point_size = 6;
     bool not_done = true;
     wxScreenDC sdc;
@@ -3564,7 +3567,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         sdc.GetTextExtent( _T("0"), &charWidth, &charHeight, &charDescent, NULL, tentativeFont ); // measure the text
         double font_size_mm = (double)(charHeight- charDescent) / GetPPMM();
 
-        if(font_size_mm >= (3.0 * scale_factor)){
+        if(font_size_mm >= (defaultHeight * scale_factor)){
             not_done = false;
             break;
         }
@@ -6328,7 +6331,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
                     
                 RenderSoundingSymbol( rzRules, rules->razRule, r, vp, symColor, angle );
-                //RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+                RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
             }
             
             rules = rules->next;
