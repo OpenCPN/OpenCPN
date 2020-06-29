@@ -109,6 +109,7 @@ static TexFontCache s_txf[TXF_CACHE];
 
 GLint S52color_tri_shader_program;
 GLint S52texture_2D_shader_program;
+GLint S52texture_2D_ColorMod_shader_program;
 GLint S52circle_filled_shader_program;
 GLint S52ring_shader_program;
 GLint S52Dash_shader_program;
@@ -3546,13 +3547,20 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         scale_factor *= pix_factor;
     }
  
+    wxFontWeight fontWeight = wxFONTWEIGHT_NORMAL;
+    wxString fontFacename = wxEmptyString;
+#ifdef __OCPN__ANDROID__
+    fontWeight = wxFONTWEIGHT_BOLD;
+    fontFacename = _T("Roboto");
+#endif
+    
         // calculate the required point size to give 2.5 mm height
     int point_size = 6;
     bool not_done = true;
     wxScreenDC sdc;
     int charWidth, charHeight, charDescent;
     while((point_size < 20) && not_done){
-        wxFont *tentativeFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        wxFont *tentativeFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, fontWeight, false, fontFacename );
         sdc.GetTextExtent( _T("0"), &charWidth, &charHeight, &charDescent, NULL, tentativeFont ); // measure the text
         double font_size_mm = (double)(charHeight- charDescent) / GetPPMM();
 
@@ -3575,12 +3583,12 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         if(!m_texSoundings.IsBuilt() || (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1) ){
             m_texSoundings.Delete();
         
-            m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+            m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, fontWeight, false, fontFacename );
             m_texSoundings.Build(m_soundFont, scale_factor);        //texSounding owns the font
         }
     }
     else{
-        m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, fontWeight, false, fontFacename );
         m_pdc->SetFont(*m_soundFont);
         //charHeight -= charDescent;
     }
@@ -3715,7 +3723,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
             if(g_texture_rectangle_format == GL_TEXTURE_2D) {
                     
                 // Normalize the sybmol texture coordinates against the next higher POT size
-                wxSize size = ChartSymbols::GLTextureSize();
+                wxSize size = m_texSoundings.GLTextureSize();
                 int rb_x = size.x;
                 int rb_y = size.y;
 
@@ -3731,18 +3739,25 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
             uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
             uv[6] = tx2; uv[7] = ty2; uv[4] = tx1; uv[5] = ty2;
 
-            w *= scale_factor;
-            h *= scale_factor;
-
+            
             // pixels
             coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
             coords[6] = w; coords[7] = h; coords[4] = 0; coords[5] = h;
 
-            glUseProgram( S52texture_2D_shader_program );
+            glUseProgram( S52texture_2D_ColorMod_shader_program );
+
+            float colorv[4];
+            colorv[0] = symColor.Red() / float(256);
+            colorv[1] = symColor.Green() / float(256);
+            colorv[2] = symColor.Blue() / float(256);
+            colorv[3] = 1.0;
+
+            GLint colloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,"color");
+            glUniform4fv(colloc, 1, colorv);
 
             // Get pointers to the attributes in the program.
-            GLint mPosAttrib = glGetAttribLocation( S52texture_2D_shader_program, "position" );
-            GLint mUvAttrib  = glGetAttribLocation( S52texture_2D_shader_program, "aUV" );
+            GLint mPosAttrib = glGetAttribLocation( S52texture_2D_ColorMod_shader_program, "position" );
+            GLint mUvAttrib  = glGetAttribLocation( S52texture_2D_ColorMod_shader_program, "aUV" );
 
             // Select the active texture unit.
             glActiveTexture( GL_TEXTURE0 );
@@ -3751,7 +3766,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
             glBindTexture( GL_TEXTURE_2D, texture );
 
             // Set up the texture sampler to texture unit 0
-            GLint texUni = glGetUniformLocation( S52texture_2D_shader_program, "uTex" );
+            GLint texUni = glGetUniformLocation( S52texture_2D_ColorMod_shader_program, "uTex" );
             glUniform1i( texUni, 0 );
 
             // Disable VBO's (vertex buffer objects) for attributes.
@@ -3777,7 +3792,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
             mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
 
 
-            GLint matloc = glGetUniformLocation(S52texture_2D_shader_program,"TransformMatrix");
+            GLint matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,"TransformMatrix");
             glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
 
             // Perform the actual drawing.
@@ -3786,7 +3801,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
             // Restore the per-object transform to Identity Matrix
             mat4x4 IM;
             mat4x4_identity(IM);
-            GLint matlocf = glGetUniformLocation(S52texture_2D_shader_program,"TransformMatrix");
+            GLint matlocf = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,"TransformMatrix");
             glUniformMatrix4fv( matlocf, 1, GL_FALSE, (const GLfloat*)IM);
 
 
@@ -12559,6 +12574,32 @@ static const GLchar* S52texture_2D_fragment_shader_source =
     "}\n";
 
 
+    // 2D texture shader with color modulation, used for colored text
+static const GLchar* S52texture_2D_ColorMod_vertex_shader_source =
+    "precision highp float;\n"
+    "attribute vec2 position;\n"
+    "attribute vec2 aUV;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
+    "   //varCoord = aUV.st;\n"
+    "   varCoord = aUV;\n"
+    "}\n";
+
+static const GLchar* S52texture_2D_ColorMod_fragment_shader_source =
+    "precision highp float;\n"
+    "uniform sampler2D uTex;\n"
+    "uniform vec4 color;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   vec4 col=texture2D(uTex, varCoord);\n"
+    "   gl_FragColor = color;\n"
+    "   gl_FragColor.a = col.a;\n"
+    "}\n";
+
+
     //  Circle shader
 
 static const GLchar* S52circle_filled_vertex_shader_source =
@@ -12730,6 +12771,9 @@ static const GLchar* S52AP_fragment_shader_source =
     GLint S52texture_2D_fragment_shader;
     GLint S52texture_2D_vertex_shader;
 
+    GLint S52texture_2D_ColorMod_fragment_shader;
+    GLint S52texture_2D_ColorMod_vertex_shader;
+
     GLint S52circle_filled_vertex_shader;
     GLint S52circle_filled_fragment_shader;
 
@@ -12837,6 +12881,49 @@ bool loadS52Shaders()
         ret_val = false;
       }
     }
+
+    // 2D texture shader with color Modulate
+
+    if(!S52texture_2D_ColorMod_vertex_shader){
+       /* Vertex shader */
+       S52texture_2D_ColorMod_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+       glShaderSource(S52texture_2D_ColorMod_vertex_shader, 1, &S52texture_2D_ColorMod_vertex_shader_source, NULL);
+       glCompileShader(S52texture_2D_ColorMod_vertex_shader);
+       glGetShaderiv(S52texture_2D_ColorMod_vertex_shader, GL_COMPILE_STATUS, &success);
+      if (!success) {
+          glGetShaderInfoLog(S52texture_2D_ColorMod_vertex_shader, INFOLOG_LEN, NULL, infoLog);
+//        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+        ret_val = false;
+      }
+    }
+
+    if(!S52texture_2D_ColorMod_fragment_shader){
+        /* Fragment shader */
+        S52texture_2D_ColorMod_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(S52texture_2D_ColorMod_fragment_shader, 1, &S52texture_2D_ColorMod_fragment_shader_source, NULL);
+        glCompileShader(S52texture_2D_ColorMod_fragment_shader);
+        glGetShaderiv(S52texture_2D_ColorMod_fragment_shader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+          glGetShaderInfoLog(S52texture_2D_ColorMod_fragment_shader, INFOLOG_LEN, NULL, infoLog);
+//        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+        ret_val = false;
+      }
+    }
+
+    if(!S52texture_2D_ColorMod_shader_program){
+      /* Link shaders */
+      S52texture_2D_ColorMod_shader_program = glCreateProgram();
+      glAttachShader(S52texture_2D_ColorMod_shader_program, S52texture_2D_ColorMod_vertex_shader);
+      glAttachShader(S52texture_2D_ColorMod_shader_program, S52texture_2D_ColorMod_fragment_shader);
+      glLinkProgram(S52texture_2D_ColorMod_shader_program);
+      glGetProgramiv(S52texture_2D_ColorMod_shader_program, GL_LINK_STATUS, &success);
+      if (!success) {
+          glGetProgramInfoLog(S52texture_2D_ColorMod_shader_program, INFOLOG_LEN, NULL, infoLog);
+//        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+        ret_val = false;
+      }
+    }
+
 
 
 
@@ -13037,6 +13124,12 @@ void PrepareS52ShaderUniforms(ViewPort *vp)
     transloc = glGetUniformLocation(S52texture_2D_shader_program,"TransformMatrix");
     glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I);
 
+    glUseProgram(S52texture_2D_ColorMod_shader_program);
+    matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,"MVMatrix");
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
+    transloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,"TransformMatrix");
+    glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I);
+    
     glUseProgram(S52circle_filled_shader_program);
     matloc = glGetUniformLocation(S52circle_filled_shader_program,"MVMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
