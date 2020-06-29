@@ -54,7 +54,7 @@ set( SRC
 )
 if (WIN32)
   set(SRC ${SRC}
-    jeeps/gpsusbwin.c
+    jeeps/gpsusbwin.cc
     gbser_win.cc
     gbser_win.h
   )

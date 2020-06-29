@@ -367,14 +367,15 @@ int32 GPS_Serial_Open(gpsdevh* dh, const char* port)
    * write/retry case anyway.  - robertl
    */
   if ((psd->fd = open(port, O_RDWR))==-1) {
-    GPS_Serial_Error("XSERIAL: Cannot open serial port '%s'", port);
+    GPS_Serial_Error("XSERIAL: Cannot open serial port '%s': %s",
+		    port, strerror(errno));
     gps_errno = SERIAL_ERROR;
     return 0;
   }
 
   if (tcgetattr(psd->fd,&psd->gps_ttysave)==-1) {
     gps_errno = HARDWARE_ERROR;
-    GPS_Serial_Error("SERIAL: tcgetattr error");
+    GPS_Serial_Error("SERIAL: tcgetattr error: %s", strerror(errno));
     return 0;
   }
   tty = psd->gps_ttysave;
@@ -391,7 +392,7 @@ int32 GPS_Serial_Open(gpsdevh* dh, const char* port)
   tty.c_cc[VTIME] = 0;
 
   if (tcsetattr(psd->fd,TCSANOW|TCSAFLUSH,&tty)==-1) {
-    GPS_Serial_Error("SERIAL: tcsetattr error");
+    GPS_Serial_Error("SERIAL: tcsetattr error: %s", strerror(errno));
     return 0;
   }
 
@@ -474,7 +475,7 @@ int32 GPS_Serial_Flush(gpsdevh* fd)
   auto* psd = (posix_serial_data*)fd;
 
   if (tcflush(psd->fd,TCIOFLUSH)) {
-    GPS_Serial_Error("SERIAL: tcflush error");
+    GPS_Serial_Error("SERIAL: tcflush error: %s", strerror(errno));
     gps_errno = SERIAL_ERROR;
     return 0;
   }
@@ -500,12 +501,13 @@ int32 GPS_Serial_Close(gpsdevh* fd)
 
   if (tcsetattr(psd->fd, TCSAFLUSH, &psd->gps_ttysave)==-1) {
     gps_errno = HARDWARE_ERROR;
-    GPS_Serial_Error("SERIAL: tcsetattr error");
+
+    GPS_Serial_Error("SERIAL: tcsetattr error: %s", strerror(errno));
     return 0;
   }
 
   if (close(psd->fd)==-1) {
-    GPS_Serial_Error("SERIAL: Error closing serial port");
+    GPS_Serial_Error("SERIAL: Error closing serial port: %s", strerror(errno));
     gps_errno = SERIAL_ERROR;
     return 0;
   }
@@ -694,7 +696,7 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
   cfsetispeed(&tty,speed);
 
   if (tcsetattr(psd->fd,TCSANOW|TCSAFLUSH,&tty)==-1) {
-    GPS_Serial_Error("SERIAL: tcsetattr error");
+    GPS_Serial_Error("SERIAL: tcsetattr error: %s", strerror(errno));
     return 0;
   }
 
