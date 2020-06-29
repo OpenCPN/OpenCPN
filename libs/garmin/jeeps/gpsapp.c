@@ -36,6 +36,10 @@
 #include "garminusb.h"
 #include "gpsusbint.h"
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 #define XMIN(a,b) (a < b? a : b)
 
 static UC Is_Trackpoint_Invalid(GPS_PTrack trk);
@@ -174,7 +178,7 @@ static void   GPS_D501_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D550_Send(UC *data, GPS_PAlmanac alm);
 static void   GPS_D551_Send(UC *data, GPS_PAlmanac alm);
 
-void  VerifySerialPortClosed(void);  /*  In gpsserial.c  */
+#include "gpsserial.h"
 
 void VerifyPortClosed()
 {
@@ -287,20 +291,22 @@ static int32 GPS_A000(const char *port)
  
         // It seems that sometimes the first byte received after port open is lost...
         //      On error, Flush() and try once more....
-        GPS_Error("GPS_Get_Ack error");
+        GPS_Error("GPS_Get_Ack error: %d", gps_errno);
         
         GPS_Device_Flush(fd);
             
         if(!GPS_Write_Packet(fd,tra))
         {
-            GPS_Error("GPS_Write_Packet error");
+            GPS_Error("GPS_Write_Packet error: %d: %s",
+                       gps_errno, GetDeviceLastError());
             err = -55;
             goto carry_out;
         }
         
         if(!GPS_Get_Ack(fd, &tra, &rec))
         {
-            GPS_Error("GPS_Get_Ack error");
+            GPS_Error("GPS_Get_Ack error %d: %s",
+                      gps_errno, GetDeviceLastError());
             err = -56;
             goto carry_out;
         }            
@@ -7459,7 +7465,7 @@ void GPS_Prepare_Track_For_Device(GPS_PTrack **trk, int32 *n)
 			trkpt->distance_populated = 0;
 			trkpt->heartrate = 0;
 			trkpt->cadence = 0xff;
-			*trk = xrealloc(*trk, (*n+1) * sizeof(GPS_PTrack));
+			*trk = (GPS_STrack**) xrealloc(*trk, (*n+1) * sizeof(GPS_PTrack));
 			memmove(&(*trk)[i+1], &(*trk)[i], (*n-i) * sizeof(GPS_PTrack));
 			(*trk)[i] = trkpt;
 			i++;

@@ -23,6 +23,11 @@
 #include "garminusb.h"
 #include "gpsusbint.h"
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
+
 /*
  * Return values are:
  * Negative on error.
