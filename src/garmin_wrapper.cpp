@@ -21,10 +21,11 @@
 
 #include "config.h"
 
+#define LIBRARY_BUILD
 #include "garmin_wrapper.h"
+#include "garmin_wrapper_utils.h"
 
 #include "gpsapp.h"
-#include "garmin_gps.h"
 #include "gpsserial.h"
 #include "Route.h"
 #include "chart1.h"
@@ -60,14 +61,14 @@ int Garmin_GPS_Init( const wxString &port_name)
       GPS_Error(m);
 
       ret = GPS_Init(port_name.mb_str());
-      VerifyPortClosed();
+//      VerifyPortClosed();
 
       return ret;
 }
 
-int Garmin_GPS_Open( wxString &port_name )
+int Garmin_GPS_Open(const wxString &port_name)
 {
-    return GPS_Init(port_name.mb_str());
+    return GPS_Init( port_name.mb_str() );
 }
 
 
@@ -89,7 +90,7 @@ int Garmin_GPS_GetPVT(void *pvt)
 
 void Garmin_GPS_ClosePortVerify(void)
 {
-    VerifyPortClosed();
+    // VerifyPortClosed();
 }
 
 wxString Garmin_GPS_GetSaveString()
@@ -142,7 +143,7 @@ int Garmin_GPS_SendWaypoints( const wxString &port_name, RoutePointList *wplist)
 
       free(ppway);
 
-      VerifyPortClosed();
+      // VerifyPortClosed();
       return ret_val;
 }
 
@@ -281,7 +282,7 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
       {
       //    Retrieve <ALL> routes from the device
             GPS_Diag("Garmin: trying to get free route number");
-            GPS_PWay *pprouteway;
+            GPS_SWay** pprouteway;
             int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
             if(npacks < 0)
                   return npacks;
@@ -362,7 +363,7 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
             pProgress->Update();
       }
 
-      VerifyPortClosed();
+      // VerifyPortClosed();
       return ret_val;
 }
 

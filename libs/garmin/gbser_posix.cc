@@ -23,6 +23,10 @@
 #include "gbser.h"
 #include "gbser_private.h"
 
+#ifdef LIBRARY_BUILD
+#include "opencpn/garmin_wrapper_utils.h"
+#endif
+
 #include <cassert>
 #include <cerrno>
 #include <cstdarg>

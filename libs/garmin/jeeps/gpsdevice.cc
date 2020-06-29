@@ -23,6 +23,10 @@
 #include "gpsdevice.h"
 #include "gpsserial.h"
 
+#ifdef LIBRARY_BUILD
+#include "garmin_wrapper_utils.h"
+#endif
+
 extern gps_device_ops gps_serial_ops;
 extern gps_device_ops gps_usb_ops;
 gps_device_ops* ops = nullptr;

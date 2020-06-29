@@ -23,6 +23,18 @@
 #include "garminusb.h"
 #include "gpsusbcommon.h"
 
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif
+
+#ifdef LIBRARY_BUILD
+using garmin::le_read16;
+using garmin::le_read32;
+using garmin::le_write16;
+using garmin::le_write32;
+#endif
+
+
 /*
  * This receive logic is a little convoluted as we go to some efforts here
  * to hide most of the differences between the bulk only and bulk-interrupt
@@ -37,7 +49,9 @@ static enum {
 static gusb_llops_t* gusb_llops;
 
 /* Decide when to truncate packets for debug output */
+#ifdef LIBRARY_BUILD
 #define DEBUG_THRESH  ((global_opts.debug_level < 5) && (i > 10))
+#endif
 
 /* Called from OS layer to register its low-level entry points. */
 void
@@ -106,18 +120,22 @@ top:
              receive_state == rs_fromintr ? "intr" : "bulk", rv);
 
     for (i=0; i<rv; i++) {
+#ifndef LIBRARY_BUILD
       if (DEBUG_THRESH) {
         GPS_Diag("[...]");
         break;
       }
+#endif
       GPS_Diag("%02x ", buf[i]);
     }
 
     for (i=0; i<rv; i++) {
+#ifndef LIBRARY_BUILD
       if (DEBUG_THRESH) {
         GPS_Diag("[...]");
         break;
       }
+#endif
       int c = buf[i];
       GPS_Diag("%c", isascii(c) && isalnum(c) ? c : '.');
     }

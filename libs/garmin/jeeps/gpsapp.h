@@ -4,13 +4,19 @@
 
 #include "gps.h"
 
+#if defined(__cplusplus) && defined(LIBRARY_BUILD)
+extern "C" {
+#endif
   int32  GPS_Init(const char* port);
+  int32  GPS_A200_Get(const char* port, GPS_PWay** way);
+#if defined(__cplusplus) && defined(LIBRARY_BUILD)
+}
+#endif
 
   int32  GPS_A100_Get(const char* port, GPS_PWay** way, int (*cb)(int ct, GPS_PWay*));
   int32 GPS_A101_Get(const char* port);
   int32  GPS_A100_Send(const char* port, GPS_PWay* way, int32 n, int (*cb)(GPS_PWay*));
 
-  int32  GPS_A200_Get(const char* port, GPS_PWay** way);
   int32  GPS_A201_Get(const char* port, GPS_PWay** way);
   int32  GPS_A200_Send(const char* port, GPS_PWay* way, int32 n);
   int32  GPS_A201_Send(const char* port, GPS_PWay* way, int32 n);
@@ -112,4 +118,6 @@
   void GPS_Prepare_Track_For_Device(GPS_PTrack** trk, int32* n);
   int32 GPS_Set_Baud_Rate(const char* port, int br);
 
-#endif
+
+
+#endif  // gpsapp_h

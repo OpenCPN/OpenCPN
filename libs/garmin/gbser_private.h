@@ -22,6 +22,8 @@
 #define MYMAGIC 0x91827364
 #define BUFSIZE 512
 
+#ifndef LIBRARY_BUILD
 void gbser__db(int l, const char* msg, ...);
+#endif
 int gbser__fill_buffer(void* h, unsigned want, unsigned* ms);
 unsigned gbser__read_buffer(void* handle, void** buf, unsigned* len);

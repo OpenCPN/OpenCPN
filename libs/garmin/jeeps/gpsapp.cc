@@ -30,7 +30,14 @@
 #include <cstring>
 #include <ctime>
 
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#include "../defs.h"
+#endif
+
+#ifndef LIBRARY_BUILD
 #include <QtCore/QDateTime>
+#endif
 
 /*
  * This violates the layering design, but is needed for device discovery.
@@ -844,9 +851,10 @@ static void GPS_A001(GPS_PPacket& packet)
            gps_route_transfer, gps_rte_hdr_type, gps_rte_type);
   GPS_User("Track:    Transfer %d Type %d\n",
            gps_trk_transfer, gps_trk_type);
+#ifndef LIBRARY_BUILD
   QDateTime dt = QDateTime::fromMSecsSinceEpoch(gps_save_time * 1000);
   GPS_User("GPS Time: %s\n", CSTR(dt.toString()));
-
+#endif
   return;
 }
 

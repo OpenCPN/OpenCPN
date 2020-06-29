@@ -19,6 +19,11 @@
 #define DLE 0x10
 #define ETX 0x03
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 
 extern int32 gps_errno;
 extern int32 gps_warning;
@@ -280,4 +285,10 @@ extern const char* gps_aviation_sym[];
 extern const char* gps_16_sym[];
 
 
+
+
+#ifdef __cplusplus
+}
 #endif
+
+#endif   // gps_h

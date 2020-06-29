@@ -27,6 +27,8 @@
 #include <cstdarg>
 #include <cstdio>
 
+
+#ifndef LIBRARY_BUILD
 void gbser__db(int l, const char* msg, ...)
 {
   va_list ap;
@@ -36,6 +38,7 @@ void gbser__db(int l, const char* msg, ...)
   }
   va_end(ap);
 }
+#endif
 
 /* Set the serial port speed.
  */

@@ -35,7 +35,7 @@
 
 /*  Wrapped interface from higher level objects   */
 int Garmin_GPS_Init( const wxString &port_name);
-int Garmin_GPS_Open( wxString &port_name );
+int Garmin_GPS_Open( const wxString &port_name );
 int Garmin_GPS_PVT_On( wxString &port_name );
 int Garmin_GPS_PVT_Off( wxString &port_name );
 int Garmin_GPS_GetPVT(void *pvt);

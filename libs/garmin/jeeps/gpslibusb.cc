@@ -38,7 +38,16 @@
 #include "garminusb.h"
 #include "gpsdevice.h"
 #include "gpsusbcommon.h"
+#ifndef LIBRARY_BUILD
 #include "../garmin_device_xml.h"
+#endif
+
+#ifdef LIBRARY_BUILD
+using garmin::le_read16;
+using garmin::le_read32;
+using garmin::le_write16;
+using garmin::le_write32;
+#endif
 
 #define GARMIN_VID 0x91e
 

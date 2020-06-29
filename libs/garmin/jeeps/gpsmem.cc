@@ -30,6 +30,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif
+
+
 /* @func GPS_Pvt_New ***********************************************
 **
 ** Pvt constructor

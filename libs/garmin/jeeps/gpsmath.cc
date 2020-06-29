@@ -27,6 +27,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif
 
 static int32 GPS_Math_LatLon_To_UTM_Param(double lat, double lon, int32* zone,
     char* zc, double* Mc, double* E0,
@@ -2567,10 +2570,12 @@ int32 GPS_Lookup_Datum_Index(const char* n)
   return -1;
 }
 
+#ifndef LIBRARY_BUILD
 int32 GPS_Lookup_Datum_Index(const QString& n)
 {
   return GPS_Lookup_Datum_Index(CSTR(n));
 }
+#endif
 
 const char*
 GPS_Math_Get_Datum_Name(const int datum_index)

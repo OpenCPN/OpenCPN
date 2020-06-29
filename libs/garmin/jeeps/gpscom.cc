@@ -29,6 +29,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif
+
+
 
 /* @func GPS_Command_Off ***********************************************
 **
@@ -241,7 +246,7 @@ int32 GPS_Command_Get_Track(const char* port, GPS_PTrack** trk, pcb_fn cb)
 }
 
 
-
+#ifndef LIBRARY_BUILD
 /* @func GPS_Command_Send_Track ******************************************
 **
 ** Send track log to GPS
@@ -281,7 +286,7 @@ int32 GPS_Command_Send_Track(const char* port, GPS_PTrack* trk, int32 n, int era
 
   return ret;
 }
-
+#endif
 
 /* @func GPS_Command_Get_Proximity **************************************
 **
@@ -929,7 +934,7 @@ static uint32 Unique_Track_Index(GPS_PCourse* crs, int n_crs)
   }
 }
 
-
+#ifndef LIBRARY_BUILD
 /* @funcstatic Calculate_Course_Lap_Data *******************************
 **
 ** Calculate lap data totals from individual track points. Also
@@ -1017,6 +1022,7 @@ Calculate_Course_Lap_Data(GPS_PCourse_Lap clp, GPS_PTrack* ctk,
   }
 }
 
+#endif  // LIBRARY_BUILD
 
 /* @funcstatic Course_Garbage_Collect **********************************
 **
@@ -1133,7 +1139,7 @@ restart_course_points:
   }
 }
 
-
+#ifndef LIBRARY_BUILD
 /* @func GPS_Command_Send_Track_As_Course ******************************
 **
 ** Convert track log to course, then send to GPS. Since sending a course
@@ -1311,6 +1317,8 @@ int32 GPS_Command_Send_Track_As_Course(const char* port, GPS_PTrack* trk, int32 
 
   return ret;
 }
+
+#endif  // LIBRARY_BUILD
 
 /*Stubs for unimplemented stuff*/
 int32  GPS_Command_Get_Workout(const char* /* port */, void** /* lap */, int (* /* cb */)(int, struct GPS_SWay**))

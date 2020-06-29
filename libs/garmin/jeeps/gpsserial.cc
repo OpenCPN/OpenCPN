@@ -26,7 +26,15 @@
 #include "gps.h"
 #include "../gbser.h"
 #include "gpsserial.h"
+
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif 
+
+#ifndef LIBRARY_BUILD
 #include <QtCore/QThread>
+#endif
+
 #include <cerrno>
 #include <cstdio>
 #include <ctime>
@@ -272,7 +280,11 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
 
   // Sleep for a small amount of time, about 100 milliseconds,
   // to make sure the packet was successfully transmitted to the GPS unit.
-  QThread::usleep(100000);
+#ifdef LIBRARY_BUILD
+    usleep(100000);
+#else
+    QThread::usleep(100000);
+#endif
 
   // Change port speed
   DCB tio;
@@ -303,12 +315,15 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
   if (!GPS_Get_Ack(fd, &tra, &rec)) {
     return gps_errno;
   }
-
-  if (global_opts.debug_level >= 1) fprintf(stderr, "Serial port speed set to %d\n", br);
-  return 0;
-
-}
+#ifdef LIBRARY_BUILD
+  debug("Serial port speed set to %d\n", br);
 #else
+  if (global_opts.debug_level >= 1) fprintf(stderr, "Serial port speed set to %d\n", br);
+#endif
+  return 0;
+}
+
+#else  // defined (__WIN32__) || defined (__CYGWIN__)
 
 #include "gbser_posix.h"
 #include <sys/ioctl.h>
@@ -334,7 +349,12 @@ typedef struct {
 int32 GPS_Serial_Open(gpsdevh* dh, const char* port)
 {
   struct termios tty;
-  if (global_opts.debug_level >= 2) fprintf(stderr, "GPS Serial Open at %d\n", gps_baud_rate);
+#ifdef LIBRARY_BUILD
+  message("GPS Serial Open at %d\n", gps_baud_rate);
+#else
+  if (global_opts.debug_level >= 2)
+      fprintf(stderr, "GPS Serial Open at %d\n", gps_baud_rate);
+#endif
   speed_t baud = mkspeed(gps_baud_rate);
   auto* psd = (posix_serial_data*)dh;
 
@@ -658,7 +678,11 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
 
   // Sleep for a small amount of time, about 100 milliseconds,
   // to make sure the packet was successfully transmitted to the GPS unit.
+#ifdef LIBRARY_BUILD
+    usleep(100000);
+#else
     QThread::usleep(100000);
+#endif
 
   // Change port speed
   auto* psd = (posix_serial_data*)fd;
@@ -689,8 +713,13 @@ int32 GPS_Serial_Set_Baud_Rate(gpsdevh* fd, int br)
   if (!GPS_Get_Ack(fd, &tra, &rec)) {
     return gps_errno;
   }
-
-  if (global_opts.debug_level >= 1) fprintf(stderr, "Serial port speed set to %d\n", br);
+#ifdef LIBRARY_BUILD
+  debug("Serial port speed set to %d\n", br);
+#else
+  if (global_opts.debug_level >= 1) {
+      fprintf(stderr, "Serial port speed set to %d\n", br);
+  }
+#endif
   return 0;
 
 }

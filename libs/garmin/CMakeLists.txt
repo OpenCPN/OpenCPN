@@ -27,8 +27,6 @@ set( SRC
     jeeps/gpsmem.cc
     jeeps/gpsmem.h
     jeeps/gpsport.h
-    jeeps/gpsproj.cc
-    jeeps/gpsproj.h
     jeeps/gpsprot.cc
     jeeps/gpsprot.h
     jeeps/gpsread.cc
@@ -45,28 +43,45 @@ set( SRC
     jeeps/gpsusbread.cc
     jeeps/gpsusbsend.cc
     jeeps/gpsusbstub.cc
-    jeeps/gpsusbwin.cc
     jeeps/gpsutil.h
     jeeps/jgpsutil.cc
+    opencpn/garmin_wrapper_utils.h
+    opencpn/garmin_wrapper_utils.cc
+    opencpn/gpsinput.h
     gbser.cc
     gbser.h
-    gbser_posix.cc
-    gbser_posix.h
     gbser_private.h
-    gbser_win.cc
-    gbser_win.h
 )
 if (WIN32)
-  set(SRC ${SRC} jeeps/gpsusbwin.c)
+  set(SRC ${SRC}
+    jeeps/gpsusbwin.c
+    gbser_win.cc
+    gbser_win.h
+  )
   add_definitions(-D__WIN32__)
+else ()
+  set(SRC ${SRC}
+    gbser_posix.cc
+    gbser_posix.h
+  )
 endif ()
 
 add_library(GARMINHOST STATIC ${SRC})
 add_library(ocpn::garminhost ALIAS GARMINHOST)
+target_compile_definitions(GARMINHOST PRIVATE "-DLIBRARY_BUILD")
 if (MINGW)
   target_compile_definitions(GARMINHOST PRIVATE "-D_UNICODE")
 endif ()
-
+if (WIN32)
+  target_compile_definitions(GARMINHOST PRIVATE "-DZLIB_INHIBITED")
+endif ()
+ 
 set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)
+target_include_directories(
+  GARMINHOST
+    PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIR}/jeeps
+      ${CMAKE_CURRENT_SOURCE_DIR}/opencpn
+      ${CMAKE_CURRENT_SOURCE_DIR}
+)
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})

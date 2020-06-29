@@ -23,6 +23,13 @@
 #include "gpsusbint.h"
 #include <cctype>
 
+#ifdef LIBRARY_BUILD
+using garmin::le_read16;
+using garmin::le_read32;
+using garmin::le_write16;
+using garmin::le_write32;
+#endif
+
 /*
  * Return values are:
  * Negative on error.

@@ -25,8 +25,15 @@
 #include <cstddef>                // for NULL, nullptr_t, size_t
 #include <cstdint>                // for int32_t, uint32_t
 #include <cstdio>                 // for NULL, fprintf, FILE, stdout
+#include <cstring>
 #include <ctime>                  // for time_t
+#include <string>                  // for time_t
 #include <utility>                // for move
+
+#ifdef LIBRARY_BUILD
+#define qint64 int64_t
+#define Q_UNUSED(x)
+#endif
 
 #if HAVE_CONFIG_H
 #include "config.h"
@@ -36,6 +43,23 @@
 #elif !ZLIB_INHIBITED
 #include "zlib.h"                 // doesn't really belong here, but is missing elsewhere.
 #endif
+
+#ifdef LIBRARY_BUILD
+
+// These collides with other implementations in opencpn
+namespace garmin {
+signed int le_read16(const void* ptr);
+signed int le_read32(const void* ptr);
+void le_write16(void* ptr, unsigned value);
+void le_write32(void* ptr, unsigned value);
+}
+
+void* xrealloc(void* p, size_t s);
+void* xcalloc(size_t nmemb, size_t size);
+char* xstrdup(const char* s);
+void* xmalloc(size_t size);
+
+#else // LIBRARY_BUILD
 
 #include <QtCore/QDebug>          // for QDebug
 #include <QtCore/QList>           // for QList, QList<>::const_reverse_iterator, QList<>::reverse_iterator
@@ -747,7 +771,7 @@ public:
   void disp_all(std::nullptr_t /* rh */, std::nullptr_t /* rt */, T3 wc);
 
   // Only expose methods from our underlying container that won't corrupt our private data.
-  // Our contained element (route_head) also contains a container (waypoint_list), 
+  // Our contained element (route_head) also contains a container (waypoint_list),
   // and we maintain a total count the elements in these contained containers, i.e.
   // the total number of waypoints in all the routes in the RouteList.
   // public types
@@ -1261,5 +1285,7 @@ int color_to_bbggrr(const char* cname);
 // TODO: this is a (probably temporary) shim for the C->QString conversion.
 // It's here instead of gps to avoid C/C++ linkage issues.
 int32_t GPS_Lookup_Datum_Index(const QString& n);
+
+#endif  // LIBRARY_BUILD
 
 #endif // DEFS_H_INCLUDED_

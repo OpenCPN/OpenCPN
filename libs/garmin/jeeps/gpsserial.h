@@ -8,7 +8,7 @@
 #define DEFAULT_BAUD 9600
 
   int32  GPS_Serial_Chars_Ready(gpsdevh* fd);
-// int32  GPS_Serial_Close(int32 fd, const char *port);
+  int32  GPS_Serial_Close(int32 fd, const char *port);
 // int32  GPS_Serial_Open(int32 *fd, const char *port);
 // int32  GPS_Serial_Open_NMEA(int32 *fd, const char *port);
 // int32  GPS_Serial_Restoretty(const char *port);

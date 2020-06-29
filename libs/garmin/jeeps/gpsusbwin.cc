@@ -18,6 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
  */
+#ifdef LIBRARY_BUILD
+#include "defs.h"
+#endif
 
 #include <cctype>
 #include <cstdio>
@@ -27,11 +30,17 @@
 #include <setupapi.h>
 #include <winioctl.h>
 
+#ifndef LIBRARY_BUILD
 #include "../garmin_device_xml.h"
+#endif
 #include "garminusb.h"
 #include "gps.h"
 #include "gpsapp.h"
 #include "gpsusbcommon.h"
+
+#ifdef LIBRARY_BUILD
+#include "../opencpn/garmin_wrapper_utils.h"
+#endif
 
 /* Constants from Garmin doc. */
 
@@ -55,7 +64,10 @@ typedef struct {
 
 static HANDLE usb_handle = INVALID_HANDLE_VALUE;
 static int usb_tx_packet_size ;
+
+#ifndef LIBRARY_BUILD
 static const gdx_info* gdx;
+#endif
 
 static int
 gusb_win_close(gpsdevh* /* handle */, bool /* exit_lib */)
@@ -255,10 +267,12 @@ gusb_init(const char* pname, gpsdevh** dh)
 
 
       char** dlist = get_garmin_mountpoints();
+#ifndef LIBRARY_BUILD
       gdx = gdx_find_file(dlist);
       if (gdx) {
         return 1;
       }
+#endif
 
 
       // Plan C.
