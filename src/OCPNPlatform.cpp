@@ -911,6 +911,12 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     wxLocale::AddCatalogLookupPathPrefix( managed_locale_location );
     #endif
 
+    #ifdef __WXOSX__
+    std::string macDir = PluginPaths::getInstance()->Homedir() + "/Library/Application Support/OpenCPN/Contents/Resources";
+    wxString Mac_managed_locale_location(macDir);
+    wxLocale::AddCatalogLookupPathPrefix( Mac_managed_locale_location );
+    #endif
+    
 #endif
 }
 
