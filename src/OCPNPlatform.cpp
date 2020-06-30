@@ -870,8 +870,15 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     // Add a new prefixes for search order.
     #if defined(__WINDOWS__)
 
+    // Legacy and system plugin location
     wxString locale_location = GetSharedDataDir();
-    locale_location += _T("share/locale");
+    locale_location += _T("share\\locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+
+    // Managed plugin location
+    wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator()); 
+    usrShare.RemoveLastDir();
+    locale_location = usrShare.GetFullPath() + ("share\\locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
     #elif defined(__OCPN__ANDROID__)
