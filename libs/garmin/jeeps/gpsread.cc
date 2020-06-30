@@ -31,6 +31,10 @@
 #include "gps.h"
 #include "gpsserial.h"
 
+#ifdef LIBRARY_BUILD
+#include "garmin_wrapper_utils.h"
+#endif
+
 
 /* @func GPS_Time_Now ***********************************************
 **

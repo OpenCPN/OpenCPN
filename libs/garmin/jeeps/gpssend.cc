@@ -30,6 +30,10 @@
 #include "gps.h"
 #include "gpsserial.h"
 
+#ifdef LIBRARY_BUILD
+#include "garmin_wrapper_utils.h"
+#endif
+
 /* @funcstatic Build_Serial_Packet *************************************
 **
 ** Forms a complete packet to send on serial port
