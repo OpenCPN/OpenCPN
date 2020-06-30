@@ -3593,7 +3593,7 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
     else{
         m_soundFont = FindOrCreateFont_PlugIn( point_size, wxFONTFAMILY_SWISS,  wxFONTSTYLE_NORMAL, fontWeight, false, fontFacename );
         m_pdc->SetFont(*m_soundFont);
-        //charHeight -= charDescent;
+        charHeight -= charDescent;
     }
 
     int pivot_x;
@@ -3633,15 +3633,15 @@ bool s52plib::RenderSoundingSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &
         
     if(symPivot < 4){
           pivot_x = (pivotWidth * symPivot) - (pivotWidth / 4);
-          pivot_y = pivotHeight * 3 / 4;
+          pivot_y = pivotHeight  / 2;
       }
     else if(symPivot == 4){
           pivot_x = -pivotWidth - (pivotWidth / 4);
-          pivot_y = pivotHeight * 3 / 4;
+          pivot_y = pivotHeight / 2;
     }
     else{
           pivot_x = - (pivotWidth / 4);
-          pivot_y = pivotHeight / 3;
+          pivot_y = pivotHeight / 5;
     }
     
     //        Get the bounding box for the to-be-drawn symbol
@@ -6329,9 +6329,11 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                         GetGlobalColor(_T("SNDG1"), &symColor);
                     bColorSet = true;
                 }
-                    
-                RenderSoundingSymbol( rzRules, rules->razRule, r, vp, symColor, angle );
-                RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+                
+                if(!strncmp(rules->razRule->name.SYNM, "SOUNDGC2", 8))
+                    RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
+                else
+                    RenderSoundingSymbol( rzRules, rules->razRule, r, vp, symColor, angle );
             }
             
             rules = rules->next;
