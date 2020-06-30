@@ -58,6 +58,9 @@
 #include "Select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
+#include "PluginPaths.h"
+#include <string>
+#include <vector>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -902,6 +905,10 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     locale_location = location.GetFullPath();
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
+    // And then for managed plugins
+    std::string dir = PluginPaths::getInstance()->UserDatadir();
+    wxString managed_locale_location(dir + "/locale");
+    wxLocale::AddCatalogLookupPathPrefix( managed_locale_location );
     #endif
 
 #endif
