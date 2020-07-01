@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (TARGET ocpn::garminhost)
-    return ()
+  return ()
 endif ()
 
 # Build the garmin lib, once upon a time copied from gpslib. Needs
@@ -75,7 +76,14 @@ endif ()
 if (WIN32)
   target_compile_definitions(GARMINHOST PRIVATE "-DZLIB_INHIBITED")
 endif ()
- 
+
+find_package(LibUSB)
+if (LIBUSB_FOUND)
+  target_compile_definitions(GARMINHOST PRIVATE "-DHAVE_LIBUSB_1_0")
+  target_include_directories(GARMINHOST PRIVATE "${LIBUSB_INCLUDE_DIRS}")
+  target_link_libraries(GARMINHOST PRIVATE "${LIBUSB_LIBRARIES}")
+endif ()
+
 set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(
   GARMINHOST

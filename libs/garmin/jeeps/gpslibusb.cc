@@ -38,8 +38,13 @@
 #include "garminusb.h"
 #include "gpsdevice.h"
 #include "gpsusbcommon.h"
+
 #ifndef LIBRARY_BUILD
 #include "../garmin_device_xml.h"
+#endif
+
+#ifdef LIBRARY_BUILD
+#include "garmin_wrapper_utils.h"
 #endif
 
 #ifdef LIBRARY_BUILD
@@ -78,7 +83,9 @@ static unsigned char gusb_bulk_in_ep;
 static bool libusb_successfully_initialized{false};
 static libusb_device_handle* udev{nullptr};
 static int garmin_usb_scan(libusb_unit_data*, int);
+#ifndef LIBRARY_BUILD
 static const gdx_info* gdx;
+#endif
 
 static int gusb_libusb_get(garmin_usb_packet* ibuf, size_t sz);
 static int gusb_libusb_get_bulk(garmin_usb_packet* ibuf, size_t sz);
@@ -515,6 +522,7 @@ int garmin_usb_scan(libusb_unit_data* lud, int req_unit_number)
   }
 
   if (0 == found_devices) {
+#ifndef LIBRARY_BUILD
     /* It's time for Plan B.  The user told us to use
      * Garmin Protocol in device "usb:" but it's possible
      * that they're talking to one of the dozens of models
@@ -526,14 +534,21 @@ int garmin_usb_scan(libusb_unit_data* lud, int req_unit_number)
     if (gdx != nullptr) {
       return 1;
     }
+#endif
     /* Plan C. */
     fatal("Found no Garmin USB devices.\n");
+#ifdef LIBRARY_BUILD
+    return 0;  // for the compiler
+#endif
   } else if (req_unit_number >= found_devices) {
     fatal("usb unit number(%d) too high.\n"
           "The unit number must be either\n"
           "1) nonnegative and less than the number of garmin devices found(%d), or\n"
           "2) negative to list the garmin devices found.\n",
           req_unit_number, found_devices);
+#ifdef LIBRARY_BUILD
+    return 0;  // for the compiler
+#endif
   } else {
     return 1;
   }
