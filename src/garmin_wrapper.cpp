@@ -328,7 +328,7 @@ int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgre
             {
                   int rv = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
                                           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
-                  if(rv != wxOK)
+                  if(rv != wxID_OK)
                         return 0;
             }
 
