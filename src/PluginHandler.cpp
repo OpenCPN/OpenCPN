@@ -220,7 +220,9 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     }
 
     std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
-    
+
+    wxLogDebug(wxString::Format(_T("Plugin compatibility check: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
+
     bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
     
