@@ -144,6 +144,14 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
     wxString src = m_itemCommListBox->GetValue();
+    int tail = src.Find(" - ") ;
+    if (tail != wxNOT_FOUND) {
+        src = src.SubString(0, tail);
+    }
+    if (!src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
+        wxLogWarning("Adding missing device prefix, using \"Serial:\".");
+        src = src.Prepend("Serial:");
+    }
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out
