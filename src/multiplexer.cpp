@@ -22,7 +22,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "config.h"
+
+#ifdef HAVE_LIBGEN_H
 #include <libgen.h>
+#endif
+
+#if defined(HAVE_READLINK) && !defined(HAVE_LIBGEN_H)
+#error Using readlink(3) requires libgen.h which cannot be found.
+#endif
 
 #include "wx/wx.h"
 
@@ -57,6 +65,7 @@ extern wxString         g_TalkerIdText;
 extern "C" bool CheckSerialAccess( void );
 
 #ifdef HAVE_READLINK
+
 
 static std::string do_readlink(const char* link) {
     char target[PATH_MAX + 1];

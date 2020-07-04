@@ -1220,6 +1220,8 @@ if (UDEV_FOUND AND OCPN_USE_UDEV)
 endif ()
 
 find_path(HAVE_UNISTD_H NAMES unistd.h)
+find_path(HAVE_LIBGEN_H NAMES libgen.h)
+
 check_symbol_exists(readlink unistd.h HAVE_READLINK)
 
 
