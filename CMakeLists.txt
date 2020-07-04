@@ -164,6 +164,7 @@ endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
+include(CheckSymbolExists)
 
 #
 # Options
@@ -1219,6 +1220,7 @@ if (UDEV_FOUND AND OCPN_USE_UDEV)
 endif ()
 
 find_path(HAVE_UNISTD_H NAMES unistd.h)
+check_symbol_exists(readlink unistd.h HAVE_READLINK)
 
 
 #

@@ -34,6 +34,7 @@
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine HAVE_LIBUDEV
 #cmakedefine HAVE_PORTAUDIO
+#cmakedefine HAVE_READLINK
 #cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_SNDFILE
 
