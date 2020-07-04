@@ -25,6 +25,10 @@
 ********************************************************************/
 #include "garmin_gps.h"
 #include "gpsserial.h"
+
+#include <chrono>
+#include <thread>
+
 //dsr#include "../gbser.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -327,6 +331,8 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
 	return 0;
     }
 
+    // https://stackoverflow.com/questions/13013387
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if(tcgetattr(psd->fd,&psd->gps_ttysave)==-1)
     {
 	gps_errno = HARDWARE_ERROR;
@@ -433,6 +439,8 @@ int32 GPS_Serial_Flush(gpsdevh *fd)
 {
     posix_serial_data *psd = (posix_serial_data *)fd;
 
+    // https://stackoverflow.com/questions/13013387
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     if(tcflush(psd->fd,TCIOFLUSH))
     {
 	GPS_Serial_Error("SERIAL: tcflush error");
