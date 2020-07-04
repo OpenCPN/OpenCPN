@@ -22,6 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <libgen.h>
 
 #include "wx/wx.h"
 
@@ -54,6 +55,42 @@ extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
 
 extern "C" bool CheckSerialAccess( void );
+
+#ifdef HAVE_READLINK
+
+static std::string do_readlink(const char* link) {
+    char target[PATH_MAX + 1];
+    char buff[PATH_MAX + 1];
+    const char* colon = strchr(link, ':');    // Strip possible Serial: or Usb: prefix.
+    const char* path  = colon ? colon + 1 : link;
+    int r = readlink(path, target, sizeof(target));
+    if (r == -1 && errno == EINVAL) {
+        return path;
+    }
+    if (*target == '/') {
+        return target;
+    }
+    memcpy(buff, path, std::min(strlen(path) + 1, (size_t)PATH_MAX));
+    return std::string(dirname(buff)) + "/" + target;
+}
+
+
+static bool is_same_device(const char* port1, const char* port2) {
+
+    std::string dev1 = do_readlink(port1);
+    std::string dev2 = do_readlink(port2);
+    return dev1 == dev2;
+}
+
+#else  // HAVE_READLINK
+
+static bool inline is_same_device(const char* port1, const char* port2) {
+    return strcmp(port1, port2) == 0;
+}
+
+#endif  // HAVE_READLINK
+
+
 
 Multiplexer::Multiplexer() : params_save(NULL)
 {
@@ -101,7 +138,7 @@ DataStream *Multiplexer::FindStream(const wxString & port)
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream *stream = m_pdatastreams->Item(i);
-        if( stream && stream->GetPort() == port )
+        if (stream && is_same_device(stream->GetPort(), port ))
             return stream;
     }
     return NULL;
@@ -394,6 +431,7 @@ int Multiplexer::SendRouteToGPS(Route *pr,
 {
     int ret_val = 0;
     DataStream *old_stream = FindStream( com_name );
+    wxLogDebug("Looking for old stream %s, %d", com_name, old_stream ? 1 : 0);
     if( old_stream ) {
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
