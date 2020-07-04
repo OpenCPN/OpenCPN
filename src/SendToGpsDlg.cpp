@@ -144,6 +144,10 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
     wxString src = m_itemCommListBox->GetValue();
+    int tail = src.Find(" - ") ;
+    if (tail != wxNOT_FOUND) {
+        src = src.SubString(0, tail);
+    }
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out

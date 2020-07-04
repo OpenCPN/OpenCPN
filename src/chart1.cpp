@@ -22,7 +22,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include "config.h"
+
 #include <memory>
+#include <iostream>
+#include <regex>
+#include <string>
+#include <vector>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#ifdef HAVE_LIBUDEV
+#include "libudev.h"
+#endif
+
+#ifdef __linux__
+#include "linux/serial.h"
+#include <sys/ioctl.h>
+#endif
+
+#include <fcntl.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 
 #ifdef __MINGW32__
 #undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
@@ -10473,7 +10498,7 @@ int isTTYreal(const char *dev)
     struct serial_struct serinfo;
     int ret = 0;
 
-    int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    int fd = open(dev, O_RDONLY | O_NONBLOCK | O_NOCTTY);
 
     // device name is pointing to a real device
     if(fd >= 0) {
@@ -10497,6 +10522,87 @@ int isTTYreal(const char *dev)
 DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
 # endif
 #endif
+
+#ifdef HAVE_LIBUDEV
+
+struct device_data {
+    std::string info;      // Free format info text
+    std::string path;      // complete /dev device path
+    device_data(const std::string& p, const std::string& i): info(i), path(p) {}
+};
+
+
+
+/** Return a single string of free-format device info, possibly empty. */
+std::string get_device_info(struct udev_device* ud) {
+    std::string info;
+    const char* prop = udev_device_get_property_value(ud, "ID_VENDOR");
+    if (prop) info += prop;
+    prop = udev_device_get_property_value(ud, "ID_MODEL");
+    if (prop) info += std::string(" - " ) + prop;
+    return info;
+}
+
+
+/** Return list of device links pointing to dev. */
+static std::vector<struct device_data> get_links(struct udev_device* dev,
+                                                 const std::regex& exclude)
+{
+    std::vector<struct device_data> items;
+    std::string info(" link -> ");
+    info += udev_device_get_devnode(dev);
+    struct udev_list_entry* link = udev_device_get_devlinks_list_entry(dev);
+    while (link) {
+        const char* linkname = udev_list_entry_get_name(link);
+        if (! std::regex_search(linkname , exclude)) {
+            struct device_data item(linkname, info);
+            items.push_back(item);
+        }
+        link = udev_list_entry_get_next(link);
+    }
+    return items;
+}
+
+
+static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+
+    struct udev_enumerate* enumerate = udev_enumerate_new(udev);
+    udev_enumerate_add_match_subsystem(enumerate, "tty");
+    udev_enumerate_scan_devices(enumerate);
+    struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
+
+    const std::regex bad_ttys(".*tty[0-9][0-9]|^/dev/serial/.*");
+    std::vector<struct device_data> items;
+    struct udev_list_entry *entry;
+    udev_list_entry_foreach(entry, devices) {
+        const char* const path = udev_list_entry_get_name(entry);
+        struct udev_device* device = udev_device_new_from_syspath(udev, path);
+        const char* const devnode = udev_device_get_devnode(device);
+        if (!std::regex_search(devnode , bad_ttys) && isTTYreal(devnode)) {
+            struct device_data item(devnode, get_device_info(device));
+            items.push_back(item);
+            auto links = get_links(device, bad_ttys);
+            items.insert(items.end(), links.begin(), links.end());
+        }
+        udev_device_unref(device);
+    }
+    return items;
+}
+
+
+wxArrayString *EnumerateSerialPorts( void )
+{
+    struct udev* udev = udev_new();
+    auto dev_items = enumerate_udev_ports(udev);
+    wxArrayString *ports = new wxArrayString;
+    for (auto item: dev_items) {
+        ports->Add((item.path + " - " + item.info).c_str());
+    }
+    return ports;
+}
+
+#else // HAVE_LIBUDEV
+
 
 wxArrayString *EnumerateSerialPorts( void )
 {
@@ -10525,7 +10631,9 @@ wxArrayString *EnumerateSerialPorts( void )
         }
     }
 #endif // __WXMSW__
-#else
+
+#else  // OPCN_USE_NEWSERIAL
+
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 
     //Initialize the pattern table
@@ -10567,7 +10675,7 @@ wxArrayString *EnumerateSerialPorts( void )
 #endif /* linux */
 
 
-#endif
+#endif // defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 
 #ifdef PROBE_PORTS__WITH_HELPER
 
@@ -10816,7 +10924,7 @@ wxArrayString *EnumerateSerialPorts( void )
         if (bFound)
         preturn->Add(wxString(s));
     }
-#endif
+#endif  // 0
 
     // Method 3:  WDM-Setupapi
     //  This method may not find XPort virtual ports,
@@ -10937,7 +11045,7 @@ wxArrayString *EnumerateSerialPorts( void )
 
         preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
     }
-#endif
+#endif   // 0
 
 #endif      //__WXMSW__
 
@@ -10949,7 +11057,7 @@ wxArrayString *EnumerateSerialPorts( void )
     return preturn;
 }
 
-
+#endif // HAVE_LIBUDEV
 bool CheckSerialAccess( void )
 {
     bool bret = true;

@@ -30,6 +30,7 @@
 
 
 #cmakedefine OPENGL_FOUND
+#undef HAVE_UNISTD_H
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine HAVE_LIBUDEV
 #cmakedefine HAVE_PORTAUDIO
