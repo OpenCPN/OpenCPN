@@ -326,7 +326,7 @@ static int32 GPS_A000(const char *port)
 
    if(!GPS_Device_Wait(fd))
     {
-	GPS_Warning("A001 protocol not supported");
+	GPS_User("A001 protocol not supported");
 	id = GPS_Protocol_Version_Change(id,version);
 	if(GPS_Protocol_Table_Set(id)<0)
             goto carry_out;
