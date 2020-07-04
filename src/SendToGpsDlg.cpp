@@ -148,6 +148,9 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     if (tail != wxNOT_FOUND) {
         src = src.SubString(0, tail);
     }
+    if (!src.Lower().StartsWith("serial") && !src.Lower().StartsWith("Usb:")) {
+        src = src.Prepend("Serial:");
+    }
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out
