@@ -159,6 +159,7 @@ endif( QT_ANDROID )
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
+include(CheckSymbolExists)
 
 #
 # Early Architecture detect, needed for some options
@@ -1192,6 +1193,12 @@ find_package(Gettext REQUIRED)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
+
+find_path(HAVE_LIBGEN_H NAMES libgen.h)
+find_path(HAVE_UNISTD_H NAMES unistd.h)
+check_symbol_exists(readlink unistd.h HAVE_READLINK)
+check_symbol_exists(dirname libgen.h HAVE_DIRNAME)
+
 
 #
 # Linux: set up GTK
