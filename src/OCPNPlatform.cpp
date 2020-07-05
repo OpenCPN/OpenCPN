@@ -1592,7 +1592,7 @@ wxString OCPNPlatform::GetPluginDataPath()
     wxString dirs("");
     auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     if (g_Platform->isFlatpacked()) {
-        dirs="~/.var/app/org.opencpn.OpenCPN/data";
+        dirs="~/.var/app/org.opencpn.OpenCPN/data/opencpn/plugins";
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
         dirs = GetLinuxDataPath();
