@@ -28,6 +28,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include <sys/stat.h>
@@ -35,6 +36,10 @@
 
 #ifdef HAVE_LIBUDEV
 #include "libudev.h"
+#endif
+
+#ifdef HAVE_DIRENT_H
+#include "dirent.h"
 #endif
 
 #ifdef __linux__
@@ -10484,6 +10489,21 @@ int paternFilter (const struct dirent * dir) {
   return 0;
 }
 
+
+#endif
+
+#ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
+# ifndef GUID_CLASS_COMPORT
+DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
+# endif
+#endif
+
+struct device_data {
+    std::string info;      // Free format info text, possibly empty
+    std::string path;      // Complete /dev device path
+    device_data(const std::string& p, const std::string& i): info(i), path(p) {}
+};
+
 int isTTYreal(const char *dev)
 {
 #ifdef __NetBSD__
@@ -10515,22 +10535,106 @@ int isTTYreal(const char *dev)
 }
 
 
-#endif
+static bool isTTYreal(const device_data& data) {
+  return isTTYreal(data.path.c_str());
+}
 
-#ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
-# ifndef GUID_CLASS_COMPORT
-DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
-# endif
-#endif
-
-#ifdef HAVE_LIBUDEV
-
-struct device_data {
-    std::string info;      // Free format info text
-    std::string path;      // complete /dev device path
-    device_data(const std::string& p, const std::string& i): info(i), path(p) {}
+struct symlink {
+    std::string path;
+    std::string target;
+    symlink(const std::string& p, const std::string& t): path(p), target(t) {}
 };
 
+
+/** Return list of full paths to all possible ttys. */
+static std::vector<std::string> get_device_candidates()
+{
+    std::vector<std::string> devices;
+    DIR* dir;
+    struct dirent* ent;
+    dir = opendir("/sys/class/tty");
+    if (dir == 0) {
+        wxLogWarning("Cannot open /sys/class/tty: %s", strerror(errno));
+        return devices;
+    }
+    const std::string prefix("/dev/");
+    for (ent = readdir(dir); ent; ent = readdir(dir)) {
+        devices.push_back(prefix + ent->d_name);
+    }
+    closedir(dir);
+    return devices;
+}
+
+
+/** Return all symlinks directly under /dev. */
+static std::vector<struct symlink> get_all_links()
+{
+    std::vector<struct symlink> links;
+    DIR* dir;
+    struct dirent* ent;
+    dir = opendir("/dev");
+    if (dir == 0) {
+        wxLogError("Cannot open /dev: %s", strerror(errno));
+        return links;
+    }
+    const std::string prefix("/dev/");
+    for (ent = readdir(dir); ent; ent = readdir(dir)) {
+        struct stat buf;
+        const std::string path(prefix + ent->d_name);
+        int r = lstat(path.c_str(), &buf);
+        if (r == -1) {
+            wxLogDebug("get_all_links: Cannot stat %s: %s",
+                       path.c_str(), strerror(errno));
+        }    
+        else if (S_ISLNK(buf.st_mode)) {
+            char buff[PATH_MAX + 1];
+            readlink(path.c_str(), buff, PATH_MAX);
+            std::string target(buff);
+            struct symlink link(path.c_str(), prefix + target);
+            links.push_back(link);
+        }
+    }
+    closedir(dir);
+    return links;
+}
+
+
+/** Return list of full paths to active, serial ports based on /sys files */
+static wxArrayString *EnumerateSysfsSerialPorts( void )
+{
+    std::vector<std::string> ports;
+    auto all_ports = get_device_candidates();
+    wxLogDebug("Enumerate: found %d candidates", all_ports.size());
+    for (auto p: all_ports) {
+        if (isTTYreal(p.c_str())) ports.push_back(p); 
+    }
+    wxLogDebug("Enumerate: found %d good ports", ports.size());
+    const auto targets =
+        std::unordered_set<std::string>(ports.begin(), ports.end());
+
+    auto all_links = get_all_links();
+    wxLogDebug("Enumerate: found %d links", all_links.size());
+    for (auto l: all_links) {
+        if (targets.find(l.target) != targets.end()) ports.push_back(l.path); 
+    }
+    wxLogDebug("Enumerate: found %d devices", ports.size());
+
+    auto wx_ports = new wxArrayString();
+    for (auto p: ports) {
+        wx_ports->Add(p);
+    }
+    return wx_ports;
+}
+
+
+#ifdef USE_SYSFS_PORTS
+
+wxArrayString *EnumerateSerialPorts( void )
+{
+    return EnumerateSysfsSerialPorts();
+}
+
+#elif defined(HAVE_LIBUDEV)   // USE_SYSFS_PORTS
 
 
 /** Return a single string of free-format device info, possibly empty. */
@@ -10564,8 +10668,8 @@ static std::vector<struct device_data> get_links(struct udev_device* dev,
 }
 
 
-static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
-
+static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev)
+{
     struct udev_enumerate* enumerate = udev_enumerate_new(udev);
     udev_enumerate_add_match_subsystem(enumerate, "tty");
     udev_enumerate_scan_devices(enumerate);
@@ -11057,7 +11161,7 @@ wxArrayString *EnumerateSerialPorts( void )
     return preturn;
 }
 
-#endif // HAVE_LIBUDEV
+#endif // USE_SYSFS_PORTS
 bool CheckSerialAccess( void )
 {
     bool bret = true;

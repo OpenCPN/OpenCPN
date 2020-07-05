@@ -31,13 +31,15 @@
 
 #cmakedefine OPENGL_FOUND
 #undef HAVE_UNISTD_H
-#cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_LIBGEN_H
 #cmakedefine HAVE_LIBUDEV
 #cmakedefine HAVE_PORTAUDIO
 #cmakedefine HAVE_READLINK
-#cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_SNDFILE
+#cmakedefine HAVE_SYSTEM_CMD_SOUND
+#cmakedefine HAVE_UNISTD_H
+#cmakedefine USE_SYSFS_PORTS
 
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"

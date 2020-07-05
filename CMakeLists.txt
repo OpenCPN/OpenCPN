@@ -210,6 +210,7 @@ set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
 option(OCPN_USE_UDEV "Use udev to enumerate serial ports" ON)
+option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
   option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
@@ -1219,8 +1220,13 @@ if (UDEV_FOUND AND OCPN_USE_UDEV)
   set(HAVE_LIBUDEV 1)
 endif ()
 
+if (OCPN_USE_SYSFS_PORTS)
+  set(USE_SYSFS_PORTS 1)
+endif ()
+
 find_path(HAVE_UNISTD_H NAMES unistd.h)
 find_path(HAVE_LIBGEN_H NAMES libgen.h)
+find_path(HAVE_DIRENT_H NAMES dirent.h)
 
 check_symbol_exists(readlink unistd.h HAVE_READLINK)
 
