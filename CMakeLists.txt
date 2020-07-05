@@ -209,7 +209,7 @@ set(OCPN_PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
-option(OCPN_USE_UDEV "Use udev to enumerate serial ports" ON)
+option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
 option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
 
 if (MSVC OR (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW))
@@ -1215,7 +1215,7 @@ add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 
 find_package(Libudev)
-if (UDEV_FOUND AND OCPN_USE_UDEV)
+if (UDEV_FOUND)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libudev)
   set(HAVE_LIBUDEV 1)
 endif ()
@@ -1227,6 +1227,8 @@ endif ()
 find_path(HAVE_UNISTD_H NAMES unistd.h)
 find_path(HAVE_LIBGEN_H NAMES libgen.h)
 find_path(HAVE_DIRENT_H NAMES dirent.h)
+find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
+find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
 
 check_symbol_exists(readlink unistd.h HAVE_READLINK)
 

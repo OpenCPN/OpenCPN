@@ -31,6 +31,8 @@
 
 #cmakedefine OPENGL_FOUND
 #undef HAVE_UNISTD_H
+#cmakedefine OCPN_USE_UDEV_PORTS
+#cmakedefine OCPN_USE_SYSFS_PORTS
 #cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_LIBGEN_H
 #cmakedefine HAVE_LIBUDEV
@@ -40,6 +42,8 @@
 #cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine USE_SYSFS_PORTS
+#cmakedefine HAVE_LINUX_SERIAL_H
+#cmakedefine HAVE_SYS_STAT_H
 
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"
