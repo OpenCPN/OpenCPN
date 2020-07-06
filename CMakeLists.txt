@@ -919,6 +919,7 @@ set(
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
+  include/gui_lib.h
   include/gshhs.h
   include/Hyperlink.h
   include/IDX_entry.h
@@ -1050,6 +1051,7 @@ set(
   src/geodesic.cpp
   src/georef.cpp
   src/GoToPositionDialog.cpp
+  src/gui_lib.cpp
   src/gshhs.cpp
   src/Hyperlink.cpp
   src/IDX_entry.cpp

@@ -43,6 +43,7 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 #include "mipmap/mipmap.h"
+#include "gui_lib.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64

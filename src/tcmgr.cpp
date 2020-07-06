@@ -33,7 +33,7 @@
 #include <math.h>
 #include <time.h>
 
-#include "chart1.h"
+#include "gui_lib.h"
 #include "dychart.h"
 #include "tcmgr.h"
 #include "georef.h"

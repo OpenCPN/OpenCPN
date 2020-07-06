@@ -14,6 +14,7 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "navutil.h"
+#include "gui_lib.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;

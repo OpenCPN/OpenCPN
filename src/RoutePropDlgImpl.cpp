@@ -33,6 +33,7 @@
 #include "chcanv.h"
 #include "tcmgr.h"
 #include "ocpn_plugin.h"
+#include "gui_lib.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP   7014

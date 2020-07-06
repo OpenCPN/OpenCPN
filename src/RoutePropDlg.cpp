@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "RoutePropDlg.h"
-#include "chart1.h"
+#include "gui_lib.h"
 
 #if wxCHECK_VERSION(3, 1, 2)
   #define CELL_EDITABLE wxDATAVIEW_CELL_EDITABLE

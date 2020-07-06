@@ -25,7 +25,7 @@
 
 #include "LinkPropDlg.h"
 #include "navutil.h"
-#include "chart1.h"
+#include "gui_lib.h"
 
 LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString& title,
         const wxPoint& pos, const wxSize& size, long style )

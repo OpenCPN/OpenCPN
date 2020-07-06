@@ -45,7 +45,7 @@
 
 #include "dychart.h"
 #include "OCPNPlatform.h"
-#include "chart1.h"
+#include "gui_lib.h"
 #include "cutil.h"
 #include "logger.h"
 #include "styles.h"

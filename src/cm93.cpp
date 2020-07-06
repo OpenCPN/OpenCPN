@@ -56,6 +56,7 @@
 #include "ChartDataInputStream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
+#include "gui_lib.h"
 
 #include <stdio.h>
 

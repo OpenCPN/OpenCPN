@@ -47,7 +47,7 @@
 #include "MarkInfo.h"
 #include "navutil.h"                // for Route
 #include "georef.h"
-#include "chart1.h"
+#include "gui_lib.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"

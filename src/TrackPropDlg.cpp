@@ -35,6 +35,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "chcanv.h"
+#include "gui_lib.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
