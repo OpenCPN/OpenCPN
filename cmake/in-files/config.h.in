@@ -44,6 +44,9 @@
 #cmakedefine USE_SYSFS_PORTS
 #cmakedefine HAVE_LINUX_SERIAL_H
 #cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_TYPES_H
+#cmakedefine HAVE_SYS_FCNTL_H
+#cmakedefine HAVE_SYS_IOCTL_H
 
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"

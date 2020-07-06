@@ -53,7 +53,6 @@
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
 enum DialogColor
 {

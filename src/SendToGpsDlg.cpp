@@ -27,7 +27,7 @@
 #include "SendToGpsDlg.h"
 #include "Route.h"
 #include "RoutePoint.h"
-#include "chart1.h"
+#include "ser_ports.h"
 
 extern wxString g_uploadConnection;
 

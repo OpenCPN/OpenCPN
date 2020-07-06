@@ -1105,6 +1105,7 @@ set(
   src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
   src/SerialDataStream.cpp
+  src/ser_ports.cpp
   src/SignalKDataStream.cpp
   src/SignalKEventHandler.cpp
   src/Station_Data.cpp
@@ -1231,6 +1232,9 @@ find_path(HAVE_LIBGEN_H NAMES libgen.h)
 find_path(HAVE_DIRENT_H NAMES dirent.h)
 find_path(HAVE_LINUX_SERIAL_H PATH_SUFFIXES linux NAMES serial.h)
 find_path(HAVE_SYS_STAT_H PATH_SUFFIXES sys NAMES stat.h)
+find_path(HAVE_SYS_IOCTL_H PATH_SUFFIXES sys NAMES ioctl.h)
+find_path(HAVE_SYS_FCNTL_H PATH_SUFFIXES sys NAMES fcntl.h)
+find_path(HAVE_SYS_TYPES_H PATH_SUFFIXES sys NAMES types.h)
 
 check_symbol_exists(readlink unistd.h HAVE_READLINK)
 

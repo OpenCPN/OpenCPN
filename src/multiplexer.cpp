@@ -40,6 +40,7 @@
 #include "NMEALogWindow.h"
 #include "OCPN_DataStreamEvent.h"
 #include "Route.h"
+#include "ser_ports.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -62,7 +63,6 @@ extern bool             g_b_legacy_input_filter_behaviour;
 extern int              g_maxWPNameLength;
 extern wxString         g_TalkerIdText;
 
-extern "C" bool CheckSerialAccess( void );
 
 #ifdef HAVE_READLINK
 
