@@ -60,6 +60,10 @@
 #include <sys/ioctl.h>
 #endif
 
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
 #ifdef HAVE_SYS_FCNTL_H
 #include <sys/fcntl.h>
 #endif
@@ -238,7 +242,7 @@ static wxArrayString *EnumerateSysfsSerialPorts( void )
 #if defined(HAVE_LIBUDEV)  
 
 /** Return a single string of free-format device info, possibly empty. */
-std::string get_device_info(struct udev_device* ud)
+static std::string get_device_info(struct udev_device* ud)
 {
     std::string info;
     const char* prop = udev_device_get_property_value(ud, "ID_VENDOR");
@@ -295,7 +299,7 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev)
 }
 
 
-wxArrayString *EnumerateUdevSerialPorts( void )
+static wxArrayString *EnumerateUdevSerialPorts( void )
 {
     struct udev* udev = udev_new();
     auto dev_items = enumerate_udev_ports(udev);
@@ -310,7 +314,7 @@ wxArrayString *EnumerateUdevSerialPorts( void )
 
 
 #ifdef __WXMSW__
-wxArrayString *EnumerateWindowsSerialPorts( void )
+static wxArrayString *EnumerateWindowsSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
     /*************************************************************************
@@ -492,7 +496,7 @@ wxArrayString *EnumerateWindowsSerialPorts( void )
     return preturn;
 }
 
-#endif
+#endif  // __WXMSW__
 
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
 
@@ -545,7 +549,8 @@ wxArrayString *EnumerateSerialPorts( void )
     return EnumerateWindowsSerialPorts();
 }
 
-#elif !defined(__WXMSW__)
+
+#else   // Linux...
 
 wxArrayString *EnumerateSerialPorts( void )
 {
@@ -563,8 +568,6 @@ wxArrayString *EnumerateSerialPorts( void )
     }
 
 #else  // OPCN_USE_NEWSERIAL
-
-#if defined(__UNIX__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -605,190 +608,12 @@ wxArrayString *EnumerateSerialPorts( void )
 #endif /* linux */
 
 
-#endif // defined(__UNIX__) && !defined(__WXOSX__)
+#endif   // OCPN_USE_NEWSERIAL
 
-#ifdef PROBE_PORTS__WITH_HELPER
-
-    /*
-     *     For modern Linux/(Posix??) systems, we may use
-     *     the system files /proc/tty/driver/serial
-     *     and /proc/tty/driver/usbserial to identify
-     *     available serial ports.
-     *     A complicating factor is that most (all??) linux
-     *     systems require root privileges to access these files.
-     *     We will use a helper program method here, despite implied vulnerability.
-     */
-
-    char buf[256]; // enough to hold one line from serial devices list
-    char left_digit;
-    char right_digit;
-    int port_num;
-    FILE *f;
-
-    pid_t pID = vfork();
-
-    if (pID == 0)// child
-    {
-//    Temporarily gain root privileges
-        seteuid(file_user_id);
-
-//  Execute the helper program
-        execlp("ocpnhelper", "ocpnhelper", "-SB", NULL);
-
-//  Return to user privileges
-        seteuid(user_user_id);
-
-        wxLogMessage(_T("Warning: ocpnhelper failed...."));
-        _exit(0);// If exec fails then exit forked process.
-    }
-
-    wait(NULL);                  // for the child to quit
-
-//    Read and parse the files
-
-    /*
-     * see if we have any traditional ttySx ports available
-     */
-    f = fopen("/var/tmp/serial", "r");
-
-    if (f != NULL)
-    {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/serial..."));
-
-        /* read in each line of the file */
-        while(fgets(buf, sizeof(buf), f) != NULL)
-        {
-            wxString sm(buf, wxConvUTF8);
-            sm.Prepend(_T("   "));
-            sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
-
-            /* if the line doesn't start with a number get the next line */
-            if (buf[0] < '0' || buf[0] > '9')
-            continue;
-
-            /*
-             * convert digits to an int
-             */
-            left_digit = buf[0];
-            right_digit = buf[1];
-            if (right_digit < '0' || right_digit > '9')
-            port_num = left_digit - '0';
-            else
-            port_num = (left_digit - '0') * 10 + right_digit - '0';
-
-            /* skip if "unknown" in the string */
-            if (strstr(buf, "unknown") != NULL)
-            continue;
-
-            /* upper limit of 15 */
-            if (port_num > 15)
-            continue;
-
-            /* create string from port_num  */
-
-            wxString s;
-            s.Printf(_T("/dev/ttyS%d"), port_num);
-
-            /*  add to the output array  */
-            preturn->Add(wxString(s));
-
-        }
-
-        fclose(f);
-    }
-
-    /*
-     * Same for USB ports
-     */
-    f = fopen("/var/tmp/usbserial", "r");
-
-    if (f != NULL)
-    {
-        wxLogMessage(_T("Parsing copy of /proc/tty/driver/usbserial..."));
-
-        /* read in each line of the file */
-        while(fgets(buf, sizeof(buf), f) != NULL)
-        {
-
-            wxString sm(buf, wxConvUTF8);
-            sm.Prepend(_T("   "));
-            sm.Replace(_T("\n"), _T(" "));
-            wxLogMessage(sm);
-
-            /* if the line doesn't start with a number get the next line */
-            if (buf[0] < '0' || buf[0] > '9')
-            continue;
-
-            /*
-             * convert digits to an int
-             */
-            left_digit = buf[0];
-            right_digit = buf[1];
-            if (right_digit < '0' || right_digit > '9')
-            port_num = left_digit - '0';
-            else
-            port_num = (left_digit - '0') * 10 + right_digit - '0';
-
-            /* skip if "unknown" in the string */
-            if (strstr(buf, "unknown") != NULL)
-            continue;
-
-            /* upper limit of 15 */
-            if (port_num > 15)
-            continue;
-
-            /* create string from port_num  */
-
-            wxString s;
-            s.Printf(_T("/dev/ttyUSB%d"), port_num);
-
-            /*  add to the output array  */
-            preturn->Add(wxString(s));
-
-        }
-
-        fclose(f);
-    }
-
-    //    As a fallback, in case seteuid doesn't work....
-    //    provide some defaults
-    //    This is currently the case for GTK+, which
-    //    refuses to run suid.  sigh...
-
-    if(preturn->IsEmpty())
-    {
-        preturn->Add( _T("/dev/ttyS0"));
-        preturn->Add( _T("/dev/ttyS1"));
-        preturn->Add( _T("/dev/ttyUSB0"));
-        preturn->Add( _T("/dev/ttyUSB1"));
-        preturn->Add( _T("/dev/ttyACM0"));
-        preturn->Add( _T("/dev/ttyACM1"));
-    }
-
-//    Clean up the temporary files created by helper.
-    pid_t cpID = vfork();
-
-    if (cpID == 0)// child
-    {
-//    Temporarily gain root privileges
-        seteuid(file_user_id);
-
-//  Execute the helper program
-        execlp("ocpnhelper", "ocpnhelper", "-U", NULL);
-
-//  Return to user privileges
-        seteuid(user_user_id);
-        _exit(0);// If exec fails then exit forked process.
-    }
-
-#endif      //  PROBE_PORTS__WITH_HELPER
     return preturn;
 }
 
-#endif   //  defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
-
-#endif
+#endif   // outermost if - elif - else
 
 
 bool CheckSerialAccess( void )
