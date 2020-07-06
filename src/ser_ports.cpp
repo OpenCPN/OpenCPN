@@ -31,6 +31,11 @@
 #include <unordered_set>
 #include <vector>
 
+#ifdef __MINGW32__
+#undef IPV6STRICT    // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
+#endif
+
 #include <wx/arrstr.h>
 #include <wx/log.h>
 #include <wx/utils.h>
@@ -67,7 +72,23 @@
 #include <unistd.h>
 #endif
 
+#ifdef __WXMSW__
+#include <windows.h>
+#include <setupapi.h>
+#endif
+
+#ifdef __WXOSX__
+#include "macutils.h"
+#endif
+
 #include "gui_lib.h"
+#include "GarminProtocolHandler.h"
+
+
+#ifdef  __WXMSW__
+DEFINE_GUID( GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7,
+        0x22, 0xc0 );
+#endif
 
 
 #ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
@@ -75,6 +96,8 @@
 DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
 # endif
 #endif
+
+extern int              g_nCOMPortCheck;
 
 struct device_data {
     std::string info;      // Free format info text, possibly empty
@@ -286,6 +309,191 @@ wxArrayString *EnumerateUdevSerialPorts( void )
 #endif  // HAVE_LIBUDEV
 
 
+#ifdef __WXMSW__
+wxArrayString *EnumerateWindowsSerialPorts( void )
+{
+    wxArrayString *preturn = new wxArrayString;
+    /*************************************************************************
+     * Windows provides no system level enumeration of available serial ports
+     * There are several ways of doing this.
+     *
+     *************************************************************************/
+
+    //    Method 1:  Use GetDefaultCommConfig()
+    // Try first {g_nCOMPortCheck} possible COM ports, check for a default configuration
+    //  This method will not find some Bluetooth SPP ports
+    for( int i = 1; i < g_nCOMPortCheck; i++ ) {
+        wxString s;
+        s.Printf( _T("COM%d"), i );
+
+        COMMCONFIG cc;
+        DWORD dwSize = sizeof(COMMCONFIG);
+        if( GetDefaultCommConfig( s.fn_str(), &cc, &dwSize ) )
+            preturn->Add( wxString( s ) );
+    }
+
+#if 0
+    // Method 2:  Use FileOpen()
+    // Try all 255 possible COM ports, check to see if it can be opened, or if
+    // not, that an expected error is returned.
+
+    BOOL bFound;
+    for (int j=1; j<256; j++)
+    {
+        char s[20];
+        sprintf(s, "\\\\.\\COM%d", j);
+
+        // Open the port tentatively
+        BOOL bSuccess = FALSE;
+        HANDLE hComm = ::CreateFile(s, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+
+        //  Check for the error returns that indicate a port is there, but not currently useable
+        if (hComm == INVALID_HANDLE_VALUE)
+        {
+            DWORD dwError = GetLastError();
+
+            if (dwError == ERROR_ACCESS_DENIED ||
+                    dwError == ERROR_GEN_FAILURE ||
+                    dwError == ERROR_SHARING_VIOLATION ||
+                    dwError == ERROR_SEM_TIMEOUT)
+            bFound = TRUE;
+        }
+        else
+        {
+            bFound = TRUE;
+            CloseHandle(hComm);
+        }
+
+        if (bFound)
+        preturn->Add(wxString(s));
+    }
+#endif  // 0
+
+    // Method 3:  WDM-Setupapi
+    //  This method may not find XPort virtual ports,
+    //  but does find Bluetooth SPP ports
+
+    GUID *guidDev = (GUID*) &GUID_CLASS_COMPORT;
+
+    HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
+
+    hDevInfo = SetupDiGetClassDevs( guidDev,
+                                     NULL,
+                                     NULL,
+                                     DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
+
+    if(hDevInfo != INVALID_HANDLE_VALUE) {
+
+        BOOL bOk = TRUE;
+        SP_DEVICE_INTERFACE_DATA ifcData;
+
+        ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+        for (DWORD ii=0; bOk; ii++) {
+            bOk = SetupDiEnumDeviceInterfaces(hDevInfo, NULL, guidDev, ii, &ifcData);
+            if (bOk) {
+            // Got a device. Get the details.
+
+                SP_DEVINFO_DATA devdata = {sizeof(SP_DEVINFO_DATA)};
+                bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo,
+                                                      &ifcData, NULL, 0, NULL, &devdata);
+
+                //      We really only need devdata
+                if( !bOk ) {
+                    if( GetLastError() == 122)  //ERROR_INSUFFICIENT_BUFFER, OK in this case
+                        bOk = true;
+                }
+
+                //      We could get friendly name and/or description here
+                TCHAR fname[256] = {0};
+                TCHAR desc[256] ={0};
+                if (bOk) {
+                    BOOL bSuccess = SetupDiGetDeviceRegistryProperty(
+                        hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
+                        (PBYTE)fname, sizeof(fname), NULL);
+
+                    bSuccess = bSuccess && SetupDiGetDeviceRegistryProperty(
+                        hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
+                        (PBYTE)desc, sizeof(desc), NULL);
+                }
+
+                //  Get the "COMn string from the registry key
+                if(bOk) {
+                    bool bFoundCom = false;
+                    TCHAR dname[256];
+                    HKEY hDeviceRegistryKey = SetupDiOpenDevRegKey(hDevInfo, &devdata,
+                                                                   DICS_FLAG_GLOBAL, 0,
+                                                                   DIREG_DEV, KEY_QUERY_VALUE);
+                    if(INVALID_HANDLE_VALUE != hDeviceRegistryKey) {
+                            DWORD RegKeyType;
+                            wchar_t    wport[80];
+                            LPCWSTR cstr = wport;
+                            MultiByteToWideChar( 0, 0, "PortName", -1, wport, 80);
+                            DWORD len = sizeof(dname);
+
+                            int result = RegQueryValueEx(hDeviceRegistryKey, cstr,
+                                                        0, &RegKeyType, (PBYTE)dname, &len );
+                            if( result == 0 )
+                                bFoundCom = true;
+                    }
+
+                    if( bFoundCom ) {
+                        wxString port( dname, wxConvUTF8 );
+
+                        //      If the port has already been found, remove the prior entry
+                        //      in favor of this entry, which will have descriptive information appended
+                        for( unsigned int n=0 ; n < preturn->GetCount() ; n++ ) {
+                            if((preturn->Item(n)).IsSameAs(port)){
+                                preturn->RemoveAt( n );
+                                break;
+                            }
+                        }
+                        wxString desc_name( desc, wxConvUTF8 );         // append "description"
+                        port += _T(" ");
+                        port += desc_name;
+
+                        preturn->Add( port );
+                    }
+                }
+            }
+        } //for
+    } // if
+
+
+    //  Search for Garmin device driver on Windows platforms
+
+    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
+
+    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
+            DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
+
+    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
+
+        if(GarminProtocolHandler::IsGarminPlugged()){
+            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
+            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
+        }
+    }
+
+#if 0
+    SP_DEVICE_INTERFACE_DATA deviceinterface;
+    deviceinterface.cbSize = sizeof(deviceinterface);
+
+    if (SetupDiEnumDeviceInterfaces(hdeviceinfo,
+                    NULL,
+                    (GUID *) &GARMIN_DETECT_GUID,
+                    0,
+                    &deviceinterface))
+    {
+        wxLogMessage(_T("Found Garmin Device."));
+
+        preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
+    }
+#endif   // 0
+    return preturn;
+}
+
+#endif
+
 #if defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
 
 wxArrayString *EnumerateSerialPorts( void )
@@ -301,6 +509,7 @@ wxArrayString *EnumerateSerialPorts( void )
     return EnumerateUdevSerialPorts();
 }
 
+
 #elif defined(__OCPN__ANDROID__)
 
 wxArrayString *EnumerateSerialPorts( void )
@@ -309,7 +518,34 @@ wxArrayString *EnumerateSerialPorts( void )
 }
 
 
-#else
+#elif defined(__WSOSX__)
+
+wxArrayString *EnumerateSerialPorts( void )
+{
+    wxArrayString *preturn = new wxArrayString;
+    char* paPortNames[MAX_SERIAL_PORTS];
+    int iPortNameCount;
+
+    memset(paPortNames,0x00,sizeof(paPortNames));
+    iPortNameCount = FindSerialPortNames(&paPortNames[0],MAX_SERIAL_PORTS);
+    for (int iPortIndex=0; iPortIndex<iPortNameCount; iPortIndex++)
+    {
+        wxString sm(paPortNames[iPortIndex], wxConvUTF8);
+        preturn->Add(sm);
+        free(paPortNames[iPortIndex]);
+    }
+    return preturn;
+}
+
+
+#elif defined(__WXMSW__)
+
+wxArrayString *EnumerateSerialPorts( void )
+{
+    return EnumerateWindowsSerialPorts();
+}
+
+#elif !defined(__WXMSW__)
 
 wxArrayString *EnumerateSerialPorts( void )
 {
@@ -325,23 +561,10 @@ wxArrayString *EnumerateSerialPorts( void )
         }
         preturn->Add(port);
     }
-#ifdef __WXMSW__
-    //    Search for Garmin device driver on Windows platforms
-    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
-    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
-                                      DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
-    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
-        
-        if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
-            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
-        }
-    }
-#endif // __WXMSW__
 
 #else  // OPCN_USE_NEWSERIAL
 
-#if defined(__UNIX__) && !defined(__WXOSX__)
+#if defined(__UNIX__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -560,207 +783,12 @@ wxArrayString *EnumerateSerialPorts( void )
     }
 
 #endif      //  PROBE_PORTS__WITH_HELPER
-#ifdef __WXOSX__
-#include "macutils.h"
-    char* paPortNames[MAX_SERIAL_PORTS];
-    int iPortNameCount;
-
-    memset(paPortNames,0x00,sizeof(paPortNames));
-    iPortNameCount = FindSerialPortNames(&paPortNames[0],MAX_SERIAL_PORTS);
-    for (int iPortIndex=0; iPortIndex<iPortNameCount; iPortIndex++)
-    {
-        wxString sm(paPortNames[iPortIndex], wxConvUTF8);
-        preturn->Add(sm);
-        free(paPortNames[iPortIndex]);
-    }
-#endif      //__WXOSX__
-#ifdef __WXMSW__
-    /*************************************************************************
-     * Windows provides no system level enumeration of available serial ports
-     * There are several ways of doing this.
-     *
-     *************************************************************************/
-
-#include <windows.h>
-
-    //    Method 1:  Use GetDefaultCommConfig()
-    // Try first {g_nCOMPortCheck} possible COM ports, check for a default configuration
-    //  This method will not find some Bluetooth SPP ports
-    for( int i = 1; i < g_nCOMPortCheck; i++ ) {
-        wxString s;
-        s.Printf( _T("COM%d"), i );
-
-        COMMCONFIG cc;
-        DWORD dwSize = sizeof(COMMCONFIG);
-        if( GetDefaultCommConfig( s.fn_str(), &cc, &dwSize ) )
-            preturn->Add( wxString( s ) );
-    }
-
-#if 0
-    // Method 2:  Use FileOpen()
-    // Try all 255 possible COM ports, check to see if it can be opened, or if
-    // not, that an expected error is returned.
-
-    BOOL bFound;
-    for (int j=1; j<256; j++)
-    {
-        char s[20];
-        sprintf(s, "\\\\.\\COM%d", j);
-
-        // Open the port tentatively
-        BOOL bSuccess = FALSE;
-        HANDLE hComm = ::CreateFile(s, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-
-        //  Check for the error returns that indicate a port is there, but not currently useable
-        if (hComm == INVALID_HANDLE_VALUE)
-        {
-            DWORD dwError = GetLastError();
-
-            if (dwError == ERROR_ACCESS_DENIED ||
-                    dwError == ERROR_GEN_FAILURE ||
-                    dwError == ERROR_SHARING_VIOLATION ||
-                    dwError == ERROR_SEM_TIMEOUT)
-            bFound = TRUE;
-        }
-        else
-        {
-            bFound = TRUE;
-            CloseHandle(hComm);
-        }
-
-        if (bFound)
-        preturn->Add(wxString(s));
-    }
-#endif  // 0
-
-    // Method 3:  WDM-Setupapi
-    //  This method may not find XPort virtual ports,
-    //  but does find Bluetooth SPP ports
-
-    GUID *guidDev = (GUID*) &GUID_CLASS_COMPORT;
-
-    HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
-
-    hDevInfo = SetupDiGetClassDevs( guidDev,
-                                     NULL,
-                                     NULL,
-                                     DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
-
-    if(hDevInfo != INVALID_HANDLE_VALUE) {
-
-        BOOL bOk = TRUE;
-        SP_DEVICE_INTERFACE_DATA ifcData;
-
-        ifcData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-        for (DWORD ii=0; bOk; ii++) {
-            bOk = SetupDiEnumDeviceInterfaces(hDevInfo, NULL, guidDev, ii, &ifcData);
-            if (bOk) {
-            // Got a device. Get the details.
-
-                SP_DEVINFO_DATA devdata = {sizeof(SP_DEVINFO_DATA)};
-                bOk = SetupDiGetDeviceInterfaceDetail(hDevInfo,
-                                                      &ifcData, NULL, 0, NULL, &devdata);
-
-                //      We really only need devdata
-                if( !bOk ) {
-                    if( GetLastError() == 122)  //ERROR_INSUFFICIENT_BUFFER, OK in this case
-                        bOk = true;
-                }
-
-                //      We could get friendly name and/or description here
-                TCHAR fname[256] = {0};
-                TCHAR desc[256] ={0};
-                if (bOk) {
-                    BOOL bSuccess = SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
-                        (PBYTE)fname, sizeof(fname), NULL);
-
-                    bSuccess = bSuccess && SetupDiGetDeviceRegistryProperty(
-                        hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
-                        (PBYTE)desc, sizeof(desc), NULL);
-                }
-
-                //  Get the "COMn string from the registry key
-                if(bOk) {
-                    bool bFoundCom = false;
-                    TCHAR dname[256];
-                    HKEY hDeviceRegistryKey = SetupDiOpenDevRegKey(hDevInfo, &devdata,
-                                                                   DICS_FLAG_GLOBAL, 0,
-                                                                   DIREG_DEV, KEY_QUERY_VALUE);
-                    if(INVALID_HANDLE_VALUE != hDeviceRegistryKey) {
-                            DWORD RegKeyType;
-                            wchar_t    wport[80];
-                            LPCWSTR cstr = wport;
-                            MultiByteToWideChar( 0, 0, "PortName", -1, wport, 80);
-                            DWORD len = sizeof(dname);
-
-                            int result = RegQueryValueEx(hDeviceRegistryKey, cstr,
-                                                        0, &RegKeyType, (PBYTE)dname, &len );
-                            if( result == 0 )
-                                bFoundCom = true;
-                    }
-
-                    if( bFoundCom ) {
-                        wxString port( dname, wxConvUTF8 );
-
-                        //      If the port has already been found, remove the prior entry
-                        //      in favor of this entry, which will have descriptive information appended
-                        for( unsigned int n=0 ; n < preturn->GetCount() ; n++ ) {
-                            if((preturn->Item(n)).IsSameAs(port)){
-                                preturn->RemoveAt( n );
-                                break;
-                            }
-                        }
-                        wxString desc_name( desc, wxConvUTF8 );         // append "description"
-                        port += _T(" ");
-                        port += desc_name;
-
-                        preturn->Add( port );
-                    }
-                }
-            }
-        }//for
-    }// if
-
-
-//    Search for Garmin device driver on Windows platforms
-
-    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
-
-    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
-            DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
-
-    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
-
-        if(GarminProtocolHandler::IsGarminPlugged()){
-            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
-            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
-        }
-    }
-
-#if 0
-    SP_DEVICE_INTERFACE_DATA deviceinterface;
-    deviceinterface.cbSize = sizeof(deviceinterface);
-
-    if (SetupDiEnumDeviceInterfaces(hdeviceinfo,
-                    NULL,
-                    (GUID *) &GARMIN_DETECT_GUID,
-                    0,
-                    &deviceinterface))
-    {
-        wxLogMessage(_T("Found Garmin Device."));
-
-        preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
-    }
-#endif   // 0
-
-#endif      //__WXMSW__
-
-#endif 
     return preturn;
 }
 
 #endif   //  defined(OCPN_USE_SYSFS_PORTS) && defined(HAVE_SYSFS_PORTS)
+
+#endif
 
 
 bool CheckSerialAccess( void )
