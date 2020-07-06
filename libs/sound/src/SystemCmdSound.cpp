@@ -53,6 +53,8 @@ static int do_play(const char* cmd, const char* path)
 {
     char buff[1024];
     snprintf(buff, sizeof( buff ), cmd, path);
+    wxLogDebug("Sound command: %s", buff);
+    
     int status = system(buff);
     if (status == -1) {
         wxLogWarning("Cannot fork process running %s", buff);
