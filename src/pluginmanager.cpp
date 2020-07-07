@@ -2021,6 +2021,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
             {
                 pi_info.dependencies.clear();
                 wxLogError( wxString::Format( _T("    Plugin \"%s\" is of another binary flavor than the main module."), plugin_file ) );
+                wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic, pi_info.type_magic);
             }
             for( ModuleInfo::DependencyMap::const_iterator own_dependency = own_info.dependencies.begin(); own_dependency != own_info.dependencies.end(); ++own_dependency )
             {
