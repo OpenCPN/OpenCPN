@@ -1505,12 +1505,19 @@ if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
 
+IF(APPLE)
+  #Homebrew does not link libarchive to /usr/local by default to avoid conflict with the system-wide one (which in turn does not provide includes...)
+  #We do not want the systemwide vrsion as it is too old and misses support for many archive formats
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+ENDIF()
+
 if (QT_ANDROID)
   target_include_directories(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
   target_link_libraries(${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/libarchive.a)
-elseif ( APPLE )
+elseif ( ZAPPLE )
     find_package(PkgConfig QUIET)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(LIBARCHIVE_PKGCONF archive)
