@@ -1519,7 +1519,7 @@ elseif ( APPLE )
     # Include dir
     find_path(LIBARCHIVE_INCLUDE_DIR  NAMES archive.h  PATHS ${LIBARCHIVE_PKGCONF_INCLUDE_DIRS} )       
     # Library
-    find_library(LIBARCHIVE_LIBRARY NAMES archive PATHS ${LIBARCHIVE_PKGCONF_LIBRARY_DIRS}  )
+    find_library(LIBARCHIVE_LIBRARY NAMES archive PATHS /usr/local/lib ${LIBARCHIVE_PKGCONF_LIBRARY_DIRS}  )
     
     target_include_directories(${PACKAGE_NAME} PRIVATE ${LIBARCHIVE_INCLUDE_DIR})
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${LIBARCHIVE_LIBRARY})
