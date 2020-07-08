@@ -1526,6 +1526,7 @@ elseif ( APPLE )
     message(STATUS "    LibArchive include found at: " ${LIBARCHIVE_INCLUDE_DIR} )
     message(STATUS "    LibArchive library found at: " ${LIBARCHIVE_LIBRARY} )
 
+    
 else ()
   find_package(LibArchive REQUIRED)
   target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
