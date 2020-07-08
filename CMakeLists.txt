@@ -1521,11 +1521,10 @@ elseif ( APPLE )
     # Library
     find_library(LIBARCHIVE_LIBRARY NAMES archive PATHS /usr/local/lib   )
     
-    target_include_directories(${PACKAGE_NAME} PRIVATE ${LIBARCHIVE_INCLUDE_DIR})
+    #  TODO This is a hack, due to some change in CI build environment 
+    target_include_directories(${PACKAGE_NAME} PRIVATE /usr/local/include)
     target_link_libraries(${PACKAGE_NAME} PRIVATE /usr/local/lib/libarchive.dylib)
-    message(STATUS "    LibArchive include found at: " ${LIBARCHIVE_INCLUDE_DIR} )
-    message(STATUS "    LibArchive library found at: " ${LIBARCHIVE_LIBRARY} )
-
+ 
     
 else ()
   find_package(LibArchive REQUIRED)
