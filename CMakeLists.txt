@@ -219,8 +219,10 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   endif ()
 endif ()
 
-if (NOT WIN32 AND NOT APPLE)
+if (NOT WIN32 AND NOT APPLE AND NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   set(PA_DEFAULT "ON")
+else ()
+  set(PA_DEFAULT "OFF")
 endif ()
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
