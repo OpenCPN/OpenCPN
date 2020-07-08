@@ -6671,6 +6671,9 @@ void MyFrame::ChartsRefresh( )
         ChartCanvas *cc = g_canvasArray.Item(i);
         if(cc ){
             int currentIndex = cc->GetpCurrentStack()->GetCurrentEntrydbIndex();
+            if(cc->GetQuiltMode()){
+                currentIndex = cc->GetQuiltReferenceChartIndex();
+                }
             cc->canvasChartsRefresh( currentIndex );
         }
     }
