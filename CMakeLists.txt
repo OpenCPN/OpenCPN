@@ -161,15 +161,6 @@ include(FindPkgConfig)
 include(CMakeDependentOption)
 
 #
-# Early Architecture detect, needed for some options
-#
-
-include(GetArch)
-getarch()
-message(STATUS "*** Build Architecture is ${ARCH}")
-
-
-#
 # Options
 #
 
@@ -228,12 +219,9 @@ if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   endif ()
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT ARCH MATCHES "arm*")
+if (NOT WIN32 AND NOT APPLE)
   set(PA_DEFAULT "ON")
-else ()
-  set(PA_DEFAULT "OFF")
 endif ()
-
 option(
   OCPN_ENABLE_PORTAUDIO "Use portaudio(3) to play sounds if available"
   ${PA_DEFAULT}
@@ -351,6 +339,10 @@ endmacro (USE_BUNDLED_LIB)
 #
 # Language, compiler and static checkers setup
 #
+
+include(GetArch)
+getarch()
+message(STATUS "*** Build Architecture is ${ARCH}")
 
 set(CMAKE_CXX_STANDARD 11)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
