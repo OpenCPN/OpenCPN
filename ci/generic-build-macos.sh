@@ -77,6 +77,10 @@ make install # Dunno why the second is needed but it is, otherwise
 rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 cp /usr/local/Cellar/pixman/0.40.0/lib/libpixman-1.0.40.0.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/libpixman-1.0.dylib
 
+#and also liblzma
+rm /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/liblzma.5.dylib
+cp /usr/local/Cellar/xz/5.2.4/lib/liblzma.5.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks/liblzma.5.dylib
+
 sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
 make create-dmg
