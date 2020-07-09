@@ -123,6 +123,8 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 FIND_PACKAGE(LibArchive)
 IF(LibArchive_FOUND)
   message(STATUS "chartdldr_pi: going to use LibArchive...")
+  message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
+  message(STATUS "chartdldr_pi: " ${LibArchive_LIBRARIES})
   INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
   #Unset the unrar sources as we will not need them
   ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)

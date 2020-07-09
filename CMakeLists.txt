@@ -1539,6 +1539,9 @@ else ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
 endif (QT_ANDROID)
 
+  message(STATUS "CORE: " ${LibArchive_INCLUDE_DIRS})
+  message(STATUS "CORE: " ${LibArchive_LIBRARIES})
+
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
