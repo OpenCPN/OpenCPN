@@ -711,6 +711,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
 
     m_upMode = NORTH_UP_MODE;
     m_bLookAhead = false;
+    m_VPRotate = 0;
     
 // Set some benign initial values
 
