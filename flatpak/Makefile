@@ -47,7 +47,7 @@ sign:   .phony
 	        base64 --wrap=0 | tr -d '\n' >> $$file; \
 	done
 	echo "Exporting gpg key"
-	gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) \
+	-gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) \
 	    > $(DESTDIR)/opencpn.key
 
 
