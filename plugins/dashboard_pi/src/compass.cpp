@@ -51,12 +51,18 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
 
 void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
 {
-      if (std::isnan(data))
-          return;
+    double cdata = data;
+    m_gpsWD = false;
+    if (std::isnan(data)) {
+        cdata = 0.0;
+        m_gpsWD = true;
+    }
+
+          //return;
       if (st == m_MainValueCap)
       {
             // Rotate the rose
-            m_AngleStart = -data;
+            m_AngleStart = -cdata;
             // Required to display data
             m_MainValue = data;
             m_MainValueUnit = unit;
@@ -71,8 +77,11 @@ void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
 
 void DashboardInstrument_Compass::DrawBackground(wxGCDC* dc)
 {
-    DrawBoat( dc, m_cx, m_cy, m_radius );
-    DrawCompassRose( dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true );
+    if (!m_gpsWD) //Don't draw if no GPS
+        DrawBoat(dc, m_cx, m_cy, m_radius);
+    
+    DrawCompassRose(dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true);
+    
 }
 
 void DashboardInstrument_Compass::DrawForeground(wxGCDC* dc)

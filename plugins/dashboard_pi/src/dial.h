@@ -105,6 +105,7 @@ class DashboardInstrument_Dial: public DashboardInstrument
       protected:
             int m_cx, m_cy, m_radius;
             int m_AngleStart, m_AngleRange;
+            bool m_gpsWD;
             double m_MainValue;
             int m_MainValueCap;
             double m_MainValueMin, m_MainValueMax;
