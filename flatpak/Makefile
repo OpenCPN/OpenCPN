@@ -28,7 +28,7 @@ install: .phony
 	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html $(DESTDIR)
 	cp -ar repo $(DESTDIR)
 
-sign:   install
+sign:   .phony
 	@test -d $(GPG_HOMEDIR) || { \
 	    echo "cannot find GPG_HOMEDIR (abort)"; exit 1; \
 	}
