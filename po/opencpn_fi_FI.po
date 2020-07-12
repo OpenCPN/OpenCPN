@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-11 11:17-0400\n"
-"PO-Revision-Date: 2020-06-12 02:29\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2020-07-12 03:33\n"
+"Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
 "MIME-Version: 1.0\n"
@@ -14,8 +14,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Project-ID: 49843\n"
 "X-Crowdin-Language: fi\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
+"X-Crowdin-File-ID: 102\n"
 
 #: include/AboutFrame.h:89 include/AboutFrameImpl.h:55 src/chart1.cpp:5793
 #: src/chart1.cpp:10049 src/toolbar.cpp:1410
@@ -5458,7 +5460,7 @@ msgstr "Aluksen suurennuskerroin"
 
 #: src/options.cpp:5936
 msgid "ENC Sounding factor"
-msgstr ""
+msgstr "ENC syvyystietojen suurennuskerroin"
 
 #: src/options.cpp:6171 src/options.cpp:6232
 msgid "Connections"
