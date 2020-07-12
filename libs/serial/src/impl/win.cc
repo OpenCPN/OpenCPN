@@ -346,6 +346,7 @@ size_t
 Serial::SerialImpl::read (uint8_t *buf, size_t size)
 {
   stringstream ss;
+  DWORD errCode;
 
   if (!is_open_) {
     throw PortNotOpenedException ("Serial::read");
@@ -353,7 +354,7 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
   DWORD bytes_read;
   if (!fWaitingOnRead) {
     if (!ReadFile(fd_, buf, static_cast<DWORD>(size), &bytes_read, &osReader)) {
-      DWORD errCode = GetLastError();  
+      errCode = GetLastError();  
       if (errCode == ERROR_IO_PENDING) {  // read delayed?
         fWaitingOnRead = TRUE;
       }
@@ -382,9 +383,12 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
                     if (GetOverlappedResult(fd_, &osReader, &bytes_read, FALSE)) {
                          // read completed successfully
                       //if (bytes_read)
-                        fWaitingOnRead = FALSE;
+                        fWaitingOnRead = FALSE; 
                     }
-                    
+                    else{
+                        errCode = GetLastError();   
+                        fWaitingOnRead = FALSE;
+                    }                        
                     break;
                     
                 case WAIT_TIMEOUT:
