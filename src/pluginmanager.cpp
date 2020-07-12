@@ -505,6 +505,10 @@ static void run_update_dialog(PluginListPanel* parent,
         wxString val;
         for ( wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof() ; str = manifest_file.GetNextLine() ){
             if(str.Contains(pispec)){
+                if (getenv("OCPN_KEEP_PLUGINS")) {
+                    // Undocumented debug hook
+                    continue;
+                }
                 if( !g_pi_manager->CheckPluginCompatibility(str)){
                     wxString msg = _("The plugin is not compatible with this version of OpenCPN, and will be uninstalled.");
                     OCPNMessageBox( NULL, msg, wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
