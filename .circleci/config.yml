@@ -58,7 +58,7 @@ jobs:
      environment:
        - OCPN_TARGET:  flatpak
      steps:
-       - run: git clone -b https://github.com/OpenCPN/OpenCPN.git
+       - run: git clone https://github.com/OpenCPN/OpenCPN.git
        - restore_cache:
            keys:
               - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
