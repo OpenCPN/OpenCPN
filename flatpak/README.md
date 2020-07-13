@@ -94,5 +94,10 @@ Given proper permissions, the result can be published using
 
     $ cd build; make -f ../flatpak/Makefile publish
 
+A raw, rsync publish command might look like (beta repository)
+
+    $ rsync -a  --info=stats website/ --delete-after \
+        mumin.crabdance.com:/var/www/ocpn-flatpak-beta
+
 There are multiple variables in the Makefile making it possible to tweak 
 this workflow in various ways.

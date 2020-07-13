@@ -8,33 +8,76 @@
 
 # bailout on errors and echo commands.
 set -xe
+if [ -z "$FLATPAK_KEY" ]; then
+    echo "Reguired \$FLATPAK_KEY not found, giving up"
+    exit 1
+fi
 
+set -xe
+
+test -d /opencpn-ci && cd /opencpn-ci || :
+
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
+    | sudo apt-key add -
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
 
-DOCKER_SOCK="unix:///var/run/docker.sock"
+sudo add-apt-repository -y ppa:alexlarsson/flatpak
+sudo apt update -y
 
-echo "DOCKER_OPTS=\"-H tcp://127.0.0.1:2375 -H $DOCKER_SOCK -s devicemapper\"" \
-    | sudo tee /etc/default/docker > /dev/null
-sudo service docker restart
-sleep 5;
-sudo docker pull fedora:31;
+# Install required packages
+sudo apt install -q -y appstream flatpak flatpak-builder git ccrypt make rsync gnupg2 
 
-set +x
-echo "FLATPAK_KEY=$FLATPAK_KEY" > envvars
-set -x
 
-docker run --privileged -d -ti \
-    -e "container=docker"  -e "BUILD_NUMBER=$CIRCLE_BUILD_NUM" \
-    --env-file envvars \
-    -v /sys/fs/cgroup:/sys/fs/cgroup \
-    -v $(pwd):/opencpn-ci:rw \
-    fedora:31   /usr/sbin/init
-DOCKER_CONTAINER_ID=$(docker ps | grep fedora | awk '{print $1}')
-docker logs $DOCKER_CONTAINER_ID
-docker exec -ti $DOCKER_CONTAINER_ID /bin/bash -xec \
-    "bash -xe /opencpn-ci/ci/generic-build-flatpak.sh 31;
-         echo -ne \"------\nEND OPENCPN-CI BUILD\n\";"
-docker ps -a
-docker stop $DOCKER_CONTAINER_ID
-docker rm -v $DOCKER_CONTAINER_ID
+# Set up flatpak
+flatpak --user remote-add --if-not-exists \
+    flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak --user install -y org.freedesktop.Platform//18.08
+flatpak --user install -y org.freedesktop.Sdk//18.08
+
+# Patch to use official master branch from github and build + build number.
+cd flatpak
+sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
+    -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
+    org.opencpn.OpenCPN.yaml
+
+test -d ../build || mkdir ../build
+cd ../build
+make -f ../flatpak/Makefile build
+flatpak list
+
+# Decrypt and unpack gpg keys, sign and install into website/
+ccat --envvar FLATPAK_KEY ../ci/gpg.tar.gz.cpt > gpg.tar.gz
+tar xf gpg.tar.gz
+chmod 700 opencpn-gpg
+make -f ../flatpak/Makefile install
+make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
+rm -rf gpg.tar.gz opencpn-gpg
+
+# Debug: show version in local repo.
+flatpak remote-add  \
+    --user --gpg-import=website/opencpn.key local $PWD/website/repo
+flatpak update --appstream local
+flatpak remote-ls local
+
+# Deploy website/ to deployment server.
+cp ../ci/id_opencpn.tar.cpt .
+ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
+tar -xf id_opencpn.tar
+chmod 600 .ssh/id_opencpn
+
+rsync -a --info=stats --delete-after \
+    --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+    website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
+rm -f .ssh/id_opencpn*
+
+# Restore the patched file so the caching works.
+git checkout ../flatpak/org.opencpn.OpenCPN.yaml
+
+# Debug: show version in remote repo.
+flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak update --appstream opencpn
+flatpak remote-ls opencpn
+
+# Validate the appstream data:
+appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml || :
