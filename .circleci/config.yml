@@ -87,11 +87,6 @@ workflows:
             branches:
               only:
                 - master
-      - build-macos:
-          filters:
-            branches:
-              only:
-                - master
       - build-mingw:
           filters:
             branches:
