@@ -21,7 +21,7 @@ sudo docker pull fedora:31;
 docker run --privileged -d -ti -e "container=docker"  \
     -v /sys/fs/cgroup:/sys/fs/cgroup \
     -v $(pwd):/opencpn-ci:rw \
-    fedora:31   /usr/sbin/init
+    fedora:31   /lib/systemd/systemd
 DOCKER_CONTAINER_ID=$(docker ps | grep fedora | awk '{print $1}')
 docker logs $DOCKER_CONTAINER_ID
 docker exec -ti $DOCKER_CONTAINER_ID /bin/bash -xec \
