@@ -49,13 +49,13 @@ matrix:
     compiler: clang
     script:
     - "./ci/generic-build-macos.sh"
-  - if: branch IN (master, plugins, plugins-build)
-    env:
-    - OCPN_TARGET=mingw
-    services:
-    - docker
-    script:
-    - "./ci/travis-build-mingw.sh"
+#  - if: branch IN (master, plugins, plugins-build)
+#    env:
+#    - OCPN_TARGET=mingw
+#    services:
+#    - docker
+#    script:
+#    - "./ci/travis-build-mingw.sh"
   - if: branch = flatpak
     env:
     - OCPN_TARGET=flatpak
