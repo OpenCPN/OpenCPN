@@ -1,0 +1,4 @@
+# License file used in runtime
+extra-license-file usr/share/opencpn/license.txt
+package-contains-documentation-outside-usr-share-doc usr/share/opencpn/license.txt
+

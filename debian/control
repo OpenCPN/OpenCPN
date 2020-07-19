@@ -1,6 +1,5 @@
 Source: opencpn
-Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
-Uploaders: Alec Leamas <leamas.alec@gmail.com>
+Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (= 12),
@@ -24,8 +23,8 @@ Build-Depends: debhelper-compat (= 12),
  lsb-release,
  portaudio19-dev
 Standards-Version: 4.5.0
-Vcs-Browser: https://salsa.debian.org/debian-gis-team/opencpn
-Vcs-Git: https://salsa.debian.org/debian-gis-team/opencpn.git
+Vcs-Browser: https://gitlab.com/leamas/opencpn
+Vcs-Git: https://gitlab.com/leamas/opencpn.git
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
