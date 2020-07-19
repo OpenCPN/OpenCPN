@@ -53,6 +53,17 @@ void PluginPaths::initWindowsPaths()
 {
     using namespace std;
 
+    if(g_bportable){
+        m_userLibdir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        m_libdirs.push_back(m_userLibdir);
+        m_userBindir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        m_bindirs = m_libdirs;
+        m_userDatadir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins";
+        m_datadirs.push_back(m_userDatadir);
+        m_unknownPathDir = g_Platform->GetPrivateDataDir().ToStdString() + "\\plugins\\unknown-prefix";
+        return;
+    }
+
     const string platform_dir = g_Platform->GetPluginDir().ToStdString();
     const string winPluginBaseDir =
         g_Platform->GetWinPluginBaseDir().ToStdString();

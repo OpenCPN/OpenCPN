@@ -1,0 +1,99 @@
+---
+version: 2
+jobs:
+   build-xenial:
+     docker:
+       - image: circleci/buildpack-deps:xenial-scm
+     environment:
+       - OCPN_TARGET:  xenial
+     steps:
+       - checkout
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
+   build-trusty:
+     docker:
+       - image: circleci/buildpack-deps:trusty-scm
+     environment:
+       - OCPN_TARGET:  trusty
+     steps:
+       - checkout
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: >
+           echo "deb-src http://us.archive.ubuntu.com/ubuntu/ trusty-updates main"
+           | sudo tee -a /etc/apt/sources.list
+       - run: cat /etc/apt/sources.list
+       - run: ci/generic-build-debian.sh
+       - run: ci/generic-upload.sh
+   build-mingw:
+     docker:
+         - image: fedora:31
+     environment:
+       - OCPN_TARGET:  mingw
+     steps:
+       - run: su -c "dnf install -q -y git openssh-clients openssh-server"
+       - checkout
+       - run: ci/generic-build-mingw.sh
+       - run: ci/generic-upload.sh
+   build-macos:
+     macos:
+       xcode: "10.0.0"
+     environment:
+       - OCPN_TARGET:  macos
+     steps:
+       - checkout
+       - run: ci/generic-build-macos.sh
+       - run: ci/generic-upload.sh
+   build-flatpak:
+     machine:
+         image: ubuntu-1604:201903-01
+     environment:
+       - OCPN_TARGET:  flatpak
+     steps:
+       - run: git clone https://github.com/OpenCPN/OpenCPN.git
+       - restore_cache:
+           keys:
+              - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+       - run: ci/circleci-build-flatpak.sh
+       - save_cache:
+           key: fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+           paths:
+             - build/.flatpak-builder/cache
+             - build/.flatpak-builder/ccache
+             - build/.flatpak-builder/checksums
+             - build/.flatpak-builder/downloads
+             - build/.flatpak-builder/rofiles
+
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build-xenial:
+          filters:
+            branches:
+              only:
+                - master
+      - build-trusty:
+          filters:
+            branches:
+              only:
+                - master
+      - build-mingw:
+          filters:
+            branches:
+              only:
+                - master
+      - build-flatpak:
+          filters:
+            branches:
+              only:
+                - flatpak

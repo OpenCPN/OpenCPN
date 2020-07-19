@@ -98,7 +98,7 @@ void DepthFont::Build( wxFont *font, double scale )
         sdc.GetTextExtent( text, &gw, &gh, &descent, &exlead, font ); // measure the text
 
         tgi[i].width = gw;
-        tgi[i].height = gh - descent;
+        tgi[i].height = gh;// - descent;
 
         tgi[i].advance = gw;
         

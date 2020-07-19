@@ -203,37 +203,78 @@ RoutePropDlg::RoutePropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	wSizerParams->Add( bSizerWidth, 1, wxEXPAND, 5 );
 
+        // wxDataViewListCtrl has some platform dependent variability
+        // We account for this here...
+        
+#ifdef __WXQT__                         // includes Android
+        int columWidths[] = {
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE,
+            wxCOL_WIDTH_AUTOSIZE
+        };
+        int colFlags = 0;
+#else
+        int columWidths[] = {
+            30,
+            80,
+            70,
+            60,
+            90,
+            90,
+            80,
+            120,
+            60,                 // Speed
+            100,                // Next tide event
+            -1,
+            80,
+            120,
+            -1
+        };
+        int colFlags = wxDATAVIEW_COL_RESIZABLE; 
+       
+#endif        
 
 	bSizerData->Add( wSizerParams, 0, wxEXPAND, 0 );
 
-	m_dvlcWaypoints = new wxDataViewListCtrl( m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	m_dataViewListColumnLeg = m_dvlcWaypoints->AppendTextColumn( _("Leg"), wxDATAVIEW_CELL_INERT, 30, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dvlcWaypoints = new wxDataViewListCtrl( m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_VERT_RULES | wxDV_HORIZ_RULES );
+	m_dataViewListColumnLeg = m_dvlcWaypoints->AppendTextColumn( _("Leg"), wxDATAVIEW_CELL_INERT, columWidths[0], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnLeg->GetRenderer()->EnableEllipsize( wxELLIPSIZE_NONE );
-	m_dataViewListColumnToWpt = m_dvlcWaypoints->AppendTextColumn( _("To waypoint"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnToWpt = m_dvlcWaypoints->AppendTextColumn( _("To waypoint"), wxDATAVIEW_CELL_INERT, columWidths[1], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnToWpt->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnDistance = m_dvlcWaypoints->AppendTextColumn( _("Distance"), wxDATAVIEW_CELL_INERT, 70, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnDistance = m_dvlcWaypoints->AppendTextColumn( _("Distance"), wxDATAVIEW_CELL_INERT, columWidths[2], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnDistance->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnBearing = m_dvlcWaypoints->AppendTextColumn( _("Bearing"), wxDATAVIEW_CELL_INERT, 60, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnBearing = m_dvlcWaypoints->AppendTextColumn( _("Bearing"), wxDATAVIEW_CELL_INERT, columWidths[3], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnBearing->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnLat = m_dvlcWaypoints->AppendTextColumn( _("Latitude"), wxDATAVIEW_CELL_INERT, 90, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnLat = m_dvlcWaypoints->AppendTextColumn( _("Latitude"), wxDATAVIEW_CELL_INERT, columWidths[4], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnLat->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnLon = m_dvlcWaypoints->AppendTextColumn( _("Longitude"), wxDATAVIEW_CELL_INERT, 90, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnLon = m_dvlcWaypoints->AppendTextColumn( _("Longitude"), wxDATAVIEW_CELL_INERT, columWidths[5], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnLon->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnETE = m_dvlcWaypoints->AppendTextColumn( _("ETE"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnETE = m_dvlcWaypoints->AppendTextColumn( _("ETE"), wxDATAVIEW_CELL_INERT, columWidths[6], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnETE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnETA = m_dvlcWaypoints->AppendTextColumn( _("ETA"), wxDATAVIEW_CELL_INERT, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnETA = m_dvlcWaypoints->AppendTextColumn( _("ETA"), wxDATAVIEW_CELL_INERT, columWidths[7], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnETA->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), CELL_EDITABLE, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnSpeed = m_dvlcWaypoints->AppendTextColumn( _("Speed"), CELL_EDITABLE, columWidths[8], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnSpeed->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnNTE = m_dvlcWaypoints->AppendTextColumn( _("Next tide event"), wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnNTE = m_dvlcWaypoints->AppendTextColumn( _("Next tide event"), wxDATAVIEW_CELL_INERT, columWidths[9], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnNTE->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnDesc = m_dvlcWaypoints->AppendTextColumn( _("Description"), wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnDesc = m_dvlcWaypoints->AppendTextColumn( _("Description"), wxDATAVIEW_CELL_INERT, columWidths[10], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnDesc->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnCourse = m_dvlcWaypoints->AppendTextColumn( _("Course"), wxDATAVIEW_CELL_INERT, 80, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnCourse = m_dvlcWaypoints->AppendTextColumn( _("Course"), wxDATAVIEW_CELL_INERT, columWidths[11], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnCourse->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), CELL_EDITABLE, 120, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnETD = m_dvlcWaypoints->AppendTextColumn( _("ETD"), CELL_EDITABLE, columWidths[12], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	m_dataViewListColumnETD->GetRenderer()->EnableEllipsize( wxELLIPSIZE_END );
-	m_dataViewListColumnEmpty = m_dvlcWaypoints->AppendTextColumn( wxEmptyString, wxDATAVIEW_CELL_INERT, -1, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_RESIZABLE );
+	m_dataViewListColumnEmpty = m_dvlcWaypoints->AppendTextColumn( wxEmptyString, wxDATAVIEW_CELL_INERT, columWidths[13], static_cast<wxAlignment>(wxALIGN_LEFT), colFlags );
 	bSizerData->Add( m_dvlcWaypoints, 1, wxALL|wxEXPAND, 5 );
 
 

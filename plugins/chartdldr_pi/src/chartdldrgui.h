@@ -38,6 +38,9 @@
 
 #include "ocpn_plugin.h"
 
+#ifndef NEW_LIST
+	#define NEW_LIST
+#endif	/* NEW_LIST */
 ///////////////////////////////////////////////////////////////////////////
 class ChartPanel;
 class ChartDldrPanelImpl;
@@ -98,9 +101,9 @@ class ChartDldrPanel : public wxPanel
 		wxButton* m_bUpdateChartList;
 		wxButton* m_bUpdateAllCharts;
 		wxStaticText* m_stCatalogInfo;
-		wxButton* m_bHelp;
+//		wxButton* m_bHelp;
 		wxButton* m_bDnldCharts;
-		wxButton* m_bShowLocal;
+//		wxButton* m_bShowLocal;
 
                 wxNotebook *m_DLoadNB;
                 wxString m_csTitle;
@@ -125,7 +128,9 @@ class ChartDldrPanel : public wxPanel
                 
 
 	public:
+#if !defined(NEW_LIST)
 		wxCheckedListCtrl *m_clCharts;
+#endif	/* NEW_LIST */
                 wxScrolledWindow *m_scrollWinChartList;
                 
 		ChartDldrPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL );
@@ -178,14 +183,15 @@ class ChartPanel: public wxPanel
 public:
     ChartPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, wxString Name, wxString stat, wxString latest, ChartDldrPanel *DldrPanel, bool bcheck);
     ~ChartPanel();
-    
+
     void OnContextMenu( wxMouseEvent& event );
     wxCheckBox *GetCB(){ return m_cb; }
-    
+    bool isNew() { return (m_stat == _("New")); }
+    bool isUpdated() { return (m_stat == _("Update available")); }
 private:
     wxCheckBox* m_cb;
-    wxStaticText *m_chartInfo;
-    wxStaticText *m_chartInfo2;
+//    wxStaticText *m_chartInfo;
+//    wxStaticText *m_chartInfo2;
     wxString m_stat;
     wxString m_latest;
     ChartDldrPanel *m_dldrPanel;

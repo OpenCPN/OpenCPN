@@ -58,6 +58,9 @@
 #include "Select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
+#include "PluginPaths.h"
+#include <string>
+#include <vector>
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -159,6 +162,7 @@ extern double                    g_ShowMoored_Kts;
 extern bool                      g_bShowAreaNotices;
 extern bool                      g_bDrawAISSize;
 extern bool                      g_bDrawAISRealtime;
+extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
 
 extern int                       gps_watchdog_timeout_ticks;
@@ -380,8 +384,16 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                     if(val.Length())  detail->osd_version = std::string(val.mb_str());
                 }
                 else if(str.StartsWith(_T("ID_LIKE"))){
-                    val = str.AfterFirst('=');
-                    if(val.Length())  detail->osd_name_like = std::string(val.mb_str());
+                    if(val.StartsWith('"')){
+                        val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+                    }
+                    else{
+                        val = str.AfterFirst('=');
+                    }
+                        
+                    if(val.Length()){
+                        detail->osd_name_like = ocpn::split(val.mb_str(), " ");
+                    }
                 }
 
             }
@@ -410,18 +422,18 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
 #endif
 
     //  Set the default processor architecture
-    detail->osd_arch = std::string("X86_64");
+    detail->osd_arch = std::string("x86_64");
     
     // then see what is actually running.
     wxPlatformInfo platformInfo = wxPlatformInfo::Get();
     wxArchitecture arch = platformInfo.GetArchitecture();
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("X86_32");
+        detail->osd_arch = std::string("i386");
     
 #ifdef ocpnARM
-    detail->osd_arch = std::string("ARM64");
+    detail->osd_arch = std::string("arm64");
     if(arch == wxARCH_32)
-        detail->osd_arch = std::string("ARMHF");
+        detail->osd_arch = std::string("armhf");
 #endif    
     
     
@@ -861,8 +873,15 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     // Add a new prefixes for search order.
     #if defined(__WINDOWS__)
 
+    // Legacy and system plugin location
     wxString locale_location = GetSharedDataDir();
-    locale_location += _T("share/locale");
+    locale_location += _T("share\\locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+
+    // Managed plugin location
+    wxFileName usrShare(GetWinPluginBaseDir() + wxFileName::GetPathSeparator()); 
+    usrShare.RemoveLastDir();
+    locale_location = usrShare.GetFullPath() + ("share\\locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
     #elif defined(__OCPN__ANDROID__)
@@ -886,8 +905,18 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
     locale_location = location.GetFullPath();
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 
+    // And then for managed plugins
+    std::string dir = PluginPaths::getInstance()->UserDatadir();
+    wxString managed_locale_location(dir + "/locale");
+    wxLocale::AddCatalogLookupPathPrefix( managed_locale_location );
     #endif
 
+    #ifdef __WXOSX__
+    std::string macDir = PluginPaths::getInstance()->Homedir() + "/Library/Application Support/OpenCPN/Contents/Resources";
+    wxString Mac_managed_locale_location(macDir);
+    wxLocale::AddCatalogLookupPathPrefix( Mac_managed_locale_location );
+    #endif
+    
 #endif
 }
 
@@ -1104,6 +1133,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bDrawAISRealtime = false;
+    g_AIS_RealtPred_Kts = 0.7;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     g_bPreserveScaleOnX = true;
@@ -1562,7 +1592,7 @@ wxString OCPNPlatform::GetPluginDataPath()
     wxString dirs("");
     auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
     if (g_Platform->isFlatpacked()) {
-        dirs="~/.var/app/org.opencpn.OpenCPN/data";
+        dirs="~/.var/app/org.opencpn.OpenCPN/data/opencpn/plugins";
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
         dirs = GetLinuxDataPath();
@@ -2821,6 +2851,12 @@ void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
 // OCPNColourPickerCtrl implementation
 // ============================================================================
 
+BEGIN_EVENT_TABLE(OCPNColourPickerCtrl, wxButton)
+#ifdef __WXMSW__
+    EVT_PAINT(OCPNColourPickerCtrl::OnPaint)
+#endif    
+END_EVENT_TABLE()
+
 // ----------------------------------------------------------------------------
 // OCPNColourPickerCtrl
 // ----------------------------------------------------------------------------
@@ -2912,6 +2948,10 @@ void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent& WXUNUSED(ev))
 
 void OCPNColourPickerCtrl::UpdateColour()
 {
+#ifndef __OCPN__ANDROID__
+    SetBitmapLabel(wxBitmap());
+#endif    
+    
     wxMemoryDC dc(m_bitmap);
     dc.SetPen( *wxTRANSPARENT_PEN );
     dc.SetBrush( wxBrush(m_colour) );
@@ -2953,5 +2993,18 @@ wxSize OCPNColourPickerCtrl::DoGetBestSize() const
     return sz;
 }
 
+void OCPNColourPickerCtrl::OnPaint(wxPaintEvent &event)
+{
 
+    wxPaintDC dc(this) ;
+
+    int offset_x = (GetSize().x - m_bitmap.GetWidth()) / 2;
+    int offset_y = (GetSize().y - m_bitmap.GetHeight()) / 2;
+    
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush(m_colour) );
+    dc.DrawRectangle( offset_x, offset_y, m_bitmap.GetWidth(), m_bitmap.GetHeight() );
+
+    event.Skip() ;
+}
 

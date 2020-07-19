@@ -6,6 +6,9 @@
 # (at your option) any later version.
 #
 
+# This manifest is used to build development snapshots (including
+# nightly builds) of the flatpak package.
+
 
 app-id: org.opencpn.OpenCPN
 runtime: org.freedesktop.Platform
@@ -56,6 +59,8 @@ modules:
           - --enable-no_deps
           - --disable-rpath
           - --enable-ipv6
+      cleanup:
+          - /include/
 
     - name:  zlib
       sources:
@@ -79,7 +84,8 @@ modules:
       build-options:
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK
-          env: {BUILD_NUMBER: "0"}
+          env:
+            BUILD_NUMBER: "0"
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop

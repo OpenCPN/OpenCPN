@@ -137,8 +137,15 @@ bool ocpnCompass::MouseEvent( wxMouseEvent& event )
     if(!m_shown || !m_rect.Contains(event.GetPosition()))
         return false;
 
-    if (event.LeftDown())
-        m_parent->ToggleCourseUp( );
+    if (event.LeftDown()){
+        if(m_parent->GetUpMode() == NORTH_UP_MODE)
+            m_parent->SetUpMode( COURSE_UP_MODE );
+        else if(m_parent->GetUpMode() == COURSE_UP_MODE)
+            m_parent->SetUpMode( HEAD_UP_MODE );
+        else
+            m_parent->SetUpMode( NORTH_UP_MODE );
+    }
+            
     return true;
 }
 
@@ -348,8 +355,10 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     cwidth = wxMin( cwidth, cheight );
     cheight = cwidth;
     
-    if( m_parent->m_bCourseUp )
+    if( m_parent->GetUpMode() == COURSE_UP_MODE )
         BMPRose = style->GetIcon( _T("CompassRose"), cwidth, cheight );
+    else if( m_parent->GetUpMode() == HEAD_UP_MODE )
+        BMPRose = style->GetIcon( _T("CompassRoseMag"), cwidth, cheight );
     else
         BMPRose = style->GetIcon( _T("CompassRoseBlue"), cwidth, cheight );
     if( ( fabs( m_parent->GetVPRotation() ) > .01 ) || ( fabs( m_parent->GetVPSkew() ) > .01 ) ) {

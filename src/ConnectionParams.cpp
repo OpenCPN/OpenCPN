@@ -376,17 +376,29 @@ void ConnectionParamsPanel::SetSelected( bool selected )
         GetGlobalColor(_T("DILG0"), &colour);
         m_boxColour = colour;
     }
+
     
+    bool bUseSysColors = false;
 #ifdef __WXOSX__
-    if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
-        // On macOS 10.14+ we use the native colours, which automatically adjust in Dark Mode.
-        if (selected) {
-            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
-        } else {
-            m_boxColour = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+    if( wxPlatformInfo::Get().CheckOSVersion(10, 14) )
+        bUseSysColors = true;
+#endif
+#ifdef __WXGTK__
+    bUseSysColors= true;
+#endif    
+
+    if(bUseSysColors){
+        wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+        if( bg.Red() < 128 ) {          // is Dark...
+            if(selected) {
+                m_boxColour=wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT/*wxSYS_COLOUR_WINDOW*/);
+            } else {
+                m_boxColour=wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE);
+            }
         }
     }
-#endif
+
+
 
     wxWindowList kids = GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {

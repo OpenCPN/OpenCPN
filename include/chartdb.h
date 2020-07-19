@@ -127,6 +127,7 @@ public:
       bool IsChartInCache(wxString path);
       bool IsChartInGroup(const int db_index, const int group);
       bool IsENCInGroup(const int group);
+      bool IsNonMBTileInGroup(const int group);
 
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);
@@ -155,6 +156,9 @@ public:
       void PurgeCacheUnusedCharts( double factor );
 
       bool IsBusy(){ return m_b_busy; }
+      bool CheckExclusiveTileGroup( int canvasIndex );
+      bool CheckAnyCanvasExclusiveTileGroup( );
+
 protected:
       virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
 
@@ -178,6 +182,8 @@ private:
 
       wxCriticalSection m_critSect;
       wxMutex           m_cache_mutex;
+      int               m_checkGroupIndex[2];
+      bool              m_checkedTileOnly[2];
 };
 
 

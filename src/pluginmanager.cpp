@@ -264,7 +264,7 @@ icon_by_status({
     {PluginStatus::Unknown,   "emblem-default.svg" },
     {PluginStatus::LegacyUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstallAvailable,   "emblem-default.svg" },
-    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-default.svg" },
+    {PluginStatus::ManagedInstalledUpdateAvailable,   "emblem-legacy-update.svg" },
     {PluginStatus::ManagedInstalledCurrentVersion,   "emblem-default.svg" },
     {PluginStatus::ManagedInstalledDowngradeAvailable,   "emblem-default.svg" },
     {PluginStatus::PendingListRemoval,   "emblem-default.svg" }
@@ -423,8 +423,10 @@ static void run_update_dialog(PluginListPanel* parent,
     if (status != wxID_OK) {
         return;
     }
+    
     auto update = dialog.GetUpdate();
     if (uninstall) {
+        g_Platform->ShowBusySpinner();
         g_pi_manager->DeactivatePlugIn(pic);
         pic->m_bEnabled = false;
         g_pi_manager->UpdatePlugIns();
@@ -432,6 +434,8 @@ static void run_update_dialog(PluginListPanel* parent,
         wxLogMessage("Uninstalling %s", plugin);
         PluginHandler::getInstance()->uninstall(plugin);
         g_pi_manager->UpdatePlugIns();
+        g_Platform->HideBusySpinner();
+
     }
 
     wxLogMessage("Installing %s", update.name.c_str());
@@ -440,6 +444,9 @@ static void run_update_dialog(PluginListPanel* parent,
     bool cacheResult = pluginHandler->installPluginFromCache( update );
             
     if(!cacheResult){
+        g_Platform->ShowBusySpinner();          // Will be cancelled in downloader->run()
+        wxYield();
+        
         auto downloader = new GuiDownloader(parent_dlg, update);
         std::string tempTarballPath = downloader->run(parent_dlg);
         
@@ -449,7 +456,7 @@ static void run_update_dialog(PluginListPanel* parent,
             PluginHandler::fileListPath(update.name);
         if(!isRegularFile(manifestPath.c_str())) {
             wxLogMessage("Installation of %s failed",  update.name.c_str());
-            PluginHandler::cleanup(manifestPath, update.name);
+            PluginHandler::cleanupFiles(manifestPath, update.name);
             bOK = false;
         }
 
@@ -481,8 +488,40 @@ static void run_update_dialog(PluginListPanel* parent,
             }
         }
     }
-            
-        //  Reload all plugins, which will bring in the action results.
+    
+    //  Check the library compatibility of the installed plugin
+    // Find the first dll/so/dylib file
+#ifdef __WXMSW__
+    wxString pispec = _T(".dll");
+#elif defined(__WXOSX__)
+    wxString pispec = _T(".dylib");
+#else
+    wxString pispec = _T(".so");
+#endif
+
+    std::string manifestPath = PluginHandler::fileListPath(update.name);
+    wxTextFile manifest_file(manifestPath);
+    if( manifest_file.Open()){
+        wxString val;
+        for ( wxString str = manifest_file.GetFirstLine(); !manifest_file.Eof() ; str = manifest_file.GetNextLine() ){
+            if(str.Contains(pispec)){
+                if (getenv("OCPN_KEEP_PLUGINS")) {
+                    // Undocumented debug hook
+                    continue;
+                }
+                if( !g_pi_manager->CheckPluginCompatibility(str)){
+                    wxString msg = _("The plugin is not compatible with this version of OpenCPN, and will be uninstalled.");
+                    OCPNMessageBox( NULL, msg, wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
+                    
+                    PluginHandler::cleanupFiles(manifestPath, update.name);
+                }
+                break;
+            }
+        }
+    }
+
+    
+    //  Reload all plugins, which will bring in the action results.
     g_pi_manager->LoadAllPlugIns( false );
     
     // Check to see if this plugin needs an options instance reload
@@ -685,7 +724,7 @@ void pluginUtilHandler::OnPluginUtilAction( wxCommandEvent& event )
                 g_pi_manager->LoadAllPlugIns( false );
             }
             else {
-                PluginHandler::cleanup(manifestPath,
+                PluginHandler::cleanupFiles(manifestPath,
                                        actionPIC->m_ManagedMetadata.name);
             }
             plugin_list_panel->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
@@ -760,6 +799,8 @@ class StatusIconPanel: public wxPanel
         StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
             :wxPanel(parent)
         {
+            m_parent = wxDynamicCast(parent, PluginPanel);
+
             m_stat = pic->m_pluginStatus; //::Unknown;    
             SetToolTip(message_by_status[m_stat]);
             m_icon_name = icon_by_status[m_stat];
@@ -770,6 +811,8 @@ class StatusIconPanel: public wxPanel
             SetMinClientSize(wxSize(minsize.GetWidth(), size.GetHeight()));
             Layout();
             Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
+            Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
+
        }
 
         void OnPaint(wxPaintEvent& event)
@@ -796,13 +839,21 @@ class StatusIconPanel: public wxPanel
             m_icon_name = icon_by_status[m_stat];
             Refresh();
          }
-             
+          
+         void OnIconSelected( wxMouseEvent &event )
+         {
+             if(m_parent){
+                 m_parent->OnPluginSelected(event);
+             }
+         }
+
 
     protected:
         wxBitmap m_bitmap;
         std::string m_icon_name;
         PluginStatus m_stat;
-
+        PluginPanel *m_parent;
+        
         void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
         {
             wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -1464,6 +1515,8 @@ void PlugInManager::UpdateManagedPlugins()
             new_pic->m_common_name = wxString(plugin.name.c_str());
             new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
             new_pic->m_ManagedMetadata = plugin;
+            new_pic->m_version_major = 0;
+            new_pic->m_version_minor = 0;
 
             plugin_array.Add(new_pic);
         }
@@ -1480,6 +1533,7 @@ void PlugInManager::UpdateManagedPlugins()
                     stream.open(path, std::ifstream::in);
                     stream >> installed;
                 }
+                pic->m_InstalledManagedVersion = installed;
                 auto installedVersion = SemanticVersion::parse(installed);
                 
                 //Compare to the version reported in metadata
@@ -1581,8 +1635,10 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         if(pic->m_bInitState){
             
             // Unload chart cache if this plugin is responsible for any charts
-            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
-                ChartData->PurgeCache();
+            if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)){
+                ChartData->PurgeCachePlugins();
+                gFrame->InvalidateAllQuilts();
+            }
 
             pic->m_bInitState = false;
             pic->m_pplugin->DeInit();
@@ -1930,28 +1986,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #if defined(__WXGTK__) || defined(__WXQT__)
-#if 0
-    wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
-    FILE *ldd = popen( cmd.mb_str(), "r" );
-    if (ldd != NULL)
-    {
-        char buf[1024];
-        
-        char strver[22]; //Enough space even for very big integers...
-        sprintf( strver, "%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
-
-        while( fscanf(ldd, "%s", buf) != EOF )
-        {
-            if( strstr(buf, "libwx") != NULL )
-            {
-                if(  strstr(buf, strver) == NULL )
-                    b_compat = false;
-                break;
-            }
-        }
-        fclose(ldd);
-    }
-#elif defined(USE_LIBELF)
+#if defined(USE_LIBELF)
 
     static bool b_own_info_queried = false;
     static bool b_own_info_usable = false;
@@ -1965,11 +2000,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         if( app.argc && !app.argv[0].IsEmpty())
         {
             wxString app_path( app.argv[0] );
-#if defined(USE_LIBELF)
             b_own_info_usable = ReadModuleInfoFromELF( app_path, dependencies, own_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         }
         else
         {
@@ -1982,18 +2013,19 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     {
         bool b_pi_info_usable = false;
         ModuleInfo pi_info;
-#if defined(USE_LIBELF)
         b_pi_info_usable = ReadModuleInfoFromELF( plugin_file, dependencies, pi_info );
-#else
-#error No support for other executable formats is implemented.
-#endif
         if( b_pi_info_usable )
         {
             b_compat = ( pi_info.type_magic == own_info.type_magic );
+            if(g_Platform->isFlatpacked()){             // Ignore specific difference in OSABI field on flatpak builds
+                    if( (pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
+                        b_compat = true;
+            }
             if( !b_compat )
             {
                 pi_info.dependencies.clear();
                 wxLogError( wxString::Format( _T("    Plugin \"%s\" is of another binary flavor than the main module."), plugin_file ) );
+                wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic, pi_info.type_magic);
             }
             for( ModuleInfo::DependencyMap::const_iterator own_dependency = own_info.dependencies.begin(); own_dependency != own_info.dependencies.end(); ++own_dependency )
             {
@@ -2018,14 +2050,21 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         b_compat = true;
     }
 
-#else
-    // this is 3x faster than the other method
+    wxLogMessage("Plugin is compatible by elf library scan: %s", b_compat ? "true" : "false");
+    return b_compat;
+
+#endif  // LIBELF
+
     
     //  But Android Plugins do not include the wxlib specification in their ELF file.
     //  So we assume Android Plugins are compatible....
 #ifdef __OCPN__ANDROID__
     return true;
 #endif
+
+    // If libelf is not available, then we must use a simplistic file scan method.
+    // This is easily fooled if the wxWidgets version in use is not exactly recognized.
+    // File scan is 3x faster than the ELF scan method
     
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
@@ -2054,8 +2093,8 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
             pos = 0;
     }
     fclose(f);
-#endif
-#endif // __WXGTK__
+#endif // __WXGTK__ or __WXQT__
+   
     wxLogMessage("Plugin is compatible: %s", b_compat ? "true" : "false");
     return b_compat;
 }
@@ -5059,8 +5098,10 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer2->Add( m_updateButton, 0, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
 
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
+
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
-     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxLEFT, 4 * GetCharWidth() );
+     rowSizer2->Add( tchannels, 0, wxALIGN_RIGHT | wxALL, 5 );
 
      wxArrayString channels;
      channels.Add(_T( "Master" ));
@@ -5138,7 +5179,11 @@ void CatalogMgrPanel::OnUpdateButton( wxCommandEvent &event)
     std::string filePath = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
 
     auto catalogHdlr = CatalogHandler::getInstance();
+    
+    g_Platform->ShowBusySpinner();
     auto status = catalogHdlr->DownloadCatalog( filePath, url);
+    g_Platform->HideBusySpinner();
+    
     std::string message;
     if (status != CatalogHandler::ServerStatus::OK) {
         message = _("Cannot download data from url");
@@ -5877,25 +5922,36 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer01->Add(itemBoxSizer02, 1, wxEXPAND|wxALL, 0);
 
-    wxBoxSizer* itemBoxSizer03 = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer02->Add(itemBoxSizer03);
+    wxFlexGridSizer* itemBoxSizer03 = new wxFlexGridSizer(3,0,0);
+    itemBoxSizer03->AddGrowableCol(2);
+    itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
+    
     m_pName = new wxStaticText( this, wxID_ANY, m_pPlugin->m_common_name );
     m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
-    wxFont font = *wxNORMAL_FONT;
+    
+    // Avoid known bug in wxGTK3
+#ifndef __WXGTK3__    
+    wxFont font = GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pName->SetFont(font);
-    itemBoxSizer03->Add(m_pName, 0, wxEXPAND|wxALL, 5);
+#endif    
+    
+    itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/wxALL, 5);
 
     m_pVersion = new wxStaticText( this, wxID_ANY, _T("") /*p_plugin->GetVersion().to_string()*/ );
-    itemBoxSizer03->Add(m_pVersion, 0, wxEXPAND|wxALL, 5);
+    itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
     if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
         m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
+    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
+    itemBoxSizer03->Add(m_cbEnable, 1, wxALIGN_RIGHT | wxTOP, 5);
+    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
+
     // This invocation has the effect of setting the minimum width of the descriptor field.
     m_pDescription = new wxStaticText( this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition, wxSize( 40 * GetCharWidth(), -1), wxST_NO_AUTORESIZE );
-    itemBoxSizer02->Add( m_pDescription, 1, wxEXPAND|wxALL, 5 );
+    itemBoxSizer02->Add( m_pDescription, 0, wxEXPAND|wxALL, 5 );
     m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
 
     m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
@@ -5912,10 +5968,6 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos, con
     
     m_pButtonUninstall = new wxButton( this, wxID_ANY, _("Uninstall"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonUninstall, 0, wxALIGN_LEFT|wxALL, 2);
-
-    m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enabled"));
-    itemBoxSizer02->Add(m_cbEnable, 0, wxALIGN_RIGHT|wxRIGHT, 2 * GetCharWidth());
-    m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
 
     m_status_icon = new StatusIconPanel(this, m_pPlugin);
     m_status_icon->SetStatus(p_plugin->m_pluginStatus);
@@ -5983,6 +6035,10 @@ void PluginPanel::SetSelected( bool selected )
         
        if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledCurrentVersion) )
             m_pVersion->SetLabel( m_pPlugin->m_ManagedMetadata.version );
+
+       if( (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstalledUpdateAvailable) )
+            m_pVersion->SetLabel( wxString(m_pPlugin->m_InstalledManagedVersion) );
+
     }
     
 
@@ -6026,7 +6082,8 @@ void PluginPanel::SetSelected( bool selected )
                 break;
                 
             case PluginStatus::ManagedInstalledUpdateAvailable:
-                label = _("Update...");
+                label = _("Update to ");
+                label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
                 m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
                 m_pButtonAction->Enable();
                 break;

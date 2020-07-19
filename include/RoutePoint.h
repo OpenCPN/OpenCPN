@@ -48,7 +48,7 @@ public:
       RoutePoint( RoutePoint* orig );
       RoutePoint();
       virtual ~RoutePoint(void);
-      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL);
+      void Draw(ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn = NULL, bool boverride_viz = false);
       void ReLoadIcon(void);
       
       void SetPosition(double lat, double lon);
@@ -61,7 +61,7 @@ public:
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }
       bool IsNameShown() { return m_bShowName; }
-      bool IsVisibleSelectable(ChartCanvas *canvas);
+      bool IsVisibleSelectable(ChartCanvas *canvas, bool boverrideViz = false);
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
@@ -182,7 +182,7 @@ public:
       
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false );
+      void DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords=false, bool bVizOverride=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 

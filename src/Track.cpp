@@ -85,6 +85,8 @@ millions of points.
 #include "Select.h"
 #include "chcanv.h"
 
+#include "pluginmanager.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern ocpnGLOptions g_GLOptions;
@@ -102,6 +104,7 @@ extern bool             g_bHighliteTracks;
 extern double           g_TrackDeltaDistance;
 extern float            g_GLMinSymbolLineWidth;
 extern wxColour         g_colourTrackLineColour;
+extern PlugInManager    *g_pi_manager;
 extern wxColor GetDimColor(wxColor c);
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -724,7 +727,8 @@ void Track::Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box )
                 i+=2;
             }
 
-            glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
+            if(i > 2)
+                glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
         }
         glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -975,6 +979,16 @@ TrackPoint* Track::AddNewPoint( vector2D point, wxDateTime time )
     AddPointFinalized( tPoint );
 
     pConfig->AddNewTrackPoint( tPoint, m_GUID );        // This will update the "changes" file only
+
+    //send a wxJson message to all plugins
+    wxJSONValue v;
+    v[_T("lat")] = tPoint->m_lat;
+    v[_T("lon")] = tPoint->m_lon;
+    v[_T("Track_ID")] = m_GUID;
+    wxString msg_id( _T("OCPN_TRK_POINT_ADDED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    //
+
     return tPoint;
 }
 

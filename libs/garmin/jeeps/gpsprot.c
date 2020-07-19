@@ -25,6 +25,10 @@
 #include "garmin_gps.h"
 #include <stdio.h>
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 #define GPS_TAGUNK  20
 
 /* Storage for any unknown tags */

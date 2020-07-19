@@ -240,7 +240,9 @@ public:
     bool m_bShowS57ImportantTextOnly;
     bool m_bDeClutterText;
     bool m_bShowNationalTexts;
-
+    int m_nSoundingFactor;
+    double m_SoundingsScaleFactor;
+    
     int m_VersionMajor;
     int m_VersionMinor;
 

@@ -2466,11 +2466,16 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 
     float vertexes[40];
     int count = buffer.count;
-    if (!head)
+
+    if (!head) {
         count -= 2;
+    }
     wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)count*4);
     for(int i=0; i < 2*count; i++) {
-        float *k = buffer.lines + 2*i;
+        int j = i;
+        if (!head && i > 1)
+            j += 4;
+        float *k = buffer.lines + 2*j;
         vertexes[2*i+0] = k[0]*cox*scale + k[1]*siy*scale + x;
         vertexes[2*i+1] = k[0]*six*scale - k[1]*coy*scale + y;
     }
@@ -2488,7 +2493,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
     } else {                       // OpenGL mode
 #ifdef ocpnUSE_GL
     if(m_oDC){
-        for(int i=0; i < buffer.count; i++) {
+        for(int i=0; i < count; i++) {
             float *l = vertexes + 4*i;
             if( m_hiDefGraphics )
                 m_oDC->StrokeLine( l[0], l[1], l[2], l[3] );

@@ -33,6 +33,9 @@
 #include <windows.h>
 #endif
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
 
 /* @func GPS_Time_Now ***********************************************
 **
@@ -109,8 +112,8 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 	    {
 		if(u != DLE)
 		{
-//		    (void) fprintf(stderr,"GPS_Packet_Read: No DLE.  Data received, but probably not a garmin packet.\n");
-//		    (void) fflush(stderr);
+		    GPS_Error(
+		        "GPS_Packet_Read: No DLE.  Data received, but probably not a garmin packet.\n");
 		    return 0;
 		}
                 ++len;
@@ -212,12 +215,13 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 
 int32 GPS_Serial_Get_Ack(gpsdevh *fd, GPS_PPacket *tra, GPS_PPacket *rec)
 {
-    if(!GPS_Serial_Packet_Read(fd, rec))
+    if(!GPS_Serial_Packet_Read(fd, rec)) {
+        gps_errno = INPUT_ERROR;
 	return 0;
-
+    }
     if(LINK_ID[0].Pid_Ack_Byte != (*rec)->type)
     {
-          gps_errno = FRAMING_ERROR;
+          gps_errno = PROTOCOL_ERROR;
 /* rjl	return 0; */
     }
 

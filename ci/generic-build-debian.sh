@@ -15,6 +15,10 @@ set -xe
 sudo apt-get -qq update
 sudo apt-get install -q devscripts equivs
 
+if [ "$OCPN_TARGET" = "focal-gtk3"  ]; then \
+    cp ./ci/control.${OCPN_TARGET} ./ci/control
+fi
+
 mk-build-deps ./ci/control --install --root-cmd=sudo --remove
 sudo apt-get --allow-unauthenticated install -f
 

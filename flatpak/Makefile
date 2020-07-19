@@ -11,8 +11,8 @@ GPG_KEY         ?= leamas@opencpn.org
 DESTDIR         ?= website
 GPG_HOMEDIR     ?= $(shell readlink -fn gpg)
 RSYNC_RSH       ?= ssh
-RSYNC_HOST      ?= amazon-ec2
-REPO_URL        ?= http://opencpn.duckdns.org/opencpn-beta
+RSYNC_HOST      ?= mumin.crabdance.com
+REPO_URL        ?= http://opencpn.duckdns.org/opencpn
 
 all: build sign
 
@@ -23,12 +23,12 @@ build:
 	flatpak install -y --user --reinstall \
 	    $(CURDIR)/repo org.opencpn.OpenCPN
 
-install:
+install: .phony
 	rm -rf $(DESTDIR); mkdir $(DESTDIR)
 	cp ../flatpak/repo/*flat* ../flatpak/repo/index.html $(DESTDIR)
 	cp -ar repo $(DESTDIR)
 
-sign:   install
+sign:   .phony
 	@test -d $(GPG_HOMEDIR) || { \
 	    echo "cannot find GPG_HOMEDIR (abort)"; exit 1; \
 	}
@@ -47,15 +47,16 @@ sign:   install
 	        base64 --wrap=0 | tr -d '\n' >> $$file; \
 	done
 	echo "Exporting gpg key"
-	gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) \
+	-gpg2 --export -a --homedir=$(GPG_HOMEDIR) $(GPG_KEY) \
 	    > $(DESTDIR)/opencpn.key
 
 
 repourl:
-	sed -i '/^Url/s|=.*|=$(REPO_URL)|' repo/opencpn.flatpakref
+	sed -i '/^Url/s|=.*|=$(REPO_URL)|' $(DESTDIR)/opencpn.flatpakref
 
 publish:
 	rsync -a  --info=stats --rsh="$(RSYNC_RSH)" $(DESTDIR)/ \
+	    --delete-after \
 	    $(RSYNC_HOST):/var/www/ocpn-flatpak/website
 
 .phony:

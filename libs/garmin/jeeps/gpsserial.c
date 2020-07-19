@@ -25,6 +25,10 @@
 ********************************************************************/
 #include "garmin_gps.h"
 #include "gpsserial.h"
+
+#include <chrono>
+#include <thread>
+
 //dsr#include "../gbser.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,7 +37,12 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
+
 extern char last_error[];
+
 
 #if 0
 #define GARMULATOR 1
@@ -94,10 +103,10 @@ typedef struct {
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
-      va_list argp;
-      va_start(argp, mb);
-      sprintf(last_error, mb, argp);
-      va_end(argp);
+      va_list ap;
+      va_start(ap, mb);
+      vsnprintf(last_error, LAST_ERROR_SIZE, mb, ap);
+      va_end(ap);
 
 /*
 	va_list ap;
@@ -128,7 +137,7 @@ int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 #endif
 
 	const char *xname = fix_win_serial_name(port);
-	win_serial_data *wsd = xcalloc(sizeof (win_serial_data), 1);
+	win_serial_data *wsd = (win_serial_data*) xcalloc(sizeof (win_serial_data), 1);
 	*dh = (gpsdevh*) wsd;
       g_gps_devh = (gpsdevh*) wsd;        // save a global copy
 
@@ -316,15 +325,18 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
      */
     if((psd->fd = open(port, O_RDWR))==-1)
     {
-	GPS_Serial_Error("XSERIAL: Cannot open serial port '%s'", port);
+	GPS_Serial_Error("XSERIAL: Cannot open serial port '%s': %s",
+                         port, strerror(errno));
 	gps_errno = SERIAL_ERROR;
 	return 0;
     }
 
+    // https://stackoverflow.com/questions/13013387
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if(tcgetattr(psd->fd,&psd->gps_ttysave)==-1)
     {
 	gps_errno = HARDWARE_ERROR;
-	GPS_Serial_Error("SERIAL: tcgetattr error");
+	GPS_Serial_Error("SERIAL: tcgetattr error: %s", strerror(errno));
 	return 0;
     }
     tty = psd->gps_ttysave;
@@ -342,7 +354,7 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
 
     if(tcsetattr(psd->fd,TCSANOW|TCSAFLUSH,&tty)==-1)
     {
-	GPS_Serial_Error("SERIAL: tcsetattr error");
+	GPS_Serial_Error("SERIAL: tcsetattr error: %s", strerror(errno));
 	return 0;
     }
 
@@ -354,12 +366,10 @@ int32 GPS_Serial_Open(gpsdevh *dh, const char *port)
  */
 void GPS_Serial_Error(const char *mb, ...)
 {
-      va_list argp;
-      va_start(argp, mb);
-
-      sprintf(last_error, mb, argp);
-
-      va_end(argp);
+      va_list ap;
+      va_start(ap, mb);
+      vsnprintf(last_error, LAST_ERROR_SIZE, mb, ap);
+      va_end(ap);
 
 //      GPS_Error(mb);
 /*dsr
@@ -429,6 +439,8 @@ int32 GPS_Serial_Flush(gpsdevh *fd)
 {
     posix_serial_data *psd = (posix_serial_data *)fd;
 
+    // https://stackoverflow.com/questions/13013387
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     if(tcflush(psd->fd,TCIOFLUSH))
     {
 	GPS_Serial_Error("SERIAL: tcflush error");
@@ -556,7 +568,7 @@ int32 GPS_Serial_Wait(gpsdevh *dh)
 
 int32 GPS_Serial_On(const char *port, gpsdevh **dh)
 {
-    posix_serial_data *psd = xcalloc(sizeof (posix_serial_data), 1);
+    posix_serial_data *psd = (posix_serial_data*) xcalloc(sizeof (posix_serial_data), 1);
     *dh = (gpsdevh*) psd;
     g_gps_devh = (gpsdevh*) psd;        // save a global copy
 

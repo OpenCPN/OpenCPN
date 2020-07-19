@@ -29,6 +29,9 @@
 #include <errno.h>
 #include <ctype.h>
 
+#ifdef USE_WX_LOGGING
+#include "gps_wx_logging.h"
+#endif
 
 /* @funcstatic Build_Serial_Packet *************************************
 **
