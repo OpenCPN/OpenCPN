@@ -1,3 +1,4 @@
+lib/udev/rules.d/98-sglock-ocpn.rules
 usr/bin/opencpn
 usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
