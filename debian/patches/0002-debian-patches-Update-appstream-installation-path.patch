@@ -1,0 +1,20 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 19 Jul 2020 18:36:19 +0200
+Subject: debian: patches: Update appstream installation path.
+
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b34ac10..e4b73bc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2220,6 +2220,7 @@ if (NOT APPLE)
+     install(
+       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
+       DESTINATION ${PREFIX_DATA}/metainfo
++      RENAME opencpn.metainfo.xml
+     )
+     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
+   endif (UNIX)
