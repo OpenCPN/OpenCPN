@@ -2227,7 +2227,7 @@ if (NOT APPLE)
   IF(PACKAGE_FORMAT MATCHES "DEB")
         INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
           PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
-          DESTINATION "/etc/udev/rules.d")
+          DESTINATION "/lib/udev/rules.d")
   ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 
 endif (NOT APPLE)
