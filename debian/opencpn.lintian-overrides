@@ -1,6 +1,2 @@
-# False positives: -DFORTIFY_SOURCE=2 is actually applied compiling these.
-hardening-no-fortify-functions usr/lib/opencpn/libchartdldr_pi.so
-hardening-no-fortify-functions usr/lib/opencpn/libdashboard_pi.so
-
 # False positive from translations.
 spelling-error-in-binary usr/bin/opencpn *
