@@ -1,3 +1,4 @@
 0001-build-Handle-missing-doc-files.patch
 0002-debian-patches-Update-appstream-installation-path.patch
 0003-CMakeLists-Adjust-udev-rule-install-path-1988.patch
+0004-Remove-bogus-svg-file-1990.patch
