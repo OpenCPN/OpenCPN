@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Tue, 19 Nov 2019 09:40:15 -0500
-Subject: build: Handle missing doc files.
+Date: Sun, 19 Jul 2020 17:42:01 +0200
+Subject: [PATCH] build: Handle missing doc files.
 
 A simple pointer added since the original documentation is
 removed in the package. Users can download the docs from
@@ -8,29 +8,26 @@ locations specified in this file.
 
 Not acceptable upstream.
 ---
- CMakeLists.txt     | 11 +++++------
+ CMakeLists.txt     |  8 ++++----
  data/help_web.html | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+), 6 deletions(-)
+ 2 files changed, 55 insertions(+), 4 deletions(-)
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8d5cd85..0ea5b86 100644
+index 08fb6bd..b34ac10 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1947,9 +1947,8 @@ if (APPLE)
+@@ -1986,7 +1986,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
 -    data/doc/help_web.html
--    PROPERTIES
--      MACOSX_PACKAGE_LOCATION SharedSupport/doc
 +    data/help_web.html
-+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
+     PROPERTIES
+       MACOSX_PACKAGE_LOCATION SharedSupport/doc
    )
- 
-   if (OCPN_BUNDLE_DOCS MATCHES "ON")
-@@ -2004,12 +2003,12 @@ if (APPLE)
-   if (OCPN_BUNDLE_DOCS MATCHES "ON")
+@@ -2043,12 +2043,12 @@ if (APPLE)
+   if (OCPN_BUNDLE_DOCS )
      set(
        DOC_FILES
 -      data/doc/help_web.html
@@ -38,19 +35,19 @@ index 8d5cd85..0ea5b86 100644
        data/doc/help_en_US.html
        ${WIKI_DOC_FILES}
      )
-   else (OCPN_BUNDLE_DOCS MATCHES "ON")
+   else (OCPN_BUNDLE_DOCS )
 -    set(DOC_FILES data/doc/help_web.html)
 +    set(DOC_FILES data/help_web.html)
-   endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+   endif (OCPN_BUNDLE_DOCS )
  
    target_sources(
-@@ -2158,7 +2157,7 @@ if (NOT APPLE)
-   if (OCPN_BUNDLE_DOCS MATCHES "ON")
+@@ -2199,7 +2199,7 @@ if (NOT APPLE)
+   if (OCPN_BUNDLE_DOCS )
      install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
-   else (OCPN_BUNDLE_DOCS MATCHES "ON")
+   else (OCPN_BUNDLE_DOCS )
 -    install(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
 +    install(FILES data/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc)
-   endif (OCPN_BUNDLE_DOCS MATCHES "ON")
+   endif (OCPN_BUNDLE_DOCS )
  
    if (UNIX)
 diff --git a/data/help_web.html b/data/help_web.html
