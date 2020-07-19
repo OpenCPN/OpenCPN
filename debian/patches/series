@@ -1,13 +1,1 @@
 0001-build-Handle-missing-doc-files.patch
-0002-CMakelists-move-appdata.xml-to-usr-share-metainfo.patch
-0003-Add-a-linux-NDEBUG-compile-flag-1500.patch
-0004-build-gtk-Ensure-linking-to-required-gtk-libs.patch
-0005-Set-defaults-to-bundling-tcdata-and-gshhs-1894.patch
-0006-wxserverdisc-Disable-pointer-sign-warnings.patch
-0007-libs-gdal-iso8211-Handle-warning-for-strange-conditi.patch
-0008-src-Fix-uninitialized-variables.patch
-0009-glChartCanvas.cpp-Fix-weird-indentation-compiler-war.patch
-0010-dashboard_pi.cpp-Add-som-parens-compiler-warning.patch
-0011-libtess2-Handle-a-unused-return-value-warning.patch
-0012-tcmgr-small-buffer.patch
-0013-bbox-Drop-useless-assert.patch
