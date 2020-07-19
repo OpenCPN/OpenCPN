@@ -24,7 +24,7 @@
 #define dirent dirent64
 //fcntl.h
 #define openat openat64
-#define open open64
+//#define open open64
 #define mkstemp mkstemp64
 //unistd.h
 #define lseek lseek64
