@@ -1,9 +1,10 @@
-opencpn (5.1.148+dfsg-1) unstable; urgency=medium
-  * New upstream beta-1 version
-  * Update debian/copyright duw to new upstream source layout.
+opencpn (5.2.0+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update debian/copyright due to new upstream source layout.
   * Bump Standards-Version to 4.5.0, no changes.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 25 Jan 2020 10:52:11 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 19 Jul 2020 15:53:34 +0200
 
 opencpn (5.0.0+dfsg-1) unstable; urgency=medium
 
