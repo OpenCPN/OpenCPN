@@ -129,6 +129,12 @@ enum {
     ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
 };
 
+enum {
+    NORTH_UP_MODE,
+    COURSE_UP_MODE,
+    HEAD_UP_MODE
+};
+
 //----------------------------------------------------------------------------
 // ChartCanvas
 //----------------------------------------------------------------------------
@@ -291,6 +297,7 @@ public:
       void StopAutoPan(void);
 
       void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
+      void ZoomCanvasSimple(double factor);
       void DoZoomCanvas(double factor,  bool can_zoom_to_cursor = true);
 
       void RotateCanvas( double dir );
@@ -320,7 +327,7 @@ public:
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
-      void ToggleCourseUp( );
+      void SetUpMode( int mode);
       void ToggleLookahead( );
       void SetShowGPS( bool show );
  
@@ -387,7 +394,7 @@ public:
       int         m_groupIndex;
       int          m_routeState;
       ChartBase   *m_singleChart;
-      bool        m_bCourseUp;
+      int         m_upMode;
       bool        m_bLookAhead;
       double      m_VPRotate;
       
@@ -473,7 +480,7 @@ public:
       void ToggleCanvasQuiltMode( void );
       
       wxString GetScaleText(){ return m_scaleText; }
-      int GetScaleValue(){ return m_scaleValue; }
+      double GetScaleValue(){ return m_scaleValue; }
       
       bool        m_b_paint_enable;
 
@@ -501,7 +508,7 @@ public:
       bool GetShowENCDataQual(){ return m_encShowDataQual; }
       void SetShowENCDataQual( bool show );
       
-      bool GetCourseUP(){ return m_bCourseUp; }
+      int GetUpMode(){ return m_upMode; }
       bool GetLookahead(){ return m_bLookAhead; }
 
       bool GetShowAIS(){ return m_bShowAIS; }
@@ -517,6 +524,15 @@ public:
       wxRect GetScaleBarRect(){ return m_scaleBarRect; }
       void RenderAlertMessage( wxDC &dc, const ViewPort &vp);
 
+      std::vector<int>      m_tile_noshow_index_array;
+      std::vector<int>      m_tile_yesshow_index_array;
+      std::vector<int>      m_quilt_noshow_index_array;
+
+      bool IsTileOverlayIndexInYesShow( int index );
+      bool IsTileOverlayIndexInNoShow( int index );
+      void AddTileOverlayIndexToNoShow( int index );
+      
+      std::vector<int> GetQuiltNoshowIindexArray(){ return m_quilt_noshow_index_array; }
 private:
       int AdjustQuiltRefChart();
 
@@ -550,7 +566,7 @@ private:
       int         cursor_region;
       bool        m_bTCupdate;
       wxString    m_scaleText;
-      int         m_scaleValue;
+      double      m_scaleValue;
       bool        m_bShowScaleInStatusBar;
       wxRect      bbRect;
 

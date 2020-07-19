@@ -133,6 +133,7 @@ public:
     } spatial_diff;
   } complex_pack;
   int drs_templ_num;
+  int precision;
   float R;
   int E,D,num_packed,pack_width,orig_val_type;
   int bms_ind;
@@ -611,6 +612,9 @@ static bool unpackDRS(GRIBMessage *grib_msg)
   grib_msg->md.drs_templ_num = uint2(b +9); /* data representation template number */
 
   switch (grib_msg->md.drs_templ_num) { // Table 5.0
+    case 4:        // Grid Point Data - Simple Packing 
+        grib_msg->md.precision = b[11];
+        break;
     case 0:        // Grid Point Data - Simple Packing 
     case 2:        // Grid Point Data - Complex Packing
     case 3:        // Grid Point Data - Complex Packing and Spatial Differencing
@@ -715,6 +719,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
 {
   int off,pval, l;
   unsigned int n, m;
+
   struct {
     int *ref_vals,*widths;
     int *lengths;
@@ -728,10 +733,11 @@ static bool unpackDS(GRIBMessage *grib_msg)
   groups.first_vals = nullptr;
 
   off= grib_msg->offset+40;
+  int npoints = grib_msg->md.ny *grib_msg->md.nx;
   switch (grib_msg->md.drs_templ_num) {
     case 0:
-	grib_msg->grids.gridpoints = new double[grib_msg->md.ny *grib_msg->md.nx];
-	for (l=0; l < grib_msg->md.ny*grib_msg->md.nx; l++) {
+	grib_msg->grids.gridpoints = new double[npoints];
+	for (l=0; l < npoints; l++) {
 	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
 	    getBits(grib_msg->buffer,&pval,off,grib_msg->md.pack_width);
 	    grib_msg->grids.gridpoints[l]=grib_msg->md.R+pval*E/D;
@@ -759,9 +765,9 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	}
 	// fall through
     case 2:
-	grib_msg->grids.gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
+	grib_msg->grids.gridpoints=new double[npoints];
 	if (grib_msg->md.complex_pack.num_groups == 0) {
-	  for (l = 0; l < grib_msg->md.ny*grib_msg->md.nx; ++l) {
+	  for (l = 0; l < npoints; ++l) {
  	    grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
 	  }
 	  break;
@@ -853,7 +859,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	  }
 	}
 
-	for (; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
+	for (; l < npoints; ++l) {
 	  grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 	}
 
@@ -872,7 +878,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
   	         }
               }
   	   }
-  	   for (l=0,m=0,lastgp=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
+  	   for (l=0,m=0,lastgp=0; l < npoints; ++l) {
   	     if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
   	   	if (m < grib_msg->md.complex_pack.spatial_diff.order) {
   	   	  grib_msg->grids.gridpoints[l]=grib_msg->md.R+groups.first_vals[m]*E/D;
@@ -887,7 +893,7 @@ static bool unpackDS(GRIBMessage *grib_msg)
   	   }
   	   delete [] groups.first_vals;
 	}
-	else for (l=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
+	else for (l=0; l < npoints; ++l) {
   	   if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
                 grib_msg->grids.gridpoints[l]= grib_msg->md.R+grib_msg->grids.gridpoints[l]*E/D;
            }
@@ -896,16 +902,59 @@ static bool unpackDS(GRIBMessage *grib_msg)
 	delete [] groups.widths;
 	delete [] groups.lengths;
  	break;
+    case 4:
+        {
+
+ 	    // Grid point data - IEEE Floating Point Data
+ 	    if (grib_msg->md.precision == 1) { // IEEE754 single precision
+     	        grib_msg->grids.gridpoints = new double[npoints];
+     	        for (int l=0; l < npoints; l++) {
+ 	            if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
+ 	                grib_msg->grids.gridpoints[l]= ieee2flt(grib_msg->buffer +off/8);
+ 	                off += 32;
+                    }
+                    else
+                        grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+                }
+            }
+ 	    else if (grib_msg->md.precision == 2) { // IEEE754 single precision
+                static const int one = 1;
+                bool const is_lsb = *((char*)&one) == 1;
+     	        grib_msg->grids.gridpoints = new double[npoints];
+     	        for (l=0; l < npoints; l++) {
+ 	            if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
+ 	                double d;
+ 	                if( is_lsb ) {
+                            unsigned char temp[8];
+ 	                    for(int j = 0; j < 8; j++ ) {
+ 	                        temp[j] = grib_msg->buffer[off/8 + 7 - j];
+                            }
+                            memcpy(&d, temp, 8);
+                        }
+                        else {
+                            memcpy(&d, grib_msg->buffer +off/8, 8);
+                        }
+ 	                grib_msg->grids.gridpoints[l]= d;
+ 	                off += 64;
+                    }
+                    else
+                        grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
+                }
+            }
+            else {
+                fprintf(stderr,"g2_unpack7: Invalid precision=%d for Data Section 5.4.\n", grib_msg->md.precision);
+                return false;
+            }
+        }
+ 	break;
 #ifdef JASPER
     case 40:
     case 40000:
         int len, *jvals, cnt;
-        int npoints;
 	getBits(grib_msg->buffer,&len,grib_msg->offset,32);
 	if (len < 5)
 	    return false;
 	len=len-5;
-	npoints = grib_msg->md.ny*grib_msg->md.nx;
 	jvals= new int[npoints];
 	grib_msg->grids.gridpoints= new double[npoints];
 	if (len > 0)

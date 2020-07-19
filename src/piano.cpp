@@ -566,6 +566,13 @@ void Piano::SetNoshowIndexArray( std::vector<int> array )
     m_noshow_index_array = array;
 }
 
+void Piano::AddNoshowIndexArray( std::vector<int> array )
+{
+    for( unsigned int i = 0; i < array.size(); i++ ) {
+        m_noshow_index_array.push_back(array[i]);
+    }
+}
+
 void Piano::SetActiveKeyArray( std::vector<int> array )
 {
     m_active_index_array = array;

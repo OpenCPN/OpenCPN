@@ -20,7 +20,7 @@ sudo dnf clean all
 
 # Install required packages
 su -c "dnf install -y -q sudo dnf-plugins-core"
-sudo dnf install -q -y flatpak-builder ccrypt make rsync gnupg2
+sudo dnf install -q -y appstream flatpak-builder ccrypt make rsync gnupg2 
 
 test -d /opencpn-ci && cd /opencpn-ci || :
 
@@ -49,13 +49,30 @@ make -f ../flatpak/Makefile install
 make GPG_HOMEDIR=opencpn-gpg -f ../flatpak/Makefile sign
 rm -rf gpg.tar.gz opencpn-gpg
 
+# Debug: show version in local repo.
+flatpak remote-add  \
+    --user --gpg-import=website/opencpn.key local $PWD/website/repo
+flatpak update --appstream local
+flatpak remote-ls local
+
 # Deploy website/ to deployment server.
-ccat --envvar FLATPAK_KEY ../ci/amazon-ec2.pem.cpt > amazon-ec2.pem
-chmod 400 amazon-ec2.pem
-rsync_host="ec2-user@ec2-18-219-5-218.us-east-2.compute.amazonaws.com"
-rsync -a --info=stats --rsh="ssh -o 'StrictHostKeyChecking no' -i amazon-ec2.pem" \
-    website/ $rsync_host:/var/www/ocpn-website/website
-rm -f ../ci/amazon-ec2.pem
+cp ../ci/id_opencpn.tar.cpt .
+ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
+tar -xf id_opencpn.tar
+chmod 600 .ssh/id_opencpn
+
+rsync -a --info=stats --delete-after \
+    --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
+    website/ opencpn@mumin.crabdance.com:/var/www/ocpn-flatpak/website
+rm -f .ssh/id_opencpn*
 
 # Restore the patched file so the caching works.
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
+
+# Debug: show version in remote repo.
+flatpak remote-add --user opencpn $PWD/website/opencpn.flatpakrepo
+flatpak update --appstream opencpn
+flatpak remote-ls opencpn
+
+# Validate the appstream data:
+appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml

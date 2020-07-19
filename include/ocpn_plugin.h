@@ -38,10 +38,10 @@
 #endif
 #endif
 
-#ifdef __WXMSW__
-#ifdef MAKING_PLUGIN
+#if defined(__WXMSW__) && defined(MAKING_PLUGIN)
 #  define DECL_IMP     __declspec(dllimport)
-#endif
+#else 
+#  define DECL_IMP
 #endif    
 
 #include <wx/xml/xml.h>

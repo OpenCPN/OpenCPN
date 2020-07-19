@@ -49,10 +49,12 @@
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
+#include "options.h"
 
 extern PlugInManager*           g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform*            g_Platform;
+extern options                 *g_options;
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -178,7 +180,7 @@ class InstallButton: public wxPanel
             PlugInContainer* found =
                 PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
             std::string label(_("Install"));
-            if (found) {
+            if (found && ((found->m_version_major > 0) || (found->m_version_minor > 0))) {
                 label = getUpdateLabel(found, metadata);
                 m_remove = true;
             }
@@ -299,13 +301,19 @@ class PluginTextPanel: public wxPanel
             sum_hbox->Add(m_more, wxSizerFlags());
 
             auto vbox = new wxBoxSizer(wxVERTICAL);
+            SetSizer(vbox);
             auto name = staticText(plugin->name + "    " + plugin->version);
-            m_descr = staticText(plugin->description);
+
+            m_widthDescription = g_options->GetSize().x / 2;
+            m_descr = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxSize( m_widthDescription, -1)/*, wxST_NO_AUTORESIZE*/ );
+            m_descText = wxString(plugin->description.c_str());
+            m_descr->SetLabel( m_descText );
+            m_descr->Wrap( m_widthDescription );
             m_descr->Hide();
             vbox->Add(name, flags);
             vbox->Add(sum_hbox, flags);
-            vbox->Add(m_descr, flags.Expand());
-            SetSizer(vbox);
+            vbox->Add(m_descr, 0);
+            Fit();
 
             m_more->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
             m_descr->Bind(wxEVT_LEFT_DOWN, &PluginTextPanel::OnClick, this);
@@ -314,12 +322,20 @@ class PluginTextPanel: public wxPanel
         void OnClick(wxMouseEvent& event)
         {
             m_descr->Show(!m_descr->IsShown());
+            m_descr->SetLabel( _T("") );
+            m_descr->SetLabel( m_descText );
+            m_descr->Wrap( m_widthDescription );
+            Layout();
+            wxSize asize = GetEffectiveMinSize();
+
             m_more->SetLabelMarkup(m_descr->IsShown() ? LESS : MORE);
             m_buttons->HideDetails(!m_descr->IsShown());
-            GetParent()->SendSizeEvent();
-            GetParent()->GetParent()->GetParent()->Layout();
-            GetParent()->GetParent()->GetParent()->Refresh(true);
-            GetParent()->GetParent()->GetParent()->Update();
+            
+            GetGrandParent()->SetSize(-1, asize.GetHeight() + 8 * GetCharHeight());
+//             GetParent()->SendSizeEvent();
+//             GetParent()->GetParent()->GetParent()->Layout();
+//             GetParent()->GetParent()->GetParent()->Refresh(true);
+//             GetParent()->GetParent()->GetParent()->Update();
         }
 
     protected:
@@ -336,6 +352,8 @@ class PluginTextPanel: public wxPanel
         wxStaticText* m_more;
         wxStaticText* m_summary;
         CandidateButtonsPanel* m_buttons;
+        int m_widthDescription;
+        wxString m_descText;
 };
 
 
@@ -352,18 +370,19 @@ class OcpnScrolledWindow : public wxScrolledWindow
             m_updates(updates),
             m_grid(new wxFlexGridSizer(3, 0, 0))
         {
+            m_twidth = 0;
             auto box = new wxBoxSizer(wxVERTICAL);
             populateGrid(m_grid);
-            box->Add(m_grid, wxSizerFlags().Proportion(1).Expand());
+            box->Add(m_grid, wxSizerFlags().Proportion(0).Expand());
             auto butt_box = new wxBoxSizer(wxHORIZONTAL);
             auto cancel_btn = new wxButton(this, wxID_CANCEL, _("Dismiss"));
             butt_box->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
             butt_box->Add(cancel_btn,  wxSizerFlags().Right().Border());
-            box->Add(butt_box, wxSizerFlags().Expand());
+            box->Add(butt_box, wxSizerFlags().Proportion(0).Expand());
 
 
             SetSizer(box);
-            FitInside();
+            //FitInside();
             // TODO: Compute size using wxWindow::GetEffectiveMinSize()
             SetScrollRate(1, 1);
         };
@@ -386,8 +405,10 @@ class OcpnScrolledWindow : public wxScrolledWindow
                 grid->Add(
                     new PluginIconPanel(this, plugin.name), flags.Expand());
                 auto buttons = new CandidateButtonsPanel(this, &plugin);
-                grid->Add(new PluginTextPanel(this, &plugin, buttons),
-                        flags.Proportion(1).Right());
+                PluginTextPanel *tpanel = new PluginTextPanel(this, &plugin, buttons);
+                grid->Add(tpanel, flags.Proportion(1).Right());
+                wxSize tsize = tpanel->GetEffectiveMinSize();
+                m_twidth = wxMax(tsize.GetWidth(), m_twidth);
                 grid->Add(buttons, flags.DoubleBorder());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
                 grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
@@ -406,6 +427,7 @@ class OcpnScrolledWindow : public wxScrolledWindow
             Refresh(true);
         }
 
+        int m_twidth;
     private:
         const std::vector<PluginMetadata> m_updates;
         wxFlexGridSizer* m_grid;
@@ -426,13 +448,18 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
 
     // The list has no natural height. Allocate 8 lines of text so some
     // items are displayed initially in Layout()
-    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 8;
+    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 10;
 
     // There seem to be no way have dynamic, wrapping text:
     // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
-    int width = GetParent()->GetClientSize().GetWidth();
-    SetMinClientSize(wxSize(width, min_height));
-
+    //int width = GetParent()->GetClientSize().GetWidth();
+  //  SetMinClientSize(wxSize(width, min_height));
+    int width = scrwin->m_twidth * 2;
+    width = wxMin(width, g_Platform->getDisplaySize().x);
+    SetMinSize(wxSize(width, min_height));
+ 
+    SetMaxSize(g_Platform->getDisplaySize());
+    
     SetSizer(vbox);
     Fit();
     Layout();

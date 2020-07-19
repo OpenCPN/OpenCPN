@@ -16,14 +16,19 @@ include(CompilerSupport)
 set(SRC
   include/mipmap/mipmap.h
   src/mipmap.c
-  src/mipmap_sse.c
-  src/mipmap_sse2.c
-  src/mipmap_ssse3.c
-  src/mipmap_avx2.c
-  src/mipmap_neon.c
 )
 
-add_library(MIPMAP STATIC ${SRC})
+if( NOT QT_ANDROID)
+    set(SRC_IPML
+        src/mipmap_sse.c
+        src/mipmap_sse2.c
+        src/mipmap_ssse3.c
+        src/mipmap_avx2.c
+        src/mipmap_neon.c
+    )
+endif( NOT QT_ANDROID)
+
+add_library(MIPMAP STATIC ${SRC} ${SRC_IPML})
 add_library(ocpn::mipmap ALIAS MIPMAP)
 target_include_directories(MIPMAP
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

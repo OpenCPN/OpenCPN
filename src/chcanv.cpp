@@ -217,6 +217,7 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
 extern bool             g_bInlandEcdis;
+extern int              g_ENCSoundingScaleFactor;
 
 
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -244,7 +245,6 @@ extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
 
-extern std::vector<int>      g_quilt_noshow_index_array;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
@@ -424,7 +424,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_bFirstAuto = true;
     m_groupIndex = 0;
     m_singleChart = NULL;
-    m_bCourseUp = false;
+    m_upMode = NORTH_UP_MODE;
     m_bShowAIS = true;
     m_bShowAISScaled = false;
     
@@ -709,8 +709,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     proute_bm = NULL;
     m_prot_bm = NULL;
 
-    m_bCourseUp = false;
+    m_upMode = NORTH_UP_MODE;
     m_bLookAhead = false;
+    m_VPRotate = 0;
     
 // Set some benign initial values
 
@@ -1117,7 +1118,14 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
     m_encShowBuoyLabels = pcc->bShowENCBuoyLabels;
     m_encShowLights = pcc->bShowENCLights;
     
-    m_bCourseUp = pcc->bCourseUp;
+    bool courseUp = pcc->bCourseUp;
+    bool headUp = pcc->bHeadUp;
+    m_upMode = NORTH_UP_MODE;
+    if(courseUp)
+        m_upMode = COURSE_UP_MODE;
+    else if(headUp)
+        m_upMode = HEAD_UP_MODE;
+    
     m_bLookAhead = pcc->bLookahead;
     
     m_singleChart = NULL;
@@ -1323,7 +1331,10 @@ void ChartCanvas::SetGroupIndex( int index, bool autoSwitch )
     //  Update the MUIBar for ENC availability
     if(m_muiBar)
         m_muiBar->SetCanvasENCAvailable(m_bENCGroup);
-    
+
+    //  Allow the chart database to pre-calculate the MBTile inclusion test boolean...
+    ChartData->CheckExclusiveTileGroup(m_canvasIndex);
+     
     //  Invalidate the "sticky" chart on group change, since it might not be in the new group
     g_sticky_chart = -1;
     
@@ -1543,7 +1554,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
         double d_east = dx / GetVP().view_scale_ppm;
         double d_north = dy / GetVP().view_scale_ppm;
 
-        if(!m_bCourseUp){
+        if(GetUpMode() == NORTH_UP_MODE){
             fromSM( d_east, d_north, gLat, gLon, &vpLat, &vpLon );
         }
         else{
@@ -1635,6 +1646,10 @@ bool ChartCanvas::DoCanvasUpdate( void )
          m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
                 
          if( m_bFirstAuto ) {
+             
+             //  Allow the chart database to pre-calculate the MBTile inclusion test boolean...
+            ChartData->CheckExclusiveTileGroup(m_canvasIndex);
+
                     double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale(); // as set from config load
                         
                         int initial_db_index = m_restore_dbindex;
@@ -2011,7 +2026,7 @@ void ChartCanvas::SetupCanvasQuiltMode( void )
     {
         ChartData->LockCache();
         
-        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        m_Piano->SetNoshowIndexArray( m_quilt_noshow_index_array );
         
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         
@@ -3291,7 +3306,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
               case 54:    case 56:    // '_'  alpha/num pad
                 DoMovement(m_mustmove);
 
-                m_zoom_factor = 1;
+                //m_zoom_factor = 1;
                 break;
             case '[': case ']':
                 DoMovement(m_mustmove);
@@ -3334,12 +3349,11 @@ void ChartCanvas::ToggleLookahead( )
 
 }
 
-
-void ChartCanvas::ToggleCourseUp( )
+void ChartCanvas::SetUpMode( int mode)
 {
-    m_bCourseUp = !m_bCourseUp;
+    m_upMode = mode;
     
-    if( m_bCourseUp ) {
+    if( mode != NORTH_UP_MODE ) {
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = 0;
         if( !std::isnan(gCog) )
@@ -3362,21 +3376,26 @@ void ChartCanvas::ToggleCourseUp( )
     if( GetMUIBar() && GetMUIBar()->GetCanvasOptions())
         GetMUIBar()->GetCanvasOptions()->RefreshControlValues();
 
-    //DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     gFrame->DoChartUpdate();
 }
 
 bool ChartCanvas::DoCanvasCOGSet( void )
 {
-    if( !m_bCourseUp )
+    if( GetUpMode() == NORTH_UP_MODE )
         return false;
     
     if (std::isnan(g_COGAvg))
         return true;
     
     double old_VPRotate = m_VPRotate;
-    m_VPRotate = -g_COGAvg * PI / 180.;
+    
+    if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt) ) {
+        m_VPRotate = -gHdt * PI / 180.;
+    }
+    else if(GetUpMode() == COURSE_UP_MODE)
+        m_VPRotate = -g_COGAvg * PI / 180.;
+        
     
     SetVPRotation( m_VPRotate );
     bool bnew_chart = DoCanvasUpdate();
@@ -3410,7 +3429,7 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
 {
     // Start/restart the stop movement timer
     if(stoptimer)
-        pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
+        pMovementStopTimer->Start( 800, wxTIMER_ONE_SHOT ); 
 
     if(!pMovementTimer->IsRunning()){
 //        printf("timer not running, starting\n");
@@ -3487,7 +3506,8 @@ void ChartCanvas::DoMovement( long dt )
             zoom_factor = 1/zoom_factor;
 
         //  Try to hit the zoom target exactly.
-        if(m_wheelzoom_stop_oneshot > 0) {
+        //if(m_wheelzoom_stop_oneshot > 0)
+        {
             if(zoom_factor > 1){
                 if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
                     zoom_factor = VPoint.chart_scale / m_zoom_target;
@@ -3846,7 +3866,11 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     s << FormatDistanceAdaptive( dist );
 
                     // Compute and display cumulative distance from route start point to current
-                    // leg end point.
+                    // leg end point and RNG,TTG,ETA from ship to current leg end point for active route
+                    double shiptoEndLeg = 0.;
+                    bool validActive = false;
+                    if( pr->IsActive() && pr->pRoutePointList->GetFirst()->GetData()->m_bIsActive )
+                            validActive = true;
 
                     if( segShow_point_a != pr->pRoutePointList->GetFirst()->GetData() ) {
                         wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
@@ -3856,13 +3880,37 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
                         while( node ) {
                             prp = node->GetData();
+                            if( validActive )
+                                shiptoEndLeg += prp->m_seg_len;
+                            else if ( prp->m_bIsActive )
+                                validActive = true;
                             dist_to_endleg += prp->m_seg_len;
                             if( prp->IsSame( segShow_point_a ) ) break;
                             node = node->GetNext();
                         }
                         s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
                     }
-
+                    //write from ship to end selected leg point data if the route is active
+                    if(validActive) {
+                        s << _T("\n") << _("From Ship To") << _T(" ") << segShow_point_b->GetName() << _T("\n");
+                        shiptoEndLeg += g_pRouteMan->GetCurrentRngToActivePoint();//add distance from ship to active point
+                        shiptoEndLeg += segShow_point_b->m_seg_len; //add the lenght of the selected leg
+                        s << FormatDistanceAdaptive( shiptoEndLeg );
+                        //ensure sog/cog are valid and vmg is positive to keep data coherent
+                        double vmg = 0.;
+                        if( !std::isnan(gCog) && !std::isnan(gSog) )
+                            vmg = gSog * cos( ( g_pRouteMan->GetCurrentBrgToActivePoint() - gCog ) * PI / 180. );
+                        if( vmg > 0. ) {
+                            float ttg_sec = ( shiptoEndLeg / gSog ) * 3600.;
+                            wxTimeSpan ttg_span = wxTimeSpan::Seconds( (long) ttg_sec );
+                            s << _T(" - ") << wxString( ttg_sec > SECONDS_PER_DAY ?
+                                          ttg_span.Format(_("%Dd %H:%M")) : ttg_span.Format(_("%H:%M")) );
+                            wxDateTime dtnow, eta;
+                            eta = dtnow.SetToCurrent().Add( ttg_span );
+                            s  << _T(" - ") << eta.Format(_T("%b")).Mid(0, 4) << eta.Format(_T(" %d %H:%M"));
+                        } else
+                            s << _T("   ----   ----");
+                    }
                     m_pRouteRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
@@ -3948,8 +3996,14 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                         s.Append( _("(unnamed)") );
                     else
                         s.Append( pt->GetName() );
-                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive(pt->Length());
-
+                    double tlenght = pt->Length();
+                    s << _T("\n") << _("Total Track: ") << FormatDistanceAdaptive(tlenght);
+                    if( pt->GetLastPoint()->GetTimeString() && pt->GetPoint(0)->GetTimeString() ) {
+                        wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() - pt->GetPoint(0)->GetCreateTime();
+                        double htime = ttime.GetSeconds().ToDouble() / 3600.;
+                        s << wxString::Format( _T("  %.1f "), (float)(tlenght / htime) ) << getUsrSpeedUnit();
+                        s << wxString(htime > 24.? ttime.Format(_T("  %Dd %H:%M")): ttime.Format(_T("  %H:%M")));
+                    }
                     if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
                         s << _T("\n") << _("Segment Created: ") << segShow_point_b->GetTimeString();
 
@@ -4354,6 +4408,13 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
     }
 }
 
+void ChartCanvas::ZoomCanvasSimple( double factor )
+{
+    DoZoomCanvas( factor, false );
+    extendedSectorLegs.clear();
+}
+
+
 void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stoptimer )
 {
     m_bzooming_to_cursor = can_zoom_to_cursor && g_bEnableZoomToCursor;
@@ -4363,6 +4424,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
             m_mustmove += 150; /* for quick presses register as 200 ms duration */
             m_zoom_factor = factor;
         }
+        
         m_zoom_target =  VPoint.chart_scale / factor;
     } else {
         if( m_modkeys == wxMOD_ALT )
@@ -4540,8 +4602,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
 void ChartCanvas::RotateCanvas( double dir )
 {
-    if(m_bCourseUp)
-        m_bCourseUp = false;
+    SetUpMode( NORTH_UP_MODE);
 
     if(g_bsmoothpanzoom) {
         if(StartTimedMovement()) {
@@ -5336,11 +5397,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             
         // Create a nice renderable string
-        double round_factor = 100.;
-        if(VPoint.chart_scale < 1000.)
+        double round_factor = 1000.;
+        if(VPoint.chart_scale <= 1000.)
             round_factor = 10.;
-        else if (VPoint.chart_scale < 10000.)
-            round_factor = 50.;
+        else if (VPoint.chart_scale <= 10000.)
+            round_factor = 100.;
+        else if (VPoint.chart_scale <= 100000.)
+            round_factor = 1000.;
             
         double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
         wxString text;
@@ -6568,6 +6631,8 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
         m_glcc->OnSize( event );
     }
 #endif
+
+    FormatPianoKeys();
     //  Invalidate the whole window
     ReloadVP();
 }
@@ -6599,6 +6664,7 @@ void ChartCanvas::CreateMUIBar()
     if(m_muiBar){
         SetMUIBarPosition();
         UpdateFollowButtonState();
+        m_muiBar->UpdateDynamicValues();
         m_muiBar->SetCanvasENCAvailable( m_bENCGroup );
         m_muiBar->Raise();
     }
@@ -7000,7 +7066,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
 
     //  Kick off the Rotation control timer
-    if( m_bCourseUp ) {
+    if( GetUpMode() == COURSE_UP_MODE ) {
         m_b_rot_hidef = false;
         pRotDefTimer->Start( 500, wxTIMER_ONE_SHOT );
     } else
@@ -8908,8 +8974,11 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
-    if ( !g_pMarkInfoDialog )    // There is one global instance of the MarkProp Dialog
+    bool bNew = false;
+    if ( !g_pMarkInfoDialog ){    // There is one global instance of the MarkProp Dialog
         g_pMarkInfoDialog = new MarkInfoDlg(this);
+        bNew = true;
+    }
 
     if( 1/*g_bresponsive*/ ) {
         wxSize canvas_size = GetSize();
@@ -8952,6 +9021,8 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     g_pMarkInfoDialog->Show();
     g_pMarkInfoDialog->Raise();
     g_pMarkInfoDialog->InitialFocus();
+    if(bNew)
+        g_pMarkInfoDialog->CenterOnScreen();
 }
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
@@ -9784,6 +9855,8 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig()
         v[_T("OpenCPN S52PLIB ShowLightDescription")] = GetShowENCLightDesc();
 
         v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
+
+        v[_T("OpenCPN S52PLIB SoundingsFactor")] = g_ENCSoundingScaleFactor;
         
         // Global options
 /*        
@@ -10269,7 +10342,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         std::vector<int> tiles_to_show;
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( stackIndexArray[is] );
-            if(std::find(g_quilt_noshow_index_array.begin(), g_quilt_noshow_index_array.end(), stackIndexArray[is]) != g_quilt_noshow_index_array.end()) {
+            if(IsTileOverlayIndexInNoShow(stackIndexArray[is])){
                 continue;
             }
             if(cte.GetChartType() == CHART_TYPE_MBTILES){
@@ -11360,13 +11433,13 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif
 
-#if 0
+#ifndef __OCPN__ANDROID__
     // another method is simply to declare that the icon shall be x times the size of a raster symbol (e.g.BOYLAT)
     //  This is a bit of a hack that will suffice until until we get fully scalable ENC symbol sets
     float nominal_icon_size_pixels = 48;  // 3 x 16
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;          
-#endif
 
+#else    
     //  Yet another method goes like this:
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
@@ -11381,7 +11454,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     float targetHeight = wxMin(targetHeight0, displaySize / 15);
     
     double pix_factor = targetHeight / symHeight;
-
+#endif
     
     scale_factor *= pix_factor;
     
@@ -12029,12 +12102,12 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
     switch( event.GetId() ){
         
         case ID_ZOOMIN: {
-            ZoomCanvas( g_plus_minus_zoom_factor, false );
+            ZoomCanvasSimple( g_plus_minus_zoom_factor );
             break;
         }
         
         case ID_ZOOMOUT: {
-            ZoomCanvas( 1.0 / g_plus_minus_zoom_factor, false );
+            ZoomCanvasSimple( 1.0 / g_plus_minus_zoom_factor );
             break;
         }
         
@@ -12088,11 +12161,7 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
         
-        case ID_TBSTATBOX: {
-            ToggleCourseUp();
-            break;
-        }
-        
+       
         default:
             break;
     }
@@ -12499,7 +12568,7 @@ void ChartCanvas::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_
         double oldskew = GetVPSkew();
         double newskew = m_singleChart->GetChartSkew() * PI / 180.0;
         
-        if (!g_bskew_comp && !m_bCourseUp) {
+        if (!g_bskew_comp && (GetUpMode() == NORTH_UP_MODE) ) {
             if (fabs(oldskew) > 0.0001)
                 rotation = 0.0;
             if (fabs(newskew) > 0.0001)
@@ -12635,8 +12704,21 @@ void ChartCanvas::selectCanvasChartDisplay( int type, int family)
 }
 
 
+bool ChartCanvas::IsTileOverlayIndexInYesShow( int index ){
+    return std::find(m_tile_yesshow_index_array.begin(), m_tile_yesshow_index_array.end(), index) != m_tile_yesshow_index_array.end();
+}
+
+bool ChartCanvas::IsTileOverlayIndexInNoShow( int index ){
+    return std::find(m_tile_noshow_index_array.begin(), m_tile_noshow_index_array.end(), index) != m_tile_noshow_index_array.end();
+}
 
 
+void ChartCanvas::AddTileOverlayIndexToNoShow( int index )
+{
+    if(std::find(m_tile_noshow_index_array.begin(), m_tile_noshow_index_array.end(), index) == m_tile_noshow_index_array.end()) {
+        m_tile_noshow_index_array.push_back( index );
+    }
+}
 
 //-------------------------------------------------------------------------------------------------------
 //
@@ -12679,16 +12761,20 @@ void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
         // Left click simply toggles the noshow array index entry
         if( CHART_TYPE_MBTILES == ChartData->GetDBChartType( selected_dbIndex ) ){
            bool bfound=false; 
-           for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-                if( g_quilt_noshow_index_array[i] == selected_dbIndex ){ // chart is in the noshow list
-                    g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );  // erase it
+           for( unsigned int i = 0; i < m_tile_noshow_index_array.size(); i++ ) {
+                if( m_tile_noshow_index_array[i] == selected_dbIndex ){ // chart is in the noshow list
+                    m_tile_noshow_index_array.erase(m_tile_noshow_index_array.begin() + i );  // erase it
                     bfound = true;
                     break;
                 }
            }
            if(!bfound){
-               g_quilt_noshow_index_array.push_back(selected_dbIndex);
+               m_tile_noshow_index_array.push_back(selected_dbIndex);
            }
+           
+           // If not already present, add this tileset to the "yes_show" array.
+           if(!IsTileOverlayIndexInYesShow(selected_dbIndex))
+                m_tile_yesshow_index_array.push_back( selected_dbIndex );
         }
         
         else{
@@ -12824,7 +12910,8 @@ void ChartCanvas::UpdateCanvasControlBar( void )
         std::vector<int>  piano_eclipsed_chart_index_array = GetQuiltEclipsedStackdbIndexArray();
         m_Piano->SetEclipsedIndexArray( piano_eclipsed_chart_index_array );
         
-        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        m_Piano->SetNoshowIndexArray( m_quilt_noshow_index_array );
+        m_Piano->AddNoshowIndexArray( m_tile_noshow_index_array );
         
         sel_type = ChartData->GetDBChartType(GetQuiltReferenceChartIndex());
         sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
@@ -12932,8 +13019,8 @@ void ChartCanvas::PianoPopupMenu( int x, int y, int selected_index, int selected
 
     //    Search the no-show array
     bool b_is_in_noshow = false;
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == selected_dbIndex ) // chart is in the noshow list
                 {
             b_is_in_noshow = true;
             break;
@@ -12970,10 +13057,10 @@ void ChartCanvas::PianoPopupMenu( int x, int y, int selected_index, int selected
 
 void ChartCanvas::OnPianoMenuEnableChart( wxCommandEvent& event )
 {
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == menu_selected_dbIndex ) // chart is in the noshow list
-                {
-            g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == menu_selected_dbIndex ) // chart is in the noshow list
+        {
+            m_quilt_noshow_index_array.erase(m_quilt_noshow_index_array.begin() + i );
             break;
         }
     }
@@ -13021,15 +13108,15 @@ void ChartCanvas::OnPianoMenuDisableChart( wxCommandEvent& event )
 void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
 {
     //    Remove the item from the list (if it appears) to avoid multiple addition
-    for( unsigned int i = 0; i < g_quilt_noshow_index_array.size(); i++ ) {
-        if( g_quilt_noshow_index_array[i] == dbIndex ) // chart is already in the noshow list
-                {
-                    g_quilt_noshow_index_array.erase(g_quilt_noshow_index_array.begin() + i );
-                    break;
-                }
+    for( unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++ ) {
+        if( m_quilt_noshow_index_array[i] == dbIndex ) // chart is already in the noshow list
+        {
+            m_quilt_noshow_index_array.erase(m_quilt_noshow_index_array.begin() + i );
+            break;
+        }
     }
     
-    g_quilt_noshow_index_array.push_back( dbIndex );
+    m_quilt_noshow_index_array.push_back( dbIndex );
     
 }
 

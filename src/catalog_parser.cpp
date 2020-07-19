@@ -123,6 +123,8 @@ static void XMLCALL endElement(void* userData, const XML_Char* name)
         ctx->plugin->target = ocpn::trim(buff);
     } else if (strcmp(name, "target-version") == 0) {
         ctx->plugin->target_version = ocpn::trim(buff);
+    } else if (strcmp(name, "target-arch") == 0) {
+        ctx->plugin->target_arch = ocpn::trim(buff);
     } else if (strcmp(name, "open-source") == 0) {
         ctx->plugin->openSource = ocpn::trim(buff) == "yes";
     } else if (strcmp(name, "plugin") == 0) {

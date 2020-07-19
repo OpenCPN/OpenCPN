@@ -172,13 +172,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 
 {
     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
-
-    //  First special case
-    //  TODO
-    //  We support no managed plugins for ARM64 platform.
-    //  So, if detected, we can bail immediately
-    if(os_detail->osd_arch.compare("ARM64") == 0)
-        return false;
     
     // Get the specified system definition,
     //   or the baked in (build system) values,
@@ -207,7 +200,6 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
     compatOsVersion = ocpn::tolower(compatOsVersion);
     
     //  Compare to the required values in the metadata
-    
     std::string plugin_os = ocpn::tolower(metadata.target);
 
     // msvc is simple...
@@ -220,31 +212,70 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         return (plugin_os == "darwin");
     }
 
+    //  For linux variants....
+    // If the plugin architecture is defined, we can eliminate incompatible plugins immediately
+    if(metadata.target_arch.size()){
+        if(ocpn::tolower(metadata.target_arch) != ocpn::tolower(os_detail->osd_arch))
+            return false;
+    }
+
+    std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
+
+    wxLogDebug(wxString::Format(_T("Plugin compatibility check: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
+
+    bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
+    
     auto meta_vers = ocpn::split(plugin_os_version.c_str(), ".")[0];
 
-    if (compatOS  == plugin_os) {
+    if (compatOS_ARCH  == plugin_os) {
         //  OS matches so far, so must compare versions
 
-        if (plugin_os == "ubuntu") {
-            return plugin_os_version == compatOsVersion;            // Full version comparison required
+        if (ocpn::startswith(plugin_os, "ubuntu")){
+            if(plugin_os_version == compatOsVersion)            // Full version comparison required
+                rv = true;
         }
-
-        auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-        return meta_vers == target_vers;
+        else{
+            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+            if( meta_vers == target_vers )
+                rv = true;;
+        }
     }
     else{
         // running OS may be "like" some known OS
-        if( os_detail->osd_name_like  == plugin_os){
-            if (plugin_os == "ubuntu") {
-                return plugin_os_version == os_detail->osd_version;            // Full version comparison required
+        for(unsigned int i=0 ; i < os_detail->osd_name_like.size(); i++){
+            std::string osd_like_arch = os_detail->osd_name_like[i] + "-" + os_detail->osd_arch;
+            if( osd_like_arch  == plugin_os){
+                if (ocpn::startswith(plugin_os, "ubuntu")){
+                    if( plugin_os_version == os_detail->osd_version )            // Full version comparison required
+                        rv = true;
+                }
+                else{
+                    auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
+                    if( meta_vers == target_vers )
+                        rv = true;
+                }
             }
-            auto target_vers = ocpn::split(os_detail->osd_version.c_str(), ".")[0];
-            return meta_vers == target_vers;
         }
     }
     
-    return false;
+    // Try some simple legacy comparisons to catch unmodified metadata naming scheme.
+//     if(!rv){
+//         if (compatOS  == plugin_os) {
+//         //  OS matches so far, so must compare versions
+// 
+//             if (ocpn::startswith(plugin_os, "ubuntu")){
+//                 if(plugin_os_version == compatOsVersion)            // Full version comparison required
+//                     rv = true;
+//             }
+// 
+//             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+//             if( meta_vers == target_vers )
+//                 rv = true;
+//         }
+//     }
+    
+    return rv;
 }
 
 
@@ -725,12 +756,22 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
 }
 
 
+void PluginHandler::cleanupFiles(const std::string& manifestFile,
+                                 const std::string& plugname)
+{
+    std::ifstream diskfiles(manifestFile);
+    if (diskfiles.is_open()) {
+        std::stringstream buffer;
+        buffer << diskfiles.rdbuf();
+        PluginHandler::cleanup(buffer.str(), plugname);
+    }
+}
+
+
 void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname)
 {
     wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
-    if(!wxFileExists( wxString(filelist.c_str())))
-        return;
     
     std::istringstream files(filelist);
     while (!files.eof()) {
@@ -749,7 +790,7 @@ void PluginHandler::cleanup(const std::string& filelist,
     int iloop = 0;
     while(!done && (iloop < 6) ){
         done = true;
-        std::ifstream dirs(filelist.c_str());
+        std::istringstream dirs(filelist);
         while (!dirs.eof()) {
             char line[256];
             dirs.getline(line, sizeof(line));
@@ -763,8 +804,6 @@ void PluginHandler::cleanup(const std::string& filelist,
                 }
             }
         }
-        dirs.close();
-        
         iloop++;
     }
 
@@ -854,20 +893,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path)
     saveVersion(plugin.name, plugin.version);
 
     return true;
-#if 0    
-    int before = g_pi_manager->GetPlugInArray()->GetCount();
-    g_pi_manager->LoadAllPlugIns(false);
-    int after = g_pi_manager->GetPlugInArray()->GetCount();
-    wxLogMessage("install: Reloading plugins, before: %d, after:  %d",
-                 before, after);
-    if (before >= after) {
-        last_error_msg = "Cannot load the installed plugin";
-        PluginHandler::cleanup(filelist, plugin.name);
-    }
-    //std::cout << "Installed: " << plugin.name << std::endl;
-
-    return after > before;
-#endif    
 }
 
 

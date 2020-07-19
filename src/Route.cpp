@@ -88,6 +88,8 @@ Route::Route()
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
     m_HyperlinkList = new HyperlinkList;
+    
+    m_bsharedWPViz = false;
 }
 
 Route::~Route()
@@ -249,18 +251,20 @@ void Route::Draw( ocpnDC& dc, ChartCanvas *canvas, const LLBBox &box )
     if ( m_bVisible )
         DrawPointWhich( dc, canvas, 1, &rpt1 );
 
+    bool sharedVizOveride = GetSharedWPViz();
+    
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
     node = node->GetNext();
 
     if ( !m_bVisible && prp1->m_bKeepXRoute )
-            prp1->Draw( dc, canvas );
+        prp1->Draw( dc, canvas, NULL, sharedVizOveride);
 
     while( node ) {
 
         RoutePoint *prp2 = node->GetData();
         if ( !m_bVisible && prp2->m_bKeepXRoute )
-            prp2->Draw( dc, canvas );
+            prp2->Draw( dc, canvas, &rpt2, sharedVizOveride );
         else if (m_bVisible)
             prp2->Draw( dc, canvas, &rpt2 );
 
@@ -476,6 +480,17 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas )
 #endif    
 }
 
+bool Route::ContainsSharedWP()
+{
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+            if ( prp->m_bKeepXRoute )
+                return true;
+    }
+    return false;
+}
+
+    
 void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL
@@ -484,6 +499,8 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
     if(!vp.GetBBox().IntersectOut(GetBBox()) && m_bVisible)
         DrawGLRouteLines(vp, canvas);
 
+    bool bVizOverride = GetSharedWPViz();
+    
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
@@ -491,9 +508,8 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
         // TODO this is a little extravagant, assumming a mark is always a large fixed lat/lon extent.
         //  Maybe better to use the mark's drawn box, once it is known.
         if(vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)){
-                
             if ( !m_bVisible && prp->m_bKeepXRoute )
-                prp->DrawGL( vp, canvas );
+                prp->DrawGL( vp, canvas, false, bVizOverride );
             else if (m_bVisible)
                 prp->DrawGL( vp, canvas );
         }

@@ -98,7 +98,7 @@ wxThread::ExitCode wxServDisc::Entry()
 
   while(!GetThread()->TestDestroy() && !exit)
     {
-      printf("TopLoop...\n");  
+      //printf("TopLoop...\n");  
       tv = mdnsd_sleep(d);
     
       long msecs = 100; //tv->tv_sec == 0 ? 100 : tv->tv_sec*1000; // so that the while loop beneath gets executed once
@@ -110,7 +110,7 @@ wxThread::ExitCode wxServDisc::Entry()
       int datatoread = 0;
       while(msecs > 0 && !GetThread()->TestDestroy() && !datatoread)
 	{
-          printf("loop...\n");  
+          //printf("loop...\n");  
 	  // the select call leaves tv undefined, so re-set
 	  tv->tv_sec = 0;
 	  tv->tv_usec = 100000; // 100 ms
@@ -123,24 +123,24 @@ wxThread::ExitCode wxServDisc::Entry()
 	  sigprocmask(SIG_BLOCK, &newsigs, &oldsigs);
 #endif
       //wxLogDebug(wxT("wxServDisc %p: select call, timeout %i seconds. %i usec."), this, (int)tv->tv_sec, (int)tv->tv_usec);
-      printf("wxServDisc %p: select call, timeout %i seconds. %i usec.\n", this, (int)tv->tv_sec, (int)tv->tv_usec);
+      //printf("wxServDisc %p: select call, timeout %i seconds. %i usec.\n", this, (int)tv->tv_sec, (int)tv->tv_usec);
 	  datatoread = select(mSock+1,&fds,0,0,tv); // returns 0 if timeout expired
 
 #ifdef __WXGTK__
 	  sigprocmask(SIG_SETMASK, &oldsigs, NULL);
 #endif
 
-          printf("out of select\n");
+          //printf("out of select\n");
 	  if(!datatoread){ // this is a timeout
-            printf("wxServDisc timeout %d\n", (int)msecs);  
+            //printf("wxServDisc timeout %d\n", (int)msecs);  
 	    msecs-=100;
           }
 	  if(datatoread == -1)
 	    break;
 	}
       
-      printf("wxServDisc %p: scanthread woke up, reason: incoming data(%i), timeout(%i), error(%i), deletion(%i)\n",
-		 this, datatoread>0, msecs<=0, datatoread==-1, GetThread()->TestDestroy() );
+      //printf("wxServDisc %p: scanthread woke up, reason: incoming data(%i), timeout(%i), error(%i), deletion(%i)\n",
+	//	 this, datatoread>0, msecs<=0, datatoread==-1, GetThread()->TestDestroy() );
 
       // receive
       if(FD_ISSET(mSock,&fds))
@@ -166,7 +166,7 @@ wxThread::ExitCode wxServDisc::Entry()
     closesocket(mSock);
 
     
-  printf("wxServDisc %p: scanthread exiting\n", this);
+  //printf("wxServDisc %p: scanthread exiting\n", this);
 
   return NULL;
 }

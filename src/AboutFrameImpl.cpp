@@ -96,7 +96,8 @@ void AboutFrameImpl::OnLinkHelp( wxHyperlinkEvent& event )
 #else
         m_btnBack->Enable(m_htmlWinHelp->HistoryCanBack());
 #endif
-        SetSize(m_parent->GetSize());
+        wxSize parentSize = m_parent->GetSize();
+        SetSize(wxSize(parentSize.x * 9 / 10, parentSize.y * 9 / 10));
         Centre();
     }
 }

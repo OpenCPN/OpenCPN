@@ -1,0 +1,92 @@
+language: cpp
+
+matrix:
+  # https://github.com/travis-ci/travis-conditions
+  include:
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=focal-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
+    dist: focal
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=bionic
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=OFF"
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=bionic-gtk3
+    - EXTRA_BUILD_OPTS="-DOCPN_FORCE_GTK3=ON"
+    dist: bionic
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=xenial
+    dist: xenial
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=trusty
+    dist: trusty
+    compiler: gcc
+    script:
+    - "./ci/generic-build-debian.sh"
+  - if: branch IN (master, plugins, plugins-build)
+    env:
+    - OCPN_TARGET=osx
+    os: osx
+    osx_image: xcode10.2
+    compiler: clang
+    script:
+    - "./ci/generic-build-macos.sh"
+#  - if: branch IN (master, plugins, plugins-build)
+#    env:
+#    - OCPN_TARGET=mingw
+#    services:
+#    - docker
+#    script:
+#    - "./ci/travis-build-mingw.sh"
+  - if: branch = flatpak
+    env:
+    - OCPN_TARGET=flatpak
+    services:
+    - docker
+    script:
+    - "./ci/circleci-build-flatpak.sh"
+
+
+before_install:
+- |
+  echo -n \
+  | openssl s_client -connect scan.coverity.com:443 \
+  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' \
+  | sudo tee -a /etc/ssl/certs/ca
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ci/generic-upload.sh
+  on:
+    branch: master
+    tags: false
+notifications:
+  email: false
+git:
+  depth: 10
+addons:
+  coverity_scan:
+    project:
+      name: OpenCPN/OpenCPN
+    notification_email: pavel@kalian.cz
+    build_command_prepend: mkdir -p build; cd build; cmake ..; make clean
+    build_command: make
+    branch_pattern: coverity_scan

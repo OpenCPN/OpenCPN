@@ -3283,7 +3283,7 @@ else gdk_region_intersect (a,b)
      OScanLineList *pSLL;     /* current scanLineList    */
      OGdkPoint *pts;          /* output buffer           */
      OEdgeTableEntry *pPrevAET;        /* ptr to previous AET     */
-     OEdgeTable ET;                    /* header node for ET      */
+     OEdgeTable ET = {0};              /* header node for ET      */
      OEdgeTableEntry AET;              /* header node for AET     */
      OEdgeTableEntry *pETEs;           /* EdgeTableEntries pool   */
      OScanLineListBlock SLLBlock;      /* header for scanlinelist */
