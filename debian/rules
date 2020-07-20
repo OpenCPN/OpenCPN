@@ -39,6 +39,10 @@ override_dh_auto_install:
 	    debian/tmp/usr/share/opencpn/COPYING.lgplv2
 	ln -sf /usr/share/common-licenses/LGPL-3 \
 	    debian/tmp/usr/share/opencpn/COPYING.lgplv3
+	# Use a shell wrapper
+	mkdir -p debian/tmp/usr/libexec || :
+	mv debian/tmp/usr/bin/opencpn debian/tmp/usr/libexec
+	cp debian/opencpn.sh debian/tmp/usr/bin/opencpn
 
 
 override_dh_missing:
