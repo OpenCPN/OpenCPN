@@ -483,6 +483,9 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
         if(szyv.y > m_pQueryTextCtl->GetSize().y)
             target_y = (szyv.y * 11 / 10) + yb;
     }
+    else{
+        target_y = csz;
+    }
 
     
     SetSize(target_x, target_y);
