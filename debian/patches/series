@@ -2,3 +2,4 @@
 0002-debian-patches-Update-appstream-installation-path.patch
 0003-CMakeLists-Adjust-udev-rule-install-path-1988.patch
 0004-Remove-bogus-svg-file-1990.patch
+0005-Build-Fix-cmake-missing-NDEBUG-flag-1991.patch
