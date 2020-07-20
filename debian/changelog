@@ -1,10 +1,15 @@
 opencpn (5.2.0+dfsg-1) unstable; urgency=medium
 
-  * New upstream release
-  * Closes: #962213
+  * New upstream release including plugin downloader. Closes: 948702
+  * Add Build-Depends libdrm-dev. Closes: #962213
   * Update debian/copyright due to new upstream source layout.
   * Bump Standards-Version to 4.5.0, no changes.
-  * Drop upstreamed patches.
+  * Drop upstreamed patches and rebase remaining one.
+  * Add udev rule installation patch  (#1988).
+  * Add metadata installation patch (#1989).
+  * Remove bogus svg file (#1990).
+  * Fix cmake parallel execution problem (#1991).
+  * Handle some lintian informational warnings.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 19 Jul 2020 15:53:34 +0200
 
