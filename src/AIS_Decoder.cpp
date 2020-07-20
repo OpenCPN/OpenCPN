@@ -97,8 +97,9 @@ extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
 extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
-extern PlugInManager             *g_pi_manager;
+extern PlugInManager    *g_pi_manager;
 extern Multiplexer      *g_pMUX;
+extern AIS_Decoder      *g_pAIS;
 
 extern wxString g_CmdSoundString;
 
@@ -130,9 +131,9 @@ extern bool g_bquiting;
 static void onSoundFinished(void* ptr)
 {
     if (!g_bquiting) {
-        auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
+        //auto aisDecoder = static_cast<AIS_Decoder*>(ptr);
         wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-        wxPostEvent(aisDecoder, ev);
+        wxPostEvent(g_pAIS, ev);
     }
 }
 
