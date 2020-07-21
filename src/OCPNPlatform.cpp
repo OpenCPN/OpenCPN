@@ -1243,7 +1243,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_bRollover = true;
-    g_bShowMuiZoomButtons = false;
+    g_bShowMuiZoomButtons = true;
 
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;
@@ -1352,7 +1352,10 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         
         // Set track default color to magenta
         g_colourTrackLineColour.Set(197,69,195);
-        
+
+        // Reshow the zoom buttons
+        g_bShowMuiZoomButtons = true;
+
  
         // This is ugly hack
         // TODO
