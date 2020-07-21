@@ -797,16 +797,16 @@ if (GTK3_FOUND)
       printf("%d\\n", wxMAJOR_VERSION * 10 + wxMINOR_VERSION);
     }
   ]=])
+  set (TRY_COMPILE
+    "echo '${_VERSPROG}' > wx-32.c; cc $(wx-config --cflags) wx-32.c; ./a.out")
   execute_process(
-    COMMAND "/bin/sh" "-c" "echo '${_VERSPROG}' > wx-32.c"
-    COMMAND "/bin/sh" "-c" "cc $(wx-config --cflags) wx-32.c"
-    COMMAND "./a.out"
+    COMMAND "/bin/sh" "-c" "${TRY_COMPILE}"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE _WX_VERSION
     ERROR_VARIABLE _WX_ERRORS
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-  if (NOT "${_WX_ERRORS}" STREQUAL "")
+  if (NOT "${_WX_ERRORS}" STREQUAL "" OR "${_WX_VERSION}" STREQUAL "")
     message(FATAL_ERROR "Cannot run wxWidgets  version test (!)")
   elseif ("${_WX_VERSION}" LESS 32)
     add_definitions("-DNDEBUG")
@@ -2225,6 +2225,7 @@ if (NOT APPLE)
     install(
       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
       DESTINATION ${PREFIX_DATA}/metainfo
+      RENAME opencpn.metainfo.xml
     )
     install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
@@ -2232,7 +2233,7 @@ if (NOT APPLE)
   IF(PACKAGE_FORMAT MATCHES "DEB")
         INSTALL(FILES "buildlinux/98-sglock-ocpn.rules"
           PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ 
-          DESTINATION "/etc/udev/rules.d")
+          DESTINATION "/lib/udev/rules.d")
   ENDIF(PACKAGE_FORMAT MATCHES "DEB")
 
 endif (NOT APPLE)
