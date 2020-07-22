@@ -7478,7 +7478,6 @@ void ChartCanvas::CallPopupMenu(int x, int y)
     // Seth: Is this refresh needed?
     Refresh( false );            // needed for MSW, not GTK  Why??
 }
-
 bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
 {
     // For now just bail out completely if the point clicked is not on the chart
@@ -9691,35 +9690,35 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, 
 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
-    if( (m_routeState >= 2) ||
-        (m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 )) ) {
-
-        Route* route = 0;
-        if( m_pMeasureRoute ) {
-            route = m_pMeasureRoute;
-        } else {
-            route = m_pMouseRoute;
-        }
-        
-        if(!route)
-            return;
+    Route* route = 0;
+    if( m_routeState >= 2)
+        route = m_pMouseRoute;
+    if(m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 ) )
+        route = m_pMeasureRoute;
     
-        double render_lat = m_cursor_lat;
-        double render_lon = m_cursor_lon;
+    if(!route)
+        return;
+    
+    double render_lat = m_cursor_lat;
+    double render_lon = m_cursor_lon;
         
-        if(route){
-            int np = route->GetnPoints();
-            if(np){
-                if(g_btouch && (np > 1))
-                    np --;
-                RoutePoint rp = route->GetPoint(np);
-                render_lat = rp.m_lat;
-                render_lon = rp.m_lon;
-            }
-        }
-                
-        double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
-        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+    int np = route->GetnPoints();
+    if(np){
+        if(g_btouch && (np > 1))
+            np --;
+        RoutePoint rp = route->GetPoint(np);
+        render_lat = rp.m_lat;
+        render_lon = rp.m_lon;
+    }
+
+    double rhumbBearing, rhumbDist;
+    DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+    double brg = rhumbBearing;
+    double dist = rhumbDist;
+
+    // Skip GreatCircle rubberbanding on touch devices.
+    if(!g_btouch){
+        double gcBearing, gcBearing2, gcDist;
         Geodesic::GreatCircleDistBear( render_lon, render_lat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
         double gcDistm = gcDist / 1852.0;
 
@@ -9727,9 +9726,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         wxPoint destPoint, lastPoint;
 
-
-        double brg = rhumbBearing;
-        double dist = rhumbDist;
         route->m_NextLegGreatCircle = false;
         int milesDiff = rhumbDist - gcDistm;
         if( milesDiff > 1 ) {
@@ -9738,63 +9734,60 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( 1/*!g_btouch*/) {
-            route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
+        route->DrawPointWhich( dc, this, route->m_lastMousePointIndex, &lastPoint );
 
-            if( route->m_NextLegGreatCircle ) {
-                for( int i=1; i<=milesDiff; i++ ) {
-                    double p = (double)i * (1.0/(double)milesDiff);
-                    double pLat, pLon;
-                    Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
-                    destPoint = VPoint.GetPixFromLL( pLat, pLon );
-                    route->DrawSegment( dc, this, &lastPoint, &destPoint, GetVP(), false );
-                    lastPoint = destPoint;
-                }
+        if( route->m_NextLegGreatCircle ) {
+            for( int i=1; i<=milesDiff; i++ ) {
+                double p = (double)i * (1.0/(double)milesDiff);
+                double pLat, pLon;
+                Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
+                destPoint = VPoint.GetPixFromLL( pLat, pLon );
+                route->DrawSegment( dc, this, &lastPoint, &destPoint, GetVP(), false );
+                lastPoint = destPoint;
             }
-            else {
-                if (r_rband.x && r_rband.y) {    // RubberBand disabled?
-                    route->DrawSegment(dc, this, &lastPoint, &r_rband, GetVP(), false);
+        }
+        else {
+            if (r_rband.x && r_rband.y) {    // RubberBand disabled?
+                route->DrawSegment(dc, this, &lastPoint, &r_rband, GetVP(), false);
+                if (m_bMeasure_DistCircle) {
+                    double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
+                        powf((float)(r_rband.y - lastPoint.y), 2));
 
-                    if (m_bMeasure_DistCircle) {
-                        double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
-                            powf((float)(r_rband.y - lastPoint.y), 2));
-
-                        dc.SetPen(*g_pRouteMan->GetRoutePen());
-                        dc.SetBrush(*wxTRANSPARENT_BRUSH);
-                        dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
-                    }
+                    dc.SetPen(*g_pRouteMan->GetRoutePen());
+                    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+                    dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
                 }
             }
         }
-
-        wxString routeInfo;
-        if( g_bShowTrue )
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-        if( g_bShowMag ){
-            double latAverage = (m_cursor_lat + render_lat)/2;
-            double lonAverage = (m_cursor_lon + render_lon)/2;
-            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
-            
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-        }
-
-        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
-
-        wxString s0;
-        if( !route->m_bIsInLayer )
-            s0.Append( _("Route") + _T(": ") );
-        else
-            s0.Append( _("Layer Route: ") );
-
-        double disp_length = route->m_route_length;
-        if( !g_btouch)
-            disp_length += dist;                // Add in the to-be-created leg.
-        s0 += FormatDistanceAdaptive( disp_length );
-
-        RouteLegInfo( dc, r_rband, routeInfo, s0 );
-
-        m_brepaint_piano = true;
     }
+        
+    wxString routeInfo;
+    if( g_bShowTrue )
+        routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
+    if( g_bShowMag ){
+        double latAverage = (m_cursor_lat + render_lat)/2;
+        double lonAverage = (m_cursor_lon + render_lon)/2;
+        double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+            
+        routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+    }
+
+    routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+
+    wxString s0;
+    if( !route->m_bIsInLayer )
+        s0.Append( _("Route") + _T(": ") );
+    else
+        s0.Append( _("Layer Route: ") );
+
+    double disp_length = route->m_route_length;
+    if( !g_btouch)
+        disp_length += dist;                // Add in the to-be-created leg.
+    s0 += FormatDistanceAdaptive( disp_length );
+
+    RouteLegInfo( dc, r_rband, routeInfo, s0 );
+
+    m_brepaint_piano = true;
 }
 
 void ChartCanvas::WarpPointerDeferred( int x, int y )
