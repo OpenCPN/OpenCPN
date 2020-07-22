@@ -166,12 +166,7 @@ extern double                    g_AIS_RealtPred_Kts;
 extern bool                      g_bShowAISName;
 
 extern int                       gps_watchdog_timeout_ticks;
-
-
-
-
-
-
+extern wxString                  *pInit_Chart_Dir;
 
 extern double                    g_config_display_size_mm;
 extern bool                      g_config_display_size_manual;
@@ -1329,7 +1324,7 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
     
         qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
 
-        if( androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
+        if(androidGetVersionCode() > g_AndroidVersionCode ){            // upgrade
             qDebug() << "Upgrade detected" << "from VC: " << g_AndroidVersionCode << " to VC: " << androidGetVersionCode();
             
             // Set some S52/S57 options
@@ -1348,13 +1343,19 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
             g_default_font_facename = _T("Roboto");
         
             FontMgr::Get().Shutdown();      // Restart the font manager
+            
+            // Reshow the zoom buttons
+            g_bShowMuiZoomButtons = true;
+            
+            // Clear the default chart storage location
+            // Will get set to e.g. "/storage/emulated/0" later
+            pInit_Chart_Dir->Clear();
+
         }
         
         // Set track default color to magenta
         g_colourTrackLineColour.Set(197,69,195);
 
-        // Reshow the zoom buttons
-        g_bShowMuiZoomButtons = true;
 
  
         // This is ugly hack

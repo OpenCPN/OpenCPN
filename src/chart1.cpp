@@ -2177,7 +2177,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
         pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
 #else
-        pInit_Chart_Dir->Append( g_Platform->GetPrivateDataDir() );
+        pInit_Chart_Dir->Append( androidGetExtStorageDir() );
 #endif
     }
 
