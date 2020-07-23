@@ -221,7 +221,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 
     std::string compatOS_ARCH = compatOS + "-" + ocpn::tolower(os_detail->osd_arch);
 
-    wxLogDebug(wxString::Format(_T("Plugin compatibility check: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
+    wxLogDebug(wxString::Format(_T("Plugin compatibility check1: %s  OS:%s  Plugin:%s"), metadata.name.c_str(), compatOS_ARCH.c_str(), plugin_os.c_str()));
 
     bool rv = false;
     std::string plugin_os_version = ocpn::tolower(metadata.target_version);
@@ -259,22 +259,28 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
         }
     }
     
-    // Try some simple legacy comparisons to catch unmodified metadata naming scheme.
-//     if(!rv){
-//         if (compatOS  == plugin_os) {
-//         //  OS matches so far, so must compare versions
-// 
-//             if (ocpn::startswith(plugin_os, "ubuntu")){
-//                 if(plugin_os_version == compatOsVersion)            // Full version comparison required
-//                     rv = true;
-//             }
-// 
-//             auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
-//             if( meta_vers == target_vers )
-//                 rv = true;
-//         }
-//     }
-    
+    // Special case tests for vanilla debian, which can use some variants of Ubuntu plugins
+    if(!rv){
+
+        if (ocpn::startswith(compatOS_ARCH, "debian-x86_64")){
+            auto target_vers = ocpn::split(compatOsVersion.c_str(), ".")[0];
+            if(target_vers == std::string("9") ){        // Stretch
+                if( (plugin_os == std::string("ubuntu-x86_64")) && (plugin_os_version == std::string("16.04")) )
+                    rv = true;
+            }
+            else if(target_vers == std::string("11") ){        // Sid
+                if( (plugin_os == std::string("ubuntu-gtk3-x86_64")) && (plugin_os_version == std::string("20.04")) )
+                    rv = true;
+            }
+        }
+    }
+
+    std::string status("REJECTED");
+    if(rv)
+        status = "ACCEPTED";
+    wxLogDebug(wxString::Format(_T("Plugin compatibility checkFinal %s: %s  PluginOS:%s  PluginVersion: %s"), status.c_str(), metadata.name.c_str(), plugin_os.c_str(), plugin_os_version.c_str()));
+       
+
     return rv;
 }
 
