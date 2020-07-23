@@ -122,6 +122,8 @@ extern bool              g_btouch;
 extern bool             g_bBasicMenus;
 extern TrackPropDlg     *pTrackPropDialog;
 extern double           gHdt;
+extern bool             g_FlushNavobjChanges;
+
 
 //    Constants for right click menus
 enum
@@ -1052,6 +1054,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->undo->AfterUndoableAction( NULL );
         gFrame->RefreshAllCanvas( false );
         gFrame->InvalidateAllGL();
+        g_FlushNavobjChanges = true;
         break;
     }
 
@@ -1628,6 +1631,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->FinishRoute();
         gFrame->SurfaceAllCanvasToolbars();
         parent->Refresh( false );
+        g_FlushNavobjChanges = true;
         break;
 
     case ID_DEF_ZERO_XTE:

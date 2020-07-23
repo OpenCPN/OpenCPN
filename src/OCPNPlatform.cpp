@@ -236,6 +236,7 @@ extern int                        g_n_ownship_min_mm;
 
 extern int                        g_AndroidVersionCode;
 extern bool                       g_bShowMuiZoomButtons;
+extern int                        g_FlushNavobjChangesTimeout;
 
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -721,6 +722,8 @@ void OCPNPlatform::Initialize_3( void )
         if (!g_bRollover)  //Not explicit set before
             g_bRollover = g_btouch ? false : true;
     }
+    
+    g_FlushNavobjChangesTimeout = 300;          // Seconds, so 5 minutes
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
