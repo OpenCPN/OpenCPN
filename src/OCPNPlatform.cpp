@@ -1963,6 +1963,10 @@ bool OCPNPlatform::InitializeLogFile( void )
         // TODO Remove this behaviour on Release
         ::wxRemoveFile( mlog_file );
     }
+
+    if(wxLog::GetLogLevel() > wxLOG_User)
+        wxLog::SetLogLevel(wxLOG_Info);
+
 #endif
     g_logger = new OcpnLog(mlog_file.mb_str());
     m_Oldlogger = wxLog::SetActiveTarget( g_logger );
