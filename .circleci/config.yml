@@ -53,12 +53,13 @@ jobs:
        - run: ci/generic-build-macos.sh
        - run: ci/generic-upload.sh
    build-flatpak:
+     working_directory: ~/OpenCPN
      machine:
          image: ubuntu-1604:201903-01
      environment:
        - OCPN_TARGET:  flatpak
      steps:
-       - run: git clone https://github.com/OpenCPN/OpenCPN.git
+       - run: cd ~; git clone https://github.com/OpenCPN/OpenCPN.git
        - restore_cache:
            keys:
               - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
