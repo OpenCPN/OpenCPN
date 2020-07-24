@@ -383,6 +383,10 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
                     val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
                     if(val.Length())  detail->osd_version = std::string(val.mb_str());
                 }
+                else if(str.StartsWith(_T("ID="))){
+                    val = str.AfterFirst('=');
+                    if(val.Length())  detail->osd_ID = ocpn::split(val.mb_str(), " ")[0];
+                }
                 else if(str.StartsWith(_T("ID_LIKE"))){
                     if(val.StartsWith('"')){
                         val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
