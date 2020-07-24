@@ -96,6 +96,8 @@ extern bool androidStopBluetoothScan();
 extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
 extern bool androidStopBT();
+extern bool androidSendBTMessage( wxString &payload );
+
 
 extern wxArrayString *androidGetSerialPortsArray( void );
 extern bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer);

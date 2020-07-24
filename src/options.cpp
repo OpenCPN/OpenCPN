@@ -7339,7 +7339,10 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-  CheckDeviceAccess(pConnectionParams->Port);
+  
+  if( (pConnectionParams->Type != INTERNAL_GPS) && (pConnectionParams->Type != INTERNAL_BT) )
+    CheckDeviceAccess(pConnectionParams->Port);
+  
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;
@@ -9674,6 +9677,10 @@ void options::ShowNMEABT(bool visible) {
     if (m_stBTPairs) m_stBTPairs->Hide();
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
+  m_tcOutputStc->Show(visible);
+  m_btnOutputStcList->Show(visible);
+  m_cbOutput->Show(visible);
+
 }
 
 void options::SetNMEAFormToSerial(void) {
@@ -9714,6 +9721,7 @@ void options::SetNMEAFormToGPS(void) {
 }
 
 void options::SetNMEAFormToBT(void) {
+  m_rbNetProtoUDP->SetValue( true );
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
