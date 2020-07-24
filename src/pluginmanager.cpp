@@ -5170,7 +5170,6 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_updateButton, 0, wxALIGN_LEFT );
      m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnUpdateButton, this);
-
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
 
      wxStaticText *tchannels = new wxStaticText( this, wxID_STATIC, _("Choose Remote Catalog"));
@@ -5198,6 +5197,11 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      m_tarballButton = new wxButton(  this, wxID_ANY, _("Import plugin..."), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
      m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
+     m_adv_button = new wxButton( this, wxID_ANY, _("Advanced..."),
+            wxDefaultPosition, wxDefaultSize, 0 );
+     rowSizer2->Add( m_adv_button, 0, wxALIGN_LEFT );
+
 
      SetUpdateButtonLabel();
 

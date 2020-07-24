@@ -464,6 +464,7 @@ class CatalogMgrPanel: public wxPanel
         void SetUpdateButtonLabel();
 
         wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
+        wxButton* m_adv_button;
         wxStaticText *m_catalogText, *m_customText;
         wxChoice *m_choiceChannel;
         wxTextCtrl *m_tcCustomURL;
