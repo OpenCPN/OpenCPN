@@ -257,27 +257,9 @@ void AISTargetQueryDialog::SetMMSI(int mmsi)
 
 void AISTargetQueryDialog::RecalculateSize()
 {
-    // Reset all the required member elements to cause a resize on next display
-    
-    //Set the maximum size of the entire settings dialog
-    wxSize sz = g_Platform->getDisplaySize();
-    SetSizeHints( 50, 50, sz.x-20, sz.y-40 );
-
-    m_bsize_set = false;
-
-    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
-    int font_size = wxMax(8, dFont->GetPointSize());
-    wxString face = dFont->GetFaceName();
-    #ifdef __WXGTK__
-    face = _T("Monospace");
-    #endif
-    m_basefont = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
-                                                  wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
-    
-    SetFont( *m_basefont );
-    m_adjustedFontSize = dFont->GetPointSize();
-    m_control_font_size = dFont->GetPointSize();
-    
+    AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
+    AdjustBestSize( td );
+    return;
 }
 
 
