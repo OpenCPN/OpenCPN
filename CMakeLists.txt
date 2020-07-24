@@ -938,6 +938,7 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
+  include/plug_settings.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1065,6 +1066,7 @@ set(
   src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
+  src/plug_settings.cpp
   src/PluginHandler.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp

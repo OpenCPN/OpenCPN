@@ -458,6 +458,7 @@ class CatalogMgrPanel: public wxPanel
         void OnChannelSelected(wxCommandEvent &event);
         void SetListPanelPtr(PluginListPanel *listPanel){ m_PluginListPanel = listPanel; }
         void OnTarballButton(wxCommandEvent &event);
+        void OnPluginSettingsButton(wxCommandEvent &event);
     protected:
         wxString GetCatalogText(bool);
         unsigned int GetChannelIndex(const wxArrayString* channels);

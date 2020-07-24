@@ -132,6 +132,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "catalog_handler.h"
 #include "semantic_vers.h"
 #include "update_mgr.h"
+#include "plug_settings.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -5198,8 +5199,12 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer2->Add( m_tarballButton, 0, wxALIGN_LEFT | wxLEFT, 2 * GetCharWidth() );
      m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CatalogMgrPanel::OnTarballButton, this);
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
-     m_adv_button = new wxButton( this, wxID_ANY, _("Advanced..."),
-            wxDefaultPosition, wxDefaultSize, 0 );
+     m_adv_button = new wxButton(this, wxID_ANY, _("Advanced..."),
+                                 wxDefaultPosition, wxDefaultSize, 0 );
+     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                        &CatalogMgrPanel::OnPluginSettingsButton,
+                        this);
+     rowSizer2->AddSpacer( 4 * GetCharWidth() );
      rowSizer2->Add( m_adv_button, 0, wxALIGN_LEFT );
 
 
@@ -5500,6 +5505,13 @@ static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &worki
     child = pluginNode.append_child("tarball-url");
     child.append_child(pugi::node_pcdata).set_value(workingMetadata.tarball_url.c_str());
 
+}
+
+
+void CatalogMgrPanel::OnPluginSettingsButton( wxCommandEvent &event)
+{
+    auto dialog = new PluginSettingsDialog(this);
+    auto result = dialog->ShowModal();
 }
 
 
