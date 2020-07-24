@@ -22,14 +22,102 @@
  ***************************************************************************
  */
 
+#include <wx/button.h>
+#include <wx/choice.h>
 #include <wx/sizer.h>
+#include <wx/statbox.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 
 #include "plug_settings.h"
-#include "OCPNPlatform.h"
 
-extern OCPNPlatform*            g_Platform;
 
-/** Top-level plugin settings dialog. */
+class CustomCatalogCtrl: public wxTextCtrl
+{
+    public:
+        CustomCatalogCtrl(wxWindow* parent): wxTextCtrl(parent, wxID_ANY, "")
+        {
+        }
+
+};
+
+
+class PlatformChoice: public wxChoice
+{
+    public:
+        PlatformChoice(wxWindow* parent): wxChoice()
+        {
+            wxArrayString labels;
+            labels.Add("ubuntu-x86_64");
+            labels.Add("Debian-x86_64");
+            labels.Add("Raspbian-armhf");
+            Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, labels);
+            Layout();
+        }
+};
+
+
+class CatalogListBox: public wxChoice
+{
+    public:
+        CatalogListBox(wxWindow* parent): wxChoice()
+        {
+            wxArrayString labels;
+            labels.Add("Master");
+            labels.Add("Beta");
+            labels.Add("Alpha");
+            labels.Add("Custom");
+            Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, labels);
+            Layout();
+        }
+};
+
+
+class CatalogSizer: public wxStaticBoxSizer
+{
+    public:
+        CatalogSizer(wxWindow* parent)
+           : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Active catalog"))
+        {
+            auto flags = wxSizerFlags().Border();
+            Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")),
+                flags);
+            Add(new CatalogListBox(parent),flags);
+            Add(new CustomCatalogCtrl(parent), flags.Expand().Proportion(1));
+            Layout();
+        }
+};
+
+
+class CompatSizer: public wxStaticBoxSizer
+{
+    public:
+        CompatSizer(wxWindow* parent)
+           : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Compatibility"))
+        {
+            auto flags = wxSizerFlags().Border();
+            Add(new wxStaticText(parent, wxID_ANY, _("Plugin active flavour")),
+                flags);
+            Add(new wxStaticText(parent, wxID_ANY, "ubuntu-x86_64"), flags);
+            Add(new PlatformChoice(parent), flags);
+        }
+};
+
+
+/** The OK and Cancel buttons. */
+class ButtonsSizer: public wxStdDialogButtonSizer
+{
+    public:
+        ButtonsSizer(wxWindow* parent): wxStdDialogButtonSizer()
+        {
+            SetAffirmativeButton(new wxButton(parent, wxID_OK));
+            SetCancelButton(new wxButton(parent, wxID_CANCEL));
+            Realize();
+        }
+};
+
+
+/** Top-level plugin settings dialog.  */
 PluginSettingsDialog::PluginSettingsDialog(wxWindow* parent)
     :wxDialog(parent, wxID_ANY, _("Plugin Catalog Settings"),
               wxDefaultPosition , wxDefaultSize,
@@ -37,19 +125,13 @@ PluginSettingsDialog::PluginSettingsDialog(wxWindow* parent)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
 
-    // The list has no natural height. Allocate 8 lines of text so some
-    // items are displayed initially in Layout()
-    int min_height = GetTextExtent("abcdefghijklmnopqrst").GetHeight() * 10;
-
-    // There seem to be no way have dynamic, wrapping text:
-    // https://forums.wxwidgets.org/viewtopic.php?f=1&t=46662
-    //int width = GetParent()->GetClientSize().GetWidth();
-    //  SetMinClientSize(wxSize(width, min_height));
-    int width = GetTextExtent("abcdefghijklmnopqrst").GetWidth() * 10;
-    width = wxMin(width, g_Platform->getDisplaySize().x);
-    SetMinSize(wxSize(width, min_height));
+    //vbox->Add(new GridSizer(this), wxSizerFlags().Expand().DoubleBorder());
+    vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().Border());
+    vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
+    vbox->Add(new ButtonsSizer(this), wxSizerFlags().Expand().DoubleBorder());
  
     SetSizer(vbox);
     Fit();
     Layout();
+    SetMinSize(GetSize());
 }
