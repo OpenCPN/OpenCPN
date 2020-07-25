@@ -8481,6 +8481,11 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
+    
+#ifdef __OCPN__ANDROID__
+    androidDisableRotation();
+#endif  
+    
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
 
@@ -8532,6 +8537,10 @@ void options::OnChooseFont(wxCommandEvent& event) {
     OnFontChoice(event);
   }
 
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif  
+
   event.Skip();
 }
 
@@ -8545,6 +8554,8 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
 #ifdef __OCPN__ANDROID__
+  androidDisableRotation();
+
   unsigned int cco = 0;
   cco |= 0xff;  cco  = cco << 8;
   cco |= init_color.Red(); cco = cco << 8; 
@@ -8563,7 +8574,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   pParent->UpdateAllFonts();
   m_bfontChanged = true;
   
-  
+  androidEnableRotation();
 #else  
   wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
   
