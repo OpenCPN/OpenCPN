@@ -132,7 +132,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "catalog_handler.h"
 #include "semantic_vers.h"
 #include "update_mgr.h"
-#include "plug_settings.h"
+#include "cat_settings.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

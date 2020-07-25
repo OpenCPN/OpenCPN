@@ -29,7 +29,7 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
-#include "plug_settings.h"
+#include "cat_settings.h"
 
 
 class CustomCatalogCtrl: public wxTextCtrl

@@ -882,6 +882,7 @@ set(
   include/catalog_handler.h
   include/catalog_mgr.h
   include/catalog_parser.h
+  include/cat_settings.h
   include/chart1.h
   include/ChartDataInputStream.h
   include/chartdb.h
@@ -938,7 +939,6 @@ set(
   include/ocpn_utils.h
   include/options.h
   include/piano.h
-  include/plug_settings.h
   include/PluginHandler.h
   include/pluginmanager.h
   include/PluginPaths.h
@@ -1011,6 +1011,7 @@ set(
   src/catalog_handler.cpp
   src/catalog_mgr.cpp
   src/catalog_parser.cpp
+  src/cat_settings.cpp
   src/chart1.cpp
   src/ChartDataInputStream.cpp
   src/chartdb.cpp
@@ -1066,7 +1067,6 @@ set(
   src/ocpn_utils.cpp
   src/options.cpp
   src/piano.cpp
-  src/plug_settings.cpp
   src/PluginHandler.cpp
   src/pluginmanager.cpp
   src/PluginPaths.cpp
