@@ -5510,7 +5510,7 @@ static void populatePluginNode(pugi::xml_node &pluginNode, PluginMetadata &worki
 
 void CatalogMgrPanel::OnPluginSettingsButton( wxCommandEvent &event)
 {
-    auto dialog = new PluginSettingsDialog(this);
+    auto dialog = new CatalogSettingsDialog(this);
     auto result = dialog->ShowModal();
 }
 

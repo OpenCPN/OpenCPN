@@ -30,13 +30,16 @@
 #include <wx/dialog.h>
 #include <wx/window.h>
 
+wxDECLARE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+wxDECLARE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+
 /**
  * Modal dialog, displays settings for plugin catalog.
  */
-class PluginSettingsDialog: public wxDialog
+class CatalogSettingsDialog: public wxDialog
 {
     public:
-        PluginSettingsDialog(wxWindow* parent);
+        CatalogSettingsDialog(wxWindow* parent);
 
 
 };
