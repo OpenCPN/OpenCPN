@@ -897,9 +897,11 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
 
+#ifndef __OCPN__ANDROID__
     if( m_gCursorData && m_CDataIsShown ){
         m_gCursorData->OnMouseEvent (evt );
     }
+#endif    
 }
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
