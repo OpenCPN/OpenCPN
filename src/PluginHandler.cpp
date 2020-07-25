@@ -160,27 +160,29 @@ static std::string dirListPath(std::string name)
 }
 
 
-std::string PluginHandler::fileListPath(std::string name)
+CompatOs* CompatOs::getInstance()
 {
-    std::string name_lower = ocpn::tolower(name);
-    return pluginsConfigDir() + SEP + name_lower + ".files";
+    static std::string last_global_os("");
+    static CompatOs* instance = 0;
+
+    if (!instance || last_global_os != g_compatOS) {
+        instance = new(CompatOs);
+        last_global_os = g_compatOS;
+    }
+    return instance;
 }
 
 
-bool PluginHandler::isCompatible(const PluginMetadata& metadata,
-                                 const char* os, const char* os_version)
-
+CompatOs::CompatOs(): _name(PKG_TARGET), _version(PKG_TARGET_VERSION)
 {
-    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
-    
     // Get the specified system definition,
     //   From the OCPN_OSDetail structure probed at startup.
     //   or the environment override,
     //   or the config file override
     //   or the baked in (build system) values.  Not too useful in cross-build environments...
 
-    std::string compatOS(os);
-    std::string compatOsVersion(os_version);
+    std::string compatOS(_name);
+    std::string compatOsVersion(_version);
 
     // Handle the most common cross-compile, safely
 #ifdef ocpnARM 
@@ -191,24 +193,43 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
 #endif    
 
     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
-        // Undocumented test hook.
-        compatOS = getenv("OPENCPN_COMPAT_TARGET");
-        if (compatOS.find(':') != std::string::npos) {
-            auto tokens = ocpn::split(compatOS.c_str(), ":");
-            compatOS = tokens[0];
-            compatOsVersion = tokens[1];
+        _name = getenv("OPENCPN_COMPAT_TARGET");
+        if (_name.find(':') != std::string::npos) {
+            auto tokens = ocpn::split(_name.c_str(), ":");
+            _name = tokens[0];
+            _version = tokens[1];
         }
     }
     else if (g_compatOS != "") {
         // CompatOS and CompatOsVersion in opencpn.conf/.ini file.
-        compatOS = g_compatOS;
+        _name = g_compatOS;
         if (g_compatOsVersion != ""){
-            compatOsVersion = g_compatOsVersion;
+            _version = g_compatOsVersion;
         }
     }
-    compatOS = ocpn::tolower(compatOS);
-    compatOsVersion = ocpn::tolower(compatOsVersion);
-    
+    _name = ocpn::tolower(_name);
+    _version = ocpn::tolower(_version);
+}
+
+
+std::string PluginHandler::fileListPath(std::string name)
+{
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    return pluginsConfigDir() + SEP + name + ".files";
+}
+
+
+bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+                                 const char* os, const char* os_version)
+
+{
+    OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+
+
+    auto compat_os = CompatOs::getInstance();
+    std::string compatOS(compat_os->name());
+    std::string compatOsVersion(compat_os->version());
+
     //  Compare to the required values in the metadata
     std::string plugin_os = ocpn::tolower(metadata.target);
 
