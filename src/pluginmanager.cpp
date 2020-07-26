@@ -6180,9 +6180,9 @@ void PluginPanel::SetSelected( bool selected )
         bool unInstallPossible = canUninstall(m_pPlugin->m_common_name.ToStdString());
         
         //Directly mark Legacy and system plugins as "not uninstallable"
-        if( (m_pPlugin->m_pluginStatus == PluginStatus::LegacyUpdateAvailable) ||
-                (m_pPlugin->m_pluginStatus == PluginStatus::Unmanaged) ||
-                (m_pPlugin->m_pluginStatus == PluginStatus::System) )
+        if (m_pPlugin->m_pluginStatus == PluginStatus::LegacyUpdateAvailable ||
+                m_pPlugin->m_pluginStatus == PluginStatus::Unmanaged ||
+                m_pPlugin->m_pluginStatus == PluginStatus::System )
             unInstallPossible = false;
             
         m_pButtonUninstall->Show(unInstallPossible);
