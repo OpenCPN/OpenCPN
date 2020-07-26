@@ -59,6 +59,7 @@
 #include "config.h"
 
 #include <string>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -115,6 +116,9 @@ class PluginHandler {
 
         /** Return list of available, not installed plugins. */
         const std::vector<PluginMetadata> getAvailable();
+        
+        /** Map of available plugin targets -> number of occurences. */
+        const std::map<std::string, int> getCountByTarget();
 
         /** Return path to metadata XML file. */
         std::string getMetadataPath();

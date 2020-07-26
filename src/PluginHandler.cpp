@@ -858,6 +858,26 @@ static void parseMetadata(const std::string path, catalog_ctx& ctx)
     ParseCatalog(xml, &ctx);
 }
 
+const std::map<std::string, int> PluginHandler::getCountByTarget()
+{
+    auto plugins = getInstalled();
+    auto a = getAvailable();
+    plugins.insert(plugins.end(), a.begin(), a.end());
+    std::map<std::string, int> count_by_target;
+    for (const auto& p: plugins) {
+        if (p.target == "") {
+            continue;    // Built-in plugins like  dashboard et. al.
+        }
+        auto key = p.target + ":" + p.target_version;
+        if (count_by_target.find(key) == count_by_target.end()) {
+            count_by_target[key] = 1;
+        }
+        else {
+            count_by_target[key] += 1;
+        }
+    }
+    return count_by_target;
+}
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
                                  const std::string& plugname)
