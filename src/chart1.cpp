@@ -4669,6 +4669,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         {
  #ifdef __OCPN__ANDROID__
             ///LoadS57();
+            androidDisableFullScreen();
             g_MainToolbar->HideTooltip();
             DoAndroidPreferences();
  #else
@@ -4828,6 +4829,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+            androidRestoreFullScreen( );
+
             break;
         }
 
