@@ -5158,12 +5158,14 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 #ifndef __OCPN__ANDROID__
      // First line
      m_catalogText = new wxStaticText( this, wxID_STATIC, _T(""));
-     itemStaticBoxSizer4->Add( m_catalogText, 1, wxALIGN_LEFT );
+     itemStaticBoxSizer4->Add(m_catalogText,
+                              wxSizerFlags().Border().Proportion(1));
      m_catalogText->SetLabel(GetCatalogText(false));
 
      // Next line
      wxBoxSizer* rowSizer2 = new wxBoxSizer( wxHORIZONTAL );
-     itemStaticBoxSizer4->Add( rowSizer2, 1, wxEXPAND | wxALL, 1 );
+     itemStaticBoxSizer4->Add(rowSizer2,
+                              wxSizerFlags().Expand().Border().Proportion(1));
 
      m_updateButton = new wxButton(  this, wxID_ANY, _("Update Plugin Catalog"), wxDefaultPosition, wxDefaultSize, 0 );
      rowSizer2->Add( m_updateButton, 0, wxALIGN_LEFT );
