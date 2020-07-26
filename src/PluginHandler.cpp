@@ -70,7 +70,6 @@ static std::string SEP("/");
 #define F_OK 0
 #endif
 
-
 extern OCPNPlatform*  g_Platform;
 extern PlugInManager* g_pi_manager;
 extern wxString       g_winPluginDir;

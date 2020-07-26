@@ -69,6 +69,10 @@
 
 #include "catalog_parser.h"
 
+
+wxDECLARE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+
+
 bool isRegularFile(const char* path);
 
 
