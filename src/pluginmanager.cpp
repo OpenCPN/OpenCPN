@@ -5143,6 +5143,11 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 }
 
 
+#define DISABLED_SETTINGS_MSG \
+    "These settings might destabilize OpenCPN and are by default disabled." \
+    " To despite the dangers enable them manually add a CatalogExpert=1" \
+    " line in the [PlugIns] section in the configuration file."
+
 /*
  * Panel with buttons to control plugin catalog management.
  */
@@ -5179,12 +5184,23 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
      m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                                  wxDefaultPosition, wxDefaultSize, 0 );
-     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                        &CatalogMgrPanel::OnPluginSettingsButton,
-                        this);
+     pConfig->SetPath("/PlugIns/");
+     wxString expert = pConfig->Read("CatalogExpert", "0");
+     if (expert.IsSameAs("1")) {
+         m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                            &CatalogMgrPanel::OnPluginSettingsButton,
+                            this);
+     }
+     else {
+         m_adv_button->Bind(
+             wxEVT_COMMAND_BUTTON_CLICKED,
+             [&](wxCommandEvent&) {
+                 wxMessageBox(DISABLED_SETTINGS_MSG, _("Disabled"));
+             }
+         );
+     }
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
      rowSizer2->Add( m_adv_button, 0, wxALIGN_LEFT );
-
 
      SetUpdateButtonLabel();
 
