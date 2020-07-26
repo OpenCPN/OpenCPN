@@ -246,7 +246,7 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
 {
     auto vbox = new wxBoxSizer(wxVERTICAL);
 
-    vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().Border());
+    vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new ButtonsSizer(this), wxSizerFlags().Expand().DoubleBorder());
  
