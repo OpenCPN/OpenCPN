@@ -5144,9 +5144,9 @@ static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap)
 
 
 #define DISABLED_SETTINGS_MSG \
-    "These settings might destabilize OpenCPN and are by default disabled." \
+    _("These settings might destabilize OpenCPN and are by default disabled." \
     " To despite the dangers enable them manually add a CatalogExpert=1" \
-    " line in the [PlugIns] section in the configuration file."
+    " line in the [PlugIns] section in the configuration file.")
 
 /*
  * Panel with buttons to control plugin catalog management.
