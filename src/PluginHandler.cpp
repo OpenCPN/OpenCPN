@@ -922,6 +922,9 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable()
         file.close();
         auto status = catalogHandler->DoParseCatalog(xml, &ctx);
         if (status == CatalogHandler::ServerStatus::OK) {
+            catalogData.undef = false;
+            catalogData.version = ctx.version;
+            catalogData.date = ctx.date;
         }
     }
 

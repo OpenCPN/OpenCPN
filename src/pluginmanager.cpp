@@ -5754,12 +5754,9 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated)
     //  Get the version from the currently active catalog, by which we mean
     //  the latest catalog parsed.
     auto pluginHandler = PluginHandler::getInstance();
-    std::string version = pluginHandler->GetCatalogData()->version;
+    std::string date = pluginHandler->GetCatalogData()->date;
     
-    catalog += _T("  ");
-    catalog += _("Version");
-    catalog += _T(" ");
-    catalog += wxString(version.c_str());
+    catalog += wxString("  ") + _("Last change: ") + " " + date;
     if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
     
     return catalog;
