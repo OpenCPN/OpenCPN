@@ -30,8 +30,12 @@
 #include <wx/dialog.h>
 #include <wx/window.h>
 
-wxDECLARE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+/** User changed plugin catalog (master, alpha, custom...) */
 wxDECLARE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+
+/** User changed plugin compatibility. */
+wxDECLARE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
+
 
 /**
  * Modal dialog, displays settings for plugin catalog.

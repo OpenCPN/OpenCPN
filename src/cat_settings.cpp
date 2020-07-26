@@ -39,8 +39,8 @@
 #include "ocpn_utils.h"
 #include "PluginHandler.h"
 
-wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
 
 wxDEFINE_EVENT(EVT_CUSTOM_INIT, wxCommandEvent);
 wxDEFINE_EVENT(EVT_CUSTOM_CLEAR, wxCommandEvent);
@@ -254,4 +254,7 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     Fit();
     Layout();
     SetMinSize(GetSize());
+    /** Forward otherwise dropped event (this is a Dialog). */
+    Bind(EVT_COMPAT_OS_CHANGE,
+         [&](wxCommandEvent& e) { ::wxPostEvent(GetParent(), e); });
 }

@@ -123,6 +123,7 @@ extern GLuint g_raster_format;
 #include "ConfigMgr.h"
 
 #include "SignalKDataStream.h"
+#include "cat_settings.h"
 
 #if !defined(__WXOSX__)  
 #define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
@@ -8842,6 +8843,13 @@ void options::DoOnPageChange(size_t page) {
       m_pPlugInCtrl->UpdateSelections();
 
       ::wxEndBusyCursor();
+
+      Bind(EVT_COMPAT_OS_CHANGE,
+           [&](wxCommandEvent&) {
+               g_pi_manager->LoadAllPlugIns(false);
+               auto plugins = g_pi_manager->GetPlugInArray();
+               m_pPlugInCtrl->ReloadPluginPanels(plugins);
+           });
     }
 
     k_plugins = TOOLBAR_CHANGED;
