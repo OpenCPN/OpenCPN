@@ -42,9 +42,6 @@
 wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
 
-wxDEFINE_EVENT(EVT_CUSTOM_INIT, wxCommandEvent);
-wxDEFINE_EVENT(EVT_CUSTOM_CLEAR, wxCommandEvent);
-
 extern wxString       g_catalog_channel;
 extern wxString       g_catalog_custom_url;
 extern wxString       g_compatOS;
@@ -59,10 +56,6 @@ class CustomCatalogCtrl: public wxTextCtrl
         {
             Bind(wxEVT_TEXT,
                 [&](wxCommandEvent& e){ g_catalog_custom_url = GetValue(); });
-            Bind(EVT_CUSTOM_INIT,
-                [&](wxCommandEvent& e){ ChangeValue(g_catalog_custom_url); });
-            Bind(EVT_CUSTOM_CLEAR,
-                [&](wxCommandEvent& e){ ChangeValue(""); });
         }
 };
 
@@ -127,7 +120,7 @@ class PlatformChoice: public wxChoice
 class CatalogChoice: public wxChoice
 {
     public:
-        CatalogChoice(wxWindow* parent, wxWindow* custom_ctrl)
+        CatalogChoice(wxWindow* parent, wxTextCtrl* custom_ctrl)
             : wxChoice(), m_custom_ctrl(custom_ctrl)
         {
             std::vector<std::string>
@@ -149,9 +142,9 @@ class CatalogChoice: public wxChoice
         }
 
      private:
-        wxWindow* m_custom_ctrl;
+        wxTextCtrl* m_custom_ctrl;
 
-        void  OnChoice(wxCommandEvent &ev)
+        void  OnChoice(wxCommandEvent&)
         {
             auto selected = GetString(GetSelection());
             m_custom_ctrl->Enable(selected == "custom");
@@ -159,12 +152,10 @@ class CatalogChoice: public wxChoice
                 m_custom_ctrl->Show();
                 GetParent()->Layout();
                 m_custom_ctrl->SetFocus();
-                wxCommandEvent event(EVT_CUSTOM_INIT, GetId());
-                ::wxPostEvent(m_custom_ctrl, event);
+                g_catalog_custom_url = m_custom_ctrl->GetValue();
             }
             else {
-                wxCommandEvent event(EVT_CUSTOM_CLEAR, GetId());
-                ::wxPostEvent(m_custom_ctrl, event);
+                g_catalog_custom_url = "";
                 m_custom_ctrl->Hide();
             }
             wxCommandEvent event(EVT_CATALOG_CHANGE, GetId());
@@ -254,7 +245,9 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     Fit();
     Layout();
     SetMinSize(GetSize());
-    /** Forward otherwise dropped event (this is a Dialog). */
+    /** Forward otherwise dropped events (this is a Dialog). */
     Bind(EVT_COMPAT_OS_CHANGE,
+         [&](wxCommandEvent& e) { ::wxPostEvent(GetParent(), e); });
+    Bind(EVT_CATALOG_CHANGE,
          [&](wxCommandEvent& e) { ::wxPostEvent(GetParent(), e); });
 }
