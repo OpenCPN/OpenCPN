@@ -27,11 +27,9 @@
 #include <string>
 
 #include <wx/button.h>
-#include <wx/colour.h>
 #include <wx/choice.h>
 #include <wx/log.h>
 #include <wx/sizer.h>
-#include <wx/statbox.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
@@ -64,12 +62,24 @@ class CustomCatalogCtrl: public wxTextCtrl
 class PlatformChoice: public wxChoice
 {
     public:
+        PlatformChoice(wxWindow* parent, wxStaticText* selected)
+            :wxChoice(), m_selected(selected)
+        {
+            Bind(wxEVT_CHOICE, &PlatformChoice::OnChoice, this);
+            Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, getLabels());
+            SetSelection(0);
+            Layout();
+        }
+
+    private:
         void  OnChoice(wxCommandEvent&)
         {
             if (GetSelection() == 0) {
+                // "Select new flavour"
                 return;
             }
             if (GetSelection() == 1) {
+                // "Default Setting"
                 g_compatOS = "";
                 g_compatOsVersion = "";
                 auto compOS = CompatOs::getInstance();
@@ -88,16 +98,6 @@ class PlatformChoice: public wxChoice
             ::wxPostEvent(this, event);
         }
 
-        PlatformChoice(wxWindow* parent, wxStaticText* selected)
-            :wxChoice(), m_selected(selected)
-        {
-            Bind(wxEVT_CHOICE, &PlatformChoice::OnChoice, this);
-            Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, getLabels());
-            SetSelection(0);
-            Layout();
-        }
-
-    private:
         wxStaticText* m_selected;
 
         wxArrayString getLabels()
@@ -112,7 +112,7 @@ class PlatformChoice: public wxChoice
                 labels.Add(ss.str());
             }
             return labels;
-         }
+        }
 };
 
 
@@ -135,7 +135,7 @@ class CatalogChoice: public wxChoice
                     SetSelection(l - labels.begin());
                 }
             }
-            wxCommandEvent ev; 
+            wxCommandEvent ev;
             OnChoice(ev);
             Layout();
             Bind(wxEVT_CHOICE, &CatalogChoice::OnChoice, this);
@@ -240,7 +240,7 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
     vbox->Add(new ButtonsSizer(this), wxSizerFlags().Expand().DoubleBorder());
- 
+
     SetSizer(vbox);
     Fit();
     Layout();
