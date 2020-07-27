@@ -6,7 +6,6 @@ Commands to test for the need for NDEBUG needs to run in sequence,
 which cmake's execute_process does not guarantee.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/1991
-
 ---
  CMakeLists.txt | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)

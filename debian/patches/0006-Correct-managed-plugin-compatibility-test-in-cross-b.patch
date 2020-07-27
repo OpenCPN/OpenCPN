@@ -1,0 +1,69 @@
+From: dsr <bdbcat@yahoo.com>
+Date: Fri, 24 Jul 2020 19:15:56 -0400
+Subject: [PATCH 6/7] Correct managed plugin compatibility test in cross-build
+ environment.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/1997
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/0b83f1f715b8
+---
+ include/OCPNPlatform.h |  1 +
+ src/OCPNPlatform.cpp   |  4 ++++
+ src/PluginHandler.cpp  | 14 ++++++++++++--
+ 3 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/include/OCPNPlatform.h b/include/OCPNPlatform.h
+index 0dc65d4..747a081 100644
+--- a/include/OCPNPlatform.h
++++ b/include/OCPNPlatform.h
+@@ -60,6 +60,7 @@ public:
+     std::string                 osd_version;
+     std::vector<std::string>    osd_name_like;
+     std::string                 osd_arch;
++    std::string                 osd_ID;
+ 
+ };
+  
+diff --git a/src/OCPNPlatform.cpp b/src/OCPNPlatform.cpp
+index 5463f76..13a309d 100644
+--- a/src/OCPNPlatform.cpp
++++ b/src/OCPNPlatform.cpp
+@@ -383,6 +383,10 @@ bool OCPNPlatform::DetectOSDetail( OCPN_OSDetail *detail)
+                     val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+                     if(val.Length())  detail->osd_version = std::string(val.mb_str());
+                 }
++                else if(str.StartsWith(_T("ID="))){
++                    val = str.AfterFirst('=');
++                    if(val.Length())  detail->osd_ID = ocpn::split(val.mb_str(), " ")[0];
++                }
+                 else if(str.StartsWith(_T("ID_LIKE"))){
+                     if(val.StartsWith('"')){
+                         val = str.AfterFirst('=').Mid(1);  val = val.Mid(0, val.Length()-1);
+diff --git a/src/PluginHandler.cpp b/src/PluginHandler.cpp
+index f9e2a87..a000744 100644
+--- a/src/PluginHandler.cpp
++++ b/src/PluginHandler.cpp
+@@ -174,12 +174,22 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata,
+     OCPN_OSDetail *os_detail = g_Platform->GetOSDetail();
+     
+     // Get the specified system definition,
+-    //   or the baked in (build system) values,
++    //   From the OCPN_OSDetail structure probed at startup.
+     //   or the environment override,
+     //   or the config file override
+-    
++    //   or the baked in (build system) values.  Not too useful in cross-build environments...
++ 
+     std::string compatOS(os);
+     std::string compatOsVersion(os_version);
++
++    // Handle the most common cross-compile, safely
++#ifdef ocpnARM 
++    if(os_detail->osd_ID.size())
++        compatOS = os_detail->osd_ID;
++    if(os_detail->osd_version.size())
++        compatOsVersion = os_detail->osd_version;
++#endif    
++
+     if (getenv("OPENCPN_COMPAT_TARGET") != 0) {
+         // Undocumented test hook.
+         compatOS = getenv("OPENCPN_COMPAT_TARGET");

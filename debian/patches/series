@@ -3,3 +3,5 @@
 0003-CMakeLists-Adjust-udev-rule-install-path-1988.patch
 0004-Remove-bogus-svg-file-1990.patch
 0005-Build-Fix-cmake-missing-NDEBUG-flag-1991.patch
+0006-Correct-managed-plugin-compatibility-test-in-cross-b.patch
+0007-Allow-vanilla-debian-host-to-use-Ubuntu-managed-plug.patch
