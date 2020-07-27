@@ -1,6 +1,5 @@
 lib/udev/rules.d/98-sglock-ocpn.rules
 usr/bin/opencpn
-usr/libexec/opencpn
 usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
 usr/share/icons/hicolor/*/apps/opencpn.*

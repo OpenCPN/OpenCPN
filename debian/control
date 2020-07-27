@@ -32,7 +32,6 @@ Package: opencpn
 Architecture: any
 Depends: opencpn-data (>= ${source:Version}),
  bzip2,
- lsb-release,
  wx3.0-i18n,
  ${shlibs:Depends},
  ${misc:Depends}
