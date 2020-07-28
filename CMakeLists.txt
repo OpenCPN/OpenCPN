@@ -867,6 +867,7 @@ endif (QT_ANDROID)
 
 set(
   HDRS
+  include/config_var.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/about.h
@@ -994,6 +995,7 @@ set(
 
 set(
   SRCS
+  src/config_var.cpp
   src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
