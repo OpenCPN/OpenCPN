@@ -34,11 +34,9 @@
 #include <wx/textctrl.h>
 
 #include "cat_settings.h"
+#include "config_var.h"
 #include "ocpn_utils.h"
 #include "PluginHandler.h"
-
-wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
 
 extern wxString       g_catalog_channel;
 extern wxString       g_catalog_custom_url;
@@ -52,8 +50,9 @@ class CustomCatalogCtrl: public wxTextCtrl
     public:
         CustomCatalogCtrl(wxWindow* parent): wxTextCtrl(parent, wxID_ANY, "")
         {
+            SetValue(g_catalog_custom_url);
             Bind(wxEVT_TEXT,
-                [&](wxCommandEvent& e){ g_catalog_custom_url = GetValue(); });
+                 [&](wxCommandEvent&) {g_catalog_custom_url = GetValue(); });
         }
 };
 
@@ -72,16 +71,19 @@ class PlatformChoice: public wxChoice
         }
 
     private:
+        wxStaticText* m_selected;
+
         void  OnChoice(wxCommandEvent&)
         {
+            ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
             if (GetSelection() == 0) {
                 // "Select new flavour"
                 return;
             }
             if (GetSelection() == 1) {
                 // "Default Setting"
-                g_compatOS = "";
                 g_compatOsVersion = "";
+                compat_os.set("");
                 auto newOS = CompatOs::getInstance();
                 m_selected->SetLabel(newOS->name() + ":" + newOS->version());
             }
@@ -89,14 +91,11 @@ class PlatformChoice: public wxChoice
                 auto current = GetString(GetSelection());
                 auto os = ocpn::split(current, " ")[0];
                 m_selected->SetLabel(os);
-                g_compatOS = ocpn::split(os.c_str(), ":")[0];
+                compat_os.set(ocpn::split(os.c_str(), ":")[0]);
                 g_compatOsVersion = ocpn::split(os.c_str(), ":")[1];
             }
-            wxCommandEvent event(EVT_COMPAT_OS_CHANGE, GetId());
-            ::wxPostEvent(this, event);
         }
 
-        wxStaticText* m_selected;
 
         wxArrayString getLabels()
         {
@@ -153,27 +152,23 @@ class CatalogChoice: public wxChoice
                 g_catalog_custom_url = m_custom_ctrl->GetValue();
             }
             else {
-                g_catalog_custom_url = "";
                 m_custom_ctrl->Hide();
             }
-            wxCommandEvent event(EVT_CATALOG_CHANGE, GetId());
-            ::wxPostEvent(GetGrandParent(), event);
-
-            g_catalog_channel = selected;
+            ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+            catalog.set(selected);
             Layout();
         }
 };
 
 
 /** Current selected compatibility. */
-class StatusText: public wxStaticText
+class CompatText: public wxStaticText
 {
     public:
-        StatusText(wxWindow* parent): wxStaticText(parent, wxID_ANY, "")
+        CompatText(wxWindow* parent): wxStaticText(parent, wxID_ANY, "")
         {
             auto compatOs = CompatOs::getInstance();
-            auto os = compatOs->name() + ":" + compatOs->version();
-            SetLabel(os);
+            SetLabel(compatOs->name() + ":" + compatOs->version());
         }
 };
 
@@ -206,7 +201,7 @@ class CompatSizer: public wxStaticBoxSizer
             auto flags = wxSizerFlags().Border();
             Add(new wxStaticText(parent, wxID_ANY, _("Active setting:")),
                 flags.Center());
-            auto status_text = new StatusText(parent);
+            auto status_text = new CompatText(parent);
             Add(status_text, flags.Center().Proportion(1));
             Add(new PlatformChoice(parent, status_text), flags);
         }
@@ -243,9 +238,4 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     Fit();
     Layout();
     SetMinSize(GetSize());
-    /** Forward otherwise dropped events (this is a Dialog). */
-    Bind(EVT_COMPAT_OS_CHANGE,
-         [&](wxCommandEvent& e) { ::wxPostEvent(GetParent(), e); });
-    Bind(EVT_CATALOG_CHANGE,
-         [&](wxCommandEvent& e) { ::wxPostEvent(GetParent(), e); });
 }

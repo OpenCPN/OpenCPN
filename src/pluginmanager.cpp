@@ -133,6 +133,7 @@ typedef __LA_INT64_T la_int64_t;      //  "older" libarchive versions support
 #include "semantic_vers.h"
 #include "update_mgr.h"
 #include "cat_settings.h"
+#include "config_var.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -5184,9 +5185,8 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      rowSizer2->AddSpacer( 4 * GetCharWidth() );
      m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                                  wxDefaultPosition, wxDefaultSize, 0 );
-     pConfig->SetPath("/PlugIns/");
-     wxString expert = pConfig->Read("CatalogExpert", "0");
-     if (expert.IsSameAs("1")) {
+     ocpn::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+     if (expert.get(false)) {
          m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                             &CatalogMgrPanel::OnPluginSettingsButton,
                             this);
@@ -5210,9 +5210,12 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
+
+     ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
+     wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
+     catalog.listen(this, EVT_CATALOG_CHANGE);
      Bind(EVT_CATALOG_CHANGE,
           [&](wxCommandEvent&) { SetUpdateButtonLabel(); });
-
 }
 
 CatalogMgrPanel::~CatalogMgrPanel()
