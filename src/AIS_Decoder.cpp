@@ -3183,6 +3183,9 @@ void AISshipNameCache(AIS_Target_Data *pTargetData,
                         if (g_bUseOnlyConfirmedAISName)
                             strncpy(pTargetData->ShipName, (*AISTargetNamesC)[mmsi].mb_str(), (*AISTargetNamesC)[mmsi].Left(20).Length() + 1);
                     }
+                    else { // The C list name is different but no NC entry. Add it.
+                        (*AISTargetNamesNC)[mmsi] = ship_name;
+                    }
                 }
             }
             else { //No confirmed entry available
