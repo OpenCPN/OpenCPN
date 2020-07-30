@@ -183,7 +183,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
       if (m_DepthUnit != _T("-")) { //Watchdog 
-          dc->DrawText(wxString::Format(_T("%.1f "), m_Depth) + m_DepthUnit, 10, m_TitleHeight); 
+          dc->DrawText(wxString::Format(_T("%.2f "), m_Depth) + m_DepthUnit, 10, m_TitleHeight); 
       } else
           dc->DrawText(_T("---"), 10, m_TitleHeight);
 

@@ -734,8 +734,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
     if( m_NMEA0183.PreParse() ) {
         if( m_NMEA0183.LastSentenceIDReceived == _T("DBT") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriDepth >= 3 ) {
-                    mPriDepth = 3;
+                if( mPriDepth >= 4 ) {
+                    mPriDepth = 4;
 
                     /*
                      double m_NMEA0183.Dbt.DepthFeet;
@@ -760,8 +760,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("DPT") ) {
             if( m_NMEA0183.Parse() ) {
-                if (mPriDepth >= 2) {
-                    mPriDepth = 2;
+                if (mPriDepth >= 3) {
+                    mPriDepth = 3;
 
                     /*
                      double m_NMEA0183.Dpt.DepthMeters
@@ -1605,10 +1605,38 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &sfixtime) {
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
             }
         }
-        else if (update_path == _T("environment.depth.belowTransducer")) {
+        else if (update_path == _T("environment.depth.belowSurface")) {
             if (mPriDepth >= 1) {
+                double depth = 0.0;
+                if (value.IsDouble())
+                    depth = (value.AsDouble());
+                else if (value.IsInt()) {
+                    int di = (value.AsInt());
+                    depth = di;
+                }
+                else return;
+
                 mPriDepth = 1;
-                double depth = (value.AsDouble());
+                depth += g_dDashDBTOffset;
+                depth /= 1852.0;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
+                    toUsrDistance_Plugin(depth, g_iDashDepthUnit),
+                    getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+                mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+            }
+        }
+        else if (update_path == _T("environment.depth.belowTransducer")) {
+            if (mPriDepth >= 2) {
+                double depth = 0.0;
+                if (value.IsDouble())
+                    depth = (value.AsDouble());
+                else if (value.IsInt()) {
+                    int di = (value.AsInt());
+                    depth = di;
+                }
+                else return;
+
+                mPriDepth = 2;
                 depth += g_dDashDBTOffset;
                 depth /= 1852.0;
                 SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
@@ -3631,7 +3659,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_I_DPT:
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_DPT, _T("%5.1f") );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_DPT, _T("%5.2f") );
                 break;
             case ID_DBP_D_DPT:
                 instrument = new DashboardInstrument_Depth( this, wxID_ANY,
