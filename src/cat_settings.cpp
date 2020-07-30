@@ -82,10 +82,8 @@ class PlatformChoice: public wxChoice
                 // "Default Setting"
                 g_compatOS = "";
                 g_compatOsVersion = "";
-                auto compOS = CompatOs::getInstance();
-                std::stringstream ss;
-                ss << compOS->name() << ":" << compOS->version();
-                m_selected->SetLabel(ss.str().c_str());
+                auto newOS = CompatOs::getInstance();
+                m_selected->SetLabel(newOS->name() + ":" + newOS->version());
             }
             else {
                 auto current = GetString(GetSelection());
@@ -215,14 +213,14 @@ class CompatSizer: public wxStaticBoxSizer
 };
 
 
-/** The Dismiss button. */
+/** The Done button. */
 class ButtonsSizer: public wxStdDialogButtonSizer
 {
     public:
         ButtonsSizer(wxWindow* parent): wxStdDialogButtonSizer()
         {
             auto button = new wxButton(parent, wxID_OK);
-            button->SetLabel(_("Dismiss"));
+            button->SetLabel(_("Done"));
             SetAffirmativeButton(button);
             Realize();
         }

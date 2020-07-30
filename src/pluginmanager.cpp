@@ -5211,7 +5211,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
      SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
      Fit();
      Bind(EVT_CATALOG_CHANGE,
-          [&](wxCommandEvent& ev) { SetUpdateButtonLabel(); });
+          [&](wxCommandEvent&) { SetUpdateButtonLabel(); });
 
 }
 
