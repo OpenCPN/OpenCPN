@@ -565,6 +565,59 @@ static void apple_entry_set_install_path(struct archive_entry* entry,
     archive_entry_set_pathname(entry, dest.c_str());
 }
 
+static void android_entry_set_install_path(struct archive_entry* entry,
+                                         pathmap_t installPaths)
+{
+    using namespace std;
+
+    string path = archive_entry_pathname(entry);
+    int slashes = count(path.begin(), path.end(), '/');
+    if (slashes < 2) {
+        archive_entry_set_pathname(entry, "");
+        return;
+    }
+
+    if(path.find("/share") != string::npos)
+        int yyp = 4;
+    
+    int slashpos = path.find_first_of('/', 1);
+    if(ocpn::startswith(path, "./"))
+        slashpos = path.find_first_of('/', 2);  // skip the './'
+
+    string prefix = path.substr(0, slashpos);
+    path = path.substr(prefix.size() + 1);
+    if (ocpn::startswith(path, "usr/")) {
+        path = path.substr(strlen("usr/"));
+    }
+    if (ocpn::startswith(path, "local/")) {
+        path = path.substr(strlen("local/"));
+    }
+    slashpos = path.find_first_of('/');
+    string location = path.substr(0, slashpos);
+    string suffix = path.substr(slashpos + 1);
+    if (installPaths.find(location) == installPaths.end()
+        && archive_entry_filetype(entry) == AE_IFREG
+    ){
+        location = "unknown";
+    }
+    
+    if((location == "lib") && ocpn::startswith(suffix, "opencpn")){
+        auto parts = split(suffix, "/");
+        if(parts.size() == 2)
+            suffix = parts[1];
+    }
+
+    if((location == "share") && ocpn::startswith(suffix, "opencpn")){
+        auto parts = split(suffix, "opencpn/");
+        if(parts.size() == 2)
+            suffix = parts[1];
+    }
+
+    ///storage/emulated/0/android/data/org.opencpn.opencpn/files/opencpn/plugins/oesenc_pi/data/LUPPatch3.xml
+    string dest = installPaths[location] + "/" + suffix;
+
+    archive_entry_set_pathname(entry, dest.c_str());
+}
 
 
 static void entry_set_install_path(struct archive_entry* entry,
@@ -576,7 +629,11 @@ static void entry_set_install_path(struct archive_entry* entry,
         flatpak_entry_set_install_path(entry, installPaths);
     }
     else if (osSystemId & wxOS_UNIX_LINUX) {
+#ifdef __OCPN__ANDROID__
+        android_entry_set_install_path(entry, installPaths);
+#else
         linux_entry_set_install_path(entry, installPaths);
+#endif        
     }
     else if (osSystemId & wxOS_WINDOWS) {
         win_entry_set_install_path(entry, installPaths);
@@ -590,7 +647,7 @@ static void entry_set_install_path(struct archive_entry* entry,
     }
     const std::string dest = archive_entry_pathname(entry);
     if(dest.size()){
-        DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
+        MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
     }
 }
 
@@ -599,7 +656,9 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a)
 {
     if (r < ARCHIVE_OK) {
         std::string s(msg);
+#ifndef __OCPN__ANDROID__
         s = s + ": " + archive_error_string(a);
+#endif
         wxLogMessage(s.c_str());
         last_error_msg = s;
     }
@@ -632,6 +691,7 @@ bool PluginHandler::explodeTarball(struct archive* src,
             continue;
         }
         filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
+
         r = archive_write_header(dest, entry);
         archive_check(r, "archive write install header error", dest);
         if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
@@ -644,6 +704,7 @@ bool PluginHandler::explodeTarball(struct archive* src,
         if (!archive_check(r, "archive finish write error", dest)) {
             return false;
         }
+        
     }
     return false; // notreached
 }
