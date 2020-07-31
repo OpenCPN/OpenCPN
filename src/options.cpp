@@ -7604,6 +7604,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
         if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
     }
 
+    // Internal BlueTooth driver stacks commonly need a time delay to purge their buffers, etc.
+    // before restating with new parameters...
+    if(cp->Type == INTERNAL_BT)
+        wxSleep(1);
+
     if (!cp->bEnabled) continue;
     g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
     cp->b_IsSetup = TRUE;
